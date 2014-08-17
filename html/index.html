@@ -28,17 +28,13 @@
                             <li class="top-bar-icon"><i class="fa-exclamation-circle"></i></li>
                             <li class="profile-area"><span>Chris Brame</span><img src="img/profile.png" alt="Profile"/></li>
                         </ul>
-                        <!--<div class="profile-area">-->
-                            <!--<span>Chris Brame</span>-->
-                            <!--<img src="img/profile.png" alt="Profile"/>-->
-                        <!--</div>-->
                     </div>
                 </section>
             </nav>
         </div>
     </div>
     <div class="row">
-        <div class="sidebar small-2 columns nopadding">
+        <div class="sidebar small-2 columns nopadding full-height">
             <ul class="side-nav">
                 <li><a href="#"><i class="fa fa-home fa-large"></i>Home</a></li>
                 <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
@@ -56,9 +52,63 @@
                 <li><a href="#"><i class="icon-invoices"></i>Invoices</a></li>
             </ul>
         </div>
-        <div class="small-10 columns page-content nopadding">
-            <div class="page-title">
-                <p>Dashboard</p>
+        <div class="small-3 columns nopadding">
+            <div class="page-title noshadow nopadding-right">
+                <div class="page-title-border-right">
+                    <p>Messages</p>
+                </div>
+            </div>
+
+            <div class="full-height">
+                <form action="#">
+                    <ul class="message-items">
+                        <li class="message-folder">Inbox</li>
+                        <li class="unread active">
+                            <input id="c1" type="checkbox"/>
+                            <label for="c1"></label>
+                            <span class="message-date">07/11/2014</span>
+                            <a href="#1" class="message-from">Rick Spencer</a>
+                            <span class="message-subject">Please Check on this ticket.</span>
+                        </li>
+                        <li class="unread">
+                            <input id="c2" type="checkbox"/>
+                            <label for="c2"></label>
+                            <span class="message-date">07/11/2014</span>
+                            <a href="#2" class="message-from unread">Rick Spencer</a>
+                            <span class="message-subject">Need to order parts.</span>
+                        </li>
+                        <li class="unread">
+                            <input id="c3" type="checkbox"/>
+                            <label for="c3"></label>
+                            <span class="message-date">07/11/2014</span>
+                            <a href="#3" class="message-from unread">Rick Spencer</a>
+                            <span class="message-subject">Need to order parts.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                    </ul>
+                </form>
+            </div>
+
+        </div>
+        <div class="small-7 columns nopadding">
+            <div class="page-title-right noshadow">
+                <ul class="button-group">
+                    <li class="active"><a href="#" class="btn"><i class="fa fa-pencil"></i>New</a></li>
+                    <li><a href="#" class="btn"><i class="fa fa-reply"></i>Reply</a></li>
+                    <li><a href="#" class="btn"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                    <li><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
+                    <li><a href="#" class="btn"><i class="fa fa-trash-o"></i>Trash</a></li>
+                </ul>
+            </div>
+
+            <div class="page-content full-height">
+
             </div>
         </div>
     </div>
