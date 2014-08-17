@@ -1,0 +1,51 @@
+.top-nav,
+.top-bar
+  background: #2c3e50
+  height: 75px
+  line-height: 75px
+
+.top-menu
+  height: 75px
+
+.top-bar-section
+  ul
+    li
+      background: #2c3e50
+      height: 75px
+      line-height: 75px
+      color: #536679
+      position: relative
+
+      &.top-bar-icon
+        font-size: 30px
+        font-family: "FontAwesome"
+        i
+          font-style: normal
+          margin: 0 10px 0 20px
+
+        span.label
+          font-size: 9px
+          font-family: "Open Sans", arial, sans-serif
+          font-weight: 700
+          padding: 5px 7px
+          position: absolute
+          right: 0px
+          bottom: 15px
+          +background-opacity(#e74c3c, 0.9)
+
+.top-bar-section ul li.profile-area
+  font-family: "Lato", sans-serif
+  font-size: 18px
+  color: #ffffff
+  background: url("../img/midDots.png") no-repeat
+  background-position: 0 50%
+  margin-left: 10px
+
+  span
+    display: inline-block
+    margin: 0 20px 0 25px
+
+  img
+    +borderRadius(50%)
+
+

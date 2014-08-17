@@ -1,1 +1,33 @@
+@import "mixins"
 @import "_settings"
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400)
+@import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,800,300,600)
+@import url(http://fonts.googleapis.com/css?family=Roboto:400,300,500,700)
+@import "partials/topnav"
+@import "partials/sidebar"
+
+body
+  background: #d5dae6
+
+.nopadding
+  padding: 0 !important
+
+.row
+  max-width: $rowWidth
+
+.page-title
+  height: 70px
+  background: #eef1f7
+  border-top: 2px solid #e74c3c
+  +boxShadow2(inset 0 1px 0px #fff, 0px 2px 2px 0px rgba(44,62,80,0.2))
+  padding: 0px 30px
+  font-family: "Roboto", sans-serif
+  p
+    font-size: 30px
+    margin: 0
+    line-height: 70px
+    color: #55616e
+
+.fa-large
+  font-size: 24px
+  line-height: 26px
