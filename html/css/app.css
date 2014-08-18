@@ -46,7 +46,7 @@ ul.side-nav-sub a:hover .icon-trash { background-position: -32px -16px; }
 
 .icon-invoices { width: 24px; height: 20px; background: url(../img/invoices.png) 0 0 no-repeat; top: 10px !important; }
 
-.message-items { list-style: none; background: #f3f5f9; min-height: 100%; padding: 0; margin: 0; border-top: 1px solid #dfe4ef; border-right: 1px solid #dfe4ef; }
+.message-items { list-style: none; background: #f3f5f9; min-height: 100%; padding: 0; margin: 0; border-top: 1px solid #dfe4ef; border-right: 1px solid #dfe4ef; overflow: auto; }
 .message-items li { height: 85px; padding-top: 17px; padding-left: 32px; border-bottom: 1px solid #dfe4ef; position: relative; }
 .message-items li:hover { background: white; cursor: pointer; }
 .message-items li:last-child { border-bottom: none; }
@@ -66,18 +66,25 @@ ul.side-nav-sub a:hover .icon-trash { background-position: -32px -16px; }
 
 .message-content { background: white; }
 
+.message-header { border-bottom: 1px solid #dfe4ef; padding: 20px 30px 20px 60px; position: relative; }
+.message-header h1 { display: block; font-size: 30px; font-family: "Open Sans", sans-serif; font-weight: normal; color: #3d4854; margin-bottom: 25px; }
+.message-header span { display: inline-block; margin-right: 15px; padding-left: 3px; color: #a2aabb; font-family: "Open Sans", sans-serif; font-size: 14px; }
+
 input[type="checkbox"] { display: none; visibility: hidden; }
 
 input[type="checkbox"] + label { display: inline-block; height: 14px; width: 16px; background: url(../img/checkbox.png) 0 0 no-repeat; cursor: pointer; position: absolute; top: 24px; left: 25px; }
 
 input[type="checkbox"]:checked + label { background-position: 0 -14px; }
 
+.message { padding: 30px 30px 30px 60px; overflow: auto; }
+.message p { font-size: 14px; font-weight: normal; line-height: 30px; margin-bottom: 40px; }
+
 .button-group li.active > a { background: #e74c3c; color: white; }
-.button-group a.btn { display: block; color: #707e9b; font-family: "Source Sans Pro", sans-serif; font-weight: 600; font-size: 14px; margin: 18px 5px 0 0; padding: 4px 16px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; }
+.button-group a.btn { display: block; color: #707e9b; font-family: "Source Sans Pro", sans-serif; font-weight: 600; font-size: 14px; margin: 18px 5px 0 0; padding: 4px 16px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; background: inherit; }
 .button-group a.btn:hover { background: #e74c3c; color: white; }
 .button-group a.btn i { font-weight: normal; margin-right: 10px; font-size: 14px; }
 
-html, body { background: #d5dae6; overflow: hidden; }
+html, body { background: #d5dae6; overflow-x: hidden; font-family: "Open Sans", sans-serif; }
 
 .nopadding { padding: 0 !important; }
 
@@ -101,3 +108,13 @@ html, body { background: #d5dae6; overflow: hidden; }
 .page-content { background: white; border-top: 1px solid #dfe4ef; }
 
 .fa-large { font-size: 24px; line-height: 26px; }
+
+a.button { color: white; font-family: "Source Sans Pro", sans-serif; font-weight: 600; font-size: 14px; padding: 4px 16px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; background: #e74c3c; }
+a.button.dropdown { padding-right: 40px; }
+a.button.dropdown:after { width: auto; height: auto; right: 12px; top: 10px; font-family: "FontAwesome"; content: "\f078"; border: none; font-size: 12px; }
+a.button:hover { background: #e43725; color: white; }
+a.button i { font-weight: normal; margin-right: 10px; font-size: 14px; }
+
+.f-dropdown.open:before { left: 10px !important; }
+
+.f-dropdown.open:after { left: 9px !important; }

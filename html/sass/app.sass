@@ -11,7 +11,8 @@
 html,
 body
   background: #d5dae6
-  overflow: hidden
+  overflow-x: hidden
+  font-family: "Open Sans", sans-serif
 
 .nopadding
   padding: 0 !important
@@ -56,3 +57,40 @@ body
 .fa-large
   font-size: 24px
   line-height: 26px
+
+a.button
+  color: #fff
+  font-family: "Source Sans Pro", sans-serif
+  font-weight: 600
+  font-size: 14px
+  //margin: 18px 5px 0 0
+  padding: 4px 16px
+  +borderRadius(3px)
+  background: #e74c3c
+
+  &.dropdown
+    padding-right: 40px
+    //margin: 0
+    &:after
+      width: auto
+      height: auto
+      right: 12px
+      top: 10px
+      font-family: "FontAwesome"
+      content: "\f078"
+      border: none
+      font-size: 12px
+
+  &:hover
+    background: darken(#e74c3c, 5%)
+    color: white
+
+  i
+    font-weight: normal
+    margin-right: 10px
+    font-size: 14px
+
+.f-dropdown.open:before
+  left: 10px !important
+.f-dropdown.open:after
+  left: 9px !important

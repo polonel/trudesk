@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="css/normalize.css"/>
     <link rel="stylesheet" href="css/foundation.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/css/foundation.min.css"/>
     <script src="js/vendor/modernizr.js"></script>
 
     <link rel="stylesheet" href="css/vendor/font-awesome.min.css"/>
@@ -60,8 +61,8 @@
             </div>
 
             <div class="full-height">
-                <form action="#">
-                    <ul class="message-items">
+                <form action="#" style="margin: 0">
+                    <ul class="message-items full-height">
                         <li class="message-folder">Inbox</li>
                         <li class="unread active">
                             <input id="c1" type="checkbox"/>
@@ -91,6 +92,56 @@
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
+
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
+                        <li class="message-tag message-tag-blue">
+                            <input id="c4" type="checkbox"/>
+                            <label for="c4"></label>
+                            <span class="message-date">07/09/2014</span>
+                            <a href="#4" class="message-from unread">John Smith</a>
+                            <span class="message-subject">Please give a status update.</span>
+                        </li>
                     </ul>
                 </form>
             </div>
@@ -108,7 +159,28 @@
             </div>
 
             <div class="page-content full-height">
+                <div class="message-header">
+                    <h1>Please Check on this ticket.</h1>
+                    <span>From:</span>
+                    <a href="#" data-dropdown="drop" class="button dropdown">Rick Spencer</a>
+                    <ul id="drop" class="f-dropdown" data-dropdown-content>
+                        <li><a href="#">Chat</a></li>
+                        <li><a href="#">View Contact</a></li>
+                    </ul>
+                </div>
+                <div class="message">
+                    <p><strong>Lorem ipsum dolor sit amet,</strong> consectetur adipiscing elit. Donec eu aliquam ante, sit amet
+                       aliquam dolor. Aliquam eu tempus sem, id ultrices massa. Aenean aliquam vel urna a
+                       elementum.</p>
 
+                    <p>Fusce ut erat ut magna semper placerat. Vivamus feugiat diam a consequat venenatis.
+                        Pellentesque volutpat justo tellus, vitae condimentum nibh scelerisque a. Donec in pretium mi,
+                        sed sagittis quam. Etiam at nisl dignissim, pulvinar libero eget, placerat lorem. Nunc semper est
+                        in libero tincidunt, vel sollicitudin enim imperdiet. Vivamus imperdiet posuere ligula, nec
+                        dignissim lectus ornare ac. Cras auctor accumsan orci non lacinia. Curabitur erat metus,
+                        fermentum id fringilla ac, placerat non tortor. Sed mattis aliquet leo ac mollis. Nam felis magna,
+                        elementum sed mauris at, blandit fermentum leo.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -117,8 +189,9 @@
 
 <script src="js/vendor/jquery.js"></script>
 <script src="js/vendor/fastclick.js"></script>
-<script src="js/foundation.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/js/foundation.min.js"></script>
 
+<script src="js/plugins/plugins.js"></script>
 <script src="js/client.js"></script>
 </body>
 </html>

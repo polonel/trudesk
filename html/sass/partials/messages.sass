@@ -6,6 +6,7 @@
   margin: 0
   border-top: 1px solid #dfe4ef
   border-right: 1px solid #dfe4ef
+  overflow: auto
 
   li
     height: 85px
@@ -81,6 +82,27 @@
 .message-content
   background: white
 
+.message-header
+  border-bottom: 1px solid #dfe4ef
+  padding: 20px 30px 20px 60px
+  position: relative
+
+  h1
+    display: block
+    font-size: 30px
+    font-family: "Open Sans", sans-serif
+    font-weight: normal
+    color: #3d4854
+    margin-bottom: 25px
+
+  span
+    display: inline-block
+    margin-right: 15px
+    padding-left: 3px
+    color: #a2aabb
+    font-family: "Open Sans", sans-serif
+    font-size: 14px
+
 input[type="checkbox"]
   display: none
   visibility: hidden
@@ -99,6 +121,16 @@ input[type="checkbox"]:checked + label
   background-position: 0 -14px
 
 
+.message
+  padding: 30px 30px 30px 60px
+  overflow: auto
+
+  p
+    font-size: 14px
+    font-weight: normal
+    line-height: 30px
+    margin-bottom: 40px
+
 //Navigation Components
 .button-group
   li.active > a
@@ -113,6 +145,7 @@ input[type="checkbox"]:checked + label
     margin: 18px 5px 0 0
     padding: 4px 16px
     +borderRadius(3px)
+    background: inherit
 
     &:hover
       background: #e74c3c
