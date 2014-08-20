@@ -25,19 +25,25 @@
                     <!-- Right Nav Section -->
                     <div class="top-menu right">
                         <ul>
-                            <li class="top-bar-icon"><i class="fa-envelope"></i><span class="alert round label">50+</span></li>
-                            <li class="top-bar-icon"><i class="fa-exclamation-circle"></i></li>
+                            <li class="top-bar-icon"><a href="#" data-notifications="mail-notifications"><i class="fa-envelope"></i><span class="alert round label">50+</span></a></li>
+                            <li class="top-bar-icon"><a href="#" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
                             <li class="profile-area"><span>Chris Brame</span><img src="img/profile.png" alt="Profile"/></li>
                         </ul>
+                        <div id="notifications" class="notifications p-dropdown">
+                            <p>Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text</p>
+                        </div>
+                        <div id="mail-notifications" class="notifications p-dropdown">
+                            <p>Some Content Text Some Content Text Some Content Text </p>
+                        </div>
                     </div>
                 </section>
             </nav>
         </div>
     </div>
     <div class="row">
-        <div class="sidebar small-2 columns nopadding full-height">
+        <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down">
             <ul class="side-nav">
-                <li><a href="#"><i class="fa fa-home fa-large"></i>Home</a></li>
+                <li><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
                 <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
                 <li class="active"><a href="#"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
                     <ul class="side-nav-sub">
@@ -53,7 +59,7 @@
                 <li><a href="#"><i class="icon-invoices"></i>Invoices</a></li>
             </ul>
         </div>
-        <div class="small-3 columns nopadding">
+        <div class="small-5 medium-5 large-3 columns message-list">
             <div class="page-title noshadow nopadding-right">
                 <div class="page-title-border-right">
                     <p>Messages</p>
@@ -147,14 +153,18 @@
             </div>
 
         </div>
-        <div class="small-7 columns nopadding">
+        <div class="small-7 columns nopadding page-message">
             <div class="page-title-right noshadow">
                 <ul class="button-group">
                     <li class="active"><a href="#" class="btn"><i class="fa fa-pencil"></i>New</a></li>
-                    <li><a href="#" class="btn"><i class="fa fa-reply"></i>Reply</a></li>
-                    <li><a href="#" class="btn"><i class="fa fa-mail-forward"></i>Forward</a></li>
-                    <li><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
-                    <li><a href="#" class="btn"><i class="fa fa-trash-o"></i>Trash</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-reply"></i>Reply</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-trash-o"></i>Trash</a></li>
+                    <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
+                    <ul id="drop1" class="f-dropdown" data-dropdown-content>
+                        <li><a href="#">Here</a></li>
+                    </ul>
                 </ul>
             </div>
 
@@ -189,7 +199,7 @@
 
 <script src="js/vendor/jquery.js"></script>
 <script src="js/vendor/fastclick.js"></script>
-<script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/js/foundation.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/js/foundation.min.js"></script>
 
 <script src="js/plugins/plugins.js"></script>
 <script src="js/client.js"></script>

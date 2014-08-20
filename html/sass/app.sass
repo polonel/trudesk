@@ -14,6 +14,8 @@ body
   overflow-x: hidden
   font-family: "Open Sans", sans-serif
 
+.nomargin
+  margin: 0 !important
 .nopadding
   padding: 0 !important
 .nopadding-right
@@ -37,7 +39,10 @@ body
   background: #eef1f7
   border-top: 2px solid #e74c3c
   +boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
-  padding: 0px 30px
+  padding: 0 15px 0 30px
+  @media only screen and (min-width: 64.063em)
+    padding: 0 30px
+
   font-family: "Roboto", sans-serif
   p
     font-size: 30px
@@ -53,6 +58,7 @@ body
 .page-content
   background: white
   border-top: 1px solid #dfe4ef
+  overflow: auto
 
 .fa-large
   font-size: 24px

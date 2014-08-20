@@ -16,12 +16,22 @@
       color: #536679
       position: relative
 
-      &.top-bar-icon
+      a
+        background: #2c3e50 !important
+        color: #536679 !important
+        padding-top: 15px !important
+        padding-bottom: 8px !important
+        &:hover
+          color: lighten(#536679, 10%) !important
+
+      &.top-bar-icon,
+      &.top-bar-icon a
         font-size: 30px
         font-family: "FontAwesome"
+
         i
           font-style: normal
-          margin: 0 10px 0 20px
+          //margin: 0 10px 0 20px
 
         span.label
           font-size: 9px
@@ -29,7 +39,7 @@
           font-weight: 700
           padding: 5px 7px
           position: absolute
-          right: 0px
+          right: 5px
           bottom: 15px
           +background-opacity(#e74c3c, 0.9)
 
@@ -49,3 +59,44 @@
     +borderRadius(50%)
 
 
+.notifications
+  width: 300px !important
+  height: 250px !important
+
+.p-dropdown
+  visibility: hidden
+  opacity: 0
+  z-index: 99999
+  background: #ffffff
+  border: 1px solid rgba(100,100,100,0.4)
+  padding: 10px
+  position: relative
+  +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
+  +transition(opacity 0.5s ease)
+
+  &:before,
+  &:after
+    content: " "
+    bottom: 100%
+    left: 260px
+    border: solid transparent
+    height: 0
+    width: 0
+    position: absolute
+    pointer-events: none
+
+  &:after
+    border-color: rgba(255, 255, 255, 0)
+    border-bottom-color: #fff
+    border-width: 8px
+    margin-left: -8px
+
+  &:before
+    border-color: rgba(100, 100, 100, 0)
+    border-bottom-color: #646464
+    border-width: 9px
+    margin-left: -9px
+
+  &.pDropOpen
+    visibility: visible
+    opacity: 1

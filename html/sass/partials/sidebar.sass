@@ -1,10 +1,15 @@
 .sidebar
+  @media only screen and (min-width: 40.063em) and (max-width: 64em)
+    position: absolute
+    top: 75px
+    left: 0
+    width: 55px
+    max-width: 55px
+    z-index: 9999
+    overflow: hidden
+
   background: #223140
   color: #cfd3d6
-  //left: 0
-  //top: 75px
-  //bottom: 0
-  //position: fixed
   +boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
 
 ul.side-nav
@@ -26,6 +31,7 @@ ul.side-nav
     position: relative
     padding-left: 60px !important
     line-height: 48px
+    height: 48px
 
     span
       padding-bottom: 5px
@@ -62,6 +68,7 @@ ul.side-nav-sub
     font-weight: 300
     padding-left: 62px !important
     line-height: 30px
+    height: 30px !important
     &:hover
       border: none
       color: #e74c3c !important
