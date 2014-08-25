@@ -24,12 +24,20 @@ $j(document).ready(function() {
             var drop = $j('#' + $j(this).attr('data-notifications'));
             if (drop.css('visibility') === 'visible') {
                 drop.removeClass('pDropOpen');
+                $j(".mail-Messages").getNiceScroll().hide();
                 return;
             }
             var left = ($j(this).offset().left - 250) + 'px';
             var top = $j(this).outerHeight() + 'px';
             $j(drop).addClass('pDropOpen');
             $j(drop).css({'position': 'absolute', 'left': left, 'top': top});
+
+            $j(".mail-Messages").niceScroll({
+                cursorcolor: "#a9b1bf",
+                cursorwidth: 7,
+                cursorborder: "1px solid #fff"
+            });
+            $j(".mail-Messages").getNiceScroll().show();
         });
     });
 
@@ -42,6 +50,7 @@ $j(document).ready(function() {
             if (!drop.is(e.target) && drop.has(e.target).length === 0)
                 if (drop.hasClass('pDropOpen')) {
                     drop.removeClass('pDropOpen');
+                    $j(".mail-Messages").getNiceScroll().hide();
                 }
         })
     });

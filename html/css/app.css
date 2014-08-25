@@ -18,6 +18,13 @@ html, body { background: #d5dae6; overflow-x: hidden; font-family: "Open Sans", 
 
 .noshadow { box-shadow: none !important; -webkit-box-shadow: none !important; -moz-box-shadow: none !important; }
 
+a.blackLink { color: black !important; }
+
+a.hoverUnderline:hover { text-decoration: underline; }
+
+.profilePic { border-radius: 50%; -webkit-border-radius: 50%; -moz-border-radius: 50%; }
+.profilePic img { border-radius: 50%; -webkit-border-radius: 50%; -moz-border-radius: 50%; }
+
 .row { max-width: 100%; }
 
 .page-title, .page-title-right { height: 70px; background: #eef1f7; border-top: 2px solid #e74c3c; box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); -webkit-box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); -moz-box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); padding: 0 15px 0 30px; font-family: "Roboto", sans-serif; }
@@ -55,9 +62,9 @@ a.button i { font-weight: normal; margin-right: 10px; font-size: 14px; }
 .top-bar-section ul li.profile-area span { display: inline-block; margin: 0 20px 0 25px; }
 .top-bar-section ul li.profile-area img { border-radius: 50%; -webkit-border-radius: 50%; -moz-border-radius: 50%; }
 
-.notifications { width: 300px !important; height: 250px !important; }
+.notifications { width: 300px !important; height: auto !important; }
 
-.p-dropdown { visibility: hidden; opacity: 0; z-index: 99999; background: white; border: 1px solid rgba(100, 100, 100, 0.4); padding: 10px; position: relative; box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -moz-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-transition: opacity 0.5s ease; -moz-transition: opacity 0.5s ease; -o-transition: opacity 0.5s ease; -ms-transition: opacity 0.5s ease; transition: opacity 0.5s ease; }
+.p-dropdown { visibility: hidden; opacity: 0; z-index: 99999; background: white; border: 1px solid rgba(100, 100, 100, 0.4); position: relative; box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -moz-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-transition: opacity 0.5s ease; -moz-transition: opacity 0.5s ease; -o-transition: opacity 0.5s ease; -ms-transition: opacity 0.5s ease; transition: opacity 0.5s ease; }
 .p-dropdown:before, .p-dropdown:after { content: " "; bottom: 100%; left: 260px; border: solid transparent; height: 0; width: 0; position: absolute; pointer-events: none; }
 .p-dropdown:after { border-color: rgba(255, 255, 255, 0); border-bottom-color: white; border-width: 8px; margin-left: -8px; }
 .p-dropdown:before { border-color: rgba(100, 100, 100, 0); border-bottom-color: #646464; border-width: 9px; margin-left: -9px; }
@@ -139,3 +146,14 @@ input[type="checkbox"]:checked + label { background-position: 0 -14px; }
 .icon-button { display: block; color: #707e9b; padding: 0; background: inherit; margin: 20px 0 0 0; }
 .icon-button:hover { color: #e74c3c; }
 .icon-button i { font-size: 24px; }
+
+#mail-notifications { max-height: 350px; }
+#mail-notifications .mail-Messages { float: left; max-height: 320px; overflow: hidden; overflow-y: auto; }
+#mail-notifications .mail-Messages ul { float: left; height: 100%; }
+#mail-notifications div.actions { width: 100%; height: auto; border-bottom: 1px solid rgba(100, 100, 100, 0.4); line-height: 24px; }
+#mail-notifications div.actions a { width: 100%; padding: 5px 10px; font-size: 12px; }
+#mail-notifications li { width: 100%; background: white; border-bottom: 1px solid rgba(100, 100, 100, 0.4); height: 80px; line-height: normal; }
+#mail-notifications li:last-child { border-bottom: none; }
+#mail-notifications li .messageNotification { display: block; width: 100%; padding: 10px !important; background: white !important; line-height: normal !important; font-size: 12px; }
+#mail-notifications li .messageNotification div.messageAuthor, #mail-notifications li .messageNotification div.messageSnippet, #mail-notifications li .messageNotification div.messageDate { margin-left: 60px; margin-bottom: 3px; }
+#mail-notifications li .messageNotification div.messageSnippet { width: 218px; overflow: hidden; white-space: nowrap; }

@@ -27,6 +27,18 @@ body
 .noshadow
   +boxShadow(none !important)
 
+a.blackLink
+  color: #000000 !important
+
+a.hoverUnderline
+  &:hover
+    text-decoration: underline
+
+.profilePic
+  +borderRadius(50%)
+  img
+    +borderRadius(50%)
+
 .row
   max-width: $rowWidth
 
