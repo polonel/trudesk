@@ -5,6 +5,7 @@ $j(document).ready(function() {
     $j(window).resize(function() {
         resizeFullHeight();
         hideAllpDropDowns();
+        hideDropDownScroll();
     });
     $j(window).resize();
 
@@ -22,9 +23,12 @@ $j(document).ready(function() {
     $j('a[data-notifications]').each(function() {
         $j(this).click(function() {
             var drop = $j('#' + $j(this).attr('data-notifications'));
+            var scroll = $j('#' + $j(drop).attr('data-scroll'));
             if (drop.css('visibility') === 'visible') {
                 drop.removeClass('pDropOpen');
-                $j(".mail-Messages").getNiceScroll().hide();
+
+                hideDropDownScroll();
+
                 return;
             }
             var left = ($j(this).offset().left - 250) + 'px';
@@ -32,12 +36,15 @@ $j(document).ready(function() {
             $j(drop).addClass('pDropOpen');
             $j(drop).css({'position': 'absolute', 'left': left, 'top': top});
 
-            $j(".mail-Messages").niceScroll({
-                cursorcolor: "#a9b1bf",
-                cursorwidth: 7,
-                cursorborder: "1px solid #fff"
-            });
-            $j(".mail-Messages").getNiceScroll().show();
+            if ($j(scroll).getNiceScroll().length < 1)
+                $j(scroll).niceScroll({
+                    cursorcolor: "#a9b1bf",
+                    cursorwidth: 7,
+                    cursorborder: "1px solid #fff"
+                });
+
+            $j(scroll).getNiceScroll().resize();
+            $j(scroll).getNiceScroll().show();
         });
     });
 
@@ -50,7 +57,7 @@ $j(document).ready(function() {
             if (!drop.is(e.target) && drop.has(e.target).length === 0)
                 if (drop.hasClass('pDropOpen')) {
                     drop.removeClass('pDropOpen');
-                    $j(".mail-Messages").getNiceScroll().hide();
+                    hideDropDownScroll();
                 }
         })
     });
@@ -65,11 +72,21 @@ $j(document).ready(function() {
     });
 });
 
+function hideDropDownScroll() {
+    $j('div[data-scroll]').each(function() {
+        var scroll = $j('#' + $j(this).attr('data-scroll'));
+        if ($j(scroll).length !== 0)
+            $j(scroll).getNiceScroll().hide();
+    });
+}
+
 function hideAllpDropDowns() {
     $j('a[data-notifications]').each(function() {
         var drop = $j('#' + $j(this).attr('data-notifications'));
-        if (drop.hasClass('pDropOpen'))
+        if (drop.hasClass('pDropOpen')) {
             drop.removeClass('pDropOpen');
+            hideDropDownScroll();
+        }
     });
 }
 

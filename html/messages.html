@@ -32,9 +32,9 @@
                         <div id="notifications" class="notifications p-dropdown">
                             <p>Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text Some Content Text</p>
                         </div>
-                        <div id="mail-notifications" class="notifications p-dropdown">
+                        <div id="mail-notifications" data-scroll="mail-Messages" class="notifications p-dropdown">
                             <div class="actions"><a href="#" class="blackLink">Inbox</a><div class="right"><a href="#" class="hoverUnderline">Send a New Message</a></div></div>
-                            <div class="mail-Messages">
+                            <div id="mail-Messages" class="mail-Messages">
                                 <ul>
                                     <li>
                                         <a class="messageNotification" href="#" role="button">
@@ -45,7 +45,7 @@
                                                     <span>Here is the content</span>
                                                 </div>
                                                 <div class="messageDate">
-                                                    <abbr title="August 25" class="timestamp">Aug 25</abbr>
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
                                                 </div>
                                             </div>
                                         </a>
@@ -59,7 +59,21 @@
                                                     <span>Need to order this part for Ticket #172.</span>
                                                 </div>
                                                 <div class="messageDate">
-                                                    <abbr title="August 24" class="timestamp">Aug 24</abbr>
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/jon_profile.jpg" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Jon Bullock</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Don't forget to get on zoe, server was spiking this morning.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
                                                 </div>
                                             </div>
                                         </a>
@@ -73,7 +87,7 @@
                                                     <span>Don't forget to get on zoe, server was spiking this morning.</span>
                                                 </div>
                                                 <div class="messageDate">
-                                                    <abbr title="August 23" class="timestamp">Aug 23</abbr>
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
                                                 </div>
                                             </div>
                                         </a>
@@ -87,21 +101,7 @@
                                                     <span>Don't forget to get on zoe, server was spiking this morning.</span>
                                                 </div>
                                                 <div class="messageDate">
-                                                    <abbr title="August 23" class="timestamp">Aug 23</abbr>
-                                                </div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="messageNotification" href="#" role="button">
-                                            <div class="clearfix">
-                                                <div class="profilePic left"><img src="img/rick_profile.jpg" alt="profile"/></div>
-                                                <div class="messageAuthor"><strong>Rick Spencer</strong></div>
-                                                <div class="messageSnippet">
-                                                    <span>Don't forget to get on zoe, server was spiking this morning.</span>
-                                                </div>
-                                                <div class="messageDate">
-                                                    <abbr title="August 23" class="timestamp">Aug 23</abbr>
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
                                                 </div>
                                             </div>
                                         </a>
@@ -166,58 +166,58 @@
                             <span class="message-subject">Need to order parts.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c5" type="checkbox"/>
+                            <label for="c5"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
 
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c6" type="checkbox"/>
+                            <label for="c6"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c7" type="checkbox"/>
+                            <label for="c7"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c8" type="checkbox"/>
+                            <label for="c8"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c9" type="checkbox"/>
+                            <label for="c9"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c10" type="checkbox"/>
+                            <label for="c10"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c11" type="checkbox"/>
+                            <label for="c11"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
                         </li>
                         <li class="message-tag message-tag-blue">
-                            <input id="c4" type="checkbox"/>
-                            <label for="c4"></label>
+                            <input id="c12" type="checkbox"/>
+                            <label for="c12"></label>
                             <span class="message-date">07/09/2014</span>
                             <a href="#4" class="message-from unread">John Smith</a>
                             <span class="message-subject">Please give a status update.</span>
@@ -236,9 +236,11 @@
                     <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
                     <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-trash-o"></i>Trash</a></li>
                     <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
-                    <ul id="drop1" class="f-dropdown" data-dropdown-content>
-                        <li><a href="#">Here</a></li>
-                    </ul>
+                    <li>
+                        <ul id="drop1" class="f-dropdown" data-dropdown-content>
+                            <li><a href="#">Here</a></li>
+                        </ul>
+                    </li>
                 </ul>
             </div>
 
