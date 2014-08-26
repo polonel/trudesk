@@ -173,3 +173,8 @@ input[type="checkbox"]:checked + label { background-position: 0 -14px; }
 .icon-button { display: block; color: #707e9b; padding: 0; background: inherit; margin: 20px 0 0 0; }
 .icon-button:hover { color: #e74c3c; }
 .icon-button i { font-size: 24px; }
+
+.pDataTable td { position: relative; }
+.pDataTable td label { top: 25%; left: 0; }
+
+table.dataTable { margin-top: 0 !important; }

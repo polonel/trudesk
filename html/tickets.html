@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TruDesk &middot; Tickets</title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <link rel="stylesheet" href="css/normalize.css"/>
+    <link rel="stylesheet" href="css/foundation.min.css"/>
+    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.3.1/css/foundation.min.css"/>
+    <script src="js/vendor/modernizr.js"></script>
+
+    <link rel="stylesheet" href="css/vendor/font-awesome.min.css"/>
+    <!--<link rel="stylesheet" href="css/plugins/datatables/jquery.dataTables.css"/>-->
+    <!--<link rel="stylesheet" href="css/plugins/datatables/dataTables.responsive.css"/>-->
+    <link rel="stylesheet" href="css/plugins/datatables/dataTables.foundation.css"/>
+
+    <link rel="stylesheet" href="css/app.css"/>
+</head>
+<body>
+<div class="wrapper">
+    <div class="row top-nav">
+        <div class="small-12 columns">
+            <nav class="top-bar" data-topbar>
+                <div class="title-area">
+                    <div class="logo"><img src="img/logo.png" alt="Logo"/></div>
+                </div>
+
+                <section class="top-bar-section">
+                    <!-- Right Nav Section -->
+                    <div class="top-menu right">
+                        <ul>
+                            <li class="top-bar-icon"><a href="#" data-notifications="mail-notifications"><i class="fa-envelope"></i><span class="alert round label">50+</span></a></li>
+                            <li class="top-bar-icon"><a href="#" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
+                            <li class="profile-area"><span>Chris Brame</span><img src="img/profile.png" alt="Profile"/></li>
+                        </ul>
+                        <div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
+                            <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline" href="#">Settings</a></div></div>
+                            <div id="notifications-Messages" class="notifications-Messages">
+                                <ul>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="messageUnread"></div>
+                                                <div class="messageIcon left"><i class="fa fa-warning"></i></div>
+                                                <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>There is an issue with the printer at the tax office.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="messageUnread read"></div>
+                                                <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>There is an issue with the printer at the tax office.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>
+                                                <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>There is an issue with the printer at the tax office.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div id="mail-notifications" data-scroll="mail-Messages" class="notifications p-dropdown">
+                            <div class="actions"><a href="#" class="blackLink">Inbox</a><div class="right"><a href="#" class="hoverUnderline">Send a New Message</a></div></div>
+                            <div id="mail-Messages" class="mail-Messages">
+                                <ul>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/profile.png" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Chris Brame</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Here is the content</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 25</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/rick_profile.jpg" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Rick Spencer</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Need to order this part for Ticket #172.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/jon_profile.jpg" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Jon Bullock</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Don't forget to get on zoe, server was spiking this morning.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/rick_profile.jpg" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Rick Spencer</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Don't forget to get on zoe, server was spiking this morning.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification" href="#" role="button">
+                                            <div class="clearfix">
+                                                <div class="profilePic left"><img src="img/rick_profile.jpg" alt="profile"/></div>
+                                                <div class="messageAuthor"><strong>Rick Spencer</strong></div>
+                                                <div class="messageSnippet">
+                                                    <span>Don't forget to get on zoe, server was spiking this morning.</span>
+                                                </div>
+                                                <div class="messageDate">
+                                                    <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
+                                                </div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            </nav>
+        </div>
+    </div>
+    <div class="row">
+        <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down">
+            <ul class="side-nav">
+                <li><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
+                <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
+                <li class="active"><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
+                    <ul id="side-nav-sub-messages" class="side-nav-sub subMenuOpen">
+                        <li class="active"><a href="#"><i class="icon-inbox"></i>Inbox</a></li>
+                        <li><a href="#"><i class="icon-sent"></i>Sent Items</a></li>
+                        <li><a href="#"><i class="icon-trash"></i>Trash</a></li>
+                    </ul>
+                </li>
+                <li><a href="#"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>
+                <li><a href="#"><i class="fa fa-hdd-o fa-large"></i>Servers</a></li>
+                <li><a href="#"><i class="icon-accounts"></i>Accounts</a></li>
+                <li><a href="#"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>
+                <li><a href="#"><i class="icon-invoices"></i>Invoices</a></li>
+            </ul>
+        </div>
+        <div class="small-10 columns nopadding">
+            <div class="page-title noshadow nopadding-right">
+                <div class="page-title-border-right">
+                    <p>Tickets</p>
+                </div>
+            </div>
+
+            <div class="full-height">
+                <div class="ticketList">
+                    <table id="ticketTable" class="pDataTable">
+                        <thead>
+                        <tr>
+                            <th></th>
+                            <th>Status</th>
+                            <th>Subject</th>
+                            <th>Created</th>
+                            <th>Requester</th>
+                            <th>Group</th>
+                            <th>Updated</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>
+                                    <input id="c1" type="checkbox"/>
+                                    <label for="c1"></label>
+                                </td>
+                                <td>Open</td>
+                                <td>Need to look at this issue</td>
+                                <td>July 15</td>
+                                <td>Chris Brame</td>
+                                <td>Administration</td>
+                                <td>Today 10:53a</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <input id="c1" type="checkbox"/>
+                                    <label for="c1"></label>
+                                </td>
+                                <td>Open</td>
+                                <td>Need to look at this issue</td>
+                                <td>July 15</td>
+                                <td>Chris</td>
+                                <td>Administration</td>
+                                <td>Today 10:53a</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="js/vendor/jquery.js"></script>
+<script src="js/vendor/fastclick.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/js/foundation.min.js"></script>
+
+<script src="js/plugins/plugins.js"></script>
+<script src="js/client.js"></script>
+</body>
+</html>

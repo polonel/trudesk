@@ -9,6 +9,11 @@ $j(document).ready(function() {
     });
     $j(window).resize();
 
+    $j('#ticketTable').dataTable({
+        searching: false,
+        bLengthChange: false
+    });
+
     $j(".message-items").niceScroll({
         cursorcolor: "#a9b1bf",
         cursorwidth: 7,
