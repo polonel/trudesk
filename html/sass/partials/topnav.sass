@@ -100,3 +100,64 @@
   &.pDropOpen
     visibility: visible
     opacity: 1
+
+//Message Notification
+#mail-notifications
+  max-height: 350px
+
+  .mail-Messages
+    float: left
+    max-height: 320px
+    overflow: hidden
+    overflow-y: auto
+    ul
+      float: left
+      height: 100%
+
+  div.actions
+    width: 100%
+    height: auto
+    border-bottom: 1px solid rgba(100,100,100,0.4)
+    line-height: 24px
+    a
+      width: 100%
+      padding: 5px 10px
+      font-size: 12px
+
+  li
+    width: 100%
+    background: #ffffff
+    border-bottom: 1px solid rgba(100,100,100,0.4)
+    height: 80px
+    line-height: normal
+    &:hover
+      background: #f3f5f9 !important
+    &:last-child
+      border-bottom: none
+
+    .messageNotification
+      display: block
+      width: 100%
+      padding: 10px !important
+      background: #ffffff !important
+      line-height: normal !important
+      font-size: 12px
+      color: black !important
+
+      &:hover
+        background: transparent !important
+
+      div.messageAuthor,
+      div.messageSnippet,
+      div.messageDate
+        margin-left: 60px
+        margin-bottom: 3px
+
+      div.messageDate
+        color: #646464 !important
+
+      div.messageSnippet
+        width: 218px
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
