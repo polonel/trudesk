@@ -70,19 +70,26 @@ a.button i { font-weight: normal; margin-right: 10px; font-size: 14px; }
 .p-dropdown:before { border-color: rgba(100, 100, 100, 0); border-bottom-color: #646464; border-width: 9px; margin-left: -9px; }
 .p-dropdown.pDropOpen { visibility: visible; opacity: 1; }
 
-#mail-notifications { max-height: 350px; }
-#mail-notifications .mail-Messages { float: left; max-height: 320px; overflow: hidden; overflow-y: auto; }
-#mail-notifications .mail-Messages ul { float: left; height: 100%; }
-#mail-notifications div.actions { width: 100%; height: auto; border-bottom: 1px solid rgba(100, 100, 100, 0.4); line-height: 24px; }
-#mail-notifications div.actions a { width: 100%; padding: 5px 10px; font-size: 12px; }
-#mail-notifications li { width: 100%; background: white; border-bottom: 1px solid rgba(100, 100, 100, 0.4); height: 80px; line-height: normal; }
-#mail-notifications li:hover { background: #f3f5f9 !important; }
-#mail-notifications li:last-child { border-bottom: none; }
-#mail-notifications li .messageNotification { display: block; width: 100%; padding: 10px !important; background: white !important; line-height: normal !important; font-size: 12px; color: black !important; }
-#mail-notifications li .messageNotification:hover { background: transparent !important; }
-#mail-notifications li .messageNotification div.messageAuthor, #mail-notifications li .messageNotification div.messageSnippet, #mail-notifications li .messageNotification div.messageDate { margin-left: 60px; margin-bottom: 3px; }
-#mail-notifications li .messageNotification div.messageDate { color: #646464 !important; }
-#mail-notifications li .messageNotification div.messageSnippet { width: 218px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#mail-notifications, #notifications { max-height: 350px; }
+#mail-notifications .mail-Messages, #mail-notifications .notifications-Messages, #notifications .mail-Messages, #notifications .notifications-Messages { float: left; max-height: 320px; overflow-x: hidden; overflow-y: auto; }
+#mail-notifications .mail-Messages ul, #mail-notifications .notifications-Messages ul, #notifications .mail-Messages ul, #notifications .notifications-Messages ul { float: left; height: 100%; }
+#mail-notifications div.actions, #notifications div.actions { width: 100%; height: auto; border-bottom: 1px solid rgba(100, 100, 100, 0.4); line-height: 24px; font-size: 12px; }
+#mail-notifications div.actions a, #notifications div.actions a { width: 100%; padding: 5px 10px; }
+#mail-notifications div.actions strong, #notifications div.actions strong { margin-left: 8px; }
+#mail-notifications li, #notifications li { width: 100%; background: white; border-bottom: 1px solid rgba(100, 100, 100, 0.4); height: 80px; line-height: normal; }
+#mail-notifications li:hover, #notifications li:hover { background: #f3f5f9 !important; }
+#mail-notifications li:last-child, #notifications li:last-child { border-bottom: none; }
+#mail-notifications li .messageNotification, #notifications li .messageNotification { display: block; width: 100%; padding: 10px !important; background: white !important; line-height: normal !important; font-size: 12px; color: black !important; position: relative; }
+#mail-notifications li .messageNotification:hover, #notifications li .messageNotification:hover { background: transparent !important; }
+#mail-notifications li .messageNotification .messageUnread, #notifications li .messageNotification .messageUnread { width: 16px; height: 16px; font-size: 12px; font-family: "FontAwesome"; color: #646464; position: absolute; top: 8px; right: 3px; }
+#mail-notifications li .messageNotification .messageUnread:before, #notifications li .messageNotification .messageUnread:before { content: "\f111"; }
+#mail-notifications li .messageNotification .messageUnread.read:before, #notifications li .messageNotification .messageUnread.read:before { content: "\f10c"; }
+#mail-notifications li .messageNotification div.messageAuthor, #mail-notifications li .messageNotification div.messageSnippet, #mail-notifications li .messageNotification div.messageDate, #notifications li .messageNotification div.messageAuthor, #notifications li .messageNotification div.messageSnippet, #notifications li .messageNotification div.messageDate { margin-left: 60px; margin-bottom: 3px; }
+#mail-notifications li .messageNotification div.messageDate, #notifications li .messageNotification div.messageDate { color: #646464 !important; }
+#mail-notifications li .messageNotification div.messageSnippet, #notifications li .messageNotification div.messageSnippet { width: 218px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+#mail-notifications li .messageNotification i, #notifications li .messageNotification i { display: block; width: 50px; font-size: 25px; line-height: 59px; text-align: center; color: #e7a13c; }
+#mail-notifications li .messageNotification i.green, #notifications li .messageNotification i.green { color: #29b955; }
+#mail-notifications li .messageNotification i.red, #notifications li .messageNotification i.red { color: #b92929; }
 
 .sidebar { background: #223140; color: #cfd3d6; box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.07); -webkit-box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.07); -moz-box-shadow: inset 0px 3px 4px rgba(0, 0, 0, 0.07); }
 @media only screen and (min-width: 40.063em) and (max-width: 64em) { .sidebar { position: absolute; top: 75px; left: 0; width: 55px; max-width: 55px; z-index: 9999; overflow: hidden; } }
