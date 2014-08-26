@@ -70,6 +70,24 @@ $j(document).ready(function() {
                 window.location.href = href;
         }
     });
+
+    $j('ul.side-nav>li>a[data-sub-menu]').click(function() {
+        var subMenu = $j('#' + ($j(this).attr('data-sub-menu')));
+        if ($j(subMenu).length < 1) {
+            e.preventDefault();
+            return;
+        }
+
+        if ($j(subMenu).hasClass('subMenuOpen')) {
+            $j(subMenu).slideUp();
+            $j(subMenu).removeClass('subMenuOpen')
+        } else {
+            $j(subMenu).slideDown();
+            $j(subMenu).addClass('subMenuOpen');
+        }
+
+        e.preventDefault();
+    });
 });
 
 function hideDropDownScroll() {
