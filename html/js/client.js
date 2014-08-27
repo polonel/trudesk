@@ -11,7 +11,24 @@ $j(document).ready(function() {
 
     $j('#ticketTable').dataTable({
         searching: false,
-        bLengthChange: false
+        bLengthChange: false,
+        bPaginate: false,
+        bInfo: false
+    }).rowGrouping({
+        iGroupingColumnIndex: 1,
+        sGroupingColumnSortDirection: "asc",
+        iGroupingOrderByColumnIndex: 0,
+        bHideGroupingColumn: false,
+        bHideGroupingOrderByColumn: false
+    });
+
+    $j('#ticketTable tbody tr[data-ticket] td').click(function(){
+        var i = $j(this).parent('tr[data-ticket]').attr('data-ticket');
+        var j = $j(this).find('input[type=checkbox]');
+        if ($j(j).length !== 0)
+            return true;
+
+        //handle ticket link here
     });
 
     $j(".message-items").niceScroll({

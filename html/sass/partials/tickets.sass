@@ -1,0 +1,47 @@
+#ticketTable
+  tr
+    height: 52px
+  tbody
+    tr
+      background: white
+      &:hover
+        cursor: pointer
+        background: #f5f5f6
+      &.ticket-new,
+      &.ticket-pending
+        td
+          font-weight: 600
+      &.ticket-closed
+        td
+          font-weight: 300
+          color: #95a1af
+
+      td.group
+        background: #e9ecf2
+        &:hover
+          cursor: default
+
+        span:before
+          content: "Status "
+          font-weight: 600
+
+
+.ticket-status span
+  display: block
+  width: 65px
+  line-height: 25px
+  height: 25px
+  text-align: center
+  font-size: 12px
+  font-weight: 300
+  font-family: "Roboto", sans-serif
+  color: white
+  background: #ababab
+  +borderRadius(3px)
+
+.ticket-status.ticket-open span
+  background: #b92929
+.ticket-status.ticket-new span
+  background: #29b955
+.ticket-status.ticket-pending span
+  background: #2980b9

@@ -170,9 +170,9 @@
         <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down">
             <ul class="side-nav">
                 <li><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
-                <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
-                <li class="active"><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
-                    <ul id="side-nav-sub-messages" class="side-nav-sub subMenuOpen">
+                <li class="active"><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
+                <li><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
+                    <ul id="side-nav-sub-messages" class="side-nav-sub">
                         <li class="active"><a href="#"><i class="icon-inbox"></i>Inbox</a></li>
                         <li><a href="#"><i class="icon-sent"></i>Sent Items</a></li>
                         <li><a href="#"><i class="icon-trash"></i>Trash</a></li>
@@ -207,29 +207,65 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <tr>
+                            <tr class="ticket-new">
+                                <td>
+                                    <input id="c2" type="checkbox"/>
+                                    <label for="c2"></label>
+                                </td>
+                                <td class="ticket-status ticket-new"><span>New</span></td>
+                                <td>Need to look at this issue</td>
+                                <td>July 15</td>
+                                <td>Chris</td>
+                                <td>Administration</td>
+                                <td>Today 10:53a</td>
+                            </tr>
+                            <tr data-ticket="1">
                                 <td>
                                     <input id="c1" type="checkbox"/>
                                     <label for="c1"></label>
                                 </td>
-                                <td>Open</td>
+                                <td class="ticket-status ticket-open"><span>Open</span></td>
                                 <td>Need to look at this issue</td>
                                 <td>July 15</td>
                                 <td>Chris Brame</td>
                                 <td>Administration</td>
                                 <td>Today 10:53a</td>
                             </tr>
-                            <tr>
+                            <tr class="ticket-pending">
                                 <td>
-                                    <input id="c1" type="checkbox"/>
-                                    <label for="c1"></label>
+                                    <input id="c3" type="checkbox"/>
+                                    <label for="c3"></label>
                                 </td>
-                                <td>Open</td>
-                                <td>Need to look at this issue</td>
-                                <td>July 15</td>
-                                <td>Chris</td>
+                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
+                                <td>15 New computers for office 203</td>
+                                <td>July 13</td>
+                                <td>Christine hall</td>
                                 <td>Administration</td>
-                                <td>Today 10:53a</td>
+                                <td>-</td>
+                            </tr>
+                            <tr class="ticket-pending">
+                                <td>
+                                    <input id="c4" type="checkbox"/>
+                                    <label for="c4"></label>
+                                </td>
+                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
+                                <td>Motherboard Repair Needed</td>
+                                <td>July 12</td>
+                                <td>Joe Rogers</td>
+                                <td>Development</td>
+                                <td>-</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
                             </tr>
                         </tbody>
                     </table>
