@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="css/vendor/font-awesome.min.css"/>
     <!--<link rel="stylesheet" href="css/plugins/datatables/jquery.dataTables.css"/>-->
     <!--<link rel="stylesheet" href="css/plugins/datatables/dataTables.responsive.css"/>-->
+    <link rel="stylesheet" href="css/plugins/datatables/dataTables.scroller.css"/>
     <link rel="stylesheet" href="css/plugins/datatables/dataTables.foundation.css"/>
 
     <link rel="stylesheet" href="css/app.css"/>
@@ -173,7 +174,7 @@
                 <li class="active"><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
                 <li><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
                     <ul id="side-nav-sub-messages" class="side-nav-sub">
-                        <li class="active"><a href="#"><i class="icon-inbox"></i>Inbox</a></li>
+                        <li><a href="#"><i class="icon-inbox"></i>Inbox</a></li>
                         <li><a href="#"><i class="icon-sent"></i>Sent Items</a></li>
                         <li><a href="#"><i class="icon-trash"></i>Trash</a></li>
                     </ul>
@@ -186,14 +187,17 @@
             </ul>
         </div>
         <div class="small-10 columns nopadding">
-            <div class="page-title noshadow nopadding-right">
-                <div class="page-title-border-right">
-                    <p>Tickets</p>
+            <div class="page-title noshadow">
+                <p class="left">Tickets</p>
+                <div class="right">
+                    <ul class="button-group">
+                        <li class="active"><a href="#" role="button" class="btn">Create</a></li>
+                    </ul>
                 </div>
             </div>
 
             <div class="full-height">
-                <div class="ticketList">
+                <div class="ticketList full-height">
                     <table id="ticketTable" class="pDataTable">
                         <thead>
                         <tr>
@@ -267,6 +271,129 @@
                                 <td>IT Support</td>
                                 <td>Today 11:52a</td>
                             </tr>
+
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+                            <tr class="ticket-closed">
+                                <td>
+                                    <input id="c5" type="checkbox"/>
+                                    <label for="c5"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>Need to Look at this issue.</td>
+                                <td>July 12</td>
+                                <td>John Smith</td>
+                                <td>IT Support</td>
+                                <td>Today 11:52a</td>
+                            </tr>
+
+
                         </tbody>
                     </table>
                 </div>

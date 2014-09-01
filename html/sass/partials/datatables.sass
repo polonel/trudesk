@@ -1,3 +1,13 @@
+.dataTables_scrollHeadInner
+  width: 100% !important
+  padding-right: 0 !important
+  .pDataTable
+    width: 100% !important
+.dataTables_scrollBody
+  .pDataTable
+    thead
+      border: none
+
 .pDataTable
   td
     position: relative
@@ -14,6 +24,10 @@ table.dataTable
     font-family: "Roboto", sans-serif
     text-transform: uppercase
     border: 1px solid #dae0ec
+    .sorting:last-child,
+    .sorting_desc:last-child,
+    .sorting_asc:last-child
+      background-position: right 15px center
     tr
       th
         font-size: 12px

@@ -4,6 +4,7 @@ $j(document).foundation();
 $j(document).ready(function() {
     $j(window).resize(function() {
         resizeFullHeight();
+        resizeDataTables();
         hideAllpDropDowns();
         hideDropDownScroll();
     });
@@ -13,7 +14,8 @@ $j(document).ready(function() {
         searching: false,
         bLengthChange: false,
         bPaginate: false,
-        bInfo: false
+        bInfo: false,
+        scrollY: '0px'
     }).rowGrouping({
         iGroupingColumnIndex: 1,
         sGroupingColumnSortDirection: "asc",
@@ -21,6 +23,8 @@ $j(document).ready(function() {
         bHideGroupingColumn: false,
         bHideGroupingOrderByColumn: false
     });
+
+    resizeDataTables();
 
     $j('#ticketTable tbody tr[data-ticket] td').click(function(){
         var i = $j(this).parent('tr[data-ticket]').attr('data-ticket');
@@ -37,6 +41,11 @@ $j(document).ready(function() {
         cursorborder: "1px solid #fff"
     });
     $j(".page-content").niceScroll({
+        cursorcolor: "#a9b1bf",
+        cursorwidth: 7,
+        cursorborder: "1px solid #fff"
+    });
+    $j(".dataTables_scrollBody").niceScroll({
         cursorcolor: "#a9b1bf",
         cursorwidth: 7,
         cursorborder: "1px solid #fff"
@@ -134,12 +143,19 @@ function hideAllpDropDowns() {
     });
 }
 
+function resizeDataTables() {
+    if ($j('.ticketList .dataTables_scrollBody').length !== 0)
+        $j('.ticketList .dataTables_scrollBody').css({'height': ($j(".ticketList").height() - $j('.dataTables_scrollHead').height()) + 'px'});
+}
+
 function resizeFullHeight() {
     var ele = $j('.full-height');
     $j.each(ele, function() {
         var h = $j(window).height();
         if ($j(this).css('borderTopStyle') === "solid")
             h = h - 1;
+
+        $j(this).css('overflow', 'hidden');
         $j(this).height(h - $j(this).offset().top);
     });
 }
