@@ -254,3 +254,17 @@ table.dataTable tbody tr td { font-family: "Roboto", sans-serif; color: #55616e;
 .server-box .server-services .server-services-list li.orange { background: #e77c3c; }
 .server-box .server-services .server-services-list li.red { background: #b92929; }
 .server-box .server-services .server-services-list li span { display: block; font-size: 0px; height: 100%; width: 100%; }
+
+.chat-bar { position: fixed; bottom: 0; left: 0; height: 25px; width: 100%; border: 1px solid red; background: #646464; }
+
+.chat-dock { position: fixed; bottom: 0; left: 0; right: 0; height: 28px; width: 100%; }
+.chat-dock .chat-box-wrapper { position: relative; display: block; }
+.chat-dock .chat-box-wrapper .chat-box { position: absolute; right: 125px; top: -252px; width: 260px; height: 280px; background: #f3f5f9; z-index: 300; border: 1px solid rgba(100, 100, 100, 0.4); border-bottom: none; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -moz-box-shadow: 0px 3px 8px 0px rgba(0, 0, 0, 0.24706); -webkit-transition: opacity 0.5s ease; -moz-transition: opacity 0.5s ease; -o-transition: opacity 0.5s ease; -ms-transition: opacity 0.5s ease; transition: opacity 0.5s ease; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-title { display: block; background: #223140; border: 1px solid transparent; box-shadow: 0 0 0 1px #223140; -webkit-box-shadow: 0 0 0 1px #223140; -moz-box-shadow: 0 0 0 1px #223140; border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; -moz-border-radius: 3px 3px 0 0; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-title h4 { font-size: 14px; margin: 5px 8px 3px; font-family: "Source Sans Pro", sans-serif; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-title h4 a { color: white; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-title h4 a:hover { text-decoration: underline; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-messages { background: #edeff4; width: 100%; border-top: 1px solid #223140; }
+.chat-dock .chat-box-wrapper .chat-box .chat-box-text { display: block; cursor: text; max-height: 77px; overflow-x: hidden; overflow-y: auto; padding: 7px 49px 4px 5px; position: relative; background: white; line-height: 16px; height: auto; border-top: 1px solid #c9d0da; }
+.chat-dock .chat-box-wrapper .chat-box textarea { resize: none; display: block; border: none; margin: 0; min-height: 16px; outline: none; padding: 0; width: 100%; font-size: 12px; overflow: hidden; max-width: 100%; white-space: pre-wrap; word-wrap: break-word; height: 0; box-shadow: none; -webkit-box-shadow: none; -moz-box-shadow: none; }
+.chat-dock .chat-box-wrapper .chat-box textarea:focus { background: inherit; }

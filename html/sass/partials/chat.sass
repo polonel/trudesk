@@ -1,0 +1,91 @@
+.chat-bar
+  position: fixed
+  bottom: 0
+  left: 0
+  height: 25px
+  width: 100%
+  border: 1px solid red
+  background: #646464
+
+.chat-dock
+  position: fixed
+  bottom: 0
+  left: 0
+  right: 0
+  height: 28px
+  width: 100%
+
+  .chat-box-wrapper
+    position: relative
+    display: block
+
+    .chat-box
+      position: absolute
+      right: 125px
+      top: -252px
+      width: 260px
+      height: 280px
+      background: #f3f5f9
+      z-index: 300
+      border: 1px solid rgba(100,100,100,0.4)
+      border-bottom: none
+      +borderRadius(3px)
+      +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
+      +transition(opacity 0.5s ease)
+
+      .chat-box-title
+        display: block
+        background: #223140
+        border: 1px solid transparent
+        +boxShadow(0 0 0 1px #223140)
+        +borderRadius(3px 3px 0 0)
+
+        h4
+          font-size: 14px
+          margin: 5px 8px 3px
+          font-family: "Source Sans Pro", sans-serif
+
+          a
+            color: #ffffff
+            &:hover
+              text-decoration: underline
+
+      .chat-box-messages
+        background: #edeff4
+        //height: 222px
+        width: 100%
+        border-top: 1px solid #223140
+
+      .chat-box-text
+        display: block
+        cursor: text
+        max-height: 77px
+        overflow-x: hidden
+        overflow-y: auto
+        padding: 7px 49px 4px 5px
+        position: relative
+        background: #ffffff
+        line-height: 16px
+        height: auto
+        border-top: 1px solid rgb(201,208,218)
+
+      textarea
+        resize: none
+        display: block
+        border: none
+        margin: 0
+        min-height: 16px
+        outline: none
+        padding: 0
+        width: 100%
+        font-size: 12px
+        overflow: hidden
+        max-width: 100%
+        white-space: pre-wrap
+        word-wrap: break-word
+        height: 0
+        +boxShadow(none)
+        &:focus
+          background: inherit
+
+

@@ -154,6 +154,15 @@ $j(document).ready(function() {
         var id = $j(this).attr('id');
         $j('div.ptooltip-box-wrap[data-ptooltip-id="' + id + '"]').hide();
     });
+
+    //Auto Growing TextArea
+    //$j('.textAreaAutogrow').autogrow({onInitialize: true});
+    $j('.textAreaAutogrow').autogrow();
+    $j('.chat-box-text').click(function() {
+        $j(this).children('textarea').focus();
+        var val = $j(this).children('textarea').val();
+        $j(this).children('textarea').val('').val(val);
+    });
 });
 
 function pingStatus() {
@@ -207,6 +216,6 @@ function resizeFullHeight() {
             h = h - 1;
 
         $j(this).css('overflow', 'hidden');
-        $j(this).height(h - $j(this).offset().top);
+        $j(this).height(h - ($j(this).offset().top));
     });
 }
