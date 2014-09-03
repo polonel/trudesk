@@ -157,13 +157,19 @@ $j(document).ready(function() {
 
     //Auto Growing TextArea
     //$j('.textAreaAutogrow').autogrow({onInitialize: true});
-    $j('.textAreaAutogrow').autogrow();
+    $j('textarea.textAreaAutogrow').autogrow({
+        preGrowCallback: growCallback()
+    });
     $j('.chat-box-text').click(function() {
         $j(this).children('textarea').focus();
         var val = $j(this).children('textarea').val();
         $j(this).children('textarea').val('').val(val);
     });
 });
+
+function growCallback() {
+    console.log('callback');
+}
 
 function pingStatus() {
     $j('.server-ping').each(function() {
