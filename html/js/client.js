@@ -2,6 +2,7 @@ $j = jQuery.noConflict();
 
 $j(document).foundation();
 $j(document).ready(function() {
+    pingStatus();
     $j(window).resize(function() {
         resizeFullHeight();
         resizeDataTables();
@@ -123,7 +124,57 @@ $j(document).ready(function() {
 
         e.preventDefault();
     });
+
+    $j('span[data-ptooltip]').each(function() {
+        var title = $j(this).attr('data-title');
+        var type = $j(this).attr('data-ptooltip-type');
+        var html = "<div class='ptooltip-box-wrap' data-ptooltip-id='" + $j(this).attr('id') + "'><div class='ptooltip-box'><span>" + title + "</span>";
+        if (type.toLowerCase() === 'service') {
+            var status = $j(this).attr('data-service-status');
+            var color = "#fff";
+            if (status.toLowerCase() === 'starting' || status.toLowerCase() === 'stopping')
+                color = "#e77c3c";
+            if (status.toLowerCase() === 'running')
+                color = '#29b955';
+            if (status.toLowerCase() === 'stopped')
+                color = '#e54242';
+
+            html += "<span>Status: <span style='color: " + color + ";'>" + status + "</span>";
+        }
+
+        html += "</div></div>";
+
+        $j(this).append(html);
+    });
+
+    $j('span[data-ptooltip]').hover(function() {
+        var id = $j(this).attr('id');
+        $j('div.ptooltip-box-wrap[data-ptooltip-id="' + id + '"]').show();
+    }, function() {
+        var id = $j(this).attr('id');
+        $j('div.ptooltip-box-wrap[data-ptooltip-id="' + id + '"]').hide();
+    });
 });
+
+function pingStatus() {
+    $j('.server-ping').each(function() {
+        console.log($j(this).children('p').html())
+        if ($j(this).children('p').html() === "timeout") {
+            $j(this).addClass('ping-status-timeout');
+            return;
+        }
+
+        var ping = parseInt($j(this).children('p').html());
+        if (ping < 100) {
+          $j(this).addClass('ping-status-green');
+        } else if (ping > 100 && ping < 300) {
+            $j(this).addClass('ping-status-orange');
+        } else {
+            $j(this).addClass('ping-status-red');
+        }
+    });
+
+}
 
 function hideDropDownScroll() {
     $j('div[data-scroll]').each(function() {

@@ -28,7 +28,7 @@ a.hoverUnderline:hover { text-decoration: underline; }
 .row { max-width: 100%; }
 
 .page-title, .page-title-right { height: 70px; background: #eef1f7; border-top: 2px solid #e74c3c; box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); -webkit-box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); -moz-box-shadow: inset 0 1px 0px white, 2px 2px 2px 0px rgba(44, 62, 80, 0.1); padding: 0 15px 0 30px; font-family: "Roboto", sans-serif; }
-@media only screen and (min-width: 64.063em) { .page-title, .page-title-right { padding: 0 15 0 30px; } }
+@media only screen and (min-width: 64.063em) { .page-title, .page-title-right { padding: 0 15px 0 30px; } }
 .page-title p, .page-title-right p { font-size: 30px; margin: 0; line-height: 70px; color: #55616e; }
 .page-title p.left, .page-title-right p.left { line-height: 68px; }
 
@@ -47,6 +47,19 @@ a.button i { font-weight: normal; margin-right: 10px; font-size: 14px; }
 .f-dropdown.open:before { left: 10px !important; }
 
 .f-dropdown.open:after { left: 9px !important; }
+
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { .page-right-content { padding: 0 0 0 55px !important; } }
+
+div.ptooltip-box-wrap { display: none; position: absolute; left: 50%; bottom: 25px; margin-left: -75px; z-index: 99999; opacity: 0.95; }
+
+div.ptooltip-box { position: relative; width: 150px; max-width: 150px; min-height: 45px; background: #223140; text-align: center; padding: 7px 0; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }
+div.ptooltip-box:before, div.ptooltip-box:after { position: absolute; top: 100%; left: 50%; border: solid transparent; content: " "; height: 0; width: 0; pointer-events: none; }
+div.ptooltip-box:before { border-color: rgba(34, 49, 64, 0); border-top-color: #223140; border-width: 11px; margin-left: -11px; }
+div.ptooltip-box:after { border-color: rgba(34, 49, 64, 0); border-top-color: #223140; border-width: 5px; margin-left: -5px; }
+div.ptooltip-box span { display: block; font-family: "Source Sans Pro", sans-serif; font-weight: 400; font-size: 12px !important; color: white; margin-bottom: 5px; }
+div.ptooltip-box span:first-child { font-weight: 600; }
+div.ptooltip-box span:last-child { margin-bottom: 0; }
+div.ptooltip-box span span { display: inline !important; }
 
 .top-nav, .top-bar { background: #2c3e50; height: 75px; line-height: 75px; }
 
@@ -175,6 +188,8 @@ input[type="checkbox"]:checked + label { background-position: 0 -14px; }
 .icon-button:hover { color: #e74c3c; }
 .icon-button i { font-size: 24px; }
 
+@media only screen and (min-width: 40.063em) and (max-width: 64em) { .ticketContent { padding: 0 0 0 55px !important; } }
+
 div#ticketTable_wrapper { margin-bottom: 0; }
 
 #ticketTable tr { height: 52px; padding-right: 15px; }
@@ -207,3 +222,35 @@ table.dataTable thead { background: #f3f5f9; font-family: "Roboto", sans-serif; 
 table.dataTable thead .sorting:last-child, table.dataTable thead .sorting_desc:last-child, table.dataTable thead .sorting_asc:last-child { background-position: right 15px center; }
 table.dataTable thead tr th { font-size: 12px; color: #55616e; font-weight: 400; }
 table.dataTable tbody tr td { font-family: "Roboto", sans-serif; color: #55616e; font-weight: normal; font-size: 14px; }
+
+.server-row { margin: 25px 0 0 0 !important; }
+
+.server-box { max-height: 290px; background: white; margin-bottom: 25px; border-radius: 3px; -webkit-border-radius: 3px; -moz-border-radius: 3px; box-shadow: 0px 1px 3px 0px rgba(44, 62, 80, 0.2); -webkit-box-shadow: 0px 1px 3px 0px rgba(44, 62, 80, 0.2); -moz-box-shadow: 0px 1px 3px 0px rgba(44, 62, 80, 0.2); }
+.server-box .server-title { height: 40px; background: #29b955; border-radius: 3px 3px 0 0; -webkit-border-radius: 3px 3px 0 0; -moz-border-radius: 3px 3px 0 0; }
+.server-box .server-title.server-status-red { background: #b92929; }
+.server-box .server-title.server-status-green { background: #29b955; }
+.server-box .server-title.server-status-orange { background: #e77c3c; }
+.server-box .server-title p { display: block; width: 100%; font-family: "Roboto", sans-serif; font-size: 14px; font-weight: 500; text-align: center; color: white; line-height: 40px; }
+.server-box .server-content { max-height: 250px; }
+.server-box .server-content .row:first-child { padding: 25px 20px 15px 20px; }
+.server-box .server-content .row { padding: 7px 20px; }
+.server-box .server-content p { color: #2c3e50; font-family: "Roboto", sans-serif; font-size: 12px; font-weight: normal; margin-bottom: 0; }
+.server-box .server-ping p:before { content: " "; display: inline-block; width: 20px; height: 5px; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; background: #29b955; margin-right: 10px; vertical-align: middle; }
+.server-box .server-ping p:after { content: "ms"; }
+.server-box .server-ping.ping-status-green p:before { background: #29b955; }
+.server-box .server-ping.ping-status-orange p:before { background: #e77c3c; }
+.server-box .server-ping.ping-status-red p:before, .server-box .server-ping.ping-status-timeout p:before { background: #b92929; }
+.server-box .server-ping.ping-status-timeout p:after { content: ""; }
+.server-box .server-col-left p { font-weight: 500; }
+.server-box .server-col-right p { text-align: right; }
+.server-box .server-services { margin-bottom: 15px; }
+.server-box .server-services .server-services-list { float: left; display: block; list-style: none; margin: 0; padding: 0; width: 100%; height: 10px; background: #d5dae6; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; }
+.server-box .server-services .server-services-list li { float: left; position: relative; border-right: 2px solid white; width: 35px; height: 100%; cursor: pointer; }
+.server-box .server-services .server-services-list li:first-child { border-radius: 5px 0 0 5px; -webkit-border-radius: 5px 0 0 5px; -moz-border-radius: 5px 0 0 5px; }
+.server-box .server-services .server-services-list li:first-child.green { border-left: 2px solid #29b955; }
+.server-box .server-services .server-services-list li:first-child.orange { border-left: 2px solid #e77c3c; }
+.server-box .server-services .server-services-list li:first-child.red { border-left: 2px solid #b92929; }
+.server-box .server-services .server-services-list li.green { background: #29b955; }
+.server-box .server-services .server-services-list li.orange { background: #e77c3c; }
+.server-box .server-services .server-services-list li.red { background: #b92929; }
+.server-box .server-services .server-services-list li span { display: block; font-size: 0px; height: 100%; width: 100%; }

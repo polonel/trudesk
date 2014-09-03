@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TruDesk &middot; Tickets</title>
+    <title>TruDesk &middot; Servers</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="css/normalize.css"/>
@@ -10,10 +10,6 @@
     <script src="js/vendor/modernizr.js"></script>
 
     <link rel="stylesheet" href="css/vendor/font-awesome.min.css"/>
-    <!--<link rel="stylesheet" href="css/plugins/datatables/jquery.dataTables.css"/>-->
-    <!--<link rel="stylesheet" href="css/plugins/datatables/dataTables.responsive.css"/>-->
-    <link rel="stylesheet" href="css/plugins/datatables/dataTables.scroller.css"/>
-    <link rel="stylesheet" href="css/plugins/datatables/dataTables.foundation.css"/>
 
     <link rel="stylesheet" href="css/app.css"/>
 </head>
@@ -171,7 +167,7 @@
         <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down">
             <ul class="side-nav">
                 <li><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
-                <li class="active"><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
+                <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
                 <li><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
                     <ul id="side-nav-sub-messages" class="side-nav-sub">
                         <li><a href="#"><i class="icon-inbox"></i>Inbox</a></li>
@@ -180,223 +176,189 @@
                     </ul>
                 </li>
                 <li><a href="#"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>
-                <li><a href="#"><i class="fa fa-hdd-o fa-large"></i>Servers</a></li>
+                <li class="active"><a href="#"><i class="fa fa-hdd-o fa-large"></i>Servers</a></li>
                 <li><a href="#"><i class="icon-accounts"></i>Accounts</a></li>
                 <li><a href="#"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>
                 <li><a href="#"><i class="icon-invoices"></i>Invoices</a></li>
             </ul>
         </div>
-        <div class="small-12 large-10 columns nopadding ticketContent">
-            <div class="page-title noshadow">
-                <p class="left">Tickets</p>
+        <div class="small-12 large-10 columns nopadding page-right-content">
+            <div class="page-title">
+                <p class="left">Servers</p>
                 <div class="right">
                     <ul class="button-group">
-                        <li class="active"><a href="#" role="button" class="btn">Create</a></li>
+                        <li class="active"><a href="#" role="button" class="btn">Add Server</a></li>
                     </ul>
                 </div>
             </div>
-
-            <div class="full-height">
-                <div class="ticketList full-height">
-                    <table id="ticketTable" class="pDataTable">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th>Status</th>
-                            <th>Subject</th>
-                            <th>Created</th>
-                            <th>Requester</th>
-                            <th>Group</th>
-                            <th>Updated</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr class="ticket-new">
-                                <td>
-                                    <input id="c2" type="checkbox"/>
-                                    <label for="c2"></label>
-                                </td>
-                                <td class="ticket-status ticket-new"><span>New</span></td>
-                                <td>Need to look at this issue</td>
-                                <td>July 15</td>
-                                <td>Chris</td>
-                                <td>Administration</td>
-                                <td>Today 10:53a</td>
-                            </tr>
-                            <tr data-ticket="1">
-                                <td>
-                                    <input id="c1" type="checkbox"/>
-                                    <label for="c1"></label>
-                                </td>
-                                <td class="ticket-status ticket-open"><span>Open</span></td>
-                                <td>Need to look at this issue</td>
-                                <td>July 15</td>
-                                <td>Chris Brame</td>
-                                <td>Administration</td>
-                                <td>Today 10:53a</td>
-                            </tr>
-                            <tr class="ticket-pending">
-                                <td>
-                                    <input id="c3" type="checkbox"/>
-                                    <label for="c3"></label>
-                                </td>
-                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
-                                <td>15 New computers for office 203</td>
-                                <td>July 13</td>
-                                <td>Christine hall</td>
-                                <td>Administration</td>
-                                <td>-</td>
-                            </tr>
-                            <tr class="ticket-pending">
-                                <td>
-                                    <input id="c4" type="checkbox"/>
-                                    <label for="c4"></label>
-                                </td>
-                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
-                                <td>Motherboard Repair Needed</td>
-                                <td>July 12</td>
-                                <td>Joe Rogers</td>
-                                <td>Development</td>
-                                <td>-</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-                            <tr class="ticket-closed">
-                                <td>
-                                    <input id="c5" type="checkbox"/>
-                                    <label for="c5"></label>
-                                </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                                <td>Need to Look at this issue.</td>
-                                <td>July 12</td>
-                                <td>John Smith</td>
-                                <td>IT Support</td>
-                                <td>Today 11:52a</td>
-                            </tr>
-
-
-                        </tbody>
-                    </table>
+            <!--Content Here-->
+            <div class="row server-row">
+                <div class="small-6 large-4 columns left">
+                    <div class="server-box">
+                        <div class="server-title">
+                            <p>Zoe.granvillecounty.local</p>
+                        </div>
+                        <div class="server-content">
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>IP Address</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>172.10.5.15</p>
+                                    <p>24.142.200.9</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Ping</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <div class="server-ping">
+                                        <p>96</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Uptime</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>368 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Last Outage</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>14 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-12 columns server-services">
+                                    <ul class="server-services-list clearfix">
+                                        <li class="orange"><span id="zoe.granvillecounty.local_s1" class="ptooltip" data-ptooltip data-title="MySQL" data-ptooltip-type="service" data-service-status="Starting">Starting</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s2" class="ptooltip" data-ptooltip data-title="TeamSpeak 3" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s3" class="ptooltip" data-ptooltip data-title="MongoDB" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="red"><span id="zoe.granvillecounty.local_s4" class="ptooltip" data-ptooltip data-title="File Transfer Protocol" data-ptooltip-type="service" data-service-status="Stopped">Stopped</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
+                <div class="small-6 large-4 columns left">
+                    <div class="server-box">
+                        <div class="server-title server-status-red">
+                            <p>Zoe.granvillecounty.local</p>
+                        </div>
+                        <div class="server-content">
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>IP Address</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>172.10.5.15</p>
+                                    <p>24.142.200.9</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Ping</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <div class="server-ping">
+                                        <p>timeout</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Uptime</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>368 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Last Outage</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>14 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-12 columns server-services">
+                                    <ul class="server-services-list clearfix">
+                                        <li class="orange"><span id="zoe.granvillecounty.local_s1" class="ptooltip" data-ptooltip data-title="MySQL" data-ptooltip-type="service" data-service-status="Starting">Starting</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s2" class="ptooltip" data-ptooltip data-title="TeamSpeak 3" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s3" class="ptooltip" data-ptooltip data-title="MongoDB" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="red"><span id="zoe.granvillecounty.local_s4" class="ptooltip" data-ptooltip data-title="File Transfer Protocol" data-ptooltip-type="service" data-service-status="Stopped">Stopped</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="small-6 large-4 columns left">
+                    <div class="server-box">
+                        <div class="server-title">
+                            <p>Zoe.granvillecounty.local</p>
+                        </div>
+                        <div class="server-content">
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>IP Address</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>172.10.5.15</p>
+                                    <p>24.142.200.9</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Ping</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <div class="server-ping">
+                                        <p>256</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Uptime</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>368 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-6 columns server-col-left">
+                                    <p>Last Outage</p>
+                                </div>
+                                <div class="small-6 columns server-col-right">
+                                    <p>14 Days</p>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="small-12 columns server-services">
+                                    <ul class="server-services-list clearfix">
+                                        <li class="orange"><span id="zoe.granvillecounty.local_s1" class="ptooltip" data-ptooltip data-title="MySQL" data-ptooltip-type="service" data-service-status="Starting">Starting</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s2" class="ptooltip" data-ptooltip data-title="TeamSpeak 3" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="green"><span id="zoe.granvillecounty.local_s3" class="ptooltip" data-ptooltip data-title="MongoDB" data-ptooltip-type="service" data-service-status="Running">Running</span></li>
+                                        <li class="red"><span id="zoe.granvillecounty.local_s4" class="ptooltip" data-ptooltip data-title="File Transfer Protocol" data-ptooltip-type="service" data-service-status="Stopped">Stopped</span></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
             </div>
         </div>
     </div>
