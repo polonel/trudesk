@@ -50,12 +50,6 @@
             &:hover
               text-decoration: underline
 
-      .chat-box-messages
-        background: #edeff4
-        height: 222px
-        width: 100%
-        border-top: 1px solid #223140
-
       .chat-box-text
         display: block
         cursor: text
@@ -79,6 +73,7 @@
         padding: 0
         width: 100%
         font-size: 12px
+        line-height: normal
         overflow: hidden
         max-width: 100%
         white-space: pre-wrap
@@ -89,3 +84,82 @@
           background: inherit
 
 
+      .chat-box-messages
+        background: #edeff4
+        height: 220px
+        width: 100%
+        border-top: 1px solid #223140
+        padding: 7px
+
+        .chat-message
+          margin-bottom: 8px
+          position: relative
+          &.chat-message-user
+            .chat-text-wrapper
+              margin-left: 60px
+              .chat-text
+                background: #e74c3c
+                color: #ffffff
+                float: right
+
+          .chat-user-profile
+            height: 34px
+            width: 34px
+            position: absolute
+            left: 5px
+            display: block
+
+            img
+              max-width: 100%
+              width: 100%
+              +borderRadius(5px)
+
+          .chat-text-wrapper
+            display: block
+            margin-left: 45px
+            float: left
+            max-width: 175px
+            width: 100%
+
+            .chat-text
+              display: block
+              width: auto
+              max-width: 175px
+              background: #ffffff
+              float: left
+              margin-left: 6px
+              border: 1px solid rgba(0,0,0,0.18)
+              +borderRadius(4px)
+              color: #3e454c
+              min-height: 14px
+              padding: 4px 6px 3px 5px
+              position: relative
+              text-align: left
+              //white-space: pre-wrap
+              word-break: break-word
+
+              &:after
+                content: ''
+                position: absolute
+                width: 8px
+                height: 13px
+                top: 5px
+                right: 100%
+                background: url('../img/chat-arrow.png') no-repeat #ffffff
+                background-size: auto
+
+              .chat-text-inner
+                text-align: left
+                font-size: 12px
+                min-height: 16px
+                line-height: 1.28em
+
+              &.chat-text-user
+                &:after
+                  content: ''
+                  position: absolute
+                  width: 8px
+                  height: 13px
+                  top: 5px
+                  left: 100%
+                  background: #e74c3c url('../img/chat-arrow.png') no-repeat 0 -13px

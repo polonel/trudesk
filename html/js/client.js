@@ -36,20 +36,12 @@ $j(document).ready(function() {
         //handle ticket link here
     });
 
-    $j(".message-items").niceScroll({
-        cursorcolor: "#a9b1bf",
-        cursorwidth: 7,
-        cursorborder: "1px solid #fff"
-    });
-    $j(".page-content").niceScroll({
-        cursorcolor: "#a9b1bf",
-        cursorwidth: 7,
-        cursorborder: "1px solid #fff"
-    });
-    $j(".dataTables_scrollBody").niceScroll({
-        cursorcolor: "#a9b1bf",
-        cursorwidth: 7,
-        cursorborder: "1px solid #fff"
+    $j('.scrollable').each(function() {
+        $j(this).niceScroll({
+            cursorcolor: "#a9b1bf",
+            cursorwidth: 7,
+            cursorborder: "1px solid #fff"
+        });
     });
 
     $j('a[data-notifications]').each(function() {
@@ -158,17 +150,61 @@ $j(document).ready(function() {
     //Auto Growing TextArea
     //$j('.textAreaAutogrow').autogrow({onInitialize: true});
     $j('textarea.textAreaAutogrow').autogrow({
-        preGrowCallback: growCallback()
+        postGrowCallback: chatBoxTextAreaGrowCallback,
+        enterPressed: function(self, v) {
+            var messages = $j('.chat-box-messages');
+            var messageDiv = createChatMessageDiv(v);
+            messages.children('#chat-message-list').append(messageDiv);
+            messages.getNiceScroll(0).resize().doScrollTop(messages.height(), 100);
+        }
     });
-    $j('.chat-box-text').click(function() {
+    $j('.chat-box-text').click(function(e) {
+        if ($j(this).children('textarea').is(":focus")) {
+            e.stopPropagation();
+            return false;
+        }
+
         $j(this).children('textarea').focus();
         var val = $j(this).children('textarea').val();
         $j(this).children('textarea').val('').val(val);
     });
 });
 
-function growCallback() {
-    console.log('callback');
+function createChatMessageDiv(v) {
+    var html  = '<div class="chat-message chat-message-user clearfix" data-chat-messageId="12">';
+        html += '<div class="chat-text-wrapper">';
+        html += '<div class="chat-text chat-text-user">';
+        html += '<div class="chat-text-inner"><span>' + v + '</span>';
+        html += '</div></div></div></div>';
+
+    return html;
+}
+
+function chatBoxTextAreaGrowCallback(self, oldHeight, newHeight) {
+    if (oldHeight === newHeight)
+        return true;
+
+    var textAreaHeight = self.parent().outerHeight();
+
+    var messages = $j('.chat-box-messages');
+
+    switch (textAreaHeight) {
+        case 29:
+            messages.height(204);
+            break;
+        case 46:
+            messages.height(187);
+            break;
+        case 63:
+            messages.height(172);
+            break;
+        default:
+            messages.height(156);
+    }
+
+    var ns = messages.getNiceScroll(0);
+    ns.resize();
+    ns.doScrollTop(99999,100);
 }
 
 function pingStatus() {

@@ -190,7 +190,7 @@
 
             <div class="full-height">
                 <form action="#" style="margin: 0">
-                    <ul class="message-items full-height">
+                    <ul class="message-items full-height scrollable">
                         <li class="message-folder">Inbox</li>
                         <li class="unread active">
                             <input id="c1" type="checkbox"/>
@@ -292,7 +292,7 @@
                 </ul>
             </div>
 
-            <div class="page-content full-height">
+            <div class="page-content full-height scrollable">
                 <div class="message-header">
                     <h1>Please Check on this ticket.</h1>
                     <span>From:</span>
@@ -330,10 +330,33 @@
                     </h4>
                 </div>
                 <div class="chat-box-messages scrollable">
+                    <div id="chat-message-list" data-chat-userId="1">
+                        <div class="chat-message clearfix" data-chat-messageId="11">
+                            <div class="chat-user-profile"><a href="#"><img src="img/jon_profile.jpg" alt="Jon profile"/></a></div>
+                            <div class="chat-text-wrapper">
+                                <div class="chat-text">
+                                    <div class="chat-text-inner">
+                                        <span>Hey! trudesk is really cool. Your one of the best coders. You should sell this crap for realz $$$.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="chat-message chat-message-user clearfix" data-chat-messageId="12">
+                            <!--<div class="chat-user-profile"><a href="#"><img src="img/jon_profile.jpg" alt="Jon profile"/></a></div>-->
+                            <div class="chat-text-wrapper">
+                                <div class="chat-text chat-text-user">
+                                    <div class="chat-text-inner">
+                                        <span>Yea JB, I could make a killing with the knowledge I have.. I could rekt them on how BA this is.</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
                 <div class="chat-box-text">
-                    <textarea class="textAreaAutogrow autogrow-short" name="message">Message</textarea>
+                    <textarea class="textAreaAutogrow autogrow-short" name="message" rows="1"></textarea>
                 </div>
             </div>
         </div>
