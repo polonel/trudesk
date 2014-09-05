@@ -18,11 +18,14 @@
   .chat-box-wrapper
     position: relative
     display: block
+    .chat-box-position
+      position: relative
+      top: -252px
+      left: 0
 
     .chat-box
-      position: absolute
-      right: 125px
-      top: -252px
+      float: right
+      margin-right: 15px
       width: 260px
       height: 280px
       background: #f3f5f9
@@ -36,6 +39,7 @@
       .chat-box-title
         display: block
         background: #223140
+        height: 29px
         border: 1px solid transparent
         +boxShadow(0 0 0 1px #223140)
         +borderRadius(3px 3px 0 0)
@@ -49,6 +53,14 @@
             color: #ffffff
             &:hover
               text-decoration: underline
+      .chat-box-title-buttons
+        line-height: 29px
+        margin-right: 7px
+        font-size: 14px
+        a
+          color: #bac3c6
+          &:hover
+            color: #ffffff
 
       .chat-box-text
         display: block

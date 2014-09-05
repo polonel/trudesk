@@ -152,9 +152,9 @@ $j(document).ready(function() {
     $j('textarea.textAreaAutogrow').autogrow({
         postGrowCallback: chatBoxTextAreaGrowCallback,
         enterPressed: function(self, v) {
-            var messages = $j('.chat-box-messages');
+            var messages = self.parent().siblings('.chat-box-messages');
             var messageDiv = createChatMessageDiv(v);
-            messages.children('#chat-message-list').append(messageDiv);
+            messages.children('.chat-message-list').append(messageDiv);
             messages.getNiceScroll(0).resize().doScrollTop(messages.height(), 100);
         }
     });
@@ -167,6 +167,9 @@ $j(document).ready(function() {
         $j(this).children('textarea').focus();
         var val = $j(this).children('textarea').val();
         $j(this).children('textarea').val('').val(val);
+    });
+    $j('.chatCloseBtn').click(function() {
+        $j(this).parents('.chat-box[data-chat-userId]').remove();
     });
 });
 
