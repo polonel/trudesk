@@ -244,8 +244,7 @@ function chatBoxTextAreaGrowCallback(self, oldHeight, newHeight) {
         return true;
 
     var textAreaHeight = self.parent().outerHeight();
-
-    var messages = $j('.chat-box-messages');
+    var messages = self.parent().siblings('.chat-box-messages');
 
     switch (textAreaHeight) {
         case 29:
