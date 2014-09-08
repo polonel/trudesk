@@ -171,6 +171,62 @@ $j(document).ready(function() {
     $j('.chatCloseBtn').click(function() {
         $j(this).parents('.chat-box[data-chat-userId]').remove();
     });
+    $j('.chat-box-title').click(function() {
+        var p = $j(this).parents('.chat-box-position');
+        if (p.css('top') === '-252px') {
+            p.animate({
+                top: 0
+            }, 250);
+        } else {
+            p.animate({
+                top: -252
+            }, 250);
+        }
+    });
+
+    //donutchart
+    $j('.donutchart').each(function() {
+        var trackColor = $j(this).attr('data-trackColor');
+        if (trackColor == null || trackColor.length <= 0)
+            trackColor = '#e74c3c';
+        var numCount = $j(this).attr('data-numCount');
+        if (numCount == null || numCount.length <= 0)
+            numCount = false;
+
+        $j(this).easyPieChart({
+            size: 150,
+            lineCap: 'round',
+            lineWidth: 8,
+            scaleColor: false,
+            barColor: trackColor,
+            trackColor: '#b5bbc9',
+            onStart: function(value, to) {
+                $j(this.el).find('.chart-value').text('0');
+            },
+            onStop: function(value, to) {
+                if (numCount) {
+                    var totalNum = parseInt($j(this.el).attr('data-totalNumCount'));
+                    $j(this.el).find('.chart-value').text(totalNum);
+                    return true;
+                }
+                $j(this.el).find('.chart-value').text(Math.round(to));
+            },
+            onStep: function(from, to, percent) {
+                if (numCount) {
+                    var countVal = parseInt($j(this.el).attr('data-totalNumCount'));
+                    var current = parseInt($j(this.el).find('.chart-value').text());
+                    if (countVal != null && countVal > 0 && current != null) {
+                        var totalCount = Math.round(countVal*(100/Math.round(to)));
+                        var val = totalCount*(0.01*Math.round(percent));
+                        $j(this.el).find('.chart-value').text(Math.round(val));
+                        return true;
+                    }
+                }
+
+                $j(this.el).find('.chart-value').text(Math.round(percent));
+            }
+        });
+    });
 });
 
 function createChatMessageDiv(v) {
