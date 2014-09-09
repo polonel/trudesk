@@ -7,6 +7,8 @@ html, body { background: #d5dae6; overflow-x: hidden; font-family: "Open Sans", 
 
 .nomargin { margin: 0 !important; }
 
+.padtop20 { padding-top: 20px !important; }
+
 .nopadding { padding: 0 !important; }
 
 .nopadding-right { padding-right: 0 !important; }
@@ -51,7 +53,7 @@ a.button i { font-weight: normal; margin-right: 10px; font-size: 14px; }
 
 @media only screen and (min-width: 40.063em) and (max-width: 64em) { .page-right-content { padding: 0 0 0 55px !important; } }
 
-div.ptooltip-box-wrap { display: none; position: absolute; left: 50%; bottom: 25px; margin-left: -75px; z-index: 99999; opacity: 0.95; }
+div.ptooltip-box-wrap { display: none; position: absolute; left: 50%; bottom: 15px; margin-left: -75px; z-index: 99999; opacity: 0.95; }
 
 div.ptooltip-box { position: relative; width: 150px; max-width: 150px; min-height: 45px; background: #223140; text-align: center; padding: 7px 0; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.3); }
 div.ptooltip-box:before, div.ptooltip-box:after { position: absolute; top: 100%; left: 50%; border: solid transparent; content: " "; height: 0; width: 0; pointer-events: none; }
@@ -290,13 +292,28 @@ table.dataTable tbody tr td { font-family: "Roboto", sans-serif; color: #55616e;
 .circle-chart-caption span { display: inline-block; width: 100%; font-family: "Roboto", sans-serif; font-size: 14px; font-weight: 500; }
 .circle-chart-caption span img { display: inline-block; margin-left: 7px; margin-right: 7px; position: relative; top: -1px; }
 
-/* DonutChart */
-.donutchart-wrapper { position: relative; width: 150px; }
+#ticketLines .flot-x-axis { top: 10px !important; }
 
-.donutchart { position: relative; display: inline-block; height: 150px; width: 150px; text-align: center; margin-bottom: 20px; }
+/* DonutChart */
+.donutchart-wrapper { position: relative; width: 33.33333%; text-align: center; float: left; margin-bottom: 30px; }
+
+.donutchart { position: relative; display: inline-block; height: 150px; width: 150px; text-align: center; margin: 0 auto; }
 .donutchart canvas { position: absolute; top: 0; left: 0; }
 .donutchart .chart-value { position: relative; display: inline-block; line-height: 125px; z-index: 2; font-size: 48px; font-family: "Roboto Condensed", sans-serif; text-align: center; font-weight: bold; color: #2c3e50; }
 .donutchart .chart-value.percent { padding-right: 22px; }
 .donutchart .chart-value.percent:after { content: "%"; position: absolute; right: 0; top: 38px; margin-left: 0.1em; font-size: 30px; line-height: normal; }
 
-.donutchart-caption { position: absolute; font-family: "Roboto Condensed", sans-serif; top: 85px; left: 0; width: 150px; font-size: 22px; text-align: center !important; font-weight: 700; font-variant: small-caps; color: #2c3e50; }
+.donutchart-caption { position: absolute; font-family: "Roboto Condensed", sans-serif; top: 85px; left: 0; width: 100%; font-size: 22px; text-align: center !important; font-weight: 700; font-variant: small-caps; color: #2c3e50; }
+
+.bar-chart-wrapper { position: relative; padding-bottom: 10px; width: 100%; margin: 0 auto; }
+.bar-chart-wrapper .bar-chart { position: relative; width: 350px; margin: 0 auto 40px auto; text-align: center; }
+.bar-chart-wrapper .bar-chart .bar { position: relative; display: inline-block; float: left; width: 15px; height: 170px; border-radius: 2px; -webkit-border-radius: 2px; -moz-border-radius: 2px; background: #b5bbc9; margin-right: 10px; }
+.bar-chart-wrapper .bar-chart .bar .bar-track { position: absolute; bottom: 0; left: 0; content: ""; display: block; height: 100px; width: 100%; background: #e74c3c; border-radius: 2px; -webkit-border-radius: 2px; -moz-border-radius: 2px; }
+.bar-chart-wrapper .bar-chart .bar .bar-track:hover { background: #c43627; }
+.bar-chart-wrapper .bar-chart .bar .bar-label { position: absolute; bottom: -20px; left: 0; color: #2c3e50; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: bold; text-align: center; width: 15px; font-variant: small-caps; }
+.bar-chart-wrapper .bar-axis ul.x-axis, .bar-chart-wrapper .bar-axis ul.y-axis { margin: 0; padding: 0; position: absolute; bottom: 0; left: 40px; list-style: none; }
+.bar-chart-wrapper .bar-axis ul.x-axis li, .bar-chart-wrapper .bar-axis ul.y-axis li { color: #2c3e50; font-family: "Roboto Condensed", sans-serif; font-size: 14px; font-weight: bold; margin-right: 6px; text-align: center; width: 15px; font-variant: small-caps; }
+.bar-chart-wrapper .bar-axis ul.y-axis { left: -35px; bottom: 0; height: 170px; }
+.bar-chart-wrapper .bar-axis ul.y-axis li { position: relative; text-align: right; width: auto; margin: 0; font-family: "open sans", sans-serif; margin-bottom: 17px; }
+
+.bar-chart-caption span { display: inline-block; width: 100%; font-family: "Roboto", sans-serif; font-size: 14px; font-weight: 500; text-align: center; }

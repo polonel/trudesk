@@ -132,11 +132,18 @@ $j(document).ready(function() {
                 color = '#e54242';
 
             html += "<span>Status: <span style='color: " + color + ";'>" + status + "</span>";
+        } else if (type.toLowerCase() === 'dailyticket') {
+            var n = $j(this).attr('data-new-count');
+            var c = $j(this).attr('data-closed-count');
+
+            html += "<span><span style='color: #e74c3c'>" + n + "</span> New / <span style='color: #3498db'>" + c + "</span> Closed</span>";
         }
 
         html += "</div></div>";
+        var k = $j('<div></div>').css({'position': 'relative'});
+        k.append(html);
 
-        $j(this).append(html);
+        $j(this).append(k);
     });
 
     $j('span[data-ptooltip]').hover(function() {
@@ -227,6 +234,18 @@ $j(document).ready(function() {
             }
         });
     });
+
+    //Bar Chart - Tickets
+    $j('#ticketBarChart > .bar').each(function() {
+        var $this = $j(this);
+        var val = $this.attr('data-percent');
+        var i = 170*(0.01*val);
+        $this.find('span.bar-track').height(0);
+        $this.find('span.bar-track').animate({
+            'height': i
+        }, 1000);
+    });
+
 });
 
 function createChatMessageDiv(v) {
