@@ -293,6 +293,7 @@ table.dataTable tbody tr td { font-family: "Roboto", sans-serif; color: #55616e;
 .circle-chart-caption span img { display: inline-block; margin-left: 7px; margin-right: 7px; position: relative; top: -1px; }
 
 #ticketLines .flot-x-axis { top: 10px !important; }
+#ticketLines .flot-y-axis div:first-child { display: none; visibility: hidden; }
 
 /* DonutChart */
 .donutchart-wrapper { position: relative; width: 33.33333%; text-align: center; float: left; margin-bottom: 30px; }
