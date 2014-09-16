@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>TruDesk &middot; Dashboard</title>
+    <title>TruDesk &middot; Calendar</title>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="css/normalize.css"/>
@@ -10,6 +10,7 @@
     <script src="js/vendor/modernizr.js"></script>
 
     <link rel="stylesheet" href="css/vendor/font-awesome.min.css"/>
+    <link rel="stylesheet" href="js/plugins/fullcalendar/fullcalendar.css"/>
 
     <link rel="stylesheet" href="css/app.css"/>
 </head>
@@ -166,7 +167,7 @@
     <div class="row">
         <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down">
             <ul class="side-nav">
-                <li class="active"><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
+                <li><a href="#"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
                 <li><a href="#"><i class="fa fa-paste fa-large"></i>Tickets</a></li>
                 <li><a href="#" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
                     <ul id="side-nav-sub-messages" class="side-nav-sub">
@@ -175,7 +176,7 @@
                         <li><a href="#"><i class="icon-trash"></i>Trash</a></li>
                     </ul>
                 </li>
-                <li><a href="#"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>
+                <li class="active"><a href="#"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>
                 <li><a href="#"><i class="fa fa-hdd-o fa-large"></i>Servers</a></li>
                 <li><a href="#"><i class="icon-accounts"></i>Accounts</a></li>
                 <li><a href="#"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>
@@ -184,205 +185,17 @@
         </div>
         <div class="small-12 large-10 columns nopadding page-right-content">
             <div class="page-title">
-                <p class="left">Dashboard</p>
+                <p class="left">Calendar</p>
+                <div class="right">
+                    <ul class="button-group">
+                        <li class="active"><a href="#" role="button" class="btn">Create Event</a></li>
+                    </ul>
+                </div>
             </div>
             <!--Content Here-->
-            <div class="row" style="padding-top: 65px; padding-left: 60px;">
-                <div class="small-12 large-6 columns padtop20">
-                    <div class="circle-chart-wrapper clearfix">
-                        <div class="donutchart-wrapper">
-                            <div class="donutchart " data-percent="75"><span class="chart-value percent">0</span></div>
-                            <div class="donutchart-caption">completed</div>
-                        </div>
-                        <div class="donutchart-wrapper">
-                            <div class="donutchart " data-percent="25" data-trackColor="#3498db" data-numCount="true" data-totalNumCount="192"><span class="chart-value">192</span></div>
-                            <div class="donutchart-caption">active</div>
-                        </div>
-                        <div class="donutchart-wrapper">
-                            <div class="donutchart " data-percent="35" data-trackColor="#2fb150" data-numCount="true" data-totalNumCount="231"><span class="chart-value">231</span></div>
-                            <div class="donutchart-caption">new</div>
-                        </div>
-                    </div>
-                    <div class="small-12 columns circle-chart-caption">
-                        <span>Tickets Summary <img src="img/small-midDots.png" alt="Divider"/> Total 768</span>
-                    </div>
-                </div>
-                <div class="small-12 large-6 columns">
-                    <div class="bar-chart-wrapper clearfix">
-                        <div id="ticketBarChart" class="bar-chart clearfix">
-                            <div class="bar-axis">
-                                <ul class="y-axis">
-                                    <li><span>400</span></li>
-                                    <li><span>300</span></li>
-                                    <li><span>200</span></li>
-                                    <li><span>100</span></li>
-                                    <li><span>0</span></li>
-                                </ul>
-                            </div>
-                            <div class="bar" data-percent="20">
-                                <span id="ticketDaily_sunday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">S</span>
-                            </div>
-                            <div class="bar" data-percent="40">
-                                <span id="ticketDaily_monday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">M</span>
-                            </div>
-                            <div class="bar" data-percent="60">
-                                <span id="ticketDaily_tuesday"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">T</span>
-                            </div>
-                            <div class="bar" data-percent="50">
-                                <span id="ticketDaily_wednesday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">W</span>
-                            </div>
-                            <div class="bar" data-percent="90">
-                                <span id="ticketDaily_thursday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span><span class="bar-label">T</span>
-                            </div>
-                            <div class="bar" data-percent="10">
-                                <span id="ticketDaily_friday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">F</span>
-                            </div>
-                            <div class="bar" data-percent="30">
-                                <span id="ticketDaily_saturday1"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">S</span>
-                            </div>
-                            <div class="bar" data-percent="45">
-                                <span id="ticketDaily_sunday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">S</span>
-                            </div>
-                            <div class="bar" data-percent="85">
-                                <span id="ticketDaily_monday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">M</span>
-                            </div>
-                            <div class="bar" data-percent="50">
-                                <span id="ticketDaily_tuesday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">T</span>
-                            </div>
-                            <div class="bar" data-percent="45">
-                                <span id="ticketDaily_wednesday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">W</span>
-                            </div>
-                            <div class="bar" data-percent="25">
-                                <span id="ticketDaily_thursday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">T</span>
-                            </div>
-                            <div class="bar" data-percent="70">
-                                <span id="ticketDaily_friday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">F</span>
-                            </div>
-                            <div class="bar" data-percent="80">
-                                <span id="ticketDaily_saturday2"
-                                      data-ptooltip
-                                      data-title="Date"
-                                      data-ptooltip-type="dailyticket"
-                                      data-new-count="231"
-                                      data-closed-count="18"
-                                      class="bar-track ptooltip">
-                                </span>
-                                <span class="bar-label">S</span>
-                            </div>
-                        </div>
-                        <div class="bar-chart-caption">
-                            <span>Tickets per Day</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div class="row">
-                <div class="small-12 columns" style="padding: 0 60px">
-                    <div id="ticketLines" style="width: 100%; height: 240px"></div>
-                    <div class="chart-caption"><h4>Ticket Progress for 2014</h4></div>
+                <div class="small-12 columns">
+                    <div id="calendar" class="full-height scrollable"></div>
                 </div>
             </div>
         </div>
@@ -393,12 +206,11 @@
 <script src="js/vendor/jquery.js"></script>
 <script src="js/vendor/fastclick.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.1.1/js/foundation.min.js"></script>
-<script src="js/plugins/flot/jquery.flot.js"></script>
-<script src="js/plugins/flot/jquery.flot.symbol.min.js"></script>
-<script src="js/plugins/flot/jquery.flot.time.min.js"></script>
-<script src="js/plugins/flot/jquery.flot.tooltip.js"></script>
-<script src="js/flotChart.js"></script>
+<script src="js/plugins/fullcalendar/moment.min.js"></script>
+<script src="js/plugins/fullcalendar/fullcalendar.min.js"></script>
+
 <script src="js/plugins/plugins.js"></script>
+<script src="js/calendar.js"></script>
 <script src="js/client.js"></script>
 </body>
 </html>
