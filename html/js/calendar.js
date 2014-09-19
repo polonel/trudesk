@@ -2,7 +2,7 @@ $j = jQuery.noConflict();
 
 $j(document).ready(function() {
     $j("#calendar").fullCalendar({
-        //aspectRatio: 1.5
+        aspectRatio: 1.48,
         events: [
             {
                 title: 'Ticket #1234 - Planning',
