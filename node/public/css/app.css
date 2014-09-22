@@ -234,6 +234,12 @@ div.ptooltip-box {
   .top-bar-section ul li.profile-area span {
     display: inline-block;
     margin: 0 20px 0 25px; }
+  .top-bar-section ul li.profile-area a.profile-pic {
+    display: inline-block;
+    width: auto;
+    background: none !important;
+    padding: 0 !important;
+    line-height: 10px !important; }
   .top-bar-section ul li.profile-area img {
     border-radius: 50%;
     -webkit-border-radius: 50%;

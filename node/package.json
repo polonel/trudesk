@@ -16,13 +16,15 @@
     "express": "~4.9.0",
     "express-hbs": "^0.7.11",
     "express-session": "^1.8.2",
+    "extend": "^1.3.0",
     "lodash": "^2.4.1",
     "mongoose": "^3.8.16",
     "morgan": "~1.3.0",
     "passport": "^0.2.1",
     "passport-local": "^1.0.0",
     "serve-favicon": "~2.1.3",
-    "socket.io": "^1.1.0"
+    "socket.io": "^1.1.0",
+    "winston": "^0.8.0"
   },
   "devDependencies": {
     "css-condense": "0.0.6",

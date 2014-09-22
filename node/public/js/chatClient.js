@@ -3,12 +3,17 @@ $j = jQuery.noConflict();
 var socket = io();
 socket.on('receivedMessage', function(data) {
     console.log(data);
-    var messages = $j('.chat-box[data-chat-userId="' + data.to + '"]').find('.chat-box-messages');
+    var messages = $j('.chat-box[data-chat-userId="' + data.to + '"]').find('.chat-box-messages .chat-message-list');
     messages.append(createChatMessageDiv(data.message));
-    messages.getNiceScroll(0).resize().doScrollTop(messages.height(), 100);
+    messages.parent().getNiceScroll(0).resize().doScrollTop(messages.height() + 500, 100);
 });
 
 $j(document).ready(function() {
+    socket.emit('userOnline',
+        {
+            id: 2
+        }
+    );
     //Auto Growing TextArea
     //$j('.textAreaAutogrow').autogrow({onInitialize: true});
     $j('textarea.textAreaAutogrow').autogrow({

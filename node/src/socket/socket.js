@@ -1,18 +1,27 @@
-var users = {};
+var users = [];
 
 module.exports = function(io) {
     io.on('connection', function(socket) {
         socket.on('userOnline', function(data) {
-            users[data.name] = socket;
+            socket.set('username', data.id, function() {
+                console.log(data.id);
+                users[data.id] = socket;
+            });
         });
 
         socket.on('receivedMessage', function(data) {
             console.log(data);
-            socket.emit('receivedMessage', data);
+            users[data.to].emit('receivedMessage', data);
+        });
+
+        socket.on('disconnect', function() {
+            socket.get('username', function(err, user) {
+                console.log('disconnect from ' + user);
+                delete users[user];
+                io.sockets.emit('update', users);
+            });
         });
     });
+};
 
-    io.on('disconnect', function(socket) {
-
-    });
-}
+module.exports.users = users;

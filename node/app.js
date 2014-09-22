@@ -7,12 +7,41 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var winston = require('winston');
 var app = express();
 
 //Database
 var mongoose = require('mongoose');
-var mDb = mongoose.connect('mongodb://trudesk:#TruDesk$@127.0.0.1/trudesk');
+var mDb;
+mongoose.connect('mongodb://trudesk:#TruDesk$@127.0.0.1/trudesk', function(err, _db) {
+    if (err) {
+        winston.error("TruDesk could not connect to your Mongo database. Mongo returned the following error: " + err.message);
+        process.exit();
+    }
+
+    mDb = _db;
+
+    //Sessions
+    var sessionSecret = 'trudesk$123#SessionKeY!2387';
+    var sessionMaxAge = 28800000;
+
+    app.use(session({
+        secret: sessionSecret,
+        cookie: {
+            maxAge: sessionMaxAge
+        },
+        store: new MongoStore({
+            db: mDb
+        }),
+        saveUninitialized: false,
+        resave: true
+    }));
+
+    app.use(passportConfig.initialize());
+    app.use(passportConfig.session());
+    app.use(flash());
+
+});
 
 //Passport
 var passportConfig = require('./src/passport/passport')();
@@ -38,26 +67,6 @@ app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-
-//Sessions
-var sessionSecret = 'trudesk$123#SessionKeY!2387';
-var sessionMaxAge = 28800000;
-
-app.use(session({
-    secret: sessionSecret,
-    cookie: {
-        maxAge: sessionMaxAge
-    },
-    store: new MongoStore({
-        mongoose_connection: mDb.connections[0]
-    }),
-    saveUninitialized: false,
-    resave: true
-}));
-
-app.use(passportConfig.initialize());
-app.use(passportConfig.session());
-app.use(flash());
 
 var routes = require('./routes/index');
 app.use('/', routes);
