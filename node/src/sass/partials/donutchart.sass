@@ -1,0 +1,53 @@
+/* DonutChart */
+.donutchart-wrapper
+  position: relative
+  width: 33.333333%
+  text-align: center
+  float: left
+  margin-bottom: 30px
+
+.donutchart
+  position: relative
+  display: inline-block
+  height: 150px
+  width: 150px
+  text-align: center
+  margin: 0 auto
+
+  canvas
+    position: absolute
+    top: 0
+    left: 0
+  .chart-value
+    position: relative
+    display: inline-block
+    line-height: 125px
+    z-index: 2
+    font-size: 48px
+    font-family: "Roboto Condensed", sans-serif
+    text-align: center
+    font-weight: bold
+    color: #2c3e50
+    &.percent
+      padding-right: 22px
+      &:after
+        content: '%'
+        position: absolute
+        right: 0
+        top: 38px
+        margin-left: 0.1em
+        font-size: 30px
+        line-height: normal
+
+.donutchart-caption
+  position: absolute
+  font-family: "Roboto Condensed", sans-serif
+  top: 85px
+  left: 0
+  width: 100%
+  font-size: 22px
+  text-align: center !important
+  //line-height: 36px
+  font-weight: 700
+  font-variant: small-caps
+  color: #2c3e50

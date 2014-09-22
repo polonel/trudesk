@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Trudesk &middot; {{{title}}}</title>
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <style type="text/css">
+        html {
+            overflow-x: hidden;
+        }
+        body {
+            background: #223140;
+            text-align: center;
+            font-family: "Open Sans", Arial, sans-serif;
+        }
+
+        .wrapper {
+            width: 400px;
+            height: 370px;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin: -185px 0 0 -200px;
+        }
+
+        img {
+            margin-bottom: 55px;
+        }
+
+        input {
+            font-family: "Open Sans", Arial, sans-serif;
+            width: 340px;
+            height: 20px;
+            text-align: left;
+            padding: 15px 20px;
+            background: #384b5f;
+            border: 1px solid #1c2937;
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 15px;
+            border-radius: 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+            font-weight: 300;
+        }
+
+        input.button {
+            width: 380px;
+            height: auto;
+            text-align: center;
+            background: #e74b3b;
+            border: none;
+            text-transform: uppercase;
+            border-radius: 3px;
+            -moz-border-radius: 3px;
+            -webkit-border-radius: 3px;
+        }
+
+        input.button:hover {
+            background: #f15849;
+            cursor: pointer;
+        }
+
+        *:focus {
+            outline: 0;
+        }
+
+        a {
+            display: inline-block;
+            padding-right: 10px;
+            color: #879eb7;
+            font-size: 14px;
+            float: right;
+            text-decoration: none;
+            font-weight: 300;
+        }
+
+        a:hover {
+            color: white;
+        }
+
+        ::-webkit-input-placeholder { /* WebKit browsers */
+            color:    #6a7b8c;
+        }
+        :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+            color:    #6a7b8c;
+            opacity:  1;
+        }
+        ::-moz-placeholder { /* Mozilla Firefox 19+ */
+            color:    #6a7b8c;
+            opacity:  1;
+        }
+        :-ms-input-placeholder { /* Internet Explorer 10+ */
+            color:    #6a7b8c;
+        }
+
+    </style>
+</head>
+<body>
+<div class="wrapper">
+    <img src="/img/logoLarge.png" alt="Trudesk Logo" /> <br />
+    <form method="post" action="/login">
+        <input id="login-username" name="login-username" type="text" placeholder="Username" />
+        <input id="login-password" name="login-password" type="password" placeholder="Password" />
+        <input class="button" type="submit" value="Login" />
+    </form>
+    <a href="#">Forgot your password?</a>
+</div>
+</body>
+</html>

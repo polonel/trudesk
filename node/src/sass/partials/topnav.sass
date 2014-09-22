@@ -1,0 +1,199 @@
+.top-nav,
+.top-bar
+  background: #2c3e50
+  height: 75px
+  line-height: 75px
+
+.top-menu
+  height: 75px
+
+.top-bar-section
+  ul
+    li
+      background: #2c3e50
+      height: 75px
+      line-height: 75px
+      color: #536679
+      position: relative
+
+      a
+        background: #2c3e50 !important
+        color: #536679 !important
+        padding-top: 15px !important
+        padding-bottom: 8px !important
+        &:hover
+          color: lighten(#536679, 10%) !important
+
+      &.top-bar-icon,
+      &.top-bar-icon a
+        font-size: 30px
+        font-family: "FontAwesome"
+
+        i
+          font-style: normal
+          //margin: 0 10px 0 20px
+
+        span.label
+          font-size: 9px
+          font-family: "Open Sans", arial, sans-serif
+          font-weight: 700
+          padding: 5px 7px
+          position: absolute
+          right: 5px
+          bottom: 15px
+          +background-opacity(#e74c3c, 0.9)
+
+.top-bar-section ul li.profile-area
+  font-family: "Lato", sans-serif
+  font-size: 18px
+  color: #ffffff
+  background: url("../img/midDots.png") no-repeat
+  background-position: 0 50%
+  margin-left: 10px
+
+  span
+    display: inline-block
+    margin: 0 20px 0 25px
+
+  img
+    +borderRadius(50%)
+
+
+.notifications
+  width: 300px !important
+  height: auto !important
+
+.p-dropdown
+  visibility: hidden
+  opacity: 0
+  z-index: 99999
+  background: #ffffff
+  border: 1px solid rgba(100,100,100,0.4)
+  //padding: 10px
+  position: relative
+  +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
+  +transition(opacity 0.5s ease)
+
+  &:before,
+  &:after
+    content: " "
+    bottom: 100%
+    left: 260px
+    border: solid transparent
+    height: 0
+    width: 0
+    position: absolute
+    pointer-events: none
+
+  &:after
+    border-color: rgba(255, 255, 255, 0)
+    border-bottom-color: #fff
+    border-width: 8px
+    margin-left: -8px
+
+  &:before
+    border-color: rgba(100, 100, 100, 0)
+    border-bottom-color: #646464
+    border-width: 9px
+    margin-left: -9px
+
+  &.pDropOpen
+    visibility: visible
+    opacity: 1
+
+//Message Notification
+#mail-notifications,
+#notifications
+  max-height: 350px
+  position: absolute
+  left: -9999px
+
+  .mail-Messages,
+  .notifications-Messages
+    float: left
+    max-height: 320px
+    overflow-x: hidden
+    overflow-y: auto
+    ul
+      float: left
+      height: 100%
+
+  div.actions
+    width: 100%
+    height: auto
+    border-bottom: 1px solid rgba(100,100,100,0.4)
+    line-height: 24px
+    font-size: 12px
+    a
+      width: 100%
+      padding: 5px 10px
+
+    strong
+      margin-left: 8px
+
+
+  li
+    width: 100%
+    background: #ffffff
+    border-bottom: 1px solid rgba(100,100,100,0.4)
+    height: 80px
+    line-height: normal
+    &:hover
+      background: #f3f5f9 !important
+    &:last-child
+      border-bottom: none
+
+    .messageNotification
+      display: block
+      width: 100%
+      padding: 10px !important
+      background: #ffffff !important
+      line-height: normal !important
+      font-size: 12px
+      color: black !important
+      position: relative
+
+      &:hover
+        background: transparent !important
+
+      .messageUnread
+        width: 16px
+        height: 16px
+        font-size: 12px
+        font-family: "FontAwesome"
+        color: #646464
+        position: absolute
+        top: 8px
+        right: 3px
+        &:before
+          content: "\f111"
+        &.read
+          &:before
+            content: "\f10c"
+
+      div.messageAuthor,
+      div.messageSnippet,
+      div.messageDate
+        margin-left: 60px
+        margin-bottom: 3px
+
+      div.messageDate
+        color: #646464 !important
+
+      div.messageSnippet
+        width: 218px
+        overflow: hidden
+        white-space: nowrap
+        text-overflow: ellipsis
+
+      i
+        display: block
+        width: 50px
+        font-size: 25px
+        line-height: 59px
+        text-align: center
+        color: #e7a13c
+        &.green
+          color: #29b955
+        &.red
+          color: #b92929
