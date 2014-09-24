@@ -1,4 +1,5 @@
-$j = jQuery.noConflict();
+"use strict";
+var $j = jQuery.noConflict();
 
 var data1 = [
     [gd(2014, 0, 1), 250], [gd(2014, 1, 1), 700], [gd(2014, 2, 1), 550], [gd(2014, 3, 1), 1250],
@@ -90,6 +91,6 @@ var options = {
     colors: ["#e74c3c", "#2fb150"]
 };
 
-$j(document).ready(function() {
+(function() {
     $j.plot($j('#ticketLines'), dataset, options);
-});
+})();

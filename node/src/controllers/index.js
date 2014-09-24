@@ -1,6 +1,7 @@
 
 var Controllers = {
-      main: require('./main')
+    main: require('./main'),
+    messages: require('./messages')
 };
 
 module.exports = Controllers;

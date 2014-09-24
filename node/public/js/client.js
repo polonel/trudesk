@@ -1,15 +1,21 @@
-$j = jQuery.noConflict();
+"use strict";
+var $j = jQuery.noConflict();
 
 $j(document).foundation();
-$j(document).ready(function() {
-    pingStatus();
-    $j(window).resize(function() {
-        resizeFullHeight();
-        resizeDataTables();
-        hideAllpDropDowns();
-        hideDropDownScroll();
-    });
+$j(window).resize(function() {
+    resizeFullHeight();
+    resizeDataTables();
+    hideAllpDropDowns();
+    hideDropDownScroll();
+});
+
+$j(window).load(function() {
     $j(window).resize();
+});
+
+(function() {
+    pingStatus();
+    resizeFullHeight();
 
     $j('#ticketTable').dataTable({
         searching: false,
@@ -208,7 +214,7 @@ $j(document).ready(function() {
         }, 1000);
     });
 
-});
+})();
 
 function pingStatus() {
     $j('.server-ping').each(function() {

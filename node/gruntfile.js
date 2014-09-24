@@ -10,7 +10,7 @@ module.exports = function(grunt) {
             },
             web: {
                 options: {
-                    script: 'bin/www',
+                    script: 'app.js',
                     port: 3000
                 }
             }

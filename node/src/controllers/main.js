@@ -1,5 +1,4 @@
 var async = require('async'),
-    express = require('express'),
     passport = require('passport');
 
 var mainController = {};
@@ -23,6 +22,10 @@ mainController.dashboard = function(req, res, next) {
     self.content.nav = 'dashboard';
 
     var User = require('../models/user');
+//
+//    User.findAll(function(err, item) {
+//        console.log('Dashboard Test = ' + item);
+//    });
 
     var data = {};
     async.waterfall([
@@ -49,6 +52,7 @@ mainController.loginPost = passport.authenticate('local', {
                             failureRedirect : '/',
                             failureFlash : true
                         });
+
 mainController.logout = function(req, res, next) {
     "use strict";
     req.logout();

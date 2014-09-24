@@ -33,8 +33,10 @@ module.exports = function(app) {
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 
+            console.log('Worked');
             req.user = username;
 
+            console.log(req.user);
             return done(null, user);
         });
     }));
