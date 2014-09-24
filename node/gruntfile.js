@@ -25,7 +25,8 @@ module.exports = function(grunt) {
                     'public/**/*.css',
                     'public/**/*.js',
                     'views/**/*.hbs'
-                ]
+                ],
+                tasks: ['minjs']
             },
             sass: {
                 files: [
@@ -81,11 +82,26 @@ module.exports = function(grunt) {
                     'public/css/app.css': 'src/sass/app.sass'
                 }
             }
+        },
+
+        uglify: {
+            options: {
+                compress: {
+                    drop_console: true
+                }
+            },
+            target: {
+                files: {
+                    'public/js/client.min.js': ['public/js/client.js'],
+                    'public/js/plugins/plugins.min.js': ['public/js/plugins/plugins.js']
+                }
+            }
         }
 
     });
 
     grunt.registerTask('buildcss', ['sass', 'cssmin']);
+    grunt.registerTask('minjs', ['uglify']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('default', ['server']);
 };
