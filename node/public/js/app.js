@@ -1,11 +1,13 @@
 requirejs.config({
     baseUrl: "/js/",
     paths: {
+        //Always Load
         jquery:         'vendor/jquery/jquery',
         foundation:     'vendor/foundation/foundation.min',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',
+
         datatables:     'vendor/datatables/jquery.dataTables',
         dt_responsive:  'vendor/datatables/dataTables.responsive',
         flot:           'vendor/flot/jquery.flot',

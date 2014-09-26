@@ -204,5 +204,10 @@
 </div>
 
 {{#contentFor 'js-plugins'}}
-    <script src="/js/flotChart.js"></script>
+    <script type="text/javascript">
+        require(['jquery', 'modules/flotchart'], function($, p) {
+            var t = $('#ticketLines');
+            $.plot(t, p.dataset, p.options);
+        });
+    </script>
 {{/contentFor}}

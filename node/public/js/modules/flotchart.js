@@ -1,5 +1,5 @@
 "use strict";
-require(['jquery', 'flot', 'flot_symbol', 'flot_time', 'flot_tooltip'], function($) {
+define('modules/flotchart', ['jquery', 'flot', 'flot_symbol', 'flot_time', 'flot_tooltip'], function($) {
 
     var $j = $.noConflict();
 
@@ -112,7 +112,8 @@ require(['jquery', 'flot', 'flot_symbol', 'flot_time', 'flot_tooltip'], function
         colors: ["#e74c3c", "#2fb150"]
     };
 
-    (function () {
-        $j.plot($j('#ticketLines'), dataset, options);
-    })();
+    return {
+        options: options,
+        dataset: dataset
+    }
 });
