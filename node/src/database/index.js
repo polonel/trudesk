@@ -1,4 +1,5 @@
-var mongoose = require('mongoose');
+var mongoose = require('mongoose'),
+    nconf = require('nconf');
 
 var db = {};
 

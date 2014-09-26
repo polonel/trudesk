@@ -17,6 +17,10 @@ module.exports = function(grunt) {
         },
 
         watch: {
+            gruntfile: {
+                files: ['gruntfile.js'],
+                tasks: ['minjs']
+            },
             frontend: {
                 options: {
                     livereload: true
@@ -24,7 +28,8 @@ module.exports = function(grunt) {
                 files: [
                     'public/**/*.css',
                     'public/**/*.js',
-                    'views/**/*.hbs'
+                    'views/**/*.hbs',
+                    '!public/js/main.min.js'
                 ],
                 tasks: ['minjs']
             },
@@ -53,7 +58,12 @@ module.exports = function(grunt) {
                 options: {
                     stream: true
                 },
-                tasks: [{
+                tasks: [
+                {
+                    grunt: true,
+                    args: ['watch:gruntfile']
+                },
+                {
                     grunt: true,
                     args: ['watch:frontend']
                 }, {
@@ -86,14 +96,34 @@ module.exports = function(grunt) {
 
         uglify: {
             options: {
-                compress: {
-                    drop_console: true
-                }
+//                compress: {
+//                    drop_console: true
+//                }
             },
             target: {
                 files: {
-                    'public/js/client.min.js': ['public/js/client.js'],
-                    'public/js/plugins/plugins.min.js': ['public/js/plugins/plugins.js']
+                    'public/js/common.min.js':
+                        [
+//                            'public/js/vendor/modernizr/modernizr.js',
+//                            'public/js/vendor/jquery/jquery.js',
+//                            'public/js/vendor/fastclick/fastclick.js',
+//                            'public/js/vendor/foundation/foundation.min.js',
+//                            'public/js/vendor/datatables/jquery.dataTables.js',
+//
+//                            'public/js/vendor/datatables/dataTables.responsive.js',
+//                            'public/js/vendor/flot/jquery.flot.js',
+//                            'public/js/vendor/flot/jquery.flot.symbol.min.js',
+//                            'public/js/vendor/flot/jquery.flot.time.min.js',
+//                            'public/js/vendor/flot/jquery.flot.tooltip.js',
+//                            'public/js/vendor/fullcalendar/moment.min.js',
+//                            'public/js/vendor/fullcalendar/fullcalendar.min.js',
+//                            'public/js/plugins/plugins.min.js',
+//                            'public/js/client.js',
+//
+//                            //RequireJS
+//                            'public/js/vendor/requirejs/requirejs.min.js'
+
+                        ]
                 }
             }
         }
