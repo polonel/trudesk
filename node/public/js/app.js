@@ -18,3 +18,6 @@ requirejs.config({
         moment:         'vendor/fullcalendar/moment.min'
     }
 });
+
+require(['jquery'],function($){return $.noConflict();});
+require(['modules/navigation']);
