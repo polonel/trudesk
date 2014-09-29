@@ -323,8 +323,9 @@ function hideAllpDropDowns() {
 }
 
 function resizeDataTables() {
-    if ($j('.ticketList .dataTables_scrollBody').length !== 0)
-        $j('.ticketList .dataTables_scrollBody').css({'height': ($j(".ticketList").height() - $j('.dataTables_scrollHead').height()) + 'px'});
+    if ($j('.ticketList .dataTables_scrollBody').length !== 0) {
+        return $j('.ticketList .dataTables_scrollBody').css({'height': ($j(".ticketList").height() - $j('.dataTables_scrollHead').height()) + 'px'});
+    }
 }
 
 function resizeFullHeight() {

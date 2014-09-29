@@ -203,7 +203,7 @@ $j(window).load(function() {
     });
 
     //Bar Chart - Tickets
-    $j('#ticketBarChart > .bar').each(function() {
+    $j('.bar-chart > .bar').each(function() {
         var $this = $j(this);
         var val = $this.attr('data-percent');
         var i = 170*(0.01*val);

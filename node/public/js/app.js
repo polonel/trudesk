@@ -1,23 +1,20 @@
-requirejs.config({
-    baseUrl: "/js/",
-    paths: {
-        //Always Load
-        jquery:         'vendor/jquery/jquery',
-        foundation:     'vendor/foundation/foundation.min',
-        modernizr:      'vendor/modernizr/modernizr',
-        fastclick:      'vendor/fastclick/fastclick',
-        placeholder:    'vendor/placeholder/placeholder',
+require(['config', 'jquery', 'modules/helpers'], function(config, $, helpers) {
+    helpers.init();
 
-        datatables:     'vendor/datatables/jquery.dataTables',
-        dt_responsive:  'vendor/datatables/dataTables.responsive',
-        flot:           'vendor/flot/jquery.flot',
-        flot_symbol:    'vendor/flot/jquery.flot.symbol',
-        flot_time:      'vendor/flot/jquery.flot.time',
-        flot_tooltip:   'vendor/flot/jquery.flot.tooltip',
-        fullcalendar:   'vendor/fullcalendar/fullcalendar.min',
-        moment:         'vendor/fullcalendar/moment.min'
-    }
+    require([
+        'modules/navigation',
+        'socketio',
+        'modernizr',
+        'fastclick',
+        'placeholder',
+        'foundation',
+        'nicescroll',
+        'easypiechart'
+
+    ], function(nav, io) {
+        //Start App
+        $(document).foundation();
+        nav.init();
+        helpers.fadeOutLoader(300);
+    });
 });
-
-require(['jquery'],function($){return $.noConflict();});
-require(['modules/navigation']);

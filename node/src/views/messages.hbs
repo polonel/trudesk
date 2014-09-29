@@ -9,84 +9,19 @@
         <form action="#" style="margin: 0">
             <ul class="message-items full-height scrollable">
                 <li class="message-folder">Inbox</li>
-                <li class="unread active">
-                    <input id="c1" type="checkbox"/>
-                    <label for="c1"></label>
-                    <span class="message-date">07/11/2014</span>
-                    <a href="#1" class="message-from">Rick Spencer</a>
-                    <span class="message-subject">Please Check on this ticket.</span>
-                </li>
-                <li class="unread">
-                    <input id="c2" type="checkbox"/>
-                    <label for="c2"></label>
-                    <span class="message-date">07/11/2014</span>
-                    <a href="#2" class="message-from unread">Rick Spencer</a>
-                    <span class="message-subject">Need to order parts.</span>
-                </li>
-                <li class="unread">
-                    <input id="c3" type="checkbox"/>
-                    <label for="c3"></label>
-                    <span class="message-date">07/11/2014</span>
-                    <a href="#3" class="message-from unread">Rick Spencer</a>
-                    <span class="message-subject">Need to order parts.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c5" type="checkbox"/>
-                    <label for="c5"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
 
-                <li class="message-tag message-tag-blue">
-                    <input id="c6" type="checkbox"/>
-                    <label for="c6"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c7" type="checkbox"/>
-                    <label for="c7"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c8" type="checkbox"/>
-                    <label for="c8"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c9" type="checkbox"/>
-                    <label for="c9"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c10" type="checkbox"/>
-                    <label for="c10"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c11" type="checkbox"/>
-                    <label for="c11"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
-                <li class="message-tag message-tag-blue">
-                    <input id="c12" type="checkbox"/>
-                    <label for="c12"></label>
-                    <span class="message-date">07/09/2014</span>
-                    <a href="#4" class="message-from unread">John Smith</a>
-                    <span class="message-subject">Please give a status update.</span>
-                </li>
+                {{#foreach data.messages.inbox}}
+                    <li class="{{#if unread}}unread message-tag{{/if}}">
+                        <input id="c_{{_id}}" type="checkbox"/>
+                        <label for="c_{{_id}}"></label>
+                        <span class="message-date">{{formatDate date "MM/DD/YYYY"}}</span>
+                        <a href="#" class="message-from">{{from.fullname}}</a>
+                        <span class="message-subject">{{subject}}</span>
+                    </li>
+                {{/foreach}}
+
+
+
             </ul>
         </form>
     </div>

@@ -35,6 +35,9 @@ body {
   -webkit-box-shadow: none !important;
   -moz-box-shadow: none !important; }
 
+.no-overflow-x {
+  overflow-x: hidden !important; }
+
 a.blackLink {
   color: black !important; }
 
@@ -126,6 +129,15 @@ a.button {
 .f-dropdown.open:after {
   left: 9px !important; }
 
+#loader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: white;
+  z-index: 999999; }
+
 @media only screen and (min-width: 40.063em) and (max-width: 64em) {
   .page-right-content {
     padding: 0 0 0 55px !important; } }
@@ -185,6 +197,17 @@ div.ptooltip-box {
       margin-bottom: 0; }
     div.ptooltip-box span span {
       display: inline !important; }
+
+.alert-message {
+  position: absolute;
+  top: 50px;
+  left: 50%;
+  width: 380px;
+  height: 55px;
+  background: red;
+  border-radius: 5px;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px; }
 
 .top-nav,
 .top-bar {
@@ -541,8 +564,8 @@ ul.side-nav-sub {
     .message-items li:hover {
       background: white;
       cursor: pointer; }
-    .message-items li:last-child {
-      border-bottom: none; }
+    .message-items li.message-folder:hover {
+      cursor: default; }
     .message-items li.active {
       background: white; }
     .message-items li.active:before, .message-items li.message-tag:before {
@@ -583,7 +606,7 @@ ul.side-nav-sub {
   font-family: "Source Sans Pro", sans-serif;
   color: #223140;
   font-size: 14px;
-  padding-left: 25px; }
+  padding-left: 8px; }
 
 .message-subject {
   display: block;
@@ -738,7 +761,7 @@ div#ticketTable_wrapper {
   position: relative; }
   .pDataTable td label {
     top: 20px;
-    left: 0; }
+    left: 5px; }
 
 table.dataTable {
   margin-top: 0 !important; }

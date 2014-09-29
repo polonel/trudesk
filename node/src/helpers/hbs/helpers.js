@@ -7,7 +7,8 @@
 
 
 // node_modules
-var _ = require('lodash');
+var _       = require('lodash');
+var moment  = require('moment');
 
 
 // The module to be exported
@@ -380,6 +381,52 @@ var helpers = {
         } else {
             return options.inverse(this);
         }
+    },
+
+    /**
+     * {{forEach}}
+     * Credit: http://bit.ly/14HLaDR
+     *
+     * @param  {[type]}   array [description]
+     * @param  {Function} fn    [description]
+     * @return {[type]}         [description]
+     *
+     * @example:
+     *   var accounts = [
+     *     {'name': 'John', 'email': 'john@example.com'},
+     *     {'name': 'Malcolm', 'email': 'malcolm@example.com'},
+     *     {'name': 'David', 'email': 'david@example.com'}
+     *   ];
+     *
+     *   {{#forEach accounts}}
+     *     <a href="mailto:{{ email }}" title="Send an email to {{ name }}">
+     *       {{ name }}
+     *     </a>{{#unless isLast}}, {{/unless}}
+     *   {{/forEach}}
+     */
+    forEach: function (array, fn) {
+        var total = array.length;
+        var buffer = "";
+        // Better performance: http://jsperf.com/for-vs-forEach/2
+        var i = 0;
+        var j = total;
+        while (i < j) {
+            // stick an index property onto the item, starting
+            // with 1, may make configurable later
+            var item = array[i];
+            item['index'] = i + 1;
+            item['_total'] = total;
+            item['isFirst'] = i === 0;
+            item['isLast'] = i === (total - 1);
+            // show the inside of the block
+            buffer += fn.fn(item);
+            i++;
+        }
+        // return the finished buffer
+        return buffer;
+    },
+    formatDate: function(date, format) {
+        return moment(date).format(format);
     }
 
 };
@@ -395,6 +442,7 @@ helpers.ifgteq     = helpers.if_gteq;
 helpers.unlessGtEq = helpers.unless_gteq;
 helpers.ifLtEq     = helpers.if_lteq;
 helpers.unlessLtEq = helpers.unless_lteq;
+helpers.foreach    = helpers.forEach;
 
 
 // Export helpers

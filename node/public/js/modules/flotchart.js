@@ -1,8 +1,11 @@
 "use strict";
-define('modules/flotchart', ['jquery', 'flot', 'flot_symbol', 'flot_time', 'flot_tooltip'], function($) {
-
-    var $j = $.noConflict();
-
+define('modules/flotchart', [
+    'jquery',
+    'flot',
+    'flot_time',
+    'flot_symbol',
+    'flot_tooltip'
+], function($) {
     var data1 = [
         [gd(2014, 0, 1), 250],
         [gd(2014, 1, 1), 700],

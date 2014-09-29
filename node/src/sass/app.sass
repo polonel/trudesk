@@ -29,6 +29,9 @@ body
 .noshadow
   +boxShadow(none !important)
 
+.no-overflow-x
+  overflow-x: hidden !important
+
 a.blackLink
   color: #000000 !important
 
@@ -113,6 +116,15 @@ a.button
   left: 10px !important
 .f-dropdown.open:after
   left: 9px !important
+
+#loader
+  position: fixed
+  left: 0
+  top: 0
+  width: 100%
+  height: 100%
+  background: white
+  z-index: 999999
 
 @import "partials/common"
 @import "partials/topnav"

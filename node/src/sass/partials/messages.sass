@@ -24,8 +24,11 @@
       background: white
       cursor: pointer
 
-    &:last-child
-      border-bottom: none
+    &.message-folder:hover
+      cursor: default
+
+    //&:last-child
+    //  border-bottom: none
 
     &.active
       background: white
@@ -75,7 +78,7 @@
   font-family: "Source Sans Pro", sans-serif
   color: #223140
   font-size: 14px
-  padding-left: 25px
+  padding-left: 8px
 
 .message-subject
   display: block

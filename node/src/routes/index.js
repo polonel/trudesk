@@ -17,8 +17,12 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/login', controllers.main.loginPost);
     router.get('/logout', controllers.main.logout);
 
+    //Tickets
+    router.get('/tickets', middleware.redirectToLogin, controllers.tickets.get);
+
     //Messages
-    router.get('/messages', middleware.redirectToLogin, controllers.messages.get);
+    router.get('/messages', middleware.redirectToLogin, function(req, res){ res.redirect('/messages/inbox');});
+    router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
 }
 
 function staticRoutes(app, middleware) {

@@ -9,7 +9,10 @@ mainController.index = function(req, res, next) {
     "use strict";
     var self = mainController;
     self.content = {};
+    self.content.title = "Login";
     self.content.layout = false;
+    self.content.flash = req.flash('loginMessage');
+
 
     res.render('login', self.content);
 };
@@ -18,31 +21,10 @@ mainController.dashboard = function(req, res, next) {
     "use strict";
     var self = mainController;
     self.content = {};
+    self.content.data = {};
+    self.content.data.user = req.user;
     self.content.title = "Dashboard";
     self.content.nav = 'dashboard';
-
-    var User = require('../models/user');
-//
-//    User.findAll(function(err, item) {
-//        console.log('Dashboard Test = ' + item);
-//    });
-
-    var data = {};
-    async.waterfall([
-        function(callback){
-            User.findOne({'username': req.user.username}, function(err, obj) {
-                if (err) {
-                    return res.send(err);
-                }
-                data.user = obj;
-                callback(null, data);
-            });
-        }
-    ], function(err, result) {
-        data = result;
-    });
-
-    self.content.data = data;
 
     res.render('dashboard', self.content);
 };
