@@ -25,13 +25,11 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
 }
 
-function staticRoutes(app, middleware) {
-    app.use(express.static(path.join(__dirname, '../../public')));
-}
+//function staticRoutes(app, middleware) {
+//    app.use(express.static(path.join(__dirname, '../../public')));
+//}
 
 module.exports = function(app, middleware) {
-    app.use(express.static(path.join(__dirname, '../../', 'public')));
-
     var router = express.Router();
 
     mainRoutes(router, middleware, controllers);
