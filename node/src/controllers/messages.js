@@ -10,6 +10,7 @@ messagesController.get = function(req, res, next) {
     self.content.title = "Messages";
     self.content.nav = 'messages';
     self.content.subnav = 'messages-inbox';
+    self.content.folder = "Inbox";
     self.content.data = {};
     self.content.data.user = req.user;
 

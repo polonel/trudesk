@@ -19,14 +19,20 @@ messageSchema.methods.updateUnread = function(unread, callback) {
     unread = _.isUndefined(unread) ? false : unread;
 
     this.model(COLLECTION).findOne({_id: this._id}, function(err, doc) {
+        if (err) {
+            return callback(err, doc);
+        }
+
         doc.unread = unread;
         doc.save();
+
+        callback(err, doc);
     });
 };
 
 messageSchema.statics.getUserInbox = function(oId, callback) {
     if (_.isUndefined(oId)) {
-        return callback("Invalid ObjectId - MessageSchema.GetAllForUser()", null);
+        return callback("Invalid OwnerId - MessageSchema.GetUserInbox()", null);
     }
 
     var q = this.model(COLLECTION).find({owner: oId, folder: 0})
@@ -35,5 +41,17 @@ messageSchema.statics.getUserInbox = function(oId, callback) {
 
     return q.exec(callback);
 };
+
+messageSchema.static.getUserSentBox = function(oId, callback) {
+    if (_.isUndefined(oId)) {
+        return callback("Invalid OwnerId - MessageSchema.GetUserSentBox()", null);
+    }
+
+    var q = this.model(COLLECTION).find({owner: oId, folder: 1})
+        .populate('to')
+        .limit(50);
+
+    return q.exec(callback);
+}
 
 module.exports = mongoose.model(COLLECTION, messageSchema);

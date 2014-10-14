@@ -8,7 +8,7 @@
     <div class="full-height">
         <form action="#" style="margin: 0">
             <ul class="message-items full-height scrollable">
-                <li class="message-folder">Inbox</li>
+                <li class="message-folder">{{{folder}}}</li>
 
                 {{#foreach data.messages.inbox}}
                     <li class="{{#if unread}}unread message-tag{{/if}}">
