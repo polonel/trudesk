@@ -23,6 +23,12 @@ function mainRoutes(router, middleware, controllers) {
     //Messages
     router.get('/messages', middleware.redirectToLogin, function(req, res){ res.redirect('/messages/inbox');});
     router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
+
+    //API
+    router.get('/api', controllers.api.index);
+    router.get('/api/users', middleware.api, controllers.api.users.get);
+    router.get('/api/users/get', middleware.api, controllers.api.users.get);
+    router.post('/api/users/insert', controllers.api.users.insert);
 }
 
 //function staticRoutes(app, middleware) {
@@ -44,7 +50,7 @@ function handleErrors(err, req, res, next) {
     winston.warn(err.stack);
     var status = err.status || 500;
     res.status(status);
-    req.flash('errorMessage', err.message);
+    //req.flash('errorMessage', err.message);
 
     res.render('error', {
         message: err.message,
