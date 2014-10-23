@@ -34,11 +34,14 @@ userSchema.statics.getUser = function(oId, callback) {
 };
 
 userSchema.statics.insertUser = function(data, callback) {
-  if (_.isUndefined(data)) {
-    return callback("Invalid User Data - UserSchema.InsertUser()", null);
-  }
+    if (_.isUndefined(data)) {
+        return callback("Invalid User Data - UserSchema.InsertUser()", null);
+    }
 
-  return this.model(COLLECTION).create(data, callback);
-}
+    //Check for existing user;
+    
+
+    return this.collection.insert(data, callback);
+};
 
 module.exports = mongoose.model(COLLECTION, userSchema);

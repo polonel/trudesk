@@ -27,8 +27,7 @@ function mainRoutes(router, middleware, controllers) {
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/users', middleware.api, controllers.api.users.get);
-    router.get('/api/users/get', middleware.api, controllers.api.users.get);
-    router.post('/api/users/insert', controllers.api.users.insert);
+    router.post('/api/users', controllers.api.users.insert);
 }
 
 //function staticRoutes(app, middleware) {
