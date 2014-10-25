@@ -18,9 +18,10 @@ apiController.users.get = function(req, res, next) {
   var users = userModel.findAll(function(err, items) {
       if (err) {
         winston.error("Error: " + err);
-        res.send(err);
+        return res.send(err);
       }
-      res.json(items);
+
+      return res.json(items);
   });
 };
 
@@ -30,8 +31,12 @@ apiController.users.insert = function(req, res, next) {
     var userModel = require('../models/user');
 
     userModel.insertUser(data, function(err, r) {
-        console.log(r);
-        res.send('DONE');
+        if (err) {
+          winston.error("Error: " + err);
+          return res.send(err);
+        }
+
+        return res.send(r);
     });
 
 };

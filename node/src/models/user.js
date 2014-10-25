@@ -1,3 +1,4 @@
+var async = require('async');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var _ = require('lodash');
@@ -37,11 +38,19 @@ userSchema.statics.insertUser = function(data, callback) {
     if (_.isUndefined(data)) {
         return callback("Invalid User Data - UserSchema.InsertUser()", null);
     }
+    var self = this;
 
-    //Check for existing user;
-    
+    self.model(COLLECTION).find({"username": data.username}, function(err, items) {
+        if (err) {
+          return callback(err, null);
+        }
 
-    return this.collection.insert(data, callback);
+        if (_.size(items) > 0) {
+          return callback("Username Already Exists", null);
+        }
+
+        return self.collection.insert(data, callback);
+    });
 };
 
 module.exports = mongoose.model(COLLECTION, userSchema);
