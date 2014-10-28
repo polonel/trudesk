@@ -24,6 +24,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages', middleware.redirectToLogin, function(req, res){ res.redirect('/messages/inbox');});
     router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
 
+    //Servers
+    router.get('/servers', middleware.redirectToLogin, controllers.servers.get);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/users', middleware.api, controllers.api.users.get);
