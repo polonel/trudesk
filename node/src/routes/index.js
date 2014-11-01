@@ -24,6 +24,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages', middleware.redirectToLogin, function(req, res){ res.redirect('/messages/inbox');});
     router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
 
+    router.get('/messages/:id', middleware.redirectToLogin, controllers.messages.getById);
+
     //Servers
     router.get('/servers', middleware.redirectToLogin, controllers.servers.get);
 

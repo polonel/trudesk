@@ -9,16 +9,16 @@
                 <!-- Right Nav Section -->
                 <div class="top-menu right">
                     <ul>
-                        <li class="top-bar-icon"><a href="#" data-notifications="mail-notifications"><i class="fa-envelope"></i><span class="alert round label">50+</span></a></li>
-                        <li class="top-bar-icon"><a href="#" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
-                        <li class="profile-area"><span>{{data.user.fullname}}</span><a href="#" class="profile-pic"><img src="/img/profile.png" alt="Profile"/></a></li>
+                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i><span class="alert round label">50+</span></a></li>
+                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
+                        <li class="profile-area"><span>{{data.user.fullname}}</span><a href="#" class="profile-pic no-ajaxy"><img src="/img/profile.png" alt="Profile"/></a></li>
                     </ul>
                     <div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
                         <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline" href="#">Settings</a></div></div>
                         <div id="notifications-Messages" class="notifications-Messages">
                             <ul>
                                 <li>
-                                    <a class="messageNotification" href="#" role="button">
+                                    <a class="messageNotification no-ajaxify" href="#" role="button">
                                         <div class="clearfix">
                                             <div class="messageUnread"></div>
                                             <div class="messageIcon left"><i class="fa fa-warning"></i></div>
@@ -33,7 +33,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="messageNotification" href="#" role="button">
+                                    <a class="messageNotification no-ajaxify" href="#" role="button">
                                         <div class="clearfix">
                                             <div class="messageUnread read"></div>
                                             <div class="messageIcon left"><i class="fa fa-check green"></i></div>

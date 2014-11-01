@@ -42,7 +42,7 @@ messageSchema.statics.getUserInbox = function(oId, callback) {
     return q.exec(callback);
 };
 
-messageSchema.static.getUserSentBox = function(oId, callback) {
+messageSchema.statics.getUserSentBox = function(oId, callback) {
     if (_.isUndefined(oId)) {
         return callback("Invalid OwnerId - MessageSchema.GetUserSentBox()", null);
     }
@@ -52,6 +52,19 @@ messageSchema.static.getUserSentBox = function(oId, callback) {
         .limit(50);
 
     return q.exec(callback);
-}
+};
+
+messageSchema.statics.getMessageById = function(mId, callback) {
+    if (_.isUndefined(mId)) {
+        return callback("Invalid MessageId - MessageSchema.GetMessageById()", null);
+    }
+
+    var q = this.model(COLLECTION).findOne({_id: mId})
+        .populate('to')
+        .populate('from');
+
+    return q.exec(callback);
+
+};
 
 module.exports = mongoose.model(COLLECTION, messageSchema);

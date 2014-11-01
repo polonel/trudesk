@@ -10,6 +10,7 @@ requirejs.config({
         nicescroll:     'vendor/nicescroll/nicescroll.min',
         underscore:     'vendor/underscore/underscore',
         socketio:       '/socket.io/socket.io',
+        history:        'vendor/history/jquery.history',
 
         datatables:     'vendor/datatables/jquery.dataTables',
         dt_responsive:  'vendor/datatables/dataTables.responsive',
@@ -26,7 +27,7 @@ requirejs.config({
     },
     shim: {
         foundation: {
-            deps: ['jquery', 'modernizr', 'fastclick', 'placeholder']
+            deps: ['jquery', 'modernizr', 'fastclick', 'placeholder', 'history']
         },
 
         datatables: {

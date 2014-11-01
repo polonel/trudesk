@@ -4,6 +4,7 @@ require(['config', 'jquery', 'modules/helpers'], function(config, $, helpers) {
     require([
         'modules/navigation',
         'socketio',
+        'modules/ajaxify',
         'modernizr',
         'fastclick',
         'placeholder',

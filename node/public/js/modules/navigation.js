@@ -1,6 +1,6 @@
 "use strict";
 
-define(['jquery', 'modules/helpers'], function($, helpers) {
+define(['jquery', 'modules/helpers', 'foundation'], function($, helpers) {
     var navigation = {};
 
     navigation.init = function() {
