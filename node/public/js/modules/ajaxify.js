@@ -1,14 +1,16 @@
 define('modules/ajaxify', [
     'jquery',
     'modules/helpers',
+    'modules/navigation',
     'modules/flotchart',
     'pages/messages',
     'history'
 
-], function($, helpers, p, messagesPage) {
+], function($, helpers, nav, p, messagesPage) {
     $(window).on('statechangecomplete', function() {
         //Global
         helpers.init();
+        //nav.init();
 
         //Dashbaord
         var t = $('#ticketLines');
@@ -157,8 +159,15 @@ define('modules/ajaxify', [
                     // Update the menu -- Custom to close submenu and add classes
                     $menuChildren = $menu.find(menuChildrenSelector);
                     $menuChildren.filter(activeSelector).removeClass(activeClass);
-                    $menuChildren = $menuChildren.has('a[href^="'+relativeUrl+'"],a[href^="/'+relativeUrl+'"],a[href^="'+url+'"]');
-                    if ( $menuChildren.length === 1 ) { $menuChildren.addClass(activeClass); }
+                    $menuChildren = $menuChildren.has(
+                                'a[href^="'+relativeUrl+'"],' +
+                                'a[href^="/'+relativeUrl+'"],' +
+                                'a[href^="'+url+'"]' +
+                                'a[data-url^="'+relativeUrl+'"]'
+
+                    );
+
+//                    if ( $menuChildren.length === 1 ) { $menuChildren.addClass(activeClass); }
 
 
 

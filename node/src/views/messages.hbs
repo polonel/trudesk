@@ -30,7 +30,7 @@
 <div class="small-7 columns nopadding page-message">
     <div class="page-title-right noshadow">
         <ul class="button-group">
-            <li class="active"><a href="#" class="btn"><i class="fa fa-pencil"></i>New</a></li>
+            <li class=""><a href="#" class="btn"><i class="fa fa-pencil"></i>New</a></li>
             <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-reply"></i>Reply</a></li>
             <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-mail-forward"></i>Forward</a></li>
             <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
@@ -45,18 +45,20 @@
     </div>
 
     <div class="page-content full-height scrollable">
-        <div class="message-header">
-            <h1>{{data.messages.message.subject}}</h1>
-            <span>From:</span>
-            <a href="#" data-dropdown="drop" class="button dropdown no-ajaxy">{{data.messages.message.from.fullname}}</a>
-            <ul id="drop" class="f-dropdown" data-dropdown-content>
-                <li><a href="#">Chat</a></li>
-                <li><a href="#">View Contact</a></li>
-            </ul>
-        </div>
-        <div class="message">
-            {{{data.messages.message.message}}}
-        </div>
+        {{#if data.messages.message}}
+            <div class="message-header">
+                <h1>{{data.messages.message.subject}}</h1>
+                <span>From:</span>
+                <a href="#" data-dropdown="drop" class="button dropdown no-ajaxy">{{data.messages.message.from.fullname}}</a>
+                <ul id="drop" class="f-dropdown" data-dropdown-content>
+                    <li><a href="#">Chat</a></li>
+                    <li><a href="#">View Contact</a></li>
+                </ul>
+            </div>
+            <div class="message">
+                {{{data.messages.message.message}}}
+            </div>
+        {{/if}}
     </div>
 </div>
 

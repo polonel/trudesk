@@ -9,7 +9,7 @@
                 <li><a href="/messages/trash"><i class="icon-trash"></i>Closed</a></li>
             </ul>
         </li>
-        <li {{#is nav 'messages'}} class='active' {{/is}}><a href="/messages" class="ajaxify" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
+        <li {{#is nav 'messages'}} class='active' {{/is}}><a href="/messages" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>
             <ul id="side-nav-sub-messages" class="side-nav-sub {{#is nav 'messages'}} subMenuOpen {{/is}}">
                 <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="icon-inbox"></i>Inbox</a></li>
                 <li><a href="/messages/sentitems"><i class="icon-sent"></i>Sent Items</a></li>

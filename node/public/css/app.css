@@ -439,6 +439,7 @@ ul.side-nav li, ul.side-nav-sub li {
   margin-bottom: 0; }
   ul.side-nav li.active > a, ul.side-nav-sub li.active > a {
     border-left: 2px solid #e74c3c;
+    font-family: "Roboto", sans-serif !important;
     background: #192633 !important; }
     ul.side-nav li.active > a i, ul.side-nav-sub li.active > a i {
       color: white; }

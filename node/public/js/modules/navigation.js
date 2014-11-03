@@ -4,7 +4,12 @@ define(['jquery', 'modules/helpers', 'foundation'], function($, helpers) {
     var navigation = {};
 
     navigation.init = function() {
-            this.notifications();
+        this.notifications();
+        this.sidebar();
+    };
+
+    navigation.sidebar = function() {
+
     };
 
     navigation.notifications = function() {
