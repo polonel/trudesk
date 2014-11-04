@@ -32,7 +32,7 @@ apiController.users.insert = function(req, res, next) {
 
     userModel.insertUser(data, function(err, r) {
         if (err) {
-          winston.error("Error: " + err);
+          winston.warn("Error: " + err);
           return res.send(err);
         }
 
