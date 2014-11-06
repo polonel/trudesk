@@ -150,7 +150,7 @@ define('modules/ajaxify', [
                     }
 
                     // Fetch the content
-                    contentHtml = $dataContent.html()||$data.html();
+                    contentHtml = $dataContent.html();
                     if ( !contentHtml ) {
                         document.location.href = url;
                         return false;
