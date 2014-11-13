@@ -786,7 +786,7 @@ form.ticket-form label {
   font-weight: normal;
   color: #2c3e50;
   margin-bottom: 3px; }
-form.ticket-form input, form.ticket-form textarea {
+form.ticket-form input, form.ticket-form textarea, form.ticket-form select {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   color: #223140;
@@ -795,11 +795,12 @@ form.ticket-form input, form.ticket-form textarea {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   border: 1px solid #9aa1ad; }
-  form.ticket-form input:focus, form.ticket-form textarea:focus {
+  form.ticket-form input:focus, form.ticket-form textarea:focus, form.ticket-form select:focus {
     background: #fdfefe;
     box-shadow: none;
     -webkit-box-shadow: none;
-    -moz-box-shadow: none; }
+    -moz-box-shadow: none;
+    outline: none; }
 form.ticket-form textarea {
   resize: none; }
 

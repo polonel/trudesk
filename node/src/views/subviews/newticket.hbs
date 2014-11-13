@@ -15,6 +15,10 @@
                 <form id="createTicketForm" class="ticket-form" action="/tickets/create" method="POST">
                     <label for="tSubject">Subject</label>
                     <input id="tSubject" name="tSubject" type="text" />
+                    <label for="tGroup">Group</label>
+                    <select name="tGroup" id="tGroup">
+                        <option value="Here">Administration</option>
+                    </select>
                     <label for="tIssue">Issue</label>
                     <textarea name="tIssue" id="tIssue" cols="30" rows="10"></textarea>
                 </form>
