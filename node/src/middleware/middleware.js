@@ -1,5 +1,6 @@
 "use strict";
 
+var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
 
@@ -22,6 +23,16 @@ middleware.redirectToLogin = function(req, res, next) {
     }
 };
 
+//Common
+middleware.loadCommonData = function(req, res, next) {
+    var viewdata = require('../helpers/viewdata');
+    viewdata.getData(req, function(data) {
+        req.viewdata = data;
+
+        next();
+    });
+};
+
 //API
 middleware.api = function(req, res, next) {
     if (_.isUndefined(db)) {
@@ -33,7 +44,7 @@ middleware.api = function(req, res, next) {
 
     next();
 
-}
+};
 
 
 

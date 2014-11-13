@@ -12,6 +12,9 @@
 
     {{/block}}
 
+    <link rel="stylesheet" href="/css/plugins/datatables/dataTables.scroller.css"/>
+    <link rel="stylesheet" href="/css/plugins/datatables/dataTables.foundation.css"/>
+
     <link rel="stylesheet" href="/css/vendor/font-awesome.min.css"/>
     <link rel="stylesheet" href="/css/app.min.css"/>
 
@@ -23,16 +26,16 @@
 <body>
 <div id="loader"></div>
 <div class="wrapper">
-{{> topbar }}
-<div class="row">
-    {{> nav }}
+    {{> topbar }}
+    <div class="row">
+        {{> nav }}
 
-        <div id="page-content" class="clearfix">
-            {{{body}}}
-        </div>
-</div>
-{{> chatdock }}
+            <div id="page-content" class="clearfix">
+                {{{body}}}
+            </div>
     </div>
+    {{> chatdock }}
+</div>
 
 </body>
 

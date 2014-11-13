@@ -11,24 +11,27 @@ var passport = require('passport');
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
-    router.get('/dashboard', middleware.redirectToLogin, controllers.main.dashboard);
+    router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', middleware.redirectToLogin, middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
     router.get('/logout', controllers.main.logout);
 
     //Tickets
-    router.get('/tickets', middleware.redirectToLogin, controllers.tickets.get);
+    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);
+    router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
+    router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
 
     //Messages
-    router.get('/messages', middleware.redirectToLogin, function(req, res){ res.redirect('/messages/inbox');});
-    router.get('/messages/inbox', middleware.redirectToLogin, controllers.messages.get);
-    router.get('/messages/sentitems', middleware.redirectToLogin, controllers.messages.getSentItems);
+    router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
+    router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
+    router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
 
-    router.get('/messages/:id', middleware.redirectToLogin, controllers.messages.getById);
+    router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
 
     //Servers
-    router.get('/servers', middleware.redirectToLogin, controllers.servers.get);
+    router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
 
     //API
     router.get('/api', controllers.api.index);

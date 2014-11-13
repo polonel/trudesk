@@ -24,19 +24,15 @@ module.exports = function(app) {
             }
 
             if (!user) {
-                //console.log('No User Found');
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 
             if (!user.validate(password)) {
-                //console.log('invalid pass');
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 
-            //console.log('Worked');
             req.user = user;
 
-            //console.log(req.user);
             return done(null, user);
         });
     }));

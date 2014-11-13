@@ -52,3 +52,26 @@ div#ticketTable_wrapper
   background: #29b955
 .ticket-status.ticket-pending span
   background: #2980b9
+
+
+//Ticket Form
+form.ticket-form
+  label
+    font-family: "Roboto", sans-serif
+    font-size: 14px
+    font-weight: normal
+    color: #2c3e50
+    margin-bottom: 3px
+  input,textarea
+    font-family: "Roboto", sans-serif
+    font-size: 14px
+    color: #223140
+    background: #eceff6
+    +boxShadow(none)
+    border: 1px solid #9aa1ad
+    &:focus
+      background: lighten(#eceff6, 5%)
+      +boxShadow(none)
+
+  textarea
+    resize: none

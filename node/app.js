@@ -22,6 +22,8 @@ function start() {
         if (err) throw err;
         var ws = require('./src/webserver');
         ws.init(db);
+
+        var cs = require('./src/chatserver')(ws.server);
     });
 
 }

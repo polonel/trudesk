@@ -34,9 +34,6 @@ server = require('http').createServer(WebServer);
             winston.info("TruDesk Ready");
             winston.info('TruDesk is now listening on port: ' + port);
         });
-
-        //Temp: Move to Module
-        var socket = require('socket.io').listen(server);
     };
 
 })(WebServer);

@@ -108,15 +108,30 @@
     visibility: visible
     opacity: 1
 
+div.actions
+  width: 100%
+  height: auto
+  border-bottom: 1px solid rgba(100,100,100,0.4)
+  line-height: 24px
+  font-size: 12px
+  a
+    width: 100%
+    padding: 5px 10px
+
+  strong
+    margin-left: 8px
+
 //Message Notification
 #mail-notifications,
-#notifications
+#notifications,
+#online-Users
   max-height: 350px
   position: absolute
   left: -9999px
 
   .mail-Messages,
-  .notifications-Messages
+  .notifications-Messages,
+  .online-Users-List
     float: left
     max-height: 320px
     overflow-x: hidden
@@ -124,20 +139,6 @@
     ul
       float: left
       height: 100%
-
-  div.actions
-    width: 100%
-    height: auto
-    border-bottom: 1px solid rgba(100,100,100,0.4)
-    line-height: 24px
-    font-size: 12px
-    a
-      width: 100%
-      padding: 5px 10px
-
-    strong
-      margin-left: 8px
-
 
   li
     width: 100%

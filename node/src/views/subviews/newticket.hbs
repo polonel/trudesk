@@ -1,0 +1,24 @@
+<div class="small-12 large-10 columns nopadding page-right-content">
+    <div class="page-title">
+        <p class="left">Create Ticket</p>
+        <div class="right">
+            <ul class="button-group">
+                <li><a href="/tickets" role="button" class="btn">Cancel</a></li>
+                <li class="active"><a href="#" role="button" class="btn" data-action="submit" data-form="createTicketForm">Save</a></li>
+            </ul>
+        </div>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper scrollable no-overflow-x">
+        <div class="row padtop20 padleft30 padright20">
+            <div class="small-12 columns">
+                <form id="createTicketForm" class="ticket-form" action="/tickets/create" method="POST">
+                    <label for="tSubject">Subject</label>
+                    <input id="tSubject" name="tSubject" type="text" />
+                    <label for="tIssue">Issue</label>
+                    <textarea name="tIssue" id="tIssue" cols="30" rows="10"></textarea>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

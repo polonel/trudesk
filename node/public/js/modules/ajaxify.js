@@ -4,9 +4,10 @@ define('modules/ajaxify', [
     'modules/navigation',
     'modules/flotchart',
     'pages/messages',
+    'pages/tickets',
     'history'
 
-], function($, helpers, nav, p, messagesPage) {
+], function($, helpers, nav, p, messagesPage, ticketsPage) {
     $(window).on('statechangecomplete', function() {
         //Global
         helpers.init();
@@ -20,6 +21,9 @@ define('modules/ajaxify', [
 
         //Messages
         messagesPage.init();
+
+        //Tickets
+        ticketsPage.init();
 
     });
     // Prepare our Variables
@@ -37,7 +41,7 @@ define('modules/ajaxify', [
         // Prepare Variables
         var
         /* Application Specific Variables */
-            contentSelector = '#page-content,article:first,.article:first,.post:first',
+            contentSelector = '.wrapper > .row:not(.top-nav):first,article:first,.article:first,.post:first',
             $content = $(contentSelector).filter(':first'),
             contentNode = $content.get(0),
             $menu = $('.sidebar > .side-nav').filter(':first'),
@@ -130,7 +134,7 @@ define('modules/ajaxify', [
             // Start Fade Out
             // Animating to opacity to 0 still keeps the element's height intact
             // Which prevents that annoying pop bang issue when loading in new content
-            $content.animate({opacity:0},800);
+            //$content.animate({opacity:0},800);
 
             // Ajax Request the Traditional Page
             $.ajax({

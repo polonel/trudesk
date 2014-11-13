@@ -21,10 +21,12 @@ mainController.dashboard = function(req, res, next) {
     "use strict";
     var self = mainController;
     self.content = {};
-    self.content.data = {};
-    self.content.data.user = req.user;
     self.content.title = "Dashboard";
     self.content.nav = 'dashboard';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
 
     res.render('dashboard', self.content);
 };

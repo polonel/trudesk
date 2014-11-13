@@ -14,6 +14,7 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
         self.pToolTip();
         self.setupDonutchart();
         self.setupBarChart();
+        self.actionButtons();
     };
 
     helpers.onWindowResize = function() {
@@ -196,7 +197,28 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
             }); 
         });
     };
-    
+
+    helpers.actionButtons = function() {
+        $(document).ready(function() {
+            $('a[data-action]').each(function() {
+                var self = $(this);
+                var action = self.attr('data-action');
+                if (action.toLowerCase() === 'submit') {
+                    var formId = self.attr('data-form');
+                    if (!_.isUndefined(formId)) {
+                        var form = $('#' + formId);
+                        if (form.length !== 0) {
+                            self.click(function(e) {
+                                form.submit();
+                                e.preventDefault();
+                            });
+                        }
+                    }
+                }
+            });
+        });
+    };
+
     helpers.fadeOutLoader = function(time) {
         if (_.isUndefined(time))
             time = 100;

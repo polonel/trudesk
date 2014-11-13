@@ -3,7 +3,7 @@ require(['config', 'jquery', 'modules/helpers'], function(config, $, helpers) {
 
     require([
         'modules/navigation',
-        'socketio',
+        'modules/socket',
         'modules/ajaxify',
         'modernizr',
         'fastclick',
@@ -12,7 +12,7 @@ require(['config', 'jquery', 'modules/helpers'], function(config, $, helpers) {
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, io) {
+    ], function(nav, socket) {
         //Start App
         $(document).foundation();
         nav.init();

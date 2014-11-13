@@ -15,7 +15,7 @@ apiController.users = {};
 apiController.users.get = function(req, res, next) {
   "use strict";
   var userModel = require('../models/user');
-  var users = userModel.findAll(function(err, items) {
+  userModel.findAll(function(err, items) {
       if (err) {
         winston.error("Error: " + err);
         return res.send(err);

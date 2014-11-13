@@ -11,6 +11,7 @@ serversController.get = function(req, res, next) {
     self.content.nav = 'servers';
     self.content.data = {};
     self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
 
     res.render('servers', self.content);
 };

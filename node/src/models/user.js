@@ -6,7 +6,6 @@ var _ = require('lodash');
 var COLLECTION = "accounts";
 
 var userSchema = mongoose.Schema({
-        _id:        { type: mongoose.Schema.Types.ObjectId },
         username:   String,
         password:   String,
         fullname:   String,

@@ -9,8 +9,12 @@ define('pages/messages', [
     messagesPage.init = function() {
         $(document).ready(function() {
             messagesPage.findActive();
-            $('ul.message-items > li:not(.message-folder)').click(function(e) {
-                if (e.target.tagName.toLowerCase() == 'label') return true;
+            var messageItem = $('ul.message-items > li:not(.message-folder)');
+
+            messageItem.click(function(e) {
+                var target = e.target;
+                if (target.tagName.toLowerCase() == 'label' || $(target).is(":checkbox")) return true;
+
                 var self = $(this);
                 if (self.hasClass('active')) {
                     return true;
@@ -28,12 +32,9 @@ define('pages/messages', [
                     pageContent.html(page);
                 });
 
-                e.preventDefault();
+                //e.preventDefault();
             });
 
-            $('ul.message-items > li > label').click(function(e) {
-                e.stopPropagation();
-            });
         });
     };
 
@@ -41,18 +42,18 @@ define('pages/messages', [
     messagesPage.loadMessage = function(id, callback) {
         var rootUrl = History.getRootUrl();
         var msgUrl = rootUrl + 'messages/' + id;
-        History.pushState(null, null, msgUrl);
-//        $.ajax({
-//            url:        msgUrl,
-//            type:       'GET',
-//            success:    function(data) {
-//                            callback(data);
-//                            History.pushState(null, null, msgUrl);
-//            },
-//            error:      function(error) {
-//                            throw new Error(error);
-//            }
-//        });
+        //History.pushState(null, null, msgUrl);
+        $.ajax({
+            url:        msgUrl,
+            type:       'GET',
+            success:    function(data) {
+                            callback(data);
+                            //History.pushState(null, null, msgUrl);
+            },
+            error:      function(error) {
+                            throw new Error(error);
+            }
+        });
     };
 
     messagesPage.clearActive = function() {
@@ -64,7 +65,7 @@ define('pages/messages', [
 
     messagesPage.findActive = function() {
         var mId = location.pathname.split('/')[2];
-        if (mId == 'Undefined') return true;
+        if (!mId) return true;
 
         $('ul.message-items > li[data-messageId=' + mId + ']').addClass('active');
     };
