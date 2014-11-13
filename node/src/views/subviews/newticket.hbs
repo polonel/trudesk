@@ -15,10 +15,36 @@
                 <form id="createTicketForm" class="ticket-form" action="/tickets/create" method="POST">
                     <label for="tSubject">Subject</label>
                     <input id="tSubject" name="tSubject" type="text" />
-                    <label for="tGroup">Group</label>
-                    <select name="tGroup" id="tGroup">
-                        <option value="Here">Administration</option>
-                    </select>
+                    <div class="row">
+                        <div class="small-3 columns">
+                            <label for="tType">Type</label>
+                            <select name="tType" id="tType">
+                                <option value="0">Problem</option>
+                            </select>
+                        </div>
+                        <div class="small-3 columns">
+                            <label for="tGroup">Group</label>
+                            <select name="tGroup" id="tGroup">
+                                {{#each data.groups}}
+                                    <option value="{{{_id}}}">{{name}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                        <div class="small-3 columns">
+                            <label for="tPriority">Priority</label>
+                            <select name="tPriority" id="tPriority">
+                                <option value="1">Normal</option>
+                                <option value="2">Urgent</option>
+                                <option value="3">Critical</option>
+                            </select>
+                        </div>
+                        <div class="small-3 columns">
+                            <label for="tStatus">Status</label>
+                            <select name="tStatus" id="tStatus">
+                                <option value="1">New</option>
+                            </select>
+                        </div>
+                    </div>
                     <label for="tIssue">Issue</label>
                     <textarea name="tIssue" id="tIssue" cols="30" rows="10"></textarea>
                 </form>
