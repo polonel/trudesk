@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 "use strict";
 
-var winston = require('winston');
+var winston = require('winston'),
+    async = require('async');
 
 global.env = process.env.NODE_ENV || 'development';
 
@@ -20,12 +21,12 @@ function start() {
 
     require('./src/database').init(function(err, db) {
         if (err) throw err;
+
         var ws = require('./src/webserver');
-        ws.init(db);
-
-        var cs = require('./src/chatserver')(ws.server);
+        ws.init(db, function() {
+            var cs = require('./src/chatserver')(ws);
+        });
     });
-
 }
 
 start();

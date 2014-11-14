@@ -4,5 +4,5 @@ define('modules/socket', [
 
 ], function(chat, ui) {
     chat.init();
-
+    ui.init();
 });

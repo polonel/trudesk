@@ -118,7 +118,6 @@ messagesController.getById = function(req, res, next) {
             function(callback) {
                 messages.getMessageById(req.params.id, function(err, obj) {
                     self.content.data.messages.message = obj;
-                    console.log(obj);
                     callback(err, obj);
                 });
             }

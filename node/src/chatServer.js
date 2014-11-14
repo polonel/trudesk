@@ -1,16 +1,24 @@
 var winston = require('winston'),
-    utils = require('./helpers/utils');
+    utils = require('./helpers/utils'),
+    passportSocketIo = require('passport.socketio'),
+    cookieparser = require('cookie-parser');
 
-module.exports = function(server) {
+module.exports = function(ws) {
     var _ = require('lodash'),
         usersOnline = {},
         rooms = {},
         chatHistory = {},
         chatHistoryCounter = 1000,
         sockets = [],
-        io = require('socket.io').listen(server);
+        io = require('socket.io')(ws.server);
 
-    //io.set('log level', 1);
+    io.use(passportSocketIo.authorize({
+        cookieParser: cookieparser,
+        key: 'connect.sid',
+        store: ws.sessionStore,
+        secret: 'trudesk$123#SessionKeY!2387',
+        success: onAuthorizeSuccess
+    }));
 
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
@@ -18,6 +26,24 @@ module.exports = function(server) {
 
         utils.sendToSelf(socket, 'connectingToSocketServer', {
             status: 'online'
+        });
+
+        setInterval(function() {
+            var userId = socket.request.user._id;
+            var messageSchema = require('./models/message');
+            messageSchema.getUnreadInboxCount(userId, function(err, objs) {
+                if (err) return true;
+                utils.sendToSelf(socket, 'updateMailNotifications', objs);
+            });
+        }, 5000);
+
+        socket.on('updateMailNotifications', function(data) {
+            var userId = socket.request.user._id;
+            var messageSchema = require('./models/message');
+            messageSchema.getUnreadInboxCount(userId, function(err, objs) {
+                if (err) return true;
+                utils.sendToSelf(socket, 'updateMailNotifications', objs);
+            });
         });
 
         socket.on('joinSocketServer', function(data) {
@@ -72,3 +98,9 @@ module.exports = function(server) {
 
     winston.info('ChatServer Running');
 };
+
+function onAuthorizeSuccess(data, accept) {
+    winston.info('User successfully connected: ' + data.user.username);
+
+    accept();
+}

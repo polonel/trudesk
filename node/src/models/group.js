@@ -14,4 +14,13 @@ groupSchema.statics.getAllGroups = function(callback) {
     return q.exec(callback);
 };
 
+groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUser()");
+
+    var q = this.model(COLLECTION).find({members: userId})
+        .populate('members');
+
+    return q.exec(callback)
+};
+
 module.exports = mongoose.model(COLLECTION, groupSchema);

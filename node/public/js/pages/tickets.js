@@ -44,7 +44,7 @@ define('pages/tickets', [
                         return true;
 
                     //handle ticket link here
-                    console.log('ticketId=' + i);
+                    History.pushState(null, 'Ticket - ' + i, '/tickets/' + i);
                 });
             }
         });

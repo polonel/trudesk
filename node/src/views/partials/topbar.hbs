@@ -10,10 +10,8 @@
                 <div class="top-menu right">
                     <ul>
                         <li class="top-bar-icon">
-                            <a href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
-                                {{#if_gt data.common.messages.unreadCount compare=0}}
-                                    <span class="alert round label">{{data.common.messages.unreadCount}}</span>
-                                {{/if_gt}}
+                            <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
+                                <span class="alert round label {{#is data.common.messages.unreadCount 0}}hide{{/is}}">{{data.common.messages.unreadCount}}</span>
                             </a>
                         </li>
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>

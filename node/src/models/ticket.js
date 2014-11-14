@@ -30,7 +30,20 @@ var ticketSchema = mongoose.Schema({
 });
 
 ticketSchema.statics.getTickets = function(grpId, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
 
+    var q = this.model(COLLECTION).find({group: {$in: grpId}})
+        .populate('owner')
+        .populate('group')
+        .populate('comments')
+        .populate('assignee')
+        .populate('type')
+        .sort({'status': 1})
+        .limit(100);
+
+    return q.exec(callback);
 };
 
 module.exports.ticketTypes = mongoose.model('ticketTypes', ticketTypeSchema);

@@ -10,8 +10,8 @@ define('modules/ajaxify', [
 ], function($, helpers, nav, p, messagesPage, ticketsPage) {
     $(window).on('statechangecomplete', function() {
         //Global
+        $(document).foundation();
         helpers.init();
-        //nav.init();
 
         //Dashbaord
         var t = $('#ticketLines');

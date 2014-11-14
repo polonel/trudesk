@@ -15,8 +15,9 @@ define('modules/chat',[
         chatClient.timeout = undefined;
 
         var socket = io.connect();
+
         socket.on('connectingToSocketServer', function(data) {
-            console.log(data.status);
+
         });
     };
 

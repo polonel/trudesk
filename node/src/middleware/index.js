@@ -16,8 +16,7 @@ var db = require('../database'),
 
 
 var middleware = {};
-
-module.exports = function(app, db) {
+module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
 
     app.set('views', path.join(__dirname, '../views/'));
@@ -41,11 +40,12 @@ module.exports = function(app, db) {
     };
 
     var sessionSecret = 'trudesk$123#SessionKeY!2387';
+    var sessionStore = new MongoStore({mongoose_connection: db.connection, auto_reconnect: true });
 
     app.use(session({
         secret: sessionSecret,
         cookie: cookie,
-        store: new MongoStore({mongoose_connection: db.connection, auto_reconnect: true }),
+        store: sessionStore,
         saveUninitialized: true,
         resave: true
     }));
@@ -54,5 +54,6 @@ module.exports = function(app, db) {
     app.use(passportConfig.session());
     app.use(flash());
 
-    return middleware;
+    callback(middleware, sessionStore);
+
 };
