@@ -32,9 +32,10 @@ body
   padding-bottom: 0 !important
 .noshadow
   +boxShadow(none !important)
-
 .no-overflow-x
   overflow-x: hidden !important
+.relative
+  position: relative !important
 
 a.blackLink
   color: #000000 !important
@@ -70,6 +71,11 @@ a.hoverUnderline
     &.left
       line-height: 68px
 
+  &.page-title-small
+    p
+      font-size: 28px
+
+
 .page-title-border-right
   width: 100%
   height: 100%
@@ -79,6 +85,11 @@ a.hoverUnderline
   background: white
   border-top: 1px solid #dfe4ef
   overflow: auto
+
+.page-left
+  background: #eef1f7
+  border-top: 1px solid #dfe4ef
+  border-right: 1px solid #dfe4ef
 
 .fa-large
   font-size: 24px

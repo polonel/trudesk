@@ -30,7 +30,7 @@
         <tbody>
         {{#each data.tickets}}
             {{#if_eq status compare=0}}
-                <tr class="ticket-new" data-ticket="{{_id}}">
+                <tr class="ticket-new" data-ticket="{{uid}}">
                     <td>
                         <input id="c_{{_id}}" type="checkbox"/>
                         <label for="c_{{_id}}"></label>
@@ -44,7 +44,7 @@
                 </tr>
             {{/if_eq}}
             {{#is status 1}}
-                <tr class="ticket-open" data-ticket="{{_id}}">
+                <tr class="ticket-open" data-ticket="{{uid}}">
                     <td>
                         <input id="c_{{_id}}" type="checkbox"/>
                         <label for="c_{{_id}}"></label>
@@ -58,7 +58,7 @@
                 </tr>
             {{/is}}
             {{#is status 2}}
-                <tr class="ticket-pending" data-ticket="{{_id}}">
+                <tr class="ticket-pending" data-ticket="{{uid}}">
                     <td>
                         <input id="c_{{_id}}" type="checkbox"/>
                         <label for="c_{{_id}}"></label>

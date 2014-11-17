@@ -1,0 +1,33 @@
+<div class="small-5 medium-5 large-3 columns message-list">
+    <div class="page-title page-title-small noshadow nopadding-right">
+        <div class="page-title-border-right relative">
+            <p>Ticket #{{data.ticket.uid}}</p>
+            <div class="floating-ticket-status">
+                <div class="ticket-status ticket-new"><span>New</span></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="page-left full-height">
+
+    </div>
+
+</div>
+<div class="small-7 columns nopadding page-message">
+    <div class="page-title-right noshadow">
+        <div class="page-top-comments right">
+            <a href="#" class="btn">{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}</a>
+        </div>
+    </div>
+
+    <div class="page-content full-height scrollable">
+
+    </div>
+</div>
+
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+
+    </script>
+{{/contentFor}}

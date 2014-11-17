@@ -1,6 +1,9 @@
 var ticketSchema    = require('../models/ticket');
 var async           = require('async');
 var _               = require('lodash');
+var flash           = require('connect-flash');
+var groupSchema     = require('../models/group');
+var typeSchema      = require('../models/tickettype');
 
 var ticketsController = {};
 
@@ -20,9 +23,7 @@ ticketsController.get = function(req, res, next) {
     self.content.data.tickets = {};
     async.waterfall([
         function(callback) {
-            var groupSchema = require('../models/group');
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                //console.log(grps);
                 callback(err, grps);
             })
         },
@@ -43,7 +44,6 @@ ticketsController.get = function(req, res, next) {
 
 ticketsController.create = function(req, res, next) {
     var self = this;
-    var groupSchema = require('../models/group');
     self.content = {};
     self.content.title = "Tickets - Create";
     self.content.nav = 'tickets';
@@ -56,31 +56,9 @@ ticketsController.create = function(req, res, next) {
             groupSchema.getAllGroups(function (err, objs) {
                 callback(err, objs);
             });
-        }
-    }, function(err, results) {
-        if (err) {
-            res.render('error', {error: err, message: err.message});
-        } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
-
-            res.render('subviews/newticket', self.content);
-        }
-    });
-};
-
-ticketsController.single = function(req, res, next) {
-    var self = this;
-    var groupSchema = require('../models/group');
-    self.content = {};
-    self.content.title = "Tickets - " + req.params.id;
-    self.content.nav = 'tickets';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    async.parallel({
-        groups: function (callback) {
-            groupSchema.getAllGroups(function (err, objs) {
+        },
+        types: function(callback) {
+            typeSchema.getTypes(function(err, objs) {
                 callback(err, objs);
             });
         }
@@ -89,8 +67,75 @@ ticketsController.single = function(req, res, next) {
             res.render('error', {error: err, message: err.message});
         } else {
             if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+            if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
 
             res.render('subviews/newticket', self.content);
+        }
+    });
+};
+
+ticketsController.single = function(req, res, next) {
+    var self = this;
+    var uid = req.params.id;
+    self.content = {};
+    self.content.title = "Tickets - " + req.params.id;
+    self.content.nav = 'tickets';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.ticket = {};
+
+    ticketSchema.getTicketByUid(uid, function(err, ticket) {
+        if (err) return handleError(res, err);
+        if (_.isNull(ticket)) return res.redirect('/tickets');
+
+        if (!_.isUndefined(ticket)) {
+            self.content.data.ticket = ticket;
+            self.content.data.ticket.commentCount = _.size(ticket.comments);
+        }
+
+        res.render('subviews/singleticket', self.content);
+    });
+};
+
+ticketsController.editTicket = function(req, res, next) {
+    var self = this;
+    var uid = req.params.id;
+    self.content = {};
+    self.content.title = "Edit Ticket #" + req.params.id;
+    self.content.nav = 'tickets';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.ticket = {};
+
+    async.parallel({
+        groups: function (callback) {
+            groupSchema.getAllGroups(function (err, objs) {
+                callback(err, objs);
+            });
+        },
+        types: function(callback) {
+            typeSchema.getTypes(function(err, objs) {
+                callback(err, objs);
+            });
+        },
+        ticket: function(callback) {
+            ticketSchema.getTicketByUid(uid, function(err, ticket) {
+                callback(err, ticket);
+            });
+        }
+    }, function(err, results) {
+        if (err) {
+            res.render('error', {error: err, message: err.message});
+        } else {
+            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+            if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
+            if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
+
+            res.render('subviews/editticket', self.content);
         }
     });
 };
@@ -104,7 +149,9 @@ ticketsController.submitTicket = function(req, res, next) {
         date: new Date(),
         updated: new Date(),
         subject: req.body.tSubject,
-        issue: req.body.tIssue
+        issue: req.body.tIssue,
+        priority: req.body.tPriority,
+        type: req.body.tType
 
     }, function(err, t) {
         if (err) return handleError(res, err);

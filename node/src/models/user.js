@@ -6,10 +6,11 @@ var _ = require('lodash');
 var COLLECTION = "accounts";
 
 var userSchema = mongoose.Schema({
-        username:   String,
-        password:   String,
-        fullname:   String,
-        email:      String
+        username:   { type: String, required: true },
+        password:   { type: String, required: true },
+        fullname:   { type: String, required: true },
+        email:      { type: String, required: true },
+        image:      { data: Buffer, contentType: String }
     });
 
 userSchema.methods.generateHash = function(password) {

@@ -31,6 +31,7 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
         if (_.isUndefined(selector)) {
             selector = '.scrollable';
         }
+
         $(document).ready(function() {
             $(selector).each(function() {
                 $(this).niceScroll({

@@ -1,5 +1,7 @@
-var mongoose = require('mongoose');
-var _ = require('lodash');
+var mongoose            = require('mongoose');
+var _                   = require('lodash');
+var groupSchema         = require('./group');
+var ticketTypeSchema    = require('./tickettype');
 
 var COLLECTION = 'tickets';
 
@@ -9,24 +11,29 @@ var commentsSchema = mongoose.Schema({
     comment:    String
 });
 
-var ticketTypeSchema = mongoose.Schema({
-    name:       String
+var ticketSchema = mongoose.Schema({
+    uid:        { type: Number },
+    owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
+    group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups' },
+    assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
+    date:       { type: Date, required: true },
+    updated:    { type: Date },
+    type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
+    status:     { type: Number, required: true },
+    priority:   { type: Number, required: true },
+    tags:       [String],
+    subject:    { type: String, required: true },
+    issue:      { type: String, required: true },
+    comments:   [commentsSchema]
 });
 
-
-var ticketSchema = mongoose.Schema({
-    owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
-    group:      { type: mongoose.Schema.Types.ObjectId, ref: 'groups' },
-    assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
-    date:       { type: Date },
-    updated:    { type: Date },
-    type:       { type: mongoose.Schema.Types.ObjectId, ref: 'ticketTypes' },
-    status:     Number,
-    priority:   Number,
-    tags:       [String],
-    subject:    String,
-    issue:      String,
-    comments:   [commentsSchema]
+ticketSchema.pre('save', function(next) {
+    var c = require('./counters');
+    var self = this;
+    c.increment('tickets', function(err, res) {
+        self.uid = res.next;
+        next();
+    });
 });
 
 ticketSchema.statics.getTickets = function(grpId, callback) {
@@ -46,5 +53,17 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
     return q.exec(callback);
 };
 
-module.exports.ticketTypes = mongoose.model('ticketTypes', ticketTypeSchema);
+ticketSchema.statics.getTicketByUid = function(uid, callback) {
+    if (_.isUndefined(uid)) return callback("Invalid Uid - TicketSchema.GetTicketByUid()", null);
+
+    var q = this.model(COLLECTION).findOne({uid: uid})
+        .populate('owner')
+        .populate('group')
+        .populate('comments')
+        .populate('assignee')
+        .populate('type');
+
+    return q.exec(callback);
+};
+
 module.exports = mongoose.model(COLLECTION, ticketSchema);

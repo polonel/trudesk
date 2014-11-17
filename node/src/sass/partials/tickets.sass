@@ -53,6 +53,37 @@ div#ticketTable_wrapper
 .ticket-status.ticket-pending span
   background: #2980b9
 
+.floating-ticket-status
+  position: absolute
+  top: 22px
+  right: 18px
+
+  .ticket-status span
+    font-weight: 500
+
+.page-top-comments
+  .active > a
+    background: darken(#cdd5e4, 1%)
+  a.btn
+    background: #cdd5e4
+    display: block
+    color: #707989
+    font-family: "Open Sans", sans-serif
+    font-weight: 400
+    font-size: 12px
+    margin: 18px 5px 0 0
+    padding: 8px 16px
+    +borderRadius(3px)
+    height: 28px
+
+    &:hover
+      background: darken(#cdd5e4, 3%)
+
+    i
+      font-weight: normal
+      margin-right: 10px
+      font-size: 14px
+
 
 //Ticket Form
 form.ticket-form

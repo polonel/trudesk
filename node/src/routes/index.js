@@ -21,6 +21,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
+    router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
 
     //Messages
