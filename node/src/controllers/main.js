@@ -31,11 +31,25 @@ mainController.dashboard = function(req, res, next) {
     res.render('dashboard', self.content);
 };
 
-mainController.loginPost = passport.authenticate('local', {
-                            successRedirect : '/dashboard',
-                            failureRedirect : '/',
-                            failureFlash : true
-                        });
+mainController.loginPost = function(req, res, next) {
+    passport.authenticate('local', function(err, user, info) {
+        if (err) return next(err);
+        if (!user) return res.redirect('/');
+
+        var redirectUrl = '/dashboard';
+
+        if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl;
+            req.session.redirectUrl = null;
+        }
+
+        req.logIn(user, function(err) {
+            if (err) return next(err);
+
+            return res.redirect(redirectUrl);
+        })
+    })(req, res, next);
+};
 
 mainController.logout = function(req, res, next) {
     "use strict";

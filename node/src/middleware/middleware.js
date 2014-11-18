@@ -17,6 +17,7 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
 
 middleware.redirectToLogin = function(req, res, next) {
     if (!req.user) {
+        req.session.redirectUrl = req.url;
         res.redirect('/');
     } else {
         next();
