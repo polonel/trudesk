@@ -820,6 +820,138 @@ div#ticketTable_wrapper {
     margin-right: 10px;
     font-size: 14px; }
 
+.ticket-assignee-wrap {
+  padding-left: 30px;
+  padding-top: 30px; }
+  .ticket-assignee-wrap h4 {
+    font-family: "open sans", sans-serif;
+    font-size: 14px;
+    color: #8e98a2;
+    margin-bottom: 10px; }
+
+.ticket-assignee img {
+  float: left;
+  display: block;
+  width: 50px;
+  height: 50px;
+  margin-left: 5px;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%; }
+.ticket-assignee .ticket-assignee-details {
+  padding-left: 75px; }
+  .ticket-assignee .ticket-assignee-details h3 {
+    font-family: "open sans", sans-serif;
+    font-size: 14px;
+    color: #3d4854;
+    margin: 0 0 7px; }
+  .ticket-assignee .ticket-assignee-details a, .ticket-assignee .ticket-assignee-details a:active, .ticket-assignee .ticket-assignee-details a:focus {
+    display: block;
+    font-family: "open sans", sans-serif;
+    font-size: 12px;
+    color: #76797e;
+    margin: 0 0 2px; }
+    .ticket-assignee .ticket-assignee-details a:hover, .ticket-assignee .ticket-assignee-details a:hover:focus, .ticket-assignee .ticket-assignee-details a:active:hover, .ticket-assignee .ticket-assignee-details a:active:hover:focus, .ticket-assignee .ticket-assignee-details a:focus:hover, .ticket-assignee .ticket-assignee-details a:focus:hover:focus {
+      text-decoration: underline; }
+  .ticket-assignee .ticket-assignee-details span {
+    font-family: "open sans", sans-serif;
+    font-size: 12px;
+    color: #76797e;
+    margin: 0 0 3px; }
+
+.comments-wrapper .initial-issue,
+.comments-wrapper .ticket-comment,
+.comments-wrapper .ticket-reply {
+  padding: 20px 20px 15px 25px;
+  border-bottom: 1px solid #dfe4ef; }
+  .comments-wrapper .initial-issue img,
+  .comments-wrapper .ticket-comment img,
+  .comments-wrapper .ticket-reply img {
+    display: block;
+    float: left;
+    height: 50px;
+    width: 50px;
+    margin-left: 10px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%; }
+  .comments-wrapper .initial-issue .issue-text,
+  .comments-wrapper .ticket-comment .issue-text,
+  .comments-wrapper .ticket-reply .issue-text {
+    padding-left: 85px; }
+  .comments-wrapper .initial-issue h3,
+  .comments-wrapper .ticket-comment h3,
+  .comments-wrapper .ticket-reply h3 {
+    margin: 0 0 8px;
+    font-family: "open sans", sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #3d4854; }
+  .comments-wrapper .initial-issue a,
+  .comments-wrapper .ticket-comment a,
+  .comments-wrapper .ticket-reply a {
+    display: block;
+    font-size: 12px;
+    font-family: "open sans", sans-serif;
+    color: #e74c3c;
+    margin-left: 2px;
+    margin-bottom: 7px; }
+    .comments-wrapper .initial-issue a:hover,
+    .comments-wrapper .ticket-comment a:hover,
+    .comments-wrapper .ticket-reply a:hover {
+      text-decoration: underline; }
+  .comments-wrapper .initial-issue time,
+  .comments-wrapper .ticket-comment time,
+  .comments-wrapper .ticket-reply time {
+    font-family: "open sans", sans-serif;
+    font-size: 12px;
+    color: #76797e;
+    display: block;
+    margin-bottom: 30px;
+    margin-left: 2px; }
+  .comments-wrapper .initial-issue p,
+  .comments-wrapper .ticket-comment p,
+  .comments-wrapper .ticket-reply p {
+    font-family: "open sans", sans-serif;
+    font-size: 14px;
+    color: #3d4854;
+    line-height: 20px; }
+.comments-wrapper .ticket-reply {
+  border-bottom: none; }
+  .comments-wrapper .ticket-reply .comment-box {
+    width: 100%;
+    display: block;
+    padding-left: 85px; }
+    .comments-wrapper .ticket-reply .comment-box textarea {
+      font-family: "open sans", sans-serif;
+      font-size: 14px;
+      color: #3d4854;
+      resize: none;
+      background: #f3f5f9;
+      border: 1px solid #dfe4ef;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px;
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      -webkit-box-sizing: border-box;
+      -moz-box-sizing: border-box;
+      box-sizing: border-box; }
+  .comments-wrapper .ticket-reply button[type=submit] {
+    font-family: "open sans", sans-serif;
+    font-size: 14px;
+    color: white;
+    padding: 8px 16px;
+    background: #e74c3c;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px; }
+    .comments-wrapper .ticket-reply button[type=submit]:hover {
+      background: #e43725; }
+    .comments-wrapper .ticket-reply button[type=submit]:active, .comments-wrapper .ticket-reply button[type=submit]:focus {
+      outline: none; }
+
 form.ticket-form label {
   font-family: "Roboto", sans-serif;
   font-size: 14px;

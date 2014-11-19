@@ -1,5 +1,7 @@
 var mongoose            = require('mongoose');
 var _                   = require('lodash');
+
+//Needed!
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 
@@ -45,6 +47,7 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('owner')
         .populate('group')
         .populate('comments')
+        .populate('comments.owner')
         .populate('assignee')
         .populate('type')
         .sort({'status': 1})
@@ -60,6 +63,21 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('owner')
         .populate('group')
         .populate('comments')
+        .populate('comments.owner')
+        .populate('assignee')
+        .populate('type');
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTicketById = function(id, callback) {
+    if (_.isUndefined(id)) return callback("Invalid Uid - TicketSchema.GetTicketById()", null);
+
+    var q = this.model(COLLECTION).findOne({_id: id})
+        .populate('owner')
+        .populate('group')
+        .populate('comments')
+        .populate('comments.owner')
         .populate('assignee')
         .populate('type');
 

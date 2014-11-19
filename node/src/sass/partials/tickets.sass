@@ -84,6 +84,129 @@ div#ticketTable_wrapper
       margin-right: 10px
       font-size: 14px
 
+.ticket-assignee-wrap
+  padding-left: 30px
+  padding-top: 30px
+  h4
+    font-family: "open sans", sans-serif
+    font-size: 14px
+    color: #8e98a2
+    margin-bottom: 10px
+
+.ticket-assignee
+  img
+    float: left
+    display: block
+    width: 50px
+    height: 50px
+    margin-left: 5px
+    +borderRadius(50%)
+
+  .ticket-assignee-details
+    padding-left: 75px
+
+    h3
+      font-family: "open sans", sans-serif
+      font-size: 14px
+      color: #3d4854
+      margin: 0 0 7px
+
+    a, a:active, a:focus
+      display: block
+      font-family: "open sans", sans-serif
+      font-size: 12px
+      color: #76797e
+      margin: 0 0 2px
+
+      &:hover,
+      &:hover:focus
+        text-decoration: underline
+
+    span
+      font-family: "open sans", sans-serif
+      font-size: 12px
+      color: #76797e
+      margin: 0 0 3px
+
+//Comments Section
+.comments-wrapper
+  .initial-issue,
+  .ticket-comment,
+  .ticket-reply
+    padding: 20px 20px 15px 25px
+    border-bottom: 1px solid #dfe4ef
+    img
+      display: block
+      float: left
+      height: 50px
+      width: 50px
+      margin-left: 10px
+      +borderRadius(50%)
+    .issue-text
+      padding-left: 85px
+    h3
+      margin: 0 0 8px
+      font-family: "open sans", sans-serif
+      font-size: 18px
+      font-weight: 600
+      color: #3d4854
+    a
+      display: block
+      font-size: 12px
+      font-family: "open sans", sans-serif
+      color: #e74c3c
+      margin-left: 2px
+      margin-bottom: 7px
+
+      &:hover
+        text-decoration: underline
+    time
+      font-family: "open sans", sans-serif
+      font-size: 12px
+      color: #76797e
+      display: block
+      margin-bottom: 30px
+      margin-left: 2px
+
+    p
+      font-family: "open sans", sans-serif
+      font-size: 14px
+      color: #3d4854
+      line-height: 20px
+
+  .ticket-reply
+    border-bottom: none
+    .comment-box
+      //float: left
+      width: 100%
+      display: block
+      padding-left: 85px
+      textarea
+        font-family: "open sans", sans-serif
+        font-size: 14px
+        color: #3d4854
+        resize: none
+        background: #f3f5f9
+        border: 1px solid #dfe4ef
+        +borderRadius(3px)
+        +boxShadow(none)
+        -webkit-box-sizing: border-box
+        -moz-box-sizing: border-box
+        box-sizing: border-box
+    button[type=submit]
+      font-family: "open sans", sans-serif
+      font-size: 14px
+      color: #ffffff
+      padding: 8px 16px
+      background: #e74c3c
+      +borderRadius(3px)
+
+      &:hover
+        background: darken(#e74c3c, 5%)
+      &:active, &:focus
+        outline: none
+
+
 
 //Ticket Form
 form.ticket-form

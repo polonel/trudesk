@@ -3,13 +3,30 @@
         <div class="page-title-border-right relative">
             <p>Ticket #{{data.ticket.uid}}</p>
             <div class="floating-ticket-status">
-                <div class="ticket-status ticket-new"><span>New</span></div>
+                {{#is data.ticket.status 0}}
+                    <div class="ticket-status ticket-new"><span>New</span></div>
+                {{/is}}
+                {{#is data.ticket.status 1}}
+                    <div class="ticket-status ticket-open"><span>Open</span></div>
+                {{/is}}
             </div>
         </div>
     </div>
 
     <div class="page-left full-height">
-
+        <div class="ticket-details">
+            <div class="ticket-assignee-wrap">
+                <h4>Assignee</h4>
+                <div class="ticket-assignee">
+                    <img src="/img/profile.png" alt=""/>
+                    <div class="ticket-assignee-details">
+                        <h3>{{data.ticket.assignee.fullname}}</h3>
+                        <a href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
+                        <span>{{{data.ticket.group.name}}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -21,7 +38,43 @@
     </div>
 
     <div class="page-content full-height scrollable">
+        <div class="comments-wrapper">
+            <div class="initial-issue">
+                <img src="/img/profile.png" alt=""/>
+                <div class="issue-text">
+                    <h3>{{data.ticket.subject}}</h3>
+                    <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
+                    <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
+                    <p>{{data.ticket.issue}}</p>
+                </div>
+            </div>
+            {{#foreach data.ticket.comments}}
+                <div class="ticket-comment">
+                    <img src="/img/profile.png" alt=""/>
+                    <div class="issue-text">
+                        <h3>Re: {{../data.ticket.subject}}</h3>
+                        <a href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                        <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, hmma"}}</time>
+                        <p>{{{comment}}}</p>
+                    </div>
+                </div>
+            {{/foreach}}
+            <div class="ticket-reply">
+                <img src="/img/profile.png" alt=""/>
+                <!--<ul class="reply-type">-->
 
+                <!--</ul>-->
+                <form id="comment-reply" action="/tickets/postcomment" method="post">
+                    <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                    <div class="comment-box">
+                        <textarea name="commentReply" id="commentReply" cols="2" rows="10"></textarea>
+                    </div>
+                    <div class="right">
+                        <button type="submit">Post Comment</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 

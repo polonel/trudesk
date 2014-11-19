@@ -160,6 +160,22 @@ ticketsController.submitTicket = function(req, res, next) {
     });
 };
 
+ticketsController.postcomment = function(req, res, next) {
+    var Comment = require('../models/comment');
+    var Ticket = ticketSchema;
+    var id = req.body.ticketId;
+    var comment = req.body.commentReply;
+    var User = req.user;
+
+    //TODO: Error check fields
+
+    Ticket.getTicketById(_id, function(err, t) {
+        if (err) return handleError(res, err);
+
+        t.comments.push(Comment);
+    });
+};
+
 function handleError(res, err) {
     if (err) {
         return res.render('error', {layout: false, error: err, message: err.message});

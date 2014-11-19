@@ -23,6 +23,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
     router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
+    router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
