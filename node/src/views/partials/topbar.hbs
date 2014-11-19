@@ -11,7 +11,7 @@
                     <ul>
                         <li class="top-bar-icon">
                             <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
-                                <span class="alert round label {{#is data.common.messages.unreadCount 0}}hide{{/is}}">{{data.common.messages.unreadCount}}</span>
+                                <span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
                             </a>
                         </li>
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>

@@ -166,11 +166,16 @@ ticketsController.postcomment = function(req, res, next) {
     var id = req.body.ticketId;
     var comment = req.body.commentReply;
     var User = req.user;
-
     //TODO: Error check fields
 
-    Ticket.getTicketById(_id, function(err, t) {
+    Ticket.getTicketById(id, function(err, t) {
         if (err) return handleError(res, err);
+
+        Comment = new Comment({
+            owner: User._id,
+            date: new Date(),
+            comment: comment
+        });
 
         t.comments.push(Comment);
     });

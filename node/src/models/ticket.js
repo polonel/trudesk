@@ -4,14 +4,11 @@ var _                   = require('lodash');
 //Needed!
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
+var commentSchema       = require('./comment');
 
 var COLLECTION = 'tickets';
 
-var commentsSchema = mongoose.Schema({
-    owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},
-    date:       { type: Date },
-    comment:    String
-});
+
 
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number },
@@ -26,7 +23,7 @@ var ticketSchema = mongoose.Schema({
     tags:       [String],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
-    comments:   [commentsSchema]
+    comments:   [commentSchema]
 });
 
 ticketSchema.pre('save', function(next) {

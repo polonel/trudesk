@@ -46,6 +46,9 @@ var helpers = {
     },
 
     is: function (value, test, options) {
+        if (value == null || value === 'undefined') {
+            return options.inverse(this);
+        }
         if (value === test) {
             return options.fn(this);
         } else {
@@ -425,6 +428,7 @@ var helpers = {
         // return the finished buffer
         return buffer;
     },
+
     formatDate: function(date, format) {
         return moment(date).format(format);
     }
