@@ -27,6 +27,8 @@ var ticketSchema = mongoose.Schema({
 });
 
 ticketSchema.pre('save', function(next) {
+    if (!_.isUndefined(this.uid)|| this.uid) return next();
+
     var c = require('./counters');
     var self = this;
     c.increment('tickets', function(err, res) {

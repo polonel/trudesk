@@ -17,14 +17,23 @@
         <div class="ticket-details">
             <div class="ticket-assignee-wrap">
                 <h4>Assignee</h4>
-                <div class="ticket-assignee">
-                    <img src="/img/profile.png" alt=""/>
-                    <div class="ticket-assignee-details">
-                        <h3>{{data.ticket.assignee.fullname}}</h3>
-                        <a href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
-                        <span>{{{data.ticket.assignee.title}}}</span>
+                {{#if data.ticket.assignee}}
+                    <div class="ticket-assignee">
+                        <img src="/img/profile.png" alt=""/>
+                        <div class="ticket-assignee-details">
+                            <h3>{{data.ticket.assignee.fullname}}</h3>
+                            <a href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
+                            <span>{{{data.ticket.assignee.title}}}</span>
+                        </div>
                     </div>
-                </div>
+                {{else}}
+                    <div class="ticket-assignee">
+                        <img src="/img/defaultProfileImage.png" alt=""/>
+                        <div class="ticket-assignee-details">
+                            <h3>No User Assigned</h3>
+                        </div>
+                    </div>
+                {{/if}}
             </div>
         </div>
     </div>
@@ -54,7 +63,7 @@
                     <div class="issue-text">
                         <h3>Re: {{../data.ticket.subject}}</h3>
                         <a href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                        <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, hmma"}}</time>
+                        <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
                         <p>{{{comment}}}</p>
                     </div>
                 </div>

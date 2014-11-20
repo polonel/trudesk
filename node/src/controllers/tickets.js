@@ -162,6 +162,7 @@ ticketsController.submitTicket = function(req, res, next) {
 
 ticketsController.postcomment = function(req, res, next) {
     var Comment = require('../models/comment');
+    console.log(req.header('Referer'));
     var Ticket = ticketSchema;
     var id = req.body.ticketId;
     var comment = req.body.commentReply;
@@ -171,13 +172,16 @@ ticketsController.postcomment = function(req, res, next) {
     Ticket.getTicketById(id, function(err, t) {
         if (err) return handleError(res, err);
 
-        Comment = new Comment({
+        Comment = {
             owner: User._id,
             date: new Date(),
             comment: comment
-        });
+        };
 
         t.comments.push(Comment);
+        t.save();
+        res.status(200);
+        res.end();
     });
 };
 
