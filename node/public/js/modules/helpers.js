@@ -15,6 +15,7 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
         self.setupDonutchart();
         self.setupBarChart();
         self.actionButtons();
+        self.ajaxFormSubmit();
     };
 
     helpers.onWindowResize = function() {
@@ -226,6 +227,15 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
 
         $(document).ready(function() {
             $('#loader').fadeOut(time);
+        });
+    };
+
+    helpers.ajaxFormSubmit = function() {
+        // Bind to forms
+        $('form.ajaxSubmit').each(function() {
+            var self = this;
+
+            
         });
     };
     

@@ -73,7 +73,7 @@
                 <!--<ul class="reply-type">-->
 
                 <!--</ul>-->
-                <form id="comment-reply" action="/tickets/postcomment" method="post">
+                <form id="comment-reply" action="/tickets/postcomment" method="post" class="ajaxSubmit">
                     <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
                     <div class="comment-box">
                         <textarea name="commentReply" id="commentReply" cols="2" rows="10"></textarea>
