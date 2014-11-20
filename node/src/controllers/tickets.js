@@ -162,7 +162,7 @@ ticketsController.submitTicket = function(req, res, next) {
 
 ticketsController.postcomment = function(req, res, next) {
     var Comment = require('../models/comment');
-    console.log(req.header('Referer'));
+
     var Ticket = ticketSchema;
     var id = req.body.ticketId;
     var comment = req.body.commentReply;
