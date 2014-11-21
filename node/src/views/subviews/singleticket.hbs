@@ -42,7 +42,7 @@
 <div class="small-7 columns nopadding page-message">
     <div class="page-title-right noshadow">
         <div class="page-top-comments right">
-            <a href="#" class="btn">{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}</a>
+            <a href="#" class="btn" data-action="scrolltobottom" data-targetScroll=".page-content">{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}</a>
         </div>
     </div>
 
@@ -57,29 +57,31 @@
                     <p>{{data.ticket.issue}}</p>
                 </div>
             </div>
-            {{#foreach data.ticket.comments}}
-                <div class="ticket-comment">
-                    <img src="/img/profile.png" alt=""/>
-                    <div class="issue-text">
-                        <h3>Re: {{../data.ticket.subject}}</h3>
-                        <a href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                        <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                        <p>{{{comment}}}</p>
+            <div class="comments">
+                {{#foreach data.ticket.comments}}
+                    <div class="ticket-comment">
+                        <img src="/img/profile.png" alt=""/>
+                        <div class="issue-text">
+                            <h3>Re: {{../data.ticket.subject}}</h3>
+                            <a href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                            <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                            <p>{{{comment}}}</p>
+                        </div>
                     </div>
-                </div>
-            {{/foreach}}
+                {{/foreach}}
+            </div>
             <div class="ticket-reply">
                 <img src="/img/profile.png" alt=""/>
                 <!--<ul class="reply-type">-->
 
                 <!--</ul>-->
-                <form id="comment-reply" action="/tickets/postcomment" method="post" class="ajaxSubmit">
+                <form id="comment-reply" action="/tickets/postcomment" method="post">
                     <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
                     <div class="comment-box">
-                        <textarea name="commentReply" id="commentReply" cols="2" rows="10"></textarea>
+                        <textarea name="commentReply" id="commentReply" cols="2" rows="10" data-clearOnSubmit="true"></textarea>
                     </div>
                     <div class="right">
-                        <button type="submit">Post Comment</button>
+                        <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
                     </div>
                 </form>
             </div>

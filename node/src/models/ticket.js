@@ -83,4 +83,14 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getComments = function(tId, callback) {
+    if (_.isUndefined(tId)) return callback("Invalid Ticket Id - TicketSchema.GetComments()", null);
+
+    var q = this.model(COLLECTION).findOne({_id: tId})
+        .populate('comments')
+        .populate('comments.owner');
+
+    return q.exec(callback);
+};
+
 module.exports = mongoose.model(COLLECTION, ticketSchema);

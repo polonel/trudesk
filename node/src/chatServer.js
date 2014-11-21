@@ -31,10 +31,13 @@ module.exports = function(ws) {
         setInterval(function() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
+            var ticketSchema = require('./models/ticket');
+
             messageSchema.getUnreadInboxCount(userId, function(err, objs) {
                 if (err) return true;
                 utils.sendToSelf(socket, 'updateMailNotifications', objs);
             });
+
         }, 5000);
 
         socket.on('updateMailNotifications', function(data) {
@@ -43,6 +46,17 @@ module.exports = function(ws) {
             messageSchema.getUnreadInboxCount(userId, function(err, objs) {
                 if (err) return true;
                 utils.sendToSelf(socket, 'updateMailNotifications', objs);
+            });
+        });
+
+        socket.on('updateComments', function(data) {
+            var userId = socket.request.user._id;
+            var ticketId = data.ticketId;
+            var ticketSchema = require('./models/ticket');
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                utils.sendToSelf(io, 'updateComments', ticket);
             });
         });
 

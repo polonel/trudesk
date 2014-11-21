@@ -1,6 +1,6 @@
 "use strict";
 
-define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], function($, _) {
+define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiechart'], function($, _, moment) {
     var helpers = {};
 
     helpers.init = function() {
@@ -43,6 +43,12 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
                 });
             });
         });
+    };
+
+    helpers.scrollToBottom = function(jqueryObject) {
+        if (_.isUndefined(jqueryObject)) return true;
+
+        $(jqueryObject).getNiceScroll(0).doScrollTop(99999999999*99999999999);
     };
 
     helpers.resizeFullHeight = function() {
@@ -202,7 +208,7 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
 
     helpers.actionButtons = function() {
         $(document).ready(function() {
-            $('a[data-action]').each(function() {
+            $('*[data-action]').each(function() {
                 var self = $(this);
                 var action = self.attr('data-action');
                 if (action.toLowerCase() === 'submit') {
@@ -212,7 +218,33 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
                         if (form.length !== 0) {
                             self.click(function(e) {
                                 form.submit();
-                                e.preventDefault();
+
+                                var preventDefault = self.attr('data-preventDefault');
+                                if (_.isUndefined(preventDefault) || preventDefault.length < 1)
+                                    e.preventDefault();
+
+                                else if (preventDefault.toLowerCase() === 'true') {
+                                    e.preventDefault();
+                                }
+                            });
+                        }
+                    }
+                } else if (action.toLowerCase() === 'scrolltobottom') {
+                    var targetScroll = self.attr('data-targetScroll');
+                    if (!_.isUndefined(targetScroll)) {
+                        var target = $(targetScroll);
+                        if (target.length !== 0) {
+                            self.click(function(e) {
+                                var windowHeight = target.children('div:first').outerHeight();
+                                target.getNiceScroll(0).doScrollTop(windowHeight+200, 1000);
+
+                                var preventDefault = self.attr('data-preventDefault');
+                                if (_.isUndefined(preventDefault) || preventDefault.length < 1)
+                                    e.preventDefault();
+
+                                else if (preventDefault.toLowerCase() === 'true') {
+                                    e.preventDefault();
+                                }
                             });
                         }
                     }
@@ -233,10 +265,28 @@ define(['jquery', 'underscore','foundation', 'nicescroll', 'easypiechart'], func
     helpers.ajaxFormSubmit = function() {
         // Bind to forms
         $('form.ajaxSubmit').each(function() {
-            var self = this;
+            var self = $(this);
+            self.submit(function(e) {
+                $.ajax({
+                    type: self.attr('method'),
+                    url: self.attr('action'),
+                    data: self.serialize(),
+                    success: function(data) {
+                        //send socket to add reply.
+                        self.find('*[data-clearOnSubmit="true"]').each(function() {
+                            $(this).val('');
+                        });
+                    }
+                });
 
-            
+                e.preventDefault();
+                return false;
+            });
         });
+    };
+
+    helpers.formatDate = function(date, format) {
+        return moment(date).format(format);
     };
     
     return helpers;
