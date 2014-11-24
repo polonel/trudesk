@@ -5,12 +5,20 @@ define('modules/ajaxify', [
     'modules/flotchart',
     'pages/messages',
     'pages/tickets',
+    'modules/ui',
     'history'
 
-], function($, helpers, nav, p, messagesPage, ticketsPage) {
+], function($, helpers, nav, p, messagesPage, ticketsPage, ui) {
     $(window).on('statechangecomplete', function() {
         //Global
-        $(document).foundation();
+        $(document).foundation({
+            abide: {
+                patterns: {
+                    is5Long: /.{5,}/
+                }
+            }
+        });
+        ui.init();
         helpers.init();
 
         //Dashbaord

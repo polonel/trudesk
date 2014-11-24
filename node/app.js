@@ -24,7 +24,7 @@ function start() {
 
         var ws = require('./src/webserver');
         ws.init(db, function() {
-            var cs = require('./src/chatserver')(ws);
+            var ss = require('./src/socketserver')(ws);
         });
     });
 }

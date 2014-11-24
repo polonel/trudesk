@@ -9,6 +9,12 @@
                 {{#is data.ticket.status 1}}
                     <div class="ticket-status ticket-open"><span>Open</span></div>
                 {{/is}}
+                {{#is data.ticket.status 2}}
+                    <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                {{/is}}
+                {{#is data.ticket.status 3}}
+                    <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                {{/is}}
             </div>
         </div>
     </div>
@@ -22,7 +28,7 @@
                         <img src="/img/profile.png" alt=""/>
                         <div class="ticket-assignee-details">
                             <h3>{{data.ticket.assignee.fullname}}</h3>
-                            <a href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
+                            <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
                             <span>{{{data.ticket.assignee.title}}}</span>
                         </div>
                     </div>
@@ -42,7 +48,9 @@
 <div class="small-7 columns nopadding page-message">
     <div class="page-title-right noshadow">
         <div class="page-top-comments right">
-            <a href="#" class="btn" data-action="scrolltobottom" data-targetScroll=".page-content">{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}</a>
+            <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
+                {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
+            </a>
         </div>
     </div>
 
@@ -54,7 +62,7 @@
                     <h3>{{data.ticket.subject}}</h3>
                     <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                     <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
-                    <p>{{data.ticket.issue}}</p>
+                    <p>{{{data.ticket.issue}}}</p>
                 </div>
             </div>
             <div class="comments">
@@ -63,22 +71,23 @@
                         <img src="/img/profile.png" alt=""/>
                         <div class="issue-text">
                             <h3>Re: {{../data.ticket.subject}}</h3>
-                            <a href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                            <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
                             <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
                             <p>{{{comment}}}</p>
                         </div>
                     </div>
                 {{/foreach}}
             </div>
-            <div class="ticket-reply">
+            <div class="ticket-reply clearfix">
                 <img src="/img/profile.png" alt=""/>
                 <!--<ul class="reply-type">-->
 
                 <!--</ul>-->
-                <form id="comment-reply" action="/tickets/postcomment" method="post">
+                <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
                     <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
                     <div class="comment-box">
-                        <textarea name="commentReply" id="commentReply" cols="2" rows="10" data-clearOnSubmit="true"></textarea>
+                        <textarea name="commentReply" id="commentReply" cols="2" rows="10" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                        <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
                     </div>
                     <div class="right">
                         <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>

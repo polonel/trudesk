@@ -14,7 +14,14 @@ require(['config', 'jquery', 'modules/helpers'], function(config, $, helpers) {
 
     ], function(nav, socket) {
         //Start App
-        $(document).foundation();
+        $(document).foundation({
+            abide: {
+                patterns: {
+                    is5Long: /.{5,}/
+                }
+            }
+        });
+
         nav.init();
         helpers.fadeOutLoader(300);
     });

@@ -3,6 +3,10 @@ define('modules/socket', [
     'modules/ui'
 
 ], function(chat, ui) {
-    chat.init();
+    var sClient = {};
+
+    //chat.init();
     ui.init();
+
+    return sClient;
 });

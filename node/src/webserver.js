@@ -35,9 +35,9 @@ server = require('http').createServer(WebServer);
             server.listen(port, '0.0.0.0', function() {
                 winston.info("TruDesk Ready");
                 winston.info('TruDesk is now listening on port: ' + port);
-            });
 
-            callback();
+                callback();
+            });
         });
     };
 

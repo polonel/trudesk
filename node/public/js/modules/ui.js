@@ -4,8 +4,11 @@ define('modules/ui', [
     'modules/helpers'
 
 ], function($, io, helpers) {
-    var socketUi = {};
-    var socket = io.connect();
+    var socketUi = {},
+        socket = io.connect();
+
+    socketUi.socket = socket;
+
     socketUi.init = function() {
         this.updateMailNotifications();
         this.updateComments();
@@ -32,33 +35,39 @@ define('modules/ui', [
 
     socketUi.updateComments = function() {
         $(document).ready(function() {
-            $('form#comment-reply').submit(function(e) {
+            $('form#comment-reply').on("valid invalid submit", function(e) {
                 var self = $(this);
-                $.ajax({
-                    type: self.attr('method'),
-                    url: self.attr('action'),
-                    data: self.serialize(),
-                    success: function() {
-                        //send socket to add reply.
-                        $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function() {
-                            $(this).val('');
-                        });
+                e.stopPropagation();
+                e.preventDefault();
+                if (e.type === "valid") {
+                    $.ajax({
+                        type: self.attr('method'),
+                        url: self.attr('action'),
+                        data: self.serialize(),
+                        success: function () {
+                            //send socket to add reply.
+                            $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function () {
+                                $(this).val('');
+                            });
 
-                        var tId = $('input[name="ticketId"]').val();
+                            var tId = $('input[name="ticketId"]').val();
+                            console.log(socket.id);
+                            socket.emit('updateComments', {ticketId: tId});
 
-                        socket.emit('updateComments',{ticketId : tId});
-
-                        var obj = $('.comments').parents('.page-content');
-                        helpers.resizeFullHeight();
-                        helpers.scrollToBottom(obj);
-                    }
-                });
+                            var obj = $('.comments').parents('.page-content');
+                            helpers.resizeFullHeight();
+                            helpers.resizeScroller();
+                            helpers.scrollToBottom(obj);
+                        }
+                    });
+                }
 
                 return false;
             });
         });
 
         socket.on('updateComments', function(data) {
+            console.log('GOT IT!');
             var ticket = data;
             var commentContainer = $('.comments');
             var comment = $(ticket.comments).get(-1);

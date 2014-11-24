@@ -141,6 +141,7 @@ ticketsController.editTicket = function(req, res, next) {
 };
 
 ticketsController.submitTicket = function(req, res, next) {
+    var marked = require('marked');
     var Ticket = ticketSchema;
     Ticket.create({
         owner: req.user._id,
@@ -149,7 +150,7 @@ ticketsController.submitTicket = function(req, res, next) {
         date: new Date(),
         updated: new Date(),
         subject: req.body.tSubject,
-        issue: req.body.tIssue,
+        issue: marked(req.body.tIssue),
         priority: req.body.tPriority,
         type: req.body.tType
 
@@ -171,11 +172,11 @@ ticketsController.postcomment = function(req, res, next) {
 
     Ticket.getTicketById(id, function(err, t) {
         if (err) return handleError(res, err);
-
+        var marked = require('marked');
         Comment = {
             owner: User._id,
             date: new Date(),
-            comment: comment
+            comment: marked(comment)
         };
 
         t.comments.push(Comment);

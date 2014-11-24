@@ -48,7 +48,15 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
     helpers.scrollToBottom = function(jqueryObject) {
         if (_.isUndefined(jqueryObject)) return true;
 
+        this.resizeScroller();
+
         $(jqueryObject).getNiceScroll(0).doScrollTop(99999999999*99999999999);
+    };
+
+    helpers.resizeScroller = function(scrollerObject) {
+        if (_.isUndefined(scrollerObject)) return true;
+
+        $(scrollerObject).getNiceScroll(0).resize();
     };
 
     helpers.resizeFullHeight = function() {
@@ -239,9 +247,9 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                                 target.getNiceScroll(0).doScrollTop(windowHeight+200, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
-                                if (_.isUndefined(preventDefault) || preventDefault.length < 1)
+                                if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
                                     e.preventDefault();
-
+                                }
                                 else if (preventDefault.toLowerCase() === 'true') {
                                     e.preventDefault();
                                 }

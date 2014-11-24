@@ -9,6 +9,33 @@ body {
   overflow-x: hidden;
   font-family: "Open Sans", sans-serif; }
 
+pre {
+  word-wrap: normal;
+  padding: 16px;
+  overflow: auto;
+  font-size: 85%;
+  line-height: 1.45;
+  background-color: #f7f7f7;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px; }
+  pre code {
+    display: inline;
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    color: #333333;
+    max-width: initial;
+    padding: 0;
+    margin: 0;
+    overflow: initial;
+    line-height: inherit;
+    word-wrap: normal;
+    background-color: transparent;
+    border: 0;
+    white-space: pre;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px; }
+
 .nomargin {
   margin: 0 !important; }
 
@@ -890,19 +917,27 @@ div#ticketTable_wrapper {
     font-size: 18px;
     font-weight: 600;
     color: #3d4854; }
-  .comments-wrapper .initial-issue a,
+  .comments-wrapper .initial-issue a, .comments-wrapper .initial-issue a.comment-email-link,
   .comments-wrapper .ticket-comment a,
-  .comments-wrapper .ticket-reply a {
+  .comments-wrapper .ticket-comment a.comment-email-link,
+  .comments-wrapper .ticket-reply a,
+  .comments-wrapper .ticket-reply a.comment-email-link {
     display: inline-block;
     font-size: 12px;
     font-family: "open sans", sans-serif;
     color: #e74c3c;
     margin-left: 2px;
     margin-bottom: 7px; }
-    .comments-wrapper .initial-issue a:hover,
+    .comments-wrapper .initial-issue a:hover, .comments-wrapper .initial-issue a.comment-email-link:hover,
     .comments-wrapper .ticket-comment a:hover,
-    .comments-wrapper .ticket-reply a:hover {
+    .comments-wrapper .ticket-comment a.comment-email-link:hover,
+    .comments-wrapper .ticket-reply a:hover,
+    .comments-wrapper .ticket-reply a.comment-email-link:hover {
       text-decoration: underline; }
+  .comments-wrapper .initial-issue a,
+  .comments-wrapper .ticket-comment a,
+  .comments-wrapper .ticket-reply a {
+    font-size: 14px; }
   .comments-wrapper .initial-issue time,
   .comments-wrapper .ticket-comment time,
   .comments-wrapper .ticket-reply time {
@@ -924,7 +959,8 @@ div#ticketTable_wrapper {
   .comments-wrapper .ticket-reply .comment-box {
     width: 100%;
     display: block;
-    padding-left: 85px; }
+    padding-left: 85px;
+    margin-bottom: 1rem; }
     .comments-wrapper .ticket-reply .comment-box textarea {
       font-family: "open sans", sans-serif;
       font-size: 14px;

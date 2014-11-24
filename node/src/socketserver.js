@@ -22,6 +22,7 @@ module.exports = function(ws) {
 
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
+        console.log('Connected');
         utils.sendToAllConnectedClients(io, 'updateUserCount', {count: totalOnline});
 
         utils.sendToSelf(socket, 'connectingToSocketServer', {
@@ -56,7 +57,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                utils.sendToSelf(io, 'updateComments', ticket);
+                utils.sendToAllConnectedClients(io, 'updateComments', ticket);
             });
         });
 
@@ -110,7 +111,7 @@ module.exports = function(ws) {
         });
     });
 
-    winston.info('ChatServer Running');
+    winston.info('SocketServer Running');
 };
 
 function onAuthorizeSuccess(data, accept) {
