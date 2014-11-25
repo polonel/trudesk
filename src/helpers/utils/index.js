@@ -9,3 +9,7 @@ module.exports.sendToAllConnectedClients = function (io, method, data) {
 module.exports.sendToAllClientsInRoom = function (io, room, method, data) {
     io.sockets.in(room).emit(method, data);
 };
+
+module.exports.sendToUser = function(socketList, userList, username, data) {
+
+};

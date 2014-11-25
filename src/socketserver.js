@@ -22,7 +22,6 @@ module.exports = function(ws) {
 
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
-        utils.sendToAllConnectedClients(io, 'updateUserCount', {count: totalOnline});
 
         utils.sendToSelf(socket, 'connectingToSocketServer', {
             status: 'online'
@@ -61,24 +60,29 @@ module.exports = function(ws) {
             });
         });
 
-        socket.on('joinSocketServer', function(data) {
+        socket.on('joinChatServer', function(data) {
+            var user = socket.request.user;
             var exists = false;
-            _.find(usersOnline, function(k,v) {
-                if (k.name.toLowerCase() === data.name.toLowerCase())
+            _.find(usersOnline, function(v,k) {
+                if (k.toLowerCase() === user.username.toLowerCase())
                     return exists = true;
             });
 
             if (!exists) {
-                if (data.name.length !== 0) {
-                    usersOnline[socket.id] = {name: data.name};
+                if (user.username.length !== 0) {
+                    usersOnline[user.username] = {sockets: [socket.id], user: user};
 
                     totalOnline = _.size(usersOnline);
-                    utils.sendToAllConnectedClients(io, 'updateUserCount', {count: totalOnline});
-
                     utils.sendToSelf(socket, 'joinSuccessfully');
-                    utils.sendToAllConnectedClients(io, 'updateUserDetails', usersOnline);
+                    utils.sendToAllConnectedClients(io, 'updateUsers', usersOnline);
                     sockets.push(socket);
                 }
+            } else {
+                usersOnline[user.username].sockets.push(socket.id);
+
+                utils.sendToSelf(socket, 'joinSuccessfully');
+                utils.sendToAllConnectedClients(io, 'updateUsers', usersOnline);
+                sockets.push(socket);
             }
         });
 
@@ -101,13 +105,20 @@ module.exports = function(ws) {
 
 
         socket.on('disconnect', function() {
-            if (typeof usersOnline[socket.id] !== 'undefined') {
-                delete usersOnline[socket.id];
-                totalOnline = _.size(usersOnline);
-                utils.sendToAllConnectedClients(io, 'updateUserCount', {count: totalOnline});
+            var user = socket.request.user;
+            if (!_.isUndefined(usersOnline[user.username])) {
+                var userSockets = usersOnline[user.username].sockets;
+                if (_.size(userSockets) < 2) {
+                    delete usersOnline[user.username];
+                } else {
+                    usersOnline[user.username].sockets = _.without(userSockets, socket.id);
+                }
+
+                utils.sendToAllConnectedClients(io, 'updateUsers', usersOnline);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
             }
+
         });
     });
 

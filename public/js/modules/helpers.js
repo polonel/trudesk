@@ -48,9 +48,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
     helpers.scrollToBottom = function(jqueryObject) {
         if (_.isUndefined(jqueryObject)) return true;
 
-        this.resizeScroller();
-
-        $(jqueryObject).getNiceScroll(0).doScrollTop(99999999999*99999999999);
+        $(jqueryObject).getNiceScroll(0).resize().doScrollTop(99999999999*99999999999);
     };
 
     helpers.resizeScroller = function(scrollerObject) {

@@ -5,7 +5,7 @@ define('modules/socket', [
 ], function(chat, ui) {
     var sClient = {};
 
-    //chat.init();
+    chat.init();
     ui.init();
 
     return sClient;
