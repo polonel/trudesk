@@ -7,8 +7,6 @@ define('modules/ui', [
     var socketUi = {},
         socket = io.connect();
 
-    socketUi.socket = socket;
-
     socketUi.init = function() {
         this.updateMailNotifications();
         this.updateComments();
@@ -23,7 +21,7 @@ define('modules/ui', [
         });
 
         socket.on('updateMailNotifications', function(data) {
-            var label = $('#btn_mail-notifications > span');
+            var label = $('#btn_mail-notifications').find('> span');
             if (data < 1) {
                 label.hide();
             } else {
@@ -35,39 +33,43 @@ define('modules/ui', [
 
     socketUi.updateComments = function() {
         $(document).ready(function() {
-            $('form#comment-reply').on("valid invalid submit", function(e) {
-                var self = $(this);
-                e.stopPropagation();
-                e.preventDefault();
-                if (e.type === "valid") {
-                    $.ajax({
-                        type: self.attr('method'),
-                        url: self.attr('action'),
-                        data: self.serialize(),
-                        success: function () {
-                            //send socket to add reply.
-                            $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function () {
-                                $(this).val('');
-                            });
+            var $commentForm = $('form#comment-reply');
+            if ($commentForm.length > 0) {
+                $commentForm.on("valid invalid submit", function (e) {
+                    var self = $(this);
+                    e.stopPropagation();
+                    e.preventDefault();
+                    if (e.type === "valid") {
+                        $.ajax({
+                            type: self.attr('method'),
+                            url: self.attr('action'),
+                            data: self.serialize(),
+                            success: function () {
+                                //send socket to add reply.
+                                $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function () {
+                                    $(this).val('');
+                                });
 
-                            var tId = $('input[name="ticketId"]').val();
-                            console.log(socket.id);
-                            socket.emit('updateComments', {ticketId: tId});
+                                var tId = $('input[name="ticketId"]').val();
 
-                            var obj = $('.comments').parents('.page-content');
-                            helpers.resizeFullHeight();
-                            helpers.resizeScroller();
-                            helpers.scrollToBottom(obj);
-                        }
-                    });
-                }
+                                socket.emit('updateComments', {ticketId: tId});
 
-                return false;
-            });
+                                var obj = $('.comments').parents('.page-content');
+                                helpers.resizeFullHeight();
+                                helpers.resizeScroller();
+                                helpers.scrollToBottom(obj);
+                            }
+                        });
+                    }
+                });
+            }
+
+            return false;
         });
 
+        //Make sure we only have 1 event listener
+        socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
-            console.log('GOT IT!');
             var ticket = data;
             var commentContainer = $('.comments');
             var comment = $(ticket.comments).get(-1);
@@ -78,14 +80,14 @@ define('modules/ui', [
             $('.page-top-comments > a').html(ticket.comments.length + ' ' + commentText);
 
             var html =  '<div class="ticket-comment">' +
-                        '<img src="/img/profile.png" alt=""/>' +
-                            '<div class="issue-text">' +
-                                '<h3>Re: ' + ticket.subject + '</h3>' +
-                                '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
-                                '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
-                                '<p>' + comment.comment + '</p>' +
-                            '</div>' +
-                        '</div>';
+                '<img src="/img/profile.png" alt=""/>' +
+                '<div class="issue-text">' +
+                '<h3>Re: ' + ticket.subject + '</h3>' +
+                '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
+                '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
+                '<p>' + comment.comment + '</p>' +
+                '</div>' +
+                '</div>';
 
             commentContainer.append(html);
         });

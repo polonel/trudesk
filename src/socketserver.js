@@ -22,7 +22,6 @@ module.exports = function(ws) {
 
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
-        console.log('Connected');
         utils.sendToAllConnectedClients(io, 'updateUserCount', {count: totalOnline});
 
         utils.sendToSelf(socket, 'connectingToSocketServer', {
@@ -54,6 +53,7 @@ module.exports = function(ws) {
             var userId = socket.request.user._id;
             var ticketId = data.ticketId;
             var ticketSchema = require('./models/ticket');
+
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
