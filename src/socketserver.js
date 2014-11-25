@@ -119,6 +119,7 @@ module.exports = function(ws) {
                 sockets = _.without(sockets, o);
             }
 
+            winston.info('User disconnected: ' + user.username + ' - ' + socket.id);
         });
     });
 

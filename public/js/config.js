@@ -9,7 +9,8 @@ requirejs.config({
         placeholder:    'vendor/placeholder/placeholder',
         nicescroll:     'vendor/nicescroll/nicescroll.min',
         underscore:     'vendor/underscore/underscore',
-        socketio:       '/socket.io/socket.io',
+        //socketio:       '/socket.io/socket.io',
+        socketio:       'https://cdn.socket.io/socket.io-1.2.1',
         history:        'vendor/history/jquery.history',
 
         datatables:     'vendor/datatables/jquery.dataTables',
