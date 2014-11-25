@@ -56,6 +56,15 @@ var helpers = {
         }
     },
 
+    checkPerm: function(user, perm, options) {
+        var P = require('../../permissions');
+        if (P.canThis(user.role, perm)) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
     isnt: function (value, test, options) {
         if (value !== test) {
             return options.fn(this);
@@ -447,6 +456,7 @@ helpers.unlessGtEq = helpers.unless_gteq;
 helpers.ifLtEq     = helpers.if_lteq;
 helpers.unlessLtEq = helpers.unless_lteq;
 helpers.foreach    = helpers.forEach;
+helpers.canUser    = helpers.checkPerm;
 
 
 // Export helpers

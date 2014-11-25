@@ -5,10 +5,11 @@ define('modules/ajaxify', [
     'modules/flotchart',
     'pages/messages',
     'pages/tickets',
+    'pages/accounts',
     'modules/ui',
     'history'
 
-], function($, helpers, nav, p, messagesPage, ticketsPage, ui) {
+], function($, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ui) {
     $(window).on('statechangecomplete', function() {
         //Global
         $(document).foundation({
@@ -32,6 +33,9 @@ define('modules/ajaxify', [
 
         //Tickets
         ticketsPage.init();
+
+        //Accounts
+        accountsPage.init();
 
     });
     // Prepare our Variables

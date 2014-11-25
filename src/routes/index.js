@@ -36,6 +36,9 @@ function mainRoutes(router, middleware, controllers) {
     //Servers
     router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
 
+    //Accounts
+    router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/users', middleware.api, controllers.api.users.get);

@@ -48,7 +48,7 @@
 <div class="small-7 columns nopadding page-message">
     <div class="page-title-right noshadow">
         <div class="page-top-comments right">
-            <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
+            <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
                 {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
             </a>
         </div>
@@ -65,7 +65,7 @@
                     <p>{{{data.ticket.issue}}}</p>
                 </div>
             </div>
-            <div class="comments">
+            <div class="comments" data-ticketId="{{data.ticket._id}}">
                 {{#foreach data.ticket.comments}}
                     <div class="ticket-comment">
                         <img src="/img/profile.png" alt=""/>

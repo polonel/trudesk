@@ -29,7 +29,7 @@ module.exports = function(app, db, callback) {
 
     // uncomment after placing your favicon in /public
     //app.use(favicon(__dirname + '/public/favicon.ico'));
-    app.use(logger('dev'));
+    //app.use(logger('dev'));
     app.use(express.static(path.join(__dirname, '../../', 'public')));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
@@ -40,20 +40,19 @@ module.exports = function(app, db, callback) {
     };
 
     var sessionSecret = 'trudesk$123#SessionKeY!2387';
-    var sessionStore = new MongoStore({mongoose_connection: db.connection, auto_reconnect: true });
+    var sessionStore = new MongoStore({mongoose_connection: db.connection, auto_reconnect: true }, function(e) {
+        app.use(session({
+            secret: sessionSecret,
+            cookie: cookie,
+            store: sessionStore,
+            saveUninitialized: true,
+            resave: true
+        }));
 
-    app.use(session({
-        secret: sessionSecret,
-        cookie: cookie,
-        store: sessionStore,
-        saveUninitialized: true,
-        resave: true
-    }));
+        app.use(passportConfig.initialize());
+        app.use(passportConfig.session());
+        app.use(flash());
 
-    app.use(passportConfig.initialize());
-    app.use(passportConfig.session());
-    app.use(flash());
-
-    callback(middleware, sessionStore);
-
+        callback(middleware, sessionStore);
+    });
 };

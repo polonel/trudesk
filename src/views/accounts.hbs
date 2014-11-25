@@ -1,0 +1,87 @@
+{{#contentFor 'css'}}
+    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.scroller.css"/>-->
+    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.foundation.css"/>-->
+{{/contentFor}}
+
+<div class="small-12 large-10 columns nopadding ticketContent">
+<div class="page-title noshadow">
+    <p class="left">Accounts</p>
+    <div class="right">
+        <ul class="button-group">
+            {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/add" role="button" class="btn">Add User</a></li>{{/canUser}}
+        </ul>
+    </div>
+</div>
+
+<div class="full-height">
+<div class="accountList full-height">
+    <table id="accountsTable" class="pDataTable">
+        <thead>
+        <tr>
+            <th></th>
+            <th>Status</th>
+            <th>Subject</th>
+            <th>Created</th>
+            <th>Requester</th>
+            <th>Group</th>
+            <th>Updated</th>
+        </tr>
+        </thead>
+        <tbody>
+        {{#each data.tickets}}
+            {{#if_eq status compare=0}}
+                <tr class="ticket-new" data-ticket="{{uid}}">
+                    <td>
+                        <input id="c_{{_id}}" type="checkbox"/>
+                        <label for="c_{{_id}}"></label>
+                    </td>
+                    <td class="ticket-status ticket-new"><span>New</span></td>
+                    <td>{{subject}}</td>
+                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{owner.fullname}}</td>
+                    <td>{{group.name}}</td>
+                    <td>Today 10:53a</td>
+                </tr>
+            {{/if_eq}}
+            {{#is status 1}}
+                <tr class="ticket-open" data-ticket="{{uid}}">
+                    <td>
+                        <input id="c_{{_id}}" type="checkbox"/>
+                        <label for="c_{{_id}}"></label>
+                    </td>
+                    <td class="ticket-status ticket-open"><span>Open</span></td>
+                    <td>{{subject}}</td>
+                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{owner.fullname}}</td>
+                    <td>{{group.name}}</td>
+                    <td>Today 10:53a</td>
+                </tr>
+            {{/is}}
+            {{#is status 2}}
+                <tr class="ticket-pending" data-ticket="{{uid}}">
+                    <td>
+                        <input id="c_{{_id}}" type="checkbox"/>
+                        <label for="c_{{_id}}"></label>
+                    </td>
+                    <td class="ticket-status ticket-pending"><span>Pending</span></td>
+                    <td>{{subject}}</td>
+                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{owner.fullname}}</td>
+                    <td>{{group.name}}</td>
+                    <td>Today 10:53a</td>
+                </tr>
+            {{/is}}
+        {{/each}}
+        </tbody>
+    </table>
+</div>
+</div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/accounts'], function(a) {
+            a.init();
+        });
+    </script>
+{{/contentFor}}

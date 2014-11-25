@@ -4,6 +4,7 @@ var Controllers = {
     tickets: require('./tickets'),
     messages: require('./messages'),
     servers: require('./servers'),
+    accounts: require('./accounts'),
     api: require('./api')
 };
 

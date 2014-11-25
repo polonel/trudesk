@@ -71,13 +71,13 @@ define('modules/ui', [
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
             var ticket = data;
-            var commentContainer = $('.comments');
+            var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
             var comment = $(ticket.comments).get(-1);
 
             var commentText = 'Comments';
             if(ticket.comments.length === 1) commentText = 'Comment';
 
-            $('.page-top-comments > a').html(ticket.comments.length + ' ' + commentText);
+            $('.page-top-comments > a[data-ticketId="' + ticket._id + '"]').html(ticket.comments.length + ' ' + commentText);
 
             var html =  '<div class="ticket-comment">' +
                 '<img src="/img/profile.png" alt=""/>' +
