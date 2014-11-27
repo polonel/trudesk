@@ -405,7 +405,8 @@ div.actions {
     width: 100%;
     background: white;
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
-    height: 80px;
+    height: 72px;
+    max-height: 80px;
     line-height: normal; }
     #mail-notifications li:hover,
     #notifications li:hover,
@@ -420,6 +421,7 @@ div.actions {
     #online-Users li .messageNotification {
       display: block;
       width: 100%;
+      height: 71px;
       padding: 10px !important;
       background: white !important;
       line-height: normal !important;
@@ -1187,7 +1189,7 @@ table.dataTable {
     display: block; }
     .chat-dock .chat-box-wrapper .chat-box-position {
       position: relative;
-      top: -252px;
+      top: -267px;
       left: 0; }
     .chat-dock .chat-box-wrapper .chat-box {
       float: right;

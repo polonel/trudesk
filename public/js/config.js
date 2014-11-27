@@ -9,8 +9,8 @@ requirejs.config({
         placeholder:    'vendor/placeholder/placeholder',
         nicescroll:     'vendor/nicescroll/nicescroll.min',
         underscore:     'vendor/underscore/underscore',
-        //socketio:       '/socket.io/socket.io',
-        socketio:       'https://cdn.socket.io/socket.io-1.2.1',
+        socketio:       '/socket.io/socket.io',
+        //socketio:       'https://cdn.socket.io/socket.io-1.2.1',
         history:        'vendor/history/jquery.history',
 
         datatables:     'vendor/datatables/jquery.dataTables',
@@ -24,7 +24,8 @@ requirejs.config({
         flot_tooltip:   'vendor/flot/jquery.flot.tooltip',
         fullcalendar:   'vendor/fullcalendar/fullcalendar.min',
         moment:         'vendor/fullcalendar/moment.min',
-        easypiechart:   'vendor/easypiechart/easypiechart'
+        easypiechart:   'vendor/easypiechart/easypiechart',
+        autogrow:       'plugins/autogrow'
     },
     shim: {
         foundation: {
@@ -72,6 +73,10 @@ requirejs.config({
         },
 
         easypiechart: {
+            deps: ['jquery']
+        },
+
+        autogrow: {
             deps: ['jquery']
         }
     }

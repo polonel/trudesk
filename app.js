@@ -20,7 +20,10 @@ function start() {
     winston.info('Time: ' + new Date());
 
     require('./src/database').init(function(err, db) {
-        if (err) throw err;
+        if (err) {
+            winston.error(err.message);
+            Process.exit();
+        }
 
         var ws = require('./src/webserver');
         ws.init(db, function() {

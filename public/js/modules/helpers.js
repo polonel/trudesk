@@ -35,6 +35,8 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
 
         $(document).ready(function() {
             $(selector).each(function() {
+                var ns = $(this).getNiceScroll(0);
+                if (ns !== false) return true;
                 $(this).niceScroll({
                     cursorcolor: "#a9b1bf",
                     cursorwidth: 7,
@@ -48,13 +50,19 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
     helpers.scrollToBottom = function(jqueryObject) {
         if (_.isUndefined(jqueryObject)) return true;
 
-        $(jqueryObject).getNiceScroll(0).resize().doScrollTop(99999999999*99999999999);
+        var niceScroll = $(jqueryObject).getNiceScroll(0);
+        if (!niceScroll) return true;
+
+        niceScroll.resize().doScrollTop(99999999999*99999999999);
     };
 
     helpers.resizeScroller = function(scrollerObject) {
         if (_.isUndefined(scrollerObject)) return true;
 
-        $(scrollerObject).getNiceScroll(0).resize();
+        var niceScroll = $(scrollerObject).getNiceScroll(0);
+        if (!niceScroll) return true;
+
+        niceScroll.resize();
     };
 
     helpers.resizeFullHeight = function() {

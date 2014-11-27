@@ -7,9 +7,10 @@ define('modules/ajaxify', [
     'pages/tickets',
     'pages/accounts',
     'modules/ui',
+    'modules/chat',
     'history'
 
-], function($, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ui) {
+], function($, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ui, chat) {
     $(window).on('statechangecomplete', function() {
         //Global
         $(document).foundation({
@@ -19,6 +20,7 @@ define('modules/ajaxify', [
                 }
             }
         });
+        chat.init();
         ui.init();
         helpers.init();
 

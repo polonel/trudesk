@@ -20,7 +20,9 @@ define('modules/ui', [
             });
         });
 
+        socket.removeAllListeners('updateMailNotifications');
         socket.on('updateMailNotifications', function(data) {
+            console.log('updateMailNotifications');
             var label = $('#btn_mail-notifications').find('> span');
             if (data < 1) {
                 label.hide();

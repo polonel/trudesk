@@ -95,21 +95,49 @@ module.exports = function(ws) {
             }
         });
 
-        socket.on('sendChat', function(data) {
-            if (typeof usersOnline[socket.id] === 'undefined') {
-                utils.sendToSelf(socket, 'sendChatMessage', {name: 'Error', message: 'Invalid Socket!'});
+        socket.on('spawnChatWindow', function(data) {
+            var user = null;
+            if (_.isUndefined(user)) return true;
+            _.find(usersOnline, function(v,k) {
+                if (String(v.user._id) === String(data))
+                    return user = v.user;
+            });
+
+            if (_.isNull(user)) return true;
+
+            utils.sendToSelf(socket,'spawnChatWindow', user);
+        });
+
+        socket.on('chatMessage', function(data) {
+            var to = data.to;
+            var from = data.from;
+            var od = data.type;
+            if (data.type === 's') {
+                data.type = 'r'
             } else {
-                if (io.sockets.manager.roomClients[socket.id]['/'+socket.room]) {
-                    if (_.size(chatHistory[socket.room]) > chatHistoryCounter) {
-                        chatHistory[socket.room].splice(0,1);
-                    } else {
-                        chatHistory[socket.room].push(data);
-                    }
-                    utils.sendToAllClientsInRoom(io, socket.room, 'sendChatMessage', data);
-                } else {
-                    utils.sendToSelf(socket, 'sendChatMessage', {name: 'Error', message: 'Invalid Chat Room'});
-                }
+                data.type = 's';
             }
+
+            var user = null;
+            var fromUser = null
+
+            _.find(usersOnline, function(v,k) {
+                 if (String(v.user._id) === String(to)) {
+                     user = v.user;
+                 }
+                 if (String(v.user._id) === String(from)) {
+                     fromUser = v.user;
+                 }
+            });
+
+            if (_.isNull(user) || _.isNull(fromUser)) {
+                socket.emit('chatMessage', {message: 'ERROR - Sending Message!'});
+                return true;
+            }
+
+            utils.sendToUser(sockets, usersOnline, user.username, 'chatMessage', data);
+            data.type = od;
+            utils.sendToUser(sockets, usersOnline, fromUser.username, 'chatMessage', data);
         });
 
 
