@@ -21,14 +21,25 @@ function start() {
 
     require('./src/database').init(function(err, db) {
         if (err) {
-            winston.error(err.message);
-            Process.exit();
+            winston.error('FETAL: ' + err.message);
+            winston.warn('Retrying to connect to MongoDB in 10secs...');
+            return setTimeout(function() {
+                require('./src/database').init(dbCallback);
+            }, 10000);
         }
 
-        var ws = require('./src/webserver');
-        ws.init(db, function() {
-            var ss = require('./src/socketserver')(ws);
-        });
+        dbCallback(err, db);
+    });
+}
+
+function dbCallback(err, db) {
+    if (err) {
+        return start();
+    }
+    var ws = require('./src/webserver');
+
+    ws.init(db, function(err) {
+        var ss = require('./src/socketserver')(ws);
     });
 }
 

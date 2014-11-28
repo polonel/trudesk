@@ -8,7 +8,6 @@ var express = require('express'),
 
 var passport = require('passport');
 
-
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
@@ -44,10 +43,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
 }
-
-//function staticRoutes(app, middleware) {
-//    app.use(express.static(path.join(__dirname, '../../public')));
-//}
 
 module.exports = function(app, middleware) {
     var router = express.Router();
