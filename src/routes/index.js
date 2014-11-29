@@ -37,6 +37,7 @@ function mainRoutes(router, middleware, controllers) {
 
     //Accounts
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
+    router.get('/accounts/add', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
 
     //API
     router.get('/api', controllers.api.index);
@@ -45,8 +46,6 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
-    var router = express.Router();
-
     mainRoutes(router, middleware, controllers);
 
     app.use('/', router);

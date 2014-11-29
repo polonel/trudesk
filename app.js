@@ -17,6 +17,13 @@ winston.add(winston.transports.File, {
 });
 
 function start() {
+    if (process.env.NODETIME_ACCOUNT_KEY) {
+        require('nodetime').profile({
+            accountKey: process.env.NODETIME_ACCOUNT_KEY,
+            appName: 'TruDesk'
+        });
+    }
+
     winston.info('Time: ' + new Date());
 
     require('./src/database').init(function(err, db) {
