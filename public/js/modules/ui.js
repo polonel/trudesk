@@ -10,6 +10,7 @@ define('modules/ui', [
     socketUi.init = function() {
         this.updateMailNotifications();
         this.updateComments();
+        this.updateUi();
     };
 
     socketUi.updateMailNotifications = function() {
@@ -22,7 +23,6 @@ define('modules/ui', [
 
         socket.removeAllListeners('updateMailNotifications');
         socket.on('updateMailNotifications', function(data) {
-            console.log('updateMailNotifications');
             var label = $('#btn_mail-notifications').find('> span');
             if (data < 1) {
                 label.hide();
@@ -32,6 +32,26 @@ define('modules/ui', [
             }
         });
     };
+
+    socketUi.updateUi = function() {
+        $(document).ready(function() {
+            var $button = $('*[data-updateUi]');
+            $.each($button, function() {
+                var self = $(this);
+                var $action = self.attr('data-updateUi');
+                if ($action.toLowerCase() === 'online-users') {
+                    self.off('click', updateUsersBtnClicked);
+                    self.on('click', updateUsersBtnClicked);
+                }
+
+            });
+        });
+    };
+
+    function updateUsersBtnClicked(e) {
+        socket.emit('updateUsers');
+        e.preventDefault();
+    }
 
     socketUi.updateComments = function() {
         $(document).ready(function() {

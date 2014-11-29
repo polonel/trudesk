@@ -53,7 +53,8 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         var niceScroll = $(jqueryObject).getNiceScroll(0);
         if (!niceScroll) return true;
 
-        niceScroll.resize().doScrollTop(99999999999*99999999999);
+        niceScroll.resize();
+        niceScroll.doScrollTop(99999999999*99999999999);
     };
 
     helpers.resizeScroller = function(scrollerObject) {

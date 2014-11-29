@@ -31,7 +31,6 @@ define('modules/chat',[
 
     socket.removeAllListeners('updateUsers');
     socket.on('updateUsers', function(data) {
-        console.log('updateUsers');
         var html = '';
         var onlineList = $('#online-Users-List').find('> ul');
         onlineList.html('');
@@ -69,19 +68,32 @@ define('modules/chat',[
         var type = data.type;
         var to = data.to;
         var from = data.from;
+        var chatBox = '',
+            chatMessage = '',
+            chatMessageList = '',
+            scroller = '',
+            selector = '';
+
         if (type === 's') {
-            var chatBox = $('.chat-box[data-chat-userId="' + to + '"]');
-            var chatMessage = createChatMessageDiv(data.message);
-            var chatMessageList = chatBox.find('.chat-message-list:first');
-            var scroller = chatBox.find('.chat-box-messages');
+            chatBox = $('.chat-box[data-chat-userId="' + to + '"]');
+            chatMessage = createChatMessageDiv(data.message);
+            chatMessageList = chatBox.find('.chat-message-list:first');
+            scroller = chatBox.find('.chat-box-messages');
             chatMessageList.append(chatMessage);
             helpers.scrollToBottom(scroller);
         } else if (type === 'r') {
-            var chatBox = $('.chat-box[data-chat-userId="' + from + '"]');
-            var chatMessage = createChatMessageDiv(data.message);
-            var chatMessageList = chatBox.find('.chat-message-list:first');
-            var scroller = chatBox.find('.chat-box-messages');
+            selector = '.chat-box[data-chat-userId="' + from + '"]';
+            chatBox = $(selector);
+            if (chatBox.length < 1) {
+                chatClient.openChatWindow(data.fromUser);
+                chatBox = $(selector);
+            }
+
+            chatMessage = createChatMessageFromUser(data.fromUser, data.message);
+            chatMessageList = chatBox.find('.chat-message-list:first');
             chatMessageList.append(chatMessage);
+
+            scroller = chatBox.find('.chat-box-messages');
             helpers.scrollToBottom(scroller);
         }
     });
@@ -154,6 +166,12 @@ define('modules/chat',[
         var username = $('.profile-name[data-username]').attr('data-username');
         if (user.username === username) return true;
 
+        var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userId="' + user._id + '"]');
+        if (cWindow.length > 0) {
+            cWindow.find('textarea').focus();
+            return true;
+        }
+
         var html = '<div class="chat-box-position">';
             html += '<div class="chat-box" data-chat-userId="' + user._id + '">';
             html += '<div class="chat-box-title">';
@@ -185,6 +203,21 @@ define('modules/chat',[
         html += '<div class="chat-text chat-text-user">';
         html += '<div class="chat-text-inner"><span>' + message + '</span>';
         html += '</div></div></div></div>';
+
+        return html;
+    }
+
+    function createChatMessageFromUser(user, message) {
+        var html  = '<div class="chat-message clearfix">';
+            html += '<div class="chat-user-profile"><a href="#"><img src="/img/jon_profile.jpg" alt="Jon profile"/></a></div>';
+            html += '<div class="chat-text-wrapper">';
+            html += '<div class="chat-text">';
+            html += '<div class="chat-text-inner">';
+            html += '<span>' + message + '</span>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
+            html += '</div>';
 
         return html;
     }

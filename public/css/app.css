@@ -1279,14 +1279,17 @@ table.dataTable {
         border-top: 1px solid #223140;
         padding: 7px; }
         .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message {
-          margin-bottom: 8px;
-          position: relative; }
-          .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message.chat-message-user .chat-text-wrapper {
-            margin-left: 60px; }
-            .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message.chat-message-user .chat-text-wrapper .chat-text {
-              background: #e74c3c;
-              color: white;
-              float: right; }
+          margin-bottom: 10px;
+          position: relative;
+          min-height: 35px; }
+          .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message.chat-message-user {
+            min-height: 25px; }
+            .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message.chat-message-user .chat-text-wrapper {
+              margin-left: 60px; }
+              .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message.chat-message-user .chat-text-wrapper .chat-text {
+                background: #e74c3c;
+                color: white;
+                float: right; }
           .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message .chat-user-profile {
             height: 34px;
             width: 34px;

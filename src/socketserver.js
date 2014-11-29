@@ -69,6 +69,10 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('updateUsers', function(data) {
+            utils.sendToSelf(socket, 'updateUsers', usersOnline);
+        });
+
         socket.on('joinChatServer', function(data) {
             var user = socket.request.user;
             var exists = false;
@@ -134,6 +138,9 @@ module.exports = function(ws) {
                 socket.emit('chatMessage', {message: 'ERROR - Sending Message!'});
                 return true;
             }
+
+            data.toUser = user;
+            data.fromUser = fromUser;
 
             utils.sendToUser(sockets, usersOnline, user.username, 'chatMessage', data);
             data.type = od;
