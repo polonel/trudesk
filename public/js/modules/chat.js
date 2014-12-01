@@ -10,13 +10,7 @@ define('modules/chat',[
     var socket = io.connect();
 
     chatClient.init = function() {
-        chatClient.user = {};
-        chatClient.users = {};
-        chatClient.rooms = [];
-        chatClient.error = {};
-        chatClient.username = '';
-        chatClient.joined = false;
-        chatClient.timeout = undefined;
+        
     };
 
     socket.removeAllListeners('connect');
