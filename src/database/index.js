@@ -15,16 +15,31 @@ mongoose.connection.on('connected', function() {
     winston.info('Connected to MongoDB');
 });
 
-var options = { server: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
-                replset: { socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
+var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } },
+                replset: { auto_reconnect: true, socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } } };
+
+var connectWithRetry = function(callback) {
+    return mongoose.connect(CONNECTION_URI, options, function(e) {
+        if (e) {
+            setTimeout(connectWithRetry, 10000);
+            return false;
+        }
+        db.connection = mongoose.connection;
+        callback(e, db);
+    });
+};
+
+function run(callback) {
+    d.run(function() {
+        connectWithRetry(callback);
+    });
+}
 
 module.exports.init = function(callback) {
-    d.run(function() {
-        mongoose.connect(CONNECTION_URI, options, function(e) {
-            db.connection = mongoose.connection;
+    mongoose.connect(CONNECTION_URI, options, function(e) {
+        db.connection = mongoose.connection;
 
-            callback(e, db);
-        });
+        callback(e, db);
     });
 };
 

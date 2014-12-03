@@ -28,6 +28,7 @@
     "nconf": "^0.6.9",
     "nodemailer": "^1.3.0",
     "passport": "^0.2.1",
+    "passport-http": "^0.2.2",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.4.1",
     "serve-favicon": "~2.1.6",

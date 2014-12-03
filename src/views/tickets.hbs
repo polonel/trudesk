@@ -37,10 +37,16 @@
                     </td>
                     <td class="ticket-status ticket-new"><span>New</span></td>
                     <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
-                    <td>Today 10:53a</td>
+                    <td>
+                        {{#isNotNull updated}}
+                            {{formatDate updated "MMM DD \at h:mma"}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
                 </tr>
             {{/if_eq}}
             {{#is status 1}}
@@ -51,10 +57,16 @@
                     </td>
                     <td class="ticket-status ticket-open"><span>Open</span></td>
                     <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
-                    <td>Today 10:53a</td>
+                    <td>
+                        {{#isNotNull updated}}
+                            {{formatDate updated "MMM DD \at h:mma"}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
                 </tr>
             {{/is}}
             {{#is status 2}}
@@ -65,10 +77,36 @@
                     </td>
                     <td class="ticket-status ticket-pending"><span>Pending</span></td>
                     <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
-                    <td>Today 10:53a</td>
+                    <td>
+                        {{#isNotNull updated}}
+                            {{formatDate updated "MMM DD \at h:mma"}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
+                </tr>
+            {{/is}}
+            {{#is status 3}}
+                <tr class="ticket-closed" data-ticket="{{uid}}">
+                    <td>
+                        <input id="c_{{_id}}" type="checkbox"/>
+                        <label for="c_{{_id}}"></label>
+                    </td>
+                    <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                    <td>{{subject}}</td>
+                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                    <td>{{owner.fullname}}</td>
+                    <td>{{group.name}}</td>
+                    <td>
+                        {{#isNotNull updated}}
+                            {{formatDate updated "MMM DD \at h:mma"}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
                 </tr>
             {{/is}}
         {{/each}}

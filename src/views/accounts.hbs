@@ -8,7 +8,7 @@
     <p class="left">Accounts</p>
     <div class="right">
         <ul class="button-group">
-            {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/add" role="button" class="btn">Add User</a></li>{{/canUser}}
+            {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/create" role="button" class="btn">Create User</a></li>{{/canUser}}
         </ul>
     </div>
 </div>
@@ -28,21 +28,19 @@
         </tr>
         </thead>
         <tbody>
-        {{#each data.tickets}}
-            {{#if_eq status compare=0}}
-                <tr class="ticket-new" data-ticket="{{uid}}">
+        {{#each data.accounts}}
+                <tr class="ticket-new" data-ticket="">
                     <td>
                         <input id="c_{{_id}}" type="checkbox"/>
                         <label for="c_{{_id}}"></label>
                     </td>
                     <td class="ticket-status ticket-new"><span>New</span></td>
-                    <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
+                    <td>{{fullname}}</td>
+                    <td>{{role}}</td>
+                    <td></td>
+                    <td></td>
                     <td>Today 10:53a</td>
                 </tr>
-            {{/if_eq}}
             {{#is status 1}}
                 <tr class="ticket-open" data-ticket="{{uid}}">
                     <td>
@@ -51,7 +49,7 @@
                     </td>
                     <td class="ticket-status ticket-open"><span>Open</span></td>
                     <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
+                    <td>{{formatDate created_at "MMM DD"}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
                     <td>Today 10:53a</td>

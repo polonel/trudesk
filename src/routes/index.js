@@ -37,10 +37,13 @@ function mainRoutes(router, middleware, controllers) {
 
     //Accounts
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
-    router.get('/accounts/add', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
+    router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
+    router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postAccount);
 
     //API
     router.get('/api', controllers.api.index);
+    router.get('/api/tickets', middleware.api, controllers.api.users.get);
+    router.get('/api/tickets/:id', middleware.api, controllers.api.users.get);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
 }

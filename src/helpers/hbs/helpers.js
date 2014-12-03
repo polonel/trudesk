@@ -65,7 +65,7 @@ var helpers = {
         }
     },
 
-    isnt: function (value, test, options) {
+    isnot: function (value, test, options) {
         if (value !== test) {
             return options.fn(this);
         } else {
@@ -440,8 +440,23 @@ var helpers = {
 
     formatDate: function(date, format) {
         return moment(date).format(format);
-    }
+    },
 
+    isNotNull: function(obj, options) {
+        if (!(_.isUndefined(obj) || _.isNull(obj))) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
+    isNull: function(obj) {
+        if((_.isUndefined(obj) || _.isNull(obj))) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    }
 };
 
 // Aliases

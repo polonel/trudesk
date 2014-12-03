@@ -778,24 +778,24 @@ input[type="checkbox"]:checked + label {
 div#ticketTable_wrapper {
   margin-bottom: 0; }
 
-#ticketTable tr {
+.pDataTable tr {
   height: 52px;
   padding-right: 15px; }
-#ticketTable tbody tr {
+.pDataTable tbody tr {
   background: white; }
-  #ticketTable tbody tr:hover {
+  .pDataTable tbody tr:hover {
     cursor: pointer;
     background: #f5f5f6; }
-  #ticketTable tbody tr.ticket-new td, #ticketTable tbody tr.ticket-pending td {
+  .pDataTable tbody tr.ticket-new td {
     font-weight: 600; }
-  #ticketTable tbody tr.ticket-closed td {
+  .pDataTable tbody tr.ticket-closed td {
     font-weight: 300;
     color: #95a1af; }
-  #ticketTable tbody tr td.group {
+  .pDataTable tbody tr td.group {
     background: #e9ecf2; }
-    #ticketTable tbody tr td.group:hover {
+    .pDataTable tbody tr td.group:hover {
       cursor: default; }
-    #ticketTable tbody tr td.group span:before {
+    .pDataTable tbody tr td.group span:before {
       content: "Status ";
       font-weight: 600; }
 

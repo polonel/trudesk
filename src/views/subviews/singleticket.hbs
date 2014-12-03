@@ -78,22 +78,24 @@
                     </div>
                 {{/foreach}}
             </div>
-            <div class="ticket-reply clearfix">
-                <img src="/img/profile.png" alt=""/>
-                <!--<ul class="reply-type">-->
+            {{#isnot data.ticket.status 3}}
+                <div class="ticket-reply clearfix">
+                    <img src="/img/profile.png" alt=""/>
+                    <!--<ul class="reply-type">-->
 
-                <!--</ul>-->
-                <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
-                    <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
-                    <div class="comment-box">
-                        <textarea name="commentReply" id="commentReply" cols="2" rows="10" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                        <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
-                    </div>
-                    <div class="right">
-                        <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
-                    </div>
-                </form>
-            </div>
+                    <!--</ul>-->
+                    <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
+                        <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                        <div class="comment-box">
+                            <textarea name="commentReply" id="commentReply" cols="2" rows="10" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                            <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
+                        </div>
+                        <div class="right">
+                            <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
+                        </div>
+                    </form>
+                </div>
+            {{/isnot}}
         </div>
     </div>
 </div>

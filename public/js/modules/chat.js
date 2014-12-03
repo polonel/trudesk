@@ -10,7 +10,7 @@ define('modules/chat',[
     var socket = io.connect();
 
     chatClient.init = function() {
-        
+
     };
 
     socket.removeAllListeners('connect');

@@ -148,7 +148,6 @@ ticketsController.submitTicket = function(req, res, next) {
         group: req.body.tGroup,
         status: req.body.tStatus,
         date: new Date(),
-        updated: new Date(),
         subject: req.body.tSubject,
         issue: marked(req.body.tIssue),
         priority: req.body.tPriority,
@@ -178,7 +177,7 @@ ticketsController.postcomment = function(req, res, next) {
             date: new Date(),
             comment: marked(comment)
         };
-
+        t.updated = Date.now();
         t.comments.push(Comment);
         t.save();
         res.status(200);

@@ -7,13 +7,11 @@ var apiController = {};
 apiController.content = {};
 
 apiController.index = function(req, res, next) {
-    "use strict";
     res.redirect('login');
 };
 
 apiController.users = {};
 apiController.users.get = function(req, res, next) {
-  "use strict";
   var userModel = require('../models/user');
   userModel.findAll(function(err, items) {
       if (err) {
@@ -26,7 +24,6 @@ apiController.users.get = function(req, res, next) {
 };
 
 apiController.users.insert = function(req, res, next) {
-    "use strict";
     var data = req.body;
     var userModel = require('../models/user');
 
