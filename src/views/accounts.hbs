@@ -15,60 +15,32 @@
 
 <div class="full-height">
 <div class="accountList full-height">
-    <table id="accountsTable" class="pDataTable">
+    <table id="accountsTable" class="pDataTable stripe">
         <thead>
         <tr>
             <th></th>
-            <th>Status</th>
-            <th>Subject</th>
-            <th>Created</th>
-            <th>Requester</th>
-            <th>Group</th>
-            <th>Updated</th>
+            <th>Name</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Title</th>
+            <th>Groups</th>
+            <th>Role</th>
         </tr>
         </thead>
         <tbody>
         {{#each data.accounts}}
-                <tr class="ticket-new" data-ticket="">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-new"><span>New</span></td>
-                    <td>{{fullname}}</td>
-                    <td>{{role}}</td>
-                    <td></td>
-                    <td></td>
-                    <td>Today 10:53a</td>
-                </tr>
-            {{#is status 1}}
-                <tr class="ticket-open" data-ticket="{{uid}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-open"><span>Open</span></td>
-                    <td>{{subject}}</td>
-                    <td>{{formatDate created_at "MMM DD"}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>Today 10:53a</td>
-                </tr>
-            {{/is}}
-            {{#is status 2}}
-                <tr class="ticket-pending" data-ticket="{{uid}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-pending"><span>Pending</span></td>
-                    <td>{{subject}}</td>
-                    <td>{{formatDate createdate "MMM DD"}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>Today 10:53a</td>
-                </tr>
-            {{/is}}
+            <tr ng-click="editAccount($event)" data-username="{{username}}">
+                <td>
+                    <input id="c_{{_id}}" type="checkbox"/>
+                    <label for="c_{{_id}}"></label>
+                </td>
+                <td>{{fullname}}</td>
+                <td>{{username}}</td>
+                <td>{{email}}</td>
+                <td>{{title}}</td>
+                <td>{{{split groups "<br />"}}} </td>
+                <td>{{firstCap role}}</td>
+            </tr>
         {{/each}}
         </tbody>
     </table>

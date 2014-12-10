@@ -39,6 +39,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
     router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
     router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postAccount);
+    router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
 
     //API
     router.get('/api', controllers.api.index);

@@ -20,33 +20,30 @@ define('pages/accounts', [
                 bPaginate: false,
                 bInfo: false,
                 scrollY: '100%',
+                order: [[1, 'asc']],
                 columnDefs: [
+                    {   "sType": "html",
+                        "render": function(data, type, row) {
+                            return data;
+                        },
+                        targets: 5
+                    },
                     {"width": "50px", "targets": 0},
-                    {"width": "100px", "targets": 1},
-                    {"width": "30%", "targets": 2}
+                    {"width": "150px", "targets": 1},
+                    {"width": "150px", "targets": 2},
+                    {"width": "27%", "targets": 3},
+                    {"width": "120px", "targets": 4}
                 ]
-            }).rowGrouping({
-                iGroupingColumnIndex: 1,
-                sGroupingColumnSortDirection: "asc",
-                iGroupingOrderByColumnIndex: 0,
-                bHideGroupingColumn: false,
-                bHideGroupingOrderByColumn: false
             });
+//                .rowGrouping({
+//                iGroupingColumnIndex: 5,
+//                sGroupingColumnSortDirection: "asc",
+//                iGroupingOrderByColumnIndex: 1,
+//                bHideGroupingColumn: false,
+//                bHideGroupingOrderByColumn: false
+//            });
 
             helpers.resizeDataTables('.accountList');
-
-            var tableRow = table.find('tr[data-ticket] > td');
-            if (tableRow.length !== 0) {
-                tableRow.on('click', function(e) {
-                    var i = $(this).parent('tr[data-ticket]').attr('data-ticket');
-                    var j = $(this).find('input[type=checkbox]');
-                    if ($(j).length !== 0)
-                        return true;
-
-                    //handle ticket link here
-                    History.pushState(null, 'Ticket - ' + i, '/tickets/' + i);
-                });
-            }
         });
     };
 

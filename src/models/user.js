@@ -6,7 +6,7 @@ var _ = require('lodash');
 var COLLECTION = "accounts";
 
 var userSchema = mongoose.Schema({
-        username:   { type: String, required: true },
+        username:   { type: String, required: true, unique: true },
         password:   { type: String, required: true },
         fullname:   { type: String, required: true },
         email:      { type: String, required: true },
@@ -33,6 +33,14 @@ userSchema.statics.getUser = function(oId, callback) {
     }
 
     return this.model(COLLECTION).findOne({_id: oId}, callback);
+};
+
+userSchema.statics.getUserByUsername = function(user, callback) {
+    if (_.isUndefined(user)) {
+        return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
+    }
+
+    return this.model(COLLECTION).findOne({username: user}, callback);
 };
 
 userSchema.statics.insertUser = function(data, callback) {

@@ -442,12 +442,26 @@ var helpers = {
         return moment(date).format(format);
     },
 
+    firstCap: function(str) {
+        var _s = require('underscore.string');
+        return _s.capitalize(str);
+    },
+
     isNotNull: function(obj, options) {
         if (!(_.isUndefined(obj) || _.isNull(obj))) {
             return options.fn(this);
         } else {
             return options.inverse(this);
         }
+    },
+
+    split: function(arr, sep) {
+        var str = "";
+        _.each(arr, function(obj) {
+            str += obj + " " + sep + " ";
+        });
+
+        return str;
     },
 
     isNull: function(obj) {

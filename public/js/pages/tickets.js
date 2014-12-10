@@ -23,8 +23,9 @@ define('pages/tickets', [
                 columnDefs: [
                     {"width": "50px", "targets": 0},
                     {"width": "100px", "targets": 1},
-                    {"width": "30%", "targets": 2},
-                    {"width": "110px", "targets": 3}
+                    {"width": "65px", "targets": 2},
+                    {"width": "30%", "targets": 3},
+                    {"width": "110px", "targets": 4}
                 ]
             }).rowGrouping({
                 iGroupingColumnIndex: 1,

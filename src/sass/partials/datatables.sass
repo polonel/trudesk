@@ -9,12 +9,45 @@
       border: none
 
 .pDataTable
-  td
-    position: relative
+  &.stripe
+    tr:nth-child(2)
+      background: darken(white, 3%)
+      &:hover
+        cursor: pointer
+        background: #f5f5f6
 
-    label
-      top: 20px
-      left: 5px
+  tr
+    height: 52px
+    padding-right: 15px
+  tbody
+    tr
+      background: white
+      &:hover
+        cursor: pointer
+        background: #f5f5f6
+      &.ticket-new
+        td
+          font-weight: 600
+      &.ticket-closed
+        td
+          font-weight: 300
+          color: #95a1af
+
+      td
+        position: relative
+
+        label
+          top: 39%
+          left: 5px
+
+      td.group
+        background: #e9ecf2
+        &:hover
+          cursor: default
+
+        span:before
+          content: "Status "
+          font-weight: 600
 
 table.dataTable
   margin-top: 0 !important

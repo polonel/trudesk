@@ -25,10 +25,68 @@ accountsController.get = function(req, res, next) {
             userSchema.findAll(function(err, results) {
                 callback(err, results);
             });
+
+        }, function (users, callback) {
+            var result = [];
+            async.eachSeries(users, function(u, c) {
+                var user = u.toObject();
+                groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
+                    if (!g) { c(); return;}
+                    user.groups = [];
+                    _.each(g, function(gg) {
+                        user.groups.push(gg.name)
+                    });
+                    result.push(user);
+                    c();
+                })
+            }, function(err) {
+                callback(null, result);
+            });
+        }
+    ], function(err, rr) {
+        if (err) return res.render('error', err);
+        self.content.data.accounts = rr;
+
+        res.render('accounts', self.content);
+    });
+};
+
+accountsController.editAccount = function(req, res, next) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:edit')) {
+        req.flash('message', 'Permission Denied.');
+        return res.redirect('/accounts');
+    }
+
+    var username = req.params.username;
+    if (_.isUndefined(username)) {
+        req.flash('message', 'Invalid User.');
+        return res.redirect('/accounts');
+    }
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Accounts";
+    self.content.nav = 'accounts';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.account = {};
+
+    async.parallel([
+        function(callback) {
+           userSchema.getUserByUsername(username, function(err, obj) {
+                callback(err, obj);
+           });
         }
     ], function(err, result) {
-        if (err) return res.render('error', err);
-        self.content.data.accounts = result;
+        if (err) {
+            req.flash('message', err.message);
+            return res.redirect('/accounts');
+        }
+
+        self.content.data.account = result;
 
         res.render('accounts', self.content);
     });

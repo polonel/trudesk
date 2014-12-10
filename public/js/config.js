@@ -4,6 +4,8 @@ requirejs.config({
         //Always Load
         jquery:         'vendor/jquery/jquery',
         foundation:     'vendor/foundation/foundation.min',
+        angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min',
+        angularRoute:  'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',
@@ -31,6 +33,12 @@ requirejs.config({
         foundation: {
             deps: ['jquery', 'modernizr', 'fastclick', 'placeholder', 'history']
         },
+
+        angular: {
+            exports: 'angular'
+        },
+
+        angularRoute: ['angular'],
 
         datatables: {
             deps: ['jquery']
@@ -79,5 +87,8 @@ requirejs.config({
         autogrow: {
             deps: ['jquery']
         }
-    }
+    },
+    priority: [
+        "angular"
+    ]
 });

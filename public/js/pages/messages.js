@@ -64,10 +64,15 @@ define('pages/messages', [
     };
 
     messagesPage.findActive = function() {
+        var path = location.pathname.split('/')[1];
+        if (path.toLowerCase() !== 'messages') return;
         var mId = location.pathname.split('/')[2];
         if (!mId) return true;
 
-        $('ul.message-items > li[data-messageId=' + mId + ']').addClass('active');
+        var item = $('ul.message-items > li[data-messageId=' + mId + ']');
+        if (item) {
+            item.addClass('active');
+        }
     };
 
 

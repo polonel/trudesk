@@ -1,5 +1,6 @@
 define('modules/ajaxify', [
     'jquery',
+    'angular',
     'modules/helpers',
     'modules/navigation',
     'modules/flotchart',
@@ -10,9 +11,14 @@ define('modules/ajaxify', [
     'modules/chat',
     'history'
 
-], function($, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ui, chat) {
+], function($, angular, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ui, chat) {
     $(window).on('statechangecomplete', function() {
         //Global
+        var $ele = $('#page-content');
+        $ele.ready(function() {
+            angular.bootstrap($ele, ['trudesk']);
+        });
+
         $(document).foundation({
             abide: {
                 patterns: {
