@@ -86,9 +86,9 @@ accountsController.editAccount = function(req, res, next) {
             return res.redirect('/accounts');
         }
 
-        self.content.data.account = result;
+        self.content.data.account = _.first(result);
 
-        res.render('accounts', self.content);
+        res.render('subviews/editAccount', self.content);
     });
 };
 

@@ -34,9 +34,12 @@ div#ticketTable_wrapper
     font-weight: 500
 
 .page-top-comments
-  .active > a
+  .active > a,
+  .active > button
     background: darken(#cdd5e4, 1%)
-  a.btn
+  a.btn,
+  button.btn,
+  button
     background: #cdd5e4
     display: block
     color: #707989
@@ -184,7 +187,8 @@ div#ticketTable_wrapper
 
 
 //Ticket Form
-form.ticket-form
+form.ticket-form,
+form.form
   label
     font-family: "Roboto", sans-serif
     font-size: 14px

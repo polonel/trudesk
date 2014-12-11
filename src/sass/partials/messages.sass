@@ -140,10 +140,12 @@ input[type="checkbox"]:checked + label
 
 //Navigation Components
 .button-group
-  li.active > a
+  li.active > a,
+  li.active > button
     background: #e74c3c
     color: white
-  a.btn
+  a.btn,
+  button
     display: block
     color: #707e9b
     font-family: "Source Sans Pro", sans-serif
@@ -153,6 +155,13 @@ input[type="checkbox"]:checked + label
     padding: 4px 16px
     +borderRadius(3px)
     background: inherit
+    border-left: none !important
+    border-color: transparent
+    line-height: inherit
+
+    &:active,
+    &:focus
+      outline: none
 
     &:hover
       background: #e74c3c

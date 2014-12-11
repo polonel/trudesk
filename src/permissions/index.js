@@ -28,7 +28,7 @@ var roles = {
         id: "user",
         name: "User",
         description: "User",
-        allowedAction: ["ticket:create delete edit", "comment:*", "account:*"]
+        allowedAction: ["ticket:create delete edit", "comment:*" ]
     }
 };
 
@@ -50,8 +50,8 @@ var canThis = function(role, a) {
         if (_s.startsWith(value, actionType + ':')) return value;
     });
 
-    if (_.isUndefined(result)) return false;
-    if (_.size(result) < 1) {
+    if (_.isUndefined(result) || _.size(result) < 1) return false;
+    if (_.size(result) === 1) {
         if (result[0] === '*') return true;
     }
 

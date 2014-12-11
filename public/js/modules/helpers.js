@@ -101,11 +101,12 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
     };
     
     helpers.hideAllpDropDowns = function() {
+        var $self = this;
         $('a[data-notifications]').each(function() {
             var drop = $('#' + $(this).attr('data-notifications'));
             if (drop.hasClass('pDropOpen')) {
                 drop.removeClass('pDropOpen');
-                hideDropDownScroll();
+                $self.hideDropDownScroll();
             }
         });
     };

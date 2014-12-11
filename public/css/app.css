@@ -147,6 +147,7 @@ button:focus,
 .button:focus {
   background-color: #e43725; }
 
+button,
 a.button {
   color: white;
   font-family: "Source Sans Pro", sans-serif;
@@ -157,8 +158,10 @@ a.button {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   background: #e74c3c; }
+  button.dropdown,
   a.button.dropdown {
     padding-right: 40px; }
+    button.dropdown:after,
     a.button.dropdown:after {
       width: auto;
       height: auto;
@@ -168,9 +171,11 @@ a.button {
       content: "\f078";
       border: none;
       font-size: 12px; }
+  button:hover,
   a.button:hover {
     background: #e43725;
     color: white; }
+  button i,
   a.button i {
     font-weight: normal;
     margin-right: 10px;
@@ -743,10 +748,12 @@ input[type="checkbox"]:checked + label {
     line-height: 30px;
     margin-bottom: 40px; }
 
-.button-group li.active > a {
+.button-group li.active > a,
+.button-group li.active > button {
   background: #e74c3c;
   color: white; }
-.button-group a.btn {
+.button-group a.btn,
+.button-group button {
   display: block;
   color: #707e9b;
   font-family: "Source Sans Pro", sans-serif;
@@ -757,11 +764,20 @@ input[type="checkbox"]:checked + label {
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  background: inherit; }
-  .button-group a.btn:hover {
+  background: inherit;
+  border-left: none !important;
+  border-color: transparent;
+  line-height: inherit; }
+  .button-group a.btn:active, .button-group a.btn:focus,
+  .button-group button:active,
+  .button-group button:focus {
+    outline: none; }
+  .button-group a.btn:hover,
+  .button-group button:hover {
     background: #e74c3c;
     color: white; }
-  .button-group a.btn i {
+  .button-group a.btn i,
+  .button-group button i {
     font-weight: normal;
     margin-right: 10px;
     font-size: 14px; }
@@ -815,9 +831,12 @@ div#ticketTable_wrapper {
   .floating-ticket-status .ticket-status span {
     font-weight: 500; }
 
-.page-top-comments .active > a {
+.page-top-comments .active > a,
+.page-top-comments .active > button {
   background: #cad2e2; }
-.page-top-comments a.btn {
+.page-top-comments a.btn,
+.page-top-comments button.btn,
+.page-top-comments button {
   background: #cdd5e4;
   display: block;
   color: #707989;
@@ -830,9 +849,13 @@ div#ticketTable_wrapper {
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   height: 28px; }
-  .page-top-comments a.btn:hover {
+  .page-top-comments a.btn:hover,
+  .page-top-comments button.btn:hover,
+  .page-top-comments button:hover {
     background: #c3cddf; }
-  .page-top-comments a.btn i {
+  .page-top-comments a.btn i,
+  .page-top-comments button.btn i,
+  .page-top-comments button i {
     font-weight: normal;
     margin-right: 10px;
     font-size: 14px; }
@@ -978,13 +1001,17 @@ div#ticketTable_wrapper {
     .comments-wrapper .ticket-reply button[type=submit]:active, .comments-wrapper .ticket-reply button[type=submit]:focus {
       outline: none; }
 
-form.ticket-form label {
+form.ticket-form label,
+form.form label {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   font-weight: normal;
   color: #2c3e50;
   margin-bottom: 3px; }
-form.ticket-form input, form.ticket-form textarea, form.ticket-form select {
+form.ticket-form input, form.ticket-form textarea, form.ticket-form select,
+form.form input,
+form.form textarea,
+form.form select {
   font-family: "Roboto", sans-serif;
   font-size: 14px;
   color: #223140;
@@ -993,13 +1020,17 @@ form.ticket-form input, form.ticket-form textarea, form.ticket-form select {
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   border: 1px solid #9aa1ad; }
-  form.ticket-form input:focus, form.ticket-form textarea:focus, form.ticket-form select:focus {
+  form.ticket-form input:focus, form.ticket-form textarea:focus, form.ticket-form select:focus,
+  form.form input:focus,
+  form.form textarea:focus,
+  form.form select:focus {
     background: #fdfefe;
     box-shadow: none;
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     outline: none; }
-form.ticket-form textarea {
+form.ticket-form textarea,
+form.form textarea {
   resize: none; }
 
 .dataTables_scrollHeadInner {

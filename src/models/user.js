@@ -11,8 +11,7 @@ var userSchema = mongoose.Schema({
         fullname:   { type: String, required: true },
         email:      { type: String, required: true },
         role:       { type: String, required: true },
-        title:      String,
-        image:      String
+        title:      String
     });
 
 userSchema.methods.generateHash = function(password) {
