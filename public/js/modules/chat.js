@@ -35,7 +35,7 @@ define('modules/chat',[
             html += '<li>';
             html += '<a class="messageNotification no-ajaxify" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
             html += '<div class="clearfix">';
-            html += '<div class="profilePic left"><img src="/img/profile.png" alt="profile"/></div>';
+            html += '<div class="profilePic left"><img src="/uploads/users/' + onlineUser.image + '" alt="profile"/></div>';
             html += '<div class="messageAuthor"><strong>' + onlineUser.fullname + '</strong></div>';
             html += '<div class="messageSnippet">';
             html += '<span>' + onlineUser.title + '</span>';
@@ -203,7 +203,7 @@ define('modules/chat',[
 
     function createChatMessageFromUser(user, message) {
         var html  = '<div class="chat-message clearfix">';
-            html += '<div class="chat-user-profile"><a href="#"><img src="/img/jon_profile.jpg" alt="Jon profile"/></a></div>';
+            html += '<div class="chat-user-profile"><a href="#"><img src="/uploads/users/' + user.image + '" alt="' + user.fullname + '"/></a></div>';
             html += '<div class="chat-text-wrapper">';
             html += '<div class="chat-text">';
             html += '<div class="chat-text-inner">';

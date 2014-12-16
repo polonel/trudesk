@@ -39,6 +39,12 @@ pre {
 .nomargin {
   margin: 0 !important; }
 
+.marginright20 {
+  margin-right: 20px !important; }
+
+.marginright30 {
+  margin-right: 30px !important; }
+
 .padtop20 {
   padding-top: 20px !important; }
 
@@ -76,6 +82,19 @@ pre {
 
 .hide {
   display: none !important; }
+
+.cursor-pointer {
+  cursor: default !important; }
+  .cursor-pointer:hover {
+    cursor: pointer !important; }
+
+.profilePic {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  -webkit-border-radius: 50%;
+  -moz-border-radius: 50%; }
 
 a.blackLink {
   color: black !important; }
@@ -267,6 +286,12 @@ div.ptooltip-box {
   -webkit-border-radius: 5px;
   -moz-border-radius: 5px; }
 
+.largeProfilePic {
+  width: 256px;
+  height: 256px;
+  border: 2px solid white;
+  background: gray; }
+
 .top-nav,
 .top-bar {
   background: #2c3e50;
@@ -322,6 +347,8 @@ div.ptooltip-box {
     padding: 0 !important;
     line-height: 10px !important; }
   .top-bar-section ul li.profile-area img {
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%; }
@@ -1007,7 +1034,8 @@ form.form label {
   font-size: 14px;
   font-weight: normal;
   color: #2c3e50;
-  margin-bottom: 3px; }
+  margin-bottom: 3px;
+  display: inline-block; }
 form.ticket-form input, form.ticket-form textarea, form.ticket-form select,
 form.form input,
 form.form textarea,
@@ -1032,6 +1060,10 @@ form.form select {
 form.ticket-form textarea,
 form.form textarea {
   resize: none; }
+
+input[type="text"][disabled] {
+  color: gray;
+  background: #dbe0ee; }
 
 .dataTables_scrollHeadInner {
   width: 100% !important;

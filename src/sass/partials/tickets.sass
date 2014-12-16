@@ -195,6 +195,7 @@ form.form
     font-weight: normal
     color: #2c3e50
     margin-bottom: 3px
+    display: inline-block
   input,textarea,select
     font-family: "Roboto", sans-serif
     font-size: 14px
@@ -209,3 +210,7 @@ form.form
 
   textarea
     resize: none
+
+input[type="text"][disabled]
+  color: gray
+  background: darken(#eceff6, 5%)

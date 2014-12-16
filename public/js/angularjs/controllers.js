@@ -1,19 +1,6 @@
-define(['angular', 'underscore', 'history'], function(angular, _) {
-    return angular.module('trudesk.controllers', [])
+define(['angular', 'underscore', 'history', 'angularjs/controllers/accounts'], function(angular, _) {
+    return angular.module('trudesk.controllers', ['trudesk.controllers.accounts'])
         .controller('truCtrl', function($scope) {
-            $scope.editAccount = function($event) {
-                if (_.isNull($event.target) || _.isUndefined($event.target) ||
-                    $event.target.tagName.toLowerCase() === 'label' ||
-                    $event.target.tagName.toLowerCase() === 'input')
-                    return true;
-
-                //currentTarget = ng-click() bound to. "<tr>"
-                var username = $event.currentTarget.dataset.username;
-                if (!username) return true;
-
-                History.pushState(null, null, '/accounts/' + username);
-            };
-
             $scope.submitForm = function(formName) {
                 if (_.isNull(formName) || _.isUndefined(formName)) return true;
 

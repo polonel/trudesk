@@ -74,19 +74,25 @@ accountsController.editAccount = function(req, res, next) {
     self.content.data.common = req.viewdata;
     self.content.data.account = {};
 
-    async.parallel([
-        function(callback) {
-           userSchema.getUserByUsername(username, function(err, obj) {
+    async.parallel({
+        roles: function (callback) {
+            callback(null, permissions.roles);
+        },
+
+        account: function(callback) {
+            userSchema.getUserByUsername(username, function (err, obj) {
                 callback(err, obj);
-           });
+            });
         }
-    ], function(err, result) {
+    }, function(err, result) {
         if (err) {
             req.flash('message', err.message);
+            winston.warn(err);
             return res.redirect('/accounts');
         }
 
-        self.content.data.account = _.first(result);
+        self.content.data.account = result.account;
+        self.content.data.roles = result.roles;
 
         res.render('subviews/editAccount', self.content);
     });

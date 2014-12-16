@@ -1,6 +1,8 @@
 var async = require('async'),
     _ = require('lodash'),
-    winston = require('winston');
+    winston = require('winston'),
+
+    permissions = require('../permissions');
 
 var apiController = {};
 
@@ -35,7 +37,13 @@ apiController.users.insert = function(req, res, next) {
 
         return res.send(r);
     });
+};
 
+//Roles
+apiController.roles = {};
+apiController.roles.get = function(req, res, next) {
+    var roles = permissions.roles;
+    return res.json(roles);
 };
 
 module.exports = apiController;

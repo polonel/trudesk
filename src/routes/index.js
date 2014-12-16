@@ -47,6 +47,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/tickets/:id', middleware.api, controllers.api.users.get);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
+    router.get('/api/roles', middleware.api, controllers.api.roles.get);
 }
 
 module.exports = function(app, middleware) {

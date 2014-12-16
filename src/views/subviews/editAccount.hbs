@@ -1,6 +1,7 @@
 <div class="small-12 large-10 columns nopadding page-right-content">
     <div class="page-title">
-        <p class="left"><img src="/uploads/users/{{data.account._id}}.png" alt="{{data.account.username}}" style="margin-right: 10px; margin-bottom: 7px"/> {{data.account.fullname}}</p>
+        <!--<p class="left"><img class="profilePic" src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}" style="margin-right: 10px; margin-bottom: 7px"/> {{data.account.fullname}}</p>-->
+        <p class="left">{{data.account.fullname}}</p>
         <div class="right">
             <ul class="button-group">
                 <li><a href="/accounts" role="button" class="btn">Cancel</a></li>
@@ -11,13 +12,44 @@
         </div>
     </div>
     <!--Content Here-->
-    <div class="page-wrapper scrollable no-overflow-x">
+    <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createAccountForm" class="form" action="/accounts/create" method="POST">
-                    <label for="tSubject">Subject</label>
-                    <input id="tSubject" name="tSubject" type="text" />
+                <form id="createAccountForm" class="form nomargin" action="/accounts/create" method="POST">
+                    <div class="largeProfilePic cursor-pointer" style="position: absolute; left: 15px; top: 0;" ng-click="accountEditPic($event)" >
+                        <input name="aImage" type="hidden" value="{{data.account.image}}" />
+                        {{#if data.account.image}}
+                            <img src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
+                        {{else}}
+                            <p>No Image</p>
+                        {{/if}}
+                    </div>
+                    <div style="margin-left: 286px;">
+                        <label for="aUsername">Username</label>
+                        <input id="aUsername" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
 
+                        <label for="aFullname">Name</label>
+                        <input id="aFullname" name="aFullname" type="text" value="{{data.account.fullname}}"/>
+
+                        <label for="aTitle">Title</label>
+                        <input id="aTitle" name="aTitle" type="text" value="{{data.account.title}}"/>
+
+                        <label for="aPass">Password</label>
+                        <input id="aPass" name="aPass" type="password" />
+
+                        <label for="aPassConfirm">Confirm Password</label>
+                        <input id="aPassConfirm" name="aPassConfirm" type="password" />
+
+                        <label for="aEmail">Email</label>
+                        <input id="aEmail" name="aEmail" type="text" value="{{data.account.email}}"/>
+
+                        <label for="aRole">Role</label>
+                        <select name="aRole" id="aRole">
+                            {{#each data.roles}}
+                                <option value="{{id}}" {{#is ../data.account.role id}}selected{{/is}}>{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                 </form>
             </div>
         </div>
