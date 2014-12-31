@@ -464,7 +464,7 @@ var helpers = {
         return str;
     },
 
-    isNull: function(obj) {
+    isNull: function(obj, options) {
         if((_.isUndefined(obj) || _.isNull(obj))) {
             return options.fn(this);
         } else {

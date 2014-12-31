@@ -3,9 +3,17 @@
 var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
+var path = require('path');
+var multer = require('multer');
 
 var app,
     middleware = {};
+
+middleware.multerToUserDir = function(req, res, next) {
+    multer({dest: path.join(__dirname, '../../', 'public/uploads/users')});
+
+    next();
+};
 
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
@@ -58,4 +66,4 @@ module.exports = function(server, mongodb) {
     app = server;
 
     return middleware;
-}
+};

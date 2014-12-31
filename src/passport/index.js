@@ -27,7 +27,7 @@ module.exports = function(app) {
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 
-            if (!user.validate(password)) {
+            if (!User.validate(password, user.password)) {
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 

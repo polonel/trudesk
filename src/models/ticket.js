@@ -37,12 +37,43 @@ ticketSchema.pre('save', function(next) {
     });
 });
 
+ticketSchema.statics.getAll = function(callback) {
+    var q = this.model(COLLECTION).find({})
+        .populate('owner')
+        .populate('group')
+        .populate('comments')
+        .populate('comments.owner')
+        .populate('assignee')
+        .populate('type')
+        .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getTickets = function(grpId, callback) {
     if (_.isUndefined(grpId)) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
     }
 
     var q = this.model(COLLECTION).find({group: {$in: grpId}})
+        .populate('owner')
+        .populate('group')
+        .populate('comments')
+        .populate('comments.owner')
+        .populate('assignee')
+        .populate('type')
+        .sort({'status': 1})
+        .limit(100);
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    var q = this.model(COLLECTION).find({group: {$in: grpId}, status: status})
         .populate('owner')
         .populate('group')
         .populate('comments')
@@ -70,7 +101,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
 };
 
 ticketSchema.statics.getTicketById = function(id, callback) {
-    if (_.isUndefined(id)) return callback("Invalid Uid - TicketSchema.GetTicketById()", null);
+    if (_.isUndefined(id)) return callback("Invalid Id - TicketSchema.GetTicketById()", null);
 
     var q = this.model(COLLECTION).findOne({_id: id})
         .populate('owner')

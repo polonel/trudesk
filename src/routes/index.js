@@ -1,10 +1,22 @@
-"use strict";
+/*
+     .                              .o8                     oooo
+   .o8                             "888                     `888
+ .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+=========================================================================
+    Created:    12/25/2014
+    Author:     Chris Brame
+ */
 
-var express = require('express'),
-    router = express.Router(),
+var express     = require('express'),
+    router      = express.Router(),
     controllers = require('../controllers/index.js'),
-    path = require('path'),
-    winston = require('winston');
+    path        = require('path'),
+    multer      = require('multer');
+    winston     = require('winston');
 
 var passport = require('passport');
 
@@ -20,6 +32,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
+    router.get('/tickets/new', middleware.redirectToLogin, controllers.tickets.getByStatus);
+    router.get('/tickets/open', middleware.redirectToLogin, controllers.tickets.getByStatus);
+    router.get('/tickets/pending', middleware.redirectToLogin, controllers.tickets.getByStatus);
+    router.get('/tickets/closed', middleware.redirectToLogin, controllers.tickets.getByStatus);
     router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
@@ -38,15 +54,20 @@ function mainRoutes(router, middleware, controllers) {
     //Accounts
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
     router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
-    router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postAccount);
+    router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
+    router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
     router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
+    router.post('/accounts/uploadimage', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/users'), rename: function(fieldname, filename) {
+        return fieldname;
+    }}), controllers.accounts.uploadImage);
 
     //API
     router.get('/api', controllers.api.index);
-    router.get('/api/tickets', middleware.api, controllers.api.users.get);
-    router.get('/api/tickets/:id', middleware.api, controllers.api.users.get);
+    router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
+    router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
+    router.get('/api/users/:username', middleware.api, controllers.api.users.single);
     router.get('/api/roles', middleware.api, controllers.api.roles.get);
 }
 

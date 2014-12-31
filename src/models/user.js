@@ -3,6 +3,7 @@ var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var _ = require('lodash');
 
+var SALT_FACTOR = 10;
 var COLLECTION = "accounts";
 
 var userSchema = mongoose.Schema({
@@ -15,12 +16,24 @@ var userSchema = mongoose.Schema({
         image:      String
     });
 
-userSchema.methods.generateHash = function(password) {
-    return bcrypt.hashSync(password, 10);
-};
+userSchema.pre('save', function(next) {
+    var user = this;
+    if (!user.isModified('password')) return next();
 
-userSchema.methods.validate = function(password) {
-    return bcrypt.compareSync(password, this.password);
+    bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
+        if (err) return next(err);
+
+        bcrypt.hash(user.password, salt, function(err, hash) {
+            if (err) return next(err);
+
+            user.password = hash;
+            next();
+        });
+    })
+});
+
+userSchema.statics.validate = function (password, dbPass) {
+    return bcrypt.compareSync(password, dbPass);
 };
 
 userSchema.statics.findAll = function(callback) {

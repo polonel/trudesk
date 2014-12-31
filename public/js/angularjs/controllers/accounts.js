@@ -1,14 +1,6 @@
 define(['angular', 'underscore', 'history'], function(angular, _) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http) {
-            $scope.getRoles = function() {
-                var roles = {};
-                $http.get('/api/roles')
-                    .success(function(data, status) {
-                        roles = data;
-                        return data;
-                    });
-            };
+        .controller('accountsCtrl', function($scope, $http, $timeout) {
 
             $scope.editAccount = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
@@ -23,9 +15,12 @@ define(['angular', 'underscore', 'history'], function(angular, _) {
                 History.pushState(null, null, '/accounts/' + username);
             };
 
-            $scope.accountEditPic = function($event) {
-                console.log($event);
+            $scope.accountEditPic = function() {
+                $timeout(function() {
+                    angular.element('#inputFile').trigger('click');
+                });
             };
 
-        });
+        })
+        .directive();
 });

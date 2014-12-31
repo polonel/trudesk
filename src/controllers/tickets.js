@@ -42,6 +42,66 @@ ticketsController.get = function(req, res, next) {
     });
 };
 
+ticketsController.getByStatus = function(req, res, next) {
+    var url = require('url');
+    var self = this;
+    self.content = {};
+    self.content.title = "Tickets";
+    self.content.nav = 'tickets';
+    self.content.subnav = 'tickets-';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    var pathname = url.parse(req.url).pathname;
+    var arr = pathname.split('/');
+    var tType = 'new';
+    var s  = 0;
+    if (_.size(arr) > 2) tType = arr[2];
+
+    switch (tType) {
+        case 'new':
+            s = 0;
+            break;
+        case 'open':
+            s = 1;
+            break;
+        case 'pending':
+            s = 2;
+            break;
+        case 'closed':
+            s = 3;
+            break;
+        default:
+            s = 0;
+            break;
+    }
+
+    self.content.subnav += tType;
+    //Ticket Data
+    self.content.data.tickets = {};
+    async.waterfall([
+        function(callback) {
+            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                callback(err, grps);
+            });
+        },
+        function(grps, callback) {
+            ticketSchema.getTicketsByStatus(grps, s, function(err, results) {
+
+                callback(err, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return handleError(res, err);
+
+        self.content.data.tickets = results;
+
+        res.render('tickets', self.content);
+    });
+};
+
 ticketsController.create = function(req, res, next) {
     var self = this;
     self.content = {};
@@ -76,6 +136,7 @@ ticketsController.create = function(req, res, next) {
 
 ticketsController.single = function(req, res, next) {
     var self = this;
+    var user = req.user;
     var uid = req.params.id;
     self.content = {};
     self.content.title = "Tickets - " + req.params.id;
@@ -88,14 +149,16 @@ ticketsController.single = function(req, res, next) {
 
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
-        if (_.isNull(ticket)) return res.redirect('/tickets');
+        if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
-        if (!_.isUndefined(ticket)) {
-            self.content.data.ticket = ticket;
-            self.content.data.ticket.commentCount = _.size(ticket.comments);
+        if (!_.any(ticket.group.members, user._id)) {
+            return res.redirect('/tickets');
         }
 
-        res.render('subviews/singleticket', self.content);
+        self.content.data.ticket = ticket;
+        self.content.data.ticket.commentCount = _.size(ticket.comments);
+
+        return res.render('subviews/singleticket', self.content);
     });
 };
 
@@ -156,6 +219,8 @@ ticketsController.submitTicket = function(req, res, next) {
     }, function(err, t) {
         if (err) return handleError(res, err);
 
+        //Trigger Event that a ticket was submitted.
+
         res.redirect('/tickets');
     });
 };
@@ -179,9 +244,12 @@ ticketsController.postcomment = function(req, res, next) {
         };
         t.updated = Date.now();
         t.comments.push(Comment);
-        t.save();
-        res.status(200);
-        res.end();
+        t.save(function (err) {
+            if (err) handleError(res, err);
+
+            res.status(200);
+            res.end();
+        });
     });
 };
 

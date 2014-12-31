@@ -1,5 +1,6 @@
 var async           = require('async');
 var _               = require('lodash');
+var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
@@ -98,6 +99,47 @@ accountsController.editAccount = function(req, res, next) {
     });
 };
 
+accountsController.postEdit = function(req, res, next) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:edit')) {
+        req.flash('message', 'Permission Denied.');
+        return res.redirect('/accounts');
+    }
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Accounts";
+    self.content.nav = 'accounts';
+
+    self.content.data = {};
+    self.content.data.user = user;
+    self.content.data.common = req.viewdata;
+
+    userSchema.getUser(req.body.aId, function(err, u) {
+        if (err) handleError(res, err);
+
+        u.fullname = req.body.aFullname;
+        u.title = req.body.aTitle;
+        u.email = req.body.aEmail;
+        u.role = req.body.aRole;
+
+        if (!_s.isBlank(req.body.aPass)) {
+            var pass = req.body.aPass;
+            var cPass = req.body.aPassConfirm;
+
+            if (pass == cPass) {
+                u.password = cPass;
+            }
+        }
+
+        u.save(function(err) {
+            if (err) handleError(res, err);
+
+            return res.redirect('/accounts/' + u.username);
+        })
+    })
+};
+
 accountsController.createAccount = function(req, res, next) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:create')) {
@@ -132,7 +174,7 @@ accountsController.createAccount = function(req, res, next) {
     });
 };
 
-accountsController.postAccount = function(req, res, next) {
+accountsController.postCreate = function(req, res, next) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:create')) {
         req.flash('message', 'Permission Denied.');
@@ -150,5 +192,29 @@ accountsController.postAccount = function(req, res, next) {
 
     res.sendStatus(200);
 };
+
+accountsController.uploadImage = function(req, res, next) {
+    var self = this;
+    var id = req.body._id;
+    var username = req.body.username;
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return handleError(res, err);
+
+        user.image = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
+
+        user.save(function(err) {
+            if (err) return handleError(res, err);
+
+            return res.sendStatus(200);
+        });
+    });
+};
+
+function handleError(res, err) {
+    if (err) {
+        return res.render('error', {layout: false, error: err, message: err.message});
+    }
+}
 
 module.exports = accountsController;

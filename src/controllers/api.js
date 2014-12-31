@@ -39,6 +39,45 @@ apiController.users.insert = function(req, res, next) {
     });
 };
 
+apiController.users.single = function(req, res, next) {
+    var username = req.params.username;
+    if(_.isUndefined(username)) return res.send('Invalid Username.');
+
+    var userModel = require('../models/user');
+    userModel.getUserByUsername(username, function(err, user) {
+        if (err) return res.send("Invalid User.");
+
+        if (_.isUndefined(user) || _.isNull(user)) return res.send("Invalid User.");
+
+        res.json(user);
+    });
+};
+
+//Tickets
+apiController.tickets = {};
+apiController.tickets.get = function(req, res, next) {
+    var ticketModel = require('../models/ticket');
+    ticketModel.getAll(function(err, tickets) {
+        if (err) return res.send(err);
+
+        return res.json(tickets);
+    });
+};
+
+apiController.tickets.single = function(req, res, next) {
+    var uid = req.params.uid;
+    if (_.isUndefined(uid)) return res.send('Invalid Ticket Id');
+
+    var ticketModel = require('../models/ticket');
+    ticketModel.getTicketByUid(uid, function(err, ticket) {
+        if (err) return res.send(err);
+
+        if (_.isUndefined(ticket) || _.isNull(ticket)) return res.send("Invalid Ticket Id");
+
+        return res.json(ticket);
+    });
+};
+
 //Roles
 apiController.roles = {};
 apiController.roles.get = function(req, res, next) {

@@ -4,9 +4,10 @@
         <li {{#is nav 'dashboard'}} class='active' {{/is}}><a href="/dashboard" class="ajaxify"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
         <li {{#is nav 'tickets'}} class='active' {{/is}}><a href="/tickets"><i class="fa fa-paste fa-large"></i>Tickets</a>
             <ul id="side-nav-sub-tickets" class="side-nav-sub {{#is nav 'tickets'}} subMenuOpen {{/is}}">
-                <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="icon-inbox"></i>New</a></li>
-                <li><a href="/messages/sentitems"><i class="icon-sent"></i>Open</a></li>
-                <li><a href="/messages/trash"><i class="icon-trash"></i>Closed</a></li>
+                <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="icon-inbox"></i>New</a></li>
+                <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="icon-trash"></i>Pending</a></li>
+                <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="icon-sent"></i>Open</a></li>
+                <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><i class="icon-trash"></i>Closed</a></li>
             </ul>
         </li>
         <li {{#is nav 'messages'}} class='active' {{/is}}><a href="/messages/inbox" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>

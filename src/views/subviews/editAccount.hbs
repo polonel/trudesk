@@ -5,7 +5,7 @@
         <div class="right">
             <ul class="button-group">
                 <li><a href="/accounts" role="button" class="btn">Cancel</a></li>
-                <li class="active"><button class="btn" ng-click="submitForm('createAccountForm')" data-form="createAccountForm">Save</button>
+                <li class="active"><button class="btn" ng-click="submitForm('createAccountForm', $event)">Save</button>
                     <!--<a href="#" role="button" class="btn" data-action="submit" data-form="createAccountForm">Save</a>-->
                 </li>
             </ul>
@@ -15,15 +15,20 @@
     <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createAccountForm" class="form nomargin" action="/accounts/create" method="POST">
-                    <div class="largeProfilePic cursor-pointer" style="position: absolute; left: 15px; top: 0;" ng-click="accountEditPic($event)" >
-                        <input name="aImage" type="hidden" value="{{data.account.image}}" />
+                <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin" enctype="multipart/form-data">
+                    <input type="hidden" name="_id" value="{{data.account._id}}" />
+                    <input type="hidden" name="username" value="{{data.account.username}}" />
+                    <div class="largeProfilePic cursor-pointer" style="position: absolute; left: 15px; top: 0;" ng-click="accountEditPic()" >
+                        <input id="inputFile" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
                         {{#if data.account.image}}
                             <img src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
                         {{else}}
-                            <p>No Image</p>
+                            <img src="/uploads/users/defaultProfile.jpg" alt="{{data.account.username}}"/>
                         {{/if}}
                     </div>
+                </form>
+                <form id="createAccountForm" class="form nomargin" action="/accounts/edit" method="POST">
+                    <input name="aId" type="hidden" value="{{data.account._id}}" />
                     <div style="margin-left: 286px;">
                         <label for="aUsername">Username</label>
                         <input id="aUsername" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
@@ -55,3 +60,11 @@
         </div>
     </div>
 </div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['modules/ajaximgupload'], function(a) {
+            a.init();
+        });
+    </script>
+{{/contentFor}}
