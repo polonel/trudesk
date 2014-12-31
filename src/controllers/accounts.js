@@ -11,6 +11,12 @@ var accountsController = {};
 accountsController.content = {};
 
 accountsController.get = function(req, res, next) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:view')) {
+        req.flash('message', 'Permission Denied.');
+        return res.redirect('/');
+    }
+
     var self = this;
     self.content = {};
     self.content.title = "Accounts";
@@ -201,12 +207,13 @@ accountsController.uploadImage = function(req, res, next) {
     userSchema.getUser(id, function(err, user) {
         if (err) return handleError(res, err);
 
-        user.image = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
+        var fileName = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
+        user.image = fileName;
 
         user.save(function(err) {
             if (err) return handleError(res, err);
 
-            return res.sendStatus(200);
+            return res.status(200).send('/uploads/users/' + fileName);
         });
     });
 };

@@ -101,8 +101,11 @@ define('modules/ui', [
 
             $('.page-top-comments > a[data-ticketId="' + ticket._id + '"]').html(ticket.comments.length + ' ' + commentText);
 
+            var image = comment.owner.image;
+            if (_.isUndefined(image)) image = 'defaultProfile.jpg';
+
             var html =  '<div class="ticket-comment">' +
-                '<img src="/img/profile.png" alt=""/>' +
+                '<img src="/uploads/users/' + image + '" alt=""/>' +
                 '<div class="issue-text">' +
                 '<h3>Re: ' + ticket.subject + '</h3>' +
                 '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +

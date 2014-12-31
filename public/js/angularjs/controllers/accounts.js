@@ -16,11 +16,10 @@ define(['angular', 'underscore', 'history'], function(angular, _) {
             };
 
             $scope.accountEditPic = function() {
-                $timeout(function() {
+                setTimeout(function() {
                     angular.element('#inputFile').trigger('click');
-                });
+                }, 0);
             };
 
-        })
-        .directive();
+        });
 });

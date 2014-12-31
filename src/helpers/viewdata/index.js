@@ -12,6 +12,13 @@ viewController.getData = function(request, cb) {
                   viewdata.messages.unreadCount = data;
                   callback(viewdata.messages.unreadCount);
               });
+          },
+          function(callback) {
+              "use strict";
+              viewController.loggedInAccount(request, function(data) {
+                  viewdata.loggedInAccount = data;
+                  callback(viewdata.loggedInAccount);
+              });
           }
       ], function(err, results) {
           cb(viewdata);
@@ -23,6 +30,17 @@ viewController.unreadMessageCount = function(request, callback) {
     messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
         if (err) {
             callback(0);
+        }
+
+        callback(data);
+    });
+};
+
+viewController.loggedInAccount = function(request, callback) {
+    var userSchema = require('../../models/user');
+    userSchema.getUser(request.user._id, function(err, data) {
+        if (err) {
+            callback(err);
         }
 
         callback(data);

@@ -7,13 +7,14 @@ define('modules/ajaximgupload', [
 
     aiu.init = function() {
         $(document).ready(function() {
-
             $('#inputFile').on('change', function() {
                 var val = $(this).val();
                 if (val === '') return true;
 
                 var form = $('#aUploadImageForm');
                 var formData = new FormData($(form)[0]);
+                var timestamp = new Date().getTime();
+                var imgSrc = form.find('img').attr('src') + '?' + timestamp;
                 $.ajax({
                     url: '/accounts/uploadImage',
                     type: 'POST',
@@ -22,8 +23,8 @@ define('modules/ajaximgupload', [
                     cache: false,
                     contentType: false,
                     processData: false,
-                    success: function() {
-                        console.log('done');
+                    success: function(data) {
+                        form.find('img').attr('src', data + '?' + timestamp);
                     },
                     error: function(err) {
                         console.log(err);
