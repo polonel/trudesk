@@ -56,6 +56,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
     router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
     router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
+    router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
     router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
     router.post('/accounts/uploadimage', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/users'), rename: function(fieldname, filename) {
         return fieldname;

@@ -1,10 +1,11 @@
 var async           = require('async');
-var _               = require('lodash');
+var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
+var mongoose        = require('mongoose');
 
 var accountsController = {};
 
@@ -86,6 +87,12 @@ accountsController.editAccount = function(req, res, next) {
             callback(null, permissions.roles);
         },
 
+        groups: function(callback) {
+            groupSchema.getAllGroups(function(err, grps) {
+                callback(err, grps);
+            });
+        },
+
         account: function(callback) {
             userSchema.getUserByUsername(username, function (err, obj) {
                 callback(err, obj);
@@ -100,6 +107,7 @@ accountsController.editAccount = function(req, res, next) {
 
         self.content.data.account = result.account;
         self.content.data.roles = result.roles;
+        self.content.data.groups = result.groups;
 
         res.render('subviews/editAccount', self.content);
     });
@@ -121,29 +129,85 @@ accountsController.postEdit = function(req, res, next) {
     self.content.data.user = user;
     self.content.data.common = req.viewdata;
 
-    userSchema.getUser(req.body.aId, function(err, u) {
-        if (err) handleError(res, err);
+    async.parallel({
+        groups: function(callback) {
+            var gIds = req.body.aGrps;
 
-        u.fullname = req.body.aFullname;
-        u.title = req.body.aTitle;
-        u.email = req.body.aEmail;
-        u.role = req.body.aRole;
-
-        if (!_s.isBlank(req.body.aPass)) {
-            var pass = req.body.aPass;
-            var cPass = req.body.aPassConfirm;
-
-            if (pass == cPass) {
-                u.password = cPass;
+            if (!_.isArray(gIds)) {
+                gIds = [gIds];
             }
+            var aId = req.body.aId;
+            groupSchema.getAllGroups(function(err, grps) {
+                if (err) return callback(err, null);
+
+                async.each(grps, function(grp, c) {
+                    // Adding User to Group
+                    if (_.contains(gIds, grp._id.toString())) {
+                        grp.addMember(aId, function(err, result) {
+                           if (result) {
+                               grp.save(function(err) {
+                                   if (err) return c(err);
+                                   c();
+                               })
+                           } else {
+                               c();
+                           }
+                        });
+                    } else {
+                        //Remove User from Group
+                        grp.removeMember(aId, function(err, result) {
+                            if (result) {
+                                grp.save(function (err) {
+                                    if (err) return c(err);
+
+                                    c();
+                                });
+                            } else {
+                                c();
+                            }
+                        });
+                    }
+
+                }, function(err) {
+                    if (err) return callback(err, null);
+
+                    callback(null, true);
+                });
+            });
+        },
+
+        user: function(callback) {
+            userSchema.getUser(req.body.aId, function(err, u) {
+                if (err) return callback(err, null);
+
+                u.fullname = req.body.aFullname;
+                u.title = req.body.aTitle;
+                u.email = req.body.aEmail;
+                u.role = req.body.aRole;
+
+                if (!_s.isBlank(req.body.aPass)) {
+                    var pass = req.body.aPass;
+                    var cPass = req.body.aPassConfirm;
+
+                    if (pass == cPass) {
+                        u.password = cPass;
+                    }
+                }
+
+                u.save(function(err) {
+                    if (err) return callback(err, null);
+
+                    callback(null, u);
+                })
+            })
         }
 
-        u.save(function(err) {
-            if (err) handleError(res, err);
+    }, function(err, results) {
+        if (err) return handleError(res, err);
+        //if (!res.groups) return handleError(res, {message: 'Unable to Save Groups for User'});
 
-            return res.redirect('/accounts/' + u.username);
-        })
-    })
+        return res.redirect('/accounts/' + results.user.username);
+    });
 };
 
 accountsController.createAccount = function(req, res, next) {
@@ -168,14 +232,18 @@ accountsController.createAccount = function(req, res, next) {
             groupSchema.getAllGroups(function(err, grps) {
                 callback(err, grps);
             });
+        },
+        roles: function(callback) {
+            callback(null, permissions.roles);
         }
     }, function(err, results) {
         if (err) {
             res.render('error', {error: err, message: err.message});
         } else {
             if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+            if (!_.isUndefined(results.roles)) self.content.data.roles = results.roles;
 
-            res.render('subviews/createaccount', self.content);
+            res.render('subviews/createAccount', self.content);
         }
     });
 };

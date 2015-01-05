@@ -56,15 +56,6 @@ var helpers = {
         }
     },
 
-    checkPerm: function(user, perm, options) {
-        var P = require('../../permissions');
-        if (P.canThis(user.role, perm)) {
-            return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
-    },
-
     isnot: function (value, test, options) {
         if (value !== test) {
             return options.fn(this);
@@ -466,6 +457,24 @@ var helpers = {
 
     isNull: function(obj, options) {
         if((_.isUndefined(obj) || _.isNull(obj))) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
+    checkPerm: function(user, perm, options) {
+        var P = require('../../permissions');
+        if (P.canThis(user.role, perm)) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
+    hasGroup: function(arr, value, options) {
+        var result = _.some(arr, {_id: value});
+        if (result) {
             return options.fn(this);
         } else {
             return options.inverse(this);

@@ -27,6 +27,7 @@ requirejs.config({
         fullcalendar:   'vendor/fullcalendar/fullcalendar.min',
         moment:         'vendor/fullcalendar/moment.min',
         easypiechart:   'vendor/easypiechart/easypiechart',
+        chosen:         'vendor/chosen/chosen.jquery.min',
         autogrow:       'plugins/autogrow'
     },
     shim: {

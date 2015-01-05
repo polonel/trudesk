@@ -1,6 +1,6 @@
-define(['angular', 'underscore', 'history'], function(angular, _) {
+define(['angular', 'underscore', 'jquery', 'history'], function(angular, _, $) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http, $timeout) {
+        .controller('accountsCtrl', function($scope, $http) {
 
             $scope.editAccount = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
@@ -16,9 +16,7 @@ define(['angular', 'underscore', 'history'], function(angular, _) {
             };
 
             $scope.accountEditPic = function() {
-                setTimeout(function() {
-                    angular.element('#inputFile').trigger('click');
-                }, 0);
+                $('#inputFile').trigger('click');
             };
 
         });
