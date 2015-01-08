@@ -1105,9 +1105,9 @@ input[type="text"][disabled] {
 .dataTables_scrollBody .pDataTable thead {
   border: none; }
 
-.pDataTable.stripe tr:nth-child(2) {
+.pDataTable.stripe tr:nth-of-type(even) {
   background: #f7f7f7; }
-  .pDataTable.stripe tr:nth-child(2):hover {
+  .pDataTable.stripe tr:nth-of-type(even):hover {
     cursor: pointer;
     background: #f5f5f6; }
 .pDataTable tr {
