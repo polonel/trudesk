@@ -1,0 +1,38 @@
+.chosen-container
+  .chosen-drop
+    +boxShadow(none)
+
+  .chosen-results
+    li.highlighted
+      background: #3498db none
+
+.chosen-container-multi
+  width: 100% !important
+
+  .chosen-choices
+    border: 1px solid #9aa1ad
+    background: #eceff6
+    height: 2.3125rem !important
+
+    li.search-choice
+      background: #3498db none
+      border: none
+      color: white
+      font-size: 13px
+      padding: 8px 25px 8px 8px
+      +boxShadow(none)
+
+      .search-choice-close
+        top: 9px
+        right: 5px
+
+    li.search-field
+      input[type="text"]
+        height: 32px
+        margin-left: 2px
+
+.chosen-container-active
+  .chosen-choices
+    border: 1px solid #9aa1ad
+    background: #ffffff
+    +boxShadow(none)

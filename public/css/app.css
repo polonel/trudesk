@@ -117,6 +117,8 @@ a.hoverUnderline:hover {
   -webkit-border-radius: 50%;
   -moz-border-radius: 50%; }
   .profilePic img {
+    height: 50px;
+    width: 50px;
     border-radius: 50%;
     -webkit-border-radius: 50%;
     -moz-border-radius: 50%; }
@@ -603,6 +605,8 @@ ul.side-nav a, ul.side-nav-sub a {
       color: white; }
       ul.side-nav a:hover i.icon-accounts, ul.side-nav-sub a:hover i.icon-accounts {
         background-position: 0 -24px; }
+      ul.side-nav a:hover i.icon-groups, ul.side-nav-sub a:hover i.icon-groups {
+        background-position: 0 -22px; }
       ul.side-nav a:hover i.icon-invoices, ul.side-nav-sub a:hover i.icon-invoices {
         background-position: 0 -20px; }
   ul.side-nav a i, ul.side-nav-sub a i {
@@ -677,6 +681,11 @@ ul.side-nav-sub {
   width: 18px;
   height: 24px;
   background: url(../img/accounts.png) 0 0 no-repeat; }
+
+.icon-groups {
+  width: 22px;
+  height: 22px;
+  background: url(../img/groups.png) 0 0 no-repeat; }
 
 .icon-invoices {
   width: 24px;
@@ -1401,8 +1410,8 @@ table.dataTable {
             left: 5px;
             display: block; }
             .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message .chat-user-profile img {
-              max-width: 100%;
-              width: 100%;
+              height: 34px;
+              width: 34px;
               border-radius: 5px;
               -webkit-border-radius: 5px;
               -moz-border-radius: 5px; }
@@ -1722,3 +1731,39 @@ table.dataTable {
     background: #e74c3c; }
     .fc .fc-event .fc-content {
       background: #e74c3c; }
+
+.chosen-container .chosen-drop {
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none; }
+.chosen-container .chosen-results li.highlighted {
+  background: #3498db none; }
+
+.chosen-container-multi {
+  width: 100% !important; }
+  .chosen-container-multi .chosen-choices {
+    border: 1px solid #9aa1ad;
+    background: #eceff6;
+    height: 2.3125rem !important; }
+    .chosen-container-multi .chosen-choices li.search-choice {
+      background: #3498db none;
+      border: none;
+      color: white;
+      font-size: 13px;
+      padding: 8px 25px 8px 8px;
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none; }
+      .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+        top: 9px;
+        right: 5px; }
+    .chosen-container-multi .chosen-choices li.search-field input[type="text"] {
+      height: 32px;
+      margin-left: 2px; }
+
+.chosen-container-active .chosen-choices {
+  border: 1px solid #9aa1ad;
+  background: white;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none; }

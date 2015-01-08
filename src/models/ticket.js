@@ -124,4 +124,18 @@ ticketSchema.statics.getComments = function(tId, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getTotalCount = function(callback) {
+    var q = this.model(COLLECTION).count({});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getStatusCount = function(status, callback) {
+    if (_.isUndefined(status)) return callback("Invalid Status - TicketSchema.GetStatusCount()", null);
+
+    var q = this.model(COLLECTION).count({status: status});
+
+    return q.exec(callback);
+};
+
 module.exports = mongoose.model(COLLECTION, ticketSchema);

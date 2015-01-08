@@ -264,7 +264,55 @@ accountsController.postCreate = function(req, res, next) {
     self.content.data.user = user;
     self.content.data.common = req.viewdata;
 
-    res.sendStatus(200);
+    var username = req.body.aUsername;
+    var fullname = req.body.aFullname;
+    var title = req.body.aTitle;
+    var password = req.body.aPass;
+    var confirmPass = req.body.aPassConfirm;
+    var email = req.body.aEmail;
+    var role = req.body.aRole;
+    var groups = req.body.aGrps;
+
+    //Todo Error and Resend to correct page
+    if (password !== confirmPass) return handleError(res, {message: "Password Mismatch"});
+
+    var User = userSchema;
+
+    var newUser = new User({
+        username: username,
+        password: password,
+        fullname: fullname,
+        email: email,
+        title: title,
+        role: role
+    });
+
+    newUser.save(function(err, obj) {
+        if (err) return handleError(res, err);
+        if (_.isUndefined(obj)) return handleError(res, {message: "Invalid Obj"});
+
+        if (!_.isArray(groups)) {
+            groups = [groups];
+        }
+
+        async.each(groups, function(g, callback) {
+            groupSchema.getGroupById(g, function(err, grp) {
+                if (err) return callback(err);
+                grp.addMember(obj._id, function(err, success) {
+                    if (err) return callback(err);
+
+                    grp.save(function(err) {
+                        if (err) return callback(err);
+                        callback(null, success);
+                    });
+                });
+            });
+        }, function(err, success) {
+            if (err) return handleError(res, err);
+
+            res.redirect('/accounts');
+        });
+    });
 };
 
 accountsController.uploadImage = function(req, res, next) {

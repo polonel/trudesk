@@ -99,18 +99,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             }
         });
     };
-    
-    helpers.hideAllpDropDowns = function() {
-        var $self = this;
-        $('a[data-notifications]').each(function() {
-            var drop = $('#' + $(this).attr('data-notifications'));
-            if (drop.hasClass('pDropOpen')) {
-                drop.removeClass('pDropOpen');
-                $self.hideDropDownScroll();
-            }
-        });
-    };
-    
+
     helpers.hideDropDownScrolls = function() {
         $('div[data-scroll]').each(function() {
             var scroll = $('#' + $(this).attr('data-scroll'));
@@ -118,7 +107,17 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 $(scroll).getNiceScroll().hide();
         });
     };
-    
+
+    helpers.hideAllpDropDowns = function() {
+        $('a[data-notifications]').each(function() {
+            var drop = $('#' + $(this).attr('data-notifications'));
+            if (drop.hasClass('pDropOpen')) {
+                drop.removeClass('pDropOpen');
+                helpers.hideDropDownScrolls();
+            }
+        });
+    };
+
     helpers.pToolTip = function() {
         $(document).ready(function() {
             var pToolTip = $('span[data-ptooltip]');
