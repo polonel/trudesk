@@ -189,6 +189,8 @@ define('modules/chat',[
             html += '</div>';
 
         $('.chat-box-wrapper').append(html);
+        $('.chat-box[data-chat-userId="' + user._id + '"] textarea').focus();
+        helpers.hideAllpDropDowns();
         helpers.setupScrollers('.chat-box[data-chat-userId="' + user._id + '"] > div.scrollable');
         this.bindActions();
     };

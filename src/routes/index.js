@@ -62,6 +62,9 @@ function mainRoutes(router, middleware, controllers) {
         return fieldname;
     }}), controllers.accounts.uploadImage);
 
+    //Groups
+    router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);

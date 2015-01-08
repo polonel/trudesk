@@ -8,20 +8,28 @@
             <div class="small-12 large-6 columns padtop20">
                 <div class="circle-chart-wrapper clearfix">
                     <div class="donutchart-wrapper">
-                        <div class="donutchart " data-percent="75"><span class="chart-value percent">0</span></div>
+                        <div class="donutchart" data-percent="{{data.summary.completedPercent}}"><span class="chart-value percent"></span></div>
                         <div class="donutchart-caption">completed</div>
                     </div>
                     <div class="donutchart-wrapper">
-                        <div class="donutchart " data-percent="25" data-trackColor="#3498db" data-numCount="true" data-totalNumCount="192"><span class="chart-value">192</span></div>
+                        <div class="donutchart"
+                             data-percent="{{data.summary.activePercent}}"
+                             data-trackColor="#3498db"
+                             data-numCount="true"
+                             data-totalNumCount="{{data.summary.activeCount}}"><span class="chart-value">{{data.summary.activeCount}}</span></div>
                         <div class="donutchart-caption">active</div>
                     </div>
                     <div class="donutchart-wrapper">
-                        <div class="donutchart " data-percent="35" data-trackColor="#2fb150" data-numCount="true" data-totalNumCount="231"><span class="chart-value">231</span></div>
+                        <div class="donutchart "
+                             data-percent="{{data.summary.newPercent}}"
+                             data-trackColor="#2fb150"
+                             data-numCount="true"
+                             data-totalNumCount="{{data.summary.newCount}}"><span class="chart-value">{{data.summary.newCount}}</span></div>
                         <div class="donutchart-caption">new</div>
                     </div>
                 </div>
                 <div class="small-12 columns circle-chart-caption">
-                    <span>Tickets Summary <img src="/img/small-midDots.png" alt="Divider"/> Total 768</span>
+                    <span>Tickets Summary <img src="/img/small-midDots.png" alt="Divider"/> Total {{data.summary.totalCount}}</span>
                 </div>
             </div>
             <div class="small-12 large-6 columns">
