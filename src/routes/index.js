@@ -32,10 +32,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
-    router.get('/tickets/new', middleware.redirectToLogin, controllers.tickets.getByStatus);
-    router.get('/tickets/open', middleware.redirectToLogin, controllers.tickets.getByStatus);
-    router.get('/tickets/pending', middleware.redirectToLogin, controllers.tickets.getByStatus);
-    router.get('/tickets/closed', middleware.redirectToLogin, controllers.tickets.getByStatus);
+    router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
+    router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
+    router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
+    router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
     router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);

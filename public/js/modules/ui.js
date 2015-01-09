@@ -15,10 +15,9 @@ define('modules/ui', [
 
     socketUi.updateMailNotifications = function() {
         $(document).ready(function() {
-            $('#btn_mail-notifications').click(function(e) {
-                socket.emit('updateMailNotifications');
-                e.preventDefault();
-            });
+            var btnMailNotifications = $('#btn_mail-notifications');
+            btnMailNotifications.off('click', updateMailNotificationsClicked);
+            btnMailNotifications.on('click', updateMailNotificationsClicked);
         });
 
         socket.removeAllListeners('updateMailNotifications');
@@ -47,6 +46,11 @@ define('modules/ui', [
             });
         });
     };
+
+    function updateMailNotificationsClicked(e) {
+        socket.emit('updateMailNotifications');
+        e.preventDefault();
+    }
 
     function updateUsersBtnClicked(e) {
         socket.emit('updateUsers');

@@ -15,7 +15,22 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.setupDonutchart();
         self.setupBarChart();
         self.actionButtons();
+        self.bindKeys();
         self.ajaxFormSubmit();
+    };
+
+    helpers.bindKeys = function() {
+        var self = this;
+        var commentReply = $('#commentReply');
+        if (commentReply.length > 0) {
+            commentReply.off('keydown');
+            commentReply.on('keydown', function(e) {
+                var keyCode = (e.which ? e.which : e.keyCode);
+                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+                    $('#comment-reply').find('button[type="submit"]').trigger('click');
+                }
+            });
+        }
     };
 
     helpers.onWindowResize = function() {

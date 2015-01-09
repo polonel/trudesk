@@ -8,7 +8,33 @@
     <p class="left">Tickets</p>
     <div class="right">
         <ul class="button-group">
+            <li class="active">
+                <a href="#" class="btn no-ajaxy" data-notifications="123">Actions</a>
+            </li>
             {{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create" role="button" class="btn">Create</a></li>{{/canUser}}
+        </ul>
+    </div>
+</div>
+
+<div id="123" data-scroll="123-list" data-top-offset="10" data-left-offset="27" class="notifications p-dropdown p-dropdown-small">
+    <div class="actions"><strong>Ticket Actions</strong></div>
+    <div id="123-list" class="notifications-Messages">
+        <ul>
+            <li>
+                <a class="messageNotification no-ajaxify" href="#" role="button">
+                    <div class="clearfix">
+                        <div class="messageUnread"></div>
+                        <div class="messageIcon left"><i class="fa fa-warning"></i></div>
+                        <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
+                        <div class="messageSnippet">
+                            <span>There is an issue with the printer at the tax office.</span>
+                        </div>
+                        <div class="messageDate">
+                            <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
+                        </div>
+                    </div>
+                </a>
+            </li>
         </ul>
     </div>
 </div>

@@ -98,6 +98,10 @@ pre {
   .cursor-pointer:hover {
     cursor: pointer !important; }
 
+.button-group > li {
+  float: left;
+  margin: 0; }
+
 .profilePic {
   width: 50px;
   height: 50px;
@@ -427,6 +431,13 @@ div.ptooltip-box {
   .p-dropdown.pDropOpen {
     visibility: visible;
     opacity: 1; }
+  .p-dropdown ul {
+    list-style: none;
+    display: block;
+    float: left;
+    margin: 0;
+    padding: 0;
+    font-size: 12px; }
 
 div.actions {
   width: 100%;
@@ -442,7 +453,8 @@ div.actions {
 
 #mail-notifications,
 #notifications,
-#online-Users {
+#online-Users,
+.p-dropdown {
   max-height: 350px;
   position: absolute;
   left: -9999px; }
@@ -454,7 +466,10 @@ div.actions {
   #notifications .online-Users-List,
   #online-Users .mail-Messages,
   #online-Users .notifications-Messages,
-  #online-Users .online-Users-List {
+  #online-Users .online-Users-List,
+  .p-dropdown .mail-Messages,
+  .p-dropdown .notifications-Messages,
+  .p-dropdown .online-Users-List {
     float: left;
     max-height: 320px;
     overflow-x: hidden;
@@ -467,12 +482,16 @@ div.actions {
     #notifications .online-Users-List ul,
     #online-Users .mail-Messages ul,
     #online-Users .notifications-Messages ul,
-    #online-Users .online-Users-List ul {
+    #online-Users .online-Users-List ul,
+    .p-dropdown .mail-Messages ul,
+    .p-dropdown .notifications-Messages ul,
+    .p-dropdown .online-Users-List ul {
       float: left;
       height: 100%; }
   #mail-notifications li,
   #notifications li,
-  #online-Users li {
+  #online-Users li,
+  .p-dropdown li {
     width: 100%;
     background: white;
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
@@ -481,15 +500,18 @@ div.actions {
     line-height: normal; }
     #mail-notifications li:hover,
     #notifications li:hover,
-    #online-Users li:hover {
+    #online-Users li:hover,
+    .p-dropdown li:hover {
       background: #f3f5f9 !important; }
     #mail-notifications li:last-child,
     #notifications li:last-child,
-    #online-Users li:last-child {
+    #online-Users li:last-child,
+    .p-dropdown li:last-child {
       border-bottom: none; }
     #mail-notifications li .messageNotification,
     #notifications li .messageNotification,
-    #online-Users li .messageNotification {
+    #online-Users li .messageNotification,
+    .p-dropdown li .messageNotification {
       display: block;
       width: 100%;
       height: 71px;
@@ -501,11 +523,13 @@ div.actions {
       position: relative; }
       #mail-notifications li .messageNotification:hover,
       #notifications li .messageNotification:hover,
-      #online-Users li .messageNotification:hover {
+      #online-Users li .messageNotification:hover,
+      .p-dropdown li .messageNotification:hover {
         background: transparent !important; }
       #mail-notifications li .messageNotification .messageUnread,
       #notifications li .messageNotification .messageUnread,
-      #online-Users li .messageNotification .messageUnread {
+      #online-Users li .messageNotification .messageUnread,
+      .p-dropdown li .messageNotification .messageUnread {
         width: 16px;
         height: 16px;
         font-size: 12px;
@@ -516,11 +540,13 @@ div.actions {
         right: 3px; }
         #mail-notifications li .messageNotification .messageUnread:before,
         #notifications li .messageNotification .messageUnread:before,
-        #online-Users li .messageNotification .messageUnread:before {
+        #online-Users li .messageNotification .messageUnread:before,
+        .p-dropdown li .messageNotification .messageUnread:before {
           content: "\f111"; }
         #mail-notifications li .messageNotification .messageUnread.read:before,
         #notifications li .messageNotification .messageUnread.read:before,
-        #online-Users li .messageNotification .messageUnread.read:before {
+        #online-Users li .messageNotification .messageUnread.read:before,
+        .p-dropdown li .messageNotification .messageUnread.read:before {
           content: "\f10c"; }
       #mail-notifications li .messageNotification div.messageAuthor,
       #mail-notifications li .messageNotification div.messageSnippet,
@@ -530,23 +556,29 @@ div.actions {
       #notifications li .messageNotification div.messageDate,
       #online-Users li .messageNotification div.messageAuthor,
       #online-Users li .messageNotification div.messageSnippet,
-      #online-Users li .messageNotification div.messageDate {
+      #online-Users li .messageNotification div.messageDate,
+      .p-dropdown li .messageNotification div.messageAuthor,
+      .p-dropdown li .messageNotification div.messageSnippet,
+      .p-dropdown li .messageNotification div.messageDate {
         margin-left: 60px;
         margin-bottom: 3px; }
       #mail-notifications li .messageNotification div.messageDate,
       #notifications li .messageNotification div.messageDate,
-      #online-Users li .messageNotification div.messageDate {
+      #online-Users li .messageNotification div.messageDate,
+      .p-dropdown li .messageNotification div.messageDate {
         color: #646464 !important; }
       #mail-notifications li .messageNotification div.messageSnippet,
       #notifications li .messageNotification div.messageSnippet,
-      #online-Users li .messageNotification div.messageSnippet {
+      #online-Users li .messageNotification div.messageSnippet,
+      .p-dropdown li .messageNotification div.messageSnippet {
         width: 218px;
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis; }
       #mail-notifications li .messageNotification i,
       #notifications li .messageNotification i,
-      #online-Users li .messageNotification i {
+      #online-Users li .messageNotification i,
+      .p-dropdown li .messageNotification i {
         display: block;
         width: 50px;
         font-size: 25px;
@@ -555,11 +587,13 @@ div.actions {
         color: #e7a13c; }
         #mail-notifications li .messageNotification i.green,
         #notifications li .messageNotification i.green,
-        #online-Users li .messageNotification i.green {
+        #online-Users li .messageNotification i.green,
+        .p-dropdown li .messageNotification i.green {
           color: #29b955; }
         #mail-notifications li .messageNotification i.red,
         #notifications li .messageNotification i.red,
-        #online-Users li .messageNotification i.red {
+        #online-Users li .messageNotification i.red,
+        .p-dropdown li .messageNotification i.red {
           color: #b92929; }
 
 .sidebar {
@@ -915,7 +949,8 @@ div#ticketTable_wrapper {
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
-  height: 28px; }
+  height: 28px;
+  line-height: 14px; }
   .page-top-comments a.btn:hover,
   .page-top-comments button.btn:hover,
   .page-top-comments button:hover {
@@ -989,7 +1024,7 @@ div#ticketTable_wrapper {
   .comments-wrapper .initial-issue h3,
   .comments-wrapper .ticket-comment h3,
   .comments-wrapper .ticket-reply h3 {
-    margin: 0 0 8px;
+    margin: 0 0 5px;
     font-family: "open sans", sans-serif;
     font-size: 18px;
     font-weight: 600;
@@ -1003,8 +1038,7 @@ div#ticketTable_wrapper {
     font-size: 12px;
     font-family: "open sans", sans-serif;
     color: #e74c3c;
-    margin-left: 2px;
-    margin-bottom: 7px; }
+    margin-left: 2px; }
     .comments-wrapper .initial-issue a:hover, .comments-wrapper .initial-issue a.comment-email-link:hover,
     .comments-wrapper .ticket-comment a:hover,
     .comments-wrapper .ticket-comment a.comment-email-link:hover,
@@ -1062,7 +1096,8 @@ div#ticketTable_wrapper {
     background: #e74c3c;
     border-radius: 3px;
     -webkit-border-radius: 3px;
-    -moz-border-radius: 3px; }
+    -moz-border-radius: 3px;
+    font-weight: 400; }
     .comments-wrapper .ticket-reply button[type=submit]:hover {
       background: #e43725; }
     .comments-wrapper .ticket-reply button[type=submit]:active, .comments-wrapper .ticket-reply button[type=submit]:focus {

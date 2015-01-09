@@ -3,9 +3,10 @@ requirejs.config({
     paths: {
         //Always Load
         jquery:         'vendor/jquery/jquery',
-        foundation:     'vendor/foundation/foundation.min',
+        //foundation:     'vendor/foundation/foundation.min',
+        foundation:     'https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/js/foundation.min',
         angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min',
-        angularRoute:  'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route',
+        angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',

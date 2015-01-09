@@ -28,10 +28,12 @@ define('modules/ajaxify', [
                 }
             }
         });
+
         chat.init();
         ui.init();
         helpers.init();
         ajaxImgUpload.init();
+        nav.init();
 
         //Dashbaord
         var t = $('#ticketLines');
