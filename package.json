@@ -32,6 +32,7 @@
     "passport-http": "^0.2.2",
     "passport-local": "^1.0.0",
     "passport.socketio": "^3.4.1",
+    "prompt": "^0.2.14",
     "serve-favicon": "~2.1.6",
     "socket.io": "1.2.1",
     "uglify-js": "^2.4.15",

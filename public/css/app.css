@@ -45,6 +45,12 @@ pre {
 .marginright30 {
   margin-right: 30px !important; }
 
+.marginleft5 {
+  margin-left: 5px !important; }
+
+.marginright5 {
+  margin-right: 5px !important; }
+
 .padtop20 {
   padding-top: 20px !important; }
 
@@ -964,42 +970,119 @@ div#ticketTable_wrapper {
 
 .ticket-assignee-wrap {
   padding-left: 30px;
-  padding-top: 30px; }
+  padding-top: 30px;
+  margin-bottom: 40px; }
   .ticket-assignee-wrap h4 {
     font-family: "open sans", sans-serif;
     font-size: 14px;
     color: #8e98a2;
     margin-bottom: 10px; }
 
-.ticket-assignee img {
-  float: left;
-  display: block;
-  width: 50px;
-  height: 50px;
-  margin-left: 5px;
-  border-radius: 50%;
-  -webkit-border-radius: 50%;
-  -moz-border-radius: 50%; }
-.ticket-assignee .ticket-assignee-details {
-  padding-left: 75px; }
-  .ticket-assignee .ticket-assignee-details h3 {
-    font-family: "open sans", sans-serif;
-    font-size: 14px;
-    color: #3d4854;
-    margin: 0 0 7px; }
-  .ticket-assignee .ticket-assignee-details a, .ticket-assignee .ticket-assignee-details a:active, .ticket-assignee .ticket-assignee-details a:focus {
+.ticket-assignee {
+  line-height: 1; }
+  .ticket-assignee img {
+    float: left;
     display: block;
+    width: 50px;
+    height: 50px;
+    margin-left: 5px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%; }
+  .ticket-assignee .ticket-assignee-details {
+    padding-left: 75px; }
+    .ticket-assignee .ticket-assignee-details h3 {
+      font-family: "open sans", sans-serif;
+      font-size: 14px;
+      color: #3d4854;
+      margin: 0 0 7px;
+      line-height: normal; }
+    .ticket-assignee .ticket-assignee-details a, .ticket-assignee .ticket-assignee-details a:active, .ticket-assignee .ticket-assignee-details a:focus {
+      display: block;
+      font-family: "open sans", sans-serif;
+      font-size: 12px;
+      color: #76797e;
+      margin: 0 0 2px; }
+      .ticket-assignee .ticket-assignee-details a:hover, .ticket-assignee .ticket-assignee-details a:hover:focus, .ticket-assignee .ticket-assignee-details a:active:hover, .ticket-assignee .ticket-assignee-details a:active:hover:focus, .ticket-assignee .ticket-assignee-details a:focus:hover, .ticket-assignee .ticket-assignee-details a:focus:hover:focus {
+        text-decoration: underline; }
+    .ticket-assignee .ticket-assignee-details span {
+      font-family: "open sans", sans-serif;
+      font-size: 12px;
+      color: #76797e;
+      margin: 0 0 3px; }
+
+.ticket-details {
+  display: block;
+  min-height: 150px;
+  background: white;
+  border: 1px solid #d3d9e4;
+  margin: 0 30px !important;
+  padding: 15px !important;
+  font-family: "open sans", sans-serif;
+  font-size: 12px;
+  color: #76797e;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px; }
+  .ticket-details label {
     font-family: "open sans", sans-serif;
     font-size: 12px;
     color: #76797e;
-    margin: 0 0 2px; }
-    .ticket-assignee .ticket-assignee-details a:hover, .ticket-assignee .ticket-assignee-details a:hover:focus, .ticket-assignee .ticket-assignee-details a:active:hover, .ticket-assignee .ticket-assignee-details a:active:hover:focus, .ticket-assignee .ticket-assignee-details a:focus:hover, .ticket-assignee .ticket-assignee-details a:focus:hover:focus {
-      text-decoration: underline; }
-  .ticket-assignee .ticket-assignee-details span {
+    margin-bottom: 3px; }
+  .ticket-details input,
+  .ticket-details .input-box,
+  .ticket-details .tag-list {
     font-family: "open sans", sans-serif;
     font-size: 12px;
-    color: #76797e;
-    margin: 0 0 3px; }
+    height: 25px;
+    width: 97%;
+    padding: 5px 10px;
+    margin-bottom: 12px;
+    color: #484848;
+    background: #f3f5f9;
+    border: 1px solid #bec4d0;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none; }
+    .ticket-details input:focus,
+    .ticket-details .input-box:focus,
+    .ticket-details .tag-list:focus {
+      outline: none;
+      border-color: #bec4d0;
+      background: white;
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none; }
+  .ticket-details .input-box {
+    padding-top: 3px;
+    padding-bottom: 3px; }
+  .ticket-details .tag-list {
+    display: block;
+    padding: 0;
+    height: auto;
+    min-height: 25px;
+    max-height: none;
+    margin-bottom: 5px; }
+    .ticket-details .tag-list .item {
+      display: inline-block;
+      float: left;
+      font-size: 12px;
+      font-family: "open sans", sans-serif;
+      padding: 1px 8px;
+      margin: 2px 0px 0px 2px;
+      max-height: 20px;
+      background: #3498db;
+      color: white;
+      border-radius: 3px;
+      -webkit-border-radius: 3px;
+      -moz-border-radius: 3px; }
+      .ticket-details .tag-list .item.orange {
+        background: #db5334; }
+      .ticket-details .tag-list .item:last-of-type {
+        margin-bottom: 2px; }
 
 .comments-wrapper .initial-issue,
 .comments-wrapper .ticket-comment,

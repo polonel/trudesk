@@ -5,9 +5,27 @@ var _ = require('lodash');
 var db = require('../database');
 var path = require('path');
 var multer = require('multer');
+var mongoose = require('mongoose');
+var winston = require('winston');
 
 var app,
     middleware = {};
+
+middleware.db = function(req, res, next) {
+    winston.info('Checking MongoDB Status...');
+    if (mongoose.connection.readyState !== 1) {
+        winston.warn('MongoDB ReadyState = ' + mongoose.connection.readyState);
+        db.init(function(e, database) {
+            if (e) {
+                return res.status(503).send();
+            }
+
+            req.db = database;
+        });
+    }
+
+    next();
+};
 
 middleware.multerToUserDir = function(req, res, next) {
     multer({dest: path.join(__dirname, '../../', 'public/uploads/users')});
@@ -55,14 +73,7 @@ middleware.api = function(req, res, next) {
 
 };
 
-
-
-
-
-
-
-
-module.exports = function(server, mongodb) {
+module.exports = function(server) {
     app = server;
 
     return middleware;

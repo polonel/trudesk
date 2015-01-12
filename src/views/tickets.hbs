@@ -51,6 +51,7 @@
             <th>Created</th>
             <th>Requester</th>
             <th>Group</th>
+            <th>Assignee</th>
             <th>Updated</th>
         </tr>
         </thead>
@@ -68,6 +69,13 @@
                     <td>{{{formatDate date "MMM DD, YY"}}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
+                    <td>
+                        {{#isNotNull assignee}}
+                            {{assignee.fullname}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
                     <td>
                         {{#isNotNull updated}}
                             {{formatDate updated "MMM DD \at h:mma"}}
@@ -90,6 +98,13 @@
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
                     <td>
+                        {{#isNotNull assignee}}
+                            {{assignee.fullname}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
+                    <td>
                         {{#isNotNull updated}}
                             {{formatDate updated "MMM DD \at h:mma"}}
                         {{else}}
@@ -110,6 +125,13 @@
                     <td>{{{formatDate date "MMM DD, YY"}}}</td>
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
+                    <td>
+                        {{#isNotNull assignee}}
+                            {{assignee.fullname}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
                     <td>
                         {{#isNotNull updated}}
                             {{formatDate updated "MMM DD \at h:mma"}}
@@ -132,6 +154,13 @@
                     <td>{{owner.fullname}}</td>
                     <td>{{group.name}}</td>
                     <td>
+                        {{#isNotNull assignee}}
+                            {{assignee.fullname}}
+                        {{else}}
+                            --
+                        {{/isNotNull}}
+                    </td>
+                    <td>
                         {{#isNotNull updated}}
                             {{formatDate updated "MMM DD \at h:mma"}}
                         {{else}}
@@ -141,166 +170,6 @@
                 </tr>
             {{/is}}
         {{/each}}
-
-        <!--<tr class="ticket-pending">-->
-            <!--<td>-->
-                <!--<input id="c3" type="checkbox"/>-->
-                <!--<label for="c3"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-pending"><span>Pending</span></td>-->
-            <!--<td>15 New computers for office 203</td>-->
-            <!--<td>July 13</td>-->
-            <!--<td>Christine hall</td>-->
-            <!--<td>Administration</td>-->
-            <!--<td>-</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-pending">-->
-            <!--<td>-->
-                <!--<input id="c4" type="checkbox"/>-->
-                <!--<label for="c4"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-pending"><span>Pending</span></td>-->
-            <!--<td>Motherboard Repair Needed</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>Joe Rogers</td>-->
-            <!--<td>Development</td>-->
-            <!--<td>-</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-        <!--<tr class="ticket-closed">-->
-            <!--<td>-->
-                <!--<input id="c5" type="checkbox"/>-->
-                <!--<label for="c5"></label>-->
-            <!--</td>-->
-            <!--<td class="ticket-status ticket-closed"><span>Closed</span></td>-->
-            <!--<td>Need to Look at this issue.</td>-->
-            <!--<td>July 12</td>-->
-            <!--<td>John Smith</td>-->
-            <!--<td>IT Support</td>-->
-            <!--<td>Today 11:52a</td>-->
-        <!--</tr>-->
-
-
         </tbody>
     </table>
 </div>

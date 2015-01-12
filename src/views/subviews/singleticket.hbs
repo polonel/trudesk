@@ -20,8 +20,8 @@
     </div>
 
     <div class="page-left full-height">
-        <div class="ticket-details">
-            <div class="ticket-assignee-wrap">
+        <div class="ticket-details-wrap clearfix">
+            <div class="ticket-assignee-wrap clearfix">
                 <h4>Assignee</h4>
                 {{#if data.ticket.assignee}}
                     <div class="ticket-assignee">
@@ -40,6 +40,38 @@
                         </div>
                     </div>
                 {{/if}}
+            </div>
+            <div class="ticket-details row">
+                <div class="small-6 columns nopadding">
+                    <div class="marginright5">
+                        <span>Type</span>
+                        <div class="input-box">{{data.ticket.type.name}}</div>
+                    </div>
+                </div>
+                <div class="small-6 columns nopadding">
+                    <div class="marginleft5">
+                        <span>Priority</span>
+                        <div class="input-box">{{data.ticket.priorityname}}</div>
+                    </div>
+                </div>
+
+                <div class="row nomargin nopadding">
+                    <div class="small-12 columns nopadding">
+                        <span>Group</span>
+                        <div class="input-box">{{data.ticket.group.name}}</div>
+                    </div>
+                </div>
+
+                <div class="row nomargin nopadding">
+                    <div class="small-12 columns nopadding">
+                        <span>Tags</span>
+                        <div class="tag-list clearfix">
+                            {{#each data.ticket.tagsArray}}
+                                <div class="item">{{this}}</div>
+                            {{/each}}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

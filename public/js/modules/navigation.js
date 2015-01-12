@@ -80,6 +80,8 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
 
         $(scroll).getNiceScroll().resize();
         $(scroll).getNiceScroll().show();
+
+        e.preventDefault();
     }
 
     return navigation;

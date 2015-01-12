@@ -1,9 +1,11 @@
 var ticketSchema    = require('../models/ticket');
 var async           = require('async');
-var _               = require('lodash');
+var _               = require('underscore');
+var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
+var emitter         = require('../emitter');
 
 var ticketsController = {};
 
@@ -156,11 +158,30 @@ ticketsController.single = function(req, res, next) {
         }
 
         self.content.data.ticket = ticket;
+        self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
+        self.content.data.ticket.tagsArray = ticket.tags;
         self.content.data.ticket.commentCount = _.size(ticket.comments);
 
         return res.render('subviews/singleticket', self.content);
     });
 };
+
+function getPriorityName(val) {
+    var p = '';
+    switch(val) {
+        case 1:
+            p = 'Normal';
+            break;
+        case 2:
+            p = 'Urgent';
+            break;
+        case 3:
+            p = 'Critical';
+            break;
+    }
+
+    return p;
+}
 
 ticketsController.editTicket = function(req, res, next) {
     var self = this;
@@ -206,10 +227,17 @@ ticketsController.editTicket = function(req, res, next) {
 ticketsController.submitTicket = function(req, res, next) {
     var marked = require('marked');
     var Ticket = ticketSchema;
+    var tags = [];
+    if (!_.isUndefined(req.body.tTags)) {
+        var t = _s.clean(req.body.tTags);
+        tags = t.split(',');
+    }
+
     Ticket.create({
         owner: req.user._id,
         group: req.body.tGroup,
-        status: req.body.tStatus,
+        status: 0,
+        tags: tags,
         date: new Date(),
         subject: req.body.tSubject,
         issue: marked(req.body.tIssue),

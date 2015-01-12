@@ -4,10 +4,11 @@ var nconf = require('nconf'),
     WebServer = express(),
     server,
     winston = require('winston'),
-    async = require('async'),
-    db = require('./database'),
     middleware = require('./middleware'),
-    routes = require('./routes');
+    routes = require('./routes'),
+
+    //Load Events
+    events = require('./emitter/events');
 
 
 server = require('http').createServer(WebServer);
@@ -21,6 +22,7 @@ server = require('http').createServer(WebServer);
     module.exports.init = function(db, callback) {
         middleware(app, db, function(middleware, store) {
             module.exports.sessionStore = store;
+
             routes(app, middleware);
 
             server.on('error', function(err) {

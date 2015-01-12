@@ -63,6 +63,7 @@ div#ticketTable_wrapper
 .ticket-assignee-wrap
   padding-left: 30px
   padding-top: 30px
+  margin-bottom: 40px
   h4
     font-family: "open sans", sans-serif
     font-size: 14px
@@ -70,6 +71,7 @@ div#ticketTable_wrapper
     margin-bottom: 10px
 
 .ticket-assignee
+  line-height: 1.0
   img
     float: left
     display: block
@@ -86,6 +88,7 @@ div#ticketTable_wrapper
       font-size: 14px
       color: #3d4854
       margin: 0 0 7px
+      line-height: normal
 
     a, a:active, a:focus
       display: block
@@ -103,6 +106,73 @@ div#ticketTable_wrapper
       font-size: 12px
       color: #76797e
       margin: 0 0 3px
+
+.ticket-details
+  display: block
+  min-height: 150px
+  background: #ffffff
+  border: 1px solid #d3d9e4
+  margin: 0 30px !important
+  padding: 15px  !important
+  font-family: "open sans", sans-serif
+  font-size: 12px
+  color: #76797e
+  +borderRadius(3px)
+
+  label
+    font-family: "open sans", sans-serif
+    font-size: 12px
+    color: #76797e
+    margin-bottom: 3px
+
+  input,
+  .input-box,
+  .tag-list
+    font-family: "open sans", sans-serif
+    font-size: 12px
+    height: 25px
+    width: 97%
+    padding: 5px 10px
+    margin-bottom: 12px
+    color: #484848
+    background: #f3f5f9
+    border: 1px solid #bec4d0
+    +borderRadius(3px)
+    +boxShadow(none)
+
+    &:focus
+      outline: none
+      border-color: #bec4d0
+      background: lighten(#f3f5f9, 5%)
+      +boxShadow(none)
+
+  .input-box
+    padding-top: 3px
+    padding-bottom: 3px
+
+  .tag-list
+    display: block
+    padding: 0
+    height: auto
+    min-height: 25px
+    max-height: none
+    margin-bottom: 5px
+    .item
+      display: inline-block
+      float: left
+      font-size: 12px
+      font-family: "open sans", sans-serif
+      padding: 1px 8px
+      margin: 2px 0px 0px 2px
+      max-height: 20px
+      background: #3498db
+      color: #ffffff
+      +borderRadius(3px)
+
+      &.orange
+        background: #db5334
+      &:last-of-type
+        margin-bottom: 2px
 
 //Comments Section
 .comments-wrapper

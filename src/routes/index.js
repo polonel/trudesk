@@ -15,8 +15,9 @@ var express     = require('express'),
     router      = express.Router(),
     controllers = require('../controllers/index.js'),
     path        = require('path'),
-    multer      = require('multer');
-    winston     = require('winston');
+    multer      = require('multer'),
+    winston     = require('winston'),
+    mongoose    = require('mongoose');
 
 var passport = require('passport');
 
@@ -89,6 +90,11 @@ function handleErrors(err, req, res, next) {
     var status = err.status || 500;
     res.status(status);
     //req.flash('errorMessage', err.message);
+
+    if (status == 503) {
+        res.render('503', {layout: false});
+        return;
+    }
 
     res.render('error', {
         message: err.message,

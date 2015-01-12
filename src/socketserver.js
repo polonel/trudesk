@@ -1,7 +1,8 @@
 var winston = require('winston'),
     utils = require('./helpers/utils'),
     passportSocketIo = require('passport.socketio'),
-    cookieparser = require('cookie-parser');
+    cookieparser = require('cookie-parser'),
+    emitter         = require('./emitter');
 
 module.exports = function(ws) {
     var _ = require('lodash'),

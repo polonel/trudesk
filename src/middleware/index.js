@@ -13,10 +13,10 @@
 
  */
 
-var db              = require('../database'),
-    path            = require('path'),
+var path            = require('path'),
     async           = require('async'),
     express         = require('express'),
+    mongoose        = require('mongoose'),
     hbs             = require('express-hbs'),
     hbsHelpers      = require('../helpers/hbs/helpers'),
     winston         = require('winston'),
@@ -47,10 +47,20 @@ module.exports = function(app, db, callback) {
     //app.use(favicon(__dirname + '/public/favicon.ico'));
     //app.use(logger('dev'));
     app.use(express.static(path.join(__dirname, '../../', 'public')));
-    //app.use(multer({dest: path.join(__dirname, '../../', 'public/uploads')}));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
+
+    app.use(function(req, res, next) {
+        if (mongoose.connection.readyState !== 1) {
+            var err = new Error('MongoDb Error');
+            err.status = 503;
+            next(err);
+            return;
+        }
+
+        next();
+    });
 
     var cookie = {
         maxAge: 1000 * 60 * 60 * 24

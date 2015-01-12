@@ -14,7 +14,6 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
-              "use strict";
               viewController.loggedInAccount(request, function(data) {
                   viewdata.loggedInAccount = data;
                   callback(viewdata.loggedInAccount);

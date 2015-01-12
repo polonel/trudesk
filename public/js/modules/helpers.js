@@ -1,6 +1,6 @@
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiechart'], function($, _, moment) {
+define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiechart', 'chosen'], function($, _, moment) {
     var helpers = {};
 
     helpers.init = function() {
@@ -17,6 +17,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.actionButtons();
         self.bindKeys();
         self.ajaxFormSubmit();
+        self.setupChosen();
     };
 
     helpers.bindKeys = function() {
@@ -317,6 +318,18 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
 
     helpers.formatDate = function(date, format) {
         return moment(date).format(format);
+    };
+
+    helpers.setupChosen = function() {
+        $('.chosen-select').each(function() {
+            var self = $(this);
+            var nosearch = $(this).attr('data-nosearch');
+            var searchNum = 10;
+            if (nosearch) searchNum = 90000;
+            self.chosen({
+                disable_search_threshold: searchNum
+            });
+        });
     };
     
     return helpers;
