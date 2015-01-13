@@ -1,10 +1,15 @@
-<div class="small-5 medium-5 large-3 columns message-list">
+<div class="small-5 medium-5 large-3 columns message-list" ng-controller="singleTicket">
     <div class="page-title page-title-small noshadow nopadding-right">
         <div class="page-title-border-right relative">
             <p>Ticket #{{data.ticket.uid}}</p>
+            <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
             <div class="floating-ticket-status">
                 {{#is data.ticket.status 0}}
-                    <div class="ticket-status ticket-new"><span>New</span></div>
+                    {{#canUser data.user "ticket:edit"}}
+                        <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                    {{else}}
+                        <div class="ticket-status ticket-new"><span>New</span></div>
+                    {{/canUser}}
                 {{/is}}
                 {{#is data.ticket.status 1}}
                     <div class="ticket-status ticket-open"><span>Open</span></div>
@@ -15,6 +20,15 @@
                 {{#is data.ticket.status 3}}
                     <div class="ticket-status ticket-closed"><span>Closed</span></div>
                 {{/is}}
+
+                <div id="statusSelect" class="hide" close-mouse-up>
+                    <ul>
+                        <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
+                        <li class="ticket-status ticket-open" ng-click="changeStatus(1)"><span>Open</span></li>
+                        <li class="ticket-status ticket-pending" ng-click="changeStatus(2)"><span>Pending</span></li>
+                        <li class="ticket-status ticket-closed" ng-click="changeStatus(3)"><span>Closed</span></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </div>
@@ -34,7 +48,7 @@
                     </div>
                 {{else}}
                     <div class="ticket-assignee">
-                        <img src="/uploads/users/defaultprofile.jpg" alt=""/>
+                        <img src="/uploads/users/defaultProfile.jpg" alt=""/>
                         <div class="ticket-assignee-details">
                             <h3>No User Assigned</h3>
                         </div>

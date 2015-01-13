@@ -938,6 +938,24 @@ div#ticketTable_wrapper {
   .floating-ticket-status .ticket-status span {
     font-weight: 500; }
 
+#statusSelect {
+  position: absolute;
+  top: 28px;
+  left: -5px;
+  padding: 5px;
+  background: white;
+  border: 1px solid #bec4d0;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px; }
+  #statusSelect ul {
+    margin: 0;
+    padding: 0;
+    list-style: none; }
+    #statusSelect ul li {
+      margin-bottom: 3px;
+      cursor: pointer; }
+
 .page-top-comments .active > a,
 .page-top-comments .active > button {
   background: #cad2e2; }

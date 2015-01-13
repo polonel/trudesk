@@ -58,6 +58,26 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('updateTicketStatus', function(data) {
+            var ticketId = data.ticketId;
+            var status = data.status;
+            var ticketSchema = require('./models/ticket');
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.setStatus(status, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err) {
+                        if (err) return true;
+
+                        utils.sendToAllConnectedClients(io, 'updateTicketStatus', status);
+                    });
+                })
+            });
+        });
+
         socket.on('updateComments', function(data) {
             var userId = socket.request.user._id;
             var ticketId = data.ticketId;

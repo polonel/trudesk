@@ -9,6 +9,7 @@ var _s      = require('underscore.string');
     create      = create permission for grp
     delete      = delete permission for grp
     edit        = edit permission for grp
+    editSelf    = edit Self Created Items
     view        = view permission for grp
  */
 var roles = {
@@ -28,7 +29,7 @@ var roles = {
         id: "user",
         name: "User",
         description: "User",
-        allowedAction: ["ticket:create delete edit", "comment:*" ]
+        allowedAction: ["ticket:create editSelf", "comment:*" ]
     }
 };
 

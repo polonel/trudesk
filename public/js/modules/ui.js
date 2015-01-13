@@ -11,9 +11,11 @@ define('modules/ui', [
         this.updateMailNotifications();
         this.updateComments();
         this.updateUi();
+        this.updateTicketStatus();
     };
 
     socketUi.updateMailNotifications = function() {
+        console.log('updating Mail');
         $(document).ready(function() {
             var btnMailNotifications = $('#btn_mail-notifications');
             btnMailNotifications.off('click', updateMailNotificationsClicked);
@@ -28,6 +30,46 @@ define('modules/ui', [
             } else {
                 label.html(data);
                 label.show();
+            }
+        });
+    };
+
+    socketUi.updateTicketStatus = function() {
+        socket.removeAllListeners('updateTicketStatus');
+        socket.on('updateTicketStatus', function(status) {
+            var statusSelectBox = $('#statusSelect');
+            if (statusSelectBox.length > 0) statusSelectBox.addClass('hide');
+
+            var tStatusBox = $('.floating-ticket-status > .ticket-status');
+            if (tStatusBox.length > 0) {
+                tStatusBox.removeClass('ticket-new');
+                tStatusBox.removeClass('ticket-open');
+                tStatusBox.removeClass('ticket-pending');
+                tStatusBox.removeClass('ticket-closed');
+
+                var s = 'New';
+                var c = 'ticket-new';
+                switch (status) {
+                    case 0:
+                        s = 'New';
+                        c = 'ticket-new';
+                        break;
+                    case 1:
+                        s = 'Open';
+                        c = 'ticket-open';
+                        break;
+                    case 2:
+                        s = 'Pending';
+                        c = 'ticket-pending';
+                        break;
+                    case 3:
+                        s = 'Closed';
+                        c = 'ticket-closed';
+                        break;
+                }
+
+                tStatusBox.find('span').html(s);
+                tStatusBox.addClass(c);
             }
         });
     };

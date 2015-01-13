@@ -37,6 +37,14 @@ ticketSchema.pre('save', function(next) {
     });
 });
 
+ticketSchema.methods.setStatus = function(status, callback) {
+    if (_.isUndefined(status)) return callback('Invalid Status', null);
+
+    this.status = status;
+
+    callback(null, this);
+};
+
 ticketSchema.statics.getAll = function(callback) {
     var q = this.model(COLLECTION).find({})
         .populate('owner')
