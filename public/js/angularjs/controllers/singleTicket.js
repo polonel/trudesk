@@ -24,12 +24,17 @@ define(['angular', 'underscore', 'jquery', 'socketio', 'history'], function(angu
 
         })
         .directive('closeMouseUp', ['$document', function($document) {
-            return function(scope, element, attr) {
-                $document.off('mouseup', mouseup);
-                $document.on('mouseup', mouseup);
+            return {
+                restrict: 'A',
+                link: function(scope, element, attr) {
+                    $document.off('mouseup', mouseup);
+                    $document.on('mouseup', mouseup);
 
-                function mouseup() {
-                    element.addClass('hide');
+                    function mouseup() {
+                        if (!element.hasClass('hide')) {
+                            element.addClass('hide');
+                        }
+                    }
                 }
             }
         }]);
