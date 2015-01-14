@@ -50,8 +50,10 @@
             <div class="ticket-assignee-wrap clearfix">
                 <h4>Assignee</h4>
                 {{#if data.ticket.assignee}}
-                    <div class="ticket-assignee">
-                        <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                    <div class="ticket-assignee clearfix">
+                        <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                        </a>
                         <div class="ticket-assignee-details">
                             <h3>{{data.ticket.assignee.fullname}}</h3>
                             <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
@@ -59,13 +61,23 @@
                         </div>
                     </div>
                 {{else}}
-                    <div class="ticket-assignee">
-                        <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                    <div class="ticket-assignee clearfix">
+                        <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                            <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                        </a>
                         <div class="ticket-assignee-details">
                             <h3>No User Assigned</h3>
                         </div>
                     </div>
                 {{/if}}
+                <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-left-offset="5" data-top-offset="10" class="notifications p-dropdown p-dropdown-left">
+                    <div class="actions"><strong>Select Assignee</strong></div>
+                    <div id="assigneeDropdown-content" class="" style="height: 215px;">
+                        <ul>
+
+                        </ul>
+                    </div>
+                </div>
             </div>
             <div class="ticket-details row">
                 <div class="small-6 columns nopadding">
@@ -144,28 +156,26 @@
                     </div>
                 {{/foreach}}
             </div>
-            {{#isnot data.ticket.status 3}}
-                <div class="ticket-reply clearfix">
-                    {{#if data.common.loggedInAccount.image}}
-                        <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
-                    {{else}}
-                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
-                    {{/if}}
-                    <!--<ul class="reply-type">-->
+            <div class="ticket-reply clearfix {{#is data.ticket.status 3}}hide{{/is}}">
+                {{#if data.common.loggedInAccount.image}}
+                    <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
+                {{else}}
+                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                {{/if}}
+                <!--<ul class="reply-type">-->
 
-                    <!--</ul>-->
-                    <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
-                        <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
-                        <div class="comment-box">
-                            <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                            <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
-                        </div>
-                        <div class="right">
-                            <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
-                        </div>
-                    </form>
-                </div>
-            {{/isnot}}
+                <!--</ul>-->
+                <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
+                    <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                    <div class="comment-box">
+                        <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                        <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
+                    </div>
+                    <div class="right">
+                        <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 </div>

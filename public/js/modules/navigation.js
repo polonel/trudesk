@@ -5,11 +5,6 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
 
     navigation.init = function() {
         this.notifications();
-        this.sidebar();
-    };
-
-    navigation.sidebar = function() {
-
     };
 
     navigation.notifications = function() {
@@ -18,29 +13,31 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
             $(this).on('click', showDropdown);
         });
 
-        $(document).mouseup(function(e) {
-            $('a[data-notifications]').each(function() {
-                var drop = $('#' + $(this).attr('data-notifications'));
-                if ($(this).has(e.target).length !== 0)
-                    return;
-                if (!drop.is(e.target) && drop.has(e.target).length === 0)
-                    if (drop.hasClass('pDropOpen')) {
-                        drop.removeClass('pDropOpen');
-                        helpers.hideDropDownScrolls();
-                    }
-            })
-        });
+        $(document).off('mouseup', hideDropdownMouseUp);
+        $(document).on('mouseup', hideDropdownMouseUp);
     };
+
+    function hideDropdownMouseUp(e) {
+        $('a[data-notifications]').each(function() {
+            var drop = $('#' + $(this).attr('data-notifications'));
+            if ($(this).has(e.target).length !== 0)
+                return;
+            if (!drop.is(e.target) && drop.has(e.target).length === 0)
+                if (drop.hasClass('pDropOpen')) {
+                    drop.removeClass('pDropOpen');
+                    helpers.hideDropDownScrolls();
+                }
+        });
+    }
 
     function showDropdown(e) {
         var drop = $('#' + $(this).attr('data-notifications'));
         var scroll = $('#' + $(drop).attr('data-scroll'));
         if (drop.css('visibility') === 'visible') {
             drop.removeClass('pDropOpen');
-
             helpers.hideDropDownScrolls();
 
-            return;
+            return true;
         }
         var pageContent = $(this).parents('#page-content > div');
         var insidePage = pageContent.length > 0;
@@ -53,6 +50,9 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
         }
 
         var left = (($(this).offset().left - $(window).scrollLeft() - pageOffsetLeft) - 250);
+        if (drop.hasClass('p-dropdown-left')) {
+            left += 250;
+        }
         var leftExtraOffset = $(drop).attr('data-left-offset');
         if (_.isUndefined(leftExtraOffset)) {
             leftExtraOffset = 0;

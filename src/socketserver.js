@@ -94,6 +94,15 @@ module.exports = function(ws) {
             utils.sendToSelf(socket, 'updateUsers', usersOnline);
         });
 
+        socket.on('updateAssigneeList', function() {
+            var userSchema = require('./models/user');
+            userSchema.getAssigneeUsers(function(err, users) {
+                if (err) return true;
+
+                utils.sendToSelf(socket, 'updateAssigneeList', users);
+            })
+        });
+
         socket.on('joinChatServer', function(data) {
             var user = socket.request.user;
             var exists = false;

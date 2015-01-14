@@ -434,6 +434,8 @@ div.ptooltip-box {
     border-bottom-color: #646464;
     border-width: 9px;
     margin-left: -9px; }
+  .p-dropdown.p-dropdown-left:before, .p-dropdown.p-dropdown-left:after {
+    left: 25px; }
   .p-dropdown.pDropOpen {
     visibility: visible;
     opacity: 1; }

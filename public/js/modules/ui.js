@@ -1,7 +1,8 @@
 define('modules/ui', [
     'jquery',
     'socketio',
-    'modules/helpers'
+    'modules/helpers',
+    'nicescroll'
 
 ], function($, io, helpers) {
     var socketUi = {},
@@ -12,10 +13,10 @@ define('modules/ui', [
         this.updateComments();
         this.updateUi();
         this.updateTicketStatus();
+        this.updateAssigneeList();
     };
 
     socketUi.updateMailNotifications = function() {
-        console.log('updating Mail');
         $(document).ready(function() {
             var btnMailNotifications = $('#btn_mail-notifications');
             btnMailNotifications.off('click', updateMailNotificationsClicked);
@@ -70,6 +71,52 @@ define('modules/ui', [
 
                 tStatusBox.find('span').html(s);
                 tStatusBox.addClass(c);
+
+                var ticketReply = $('.ticket-reply');
+                if (status === 3) {
+                    //Remove Comment Box
+                    if (ticketReply.length > 0) {
+                        ticketReply.addClass('hide');
+                    }
+                } else {
+                    if (ticketReply.length > 0) {
+                        ticketReply.removeClass('hide');
+                    }
+                }
+            }
+        });
+    };
+
+    socketUi.updateAssigneeList = function() {
+        socket.removeAllListeners('updateAssigneeList');
+        socket.on('updateAssigneeList', function(users) {
+            var wrapper = '';
+            _.each(users, function(user) {
+                var html = '<li>';
+                html    += '<a class="messageNotification" href="#" role="button">';
+                html    += '<div class="clearfix">';
+                if (_.isUndefined(user.image)) {
+                    html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
+                } else {
+                    html    += '<div class="profilePic left"><img src="/uploads/users/' + user.image + '" alt="profile"/></div>';
+                }
+                html    += '<div class="messageAuthor"><strong>' + user.fullname + '</strong></div>';
+                html    += '<div class="messageSnippet">';
+                html    += '<span>' + user.email + '</span>';
+                html    += '</div>';
+                html    += '<div class="messageDate">';
+                html    += '<span>' + user.title + '</span>';
+                html    += '</div>';
+                html    += '</div>';
+                html    += '</a>';
+                html    += '</li>';
+
+                wrapper += html;
+            });
+
+            var assigneeListDrop = $('#assigneeDropdown-content > ul');
+            if (assigneeListDrop.length > 0) {
+                assigneeListDrop.html(wrapper);
             }
         });
     };
@@ -84,6 +131,10 @@ define('modules/ui', [
                     self.off('click', updateUsersBtnClicked);
                     self.on('click', updateUsersBtnClicked);
                 }
+                else if ($action.toLowerCase() === 'assigneelist') {
+                    self.off('click', updateAssigneeList);
+                    self.on('click', updateAssigneeList);
+                }
 
             });
         });
@@ -96,6 +147,11 @@ define('modules/ui', [
 
     function updateUsersBtnClicked(e) {
         socket.emit('updateUsers');
+        e.preventDefault();
+    }
+
+    function updateAssigneeList(e) {
+        socket.emit('updateAssigneeList');
         e.preventDefault();
     }
 

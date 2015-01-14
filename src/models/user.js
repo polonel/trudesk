@@ -56,6 +56,10 @@ userSchema.statics.getUserByUsername = function(user, callback) {
     return this.model(COLLECTION).findOne({username: user}, callback);
 };
 
+userSchema.statics.getAssigneeUsers = function(callback) {
+    return this.model(COLLECTION).find({$or: [{role: "mod"}, {role: "admin"}]}, callback);
+};
+
 userSchema.statics.insertUser = function(data, callback) {
     if (_.isUndefined(data)) {
         return callback("Invalid User Data - UserSchema.InsertUser()", null);

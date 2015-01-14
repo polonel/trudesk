@@ -22,6 +22,10 @@ define(['angular', 'underscore', 'jquery', 'socketio', 'history'], function(angu
                 socket.emit('updateTicketStatus', {ticketId: id, status: status});
             };
 
+            $scope.setAssignee = function() {
+
+            }
+
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {
@@ -30,7 +34,10 @@ define(['angular', 'underscore', 'jquery', 'socketio', 'history'], function(angu
                     $document.off('mouseup', mouseup);
                     $document.on('mouseup', mouseup);
 
-                    function mouseup() {
+                    function mouseup($event) {
+                        var target = $event.target.offsetParent;
+                        if ($(target).length > 0 && $(target).hasClass('floating-ticket-status')) return false;
+
                         if (!element.hasClass('hide')) {
                             element.addClass('hide');
                         }
