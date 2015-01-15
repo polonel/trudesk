@@ -20,6 +20,13 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
 
                 socket.ui.sendUpdateTicketStatus(id, status);
             };
+
+            $scope.clearAssignee = function() {
+                var id = $('#__ticketId').html();
+                if (id.length > 0) {
+                    socket.ui.clearAssignee(id);
+                }
+            }
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

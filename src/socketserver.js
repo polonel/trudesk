@@ -119,11 +119,25 @@ module.exports = function(ws) {
                     });
                 })
             });
+        });
 
+        socket.on('clearAssignee', function(id) {
+            var ticketId = id;
+            var ticketSchema = require('./models/ticket');
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.assignee = undefined;
+
+                ticket.save(function(err, t) {
+                    if (err) return true;
+
+                    utils.sendToAllConnectedClients(io, 'updateAssignee', t);
+                });
+            })
         });
 
         socket.on('joinChatServer', function(data) {
-            console.log('joining chatserver = ' + socket.request.user.fullname);
             var user = socket.request.user;
             var exists = false;
             _.find(usersOnline, function(v,k) {

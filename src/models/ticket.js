@@ -53,6 +53,12 @@ ticketSchema.methods.setAssignee = function(userId, callback) {
     callback(null, this);
 };
 
+ticketSchema.methods.clearAssignee = function(callback) {
+    this.assignee = undefined;
+    
+    callback(null, this);
+};
+
 ticketSchema.statics.getAll = function(callback) {
     var q = this.model(COLLECTION).find({})
         .populate('owner')

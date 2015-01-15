@@ -21,6 +21,10 @@ define('modules/ui', [
         socket.emit('updateTicketStatus', {ticketId: id, status: status});
     };
 
+    socketUi.clearAssignee = function(id) {
+        socket.emit('clearAssignee', id);
+    };
+
     socketUi.updateMailNotifications = function() {
         $(document).ready(function() {
             var btnMailNotifications = $('#btn_mail-notifications');
@@ -153,14 +157,30 @@ define('modules/ui', [
         socket.on('updateAssignee', function(ticket) {
             var assigneeContainer = $('.ticket-assignee[data-ticketId="' + ticket._id + '"]');
             if (assigneeContainer.length > 0) {
-                var image = ticket.assignee.image;
+                var image = _.isUndefined(ticket.assignee) ? 'defaultProfile.jpg' : ticket.assignee.image;
                 if (_.isUndefined(image)) image = 'defaultProfile.jpg';
                 assigneeContainer.find('a > img').attr('src', '/uploads/users/' + image);
                 var details = assigneeContainer.find('.ticket-assignee-details');
                 if (details.length > 0) {
-                    details.find('h3').html(ticket.assignee.fullname);
-                    details.find('a.comment-email-link').attr('href', 'mailto:' + ticket.assignee.email).html(ticket.assignee.email);
-                    details.find('span').html(ticket.assignee.title);
+                    var name = _.isUndefined(ticket.assignee) ? 'No User Assigned' : ticket.assignee.fullname;
+                    details.find('h3').html(name);
+                    var a = details.find('a.comment-email-link');
+                    var email = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.email;
+                    if (a.length > 0) {
+                        a.attr('href', 'mailto:' + email).html(email);
+                    } else {
+                        a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link');
+                        details.append(a);
+                    }
+
+                    var span = details.find('span');
+                    var title = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.title;
+                    if (span.length > 0) {
+                        span.html(title);
+                    } else {
+                        span = $('<span></span>').html(title);
+                        details.append(span);
+                    }
                 }
             }
 
