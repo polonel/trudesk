@@ -14,6 +14,11 @@ define('modules/ui', [
         this.updateUi();
         this.updateTicketStatus();
         this.updateAssigneeList();
+        this.updateAssignee();
+    };
+
+    socketUi.sendUpdateTicketStatus = function(id, status) {
+        socket.emit('updateTicketStatus', {ticketId: id, status: status});
     };
 
     socketUi.updateMailNotifications = function() {
@@ -37,11 +42,13 @@ define('modules/ui', [
 
     socketUi.updateTicketStatus = function() {
         socket.removeAllListeners('updateTicketStatus');
-        socket.on('updateTicketStatus', function(status) {
+        socket.on('updateTicketStatus', function(payload) {
+            var ticketId = payload.tid;
+            var status = payload.status;
             var statusSelectBox = $('#statusSelect');
             if (statusSelectBox.length > 0) statusSelectBox.addClass('hide');
 
-            var tStatusBox = $('.floating-ticket-status > .ticket-status');
+            var tStatusBox = $('.floating-ticket-status[data-ticketId="' + ticketId + '"] > .ticket-status');
             if (tStatusBox.length > 0) {
                 tStatusBox.removeClass('ticket-new');
                 tStatusBox.removeClass('ticket-open');
@@ -92,7 +99,7 @@ define('modules/ui', [
         socket.on('updateAssigneeList', function(users) {
             var wrapper = '';
             _.each(users, function(user) {
-                var html = '<li>';
+                var html = '<li data-setAssignee="' + user._id + '">';
                 html    += '<a class="messageNotification" href="#" role="button">';
                 html    += '<div class="clearfix">';
                 if (_.isUndefined(user.image)) {
@@ -117,7 +124,48 @@ define('modules/ui', [
             var assigneeListDrop = $('#assigneeDropdown-content > ul');
             if (assigneeListDrop.length > 0) {
                 assigneeListDrop.html(wrapper);
+
+                $.each(assigneeListDrop.find('li[data-setAssignee]'), function() {
+                    var self = $(this);
+                    var $_id = self.attr('data-setAssignee');
+                    self.off('click', setAssigneeClicked);
+                    self.on('click', {_id: $_id}, setAssigneeClicked);
+                });
             }
+        });
+    };
+
+    function setAssigneeClicked(e) {
+        var _id = e.data._id;
+        var ticketId = $('#__ticketId').html();
+        var payload = {
+            _id: _id,
+            ticketId: ticketId
+        };
+
+        socket.emit('setAssignee', payload);
+
+        e.preventDefault();
+    }
+
+    socketUi.updateAssignee = function() {
+        socket.removeAllListeners('updateAssignee');
+        socket.on('updateAssignee', function(ticket) {
+            var assigneeContainer = $('.ticket-assignee[data-ticketId="' + ticket._id + '"]');
+            if (assigneeContainer.length > 0) {
+                var image = ticket.assignee.image;
+                if (_.isUndefined(image)) image = 'defaultProfile.jpg';
+                assigneeContainer.find('a > img').attr('src', '/uploads/users/' + image);
+                var details = assigneeContainer.find('.ticket-assignee-details');
+                if (details.length > 0) {
+                    details.find('h3').html(ticket.assignee.fullname);
+                    details.find('a.comment-email-link').attr('href', 'mailto:' + ticket.assignee.email).html(ticket.assignee.email);
+                    details.find('span').html(ticket.assignee.title);
+                }
+            }
+
+            $('#assigneeDropdown').removeClass('pDropOpen');
+            helpers.hideDropDownScrolls();
         });
     };
 

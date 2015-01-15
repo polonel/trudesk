@@ -45,6 +45,14 @@ ticketSchema.methods.setStatus = function(status, callback) {
     callback(null, this);
 };
 
+ticketSchema.methods.setAssignee = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback('Invalid User Id', null);
+
+    this.assignee = userId;
+
+    callback(null, this);
+};
+
 ticketSchema.statics.getAll = function(callback) {
     var q = this.model(COLLECTION).find({})
         .populate('owner')

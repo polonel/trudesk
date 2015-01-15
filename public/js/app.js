@@ -22,7 +22,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, socket) {
+    ], function(nav) {
         //Start App
         $(document).foundation({
             abide: {

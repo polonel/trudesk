@@ -33,10 +33,6 @@ module.exports = function(ws) {
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
 
-        utils.sendToSelf(socket, 'connectingToSocketServer', {
-            status: 'online'
-        });
-
         setInterval(function() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
@@ -72,7 +68,7 @@ module.exports = function(ws) {
                     t.save(function(err) {
                         if (err) return true;
 
-                        utils.sendToAllConnectedClients(io, 'updateTicketStatus', status);
+                        utils.sendToAllConnectedClients(io, 'updateTicketStatus', {tid: t._id, status: status});
                     });
                 })
             });
@@ -103,7 +99,31 @@ module.exports = function(ws) {
             })
         });
 
+        socket.on('setAssignee', function(data) {
+            var userId = data._id;
+            var ticketId = data.ticketId;
+            var ticketSchema = require('./models/ticket');
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.setAssignee(userId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+                        ticketSchema.populate(tt, 'assignee', function(err){
+                            if (err) return true;
+
+                            utils.sendToAllConnectedClients(io, 'updateAssignee', tt);
+                        });
+                    });
+                })
+            });
+
+        });
+
         socket.on('joinChatServer', function(data) {
+            console.log('joining chatserver = ' + socket.request.user.fullname);
             var user = socket.request.user;
             var exists = false;
             _.find(usersOnline, function(v,k) {

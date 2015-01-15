@@ -1,7 +1,6 @@
-define(['angular', 'underscore', 'jquery', 'socketio', 'history'], function(angular, _, $, io) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
     return angular.module('trudesk.controllers.singleTicket', [])
         .controller('singleTicket', function($scope, $http) {
-            var socket = io.connect();
 
             $scope.showStatusSelect = function() {
                 var statusSelect = $('#statusSelect');
@@ -19,13 +18,8 @@ define(['angular', 'underscore', 'jquery', 'socketio', 'history'], function(angu
                 var statusSelectBox = $('#statusSelect');
                 if (statusSelectBox.length > 0) statusSelectBox.addClass('hide');
 
-                socket.emit('updateTicketStatus', {ticketId: id, status: status});
+                socket.ui.sendUpdateTicketStatus(id, status);
             };
-
-            $scope.setAssignee = function() {
-
-            }
-
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

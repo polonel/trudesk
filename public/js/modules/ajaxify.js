@@ -13,7 +13,7 @@ define('modules/ajaxify', [
     'modules/chat',
     'history'
 
-], function($, angular, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ajaxImgUpload, editAccountPage, ui, chat) {
+], function($, angular, helpers, nav, p, messagesPage, ticketsPage, accountsPage, ajaxImgUpload, editAccountPage, ui) {
     $(window).on('statechangecomplete', function() {
         //Global
         var $ele = $('#page-content');
@@ -29,7 +29,6 @@ define('modules/ajaxify', [
             }
         });
 
-        chat.init();
         ui.init();
         helpers.init();
         ajaxImgUpload.init();

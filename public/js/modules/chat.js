@@ -9,12 +9,10 @@ define('modules/chat',[
     var chatClient = {};
     var socket = io.connect();
 
-    chatClient.init = function() {
-
-    };
-
+    console.log('loaded');
     socket.removeAllListeners('connect');
     socket.on('connect', function(data) {
+        console.log('Joining');
         socket.emit('joinChatServer');
     });
 

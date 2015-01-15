@@ -3,7 +3,7 @@
         <div class="page-title-border-right relative">
             <p>Ticket #{{data.ticket.uid}}</p>
             <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
-            <div class="floating-ticket-status">
+            <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                 {{#is data.ticket.status 0}}
                     {{#canUser data.user "ticket:edit"}}
                         <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
@@ -50,9 +50,13 @@
             <div class="ticket-assignee-wrap clearfix">
                 <h4>Assignee</h4>
                 {{#if data.ticket.assignee}}
-                    <div class="ticket-assignee clearfix">
+                    <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
                         <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
-                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                            {{#if data.ticket.assignee.image}}
+                                <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                            {{else}}
+                                <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                            {{/if}}
                         </a>
                         <div class="ticket-assignee-details">
                             <h3>{{data.ticket.assignee.fullname}}</h3>
@@ -61,7 +65,7 @@
                         </div>
                     </div>
                 {{else}}
-                    <div class="ticket-assignee clearfix">
+                    <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
                         <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
                             <img src="/uploads/users/defaultProfile.jpg" alt="" />
                         </a>

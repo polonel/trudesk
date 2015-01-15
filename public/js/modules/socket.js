@@ -1,12 +1,14 @@
 define('modules/socket', [
+    'socketio',
     'modules/chat',
     'modules/ui'
 
-], function(chat, ui) {
+], function(io, chat, ui) {
     var sClient = {};
-
-    chat.init();
+    sClient.ui = ui;
     ui.init();
+
+    console.log(socket);
 
     return sClient;
 });
