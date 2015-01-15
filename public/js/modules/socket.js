@@ -8,7 +8,5 @@ define('modules/socket', [
     sClient.ui = ui;
     ui.init();
 
-    console.log(socket);
-
     return sClient;
 });
