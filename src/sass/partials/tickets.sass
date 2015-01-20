@@ -143,6 +143,7 @@ div#ticketTable_wrapper
     margin-bottom: 3px
 
   input,
+  select,
   .input-box,
   .tag-list
     font-family: "open sans", sans-serif
@@ -162,6 +163,9 @@ div#ticketTable_wrapper
       border-color: #bec4d0
       background: lighten(#f3f5f9, 5%)
       +boxShadow(none)
+
+  select
+    padding: 2px 4px
 
   .input-box
     padding-top: 3px
@@ -239,6 +243,22 @@ div#ticketTable_wrapper
       font-size: 14px
       color: #3d4854
       line-height: 20px
+
+  .ticket-comment
+    position: relative
+    .remove-comment
+      position: absolute
+      right: 25px
+      top: 15px
+      font-weight: 600
+      font-size: 14px
+      line-height: normal
+      cursor: pointer
+      display: none
+      color: #8699ac
+    &:hover
+      .remove-comment
+        display: block
 
   .ticket-reply
     border-bottom: none

@@ -102,7 +102,7 @@ module.exports = function(grunt) {
             },
             target: {
                 files: {
-                    'public/js/common.min.js':
+                    'public/js/trudesk.min.js':
                         [
 //                            'public/js/vendor/modernizr/modernizr.js',
 //                            'public/js/vendor/jquery/jquery.js',

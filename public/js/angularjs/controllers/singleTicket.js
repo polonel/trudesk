@@ -1,6 +1,6 @@
 define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
     return angular.module('trudesk.controllers.singleTicket', [])
-        .controller('singleTicket', function($scope, $http) {
+        .controller('singleTicket', function($scope, $http, $q) {
 
             $scope.showStatusSelect = function() {
                 var statusSelect = $('#statusSelect');
@@ -26,7 +26,64 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
                 if (id.length > 0) {
                     socket.ui.clearAssignee(id);
                 }
-            }
+            };
+
+            $scope.types = [];
+            $scope.priorities = [
+                {name: 'Normal', value: 1},
+                {name: 'Urgent', value: 2},
+                {name: 'Critical', value: 3}
+            ];
+            $scope.groups = [];
+
+            $scope.selected_priority = _.findWhere($scope.priorities, {value: $scope.ticketPriority});
+            var ticketTypes = $http.get('/api/tickets/types').
+                                success(function(data) {
+                                    _.each(data, function(item) {
+                                        $scope.types.push(item);
+                                    });
+                                }).
+                                error(function(data) {
+                                });
+
+            $q.all([ticketTypes]).then(function(ret) {
+                $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
+            });
+
+            var groupHttpGet = $http.get('/api/groups').
+                                success(function(data) {
+                                    _.each(data, function(item) {
+                                        $scope.groups.push(item);
+                                    });
+                                }).
+                                error(function(data) {
+
+                                });
+
+            $q.all([groupHttpGet]).then(function(ret) {
+                $scope.selected_group = _.findWhere($scope.groups, {_id: $scope.ticketGroup});
+            });
+
+            $scope.updateTicketType = function() {
+                var id = $('#__ticketId').html();
+                if (id.length > 0) {
+                    socket.ui.setTicketType(id, $scope.selected_type);
+                }
+            };
+
+            $scope.updateTicketPriority = function() {
+                var id = $('#__ticketId').html();
+                if (id.length > 0) {
+                    socket.ui.setTicketPriority(id, $scope.selected_priority);
+                }
+            };
+
+            $scope.updateTicketGroup = function() {
+                var id = $('#__ticketId').html();
+                if (id.length > 0) {
+                    socket.ui.setTicketGroup(id, $scope.selected_group);
+                }
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

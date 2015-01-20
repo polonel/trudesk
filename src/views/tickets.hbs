@@ -58,7 +58,7 @@
         <tbody>
         {{#each data.tickets}}
             {{#if_eq status compare=0}}
-                <tr class="ticket-new" data-ticket="{{uid}}">
+                <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                     <td>
                         <input id="c_{{_id}}" type="checkbox"/>
                         <label for="c_{{_id}}"></label>

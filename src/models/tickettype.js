@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var _ = require('lodash');
+var _ = require('underscore');
 
 var COLLECTION = 'tickettypes';
 

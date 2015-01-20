@@ -1,18 +1,15 @@
 define('modules/chat',[
     'jquery',
-    'socketio',
     'underscore',
     'modules/helpers',
     'autogrow'
 
-], function($, io, _, helpers) {
+], function($, _, helpers) {
     var chatClient = {};
     var socket = io.connect();
 
-    console.log('loaded');
     socket.removeAllListeners('connect');
     socket.on('connect', function(data) {
-        console.log('Joining');
         socket.emit('joinChatServer');
     });
 
@@ -135,17 +132,18 @@ define('modules/chat',[
                 var val = $(this).children('textarea').val();
                 $(this).children('textarea').val('').val(val);
             });
+
             $('.chatCloseBtn').off('click');
             $('.chatCloseBtn').click(function() {
                 $(this).parents('.chat-box[data-chat-userId]').remove();
             });
+
             $('.chat-box-title').off('click');
             $('.chat-box-title').click(function() {
-                console.log('bind');
                 var p = $(this).parents('.chat-box-position');
                 if (p.css('top') === '-252px') {
                     p.animate({
-                        top: -19
+                        top: -4
                     }, 250);
                 } else {
                     p.animate({

@@ -55,7 +55,31 @@ ticketSchema.methods.setAssignee = function(userId, callback) {
 
 ticketSchema.methods.clearAssignee = function(callback) {
     this.assignee = undefined;
-    
+
+    callback(null, this);
+};
+
+ticketSchema.methods.setTicketType = function(typeId, callback) {
+    this.type = typeId;
+
+    callback(null, this);
+};
+
+ticketSchema.methods.setTicketPriority = function(priority, callback) {
+    this.priority = priority;
+
+    callback(null, this);
+};
+
+ticketSchema.methods.setTicketGroup = function(groupId, callback) {
+    this.group = groupId;
+
+    callback(null, this);
+};
+
+ticketSchema.methods.removeComment = function(commentId, callback) {
+    this.comments = _.reject(this.comments, function(o) { return o._id == commentId; });
+
     callback(null, this);
 };
 

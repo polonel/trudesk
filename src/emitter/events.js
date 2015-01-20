@@ -1,5 +1,12 @@
+"use strict";
+
+var winston = require('winston');
 var emitter = require('../emitter');
 
-emitter.on('newTicket', function() {
-    console.log('test');
-});
+(function() {
+    //winston.info('Binding to Events');
+
+    emitter.on('ticket:updated', function(ticketOid) {
+
+    });
+})();

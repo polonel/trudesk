@@ -27,6 +27,23 @@ define('pages/tickets', [
                     {"width": "25%", "targets": 3},
                     {"width": "110px", "targets": 4}
                 ]
+
+//                columns: [
+//                    {data: "_id"},
+//                    {data: "status"},
+//                    {data: "uid"},
+//                    {data: "subject"},
+//                    {data: "date"},
+//                    {data: "owner.fullname"},
+//                    {data: "group.name"},
+//                    {data: "assignee.fullname"},
+//                    {data: "updated"}
+//                ],
+//                ajax: {
+//                    url: '/api/tickets',
+//                    dataSrc: "",
+//                    type: 'GET'
+//                }
             }).rowGrouping({
                 iGroupingColumnIndex: 1,
                 sGroupingColumnSortDirection: "asc",

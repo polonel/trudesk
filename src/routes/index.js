@@ -69,7 +69,9 @@ function mainRoutes(router, middleware, controllers) {
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
+    router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
+    router.get('/api/groups', middleware.api, controllers.api.groups.get);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
     router.get('/api/users/:username', middleware.api, controllers.api.users.single);

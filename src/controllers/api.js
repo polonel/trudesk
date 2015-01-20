@@ -53,14 +53,44 @@ apiController.users.single = function(req, res, next) {
     });
 };
 
+//Groups
+apiController.groups = {};
+apiController.groups.get = function(req, res, next) {
+    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
+    var groupSchema = require('../models/group');
+    var username = req.user._id;
+    groupSchema.getAllGroupsOfUser(username, function(err, groups) {
+        if (err) return res.send(err.message);
+
+        res.json(groups);
+    });
+};
+
 //Tickets
 apiController.tickets = {};
 apiController.tickets.get = function(req, res, next) {
-    var ticketModel = require('../models/ticket');
-    ticketModel.getAll(function(err, tickets) {
-        if (err) return res.send(err);
+    var user = req.user;
+    if (_.isUndefined(user)) return res.send('Error: Not Currently Logged in.');
 
-        return res.json(tickets);
+    var ticketModel = require('../models/ticket');
+    var groupModel = require('../models/group');
+
+    async.waterfall([
+        function(callback) {
+            groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
+                callback(err, grps);
+            })
+        },
+        function(grps, callback) {
+            ticketModel.getTickets(grps, function(err, results) {
+
+                callback(err, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.send('Error: ' + err.message);
+
+        return res.json(results);
     });
 };
 
@@ -76,6 +106,15 @@ apiController.tickets.single = function(req, res, next) {
 
         return res.json(ticket);
     });
+};
+
+apiController.tickets.getTypes = function(req, res, next) {
+    var ticketType = require('../models/tickettype');
+    ticketType.getTypes(function(err, types) {
+        if (err) return res.send(err);
+
+        res.json(types);
+    })
 };
 
 //Roles

@@ -2,14 +2,12 @@ var winston = require('winston'),
     utils = require('./helpers/utils'),
     passportSocketIo = require('passport.socketio'),
     cookieparser = require('cookie-parser'),
-    emitter         = require('./emitter');
+    emitter         = require('./emitter'),
+    async           = require('async');
 
 module.exports = function(ws) {
     var _ = require('lodash'),
         usersOnline = {},
-        rooms = {},
-        chatHistory = {},
-        chatHistoryCounter = 1000,
         sockets = [],
         io = require('socket.io')(ws.server);
 
@@ -36,7 +34,6 @@ module.exports = function(ws) {
         setInterval(function() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
-            var ticketSchema = require('./models/ticket');
 
             messageSchema.getUnreadInboxCount(userId, function(err, objs) {
                 if (err) return true;
@@ -44,6 +41,33 @@ module.exports = function(ws) {
             });
 
         }, 5000);
+
+        //Update Ticket Grid Every Min
+//        setInterval(function() {
+//            var userId = socket.request.user._id;
+//            var ticketSchema = require('./models/ticket');
+//            var groupSchema = require('./models/group');
+//
+//            async.waterfall([
+//                function(callback) {
+//                    groupSchema.getAllGroupsOfUser(socket.request.user._id, function(err, grps) {
+//                        callback(err, grps);
+//                    })
+//                },
+//                function(grps, callback) {
+//                    ticketSchema.getTickets(grps, function(err, results) {
+//
+//                        callback(err, results);
+//                    });
+//                }
+//            ], function(err, results) {
+//                if (err) return handleError(res, err);
+//
+//                //winston.verbose('Updating Ticket Grid For: ' + socket.request.user.fullname);
+//                //utils.sendToSelf(socket, 'updateTicketGrid', results);
+//            });
+//
+//        }, 60000);
 
         socket.on('updateMailNotifications', function(data) {
             var userId = socket.request.user._id;
@@ -68,6 +92,7 @@ module.exports = function(ws) {
                     t.save(function(err) {
                         if (err) return true;
 
+                        emitter.emit('ticket:updated', ticketId);
                         utils.sendToAllConnectedClients(io, 'updateTicketStatus', {tid: t._id, status: status});
                     });
                 })
@@ -114,10 +139,56 @@ module.exports = function(ws) {
                         ticketSchema.populate(tt, 'assignee', function(err){
                             if (err) return true;
 
+                            emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateAssignee', tt);
                         });
                     });
                 })
+            });
+        });
+
+        socket.on('setTicketType', function(data) {
+            var ticketId = data.ticketId;
+            var typeId = data.typeId;
+            var ticketSchema = require('./models/ticket');
+
+            if (_.isUndefined(ticketId) || _.isUndefined(typeId)) return true;
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+                ticket.setTicketType(typeId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        ticketSchema.populate(tt, 'type', function(err) {
+                            if (err) return true;
+
+                            emitter.emit('ticket:updated', ticketId);
+                            utils.sendToAllConnectedClients(io, 'updateTicketType', tt);
+                        });
+                    });
+                });
+            });
+        });
+
+        socket.on('setTicketPriority', function(data) {
+            var ticketId = data.ticketId;
+            var priority = data.priority.value;
+            var ticketSchema = require('./models/ticket');
+
+            if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true;
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+                ticket.setTicketPriority(priority, function(err, t) {
+                    if (err) return true;
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        emitter.emit('ticket:updated', ticketId);
+                        utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
+                    });
+                });
             });
         });
 
@@ -132,9 +203,63 @@ module.exports = function(ws) {
                 ticket.save(function(err, t) {
                     if (err) return true;
 
+                    emitter.emit('ticket:updated', ticketId);
                     utils.sendToAllConnectedClients(io, 'updateAssignee', t);
                 });
             })
+        });
+
+        socket.on('setTicketGroup', function(data) {
+            var ticketId = data.ticketId;
+            var groupId = data.groupId;
+            var ticketSchema = require('./models/ticket');
+
+            if (_.isUndefined(ticketId) || _.isUndefined(groupId)) return true;
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.setTicketGroup(groupId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        ticketSchema.populate(tt, 'group', function(err) {
+                            if (err) return true;
+
+                            emitter.emit('ticket:updated', ticketId);
+                            utils.sendToAllConnectedClients(io, 'updateTicketGroup', tt);
+                        });
+                    });
+                });
+            });
+        });
+
+        socket.on('removeComment', function(data) {
+            var ticketId = data.ticketId;
+            var commentId = data.commentId;
+            var ticketSchema = require('./models/ticket');
+
+            if (_.isUndefined(ticketId) || _.isUndefined(commentId)) return true;
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.removeComment(commentId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        ticketSchema.populate(tt, 'comments', function(err) {
+                            if (err) return true;
+                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
+                        });
+                    });
+                });
+            });
+
         });
 
         socket.on('joinChatServer', function(data) {

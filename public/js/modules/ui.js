@@ -1,10 +1,9 @@
 define('modules/ui', [
     'jquery',
-    'socketio',
     'modules/helpers',
     'nicescroll'
 
-], function($, io, helpers) {
+], function($, helpers) {
     var socketUi = {},
         socket = io.connect();
 
@@ -15,6 +14,9 @@ define('modules/ui', [
         this.updateTicketStatus();
         this.updateAssigneeList();
         this.updateAssignee();
+        this.updateTicketType();
+        this.updateTicketPriority();
+        this.updateTicketGroup();
     };
 
     socketUi.sendUpdateTicketStatus = function(id, status) {
@@ -189,6 +191,101 @@ define('modules/ui', [
         });
     };
 
+    socketUi.setTicketType = function(ticketId, typeId) {
+        var payload = {
+            ticketId: ticketId,
+            typeId: typeId
+        };
+
+        socket.emit('setTicketType', payload);
+    };
+
+    socketUi.updateTicketType = function() {
+        socket.removeAllListeners('updateTicketType');
+        socket.on('updateTicketType', function(data) {
+            var typeSelect = $('select#tType[data-ticketId="' + data._id + '"] option[value="' + data.type._id + '"]');
+            if (typeSelect.length > 0) {
+                typeSelect.prop('selected', true);
+            } else {
+                typeSelect = $('div#tType[data-ticketId="' + data._id + '"]');
+                if (typeSelect.length > 0) {
+                    typeSelect.html(data.type.name);
+                }
+            }
+        });
+    };
+
+    socketUi.setTicketPriority = function(ticketId, priority) {
+        var payload = {
+            ticketId: ticketId,
+            priority: priority
+        };
+
+        socket.emit('setTicketPriority', payload);
+    };
+
+    socketUi.updateTicketPriority = function() {
+        socket.removeAllListeners('updateTicketPriority');
+        socket.on('updateTicketPriority', function(data) {
+            var prioritySelect = $('select#tPriority[data-ticketId="' + data._id + '"] option[value="' + data.priority + '"]');
+            if (prioritySelect.length > 0) {
+                prioritySelect.prop('selected', true);
+            } else {
+                prioritySelect = $('div#tPriority[data-ticketId="' + data._id + '"]');
+                if (prioritySelect.length > 0) {
+                    var priorityname = 'Normal';
+                    switch (data.priority) {
+                        case 1:
+                            priorityname = 'Normal';
+                            break;
+                        case 2:
+                            priorityname = 'Urgent';
+                            break;
+                        case 3:
+                            priorityname = 'Critical';
+                            break;
+                    }
+
+                    prioritySelect.html(priorityname);
+                }
+            }
+        });
+    };
+
+    socketUi.setTicketGroup = function(ticketId, group) {
+        var payload = {
+            ticketId: ticketId,
+            groupId: group._id
+        };
+
+        socket.emit('setTicketGroup', payload);
+    };
+
+    socketUi.updateTicketGroup = function() {
+        socket.removeAllListeners('updateTicketGroup');
+        socket.on('updateTicketGroup', function(data) {
+            var groupSelect = $('select#tGroup[data-ticketId="' + data._id + '"] option[value="' + data.group._id + '"]');
+            if (groupSelect.length > 0) {
+                groupSelect.prop('selected', true);
+            } else {
+                groupSelect = $('div#tGroup[data-ticketId="' + data._id + '"]');
+                if (groupSelect.length > 0) {
+                    groupSelect.html(data.group.name);
+                }
+            }
+        });
+    };
+
+    socketUi.removeComment = function(ticketId, commentId) {
+        var payload = {
+            ticketId: ticketId,
+            commentId: commentId
+        };
+
+
+        socket.emit('removeComment', payload);
+    };
+
     socketUi.updateUi = function() {
         $(document).ready(function() {
             var $button = $('*[data-updateUi]');
@@ -259,32 +356,39 @@ define('modules/ui', [
             return false;
         });
 
-        //Make sure we only have 1 event listener
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
+
             var ticket = data;
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
-            var comment = $(ticket.comments).get(-1);
+            //var comment = $(ticket.comments).get(-1);
 
             var commentText = 'Comments';
             if(ticket.comments.length === 1) commentText = 'Comment';
 
             $('.page-top-comments > a[data-ticketId="' + ticket._id + '"]').html(ticket.comments.length + ' ' + commentText);
 
-            var image = comment.owner.image;
-            if (_.isUndefined(image)) image = 'defaultProfile.jpg';
+            var html = '';
+            _.each(ticket.comments, function(comment) {
+                var image = comment.owner.image;
+                if (_.isUndefined(image)) image = 'defaultProfile.jpg';
 
-            var html =  '<div class="ticket-comment">' +
-                '<img src="/uploads/users/' + image + '" alt=""/>' +
-                '<div class="issue-text">' +
-                '<h3>Re: ' + ticket.subject + '</h3>' +
-                '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
-                '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
-                '<p>' + comment.comment + '</p>' +
-                '</div>' +
-                '</div>';
+                html +=  '<div class="ticket-comment">' +
+                    '<img src="/uploads/users/' + image + '" alt=""/>' +
+                    '<div class="issue-text">' +
+                    '<h3>Re: ' + ticket.subject + '</h3>' +
+                    '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
+                    '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
+                    '<p>' + comment.comment + '</p>' +
+                    '</div>' +
+                    '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>' +
+                    '</div>';
+            });
 
-            commentContainer.append(html);
+            commentContainer.html(html);
+            require(['pages/singleTicket'], function(st) {
+                st.init();
+            });
         });
     };
 

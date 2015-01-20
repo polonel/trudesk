@@ -6,6 +6,34 @@
     li.highlighted
       background: #3498db none
 
+.chosen-container-single
+  .chosen-single
+    background: #f3f5f9
+    border: 1px solid #bec4d0
+    +boxShadow(none)
+    +borderRadius(3px)
+    font-size: 12px
+
+  .chosen-drop
+    background: darken(#f3f5f9, 5%)
+    border-color: #bec4d0
+    +borderRadius(0 0 3px 3px)
+    font-size: 12px
+
+    .chosen-results
+      li
+        line-height: normal
+        font-size: 12px
+        padding: 3px 4px
+
+.chosen-container-active
+  &.chosen-with-drop
+    .chosen-single
+      border: 1px solid #bec4d0
+      +boxShadow(none)
+      background-image: none
+
+
 .chosen-container-multi
   width: 100% !important
 

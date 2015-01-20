@@ -1,192 +1,227 @@
-<div class="small-5 medium-5 large-3 columns message-list" ng-controller="singleTicket">
-    <div class="page-title page-title-small noshadow nopadding-right">
-        <div class="page-title-border-right relative">
-            <p>Ticket #{{data.ticket.uid}}</p>
-            <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
-            <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
-                {{#is data.ticket.status 0}}
-                    {{#canUser data.user "ticket:edit"}}
-                        <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
-                    {{else}}
-                        <div class="ticket-status ticket-new"><span>New</span></div>
-                    {{/canUser}}
-                {{/is}}
-                {{#is data.ticket.status 1}}
-                    {{#canUser data.user "ticket:edit"}}
-                        <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
-                    {{else}}
-                        <div class="ticket-status ticket-open"><span>Open</span></div>
-                    {{/canUser}}
-                {{/is}}
-                {{#is data.ticket.status 2}}
-                    {{#canUser data.user "ticket:edit"}}
-                        <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
-                    {{else}}
-                        <div class="ticket-status ticket-pending"><span>Pending</span></div>
-                    {{/canUser}}
-                {{/is}}
-                {{#is data.ticket.status 3}}
-                    {{#canUser data.user "ticket:edit"}}
-                        <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
-                    {{else}}
-                        <div class="ticket-status ticket-closed"><span>Closed</span></div>
-                    {{/canUser}}
-                {{/is}}
-
-                <div id="statusSelect" close-mouse-up class="hide">
-                    <ul>
-                        <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
-                        <li class="ticket-status ticket-open" ng-click="changeStatus(1)"><span>Open</span></li>
-                        <li class="ticket-status ticket-pending" ng-click="changeStatus(2)"><span>Pending</span></li>
-                        <li class="ticket-status ticket-closed" ng-click="changeStatus(3)"><span>Closed</span></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="page-left full-height">
-        <div class="ticket-details-wrap clearfix">
-            <div class="ticket-assignee-wrap clearfix">
-                <h4>Assignee</h4>
-                {{#if data.ticket.assignee}}
-                    <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
-                        <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
-                            {{#if data.ticket.assignee.image}}
-                                <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+<div ng-init="ticketType='{{data.ticket.type._id}}';ticketPriority={{data.ticket.priority}};ticketGroup='{{data.ticket.group._id}}';">
+    <div ng-controller="singleTicket">
+        <div class="small-5 medium-5 large-3 columns message-list">
+            <div class="page-title page-title-small noshadow nopadding-right" >
+                <div class="page-title-border-right relative">
+                    <p>Ticket #{{data.ticket.uid}}</p>
+                    <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
+                    <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
+                        {{#is data.ticket.status 0}}
+                            {{#canUser data.user "ticket:edit"}}
+                                <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
                             {{else}}
-                                <img src="/uploads/users/defaultProfile.jpg" alt=""/>
-                            {{/if}}
-                        </a>
-                        <div class="ticket-assignee-details">
-                            <h3>{{data.ticket.assignee.fullname}}</h3>
-                            <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
-                            <span>{{{data.ticket.assignee.title}}}</span>
-                        </div>
-                    </div>
-                {{else}}
-                    <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
-                        <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
-                            <img src="/uploads/users/defaultProfile.jpg" alt="" />
-                        </a>
-                        <div class="ticket-assignee-details">
-                            <h3>No User Assigned</h3>
-                        </div>
-                    </div>
-                {{/if}}
-                <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-left-offset="5" data-top-offset="10" class="notifications p-dropdown p-dropdown-left">
-                    <div class="actions"><strong>Select Assignee</strong><div class="right"><a href="#" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
-                    <div id="assigneeDropdown-content" class="" style="height: 215px;">
-                        <ul>
+                                <div class="ticket-status ticket-new"><span>New</span></div>
+                            {{/canUser}}
+                        {{/is}}
+                        {{#is data.ticket.status 1}}
+                            {{#canUser data.user "ticket:edit"}}
+                                <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                            {{else}}
+                                <div class="ticket-status ticket-open"><span>Open</span></div>
+                            {{/canUser}}
+                        {{/is}}
+                        {{#is data.ticket.status 2}}
+                            {{#canUser data.user "ticket:edit"}}
+                                <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                            {{else}}
+                                <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                            {{/canUser}}
+                        {{/is}}
+                        {{#is data.ticket.status 3}}
+                            {{#canUser data.user "ticket:edit"}}
+                                <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                            {{else}}
+                                <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                            {{/canUser}}
+                        {{/is}}
 
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="ticket-details row">
-                <div class="small-6 columns nopadding">
-                    <div class="marginright5">
-                        <span>Type</span>
-                        <div class="input-box">{{data.ticket.type.name}}</div>
-                    </div>
-                </div>
-                <div class="small-6 columns nopadding">
-                    <div class="marginleft5">
-                        <span>Priority</span>
-                        <div class="input-box">{{data.ticket.priorityname}}</div>
-                    </div>
-                </div>
-
-                <div class="row nomargin nopadding">
-                    <div class="small-12 columns nopadding">
-                        <span>Group</span>
-                        <div class="input-box">{{data.ticket.group.name}}</div>
-                    </div>
-                </div>
-
-                <div class="row nomargin nopadding">
-                    <div class="small-12 columns nopadding">
-                        <span>Tags</span>
-                        <div class="tag-list clearfix">
-                            {{#each data.ticket.tagsArray}}
-                                <div class="item">{{this}}</div>
-                            {{/each}}
+                        <div id="statusSelect" close-mouse-up class="hide">
+                            <ul>
+                                <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
+                                <li class="ticket-status ticket-open" ng-click="changeStatus(1)"><span>Open</span></li>
+                                <li class="ticket-status ticket-pending" ng-click="changeStatus(2)"><span>Pending</span></li>
+                                <li class="ticket-status ticket-closed" ng-click="changeStatus(3)"><span>Closed</span></li>
+                            </ul>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="page-left full-height">
+                <div class="ticket-details-wrap clearfix">
+                    <div class="ticket-assignee-wrap clearfix">
+                        <h4>Assignee</h4>
+                        {{#if data.ticket.assignee}}
+                            <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
+                                <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                                    {{#if data.ticket.assignee.image}}
+                                        <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                                    {{else}}
+                                        <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                    {{/if}}
+                                </a>
+                                <div class="ticket-assignee-details">
+                                    <h3>{{data.ticket.assignee.fullname}}</h3>
+                                    <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
+                                    <span>{{{data.ticket.assignee.title}}}</span>
+                                </div>
+                            </div>
+                        {{else}}
+                            <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
+                                <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                </a>
+                                <div class="ticket-assignee-details">
+                                    <h3>No User Assigned</h3>
+                                </div>
+                            </div>
+                        {{/if}}
+                        <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-left-offset="-210" data-top-offset="10" class="notifications p-dropdown p-dropdown-left">
+                            <div class="actions"><strong>Select Assignee</strong><div class="right"><a href="#" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
+                            <div id="assigneeDropdown-content" class="" style="height: 215px;">
+                                <ul>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ticket-details row">
+                        <div class="small-6 columns nopadding">
+                            <div class="marginright5">
+                                <span>Type</span>
+                                {{#canUser data.user "ticket:edit"}}
+                                    <select name="tType" id="tType" class="chosen-select1"
+                                            ng-model="selected_type"
+                                            ng-options="t.name for t in types track by t._id"
+                                            ng-change="updateTicketType()"
+                                            data-ticketId="{{data.ticket._id}}">
+                                    </select>
+                                {{else}}
+                                    <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
+                                {{/canUser}}
+                            </div>
+                        </div>
+                        <div class="small-6 columns nopadding">
+                            <div class="marginleft5">
+                                <span>Priority</span>
+                                {{#canUser data.user "ticket:edit"}}
+                                    <select name="tPriority" id="tPriority"
+                                            ng-model="selected_priority"
+                                            ng-options="p.name for p in priorities track by p.value"
+                                            ng-change="updateTicketPriority()"
+                                            data-ticketId="{{data.ticket._id}}">
+
+                                    </select>
+                                {{else}}
+                                    <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
+                                {{/canUser}}
+                            </div>
+                        </div>
+
+                        <div class="row nomargin nopadding">
+                            <div class="small-12 columns nopadding">
+                                <span>Group</span>
+                                {{#canUser data.user "ticket:edit"}}
+                                    <select name="tGroup" id="tGroup"
+                                            ng-model="selected_group"
+                                            ng-options="g.name for g in groups track by g._id"
+                                            ng-change="updateTicketGroup()"
+                                            data-ticketId="{{data.ticket._id}}">
+
+                                    </select>
+                                {{else}}
+                                    <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
+                                {{/canUser}}
+                            </div>
+                        </div>
+
+                        <div class="row nomargin nopadding">
+                            <div class="small-12 columns nopadding">
+                                <span>Tags</span>
+                                <div class="tag-list clearfix">
+                                    {{#each data.ticket.tagsArray}}
+                                        <div class="item">{{this}}</div>
+                                    {{/each}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
-    </div>
-
-</div>
-<div class="small-7 columns nopadding page-message">
-    <div class="page-title-right noshadow">
-        <div class="page-top-comments right">
-            <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
-                {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
-            </a>
-        </div>
-    </div>
-
-    <div class="page-content full-height scrollable">
-        <div class="comments-wrapper">
-            <div class="initial-issue">
-                {{#if data.ticket.owner.image}}
-                    <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
-                {{else}}
-                    <img src="/uploads/users/defaultProfile.jpg" alt=""/>
-                {{/if}}
-                <div class="issue-text">
-                    <h3>{{data.ticket.subject}}</h3>
-                    <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
-                    <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
-                    <p>{{{data.ticket.issue}}}</p>
+        <div class="small-7 columns nopadding page-message">
+            <div class="page-title-right noshadow">
+                <div class="page-top-comments right">
+                    <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
+                        {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
+                    </a>
                 </div>
             </div>
-            <div class="comments" data-ticketId="{{data.ticket._id}}">
-                {{#foreach data.ticket.comments}}
-                    <div class="ticket-comment">
-                        {{#if owner.image}}
-                            <img src="/uploads/users/{{owner.image}}" alt=""/>
+
+            <div class="page-content full-height scrollable">
+                <div class="comments-wrapper">
+                    <div class="initial-issue">
+                        {{#if data.ticket.owner.image}}
+                            <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
+                        {{else}}
+                            <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                        {{/if}}
+                        <div class="issue-text">
+                            <h3>{{data.ticket.subject}}</h3>
+                            <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
+                            <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
+                            <p>{{{data.ticket.issue}}}</p>
+                        </div>
+                    </div>
+                    <div class="comments" data-ticketId="{{data.ticket._id}}">
+                        {{#foreach data.ticket.comments}}
+                            <div class="ticket-comment">
+                                {{#if owner.image}}
+                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                {{else}}
+                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                {{/if}}
+                                <div class="issue-text">
+                                    <h3>Re: {{../data.ticket.subject}}</h3>
+                                    <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                    <p>{{{comment}}}</p>
+                                </div>
+                                <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                            </div>
+                        {{/foreach}}
+                    </div>
+                    <div class="ticket-reply clearfix {{#is data.ticket.status 3}}hide{{/is}}">
+                        {{#if data.common.loggedInAccount.image}}
+                            <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
                         {{else}}
                             <img src="/uploads/users/defaultProfile.jpg" alt="" />
                         {{/if}}
-                        <div class="issue-text">
-                            <h3>Re: {{../data.ticket.subject}}</h3>
-                            <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                            <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                            <p>{{{comment}}}</p>
-                        </div>
-                    </div>
-                {{/foreach}}
-            </div>
-            <div class="ticket-reply clearfix {{#is data.ticket.status 3}}hide{{/is}}">
-                {{#if data.common.loggedInAccount.image}}
-                    <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
-                {{else}}
-                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
-                {{/if}}
-                <!--<ul class="reply-type">-->
+                        <!--<ul class="reply-type">-->
 
-                <!--</ul>-->
-                <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
-                    <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
-                    <div class="comment-box">
-                        <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                        <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
+                        <!--</ul>-->
+                        <form id="comment-reply" action="/tickets/postcomment" method="post" data-abide>
+                            <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                            <div class="comment-box">
+                                <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                                <small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>
+                            </div>
+                            <div class="right">
+                                <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="right">
-                        <button type="submit" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="false">Post Comment</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-
+        require(['pages/singleTicket'], function(st) {
+            st.init();
+        });
     </script>
 {{/contentFor}}

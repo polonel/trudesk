@@ -4,6 +4,7 @@ var path    = require('path'),
     async = require('async'),
     nconf = require('nconf'),
     emitter = require('./src/emitter'),
+//    events = require('./src/emitter/events'),
     pkg     = require('./package.json');
 
 nconf.argv().env();
