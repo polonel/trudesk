@@ -1,7 +1,7 @@
 var async = require('async'),
     _ = require('lodash'),
     winston = require('winston'),
-
+    passport = require('passport'),
     permissions = require('../permissions');
 
 var apiController = {};
@@ -10,6 +10,30 @@ apiController.content = {};
 
 apiController.index = function(req, res, next) {
     res.redirect('login');
+};
+
+apiController.login = function(req, res, next) {
+    var userModel = require('../models/user');
+    var username = req.body.username;
+    var password = req.body.password;
+    var apitoken = req.body.apitoken;
+
+    if (_.isUndefined(username) ||
+        _.isUndefined(password) ||
+        _.isUndefined(apitoken)) {
+        return res.sendStatus(403);
+    }
+
+    passport.authenticate('local', function(err, user, info) {
+        if (err) return next(err);
+        if (!user) return res.sendStatus(401);
+
+        req.logIn(user, function(err) {
+            if (err) return res.send(err.message);
+
+            return res.send(200);
+        })
+    })(req, res, next);
 };
 
 apiController.users = {};
@@ -70,6 +94,8 @@ apiController.groups.get = function(req, res, next) {
 apiController.tickets = {};
 apiController.tickets.get = function(req, res, next) {
     var user = req.user;
+    //var apiToken = req.headers.apitoken;
+    //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
     if (_.isUndefined(user)) return res.send('Error: Not Currently Logged in.');
 
     var ticketModel = require('../models/ticket');
@@ -105,6 +131,38 @@ apiController.tickets.single = function(req, res, next) {
         if (_.isUndefined(ticket) || _.isNull(ticket)) return res.send("Invalid Ticket Id");
 
         return res.json(ticket);
+    });
+};
+
+apiController.tickets.update = function(req, res, next) {
+    var oId = req.params.id;
+    var reqTicket = req.body;
+    if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+    var ticketModel = require('../models/ticket');
+    ticketModel.getTicketById(oId, function(err, ticket) {
+        if (err) return res.send(err.message);
+
+        if (!_.isUndefined(reqTicket.status))
+            ticket.status = reqTicket.status;
+
+        if (!_.isUndefined(reqTicket.group))
+            ticket.group = reqTicket.group;
+
+        ticket.save(function(err, t) {
+            if (err) return res.send(err.message);
+            res.json(t);
+        });
+    });
+};
+
+apiController.tickets.delete = function(req, res, next) {
+    var oId = req.params.id;
+    if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+    var ticketModel = require('../models/ticket');
+    ticketModel.remove({_id: oId}, function(err) {
+        if (err) return res.send(err.message);
+
+        res.sendStatus(200);
     });
 };
 

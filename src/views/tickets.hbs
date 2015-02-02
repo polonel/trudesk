@@ -3,177 +3,181 @@
     <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.foundation.css"/>-->
 {{/contentFor}}
 
-<div class="small-12 large-10 columns nopadding ticketContent">
-<div class="page-title noshadow">
-    <p class="left">Tickets</p>
-    <div class="right">
-        <ul class="button-group">
-            <li class="active">
-                <a href="#" class="btn no-ajaxy" data-notifications="123">Actions</a>
-            </li>
-            {{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create" role="button" class="btn">Create</a></li>{{/canUser}}
-        </ul>
-    </div>
-</div>
-
-<div id="123" data-scroll="123-list" data-top-offset="10" data-left-offset="27" class="notifications p-dropdown p-dropdown-small">
-    <div class="actions"><strong>Ticket Actions</strong></div>
-    <div id="123-list" class="notifications-Messages">
-        <ul>
-            <li>
-                <a class="messageNotification no-ajaxify" href="#" role="button">
-                    <div class="clearfix">
-                        <div class="messageUnread"></div>
-                        <div class="messageIcon left"><i class="fa fa-warning"></i></div>
-                        <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
-                        <div class="messageSnippet">
-                            <span>There is an issue with the printer at the tax office.</span>
+<div ng-controller="ticketsCtrl">
+    <div class="small-12 large-10 columns nopadding ticketContent">
+        <div class="page-title noshadow">
+            <p class="left">Tickets</p>
+            <div class="right">
+                <ul class="button-group">
+                    <li class="active" style="position:relative;">
+                        <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions">Actions</a>
+                        <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-155" class="notifications p-dropdown p-dropdown-small pSmall">
+                            <div class="actions"><strong>Ticket Actions</strong></div>
+                            <div id="tAction-list" class="notifications-Messages">
+                                <ul>
+                                    <li>
+                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
+                                            <div class="clearfix">
+                                                <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                                <div class="messageAuthor"><strong>Delete Tickets</strong></div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                            <div class="clearfix">
+                                                <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                <div class="messageAuthor"><strong>Close Tickets</strong></div>
+                                            </div>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
-                        <div class="messageDate">
-                            <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
-                        </div>
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
-</div>
+                    </li>
+                    {{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create" role="button" class="btn">Create</a></li>{{/canUser}}
+                </ul>
+            </div>
+        </div>
 
-<div class="full-height">
-<div class="ticketList full-height">
-    <table id="ticketTable" class="pDataTable">
-        <thead>
-        <tr>
-            <th></th>
-            <th>Status</th>
-            <th>#</th>
-            <th>Subject</th>
-            <th>Created</th>
-            <th>Requester</th>
-            <th>Group</th>
-            <th>Assignee</th>
-            <th>Updated</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#each data.tickets}}
-            {{#if_eq status compare=0}}
-                <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-new"><span>New</span></td>
-                    <td>{{uid}}</td>
-                    <td>{{subject}}</td>
-                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>
-                        {{#isNotNull assignee}}
-                            {{assignee.fullname}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                    <td>
-                        {{#isNotNull updated}}
-                            {{formatDate updated "MMM DD \at h:mma"}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                </tr>
-            {{/if_eq}}
-            {{#is status 1}}
-                <tr class="ticket-open" data-ticket="{{uid}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-open"><span>Open</span></td>
-                    <td>{{uid}}</td>
-                    <td>{{subject}}</td>
-                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>
-                        {{#isNotNull assignee}}
-                            {{assignee.fullname}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                    <td>
-                        {{#isNotNull updated}}
-                            {{formatDate updated "MMM DD \at h:mma"}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                </tr>
-            {{/is}}
-            {{#is status 2}}
-                <tr class="ticket-pending" data-ticket="{{uid}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-pending"><span>Pending</span></td>
-                    <td>{{uid}}</td>
-                    <td>{{subject}}</td>
-                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>
-                        {{#isNotNull assignee}}
-                            {{assignee.fullname}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                    <td>
-                        {{#isNotNull updated}}
-                            {{formatDate updated "MMM DD \at h:mma"}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                </tr>
-            {{/is}}
-            {{#is status 3}}
-                <tr class="ticket-closed" data-ticket="{{uid}}">
-                    <td>
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                    </td>
-                    <td class="ticket-status ticket-closed"><span>Closed</span></td>
-                    <td>{{uid}}</td>
-                    <td>{{subject}}</td>
-                    <td>{{{formatDate date "MMM DD, YY"}}}</td>
-                    <td>{{owner.fullname}}</td>
-                    <td>{{group.name}}</td>
-                    <td>
-                        {{#isNotNull assignee}}
-                            {{assignee.fullname}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                    <td>
-                        {{#isNotNull updated}}
-                            {{formatDate updated "MMM DD \at h:mma"}}
-                        {{else}}
-                            --
-                        {{/isNotNull}}
-                    </td>
-                </tr>
-            {{/is}}
-        {{/each}}
-        </tbody>
-    </table>
-</div>
-</div>
+
+
+        <div class="full-height">
+            <div class="ticketList full-height">
+                <table id="ticketTable" class="pDataTable">
+                    <thead>
+                    <tr>
+                        <th></th>
+                        <th>Status</th>
+                        <th>#</th>
+                        <th>Subject</th>
+                        <th>Created</th>
+                        <th>Requester</th>
+                        <th>Group</th>
+                        <th>Assignee</th>
+                        <th>Updated</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{#each data.tickets}}
+                        {{#if_eq status compare=0}}
+                            <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                                <td>
+                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <label for="c_{{_id}}"></label>
+                                </td>
+                                <td class="ticket-status ticket-new"><span>New</span></td>
+                                <td>{{uid}}</td>
+                                <td>{{subject}}</td>
+                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{owner.fullname}}</td>
+                                <td>{{group.name}}</td>
+                                <td>
+                                    {{#isNotNull assignee}}
+                                        {{assignee.fullname}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                                <td>
+                                    {{#isNotNull updated}}
+                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                            </tr>
+                        {{/if_eq}}
+                        {{#is status 1}}
+                            <tr class="ticket-open" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                                <td>
+                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <label for="c_{{_id}}"></label>
+                                </td>
+                                <td class="ticket-status ticket-open"><span>Open</span></td>
+                                <td>{{uid}}</td>
+                                <td>{{subject}}</td>
+                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{owner.fullname}}</td>
+                                <td>{{group.name}}</td>
+                                <td>
+                                    {{#isNotNull assignee}}
+                                        {{assignee.fullname}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                                <td>
+                                    {{#isNotNull updated}}
+                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                            </tr>
+                        {{/is}}
+                        {{#is status 2}}
+                            <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                                <td>
+                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <label for="c_{{_id}}"></label>
+                                </td>
+                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
+                                <td>{{uid}}</td>
+                                <td>{{subject}}</td>
+                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{owner.fullname}}</td>
+                                <td>{{group.name}}</td>
+                                <td>
+                                    {{#isNotNull assignee}}
+                                        {{assignee.fullname}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                                <td>
+                                    {{#isNotNull updated}}
+                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                            </tr>
+                        {{/is}}
+                        {{#is status 3}}
+                            <tr class="ticket-closed" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                                <td>
+                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <label for="c_{{_id}}"></label>
+                                </td>
+                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td>{{uid}}</td>
+                                <td>{{subject}}</td>
+                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{owner.fullname}}</td>
+                                <td>{{group.name}}</td>
+                                <td>
+                                    {{#isNotNull assignee}}
+                                        {{assignee.fullname}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                                <td>
+                                    {{#isNotNull updated}}
+                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                    {{else}}
+                                        --
+                                    {{/isNotNull}}
+                                </td>
+                            </tr>
+                        {{/is}}
+                    {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
 
 {{#contentFor 'js-plugins'}}

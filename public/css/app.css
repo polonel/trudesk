@@ -603,6 +603,56 @@ div.actions {
         #online-Users li .messageNotification i.red,
         .p-dropdown li .messageNotification i.red {
           color: #b92929; }
+  #mail-notifications.p-dropdown-small,
+  #notifications.p-dropdown-small,
+  #online-Users.p-dropdown-small,
+  .p-dropdown.p-dropdown-small {
+    width: 240px !important; }
+    #mail-notifications.p-dropdown-small:before, #mail-notifications.p-dropdown-small:after,
+    #notifications.p-dropdown-small:before,
+    #notifications.p-dropdown-small:after,
+    #online-Users.p-dropdown-small:before,
+    #online-Users.p-dropdown-small:after,
+    .p-dropdown.p-dropdown-small:before,
+    .p-dropdown.p-dropdown-small:after {
+      content: " ";
+      left: 215px; }
+    #mail-notifications.p-dropdown-small div.notifications-Messages,
+    #notifications.p-dropdown-small div.notifications-Messages,
+    #online-Users.p-dropdown-small div.notifications-Messages,
+    .p-dropdown.p-dropdown-small div.notifications-Messages {
+      width: 100%; }
+      #mail-notifications.p-dropdown-small div.notifications-Messages ul,
+      #notifications.p-dropdown-small div.notifications-Messages ul,
+      #online-Users.p-dropdown-small div.notifications-Messages ul,
+      .p-dropdown.p-dropdown-small div.notifications-Messages ul {
+        width: 100%; }
+        #mail-notifications.p-dropdown-small div.notifications-Messages ul li,
+        #notifications.p-dropdown-small div.notifications-Messages ul li,
+        #online-Users.p-dropdown-small div.notifications-Messages ul li,
+        .p-dropdown.p-dropdown-small div.notifications-Messages ul li {
+          height: 40px;
+          width: 100%; }
+      #mail-notifications.p-dropdown-small div.notifications-Messages a.messageNotification,
+      #notifications.p-dropdown-small div.notifications-Messages a.messageNotification,
+      #online-Users.p-dropdown-small div.notifications-Messages a.messageNotification,
+      .p-dropdown.p-dropdown-small div.notifications-Messages a.messageNotification {
+        height: auto;
+        padding-bottom: 0 !important; }
+      #mail-notifications.p-dropdown-small div.notifications-Messages .messageIcon i,
+      #notifications.p-dropdown-small div.notifications-Messages .messageIcon i,
+      #online-Users.p-dropdown-small div.notifications-Messages .messageIcon i,
+      .p-dropdown.p-dropdown-small div.notifications-Messages .messageIcon i {
+        width: 25px;
+        height: 25px;
+        line-height: 25px;
+        font-size: 20px; }
+      #mail-notifications.p-dropdown-small div.notifications-Messages .messageAuthor,
+      #notifications.p-dropdown-small div.notifications-Messages .messageAuthor,
+      #online-Users.p-dropdown-small div.notifications-Messages .messageAuthor,
+      .p-dropdown.p-dropdown-small div.notifications-Messages .messageAuthor {
+        margin-left: 40px;
+        padding-top: 3px; }
 
 .sidebar {
   background: #223140;
@@ -957,7 +1007,8 @@ div#ticketTable_wrapper {
   border: 1px solid #bec4d0;
   border-radius: 3px;
   -webkit-border-radius: 3px;
-  -moz-border-radius: 3px; }
+  -moz-border-radius: 3px;
+  z-index: 999; }
   #statusSelect ul {
     margin: 0;
     padding: 0;

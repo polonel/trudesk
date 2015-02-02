@@ -230,7 +230,7 @@ ticketsController.submitTicket = function(req, res, next) {
     var tags = [];
     if (!_.isUndefined(req.body.tTags)) {
         var t = _s.clean(req.body.tTags);
-        tags = t.split(',');
+        tags = _.compact(t.split(','));
     }
 
     Ticket.create({

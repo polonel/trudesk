@@ -49,9 +49,13 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
             pageOffsetLeft = pOffset.left;
         }
 
-        var left = (($(this).offset().left - $(window).scrollLeft() - pageOffsetLeft) - 250);
+        var leftO = 250;
+
+        if ($(drop).hasClass('pSmall')) leftO = 180;
+
+        var left = (($(this).offset().left - $(window).scrollLeft() - pageOffsetLeft) - leftO);
         if (drop.hasClass('p-dropdown-left')) {
-            left += 250;
+            //left += 250;
         }
         var leftExtraOffset = $(drop).attr('data-left-offset');
         if (_.isUndefined(leftExtraOffset)) {
@@ -68,6 +72,13 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
         }
         top += Number(topExtraOffset);
         top = top + 'px';
+
+        var override = $(drop).attr('data-override');
+        if (!_.isUndefined(override) && override.length > 0) {
+            top = topExtraOffset + 'px';
+            left = leftExtraOffset + 'px';
+        }
+
         $(drop).addClass('pDropOpen');
         $(drop).css({'position': 'absolute', 'left': left, 'top': top});
 

@@ -91,7 +91,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 if (self.css('borderTopStyle') === "solid")
                     h = h - 1;
 
-                self.css('overflow', 'hidden');
+                //self.css('overflow', 'hidden');
                 self.height(h - (self.offset().top));
             });
 

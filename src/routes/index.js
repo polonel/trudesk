@@ -46,8 +46,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
     router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
     router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
-
     router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
+
+    //Calendar
+    router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
 
     //Servers
     router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
@@ -66,11 +68,17 @@ function mainRoutes(router, middleware, controllers) {
     //Groups
     router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
 
+    //Invoices
+    router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
+
     //API
     router.get('/api', controllers.api.index);
+    router.post('/api/login', middleware.api, controllers.api.login);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
+    router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
+    router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.get('/api/groups', middleware.api, controllers.api.groups.get);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);

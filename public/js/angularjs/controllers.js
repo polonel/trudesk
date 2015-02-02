@@ -5,6 +5,7 @@ define([
     'history',
 
     'angularjs/controllers/accounts',
+    'angularjs/controllers/tickets',
     'angularjs/controllers/singleTicket'
 
     ], function($, angular, _) {
@@ -12,6 +13,7 @@ define([
     return angular.module('trudesk.controllers',
         [
             'trudesk.controllers.accounts',
+            'trudesk.controllers.tickets',
             'trudesk.controllers.singleTicket'
         ])
         .controller('truCtrl', function($scope) {
