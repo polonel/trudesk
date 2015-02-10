@@ -17,6 +17,7 @@ define('modules/ui', [
         this.updateTicketType();
         this.updateTicketPriority();
         this.updateTicketGroup();
+
     };
 
     socketUi.sendUpdateTicketStatus = function(id, status) {

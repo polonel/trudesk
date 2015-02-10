@@ -47,57 +47,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
-                        <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline" href="#">Settings</a></div></div>
-                        <div id="notifications-Messages" class="notifications-Messages">
-                            <ul>
-                                <li>
-                                    <a class="messageNotification no-ajaxify" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="messageUnread"></div>
-                                            <div class="messageIcon left"><i class="fa fa-warning"></i></div>
-                                            <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>There is an issue with the printer at the tax office.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification no-ajaxify" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="messageUnread read"></div>
-                                            <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                            <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>There is an issue with the printer at the tax office.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>
-                                            <div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>There is an issue with the printer at the tax office.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
+                    {{> topbar/notifications }}
                     <div id="mail-notifications" data-scroll="mail-Messages" class="notifications p-dropdown">
                         <div class="actions"><a href="/messages/inbox" class="blackLink">Inbox</a><div class="right"><a href="#" class="hoverUnderline">Send a New Message</a></div></div>
                         <div id="mail-Messages" class="mail-Messages">

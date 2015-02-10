@@ -1,6 +1,6 @@
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socket) {
     return angular.module('trudesk.controllers.tickets', [])
-        .controller('ticketsCtrl', function($scope, $http) {
+        .controller('ticketsCtrl', function($scope, $http, $window) {
 
             $scope.deleteTickets = function() {
                 var $ids = getChecked();
@@ -8,7 +8,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.delete(
                         '/api/tickets/' + id
                     ).success(function() {
-                            console.log('Deleted ticket ' + id);
+                            removeCheckedFromGrid();
                         }).error(function(err) {
                            console.log(err);
                         });
@@ -64,6 +64,16 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 });
 
                 return checkedIds;
+            }
+
+            function removeCheckedFromGrid() {
+                $('#ticketTable input[type="checkbox"]:checked').each(function() {
+                    var self = $(this);
+                    var $ticketTR = self.parents('tr');
+                    if (!_.isUndefined($ticketTR)) {
+                        $ticketTR.remove();
+                    }
+                });
             }
 
         });

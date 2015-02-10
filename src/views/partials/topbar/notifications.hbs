@@ -1,0 +1,64 @@
+<div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
+    <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline" href="#">Settings</a></div></div>
+    <div id="notifications-Messages" class="notifications-Messages">
+        <ul>
+            {{#each data.common.notifications}}
+                <li>
+                    <a class="messageNotification no-ajaxify" href="#" role="button">
+                        <div class="clearfix">
+                            {{#if unread}}
+                                <div class="messageUnread"></div>
+                            {{/if}}
+                            {{#compare type 0}}
+                                <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                            {{/compare}}
+                            {{#compare type 1}}
+                                <div class="messageIcon left"><i class="fa fa-warning"></i></div>
+                            {{/compare}}
+                            {{#compare type 2}}
+                                <div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>
+                            {{/compare}}
+                            <div class="messageAuthor"><strong>{{title}}</strong></div>
+                            <div class="messageSnippet">
+                                <span>{{message}}</span>
+                            </div>
+                            <div class="messageDate">
+                                <time datetime="2014-08-25T12:00" class="timestamp">{{formatDate created "MMM DD"}}</time>
+                            </div>
+                        </div>
+                    </a>
+                </li>
+            {{/each}}
+
+            <!--<li>-->
+                <!--<a class="messageNotification no-ajaxify" href="#" role="button">-->
+                    <!--<div class="clearfix">-->
+                        <!--<div class="messageUnread read"></div>-->
+                        <!--<div class="messageIcon left"><i class="fa fa-check green"></i></div>-->
+                        <!--<div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>-->
+                        <!--<div class="messageSnippet">-->
+                            <!--<span>There is an issue with the printer at the tax office.</span>-->
+                        <!--</div>-->
+                        <!--<div class="messageDate">-->
+                            <!--<time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</a>-->
+            <!--</li>-->
+            <!--<li>-->
+                <!--<a class="messageNotification" href="#" role="button">-->
+                    <!--<div class="clearfix">-->
+                        <!--<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>-->
+                        <!--<div class="messageAuthor"><strong>Ticket #132 Submitted</strong></div>-->
+                        <!--<div class="messageSnippet">-->
+                            <!--<span>There is an issue with the printer at the tax office.</span>-->
+                        <!--</div>-->
+                        <!--<div class="messageDate">-->
+                            <!--<time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</a>-->
+            <!--</li>-->
+        </ul>
+    </div>
+</div>
