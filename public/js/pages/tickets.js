@@ -26,7 +26,8 @@ define('pages/tickets', [
                     {"width": "65px", "targets": 2},
                     {"width": "25%", "targets": 3},
                     {"width": "110px", "targets": 4}
-                ]
+                ],
+                order: [[2, "desc"]]
 
 //                columns: [
 //                    {data: "_id"},
@@ -44,12 +45,12 @@ define('pages/tickets', [
 //                    dataSrc: "",
 //                    type: 'GET'
 //                }
-            }).rowGrouping({
-                iGroupingColumnIndex: 1,
-                sGroupingColumnSortDirection: "asc",
-                iGroupingOrderByColumnIndex: 0,
-                bHideGroupingColumn: false,
-                bHideGroupingOrderByColumn: false
+//            }).rowGrouping({
+//                iGroupingColumnIndex: 1,
+//                sGroupingColumnSortDirection: "desc",
+//                iGroupingOrderByColumnIndex: 2,
+//                bHideGroupingColumn: false,
+//                bHideGroupingOrderByColumn: false
             });
 
             helpers.resizeDataTables('.ticketList');

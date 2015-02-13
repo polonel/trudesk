@@ -17,7 +17,6 @@ var path    = require('path'),
     async = require('async'),
     nconf = require('nconf'),
     emitter = require('./src/emitter'),
-//    events = require('./src/emitter/events'),
     pkg     = require('./package.json');
 
 nconf.argv().env();
@@ -25,6 +24,7 @@ nconf.argv().env();
 global.env = process.env.NODE_ENV || 'development';
 //global.env = process.env.NODE_ENV || 'production';
 
+winston.setLevels(winston.config.cli.levels);
 winston.remove(winston.transports.Console);
 winston.add(winston.transports.Console, {
     colorize: true,
@@ -66,13 +66,8 @@ function loadConfig() {
 
 function start() {
     loadConfig();
-//    if (process.env.NODETIME_ACCOUNT_KEY) {
-//        require('nodetime').profile({
-//            accountKey: process.env.NODETIME_ACCOUNT_KEY,
-//            appName: 'TruDesk'
-//        });
-//    }
 
+    winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
 
     require('./src/database').init(function(err, db) {
@@ -101,6 +96,10 @@ function dbCallback(err, db) {
         }
 
         require('./src/socketserver')(ws);
+
+        //Start Mailer
+        var mailQueue = require('./src/mailer');
+        mailQueue.queue();
     });
 }
 

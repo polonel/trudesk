@@ -12,20 +12,56 @@
 
  **/
 
-var nodeMailer = require('nodemailer');
+var _           = require('underscore');
+var async       = require('async');
+var nodeMailer  = require('nodemailer');
+var winston     = require('winston');
+
 var transporter = nodeMailer.createTransport({
-    host:   'mailer.com',
-    port:   25,
+    host:   'smtp.zoho.com',
+    port:   465,
+    secure: true,
     auth: {
-        user: 'chris',
-        pass: '1234'
+        user: 'no-reply@trudesk.io',
+        pass: '#TruDesk$'
     }
 });
 
-module.exports.sendMail = function(data) {
-    transporter.sendMail(data);
+var mailer = {};
+
+mailer.queue = function() {
+    checkQueue(handleQueue);
+
+    setInterval(function() {
+        checkQueue(handleQueue);
+    }, 60000);
 };
 
-module.exports = transporter;
+mailer.sendMail = function(data, callback) {
+    transporter.sendMail(data, callback);
+};
 
+function handleQueue(err, size) {
+    if (err) {
+        return winston.warn(err.message);
+    }
+
+    //Todo: Handle processing of mailqueue here
+
+
+    winston.log('debug', 'polling mailqueue: ' + size);
+}
+
+function checkQueue(callback) {
+    var mailqueue = require('./mailqueue');
+    mailqueue.getQueue(function(err, items) {
+        if (err) return callback(err, null);
+
+        var size = _.size(items);
+
+        callback(null, size);
+    });
+}
+
+module.exports = mailer;
 

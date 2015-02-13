@@ -17,6 +17,7 @@ var async           = require('async');
 var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
+var winston         = require('winston');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
 var emitter         = require('../emitter');
@@ -168,6 +169,7 @@ ticketsController.single = function(req, res, next) {
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
         if (!_.any(ticket.group.members, user._id)) {
+            winston.warn('User access ticket outside of group - UserId: ' + user._id);
             return res.redirect('/tickets');
         }
 

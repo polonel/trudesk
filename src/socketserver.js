@@ -366,7 +366,7 @@ module.exports = function(ws) {
                 sockets = _.without(sockets, o);
             }
 
-            winston.info('User disconnected: ' + user.username + ' - ' + socket.id);
+            winston.debug('User disconnected: ' + user.username + ' - ' + socket.id);
         });
     });
 
@@ -376,7 +376,7 @@ module.exports = function(ws) {
 };
 
 function onAuthorizeSuccess(data, accept) {
-    winston.info('User successfully connected: ' + data.user.username);
+    winston.debug('User successfully connected: ' + data.user.username);
 
     accept();
 }

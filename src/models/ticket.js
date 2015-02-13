@@ -1,5 +1,6 @@
 var mongoose            = require('mongoose');
 var _                   = require('lodash');
+var deepPopulate        = require('mongoose-deep-populate');
 
 //Needed!
 var groupSchema         = require('./group');
@@ -25,6 +26,8 @@ var ticketSchema = mongoose.Schema({
     issue:      { type: String, required: true },
     comments:   [commentSchema]
 });
+
+ticketSchema.plugin(deepPopulate);
 
 ticketSchema.pre('save', function(next) {
     if (!_.isUndefined(this.uid)|| this.uid) return next();
@@ -86,11 +89,9 @@ ticketSchema.methods.removeComment = function(commentId, callback) {
 ticketSchema.statics.getAll = function(callback) {
     var q = this.model(COLLECTION).find({})
         .populate('owner')
-        .populate('group')
-        .populate('comments')
-        .populate('comments.owner')
         .populate('assignee')
         .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
         .sort({'status': 1});
 
     return q.exec(callback);
@@ -103,11 +104,9 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
 
     var q = this.model(COLLECTION).find({group: {$in: grpId}})
         .populate('owner')
-        .populate('group')
-        .populate('comments')
-        .populate('comments.owner')
         .populate('assignee')
         .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
         .sort({'status': 1})
         .limit(100);
 
@@ -121,11 +120,9 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
 
     var q = this.model(COLLECTION).find({group: {$in: grpId}, status: status})
         .populate('owner')
-        .populate('group')
-        .populate('comments')
-        .populate('comments.owner')
         .populate('assignee')
         .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
         .sort({'status': 1})
         .limit(100);
 
@@ -137,11 +134,9 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
 
     var q = this.model(COLLECTION).findOne({uid: uid})
         .populate('owner')
-        .populate('group')
-        .populate('comments')
-        .populate('comments.owner')
         .populate('assignee')
-        .populate('type');
+        .populate('type')
+        .deepPopulate(['group', 'comments', 'comments.owner']);
 
     return q.exec(callback);
 };
@@ -151,11 +146,9 @@ ticketSchema.statics.getTicketById = function(id, callback) {
 
     var q = this.model(COLLECTION).findOne({_id: id})
         .populate('owner')
-        .populate('group')
-        .populate('comments')
-        .populate('comments.owner')
         .populate('assignee')
-        .populate('type');
+        .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner']);
 
     return q.exec(callback);
 };
@@ -164,8 +157,7 @@ ticketSchema.statics.getComments = function(tId, callback) {
     if (_.isUndefined(tId)) return callback("Invalid Ticket Id - TicketSchema.GetComments()", null);
 
     var q = this.model(COLLECTION).findOne({_id: tId})
-        .populate('comments')
-        .populate('comments.owner');
+        .deepPopulate('comments comments.owner');
 
     return q.exec(callback);
 };
