@@ -34,7 +34,7 @@ mailer.queue = function() {
 
     setInterval(function() {
         checkQueue(handleQueue);
-    }, 60000);
+    }, 3600000); //1hour
 };
 
 mailer.sendMail = function(data, callback) {
