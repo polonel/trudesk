@@ -90,6 +90,7 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
                              title: 'Ticket #' + ticket.uid + ' Created',
                              message: ticket.subject,
                              type: 0,
+                             data: {ticketuid: ticket.uid},
                              unread: true
                          });
 

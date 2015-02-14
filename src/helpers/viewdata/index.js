@@ -49,7 +49,8 @@ viewController.getUserNotifications = function(request, callback) {
     var notificationsSchema = require('../../models/notification');
     notificationsSchema.findAllForUser(request.user._id, function(err, data) {
         if (err) {
-            callback();
+            winston.warn(err.message);
+            callback(err);
         }
 
         callback(data);

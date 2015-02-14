@@ -24,6 +24,7 @@ var notificationSchema = mongoose.Schema({
     title: {type: String, required: true},
     message: {type: String, required: true},
     type: Number,
+    data: Object,
     unread: {type: Boolean, default: true}
 });
 

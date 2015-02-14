@@ -4,7 +4,7 @@
         <ul>
             {{#each data.common.notifications}}
                 <li>
-                    <a class="messageNotification no-ajaxify" href="#" role="button">
+                    <a class="messageNotification" href="/tickets/{{data.ticketuid}}" role="button">
                         <div class="clearfix">
                             {{#if unread}}
                                 <div class="messageUnread"></div>
