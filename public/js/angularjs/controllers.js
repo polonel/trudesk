@@ -4,6 +4,7 @@ define([
     'underscore',
     'history',
 
+    'angularjs/controllers/common',
     'angularjs/controllers/accounts',
     'angularjs/controllers/tickets',
     'angularjs/controllers/singleTicket'
@@ -12,6 +13,7 @@ define([
 
     return angular.module('trudesk.controllers',
         [
+            'trudesk.controllers.common',
             'trudesk.controllers.accounts',
             'trudesk.controllers.tickets',
             'trudesk.controllers.singleTicket'

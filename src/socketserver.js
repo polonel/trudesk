@@ -12,12 +12,12 @@
 
  **/
 
-var winston = require('winston'),
-    utils = require('./helpers/utils'),
-    passportSocketIo = require('passport.socketio'),
-    cookieparser = require('cookie-parser'),
-    emitter         = require('./emitter'),
-    async           = require('async');
+var winston             = require('winston'),
+    utils               = require('./helpers/utils'),
+    passportSocketIo    = require('passport.socketio'),
+    cookieparser        = require('cookie-parser'),
+    emitter             = require('./emitter'),
+    async               = require('async');
 
 module.exports = function(ws) {
     var _ = require('lodash'),
@@ -90,6 +90,17 @@ module.exports = function(ws) {
                 if (err) return true;
                 utils.sendToSelf(socket, 'updateMailNotifications', objs);
             });
+        });
+
+        socket.on('clearNotifications', function(data) {
+            var userId = socket.request.user._id;
+            if (_.isUndefined(userId)) return true;
+            var notificationSchema = require('./models/notification');
+            notificationSchema.clearNotifications(userId, function(err) {
+                if (err) return true;
+                utils.sendToSelf(socket, 'updateNotifications');
+            });
+
         });
 
         socket.on('updateTicketStatus', function(data) {

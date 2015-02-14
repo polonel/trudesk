@@ -8,6 +8,7 @@ define('modules/ui', [
         socket = io.connect();
 
     socketUi.init = function() {
+        this.updateNotifications();
         this.updateMailNotifications();
         this.updateComments();
         this.updateUi();
@@ -390,6 +391,18 @@ define('modules/ui', [
             require(['pages/singleTicket'], function(st) {
                 st.init();
             });
+        });
+    };
+
+    socketUi.clearNotifications = function() {
+        socket.emit('clearNotifications');
+    };
+
+    socketUi.updateNotifications = function() {
+        socket.removeAllListeners('updateNotifications');
+        socket.on('updateNotifications', function(data) {
+
+            console.log('Notifications Updated: ' + data);
         });
     };
 

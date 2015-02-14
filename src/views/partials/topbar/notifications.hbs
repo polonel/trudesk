@@ -1,5 +1,5 @@
-<div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
-    <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline no-ajaxy" href="#">Clear Notifications</a></div></div>
+<div ng-controller="commonCtrl" id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
+    <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline no-ajaxy" href="#" data-clearNotifications="true">Clear Notifications</a></div></div>
     <div id="notifications-Messages" class="notifications-Messages">
         <ul>
             {{#each data.common.notifications}}

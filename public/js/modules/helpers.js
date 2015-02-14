@@ -32,6 +32,17 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 }
             });
         }
+
+        var ticketIssue = $('#tIssue');
+        if (ticketIssue.length > 0) {
+            ticketIssue.off('keydown');
+            ticketIssue.on('keydown', function(e) {
+                var keyCode = (e.which ? e.which : e.keyCode);
+                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+                    $('#saveTicketBtn').trigger('click');
+                }
+            });
+        }
     };
 
     helpers.onWindowResize = function() {

@@ -1,6 +1,6 @@
 "use strict";
 
-define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, helpers, _) {
+define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation'], function($, helpers, _, socket) {
     var navigation = {};
 
     navigation.init = function() {
@@ -13,9 +13,18 @@ define(['jquery', 'modules/helpers', 'underscore', 'foundation'], function($, he
             $(this).on('click', showDropdown);
         });
 
+        $('a[data-clearNotifications]').each(function() {
+            $(this).off('click', clearNotifications);
+            $(this).on('click', clearNotifications);
+        });
+
         $(document).off('mouseup', hideDropdownMouseUp);
         $(document).on('mouseup', hideDropdownMouseUp);
     };
+
+    function clearNotifications(e) {
+        socket.ui.clearNotifications();
+    }
 
     function hideDropdownMouseUp(e) {
         $('a[data-notifications]').each(function() {
