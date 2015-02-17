@@ -14,7 +14,7 @@
                                 <span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
                             </a>
                         </li>
-                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
+                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="online-Users" data-notifications="online-Users"><i class="fa-comments"></i></a></li>
                         <li class="profile-area profile-name" data-username="{{data.user.username}}" data-userId="{{data.user._id}}"><span>{{data.user.fullname}}</span>
                             {{#isNull data.user.image}}

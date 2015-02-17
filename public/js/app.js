@@ -4,11 +4,12 @@
 require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], function(config, $, helpers, angular) {
     helpers.init();
 
-    //Resume loading once Angular Modules are loaded!
-    //var $html = angular.element(document.getElementsByName('html')[0]);
-    var $ele = $('#page-content');
     angular.element(document).ready(function() {
-        angular.bootstrap($ele, ['trudesk']);
+        //Static Bootstraps
+        angular.bootstrap($('.top-bar'), ['trudesk']);
+
+        //Dynamic Bootstrap
+        angular.bootstrap($('#page-content'), ['trudesk']);
     });
 
     require([

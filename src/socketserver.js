@@ -98,7 +98,8 @@ module.exports = function(ws) {
             var notificationSchema = require('./models/notification');
             notificationSchema.clearNotifications(userId, function(err) {
                 if (err) return true;
-                utils.sendToSelf(socket, 'updateNotifications');
+
+                utils.sendToSelf(socket, 'updateNotifications', []);
             });
 
         });

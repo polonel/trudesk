@@ -302,6 +302,10 @@ define('modules/ui', [
                     self.off('click', updateAssigneeList);
                     self.on('click', updateAssigneeList);
                 }
+                else if ($action.toLowerCase() === 'notifications') {
+                    self.off('click', updateNotificationsClicked);
+                    self.on('click', updateNotificationsClicked);
+                }
 
             });
         });
@@ -319,6 +323,11 @@ define('modules/ui', [
 
     function updateAssigneeList(e) {
         socket.emit('updateAssigneeList');
+        e.preventDefault();
+    }
+
+    function updateNotificationsClicked(e) {
+        socket.emit('updateNotifications');
         e.preventDefault();
     }
 
@@ -396,11 +405,18 @@ define('modules/ui', [
 
     socketUi.clearNotifications = function() {
         socket.emit('clearNotifications');
+
+        helpers.hideAllpDropDowns();
     };
 
     socketUi.updateNotifications = function() {
         socket.removeAllListeners('updateNotifications');
         socket.on('updateNotifications', function(data) {
+
+            var $notifications = $('#notifications-Messages').find('ul');
+            if ($notifications.length > 0) {
+                $notifications.html('');
+            }
 
             console.log('Notifications Updated: ' + data);
         });

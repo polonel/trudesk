@@ -2,7 +2,13 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
     return angular.module('trudesk.controllers.common', [])
         .controller('commonCtrl', function($scope, $http) {
 
-            console.log('Controller Common Loaded!');
+
+            $scope.clearNotifications = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
+
+                socket.ui.clearNotifications();
+            }
 
         });
 });
