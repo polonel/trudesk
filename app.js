@@ -13,10 +13,10 @@
  **/
 
 var path    = require('path'),
+    fs      = require('fs'),
     winston = require('winston'),
     async = require('async'),
     nconf = require('nconf'),
-    emitter = require('./src/emitter'),
     pkg     = require('./package.json');
 
 nconf.argv().env();
@@ -45,14 +45,35 @@ winston.err = function (err) {
 };
 
 if (!process.send) {
+    winston.info('    .                              .o8                     oooo');
+    winston.info('  .o8                             "888                     `888');
+    winston.info('.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo');
+    winston.info('  888   `888""8P `888  `888  d88\' `888  d88\' `88b d88(  "8  888 .8P\'');
+    winston.info('  888    888      888   888  888   888  888ooo888 `"Y88b.   888888.');
+    winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
+    winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
+    winston.info('==========================================================================');
     winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2015 Polonel.com');
-    winston.info('This program comes with ABSOLUTELY NO WARRANTY.');
-    winston.info('This is free software, and you are welcome to redistribute it under certain conditions.');
     winston.info('');
 }
 
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
+
+if (nconf.get('config')) {
+    configFile = path.resolve(__dirname, nconf.get('config'));
+}
+configExists = fs.existsSync(configFile);
+
+if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
+    start();
+} else if (nconf.get('setup') || nconf.get('install') || !configExists) {
+    setup();
+} else if (nconf.get('upgrade')) {
+    //upgrade();
+} else if (nconf.get('reset')) {
+    reset();
+}
 
 function loadConfig() {
     nconf.file({
@@ -83,6 +104,28 @@ function start() {
     });
 }
 
+function setup() {
+    loadConfig();
+
+    if (nconf.get('setup')) {
+        winston.info('Starting trudesk setup....');
+    } else {
+        winston.warn('Configuration not found!!! Starting trudesk setup....');
+    }
+
+    var install = require('./src/install');
+
+    install.setup(function(err) {
+        if (err) {
+            winston.error('There was a problem completing trudesk setup: ', err.message);
+        } else {
+            winston.info('trudesk Setup Completed. Run \'./trudesk start\' to manually start your trudesk server.');
+        }
+
+        process.exit();
+    })
+}
+
 function dbCallback(err, db) {
     if (err) {
         return start();
@@ -100,7 +143,7 @@ function dbCallback(err, db) {
         //Start Mailer
         var mailQueue = require('./src/mailer');
         mailQueue.queue();
+
+        winston.info("TruDesk Ready");
     });
 }
-
-start();

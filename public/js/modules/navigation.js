@@ -88,6 +88,11 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation
             left = leftExtraOffset + 'px';
         }
 
+        $(drop).find('.close-on-click').find('li > a').each(function() {
+            $(this).off('click', liClick);
+            $(this).on('click', liClick);
+        });
+
         $(drop).addClass('pDropOpen');
         $(drop).css({'position': 'absolute', 'left': left, 'top': top});
 
@@ -102,6 +107,11 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation
         $(scroll).getNiceScroll().show();
 
         e.preventDefault();
+    }
+
+    function liClick(e) {
+        helpers.hideAllpDropDowns();
+        helpers.hideDropDownScrolls();
     }
 
     return navigation;

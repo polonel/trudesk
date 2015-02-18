@@ -73,6 +73,44 @@ accountsController.get = function(req, res, next) {
     });
 };
 
+accountsController.profile = function(req, res, next) {
+    var user = req.user;
+    var backUrl = req.header('Referer') || '/';
+    if (_.isUndefined(user)) {
+        req.flash('message', 'Permission Denied.');
+        winston.warn('Undefined User - /Profile');
+        return res.redirect(backUrl);
+    }
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Profile";
+    self.content.nav = 'profile';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.account = {};
+
+    async.parallel({
+        account: function(callback) {
+            userSchema.getUser(req.user._id, function (err, obj) {
+                callback(err, obj);
+            });
+        }
+    }, function(err, result) {
+        if (err) {
+            req.flash('message', err.message);
+            winston.warn(err);
+            return res.redirect(backUrl);
+        }
+
+        self.content.data.account = result.account;
+
+        res.render('subviews/profile', self.content);
+    });
+};
+
 accountsController.editAccount = function(req, res, next) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:edit')) {

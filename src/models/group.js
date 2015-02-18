@@ -1,5 +1,6 @@
 var mongoose    = require('mongoose');
 var _           = require('underscore');
+var accountsSchema = require('./user');
 
 var COLLECTION = 'groups';
 
@@ -7,6 +8,14 @@ var groupSchema = mongoose.Schema({
     name:       String,
     members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
 });
+
+groupSchema.statics.getGroupByName = function(name, callback) {
+    if (_.isUndefined(name) || name.length < 1) return callback("Invalid Group Name - GroupSchema.GetGroupByName()");
+
+    var q = this.model(COLLECTION).findOne({name: name}).populate('members');
+
+    return q.exec(callback);
+};
 
 groupSchema.statics.getAllGroups = function(callback) {
     var q = this.model(COLLECTION).find({}).populate('members');

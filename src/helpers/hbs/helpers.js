@@ -7,7 +7,7 @@
 
 
 // node_modules
-var _       = require('lodash');
+var _       = require('underscore');
 var moment  = require('moment');
 
 
@@ -473,7 +473,9 @@ var helpers = {
     },
 
     hasGroup: function(arr, value, options) {
-        var result = _.some(arr, {_id: value});
+        var result = _.some(arr, function(i) {
+            return i._id.toString() == value.toString();
+        });
         if (result) {
             return options.fn(this);
         } else {

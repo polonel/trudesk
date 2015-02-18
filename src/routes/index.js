@@ -55,6 +55,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
 
     //Accounts
+    router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
     router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
     router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
@@ -83,6 +84,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
     router.get('/api/users/:username', middleware.api, controllers.api.users.single);
+    router.put('/api/users/:username', middleware.api, controllers.api.users.update);
     router.get('/api/roles', middleware.api, controllers.api.roles.get);
 }
 

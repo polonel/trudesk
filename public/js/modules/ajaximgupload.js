@@ -19,7 +19,7 @@ define('modules/ajaximgupload', [
                     url: '/accounts/uploadImage',
                     type: 'POST',
                     data: formData,
-                    async: false,
+                    //async: false,
                     cache: false,
                     contentType: false,
                     processData: false,

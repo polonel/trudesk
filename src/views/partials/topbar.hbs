@@ -1,3 +1,6 @@
+<div class="flash-message">
+    <div class="red" style="background: red;">HEY</div>
+</div>
 <div class="row top-nav">
     <div class="small-12 columns">
         <nav class="top-bar" data-topbar>
@@ -17,12 +20,39 @@
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="online-Users" data-notifications="online-Users"><i class="fa-comments"></i></a></li>
                         <li class="profile-area profile-name" data-username="{{data.user.username}}" data-userId="{{data.user._id}}"><span>{{data.user.fullname}}</span>
-                            {{#isNull data.user.image}}
-                                <a href="#" class="profile-pic no-ajaxy"><img src="/uploads/users/defaultProfile.jpg" alt="Profile"/></a>
-                            {{else}}
-                                <a href="#" class="profile-pic no-ajaxy"><img src="/uploads/users/{{data.user.image}}" alt="Profile"/></a>
-                            {{/isNull}}
+                            <div style="position: relative; display: inline-block;">
+                                <a href="#" class="profile-pic no-ajaxy" data-notifications="profile-actions" style="position: relative;">
+                                    {{#isNull data.user.image}}
+                                        <img src="/uploads/users/defaultProfile.jpg" alt="Profile"/>
+                                    {{else}}
+                                        <img src="/uploads/users/{{data.user.image}}" alt="Profile"/>
+                                    {{/isNull}}
+                                </a>
 
+                                <div id="profile-actions" data-scroll="profileAction-list" data-override="true" data-top-offset="78" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall" ng-controller="profileCtrl">
+                                    <div class="actions"><strong>{{data.user.username}}</strong></div>
+                                    <div id="profileAction-list" class="notifications-Messages close-on-click">
+                                        <ul>
+                                            <li>
+                                                <a class="messageNotification" href="/profile" role="button">
+                                                    <div class="clearfix">
+                                                        <div class="messageIcon left"><i class="fa fa-user"></i></div>
+                                                        <div class="messageAuthor"><strong>Profile</strong></div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="messageNotification no-ajaxify" href="/logout" role="button">
+                                                    <div class="clearfix">
+                                                        <div class="messageIcon left"><i class="fa fa-sign-out"></i></div>
+                                                        <div class="messageAuthor"><strong>Logout</strong></div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
                         </li>
                     </ul>
                     <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown">
@@ -50,7 +80,7 @@
                     {{> topbar/notifications }}
                     <div id="mail-notifications" data-scroll="mail-Messages" class="notifications p-dropdown">
                         <div class="actions"><a href="/messages/inbox" class="blackLink">Inbox</a><div class="right"><a href="#" class="hoverUnderline">Send a New Message</a></div></div>
-                        <div id="mail-Messages" class="mail-Messages">
+                        <div id="mail-Messages" class="mail-Messages close-on-click">
                             <ul>
                                 <li>
                                     <a class="messageNotification" href="#" role="button">

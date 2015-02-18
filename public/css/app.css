@@ -377,7 +377,7 @@ div.ptooltip-box {
   font-family: "Lato", sans-serif;
   font-size: 18px;
   color: white;
-  background: url("../img/midDots.png") no-repeat;
+  background: url("/img/midDots.png") no-repeat;
   background-position: 0 50%;
   margin-left: 10px; }
   .top-bar-section ul li.profile-area span {
@@ -452,7 +452,9 @@ div.actions {
   height: auto;
   border-bottom: 1px solid rgba(100, 100, 100, 0.4);
   line-height: 24px;
-  font-size: 12px; }
+  font-size: 12px;
+  color: black;
+  font-family: "Roboto", sans-serif; }
   div.actions a {
     width: 100%;
     padding: 5px 10px; }
@@ -501,7 +503,7 @@ div.actions {
   #online-Users li,
   .p-dropdown li {
     width: 100%;
-    background: white;
+    background: white !important;
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
     height: 72px;
     max-height: 80px;
@@ -533,7 +535,8 @@ div.actions {
       #notifications li .messageNotification:hover,
       #online-Users li .messageNotification:hover,
       .p-dropdown li .messageNotification:hover {
-        background: transparent !important; }
+        background: transparent !important;
+        color: black !important; }
       #mail-notifications li .messageNotification .messageUnread,
       #notifications li .messageNotification .messageUnread,
       #online-Users li .messageNotification .messageUnread,
@@ -592,7 +595,12 @@ div.actions {
         font-size: 25px;
         line-height: 59px;
         text-align: center;
-        color: #e7a13c; }
+        color: black; }
+        #mail-notifications li .messageNotification i.warn,
+        #notifications li .messageNotification i.warn,
+        #online-Users li .messageNotification i.warn,
+        .p-dropdown li .messageNotification i.warn {
+          color: #e7a13c; }
         #mail-notifications li .messageNotification i.green,
         #notifications li .messageNotification i.green,
         #online-Users li .messageNotification i.green,
@@ -603,56 +611,102 @@ div.actions {
         #online-Users li .messageNotification i.red,
         .p-dropdown li .messageNotification i.red {
           color: #b92929; }
-  #mail-notifications.p-dropdown-small,
+        #mail-notifications li .messageNotification i.blue,
+        #notifications li .messageNotification i.blue,
+        #online-Users li .messageNotification i.blue,
+        .p-dropdown li .messageNotification i.blue {
+          color: #017ebc; }
+  #mail-notifications.p-dropdown-small, #mail-notifications.p-dropdown-xsmall,
   #notifications.p-dropdown-small,
+  #notifications.p-dropdown-xsmall,
   #online-Users.p-dropdown-small,
-  .p-dropdown.p-dropdown-small {
+  #online-Users.p-dropdown-xsmall,
+  .p-dropdown.p-dropdown-small,
+  .p-dropdown.p-dropdown-xsmall {
     width: 240px !important; }
-    #mail-notifications.p-dropdown-small:before, #mail-notifications.p-dropdown-small:after,
+    #mail-notifications.p-dropdown-small:before, #mail-notifications.p-dropdown-small:after, #mail-notifications.p-dropdown-xsmall:before, #mail-notifications.p-dropdown-xsmall:after,
     #notifications.p-dropdown-small:before,
     #notifications.p-dropdown-small:after,
+    #notifications.p-dropdown-xsmall:before,
+    #notifications.p-dropdown-xsmall:after,
     #online-Users.p-dropdown-small:before,
     #online-Users.p-dropdown-small:after,
+    #online-Users.p-dropdown-xsmall:before,
+    #online-Users.p-dropdown-xsmall:after,
     .p-dropdown.p-dropdown-small:before,
-    .p-dropdown.p-dropdown-small:after {
+    .p-dropdown.p-dropdown-small:after,
+    .p-dropdown.p-dropdown-xsmall:before,
+    .p-dropdown.p-dropdown-xsmall:after {
       content: " ";
       left: 215px; }
-    #mail-notifications.p-dropdown-small div.notifications-Messages,
+    #mail-notifications.p-dropdown-small div.notifications-Messages, #mail-notifications.p-dropdown-xsmall div.notifications-Messages,
     #notifications.p-dropdown-small div.notifications-Messages,
+    #notifications.p-dropdown-xsmall div.notifications-Messages,
     #online-Users.p-dropdown-small div.notifications-Messages,
-    .p-dropdown.p-dropdown-small div.notifications-Messages {
+    #online-Users.p-dropdown-xsmall div.notifications-Messages,
+    .p-dropdown.p-dropdown-small div.notifications-Messages,
+    .p-dropdown.p-dropdown-xsmall div.notifications-Messages {
       width: 100%; }
-      #mail-notifications.p-dropdown-small div.notifications-Messages ul,
+      #mail-notifications.p-dropdown-small div.notifications-Messages ul, #mail-notifications.p-dropdown-xsmall div.notifications-Messages ul,
       #notifications.p-dropdown-small div.notifications-Messages ul,
+      #notifications.p-dropdown-xsmall div.notifications-Messages ul,
       #online-Users.p-dropdown-small div.notifications-Messages ul,
-      .p-dropdown.p-dropdown-small div.notifications-Messages ul {
+      #online-Users.p-dropdown-xsmall div.notifications-Messages ul,
+      .p-dropdown.p-dropdown-small div.notifications-Messages ul,
+      .p-dropdown.p-dropdown-xsmall div.notifications-Messages ul {
         width: 100%; }
-        #mail-notifications.p-dropdown-small div.notifications-Messages ul li,
+        #mail-notifications.p-dropdown-small div.notifications-Messages ul li, #mail-notifications.p-dropdown-xsmall div.notifications-Messages ul li,
         #notifications.p-dropdown-small div.notifications-Messages ul li,
+        #notifications.p-dropdown-xsmall div.notifications-Messages ul li,
         #online-Users.p-dropdown-small div.notifications-Messages ul li,
-        .p-dropdown.p-dropdown-small div.notifications-Messages ul li {
+        #online-Users.p-dropdown-xsmall div.notifications-Messages ul li,
+        .p-dropdown.p-dropdown-small div.notifications-Messages ul li,
+        .p-dropdown.p-dropdown-xsmall div.notifications-Messages ul li {
           height: 40px;
           width: 100%; }
-      #mail-notifications.p-dropdown-small div.notifications-Messages a.messageNotification,
+      #mail-notifications.p-dropdown-small div.notifications-Messages a.messageNotification, #mail-notifications.p-dropdown-xsmall div.notifications-Messages a.messageNotification,
       #notifications.p-dropdown-small div.notifications-Messages a.messageNotification,
+      #notifications.p-dropdown-xsmall div.notifications-Messages a.messageNotification,
       #online-Users.p-dropdown-small div.notifications-Messages a.messageNotification,
-      .p-dropdown.p-dropdown-small div.notifications-Messages a.messageNotification {
-        height: auto;
+      #online-Users.p-dropdown-xsmall div.notifications-Messages a.messageNotification,
+      .p-dropdown.p-dropdown-small div.notifications-Messages a.messageNotification,
+      .p-dropdown.p-dropdown-xsmall div.notifications-Messages a.messageNotification {
+        height: 100%;
         padding-bottom: 0 !important; }
-      #mail-notifications.p-dropdown-small div.notifications-Messages .messageIcon i,
+      #mail-notifications.p-dropdown-small div.notifications-Messages .messageIcon i, #mail-notifications.p-dropdown-xsmall div.notifications-Messages .messageIcon i,
       #notifications.p-dropdown-small div.notifications-Messages .messageIcon i,
+      #notifications.p-dropdown-xsmall div.notifications-Messages .messageIcon i,
       #online-Users.p-dropdown-small div.notifications-Messages .messageIcon i,
-      .p-dropdown.p-dropdown-small div.notifications-Messages .messageIcon i {
+      #online-Users.p-dropdown-xsmall div.notifications-Messages .messageIcon i,
+      .p-dropdown.p-dropdown-small div.notifications-Messages .messageIcon i,
+      .p-dropdown.p-dropdown-xsmall div.notifications-Messages .messageIcon i {
         width: 25px;
         height: 25px;
         line-height: 25px;
         font-size: 20px; }
-      #mail-notifications.p-dropdown-small div.notifications-Messages .messageAuthor,
+      #mail-notifications.p-dropdown-small div.notifications-Messages .messageAuthor, #mail-notifications.p-dropdown-xsmall div.notifications-Messages .messageAuthor,
       #notifications.p-dropdown-small div.notifications-Messages .messageAuthor,
+      #notifications.p-dropdown-xsmall div.notifications-Messages .messageAuthor,
       #online-Users.p-dropdown-small div.notifications-Messages .messageAuthor,
-      .p-dropdown.p-dropdown-small div.notifications-Messages .messageAuthor {
+      #online-Users.p-dropdown-xsmall div.notifications-Messages .messageAuthor,
+      .p-dropdown.p-dropdown-small div.notifications-Messages .messageAuthor,
+      .p-dropdown.p-dropdown-xsmall div.notifications-Messages .messageAuthor {
         margin-left: 40px;
         padding-top: 3px; }
+  #mail-notifications.p-dropdown-xsmall,
+  #notifications.p-dropdown-xsmall,
+  #online-Users.p-dropdown-xsmall,
+  .p-dropdown.p-dropdown-xsmall {
+    width: 140px !important; }
+    #mail-notifications.p-dropdown-xsmall:before, #mail-notifications.p-dropdown-xsmall:after,
+    #notifications.p-dropdown-xsmall:before,
+    #notifications.p-dropdown-xsmall:after,
+    #online-Users.p-dropdown-xsmall:before,
+    #online-Users.p-dropdown-xsmall:after,
+    .p-dropdown.p-dropdown-xsmall:before,
+    .p-dropdown.p-dropdown-xsmall:after {
+      content: " ";
+      left: 120px; }
 
 .sidebar {
   background: #223140;
@@ -762,13 +816,13 @@ ul.side-nav-sub {
 .icon-check {
   width: 16px;
   height: 16px;
-  background: url(../img/inbox.png) 0 0 no-repeat;
+  background: url(/img/inbox.png) 0 0 no-repeat;
   position: absolute;
   top: 3px !important;
   left: 20px !important; }
 
 .icon-check {
-  background-image: url(../img/tickets_submenu.png); }
+  background-image: url(/img/tickets_submenu.png); }
 
 .icon-sent {
   background-position: -16px 0; }
@@ -780,17 +834,17 @@ ul.side-nav-sub {
 .icon-accounts {
   width: 18px;
   height: 24px;
-  background: url(../img/accounts.png) 0 0 no-repeat; }
+  background: url(/img/accounts.png) 0 0 no-repeat; }
 
 .icon-groups {
   width: 22px;
   height: 22px;
-  background: url(../img/groups.png) 0 0 no-repeat; }
+  background: url(/img/groups.png) 0 0 no-repeat; }
 
 .icon-invoices {
   width: 24px;
   height: 20px;
-  background: url(../img/invoices.png) 0 0 no-repeat;
+  background: url(/img/invoices.png) 0 0 no-repeat;
   top: 10px !important; }
 
 .message-list {
@@ -897,7 +951,7 @@ input[type="checkbox"] + label {
   display: inline-block;
   height: 14px;
   width: 16px;
-  background: url(../img/checkbox.png) 0 0 no-repeat;
+  background: url(/img/checkbox.png) 0 0 no-repeat;
   cursor: pointer;
   position: absolute;
   top: 24px;
@@ -965,7 +1019,8 @@ input[type="checkbox"]:checked + label {
     padding: 0 0 0 55px !important; } }
 
 div#ticketTable_wrapper {
-  margin-bottom: 0; }
+  margin-bottom: 0;
+  background: white; }
 
 .ticket-status span {
   display: block;

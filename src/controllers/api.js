@@ -13,7 +13,7 @@
  **/
 
 var async = require('async'),
-    _ = require('lodash'),
+    _ = require('underscore'),
     winston = require('winston'),
     passport = require('passport'),
     permissions = require('../permissions'),
@@ -70,11 +70,37 @@ apiController.users.insert = function(req, res, next) {
 
     userModel.insertUser(data, function(err, r) {
         if (err) {
-          winston.warn("Error: " + err);
+          winston.warn("Error: " + err.message);
           return res.send(err);
         }
 
         return res.send(r);
+    });
+};
+
+apiController.users.update = function(req, res, next) {
+    var data = req.body;
+    var userModel = require('../models/user');
+
+    userModel.getUser(data._id, function(err, user) {
+        if (err) {
+            winston.warn('Error: ' + err);
+            return res.status(500).send(err);
+        }
+
+        console.log(data);
+
+        user.fullname = data.fullname;
+        if (!_.isUndefined(data.password) && !_.isUndefined(data.cPassword)) {
+            if (data.password === data.cPassword) {
+                user.password = data.password;
+                user.email = data.email;
+            }
+        }
+
+        user.save(function(err, nUser) {
+            return res.json(nUser);
+        });
     });
 };
 

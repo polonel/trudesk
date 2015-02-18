@@ -30,7 +30,7 @@ server = require('http').createServer(WebServer);
 (function (app) {
     "use strict";
 
-    var port = process.env.PORT || 3000;
+    var port = process.env.PORT || 8118;
 
     module.exports.server = server;
     module.exports.init = function(db, callback) {
@@ -50,7 +50,6 @@ server = require('http').createServer(WebServer);
             });
 
             server.listen(port, '0.0.0.0', function() {
-                winston.info("TruDesk Ready");
                 winston.info('TruDesk is now listening on port: ' + port);
 
                 callback();

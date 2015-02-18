@@ -24,7 +24,8 @@ var ticketSchema = mongoose.Schema({
     tags:       [String],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
-    comments:   [commentSchema]
+    comments:   [commentSchema],
+    closed_date:{ type: Date}
 });
 
 ticketSchema.plugin(deepPopulate);

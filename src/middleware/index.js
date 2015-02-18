@@ -33,6 +33,7 @@ var path            = require('path'),
 var middleware = {};
 module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
+    app.use(express.static(path.join(__dirname, '../../', 'public')));
 
     app.set('views', path.join(__dirname, '../views/'));
     app.engine('hbs', hbs.express3({
@@ -44,8 +45,6 @@ module.exports = function(app, db, callback) {
 
     // uncomment after placing your favicon in /public
     //app.use(favicon(__dirname + '/public/favicon.ico'));
-    //app.use(logger('dev'));
-    app.use(express.static(path.join(__dirname, '../../', 'public')));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
@@ -66,19 +65,32 @@ module.exports = function(app, db, callback) {
     };
 
     var sessionSecret = 'trudesk$123#SessionKeY!2387';
-    var sessionStore = new MongoStore({mongoose_connection: db.connection, auto_reconnect: true }, function(e) {
-        app.use(session({
-            secret: sessionSecret,
-            cookie: cookie,
-            store: sessionStore,
-            saveUninitialized: true,
-            resave: true
-        }));
+    async.waterfall([
+        function(next) {
+            var sessionStore = new MongoStore({mongooseConnection: db.connection, autoReconnect: true });
+            app.use(session({
+                secret: sessionSecret,
+                cookie: cookie,
+                store: sessionStore,
+                saveUninitialized: true,
+                resave: true
+            }));
 
-        app.use(passportConfig.initialize());
-        app.use(passportConfig.session());
-        app.use(flash());
+            next(null, sessionStore);
+        },
+        function(store, next) {
+            app.use(passportConfig.initialize());
+            app.use(passportConfig.session());
+            app.use(flash());
 
-        callback(middleware, sessionStore);
+            next(null, store);
+        }
+    ], function(err, s) {
+        if (err) {
+            winston.error(err);
+            process.exit();
+        }
+
+        callback(middleware, s);
     });
 };

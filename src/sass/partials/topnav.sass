@@ -47,7 +47,7 @@
   font-family: "Lato", sans-serif
   font-size: 18px
   color: #ffffff
-  background: url("../img/midDots.png") no-repeat
+  background: url("/img/midDots.png") no-repeat
   background-position: 0 50%
   margin-left: 10px
 
@@ -130,6 +130,8 @@ div.actions
   border-bottom: 1px solid rgba(100,100,100,0.4)
   line-height: 24px
   font-size: 12px
+  color: #000
+  font-family: "Roboto", sans-serif
   a
     width: 100%
     padding: 5px 10px
@@ -159,7 +161,7 @@ div.actions
 
   li
     width: 100%
-    background: #ffffff
+    background: #ffffff !important
     border-bottom: 1px solid rgba(100,100,100,0.4)
     height: 72px
     max-height: 80px
@@ -182,6 +184,7 @@ div.actions
 
       &:hover
         background: transparent !important
+        color: #000 !important
 
       .messageUnread
         width: 16px
@@ -219,13 +222,18 @@ div.actions
         font-size: 25px
         line-height: 59px
         text-align: center
-        color: #e7a13c
+        color: black
+        &.warn
+          color: #e7a13c
         &.green
           color: #29b955
         &.red
           color: #b92929
+        &.blue
+          color: #017ebc
 
-  &.p-dropdown-small
+  &.p-dropdown-small,
+  &.p-dropdown-xsmall
     &:before,
     &:after
       content: " "
@@ -241,7 +249,7 @@ div.actions
           width: 100%
 
       a.messageNotification
-        height: auto
+        height: 100%
         padding-bottom: 0 !important
 
       .messageIcon i
@@ -253,3 +261,11 @@ div.actions
       .messageAuthor
         margin-left: 40px
         padding-top: 3px
+
+  &.p-dropdown-xsmall
+    &:before,
+    &:after
+      content: " "
+      left: 120px
+
+    width: 140px !important

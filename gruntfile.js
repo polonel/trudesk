@@ -11,7 +11,7 @@ module.exports = function(grunt) {
             web: {
                 options: {
                     script: 'app.js',
-                    port: 3000
+                    port: 8118
                 }
             }
         },
@@ -59,20 +59,20 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
-                {
-                    grunt: true,
-                    args: ['watch:gruntfile']
-                },
-                {
-                    grunt: true,
-                    args: ['watch:frontend']
-                }, {
-                    grunt: true,
-                    args: ['watch:sass']
-                }, {
-                    grunt: true,
-                    args: ['watch:web']
-                }]
+                    {
+                        grunt: true,
+                        args: ['watch:gruntfile']
+                    },
+                    {
+                        grunt: true,
+                        args: ['watch:frontend']
+                    }, {
+                        grunt: true,
+                        args: ['watch:sass']
+                    }, {
+                        grunt: true,
+                        args: ['watch:web']
+                    }]
             }
         },
 
@@ -123,7 +123,7 @@ module.exports = function(grunt) {
 //                            //RequireJS
 //                            'public/js/vendor/requirejs/requirejs.min.js'
 
-                        ]
+                    ]
                 }
             }
         }
