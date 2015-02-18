@@ -11,6 +11,8 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
 
         self.resizeFullHeight();
         self.setupScrollers();
+        self.setupScrollers('.scrollable-dark');
+        self.setupScrollers('.wrapper');
         self.pToolTip();
         self.setupDonutchart();
         self.setupBarChart();
@@ -18,6 +20,16 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.bindKeys();
         self.ajaxFormSubmit();
         self.setupChosen();
+    };
+
+    helpers.showFlash = function(message) {
+        var self = this;
+        var flash = $('.flash-message');
+        if (flash.length < 1) return true;
+
+        flash.find('.flash-text').html(message);
+
+        flash.hide().slideDown(200, function() { self.resizeAll(); });
     };
 
     helpers.bindKeys = function() {
@@ -51,8 +63,9 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             self.resizeFullHeight();
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
+            self.resizeScroller();
             self.resizeDataTables('.ticketList');
-        }, 200);
+        }, 100);
     };
 
     helpers.setupScrollers = function(selector) {
@@ -60,14 +73,29 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             selector = '.scrollable';
         }
 
+        var color = "#a9b1bf";
+        var colorBrd = "1px solid #fff";
+        if (selector == '.scrollable-dark') {
+            color = '#353e47';
+            colorBrd = "1px solid #000";
+        }
+
+        var size = 7;
+        var opacityMax = 1;
+        if (selector == '.wrapper') {
+            size = 1;
+            opacityMax = 0;
+        }
+
         $(document).ready(function() {
             $(selector).each(function() {
                 var ns = $(this).getNiceScroll(0);
                 if (ns !== false) return true;
                 $(this).niceScroll({
-                    cursorcolor: "#a9b1bf",
-                    cursorwidth: 7,
-                    cursorborder: "1px solid #fff",
+                    cursorcolor: color,
+                    cursorwidth: size,
+                    cursorborder: colorBrd,
+                    cursoropacitymax: opacityMax,
                     horizrailenabled: false
                 });
             });
@@ -84,8 +112,39 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         niceScroll.doScrollTop(99999999999*99999999999);
     };
 
+    helpers.resizeAll = function() {
+        var self = this;
+        var l = _.debounce(function() {
+            self.resizeFullHeight();
+            self.hideAllpDropDowns();
+            self.hideDropDownScrolls();
+            self.resizeScroller();
+            self.resizeDataTables('.ticketList');
+        }, 100);
+
+        l();
+    };
+
     helpers.resizeScroller = function(scrollerObject) {
-        if (_.isUndefined(scrollerObject)) return true;
+        if (_.isUndefined(scrollerObject)) {
+            $('.scrollable').each(function() {
+                var self = $(this);
+                var ns = self.getNiceScroll(0);
+                if (!ns) return true;
+
+                ns.resize();
+            });
+
+            $('.scrollable-dark').each(function() {
+                var self = $(this);
+                var ns = self.getNiceScroll(0);
+                if (!ns) return true;
+
+                ns.resize();
+            });
+
+            return true;
+        }
 
         var niceScroll = $(scrollerObject).getNiceScroll(0);
         if (!niceScroll) return true;

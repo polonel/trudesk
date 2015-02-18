@@ -1,51 +1,46 @@
-{{#contentFor 'css'}}
-    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.scroller.css"/>-->
-    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.foundation.css"/>-->
-{{/contentFor}}
-
 <div class="small-12 large-10 columns nopadding ticketContent">
-<div class="page-title noshadow">
-    <p class="left">Accounts</p>
-    <div class="right">
-        <ul class="button-group">
-            {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/create" role="button" class="btn">Create User</a></li>{{/canUser}}
-        </ul>
+    <div class="page-title noshadow">
+        <p class="left">Accounts</p>
+        <div class="right">
+            <ul class="button-group">
+                {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/create" role="button" class="btn">Create User</a></li>{{/canUser}}
+            </ul>
+        </div>
     </div>
-</div>
 
-<div class="full-height">
-<div class="accountList full-height" ng-controller="accountsCtrl">
-    <table id="accountsTable" class="pDataTable stripe">
-        <thead>
-        <tr>
-            <th></th>
-            <th>Name</th>
-            <th>Username</th>
-            <th>Email</th>
-            <th>Title</th>
-            <th>Groups</th>
-            <th>Role</th>
-        </tr>
-        </thead>
-        <tbody>
-        {{#each data.accounts}}
-            <tr ng-click="editAccount($event)" data-username="{{username}}">
-                <td>
-                    <input id="c_{{_id}}" type="checkbox"/>
-                    <label for="c_{{_id}}"></label>
-                </td>
-                <td>{{fullname}}</td>
-                <td>{{username}}</td>
-                <td>{{email}}</td>
-                <td>{{title}}</td>
-                <td>{{{split groups "<br />"}}} </td>
-                <td>{{firstCap role}}</td>
-            </tr>
-        {{/each}}
-        </tbody>
-    </table>
-</div>
-</div>
+    <div class="full-height page-right-content">
+        <div class="accountList" ng-controller="accountsCtrl">
+            <table id="accountsTable" class="pDataTable stripe">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Title</th>
+                    <th>Groups</th>
+                    <th>Role</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.accounts}}
+                    <tr ng-click="editAccount($event)" data-username="{{username}}">
+                        <td>
+                            <input id="c_{{_id}}" type="checkbox"/>
+                            <label for="c_{{_id}}"></label>
+                        </td>
+                        <td>{{fullname}}</td>
+                        <td>{{username}}</td>
+                        <td>{{email}}</td>
+                        <td>{{title}}</td>
+                        <td>{{{split groups "<br />"}}} </td>
+                        <td>{{firstCap role}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 {{#contentFor 'js-plugins'}}

@@ -1,4 +1,4 @@
-define(['angular', 'underscore', 'jquery', 'history'], function(angular, _, $) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], function(angular, _, $, helpers) {
     return angular.module('trudesk.controllers.profile', [])
         .controller('profileCtrl', function($scope, $http) {
 
@@ -17,7 +17,8 @@ define(['angular', 'underscore', 'jquery', 'history'], function(angular, _, $) {
                         email: data.email
                     }
                 ).success(function(d) {
-                        resetForm(d);
+                        resetForm();
+                        helpers.showFlash('Profile Successfully Saved!');
                     }).error(function(e) {
                         console.log('Error: ' + e);
                     });
@@ -38,11 +39,11 @@ define(['angular', 'underscore', 'jquery', 'history'], function(angular, _, $) {
                 return data;
             }
 
-            function resetForm(data) {
-                $('#aFullname').val(data.fullname);
+            function resetForm() {
+                //$('#aFullname').val(data.fullname);
                 $('#aPass').val('');
                 $('#aPassConfirm').val('');
-                $('#aEmail').val(data.email);
+                //$('#aEmail').val(data.email);
             }
         });
 });

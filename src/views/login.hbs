@@ -26,7 +26,8 @@
             margin-bottom: 55px;
         }
 
-        input {
+        input,
+        button {
             font-family: "Open Sans", Arial, sans-serif;
             width: 340px;
             height: 20px;
@@ -43,7 +44,8 @@
             font-weight: 300;
         }
 
-        input.button {
+        input.button,
+        button.button {
             width: 380px;
             height: auto;
             text-align: center;
@@ -55,7 +57,8 @@
             -webkit-border-radius: 3px;
         }
 
-        input.button:hover {
+        input.button:hover,
+        button.button:hover {
             background: #f15849;
             cursor: pointer;
         }
@@ -114,6 +117,10 @@
             font-weight: 300;
         }
 
+        button.button.noCap {
+            text-transform: none;
+        }
+
     </style>
 </head>
 <body>
@@ -124,12 +131,42 @@
         </div>
     {{/if}}
     <img src="/img/logoLarge.png" alt="Trudesk Logo" /> <br />
-    <form method="post" action="/login">
-        <input id="login-username" name="login-username" type="text" placeholder="Username" />
-        <input id="login-password" name="login-password" type="password" placeholder="Password" />
-        <input class="button" type="submit" value="Login" />
-    </form>
-    <a href="#">Forgot your password?</a>
+    <div class="loginForm">
+        <form method="post" action="/login">
+            <input id="login-username" name="login-username" type="text" placeholder="Username" />
+            <input id="login-password" name="login-password" type="password" placeholder="Password" />
+            <button class="button" type="submit">Login</button>
+        </form>
+
+        <a id="forgotPass" href="#">Forgot your password?</a>
+    </div>
+    <div class="forgotPassForm" style="display: none;">
+        <form method="post" action="/forgotpassword">
+            <input id="forgotPass-email" name="forgotPass-email" type="text" placeholder="Email" />
+            <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
+            <button class="button noCap" type="submit">Forgot Password</button>
+        </form>
+
+        <a id="backToLogin" href="#">Back to Login</a>
+    </div>
 </div>
+
+<script src="/js/vendor/jquery/jquery.js"></script>
+<script type="text/javascript">
+    $('#forgotPass').click(function(e) {
+        e.preventDefault();
+        $('.loginForm').fadeOut(100, function() {
+            $('.forgotPassForm').fadeIn();
+        });
+
+    });
+
+    $('#backToLogin').click(function(e) {
+        e.preventDefault();
+        $('.forgotPassForm').fadeOut(100, function() {
+            $('.loginForm').fadeIn();
+        })
+    });
+</script>
 </body>
 </html>

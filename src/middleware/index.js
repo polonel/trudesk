@@ -44,7 +44,7 @@ module.exports = function(app, db, callback) {
     hbsHelpers.register(hbs.handlebars);
 
     // uncomment after placing your favicon in /public
-    //app.use(favicon(__dirname + '/public/favicon.ico'));
+    app.use(favicon(path.join(__dirname, '../../', 'public/img/favicon.ico')));
     app.use(bodyParser.json());
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(cookieParser());
