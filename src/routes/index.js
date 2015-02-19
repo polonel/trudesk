@@ -28,6 +28,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/login', middleware.redirectToLogin, middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
     router.get('/logout', controllers.main.logout);
+    router.post('/forgotpass', controllers.main.forgotPass);
+    router.get('/resetpassword/:hash', controllers.main.resetPass);
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);

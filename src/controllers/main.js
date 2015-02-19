@@ -13,10 +13,12 @@
  **/
 
 var async = require('async'),
+    path = require('path'),
     _ = require('underscore'),
     _mixins = require('../helpers/underscore'),
     passport = require('passport'),
-    ticketSchema = require('../models/ticket');
+    ticketSchema = require('../models/ticket'),
+    nconf = require('nconf');
 
 var mainController = {};
 
@@ -132,6 +134,159 @@ mainController.logout = function(req, res, next) {
     res.redirect('/');
 };
 
+mainController.forgotPass = function(req, res, next) {
+    var data = req.body;
+    if (_.isUndefined(data['forgotPass-email'])) {
+        return res.send(400).send('No Form Data');
+    }
 
+    var email = data['forgotPass-email'];
+    var userSchema = require('../models/user');
+    userSchema.getUserByEmail(email, function(err, user) {
+        if (err) {
+            req.flash(err);
+            return res.status(400).send(err.message);
+        }
+
+        if (_.isUndefined(user) || _.isEmpty(user)) {
+            req.flash('Invalid Email: Account not found!');
+            return res.status(400).send('Invalid Email: Account not found!');
+        }
+
+        // Found user send Password Reset Email.
+        //Set User Reset Hash and Expire Date.
+        var Chance = require('chance');
+        var chance = new Chance();
+
+        user.resetPassHash = chance.hash({casing: 'upper'});
+        var expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + 2);
+        user.resetPassExpire = expireDate;
+
+        user.save(function(err, savedUser) {
+            if (err) {
+                req.flash(err);
+                return res.status(400).send(err.message);
+            }
+
+            //Send mail
+            var mailer          = require('../mailer');
+            var emailTemplates  = require('email-templates');
+            var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
+
+            emailTemplates(templateDir, function(err, template) {
+                if (err) {
+                    req.flash('Error: ' + err);
+                    return res.status(400).send(err.message);
+                }
+
+                var data = {
+                    base_url: nconf.get('url'),
+                    user: savedUser
+                };
+
+                template('password-reset', data, function(err, html) {
+                    if (err) {
+                        req.flash('Error: ' + err);
+                        return res.status(400).send(err.message);
+                    }
+
+                    var mailOptions = {
+                        from: 'no-reply@trudesk.io',
+                        to: email,
+                        subject: '[TruDesk] Password Reset Request',
+                        html: html,
+                        generateTextFromHTML: true
+                    };
+
+                    mailer.sendMail(mailOptions, function(err, info) {
+                        if (err) {
+                            req.flash('Error: ' + err.message);
+                            return res.status(400).send(err.message);
+                        }
+
+                        return res.status(200).send();
+                    });
+                });
+            });
+        });
+    });
+};
+
+mainController.resetPass = function(req, res, next) {
+    var hash = req.params.hash;
+
+    if (_.isUndefined(hash)) {
+        return res.status(400).send('Invalid Link!');
+    }
+
+    var userSchema = require('../models/user');
+    userSchema.getUserByResetHash(hash, function(err, user) {
+        if (err) {
+            return res.status(400).send('Invalid Link!');
+        }
+
+        if (_.isUndefined(user) || _.isEmpty(user)) {
+            return res.status(400).send('Invalid Link!');
+        }
+
+        var now = new Date();
+        if (now < user.resetPassExpire) {
+            var Chance = require('chance');
+            var chance = new Chance();
+            var gPass = chance.string({length: 8});
+            user.password = gPass;
+
+            user.resetPassHash = undefined;
+            user.resetPassExpire = undefined;
+
+            user.save(function(err, updated) {
+                if (err) {
+                    return res.status(500).send(err.message);
+                }
+
+                //Send mail
+                var mailer          = require('../mailer');
+                var emailTemplates  = require('email-templates');
+                var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
+
+                emailTemplates(templateDir, function(err, template) {
+                    if (err) {
+                        return res.status(500).send(err.message);
+                    }
+
+                    var data = {
+                        password: gPass,
+                        user: updated
+                    };
+
+                    template('new-password', data, function(err, html) {
+                        if (err) {
+                            req.flash('Error: ' + err);
+                            return res.status(500).send(err.message);
+                        }
+
+                        var mailOptions = {
+                            from: 'no-reply@trudesk.io',
+                            to: updated.email,
+                            subject: '[TruDesk] New Password',
+                            html: html,
+                            generateTextFromHTML: true
+                        };
+
+                        mailer.sendMail(mailOptions, function(err, info) {
+                            if (err) {
+                                req.flash('Error: ' + err.message);
+                                return res.status(500).send(err.message);
+                            }
+
+                            return res.redirect('/');
+                        });
+                    });
+                });
+            });
+        }
+    });
+};
 
 module.exports = mainController;

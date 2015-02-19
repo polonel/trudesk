@@ -88,17 +88,20 @@ apiController.users.update = function(req, res, next) {
             return res.status(500).send(err);
         }
 
-        console.log(data);
-
         user.fullname = data.fullname;
-        if (!_.isUndefined(data.password) && !_.isUndefined(data.cPassword)) {
+        user.email = data.email;
+
+        if (!_.isEmpty(data.password) && !_.isEmpty(data.cPassword)) {
             if (data.password === data.cPassword) {
                 user.password = data.password;
-                user.email = data.email;
             }
         }
 
         user.save(function(err, nUser) {
+            if (err) {
+                winston.warn('Error: ' + err);
+                return res.status(500).send(err);
+            }
             return res.json(nUser);
         });
     });

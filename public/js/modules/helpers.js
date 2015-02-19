@@ -22,12 +22,17 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.setupChosen();
     };
 
-    helpers.showFlash = function(message) {
+    helpers.showFlash = function(message, error) {
         var self = this;
         var flash = $('.flash-message');
         if (flash.length < 1) return true;
 
-        flash.find('.flash-text').html(message);
+        var e = error ? true : false;
+
+        var flashText = flash.find('.flash-text');
+        flashText.html(message);
+
+        if (e) flashText.css('background', '#de4d4d');
 
         flash.hide().slideDown(200, function() { self.resizeAll(); });
     };

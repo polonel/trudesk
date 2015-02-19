@@ -121,15 +121,20 @@
             text-transform: none;
         }
 
+        .hide {
+            display: none;
+        }
+
+        .green {
+            background: #29b955;
+        }
     </style>
 </head>
 <body>
 <div class="wrapper">
-    {{#if flash}}
-        <div class="alert-message">
-            <p class="message">{{{flash}}}</p>
-        </div>
-    {{/if}}
+    <div class="alert-message {{#if flash}} {{else}} hide {{/if}}">
+        <p class="message">{{{flash}}}</p>
+    </div>
     <img src="/img/logoLarge.png" alt="Trudesk Logo" /> <br />
     <div class="loginForm">
         <form method="post" action="/login">
@@ -141,7 +146,7 @@
         <a id="forgotPass" href="#">Forgot your password?</a>
     </div>
     <div class="forgotPassForm" style="display: none;">
-        <form method="post" action="/forgotpassword">
+        <form id="forgotPassForm" method="post" action="/">
             <input id="forgotPass-email" name="forgotPass-email" type="text" placeholder="Email" />
             <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
             <button class="button noCap" type="submit">Forgot Password</button>
@@ -166,6 +171,38 @@
         $('.forgotPassForm').fadeOut(100, function() {
             $('.loginForm').fadeIn();
         })
+    });
+
+    $('#forgotPassForm').submit(function(e) {
+        e.preventDefault();
+        var self = $(this);
+        var alertMessage = $('.alert-message');
+        $.ajax({
+            type: 'POST',
+            url: '/forgotpass',
+            data: self.serialize(),
+            async: true,
+            success: function(data) {
+                alertMessage.removeClass('hide')
+                        .addClass('green')
+                        .find('.message')
+                        .html('Password Reset Email Sent!');
+
+                $('#forgotPass-email').val('');
+
+                $('.forgotPassForm').fadeOut(100, function() {
+                    $('.loginForm').fadeIn();
+                })
+            },
+
+            error: function(xhr, ajaxOptions, thrownError) {
+                alertMessage.removeClass('hide')
+                        .find('.message')
+                        .html(xhr.responseText);
+            }
+        });
+
+        return false;
     });
 </script>
 </body>

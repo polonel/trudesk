@@ -20,7 +20,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         resetForm();
                         helpers.showFlash('Profile Successfully Saved!');
                     }).error(function(e) {
-                        console.log('Error: ' + e);
+                        helpers.showFlash('Error: ' + e, true);
                     });
             };
 

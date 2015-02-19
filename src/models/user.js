@@ -10,10 +10,13 @@ var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
         password:   { type: String, required: true },
         fullname:   { type: String, required: true },
-        email:      { type: String, required: true },
+        email:      { type: String, required: true, unique: true },
         role:       { type: String, required: true },
         title:      String,
-        image:      String
+        image:      String,
+
+        resetPassHash: String,
+        resetPassExpire: Date
     });
 
 userSchema.pre('save', function(next) {
@@ -54,6 +57,22 @@ userSchema.statics.getUserByUsername = function(user, callback) {
     }
 
     return this.model(COLLECTION).findOne({username: user}, callback);
+};
+
+userSchema.statics.getUserByEmail = function(email, callback) {
+    if (_.isUndefined(email)) {
+        return callback("Invalid Email - UserSchema.GetUserByEmail()", null);
+    }
+
+    return this.model(COLLECTION).findOne({email: email}, callback);
+};
+
+userSchema.statics.getUserByResetHash = function(hash, callback) {
+    if (_.isUndefined(hash)) {
+        return callback("Invalid Hash - UserSchema.GetUserByResetHash()", null);
+    }
+
+    return this.model(COLLECTION).findOne({resetPassHash: hash}, callback);
 };
 
 userSchema.statics.getAssigneeUsers = function(callback) {
