@@ -244,6 +244,7 @@ ticketsController.submitTicket = function(req, res, next) {
     var marked = require('marked');
     var Ticket = ticketSchema;
     var tags = [];
+    var result = {};
     if (!_.isUndefined(req.body.tTags)) {
         var t = _s.clean(req.body.tTags);
         tags = _.compact(t.split(','));
@@ -261,12 +262,19 @@ ticketsController.submitTicket = function(req, res, next) {
         type: req.body.tType
 
     }, function(err, t) {
-        if (err) return handleError(res, err);
+        if (err) {
+            result.error = err.message;
+            result.success = false;
+            return res.json(result);
+        }
 
         //Trigger Event that a ticket was submitted.
         emitter.emit('ticket:created', t);
 
-        res.redirect('/tickets');
+        result.ticket = t;
+        result.success = true;
+
+        return res.json(result);
     });
 };
 

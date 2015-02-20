@@ -2,6 +2,29 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
     return angular.module('trudesk.controllers.tickets', [])
         .controller('ticketsCtrl', function($scope, $http, $window) {
 
+            $scope.submitTicketForm = function() {
+                $http({
+                    method: 'POST',
+                    url: '/tickets/create',
+                    data: $('#createTicketForm').serialize(),
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+                })
+                    .success(function(data) {
+                        if (!data.success) {
+                            if (data.error) {
+                                helpers.showFlash('Error: ' + data.error, true);
+                                return;
+                            }
+
+                            helpers.showFlash('Error Submitting Ticket', true);
+                        }
+
+                        helpers.showFlash('Ticket Created Successful.');
+
+                        History.pushState(null, null, '/tickets/');
+                    });
+            };
+
             $scope.deleteTickets = function() {
                 var $ids = getChecked();
                 _.each($ids, function(id) {

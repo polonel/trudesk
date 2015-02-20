@@ -72,7 +72,7 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
                                                  return c(err, null);
                                              }
 
-                                             winston.debug(info);
+
                                              return c(null, info);
                                          });
                                      }
@@ -118,7 +118,7 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
     });
 
     emitter.on('ticket:deleted', function(oId) {
-        io.sockets.emit('tester', 'here');
+        io.sockets.emit('ticket:delete', oId);
         winston.warn('ticket deleted: ' + oId);
     });
 

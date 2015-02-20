@@ -32,9 +32,21 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         var flashText = flash.find('.flash-text');
         flashText.html(message);
 
-        if (e) flashText.css('background', '#de4d4d');
+        if (e) {
+            flashText.css('background', '#de4d4d');
+        } else {
+            flashText.css('background', '#29b955');
+        }
 
-        flash.hide().slideDown(200, function() { self.resizeAll(); });
+        flashText.css('top', '-50px');
+        flash.show();
+        flashText.animate({top: '0'}, 500, function() {
+            setTimeout(function() {
+                flashText.animate({top: '-50px'}, 500, function() {
+                    flash.hide();
+                });
+            }, 2000);
+        });
     };
 
     helpers.bindKeys = function() {

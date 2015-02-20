@@ -1,6 +1,6 @@
 <div ng-controller="commonCtrl" id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown">
     <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline" href="#" ng-click="clearNotifications($event)">Clear Notifications</a></div></div>
-    <div id="notifications-Messages" class="notifications-Messages">
+    <div id="notifications-Messages" class="notifications-Messages close-on-click">
         <ul>
             {{#each data.common.notifications}}
                 <li>

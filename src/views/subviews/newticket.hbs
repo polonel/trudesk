@@ -1,10 +1,10 @@
-<div class="small-12 large-10 columns nopadding page-right-content">
+<div class="small-12 large-10 columns nopadding page-right-content" ng-controller="ticketsCtrl">
     <div class="page-title">
         <p class="left">Create Ticket</p>
         <div class="right">
             <ul class="button-group">
                 <li><a href="/tickets" role="button" class="btn">Cancel</a></li>
-                <li class="active"><a id="saveTicketBtn" href="#" role="button" class="btn" data-action="submit" data-form="createTicketForm">Save</a></li>
+                <li class="active"><a id="saveTicketBtn" href="#" role="button" class="btn" ng-click="submitTicketForm()">Save</a></li>
             </ul>
         </div>
     </div>

@@ -19,6 +19,8 @@ define('modules/ui', [
         this.updateTicketPriority();
         this.updateTicketGroup();
 
+        //Events
+        this.onTicketDelete();
     };
 
     socketUi.sendUpdateTicketStatus = function(id, status) {
@@ -419,6 +421,13 @@ define('modules/ui', [
             }
 
             console.log('Notifications Updated: ' + data);
+        });
+    };
+
+    socketUi.onTicketDelete = function() {
+        socket.removeAllListeners('ticket:delete');
+        socket.on('ticket:delete', function(data) {
+            helpers.showFlash('Ticket Deleted Successful.');
         });
     };
 

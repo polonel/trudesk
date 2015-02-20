@@ -12,6 +12,8 @@
 
  **/
 
+var DISABLE_MAIL = true;
+
 var _           = require('underscore');
 var async       = require('async');
 var nodeMailer  = require('nodemailer');
@@ -38,6 +40,10 @@ mailer.queue = function() {
 };
 
 mailer.sendMail = function(data, callback) {
+    if (DISABLE_MAIL) {
+        return callback(null, 'Mail Disabled');
+    }
+
     transporter.sendMail(data, callback);
 };
 
