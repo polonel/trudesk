@@ -102,7 +102,7 @@ define('modules/flotchart', [
             content: function (label, xVal, yVal, item) {
                 var color = "#e74c3c";
                 if (label === 'Closed')
-                    color = "#3498db";
+                    color = "#2fb150";
                 return "<span>%x</span><span style='color: " + color + ";'>%y <span style='font-weight: 300;'>%s</span></span>";
             },
             monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],

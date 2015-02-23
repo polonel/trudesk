@@ -12,13 +12,15 @@
 
  **/
 
-var async = require('async'),
-    path = require('path'),
-    _ = require('underscore'),
-    _mixins = require('../helpers/underscore'),
-    passport = require('passport'),
-    ticketSchema = require('../models/ticket'),
-    nconf = require('nconf');
+var async           = require('async'),
+    path            = require('path'),
+    _               = require('underscore'),
+    _mixins         = require('../helpers/underscore'),
+    passport        = require('passport'),
+    ticketSchema    = require('../models/ticket'),
+    nconf           = require('nconf'),
+    winston         = require('winston'),
+    moment          = require('moment');
 
 var mainController = {};
 
@@ -46,6 +48,7 @@ mainController.dashboard = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.summary = {};
+    self.content.data.dailycount = {};
 
     async.parallel({
         totalCount: function(callback) {
@@ -89,11 +92,66 @@ mainController.dashboard = function(req, res, next) {
 
                 callback(null, count);
             });
+        },
+        dailyCount: function(callback) {
+            var dates = [];
+            for (var i = 0; i < 14; i++) {
+                var today = new Date();
+                today.setHours(23);
+                today.setMinutes(59);
+                today.setSeconds(59);
+                today.setDate(today.getDate()-i);
+                dates.push(today.toISOString());
+            }
+
+            dates.reverse();
+
+            var final = {};
+            for (var k = 0; k < dates.length; k++) {
+                (function(key) {
+                    final[key] = {date: dates[key]};
+
+                    async.parallel({
+                        total: function(next) {
+                            ticketSchema.getDateCount(dates[key], function(err, c) {
+                                if (err) return next(null, 0);
+
+                                next(null, c);
+                            });
+                        },
+                        newCount: function(next) {
+                            ticketSchema.getStatusCountByDate(0, dates[key], function(err, c) {
+                                if (err) return next(null, 0);
+
+                                next(null, c);
+                            });
+                        },
+                        closedCount: function(next) {
+                            ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
+                                if (err) return next(null, 0);
+
+                                next(null, c);
+                            });
+                        }
+                    }, function(err, done) {
+                        final[key].total = done.total;
+                        final[key].newCount = done.newCount;
+                        final[key].closedCount = done.closedCount;
+
+                        final[key].percent = (done.total / 25)*100;
+                    });
+                })(k);
+            }
+
+            callback(null, final);
         }
     }, function(err, results) {
         var activePercent = (results.activeCount / results.totalCount)*100;
         var newPercent = (results.newCount / results.totalCount)*100;
         var completedPercent = (results.closedCount / results.totalCount)*100;
+        if (isNaN(completedPercent)) completedPercent = 0;
+        if (isNaN(activePercent)) activePercent = 0;
+        if (isNaN(newPercent)) newPercent = 0;
         activePercent = Math.round(activePercent);
         completedPercent = Math.round(completedPercent);
         newPercent = Math.round(newPercent);
@@ -103,6 +161,25 @@ mainController.dashboard = function(req, res, next) {
         self.content.data.summary.activeCount = results.activeCount;
         self.content.data.summary.activePercent = activePercent;
         self.content.data.summary.completedPercent = completedPercent;
+
+        self.content.data.dailycount = results.dailyCount;
+        self.content.data.dailyYAxis = {};
+
+        var maxNewCount = _.max(_.pluck(results.dailyCount, "newCount"));
+        var maxClosedCount = _.max(_.pluck(results.dailyCount, "closedCount"));
+        var max = _.max([maxNewCount, maxClosedCount]);
+        self.content.data.dailyYAxis.maxValue = 25;
+        self.content.data.dailyYAxis.v1 = 15;
+        self.content.data.dailyYAxis.v2 = 10;
+        self.content.data.dailyYAxis.v3 = 5;
+        if (max > 25) {
+            self.content.data.dailyYAxis.maxValue = 50;
+            self.content.data.dailyYAxis.v1 = 35;
+            self.content.data.dailyYAxis.v2 = 20;
+            self.content.data.dailyYAxis.v3 = 5;
+        }
+
+
 
         res.render('dashboard', self.content);
     });

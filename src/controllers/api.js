@@ -203,8 +203,8 @@ apiController.tickets.delete = function(req, res, next) {
     var oId = req.params.id;
     if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
     var ticketModel = require('../models/ticket');
-    ticketModel.remove({_id: oId}, function(err) {
-        if (err) return res.send(err.message);
+    ticketModel.softDelete(oId, function(err) {
+        if (err) return res.status(400).send(err.message);
 
         emitter.emit('ticket:deleted', oId);
         res.sendStatus(200);

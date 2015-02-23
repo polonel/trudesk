@@ -8,6 +8,8 @@ define('modules/ui', [
         socket = io.connect();
 
     socketUi.init = function() {
+        this.onReconnect();
+        this.onDisconnect();
         this.updateNotifications();
         this.updateMailNotifications();
         this.updateComments();
@@ -21,6 +23,30 @@ define('modules/ui', [
 
         //Events
         this.onTicketDelete();
+    };
+
+    socketUi.onReconnect = function() {
+        socket.removeAllListeners('reconnect');
+        socket.on('reconnect', function() {
+            helpers.clearFlash();
+        });
+    };
+
+    socketUi.onDisconnect = function() {
+        socket.removeAllListeners('disconnect');
+        socket.on('disconnect', function(data) {
+            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+        });
+
+        socket.removeAllListeners('reconnect_attempt');
+        socket.on('reconnect_attempt', function(err) {
+            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+        });
+
+        socket.removeAllListeners('connect_timeout');
+        socket.on('connect_timeout', function(err) {
+            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+        });
     };
 
     socketUi.sendUpdateTicketStatus = function(id, status) {

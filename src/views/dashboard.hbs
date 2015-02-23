@@ -8,7 +8,7 @@
             <div class="small-12 large-6 columns padtop20">
                 <div class="circle-chart-wrapper clearfix">
                     <div class="donutchart-wrapper">
-                        <div class="donutchart" data-percent="{{data.summary.completedPercent}}"><span class="chart-value percent"></span></div>
+                        <div class="donutchart" data-percent="{{data.summary.completedPercent}}" data-trackColor="#2fb150"><span class="chart-value percent"></span></div>
                         <div class="donutchart-caption">completed</div>
                     </div>
                     <div class="donutchart-wrapper">
@@ -22,7 +22,6 @@
                     <div class="donutchart-wrapper">
                         <div class="donutchart "
                              data-percent="{{data.summary.newPercent}}"
-                             data-trackColor="#2fb150"
                              data-numCount="true"
                              data-totalNumCount="{{data.summary.newCount}}"><span class="chart-value">{{data.summary.newCount}}</span></div>
                         <div class="donutchart-caption">new</div>
@@ -37,166 +36,179 @@
                     <div id="ticketBarChart" class="bar-chart clearfix">
                         <div class="bar-axis">
                             <ul class="y-axis">
-                                <li><span>400</span></li>
-                                <li><span>300</span></li>
-                                <li><span>200</span></li>
-                                <li><span>100</span></li>
+                                <li><span>{{data.dailyYAxis.maxValue}}</span></li>
+                                <li><span>{{data.dailyYAxis.v1}}</span></li>
+                                <li><span>{{data.dailyYAxis.v2}}</span></li>
+                                <li><span>{{data.dailyYAxis.v3}}</span></li>
                                 <li><span>0</span></li>
                             </ul>
                         </div>
-                        <div class="bar" data-percent="20">
-                                    <span id="ticketDaily_sunday1"
+                        {{#each data.dailycount}}
+                            <div class="bar" data-percent="{{percent}}">
+                                    <span id="dc_{{formatDate date "MMMDDYYYY"}}"
                                           data-ptooltip
-                                          data-title="Date"
+                                          data-title="{{formatDate date "MMM Do"}}"
                                           data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
+                                          data-new-count="{{total}}"
+                                          data-closed-count="{{closedCount}}"
                                           class="bar-track ptooltip">
                                     </span>
-                            <span class="bar-label">S</span>
-                        </div>
-                        <div class="bar" data-percent="40">
-                                    <span id="ticketDaily_monday1"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">M</span>
-                        </div>
-                        <div class="bar" data-percent="60">
-                                    <span id="ticketDaily_tuesday"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">T</span>
-                        </div>
-                        <div class="bar" data-percent="50">
-                                    <span id="ticketDaily_wednesday1"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">W</span>
-                        </div>
-                        <div class="bar" data-percent="90">
-                                    <span id="ticketDaily_thursday1"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span><span class="bar-label">T</span>
-                        </div>
-                        <div class="bar" data-percent="10">
-                                    <span id="ticketDaily_friday1"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">F</span>
-                        </div>
-                        <div class="bar" data-percent="30">
-                                    <span id="ticketDaily_saturday1"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">S</span>
-                        </div>
-                        <div class="bar" data-percent="45">
-                                    <span id="ticketDaily_sunday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">S</span>
-                        </div>
-                        <div class="bar" data-percent="85">
-                                    <span id="ticketDaily_monday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">M</span>
-                        </div>
-                        <div class="bar" data-percent="50">
-                                    <span id="ticketDaily_tuesday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">T</span>
-                        </div>
-                        <div class="bar" data-percent="45">
-                                    <span id="ticketDaily_wednesday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">W</span>
-                        </div>
-                        <div class="bar" data-percent="25">
-                                    <span id="ticketDaily_thursday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">T</span>
-                        </div>
-                        <div class="bar" data-percent="70">
-                                    <span id="ticketDaily_friday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">F</span>
-                        </div>
-                        <div class="bar" data-percent="80">
-                                    <span id="ticketDaily_saturday2"
-                                          data-ptooltip
-                                          data-title="Date"
-                                          data-ptooltip-type="dailyticket"
-                                          data-new-count="231"
-                                          data-closed-count="18"
-                                          class="bar-track ptooltip">
-                                    </span>
-                            <span class="bar-label">S</span>
-                        </div>
+                                <span class="bar-label">{{#substring 0 1}}{{formatDate date "dd"}}{{/substring}}</span>
+                            </div>
+                        {{/each}}
+                        <!--<div class="bar" data-percent="20">-->
+                                    <!--<span id="ticketDaily_sunday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">S</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="40">-->
+                                    <!--<span id="ticketDaily_monday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">M</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="60">-->
+                                    <!--<span id="ticketDaily_tuesday"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">T</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="50">-->
+                                    <!--<span id="ticketDaily_wednesday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">W</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="90">-->
+                                    <!--<span id="ticketDaily_thursday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span><span class="bar-label">T</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="10">-->
+                                    <!--<span id="ticketDaily_friday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">F</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="30">-->
+                                    <!--<span id="ticketDaily_saturday1"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">S</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="45">-->
+                                    <!--<span id="ticketDaily_sunday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">S</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="85">-->
+                                    <!--<span id="ticketDaily_monday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">M</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="50">-->
+                                    <!--<span id="ticketDaily_tuesday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">T</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="45">-->
+                                    <!--<span id="ticketDaily_wednesday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">W</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="25">-->
+                                    <!--<span id="ticketDaily_thursday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">T</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="70">-->
+                                    <!--<span id="ticketDaily_friday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">F</span>-->
+                        <!--</div>-->
+                        <!--<div class="bar" data-percent="80">-->
+                                    <!--<span id="ticketDaily_saturday2"-->
+                                          <!--data-ptooltip-->
+                                          <!--data-title="Date"-->
+                                          <!--data-ptooltip-type="dailyticket"-->
+                                          <!--data-new-count="231"-->
+                                          <!--data-closed-count="18"-->
+                                          <!--class="bar-track ptooltip">-->
+                                    <!--</span>-->
+                            <!--<span class="bar-label">S</span>-->
+                        <!--</div>-->
                     </div>
                     <div class="bar-chart-caption">
                         <span>Tickets per Day</span>
@@ -215,9 +227,13 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['jquery', 'modules/flotchart'], function($, p) {
-            var t = $('#ticketLines');
-            $.plot(t, p.dataset, p.options);
+        require(['jquery', 'modules/flotchart', 'modules/helpers'], function($, p, helpers) {
+            $(document).ready(function() {
+                var t = $('#ticketLines');
+                $.plot(t, p.dataset, p.options);
+
+                helpers.setupDonutchart();
+            });
         });
     </script>
 {{/contentFor}}

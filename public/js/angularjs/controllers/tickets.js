@@ -19,7 +19,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             helpers.showFlash('Error Submitting Ticket', true);
                         }
 
-                        helpers.showFlash('Ticket Created Successful.');
+                        helpers.showFlash('Ticket Created Successfully.');
 
                         History.pushState(null, null, '/tickets/');
                     });
@@ -32,8 +32,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         '/api/tickets/' + id
                     ).success(function() {
                             removeCheckedFromGrid();
+                            helpers.showFlash('Ticket Deleted Successfully.')
                         }).error(function(err) {
-                           console.log(err);
+                            console.log(err);
+                           helpers.showFlash('Error: ' + err, true);
                         });
                 });
 

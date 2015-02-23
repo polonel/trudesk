@@ -1,11 +1,13 @@
 var mongoose            = require('mongoose');
 var _                   = require('lodash');
 var deepPopulate        = require('mongoose-deep-populate');
+var moment              = require('moment');
 
 //Needed!
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var commentSchema       = require('./comment');
+var historySchema       = require('./history');
 
 var COLLECTION = 'tickets';
 
@@ -18,6 +20,7 @@ var ticketSchema = mongoose.Schema({
     assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
     date:       { type: Date, default: Date.now, required: true },
     updated:    { type: Date},
+    deleted:    { type: Boolean, default: false, required: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, required: true },
     priority:   { type: Number, required: true },
@@ -25,7 +28,7 @@ var ticketSchema = mongoose.Schema({
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
     comments:   [commentSchema],
-    closed_date:{ type: Date}
+    history:    [historySchema]
 });
 
 ticketSchema.plugin(deepPopulate);
@@ -88,7 +91,7 @@ ticketSchema.methods.removeComment = function(commentId, callback) {
 };
 
 ticketSchema.statics.getAll = function(callback) {
-    var q = this.model(COLLECTION).find({})
+    var q = this.model(COLLECTION).find({deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')
@@ -103,7 +106,7 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
     }
 
-    var q = this.model(COLLECTION).find({group: {$in: grpId}})
+    var q = this.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')
@@ -119,7 +122,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
     }
 
-    var q = this.model(COLLECTION).find({group: {$in: grpId}, status: status})
+    var q = this.model(COLLECTION).find({group: {$in: grpId}, status: status, deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')
@@ -133,7 +136,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
 ticketSchema.statics.getTicketByUid = function(uid, callback) {
     if (_.isUndefined(uid)) return callback("Invalid Uid - TicketSchema.GetTicketByUid()", null);
 
-    var q = this.model(COLLECTION).findOne({uid: uid})
+    var q = this.model(COLLECTION).findOne({uid: uid, deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')
@@ -145,7 +148,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
 ticketSchema.statics.getTicketById = function(id, callback) {
     if (_.isUndefined(id)) return callback("Invalid Id - TicketSchema.GetTicketById()", null);
 
-    var q = this.model(COLLECTION).findOne({_id: id})
+    var q = this.model(COLLECTION).findOne({_id: id, deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')
@@ -157,14 +160,14 @@ ticketSchema.statics.getTicketById = function(id, callback) {
 ticketSchema.statics.getComments = function(tId, callback) {
     if (_.isUndefined(tId)) return callback("Invalid Ticket Id - TicketSchema.GetComments()", null);
 
-    var q = this.model(COLLECTION).findOne({_id: tId})
+    var q = this.model(COLLECTION).findOne({_id: tId, deleted: false})
         .deepPopulate('comments comments.owner');
 
     return q.exec(callback);
 };
 
 ticketSchema.statics.getTotalCount = function(callback) {
-    var q = this.model(COLLECTION).count({});
+    var q = this.model(COLLECTION).count({deleted: false});
 
     return q.exec(callback);
 };
@@ -172,9 +175,40 @@ ticketSchema.statics.getTotalCount = function(callback) {
 ticketSchema.statics.getStatusCount = function(status, callback) {
     if (_.isUndefined(status)) return callback("Invalid Status - TicketSchema.GetStatusCount()", null);
 
-    var q = this.model(COLLECTION).count({status: status});
+    var q = this.model(COLLECTION).count({status: status, deleted: false});
 
     return q.exec(callback);
+};
+
+ticketSchema.statics.getStatusCountByDate = function(status, date, callback) {
+    if (_.isUndefined(status)) return callback("Invalid Status - TicketSchema.GetStatusCount()", null);
+    if (_.isUndefined(date)) return callback("Invalid Date - TicketSchema.GetStatusCount()", null);
+
+    var today = new Date(date);
+    var yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate()-1);
+
+    var q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getDateCount = function(date, callback) {
+    if (_.isUndefined(date)) return callback("Invalid Date - TicketSchema.GetDateCount()", null);
+
+    var today = new Date(date);
+    var yesterday = new Date(date);
+    yesterday.setDate(yesterday.getDate()-1);
+
+    var q = this.model(COLLECTION).count({date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.softDelete = function(oId, callback) {
+    if (_.isUndefined(oId)) return callback("Invalid ObjectID - TicketSchema.SoftDelete()", null);
+
+    return this.model(COLLECTION).findOneAndUpdate({_id: oId}, {deleted: true}, callback);
 };
 
 module.exports = mongoose.model(COLLECTION, ticketSchema);

@@ -12,7 +12,8 @@
 
  **/
 
-var path    = require('path'),
+var async   = require('async'),
+    path    = require('path'),
     fs      = require('fs'),
     winston = require('winston'),
     async = require('async'),
@@ -138,12 +139,24 @@ function dbCallback(err, db) {
             return;
         }
 
-        require('./src/socketserver')(ws);
-
-        //Start Mailer
-        var mailQueue = require('./src/mailer');
-        mailQueue.queue();
-
-        winston.info("TruDesk Ready");
+        async.series([
+            function(next) {
+                require('./src/socketserver')(ws);
+                next();
+            },
+            function(next) {
+                //Start Mailer
+                var mailQueue = require('./src/mailer');
+                mailQueue.queue();
+                next();
+            },
+            function(next) {
+                //Start Task Runners
+                var taskrunner = require('./src/taskrunner');
+                next();
+            }
+        ], function() {
+            winston.info("TruDesk Ready");
+        });
     });
 }

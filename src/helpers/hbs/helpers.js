@@ -438,6 +438,10 @@ var helpers = {
         return _s.capitalize(str);
     },
 
+    substring: function(start, len, options) {
+        return options.fn(this).toString().substr(start, len);
+    },
+
     isNotNull: function(obj, options) {
         if (!(_.isUndefined(obj) || _.isNull(obj))) {
             return options.fn(this);

@@ -22,13 +22,15 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.setupChosen();
     };
 
-    helpers.showFlash = function(message, error) {
+    helpers.showFlash = function(message, error, sticky) {
         var self = this;
         var flash = $('.flash-message');
         if (flash.length < 1) return true;
 
         var e = error ? true : false;
+        var s = sticky ? true : false;
 
+        var flashTO;
         var flashText = flash.find('.flash-text');
         flashText.html(message);
 
@@ -38,16 +40,45 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             flashText.css('background', '#29b955');
         }
 
+        if (s) {
+            flash.off('mouseout');
+            flash.off('mouseover');
+        }
+
+        if (!s) {
+            flash.mouseout(function() {
+                flashTO = setTimeout(flashTimeout, 2000);
+            });
+
+            flash.mouseover(function() {
+                clearTimeout(flashTO);
+            });
+        }
+
+        var isShown = flashText.is(':visible');
+        if (isShown) return true;
+
         flashText.css('top', '-50px');
         flash.show();
-        flashText.animate({top: '0'}, 500, function() {
-            setTimeout(function() {
-                flashText.animate({top: '-50px'}, 500, function() {
-                    flash.hide();
-                });
-            }, 2000);
+        if (flashTO) clearTimeout(flashTO);
+        flashText.stop().animate({top: '0'}, 500, function() {
+            if (!s) {
+                flashTO = setTimeout(flashTimeout, 2000);
+            }
         });
     };
+
+    helpers.clearFlash = function() {
+        flashTimeout();
+    };
+
+    function flashTimeout() {
+        var flashText = $('.flash-message').find('.flash-text');
+        if (flashText.length < 1) return;
+        flashText.stop().animate({top: '-50px'}, 500, function() {
+            $('.flash-message').hide();
+        });
+    }
 
     helpers.bindKeys = function() {
         var self = this;
@@ -243,7 +274,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                     var n = $(this).attr('data-new-count');
                     var c = $(this).attr('data-closed-count');
 
-                    html += "<span><span style='color: #e74c3c'>" + n + "</span> New / <span style='color: #3498db'>" + c + "</span> Closed</span>";
+                    html += "<span><span style='color: #e74c3c'>" + n + "</span> New / <span style='color: #2fb150'>" + c + "</span> Closed</span>";
                 }
 
                 html += "</div></div>";
@@ -286,6 +317,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                     onStop: function(value, to) {
                         if (numCount) {
                             var totalNum = parseInt($(this.el).attr('data-totalNumCount'));
+                            if (totalNum <= 0) return;
                             $(this.el).find('.chart-value').text(totalNum);
                             return true;
                         }
@@ -294,6 +326,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                     onStep: function(from, to, percent) {
                         if (numCount) {
                             var countVal = parseInt($(this.el).attr('data-totalNumCount'));
+                            if (countVal <= 0) return;
                             var current = parseInt($(this.el).find('.chart-value').text());
                             if (countVal != null && countVal > 0 && current != null) {
                                 var totalCount = Math.round(countVal*(100/Math.round(to)));
