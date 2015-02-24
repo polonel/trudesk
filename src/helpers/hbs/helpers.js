@@ -478,6 +478,7 @@ var helpers = {
 
     hasGroup: function(arr, value, options) {
         var result = _.some(arr, function(i) {
+            if (_.isUndefined(i) || _.isUndefined(value)) return false;
             return i._id.toString() == value.toString();
         });
         if (result) {
