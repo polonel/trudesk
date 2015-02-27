@@ -1,8 +1,3 @@
-{{#contentFor 'css'}}
-    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.scroller.css"/>-->
-    <!--<link rel="stylesheet" href="/css/plugins/datatables/dataTables.foundation.css"/>-->
-{{/contentFor}}
-
 <div ng-controller="ticketsCtrl">
     <div class="small-12 large-10 columns nopadding ticketContent">
         <div class="page-title noshadow">
@@ -11,7 +6,7 @@
                 <ul class="button-group">
                     <li class="active" style="position:relative;">
                         <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions">Actions</a>
-                        <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-160" class="notifications p-dropdown p-dropdown-small pSmall">
+                        <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
                             <div class="actions"><strong>Ticket Actions</strong></div>
                             <div id="tAction-list" class="notifications-Messages">
                                 <ul>
@@ -19,7 +14,7 @@
                                         <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
                                             <div class="clearfix">
                                                 <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                                <div class="messageAuthor"><strong>Delete Tickets</strong></div>
+                                                <div class="messageAuthor"><strong>Delete</strong></div>
                                             </div>
                                         </a>
                                     </li>
@@ -27,7 +22,7 @@
                                         <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
                                             <div class="clearfix">
                                                 <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                <div class="messageAuthor"><strong>Close Tickets</strong></div>
+                                                <div class="messageAuthor"><strong>Close</strong></div>
                                             </div>
                                         </a>
                                     </li>

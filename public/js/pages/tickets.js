@@ -41,7 +41,10 @@ define('pages/tickets', [
                     {"width": "25%", "targets": 3},
                     {"width": "110px", "targets": 4}
                 ],
-                order: [[2, "desc"]]
+                order: [[2, "desc"]],
+                "oLanguage": {
+                    "sEmptyTable": "No tickets to display."
+                }
 
 //                columns: [
 //                    {data: "_id"},
