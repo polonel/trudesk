@@ -250,6 +250,11 @@ ticketsController.submitTicket = function(req, res, next) {
         tags = _.compact(t.split(','));
     }
 
+    var HistoryItem = {
+        action: 'ticket:created',
+        description: 'Ticket was created.'
+    };
+
     Ticket.create({
         owner: req.user._id,
         group: req.body.tGroup,
@@ -259,10 +264,12 @@ ticketsController.submitTicket = function(req, res, next) {
         subject: req.body.tSubject,
         issue: marked(req.body.tIssue),
         priority: req.body.tPriority,
-        type: req.body.tType
+        type: req.body.tType,
+        history: [HistoryItem]
 
     }, function(err, t) {
         if (err) {
+            winston.warn(err);
             result.error = err.message;
             result.success = false;
             return res.json(result);
@@ -279,8 +286,6 @@ ticketsController.submitTicket = function(req, res, next) {
 };
 
 ticketsController.postcomment = function(req, res, next) {
-    var Comment = require('../models/comment');
-
     var Ticket = ticketSchema;
     var id = req.body.ticketId;
     var comment = req.body.commentReply;
@@ -290,13 +295,19 @@ ticketsController.postcomment = function(req, res, next) {
     Ticket.getTicketById(id, function(err, t) {
         if (err) return handleError(res, err);
         var marked = require('marked');
-        Comment = {
+        var Comment = {
             owner: User._id,
             date: new Date(),
             comment: marked(comment)
         };
         t.updated = Date.now();
         t.comments.push(Comment);
+        var HistoryItem = {
+            action: 'ticket:comment:added',
+            description: 'Comment was added'
+        };
+        t.history.push(HistoryItem);
+
         t.save(function (err) {
             if (err) handleError(res, err);
 
@@ -308,6 +319,7 @@ ticketsController.postcomment = function(req, res, next) {
 
 function handleError(res, err) {
     if (err) {
+        winston.warn(err);
         return res.render('error', {layout: false, error: err, message: err.message});
     }
 }

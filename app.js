@@ -16,7 +16,6 @@ var async   = require('async'),
     path    = require('path'),
     fs      = require('fs'),
     winston = require('winston'),
-    async = require('async'),
     nconf = require('nconf'),
     pkg     = require('./package.json');
 
@@ -135,7 +134,7 @@ function dbCallback(err, db) {
 
     ws.init(db, function(err) {
         if (err) {
-            winston.err(err);
+            winston.error(err);
             return;
         }
 

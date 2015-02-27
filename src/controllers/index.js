@@ -18,6 +18,7 @@ var Controllers = {
     messages: require('./messages'),
     servers: require('./servers'),
     accounts: require('./accounts'),
+    groups: require('./groups'),
     api: require('./api')
 };
 

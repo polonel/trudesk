@@ -20,6 +20,7 @@ var async               = require('async');
 var winston             = require('winston');
 var emitter             = require('../emitter');
 var ticketSchema        = require('../models/ticket');
+var historySchema       = require('../models/history');
 var notificationSchema  = require('../models/notification');
 var mailqueue           = require('../mailer/mailqueue');
 var emailTemplates      = require('email-templates');

@@ -39,7 +39,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
     router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
     router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
+    //router.get('/tickets/edit/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.editTicket);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
 
@@ -69,7 +69,9 @@ function mainRoutes(router, middleware, controllers) {
     }}), controllers.accounts.uploadImage);
 
     //Groups
-    router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
+    router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get);
+    router.get('/groups/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.getCreate);
+    router.get('/groups/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.edit);
 
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
@@ -83,10 +85,13 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.get('/api/groups', middleware.api, controllers.api.groups.get);
+    router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
+    router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
     router.get('/api/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/users/:username', middleware.api, controllers.api.users.update);
+    router.delete('/api/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.get('/api/roles', middleware.api, controllers.api.roles.get);
 }
 

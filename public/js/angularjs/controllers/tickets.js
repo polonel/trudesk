@@ -31,16 +31,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.delete(
                         '/api/tickets/' + id
                     ).success(function() {
+                            clearChecked();
                             removeCheckedFromGrid();
                             helpers.showFlash('Ticket Deleted Successfully.')
                         }).error(function(err) {
-                            console.log(err);
                            helpers.showFlash('Error: ' + err, true);
                         });
                 });
 
                 //hide Dropdown
-                clearChecked();
                 helpers.hideAllpDropDowns();
                 helpers.hideDropDownScrolls();
             };

@@ -107,6 +107,40 @@ apiController.users.update = function(req, res, next) {
     });
 };
 
+apiController.users.deleteUser = function(req, res) {
+    var username = req.params.username;
+    if(_.isUndefined(username)) return res.send('Invalid Username.');
+
+    var userModel = require('../models/user');
+    var returnData = {
+        success: true
+    };
+
+    userModel.getUserByUsername(username, function(err, user) {
+        if (err) {
+            returnData.success = false;
+            returnData.error = err.message;
+            return res.status(200).json(returnData);
+        }
+
+        if (_.isUndefined(user) || _.isNull(user)) {
+            returnData.success = false;
+            returnData.error = "Invalid User";
+            return res.status(200).json(returnData);
+        }
+
+        user.remove(function(err) {
+            if (err) {
+                returnData.success = false;
+                returnData.error = err.message;
+                return res.status(200).json(returnData);
+            }
+
+            res.status(200).json(returnData);
+        });
+    });
+};
+
 apiController.users.single = function(req, res, next) {
     var username = req.params.username;
     if(_.isUndefined(username)) return res.send('Invalid Username.');
@@ -131,6 +165,70 @@ apiController.groups.get = function(req, res, next) {
         if (err) return res.send(err.message);
 
         res.json(groups);
+    });
+};
+
+apiController.groups.create = function(req, res, next) {
+    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
+    var groupSchema = require('../models/group');
+    var Group = new groupSchema();
+    console.log(req.body);
+    Group.name = req.body.name;
+    Group.members = req.body.members;
+    Group.save(function(err, group) {
+        if (err) return res.status(400).send('Error: ' + err.message);
+
+        res.status(200).json(group);
+    });
+};
+
+apiController.groups.deleteGroup = function(req, res) {
+    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
+    var groupSchema = require('../models/group');
+    var ticketSchema = require('../models/ticket');
+    var id = req.params.id;
+    if (_.isUndefined(id)) return res.status(400).send('Error: Invalid Group Id.');
+    var returnData = {
+        success: true
+    };
+
+    async.series([
+        function(next) {
+            var grps = [id];
+            ticketSchema.getTickets(grps, function(err, tickets) {
+                if (err) {
+                    return next('Error: ' + err.message);
+                }
+
+                if (_.size(tickets) > 0) {
+                    return next('Error: Cannot delete a group with tickets.');
+                }
+
+                next();
+            });
+        },
+        function(next) {
+            groupSchema.getGroupById(id, function(err, group) {
+                if (err) return next('Error: ' + err.message);
+
+                group.remove(function(err, success) {
+                    if (err) return next('Error: ' + err.message);
+
+                    winston.warn('Group Deleted: ' + group._id);
+                    next(null, success);
+                });
+            });
+        }
+    ], function(err, done) {
+        if (err) {
+            returnData.success = false;
+            returnData.error = err;
+
+            return res.status(200).json(returnData);
+        }
+
+        returnData.success = true;
+        return res.status(200).json(returnData);
     });
 };
 

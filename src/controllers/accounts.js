@@ -300,7 +300,7 @@ accountsController.createAccount = function(req, res, next) {
     });
 };
 
-accountsController.postCreate = function(req, res, next) {
+accountsController.postCreate = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:create')) {
         req.flash('message', 'Permission Denied.');
@@ -348,6 +348,8 @@ accountsController.postCreate = function(req, res, next) {
         }
 
         async.each(groups, function(g, callback) {
+            if (_.isUndefined(g)) return callback(null);
+
             groupSchema.getGroupById(g, function(err, grp) {
                 if (err) return callback(err);
                 grp.addMember(obj._id, function(err, success) {
@@ -359,7 +361,7 @@ accountsController.postCreate = function(req, res, next) {
                     });
                 });
             });
-        }, function(err, success) {
+        }, function(err) {
             if (err) return handleError(res, err);
 
             res.redirect('/accounts');

@@ -16,6 +16,7 @@ requirejs.config({
         //socketio:       'https://cdn.socket.io/socket.io-1.2.1',
         history:        'vendor/history/jquery.history',
 
+        jquery_custom:  'plugins/jquery.custom',
         datatables:     'vendor/datatables/jquery.dataTables',
         dt_responsive:  'vendor/datatables/dataTables.responsive',
         dt_foundation:  'vendor/datatables/dataTables.foundation',
@@ -33,7 +34,7 @@ requirejs.config({
     },
     shim: {
         foundation: {
-            deps: ['jquery', 'modernizr', 'fastclick', 'placeholder', 'history']
+            deps: ['jquery', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history']
         },
 
         angular: {

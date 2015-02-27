@@ -1,0 +1,44 @@
+<div class="small-12 large-10 columns nopadding page-right-content"  ng-controller="groupsCtrl">
+    <div class="page-title">
+        <p class="left">Edit Group - {{data.group.name}}</p>
+        <div class="right">
+            <ul class="button-group">
+                <li><a href="/groups" role="button" class="btn">Cancel</a></li>
+                <li class="active"><button class="btn" ng-click="submitCreateGroupForm()">Save</button>
+                    <!--<a href="#" role="button" class="btn" data-action="submit" data-form="createAccountForm">Save</a>-->
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper scrollable no-overflow-x full-height">
+        <div class="row padtop20 padleft30 padright20">
+            <div class="small-12 columns">
+                <form id="createGroupForm" class="form nomargin" action="/" method="POST">
+                    <div>
+                        <label for="gName">Group Name</label>
+                        <input id="gName" name="gName" type="text" value="{{data.group.name}}"/>
+
+                        <div style="margin-bottom: 85px;">
+                            <label for="gMembers">Members</label>
+                            <select name="gMembers" id="gMembers" multiple class="chosen-select" data-placeholder="Add Group Members...">
+                                {{#each data.users}}
+                                    <option value="{{_id}}">{{fullname}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['modules/ajaximgupload', 'pages/editaccount'], function(a, editAccount) {
+            a.init();
+            editAccount.init();
+        });
+    </script>
+{{/contentFor}}

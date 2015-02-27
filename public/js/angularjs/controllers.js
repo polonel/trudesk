@@ -7,6 +7,7 @@ define([
     'angularjs/controllers/common',
     'angularjs/controllers/profile',
     'angularjs/controllers/accounts',
+    'angularjs/controllers/groups',
     'angularjs/controllers/tickets',
     'angularjs/controllers/singleTicket'
 
@@ -17,6 +18,7 @@ define([
             'trudesk.controllers.common',
             'trudesk.controllers.profile',
             'trudesk.controllers.accounts',
+            'trudesk.controllers.groups',
             'trudesk.controllers.tickets',
             'trudesk.controllers.singleTicket'
         ])

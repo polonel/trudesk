@@ -11,8 +11,6 @@ var historySchema       = require('./history');
 
 var COLLECTION = 'tickets';
 
-
-
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number },
     owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
@@ -56,6 +54,11 @@ ticketSchema.methods.setAssignee = function(userId, callback) {
     if (_.isUndefined(userId)) return callback('Invalid User Id', null);
 
     this.assignee = userId;
+    var historyItem = {
+        action: 'ticket:set:assignee',
+        description: userId + ' was set as assignee'
+    };
+    this.history.push(historyItem);
 
     callback(null, this);
 };
@@ -104,6 +107,10 @@ ticketSchema.statics.getAll = function(callback) {
 ticketSchema.statics.getTickets = function(grpId, callback) {
     if (_.isUndefined(grpId)) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
     }
 
     var q = this.model(COLLECTION).find({group: {$in: grpId}, deleted: false})

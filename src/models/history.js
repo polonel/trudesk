@@ -3,8 +3,8 @@ var _                   = require('underscore');
 
 var historySchema = mongoose.Schema({
     action:         { type: String, required: true},
-    date:           { type: Date, required: true, default: Date.now },
+    date:           { type: Date, default: Date.now, required: true },
     description:    { type: String }
 });
 
-module.exports = historySchema;
+module.exports = historySchema

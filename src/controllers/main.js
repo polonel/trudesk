@@ -119,13 +119,6 @@ mainController.dashboard = function(req, res, next) {
                                 next(null, c);
                             });
                         },
-                        newCount: function(next) {
-                            ticketSchema.getStatusCountByDate(0, dates[key], function(err, c) {
-                                if (err) return next(null, 0);
-
-                                next(null, c);
-                            });
-                        },
                         closedCount: function(next) {
                             ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
                                 if (err) return next(null, 0);
@@ -135,7 +128,6 @@ mainController.dashboard = function(req, res, next) {
                         }
                     }, function(err, done) {
                         final[key].total = done.total;
-                        final[key].newCount = done.newCount;
                         final[key].closedCount = done.closedCount;
 
                         final[key].percent = (done.total / 25)*100;

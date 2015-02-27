@@ -5,7 +5,7 @@ var accountsSchema = require('./user');
 var COLLECTION = 'groups';
 
 var groupSchema = mongoose.Schema({
-    name:       String,
+    name:       { type: String, required: true },
     members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
 });
 

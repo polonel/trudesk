@@ -444,10 +444,18 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         $('.chosen-select').each(function() {
             var self = $(this);
             var nosearch = $(this).attr('data-nosearch');
+            var placeholder = 'Select Some Options';
+            var elePlaceHolder = $(this).attr('data-placeholder');
             var searchNum = 10;
             if (nosearch) searchNum = 90000;
+            if (!_.isUndefined(elePlaceHolder) && elePlaceHolder.length > 0) {
+                placeholder = elePlaceHolder;
+            }
+
             self.chosen({
-                disable_search_threshold: searchNum
+                disable_search_threshold: searchNum,
+                placeholder_text_single: placeholder,
+                placeholder_text_multiple: placeholder
             });
         });
     };
