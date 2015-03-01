@@ -172,13 +172,31 @@ apiController.groups.create = function(req, res, next) {
     if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
     var groupSchema = require('../models/group');
     var Group = new groupSchema();
-    console.log(req.body);
+
     Group.name = req.body.name;
     Group.members = req.body.members;
     Group.save(function(err, group) {
         if (err) return res.status(400).send('Error: ' + err.message);
 
         res.status(200).json(group);
+    });
+};
+
+apiController.groups.updateGroup = function(req, res) {
+    var data = req.body;
+    if (_.isUndefined(data) || !_.isObject(data)) return res.status(400).send('Error: Misformated Data.');
+    var groupSchema = require('../models/group');
+    groupSchema.getGroupById(data.id, function(err, group) {
+        if (err) return res.status(400).send('Error: ' + err.message);
+
+        group.name = data.name;
+        group.members = data.members;
+
+        group.save(function(err, g) {
+            if (err) return res.status(400).send('Error: ' + err.message);
+
+            res.json(g);
+        });
     });
 };
 

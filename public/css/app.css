@@ -1724,7 +1724,7 @@ table.dataTable {
                 height: 13px;
                 top: 5px;
                 right: 100%;
-                background: url("../img/chat-arrow.png") no-repeat white;
+                background: url("/img/chat-arrow.png") no-repeat white;
                 background-size: auto; }
               .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-message .chat-text-wrapper .chat-text .chat-text-inner {
                 text-align: left;
@@ -1738,7 +1738,7 @@ table.dataTable {
                 height: 13px;
                 top: 5px;
                 left: 100%;
-                background: #e74c3c url("../img/chat-arrow.png") no-repeat 0 -13px; }
+                background: #e74c3c url("/img/chat-arrow.png") no-repeat 0 -13px; }
 
 .circle-chart-wrapper {
   margin-bottom: 15px; }

@@ -88,6 +88,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/groups', middleware.api, controllers.api.groups.get);
     router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
+    router.put('/api/groups/:id', middleware.api, controllers.api.groups.updateGroup);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
     router.get('/api/users/:username', middleware.api, controllers.api.users.single);

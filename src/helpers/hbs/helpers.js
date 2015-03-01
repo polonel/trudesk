@@ -516,6 +516,7 @@ helpers.ifLtEq     = helpers.if_lteq;
 helpers.unlessLtEq = helpers.unless_lteq;
 helpers.foreach    = helpers.forEach;
 helpers.canUser    = helpers.checkPerm;
+helpers.inArray    = helpers.hasGroup;
 
 
 // Export helpers

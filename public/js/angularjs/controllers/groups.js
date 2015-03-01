@@ -23,7 +23,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                     return true;
 
                 //currentTarget = ng-click() bound to. "<tr>"
-                console.log($event.currentTarget.dataset);
                 var id = $event.currentTarget.dataset.groupoid;
                 if (!id) return true;
 
@@ -45,6 +44,30 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 })
                     .success(function() {
                         helpers.showFlash('Group Created Successfully.');
+
+                        History.pushState(null, null, '/groups/');
+                    })
+                    .error(function(err) {
+                        helpers.showFlash(err, true);
+                    });
+            };
+
+            $scope.submitSaveGroup = function() {
+                var formData = $('#editGroupForm').serializeObject();
+                var apiData = {
+                    id: formData.groupID,
+                    name: formData.gName,
+                    members: formData.gMembers
+                };
+
+                $http({
+                    method: 'PUT',
+                    url: '/api/groups/' + apiData.id,
+                    data: apiData,
+                    headers: {'Content-Type': 'application/json' }
+                })
+                    .success(function() {
+                        helpers.showFlash('Group Saved Successfully');
 
                         History.pushState(null, null, '/groups/');
                     })

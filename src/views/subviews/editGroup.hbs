@@ -4,7 +4,7 @@
         <div class="right">
             <ul class="button-group">
                 <li><a href="/groups" role="button" class="btn">Cancel</a></li>
-                <li class="active"><button class="btn" ng-click="submitCreateGroupForm()">Save</button>
+                <li class="active"><button class="btn" ng-click="submitSaveGroup()">Save</button>
                     <!--<a href="#" role="button" class="btn" data-action="submit" data-form="createAccountForm">Save</a>-->
                 </li>
             </ul>
@@ -14,7 +14,8 @@
     <div class="page-wrapper scrollable no-overflow-x full-height">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createGroupForm" class="form nomargin" action="/" method="POST">
+                <form id="editGroupForm" class="form nomargin" action="/" method="PUT">
+                    <input id="groupID" name="groupID" type="hidden" value="{{data.group._id}}"/>
                     <div>
                         <label for="gName">Group Name</label>
                         <input id="gName" name="gName" type="text" value="{{data.group.name}}"/>
@@ -23,7 +24,7 @@
                             <label for="gMembers">Members</label>
                             <select name="gMembers" id="gMembers" multiple class="chosen-select" data-placeholder="Add Group Members...">
                                 {{#each data.users}}
-                                    <option value="{{_id}}">{{fullname}}</option>
+                                    <option value="{{_id}}" {{#inArray ../data.group.members _id}} selected="selected" {{/inArray}}>{{fullname}}</option>
                                 {{/each}}
                             </select>
                         </div>
