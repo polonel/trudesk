@@ -82,6 +82,8 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/login', middleware.api, controllers.api.login);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
+    router.get('/api/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);

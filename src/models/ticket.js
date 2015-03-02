@@ -226,6 +226,43 @@ ticketSchema.statics.getDateCount = function(date, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getMonthCount = function(month, status, callback) {
+    if (_.isUndefined(month)) return callback("Invalid Month - TicketSchema.GetMonthCount()", null);
+
+    month = Number(month);
+
+    var now = new Date();
+    var date = new Date(now.getFullYear(), month, 1);
+    var endDate = new Date(date).setMonth(date.getMonth() + 1);
+
+    var q = this.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+
+    if (!_.isUndefined(status)) {
+        status = Number(status);
+        q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+    }
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getYearCount = function(year, status, callback) {
+    if (_.isUndefined(year)) return callback("Invalid Year - TicketSchema.GetYearCount()", null);
+
+    year = Number(year);
+
+    var date = new Date(year, 0, 1);
+    var endDate = date;
+    endDate.setYear(endDate.getFullYear() + 1);
+
+    var q = this.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false});
+
+    if (!_.isUndefined(status) && _.isNumber(status)) {
+        q = this.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false, status: status});
+    }
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.softDelete = function(oId, callback) {
     if (_.isUndefined(oId)) return callback("Invalid ObjectID - TicketSchema.SoftDelete()", null);
 

@@ -74,9 +74,8 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['jquery', 'modules/flotchart'], function($, p) {
-            var t = $('#ticketLines');
-            $.plot(t, p.dataset, p.options);
+        require(['jquery', 'pages/dashboard'], function($, d) {
+            d.init();
         });
     </script>
 {{/contentFor}}

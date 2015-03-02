@@ -21,7 +21,7 @@ define('modules/flotchart', [
     'flot_tooltip'
 ], function($) {
     var data1 = [
-        [gd(2014, 0, 1), 250],
+        [gd(2014, 0, 1), 25],
         [gd(2014, 1, 1), 700],
         [gd(2014, 2, 1), 550],
         [gd(2014, 3, 1), 1250],
@@ -73,10 +73,10 @@ define('modules/flotchart', [
         },
         xaxis: {
             mode: "time",
-            min: (new Date(2014, 0, 0)).getTime(),
+            min: (new Date(2015, 0, 0)).getTime(),
             tickSize: [1, "month"],
             tickLength: 0,
-            label: "2014",
+            label: "2015",
             font: {
                 size: 14,
                 weight: 500,
@@ -92,7 +92,8 @@ define('modules/flotchart', [
                     family: '"Open Sans", sans-serif',
                     color: '#2c3e50'
                 },
-                tickColor: '#c5cad7'
+                tickColor: '#c5cad7',
+                tickDecimals: 0
                 //ticks: [0, [Math.PI/2, "\u03c0/2"], [Math.PI, "\u03c0"], [Math.PI * 3/2, "3\u03c0/2"], [Math.PI * 2, "2\u03c0"]]
 //        tickFormatter: function (v, axis) {
 //            return $j.formatNumber(v, { format: "#,###", locale: "us" });

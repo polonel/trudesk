@@ -17,7 +17,7 @@ define('modules/ajaxify', [
     'angular',
     'modules/helpers',
     'modules/navigation',
-    'modules/flotchart',
+    'pages/dashboard',
     'pages/messages',
     'pages/tickets',
     'pages/accounts',
@@ -29,7 +29,7 @@ define('modules/ajaxify', [
     'modules/chat',
     'history'
 
-], function($, angular, helpers, nav, p, messagesPage, ticketsPage, accountsPage, groupsPage, ajaxImgUpload, editAccountPage, singleTicketPage, ui) {
+], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage, ajaxImgUpload, editAccountPage, singleTicketPage, ui) {
     $(window).on('statechangecomplete', function() {
         //Global
         var $ele = $('#page-content');
@@ -51,10 +51,7 @@ define('modules/ajaxify', [
         nav.init();
 
         //Dashbaord
-        var t = $('#ticketLines');
-        if (t.length > 0) {
-            $.plot(t, p.dataset, p.options);
-        }
+        dashboardPage.init();
 
         //Messages
         messagesPage.init();

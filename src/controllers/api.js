@@ -336,6 +336,65 @@ apiController.tickets.getTypes = function(req, res, next) {
     })
 };
 
+apiController.tickets.getMonthData = function(req, res) {
+    var ticketModel = require('../models/ticket');
+    var now = new Date();
+    var data = [];
+    var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+
+    async.forEachSeries(dates, function(value, next) {
+        var d = [];
+        var date = new Date(now.getFullYear(), value, 1).getTime();
+        d.push(date);
+        ticketModel.getMonthCount(value, 0, function(err, count) {
+            if (err) return next(err);
+
+            d.push(Math.round(count));
+            data.push(d);
+            next();
+        });
+
+    }, function(err) {
+        if (err) return res.json({error: err});
+
+        res.json(data);
+    });
+};
+
+apiController.tickets.flotData = function(req, res) {
+
+};
+
+apiController.tickets.getYearData = function(req, res) {
+    var ticketModel = require('../models/ticket');
+    var year = req.params.year;
+
+    var returnData = {};
+
+    async.parallel({
+        newCount: function(next) {
+            ticketModel.getYearCount(year, 0, function(err, count) {
+                if (err) return next(err);
+
+                next(null, count);
+            });
+        },
+
+        closedCount: function(next) {
+            ticketModel.getYearCount(year, 3, function(err, count) {
+                if (err) return next(err);
+
+                next(null, count);
+            });
+        }
+    }, function(err, done) {
+        returnData.newCount = done.newCount;
+        returnData.closedCount = done.closedCount;
+
+        res.json(returnData);
+    });
+};
+
 //Roles
 apiController.roles = {};
 apiController.roles.get = function(req, res, next) {
