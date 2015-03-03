@@ -340,23 +340,54 @@ apiController.tickets.getMonthData = function(req, res) {
     var ticketModel = require('../models/ticket');
     var now = new Date();
     var data = [];
+    var newData = {data: [], label: 'New'};
+    var closedData = {data: [], label: 'Closed'};
+
     var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
 
-    async.forEachSeries(dates, function(value, next) {
-        var d = [];
-        var date = new Date(now.getFullYear(), value, 1).getTime();
-        d.push(date);
-        ticketModel.getMonthCount(value, 0, function(err, count) {
-            if (err) return next(err);
 
-            d.push(Math.round(count));
-            data.push(d);
-            next();
-        });
+    async.series({
+        newCount: function(cb) {
+            async.forEachSeries(dates, function(value, next) {
+                var d = [];
+                var date = new Date(now.getFullYear(), value, 1).getTime();
+                d.push(date);
+                ticketModel.getMonthCount(value, 0, function(err, count) {
+                    if (err) return next(err);
 
-    }, function(err) {
-        if (err) return res.json({error: err});
+                    d.push(Math.round(count));
+                    newData.data.push(d);
+                    next();
+                });
+            }, function(err) {
+                if (err) return cb(err);
 
+                cb();
+            });
+        },
+        closed: function(cb) {
+            async.forEachSeries(dates, function(value, next) {
+                var d = [];
+                var date = new Date(now.getFullYear(), value, 1).getTime();
+                d.push(date);
+                ticketModel.getMonthCount(value, 3, function(err, count) {
+                    if (err) return next(err);
+
+                    d.push(Math.round(count));
+                    closedData.data.push(d);
+                    next();
+                });
+            }, function(err) {
+                if (err) return cb(err);
+
+                cb();
+            });
+        }
+    }, function(err, done) {
+        if (err) return res.status(400).send(err);
+
+        data.push(newData);
+        data.push(closedData);
         res.json(data);
     });
 };

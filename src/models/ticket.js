@@ -60,6 +60,11 @@ ticketSchema.methods.setStatus = function(status, callback) {
     if (_.isUndefined(status)) return callback('Invalid Status', null);
 
     this.status = status;
+    var historyItem = {
+        action: 'ticket:set:status',
+        description: 'Ticket Status set to: ' + status
+    };
+    this.history.push(historyItem);
 
     callback(null, this);
 };
@@ -79,18 +84,33 @@ ticketSchema.methods.setAssignee = function(userId, callback) {
 
 ticketSchema.methods.clearAssignee = function(callback) {
     this.assignee = undefined;
-
+    var historyItem = {
+        action: 'ticket:set:assignee',
+        description: 'Assignee was cleared'
+    };
+    this.history.push(historyItem);
     callback(null, this);
 };
 
 ticketSchema.methods.setTicketType = function(typeId, callback) {
     this.type = typeId;
+    var historyItem = {
+        action: 'ticket:set:type',
+        description: 'Ticket type set to: ' + typeId.name
+    };
+
+    this.history.push(historyItem);
 
     callback(null, this);
 };
 
 ticketSchema.methods.setTicketPriority = function(priority, callback) {
     this.priority = priority;
+    var historyItem = {
+        action: 'ticket:set:priority',
+        description: 'Ticket Priority set to: ' + priority
+    };
+    this.history.push(historyItem);
 
     callback(null, this);
 };
@@ -98,11 +118,23 @@ ticketSchema.methods.setTicketPriority = function(priority, callback) {
 ticketSchema.methods.setTicketGroup = function(groupId, callback) {
     this.group = groupId;
 
+    var historyItem = {
+        action: 'ticket:set:group',
+        description: 'Ticket Group set to: ' + groupId
+    };
+    this.history.push(historyItem);
+
     callback(null, this);
 };
 
 ticketSchema.methods.removeComment = function(commentId, callback) {
     this.comments = _.reject(this.comments, function(o) { return o._id == commentId; });
+
+    var historyItem = {
+        action: 'ticket:delete:comment',
+        description: 'Comment was deleted: ' + commentId
+    };
+    this.history.push(historyItem);
 
     callback(null, this);
 };
@@ -239,7 +271,11 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
 
     if (!_.isUndefined(status)) {
         status = Number(status);
-        q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        if (status === 0) {
+            q = this.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        } else {
+            q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        }
     }
 
     return q.exec(callback);

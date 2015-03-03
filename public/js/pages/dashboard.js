@@ -31,9 +31,8 @@ define('pages/dashboard', [
                     method: 'GET'
                 })
                     .success(function(d) {
-                        var dd = {data: d, label: 'New'};
-                        data.push(dd);
-                        $.plot($ticketLines, data, flotchart.options);
+
+                        $.plot($ticketLines, d, flotchart.options);
                     })
                     .error(function(err) {
                         helpers.showFlash(err, true);
