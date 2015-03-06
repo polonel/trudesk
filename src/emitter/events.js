@@ -110,6 +110,8 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
                         winston.warn('Error: Event: ticket:created');
                         return winston.warn(err.message);
                     }
+
+                 io.sockets.emit('ticket:created');
              });
          });
     });

@@ -143,7 +143,7 @@ ticketsController.create = function(req, res, next) {
         if (err) {
             res.render('error', {error: err, message: err.message});
         } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+            if (!_.isUndefined(results.groups)) self.content.data.groups = _.sortBy(results.groups, 'name');
             if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
 
             res.render('subviews/newticket', self.content);

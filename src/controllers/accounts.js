@@ -53,15 +53,17 @@ accountsController.get = function(req, res, next) {
             async.eachSeries(users, function(u, c) {
                 var user = u.toObject();
                 groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
-                    if (!g) { c(); return;}
-                    user.groups = [];
+                    if (!g) { return c();}
+                    var groups = [];
                     _.each(g, function(gg) {
-                        user.groups.push(gg.name)
+                        groups.push(gg.name)
                     });
+                    user.groups = _.sortBy(groups, 'name');
                     result.push(user);
                     c();
                 })
             }, function(err) {
+                if (err) return callback(err);
                 callback(null, result);
             });
         }
@@ -159,7 +161,7 @@ accountsController.editAccount = function(req, res, next) {
 
         self.content.data.account = result.account;
         self.content.data.roles = result.roles;
-        self.content.data.groups = result.groups;
+        self.content.data.groups = _.sortBy(result.groups, 'name');
 
         res.render('subviews/editAccount', self.content);
     });

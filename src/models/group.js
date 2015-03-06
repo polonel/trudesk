@@ -57,6 +57,8 @@ groupSchema.statics.getGroupById = function(gId, callback) {
 groupSchema.methods.addMember = function(memberId, callback) {
     if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.AddMember()");
 
+    if (this.members === null) this.members = [];
+
     if (isMember(this.members, memberId)) return callback(null, false);
 
     this.members.push(memberId);

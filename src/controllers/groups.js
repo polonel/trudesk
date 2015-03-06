@@ -45,7 +45,7 @@ groupsController.get = function(req, res, next) {
     groupSchema.getAllGroups(function(err, groups) {
         if (err) handleError(res, err);
 
-        self.content.data.groups = groups;
+        self.content.data.groups = _.sortBy(groups, 'name');
 
         res.render('groups', self.content);
     });

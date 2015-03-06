@@ -2052,7 +2052,7 @@ table.dataTable {
   .chosen-container-multi .chosen-choices {
     border: 1px solid #9aa1ad;
     background: #eceff6;
-    height: 2.3125rem !important; }
+    min-height: 2.3125rem !important; }
     .chosen-container-multi .chosen-choices li.search-choice {
       background: #3498db none;
       border: none;

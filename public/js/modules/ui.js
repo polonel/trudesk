@@ -459,15 +459,13 @@ define('modules/ui', [
             if ($notifications.length > 0) {
                 $notifications.html('');
             }
-
-            console.log('Notifications Updated: ' + data);
         });
     };
 
     socketUi.onTicketDelete = function() {
         socket.removeAllListeners('ticket:delete');
         socket.on('ticket:delete', function(data) {
-            helpers.showFlash('Ticket Deleted Successful.');
+            //helpers.showFlash('Ticket Deleted Successful.');
         });
     };
 

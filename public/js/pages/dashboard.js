@@ -23,24 +23,34 @@ define('pages/dashboard', [
 
     dashboardPage.init = function() {
         $(document).ready(function() {
-            var $ticketLines = $('#ticketLines');
-            if ($ticketLines.length > 0) {
-                var data = [];
-                $.ajax({
-                    url: '/api/tickets/count/month/0',
-                    method: 'GET'
-                })
-                    .success(function(d) {
-
-                        $.plot($ticketLines, d, flotchart.options);
-                    })
-                    .error(function(err) {
-                        helpers.showFlash(err, true);
-                    });
-
-            }
+            getData();
         });
     };
+
+    function getData() {
+        var $ticketLines = $('#ticketLines');
+        if ($ticketLines.length > 0) {
+            $.ajaxSetup({cache: false});
+            $.ajax({
+                url: '/api/tickets/count/month/0',
+                method: 'GET',
+                success: updateFlot
+            })
+                .error(function(err) {
+                    setTimeout(getData, 25000);
+                });
+
+        }
+    }
+
+    function updateFlot(_data) {
+        var $ticketLines = $('#ticketLines');
+        if ($ticketLines.length > 0) {
+            $.plot($ticketLines, _data, flotchart.options);
+
+            setTimeout(getData, 25000);
+        }
+    }
 
     return dashboardPage;
 });
