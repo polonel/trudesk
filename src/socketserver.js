@@ -92,6 +92,26 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('markNotificationRead', function(_id) {
+            if (_.isUndefined(_id)) return true;
+            var notificationSchema = require('./models/notification');
+            notificationSchema.getNotification(_id, function(err, notification) {
+                if (err) return true;
+
+                notification.markRead(function() {
+                    notification.save(function(err, final) {
+                        if (err) return true;
+
+                        notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
+                            if (err) return true;
+
+                            utils.sendToSelf(socket, 'updateNotifications', items);
+                        });
+                    });
+                })
+            });
+        });
+
         socket.on('clearNotifications', function(data) {
             var userId = socket.request.user._id;
             if (_.isUndefined(userId)) return true;

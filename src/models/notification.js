@@ -28,12 +28,42 @@ var notificationSchema = mongoose.Schema({
     unread: {type: Boolean, default: true}
 });
 
+notificationSchema.methods.markRead = function(callback) {
+    this.unread = false;
+
+    return callback(null, true);
+};
+
+notificationSchema.statics.getNotification = function(id, callback) {
+    if (_.isUndefined(id)) {
+        return callback("Invalid ObjectId - NotificationSchema.GetNotification()", null);
+    }
+
+    return this.model(COLLECTION).findOne({_id: id}, callback);
+};
+
 notificationSchema.statics.findAllForUser = function(oId, callback) {
     if (_.isUndefined(oId)) {
         return callback("Invalid ObjectId - NotificationSchema.FindAllForUser()", null);
     }
 
     return this.model(COLLECTION).find({owner: oId}, callback);
+};
+
+notificationSchema.statics.getCount = function(oId, callback) {
+    if (_.isUndefined(oId)) {
+        return callback("Invalid ObjectId - NotificationSchema.GetCount()", null);
+    }
+
+    return this.model(COLLECTION).count({owner: oId}, callback);
+};
+
+notificationSchema.statics.getUnreadCount = function(oId, callback) {
+    if (_.isUndefined(oId)) {
+        return callback("Invalid ObjectId - NotificationSchema.GetUnreadCount()", null);
+    }
+
+    return this.model(COLLECTION).count({owner: oId, unread: true}, callback);
 };
 
 notificationSchema.statics.clearNotifications = function(oId, callback) {

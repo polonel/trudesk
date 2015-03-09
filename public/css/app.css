@@ -1379,6 +1379,9 @@ input[type="text"][disabled] {
   color: gray;
   background: #dbe0ee; }
 
+.dt-borderTop {
+  border-top: 1px solid #dae0ec; }
+
 .dataTables_scrollHeadInner {
   width: 100% !important;
   padding-right: 0 !important; }
@@ -1444,6 +1447,22 @@ table.dataTable {
     color: #55616e;
     font-weight: normal;
     font-size: 14px; }
+
+div.dataTables_wrapper {
+  background: #f6f8fb; }
+  div.dataTables_wrapper .dataTables_filter label, div.dataTables_wrapper .dataTables_filter input {
+    font-family: "open sans", sans-serif;
+    font-weight: 300;
+    font-size: 13px;
+    margin-right: 5px; }
+  div.dataTables_wrapper .dataTables_filter input {
+    margin: 7px 15px 7px 7px;
+    height: 30px;
+    padding: 8px; }
+    div.dataTables_wrapper .dataTables_filter input:focus {
+      box-shadow: none;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none; }
 
 .server-row {
   margin: 25px 0 0 0 !important; }

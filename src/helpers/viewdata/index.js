@@ -23,24 +23,35 @@ viewdata.messages = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
-              viewController.getUserNotifications(request, function(data) {
-                  viewdata.notifications = data;
-                  callback(viewdata.notifications);
+              viewController.getUserNotifications(request, function(err, data) {
+                  if (err) return callback(err);
+                  viewdata.notifications.items = data;
+                  callback();
               })
+          },
+          function(callback) {
+              viewController.getUnreadNotificationsCount(request, function(err, count) {
+                  if (err) return callback(err);
+                  viewdata.notifications.unreadCount = count;
+                  callback();
+              });
           },
           function(callback) {
               viewController.unreadMessageCount(request, function(data) {
                   viewdata.messages.unreadCount = data;
-                  callback(viewdata.messages.unreadCount);
+                  callback();
               });
           },
           function(callback) {
               viewController.loggedInAccount(request, function(data) {
                   viewdata.loggedInAccount = data;
-                  callback(viewdata.loggedInAccount);
+                  callback();
               });
           }
-      ], function(err, results) {
+      ], function(err) {
+          if (err) {
+              winston.warn('Error: ' + err);
+          }
           cb(viewdata);
       });
 };
@@ -50,11 +61,23 @@ viewController.getUserNotifications = function(request, callback) {
     notificationsSchema.findAllForUser(request.user._id, function(err, data) {
         if (err) {
             winston.warn(err.message);
-            callback(err);
+            return callback(err);
         }
 
-        callback(data);
+        callback(null, data);
     })
+};
+
+viewController.getUnreadNotificationsCount = function(request, callback) {
+    var notificationsSchema = require('../../models/notification');
+    notificationsSchema.getUnreadCount(request.user._id, function(err, count) {
+        if (err) {
+            winston.war(err.message);
+            return callback(err);
+        }
+
+        callback(null, count);
+    });
 };
 
 viewController.unreadMessageCount = function(request, callback) {

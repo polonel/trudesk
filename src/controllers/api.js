@@ -14,6 +14,7 @@
 
 var async = require('async'),
     _ = require('underscore'),
+    _s = require('underscore.string'),
     winston = require('winston'),
     passport = require('passport'),
     permissions = require('../permissions'),
@@ -22,6 +23,75 @@ var async = require('async'),
 var apiController = {};
 
 apiController.content = {};
+
+apiController.import = function(req, res, next) {
+    var fs = require('fs');
+    var path = require('path');
+    var userModel =  require('../models/user');
+    var groupModel = require('../models/group');
+
+    var array = fs.readFileSync(path.join(__dirname, '..', 'import.csv')).toString().split(("\n"));
+    var clean = array.filter(function(e){return e;});
+
+    async.eachSeries(clean, function(item, cb) {
+        winston.info(item);
+
+        var fields = item.split(',');
+        var fullname = fields[0].toString().replace('.', ' ');
+        var k = fullname.split(' ');
+        var kCap = _s.capitalize(k[0]);
+        var kCap1 = _s.capitalize(k[1]);
+        fullname = kCap + ' ' + kCap1;
+
+        var groupName = fields[2].replace('\\r', '');
+        groupName = _s.trim(groupName);
+        var User = new userModel({
+            username: fields[0],
+            password: 'Granville789',
+            email: fields[1],
+            fullname: fullname,
+            role: 'user'
+        });
+
+        async.series([
+            function(next) {
+                User.save(function(err) {
+                    if (err) return next(err);
+
+                    next();
+                });
+            },
+            function(next) {
+                winston.debug('Getting Group "' + groupName + '"');
+                groupModel.getGroupByName(groupName, function(err, group) {
+                    if (err) return next(err);
+
+                    if (_.isUndefined(group) || _.isNull(group)) {
+                        return next('no group found = ' + groupName);
+                    }
+
+                    group.addMember(User._id, function(err) {
+                        if (err) return next(err);
+
+                        group.save(function(err) {
+                            if (err) return next(err);
+
+                            next();
+                        });
+                    });
+                });
+            }
+        ], function(err) {
+            if (err) return cb(err);
+
+            cb();
+        });
+    }, function(err) {
+        if (err) return res.status(500).send(err);
+
+        res.status(200).send('Imported ' + _.size(clean));
+    });
+};
 
 apiController.index = function(req, res, next) {
     res.redirect('login');

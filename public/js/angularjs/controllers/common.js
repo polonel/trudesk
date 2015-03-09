@@ -22,7 +22,14 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
                 $event.stopPropagation();
 
                 socket.ui.clearNotifications();
-            }
+            };
+
+            $scope.markRead = function($event) {
+                var $id = $($event.currentTarget).attr('data-notificationid');
+                if ($id.length < 1) return;
+
+                socket.ui.markNotificationRead($id);
+            };
 
         });
 });

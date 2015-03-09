@@ -2,9 +2,9 @@
     <div class="actions"><strong>Notifications</strong><div class="right"><a class="hoverUnderline no-ajaxy" ng-click="clearNotifications($event)">Clear Notifications</a></div></div>
     <div id="notifications-Messages" class="notifications-Messages close-on-click">
         <ul>
-            {{#each data.common.notifications}}
+            {{#each data.common.notifications.items}}
                 <li>
-                    <a class="messageNotification" href="/tickets/{{data.ticketuid}}" role="button">
+                    <a class="messageNotification" href="/tickets/{{data.ticketuid}}" role="button" data-notificationId="{{_id}}" ng-click="markRead($event)">
                         <div class="clearfix">
                             {{#if unread}}
                                 <div class="messageUnread"></div>
@@ -23,7 +23,7 @@
                                 <span>{{message}}</span>
                             </div>
                             <div class="messageDate">
-                                <time datetime="2014-08-25T12:00" class="timestamp">{{formatDate created "MMM DD"}}</time>
+                                <time datetime="{{formatDate created "YYYY-MM-DDTHH:MM"}}" class="timestamp">{{formatDate created "MMM DD"}}</time>
                             </div>
                         </div>
                     </a>

@@ -46,6 +46,7 @@ define('pages/dashboard', [
     function updateFlot(_data) {
         var $ticketLines = $('#ticketLines');
         if ($ticketLines.length > 0) {
+            $ticketLines.html('');
             $.plot($ticketLines, _data, flotchart.options);
 
             setTimeout(getData, 25000);

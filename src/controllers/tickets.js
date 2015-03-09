@@ -130,7 +130,7 @@ ticketsController.create = function(req, res, next) {
     self.content.data.common = req.viewdata;
     async.parallel({
         groups: function (callback) {
-            groupSchema.getAllGroups(function (err, objs) {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, objs) {
                 callback(err, objs);
             });
         },

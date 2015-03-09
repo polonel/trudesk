@@ -1,3 +1,6 @@
+.dt-borderTop
+  border-top: 1px solid #dae0ec
+
 .dataTables_scrollHeadInner
   width: 100% !important
   padding-right: 0 !important
@@ -79,3 +82,21 @@ table.dataTable
         color: #55616e
         font-weight: normal
         font-size: 14px
+
+div.dataTables_wrapper
+  background: lighten(#f3f5f9, 1)
+
+  .dataTables_filter
+    label,input
+      font-family: "open sans", sans-serif
+      font-weight: 300
+      font-size: 13px
+      margin-right: 5px
+
+    input
+      margin: 7px 15px 7px 7px
+      height: 30px
+      padding: 8px
+
+      &:focus
+        +boxShadow(none)

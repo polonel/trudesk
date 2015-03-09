@@ -14,7 +14,7 @@
             <div class="small-12 columns">
                 <form id="createTicketForm" class="ticket-form" action="/tickets/create" method="POST">
                     <label for="tSubject">Subject</label>
-                    <input id="tSubject" name="tSubject" type="text" />
+                    <input id="tSubject" name="tSubject" type="text" data-keyBindSubmit="#saveTicketBtn" />
                     <div class="row">
                         <div class="small-3 columns">
                             <label for="tType">Type</label>
@@ -42,7 +42,7 @@
                         </div>
                         <div class="small-3 columns">
                             <label for="tTags">Tags</label>
-                            <input type="text" name="tTags" id="tags" />
+                            <input type="text" name="tTags" id="tags" data-keyBindSubmit="#saveTicketBtn" />
                         </div>
                         <!--<div class="small-3 columns">-->
                             <!--<label for="tStatus">Status</label>-->

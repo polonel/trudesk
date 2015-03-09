@@ -5,7 +5,7 @@
         <div class="right">
             <ul class="button-group">
                 <li><a href="/accounts" role="button" class="btn">Cancel</a></li>
-                <li class="active"><button class="btn" ng-click="submitForm('createAccountForm', $event)">Save</button>
+                <li class="active"><button id="editSaveButton" class="btn" ng-click="submitForm('createAccountForm', $event)">Save</button>
                     <!--<a href="#" role="button" class="btn" data-action="submit" data-form="createAccountForm">Save</a>-->
                 </li>
             </ul>
@@ -37,19 +37,19 @@
                         <input id="aUsername" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
 
                         <label for="aFullname">Name</label>
-                        <input id="aFullname" name="aFullname" type="text" value="{{data.account.fullname}}"/>
+                        <input id="aFullname" name="aFullname" type="text" value="{{data.account.fullname}}" data-keyBindSubmit="#editSaveButton"/>
 
                         <label for="aTitle">Title</label>
-                        <input id="aTitle" name="aTitle" type="text" value="{{data.account.title}}"/>
+                        <input id="aTitle" name="aTitle" type="text" value="{{data.account.title}}" data-keyBindSubmit="#editSaveButton" />
 
                         <label for="aPass">Password</label>
-                        <input id="aPass" name="aPass" type="password" />
+                        <input id="aPass" name="aPass" type="password" data-keyBindSubmit="#editSaveButton" />
 
                         <label for="aPassConfirm">Confirm Password</label>
-                        <input id="aPassConfirm" name="aPassConfirm" type="password" />
+                        <input id="aPassConfirm" name="aPassConfirm" type="password" data-keyBindSubmit="#editSaveButton" />
 
                         <label for="aEmail">Email</label>
-                        <input id="aEmail" name="aEmail" type="text" value="{{data.account.email}}"/>
+                        <input id="aEmail" name="aEmail" type="text" value="{{data.account.email}}" data-keyBindSubmit="#editSaveButton" />
 
                         <label for="aRole">Role</label>
                         <select name="aRole" id="aRole">
@@ -60,7 +60,7 @@
 
                         <div style="margin-bottom: 85px;">
                             <label for="agrps">Groups</label>
-                            <select name="aGrps" id="aGrps" multiple class="chosen-select" data-placeholder="Select a group...">
+                            <select name="aGrps" id="aGrps" multiple class="chosen-select1" data-placeholder="Select a group..." style="height: 250px">
                                 {{#each data.groups}}
                                     <option value="{{_id}}" {{#hasGroup members ../data.account._id}}selected{{/hasGroup}}>{{name}}</option>
                                 {{/each}}

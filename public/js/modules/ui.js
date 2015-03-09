@@ -451,6 +451,19 @@ define('modules/ui', [
         helpers.hideAllpDropDowns();
     };
 
+    socketUi.markNotificationRead = function(_id) {
+        socket.emit('markNotificationRead', _id);
+
+        helpers.hideAllpDropDowns();
+    };
+
+    socketUi.updateNotificationsCount = function() {
+        socket.removeAllListeners('updateNotificationsCount');
+        socket.on('updateNotificationsCount', function(count) {
+
+        });
+    };
+
     socketUi.updateNotifications = function() {
         socket.removeAllListeners('updateNotifications');
         socket.on('updateNotifications', function(data) {
@@ -459,6 +472,9 @@ define('modules/ui', [
             if ($notifications.length > 0) {
                 $notifications.html('');
             }
+
+            //Build Notifications
+            console.log(data);
         });
     };
 

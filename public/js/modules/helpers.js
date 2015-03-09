@@ -117,6 +117,27 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 }
             });
         }
+
+        var keyBindEnter = $('*[data-keyBindSubmit]');
+        if (keyBindEnter.length > 0) {
+            $.each(keyBindEnter, function(k, val) {
+                var item = $(val);
+                if (item.length < 1) return;
+                item.off('keydown');
+                var actionItem = item.attr('data-keyBindSubmit');
+                if (actionItem.length > 0) {
+                    var itemObj = $(actionItem);
+                    if (itemObj.length > 0) {
+                        item.on('keydown', function(e) {
+                            var keyCode = (e.which ? e.which : e.keyCode);
+                            if (keyCode === 10 || keyCode === 13 && e.ctrlKey || keyCode === 13) {
+                                itemObj.trigger('click');
+                            }
+                        });
+                    }
+                }
+            });
+        }
     };
 
     helpers.onWindowResize = function() {

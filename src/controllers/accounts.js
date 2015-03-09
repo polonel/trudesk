@@ -49,6 +49,8 @@ accountsController.get = function(req, res, next) {
             });
 
         }, function (users, callback) {
+            return callback(null, users);
+            //disabled - not displaying groups on Account page.
             var result = [];
             async.eachSeries(users, function(u, c) {
                 var user = u.toObject();

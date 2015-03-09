@@ -28,12 +28,20 @@
                 <!-- Right Nav Section -->
                 <div class="top-menu right">
                     <ul>
+                        <li class="top-bar-icon"><a href="/tickets/create" style="margin-top: 3px;"><i class="fa fa-plus"></i></a></li>
+                        <li class="top-bar-icon">
+                            <img src="/img/middots.png" alt="" style="margin-right: 10px; margin-left: 10px; margin-top: -3px"/>
+                        </li>
                         <li class="top-bar-icon">
                             <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
                                 <span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
                             </a>
                         </li>
-                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i></a></li>
+                        <li class="top-bar-icon">
+                            <a href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i>
+                                <span class="alert round label {{#compare data.common.notifications.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.notifications.unreadCount}}</span>
+                            </a>
+                        </li>
                         <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="online-Users" data-notifications="online-Users"><i class="fa-comments"></i></a></li>
                         <li class="profile-area profile-name" data-username="{{data.user.username}}" data-userId="{{data.user._id}}"><span>{{data.user.fullname}}</span>
                             <div style="position: relative; display: inline-block;">

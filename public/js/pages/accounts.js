@@ -29,7 +29,7 @@ define('pages/accounts', [
         $(document).ready(function() {
             var table = $('#accountsTable');
             table.dataTable({
-                searching: false,
+                //searching: false,
                 bLengthChange: false,
                 bPaginate: false,
                 bInfo: false,
