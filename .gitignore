@@ -28,3 +28,6 @@ node_modules
 #JetBrians
 .idea
 *.sassc
+
+#custom
+import.csv

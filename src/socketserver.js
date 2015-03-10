@@ -21,6 +21,7 @@ var winston             = require('winston'),
 
 module.exports = function(ws) {
     var _ = require('lodash'),
+        __ = require('underscore'),
         usersOnline = {},
         sockets = [],
         io = require('socket.io')(ws.server);
@@ -92,8 +93,23 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('updateNotifications', function() {
+            var notifications = {};
+            var noticationSchema = require('./models/notification');
+            noticationSchema.findAllForUser(socket.request.user._id, function(err, items) {
+                if (err) return true;
+
+                notifications.items = items;
+                var p = __.where(items, {unread: true});
+                notifications.count = _.size(p);
+
+                utils.sendToSelf(socket, 'updateNotifications', notifications);
+            });
+        });
+
         socket.on('markNotificationRead', function(_id) {
             if (_.isUndefined(_id)) return true;
+            var notifications = {};
             var notificationSchema = require('./models/notification');
             notificationSchema.getNotification(_id, function(err, notification) {
                 if (err) return true;
@@ -105,7 +121,11 @@ module.exports = function(ws) {
                         notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
                             if (err) return true;
 
-                            utils.sendToSelf(socket, 'updateNotifications', items);
+                            notifications.items = items;
+                            var p = __.findWhere(items, {unread: true});
+                            notifications.count = _.size(p);
+
+                            utils.sendToSelf(socket, 'updateNotifications', notifications);
                         });
                     });
                 })
@@ -115,11 +135,15 @@ module.exports = function(ws) {
         socket.on('clearNotifications', function(data) {
             var userId = socket.request.user._id;
             if (_.isUndefined(userId)) return true;
+            var notifications = {};
+            notifications.items = [];
+            notifications.count = 0;
+
             var notificationSchema = require('./models/notification');
             notificationSchema.clearNotifications(userId, function(err) {
                 if (err) return true;
 
-                utils.sendToSelf(socket, 'updateNotifications', []);
+                utils.sendToSelf(socket, 'updateNotifications', notifications);
             });
 
         });

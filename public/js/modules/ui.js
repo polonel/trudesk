@@ -15,7 +15,8 @@
 define('modules/ui', [
     'jquery',
     'modules/helpers',
-    'nicescroll'
+    'nicescroll',
+    'history'
 
 ], function($, helpers) {
     var socketUi = {},
@@ -36,6 +37,7 @@ define('modules/ui', [
         this.updateTicketGroup();
 
         //Events
+        this.onTicketCreated();
         this.onTicketDelete();
     };
 
@@ -469,12 +471,78 @@ define('modules/ui', [
         socket.on('updateNotifications', function(data) {
 
             var $notifications = $('#notifications-Messages').find('ul');
-            if ($notifications.length > 0) {
-                $notifications.html('');
-            }
+            if ($notifications.length < 1) return;
 
+            $notifications.html('');
             //Build Notifications
-            console.log(data);
+            _.each(data.items, function(item) {
+                var html = '';
+                html += '<li>' +
+                    '<a class="messageNotification" href="/tickets/' + item.data.ticketuid + '" role="button" data-notificationId="' + item._id + '" >' +
+                        '<div class="clearfix">';
+                if (item.unread === true) {
+                    html += '<div class="messageUnread"></div>';
+                }
+                switch (item.type) {
+                    case 0:
+                        html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>';
+                        break;
+                    case 1:
+                        html += '<div class="messageIcon left"><i class="fa fa-warning"></i></div>';
+                        break;
+                    case 2:
+                        html += '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>';
+                        break;
+                }
+
+                html += '<div class="messageAuthor"><strong>' + item.title + '</strong></div>' +
+                        '<div class="messageSnippet">' +
+                        '<span>' + item.message + '</span>' +
+                        '</div>' +
+                        '<div class="messageDate">' +
+                        '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDTHH:MM") + '" class="timestamp">' + helpers.formatDate(item.created, "MM DD") + '</time>' +
+                        '</div>' +
+                        '</div>' +
+                        '</a>' +
+                        '</li>';
+
+                $notifications.append(html);
+                console.log(data.count);
+                var $notificationsCount = $('#btn_notifications').find('span');
+                if ($notificationsCount.length > 0) {
+                    if (data.count == 0) {
+                        $notificationsCount.html('0');
+                        $notificationsCount.addClass('hide');
+                    } else {
+                        $notificationsCount.removeClass('hide');
+                        $notificationsCount.html(data.count);
+                    }
+                }
+
+                var $nLinks = $('#notifications-Messages').find('a[data-notificationId]');
+                $.each($nLinks, function(k, val) {
+                    var item = $(val);
+                    item.off('click');
+                    item.on('click', function(e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        var $id = $(e.currentTarget).attr('data-notificationId');
+                        var $href = $(e.currentTarget).attr('href');
+                        if ($id.length < 1) return;
+
+                        socketUi.markNotificationRead($id);
+
+                        History.pushState(null, null, $href);
+                    });
+                });
+            });
+        });
+    };
+
+    socketUi.onTicketCreated = function() {
+        socket.removeAllListeners('ticket:created');
+        socket.on('ticket:created', function(data) {
+           socket.emit('updateNotifications');
         });
     };
 
