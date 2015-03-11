@@ -85,11 +85,6 @@ exit /B
 
     goto END_CASE
 
-:CASE_watch
-    echo Not supported
-
-    goto END_CASE
-
 :DEFAULT_CASE
     echo Welcome to TruDesk
     echo Usage: trudesk.bat ^{start^|stop^|log^|setup^|reset^|upgrade^|dev^}

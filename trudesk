@@ -74,9 +74,9 @@ case "$1" in
 				echo "  \"./trudesk start\" to launch the TruDesk server";
 			else
 				echo "TruDesk Running (pid $(cat pidfile))";
-				echo "  \"./trudesk stop\" to stop the NodeBB server";
+				echo "  \"./trudesk stop\" to stop the TruDesk server";
 				echo "  \"./trudesk log\" to view server output";
-				echo "  \"./trudesk restart\" to restart NodeBB";
+				echo "  \"./trudesk restart\" to restart TruDesk";
 		fi
 		;;
 
@@ -86,9 +86,8 @@ case "$1" in
 		;;
 
 	upgrade)
+	    git pull
 		npm install
-		# ls -d node_modules/trudesk* | xargs -n1 basename | xargs npm install
-		# ls -d node_modules/trudesk* | xargs -n1 basename | xargs npm update
 		"$node" app --upgrade
 		touch package.json
 		;;
@@ -104,7 +103,6 @@ case "$1" in
 	dev)
 		echo "Launching TruDesk in \"development\" mode."
 		echo "To run the production build of TruDesk, please use \"forever\"."
-		#echo "More Information: https://docs.nodebb.org/en/latest/running/index.html"
 		NODE_ENV=development "$node" runner --no-daemon "$@"
 		;;
 
