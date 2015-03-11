@@ -12,20 +12,31 @@
 
  **/
 
-var DISABLE_MAIL = true;
-
 var _           = require('underscore');
 var async       = require('async');
 var nodeMailer  = require('nodemailer');
 var winston     = require('winston');
+var nconf       = require('nconf');
+
+var MAILER_ENABLED = nconf.get('mailer:enable') ? nconf.get('mailer:enable') : true;
+
+//var transporter = nodeMailer.createTransport({
+//    host:   'smtp.zoho.com',
+//    port:   465,
+//    secure: true,
+//    auth: {
+//        user: 'no-reply@trudesk.io',
+//        pass: '#TruDesk$'
+//    }
+//});
 
 var transporter = nodeMailer.createTransport({
-    host:   'smtp.zoho.com',
-    port:   465,
+    host:   nconf.get('mailer:host') ? nconf.get('mailer:host') : '127.0.0.1',
+    port:   nconf.get('mailer:port') ? nconf.get('mailer:port') : 25,
     secure: true,
     auth: {
-        user: 'no-reply@trudesk.io',
-        pass: '#TruDesk$'
+        user: nconf.get('mailer:username') ? nconf.get('mailer:username') : '',
+        pass: nconf.get('mailer:password') ? nconf.get('mailer:password') : ''
     }
 });
 
@@ -35,12 +46,14 @@ mailer.queue = function() {
     checkQueue(handleQueue);
 
     setInterval(function() {
+        if (!MAILER_ENABLED) return;
+
         checkQueue(handleQueue);
     }, 3600000); //1hour
 };
 
 mailer.sendMail = function(data, callback) {
-    if (DISABLE_MAIL) {
+    if (!MAILER_ENABLED) {
         return callback(null, 'Mail Disabled');
     }
 
@@ -53,7 +66,6 @@ function handleQueue(err, size) {
     }
 
     //Todo: Handle processing of mailqueue here
-
 
     winston.log('debug', 'polling mailqueue: ' + size);
 }

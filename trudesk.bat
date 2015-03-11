@@ -10,7 +10,7 @@ if ERRORLEVEL 1 call :DEFAULT_CASE
 exit /B
 
 :CASE_start
-    echo Starting NodeBB
+    echo Starting TruDesk
     echo   "trudesk.bat stop" to stop the TruDesk server
     echo   "trudesk.bat log" to view server output
 
@@ -57,7 +57,7 @@ exit /B
 
 :CASE_log
     cls
-    type .\logs\output.log
+    type .\logs\app.log
 
     goto END_CASE
 

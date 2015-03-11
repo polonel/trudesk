@@ -133,7 +133,7 @@ function forkWorker(index, isPrimary) {
 }
 
 function getPorts() {
-    var urlObject = url.parse(nconf.get('url'));
+    var urlObject = url.parse(nconf.get('url') ? nconf.get('url') : '127.0.0.1');
     var port = nconf.get('port') || nconf.get('PORT') || urlObject.port || 8118;
     if (!Array.isArray(port)) {
         port = [port];

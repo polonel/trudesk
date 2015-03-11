@@ -1,0 +1,128 @@
+#!/bin/bash
+
+# $0 script path
+# $1 action
+# $2 subaction
+
+node="$(which nodejs 2>/dev/null)";
+if [ $? -gt 0 ];
+	then node="$(which node)";
+fi
+
+function pidExists() {
+	if [ -e "pidfile" ];
+		then
+			if ps -p $(cat pidfile) > /dev/null
+				then return 1;
+				else
+					rm ./pidfile;
+					return 0;
+			fi
+		else
+			return 0;
+	fi
+}
+
+case "$1" in
+	start)
+		echo "Starting Trudesk";
+		echo "  \"./trudesk stop\" to stop the TruDesk server";
+		echo "  \"./trudesk log\" to view server output";
+
+		# Start the loader daemon
+		"$node" runner "$@"
+		;;
+
+	stop)
+		pidExists;
+		if [ 0 -eq $? ];
+			then
+				echo "TruDesk is already stopped.";
+			else
+				echo "Stopping TruDesk. Goodbye!";
+				kill $(cat pidfile);
+		fi
+		;;
+
+	restart)
+		pidExists;
+		if [ 0 -eq $? ];
+			then
+				echo "TruDesk could not be restarted, as a running instance could not be found.";
+			else
+				echo "Restarting TruDesk.";
+				kill -1 $(cat pidfile);
+		fi
+		;;
+
+	reload)
+		pidExists;
+		if [ 0 -eq $? ];
+			then
+				echo "TruDesk could not be reloaded, as a running instance could not be found.";
+			else
+				echo "Reloading TruDesk.";
+				kill -12 $(cat pidfile);
+		fi
+		;;
+
+	status)
+		pidExists;
+		if [ 0 -eq $? ];
+			then
+				echo "TruDesk is not running";
+				echo "  \"./trudesk start\" to launch the TruDesk server";
+			else
+				echo "TruDesk Running (pid $(cat pidfile))";
+				echo "  \"./trudesk stop\" to stop the NodeBB server";
+				echo "  \"./trudesk log\" to view server output";
+				echo "  \"./trudesk restart\" to restart NodeBB";
+		fi
+		;;
+
+	log)
+		clear;
+		tail -F ./logs/app.log;
+		;;
+
+	upgrade)
+		npm install
+		# ls -d node_modules/trudesk* | xargs -n1 basename | xargs npm install
+		# ls -d node_modules/trudesk* | xargs -n1 basename | xargs npm update
+		"$node" app --upgrade
+		touch package.json
+		;;
+
+	setup)
+		"$node" app --setup "$@"
+		;;
+
+	reset)
+		"$node" app --reset --$2
+		;;
+
+	dev)
+		echo "Launching TruDesk in \"development\" mode."
+		echo "To run the production build of TruDesk, please use \"forever\"."
+		#echo "More Information: https://docs.nodebb.org/en/latest/running/index.html"
+		NODE_ENV=development "$node" runner --no-daemon "$@"
+		;;
+
+	*)
+		echo "Welcome to TruDesk"
+		echo $"Usage: $0 {start|stop|reload|restart|log|setup|reset|upgrade|dev}"
+		echo ''
+		column -s '	' -t <<< '
+		start	Start the TruDesk server
+		stop	Stops the TruDesk server
+		reload	Restarts TruDesk
+		restart	Restarts TruDesk
+		log	    Opens the logging interface (useful for debugging)
+		setup	Runs the TruDesk setup script
+		reset	Disables all plugins, restores the default theme.
+		upgrade	Run TruDesk upgrade scripts, ensure packages are up-to-date
+		dev	    Start TruDesk in interactive development mode
+		watch	Start TruDesk in development mode and watch for changes
+		'
+		exit 1
+esac

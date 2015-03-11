@@ -15,12 +15,12 @@
 'use strict';
 
 var _       = require('underscore');
-var async = require('async');
-var fs = require('fs');
-var path = require('path');
-var prompt = require('prompt');
+var async   = require('async');
+var fs      = require('fs');
+var path    = require('path');
+var prompt  = require('prompt');
 var winston = require('winston');
-var nconf = require('nconf');
+var nconf   = require('nconf');
 
 var install = {};
 var questions = {};
@@ -51,17 +51,41 @@ questions.mongo = [
     },
     {
         name: 'mongo:username',
-        description: 'MongoDB username'
+        description: 'MongoDB username',
+        default: nconf.get('mongo:username') || ''
     },
     {
         name: 'mongo:password',
         description: 'Password for your MongoDB user',
-        hidden: true
+        hidden: true,
+        default: nconf.get('mongo:password') || ''
     },
     {
         name: 'mongo:database',
         description: 'Database to use',
         'default': nconf.get('mongo:database') || 0
+    }
+];
+
+questions.mailer = [
+    {
+        name: 'mailer:host',
+        description: 'Host IP or address of your SMTP host',
+        default: nconf.get('mailer:host') || '127.0.0.1'
+    },
+    {
+        name: 'mailer:port',
+        description: 'Host port of your SMTP server',
+        default: nconf.get('mailer:port') || 25
+    },
+    {
+        name: 'mailer:username',
+        description: 'SMTP Server username'
+    },
+    {
+        name: 'mailer:password',
+        description: 'Password for your SMTP user',
+        hidden: true
     }
 ];
 
@@ -135,7 +159,22 @@ function setupConfig(next) {
                     database: dbConfig['mongo:database']
                 };
 
-                completeConfigSetup(err, config, next);
+                prompt.get(questions.mailer, function(err, mailerConfig) {
+                    if (err) {
+                        process.stdout.write('\n\n');
+                        winston.warn('trudesk setup ' + err.message);
+                        process.exit();
+                    }
+
+                    config.mailer = {
+                        host: mailerConfig['mailer:host'],
+                        port: mailerConfig['mailer:port'],
+                        username: mailerConfig['mailer:username'],
+                        password: mailerConfig['mailer:password']
+                    };
+
+                    completeConfigSetup(err, config, next);
+                });
             });
         });
 
@@ -215,7 +254,7 @@ function createAdmin(next) {
                 process.exit();
             }
 
-            if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+            if (!_.isNull(admin) || !_.isUndefined(admin) || !_.isEmpty(admin)) {
                 winston.info('Administrator Account already Exists');
 
                 next();
