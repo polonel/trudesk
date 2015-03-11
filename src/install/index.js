@@ -254,17 +254,12 @@ function createAdmin(next) {
                 process.exit();
             }
 
-            if (!_.isNull(admin) || !_.isUndefined(admin) || !_.isEmpty(admin)) {
+            if (!_.isNull(admin)) {
                 winston.info('Administrator Account already Exists');
 
                 next();
             } else {
                 var questions = [{
-                    name: 'username',
-                    description: 'Administrator username',
-                    required: true,
-                    type: 'string'
-                }, {
                     name: 'fullname',
                     description: 'Administrator Fullname',
                     required: true,
@@ -301,7 +296,7 @@ function createAdmin(next) {
                     //Create User and Add to group.
 
                     var user = new User({
-                        username:   results.username,
+                        username:   'Administrator',
                         password:   results.password,
                         fullname:   results.fullname,
                         email:      results.email,
