@@ -4,10 +4,13 @@
         <li {{#is nav 'dashboard'}} class='active' {{/is}}><a href="/dashboard"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
         <li {{#is nav 'tickets'}} class='active' {{/is}}><a href="/tickets"><i class="fa fa-paste fa-large"></i>Tickets</a>
             <ul id="side-nav-sub-tickets" class="side-nav-sub {{#is nav 'tickets'}} subMenuOpen {{/is}}">
-                <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="icon-inbox"></i>New</a></li>
-                <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="icon-trash"></i>Pending</a></li>
-                <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="icon-sent"></i>Open</a></li>
-                <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><i class="icon-check"></i>Closed</a></li>
+                <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><i class="fa fa-flask fa-sub-icon"></i>Active</a></li>
+                <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}><a href="/tickets/assigned"><i class="fa fa-location-arrow fa-sub-icon"></i>Assigned</a></li>
+                <hr/>
+                <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="fa fa-file-text-o fa-sub-icon"></i>New</a></li>
+                <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="fa fa-history fa-sub-icon"></i>Pending</a></li>
+                <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="fa fa-folder-open-o fa-sub-icon"></i>Open</a></li>
+                <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><i class="fa fa-folder-o fa-sub-icon"></i>Closed</a></li>
             </ul>
         </li>
         <li {{#is nav 'messages'}} class='active' {{/is}}><a href="/messages/inbox" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="fa fa-envelope-o fa-large"></i>Messages</a>

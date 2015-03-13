@@ -47,13 +47,8 @@ module.exports = function(ws) {
         var totalOnline = _.size(usersOnline);
 
         setInterval(function() {
-            var userId = socket.request.user._id;
-            var messageSchema = require('./models/message');
-
-            messageSchema.getUnreadInboxCount(userId, function(err, objs) {
-                if (err) return true;
-                utils.sendToSelf(socket, 'updateMailNotifications', objs);
-            });
+            updateMailNotifications();
+            updateNotifications();
 
         }, 5000);
 
@@ -84,20 +79,27 @@ module.exports = function(ws) {
 //
 //        }, 60000);
 
-        socket.on('updateMailNotifications', function(data) {
+        function updateMailNotifications() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
             messageSchema.getUnreadInboxCount(userId, function(err, objs) {
                 if (err) return true;
                 utils.sendToSelf(socket, 'updateMailNotifications', objs);
             });
+        }
+
+        socket.on('updateMailNotifications', function() {
+            updateMailNotifications();
         });
 
-        socket.on('updateNotifications', function() {
+        function updateNotifications() {
             var notifications = {};
-            var noticationSchema = require('./models/notification');
-            noticationSchema.findAllForUser(socket.request.user._id, function(err, items) {
-                if (err) return true;
+            var notificationSchema = require('./models/notification');
+            notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
+                if (err) {
+                    winston.warn(err);
+                    return true;
+                }
 
                 notifications.items = items;
                 var p = __.where(items, {unread: true});
@@ -105,11 +107,14 @@ module.exports = function(ws) {
 
                 utils.sendToSelf(socket, 'updateNotifications', notifications);
             });
+        }
+
+        socket.on('updateNotifications', function() {
+            updateNotifications();
         });
 
         socket.on('markNotificationRead', function(_id) {
             if (_.isUndefined(_id)) return true;
-            var notifications = {};
             var notificationSchema = require('./models/notification');
             notificationSchema.getNotification(_id, function(err, notification) {
                 if (err) return true;
@@ -118,15 +123,7 @@ module.exports = function(ws) {
                     notification.save(function(err, final) {
                         if (err) return true;
 
-                        notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
-                            if (err) return true;
-
-                            notifications.items = items;
-                            var p = __.findWhere(items, {unread: true});
-                            notifications.count = _.size(p);
-
-                            utils.sendToSelf(socket, 'updateNotifications', notifications);
-                        });
+                        updateNotifications();
                     });
                 })
             });

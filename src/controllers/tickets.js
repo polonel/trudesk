@@ -119,6 +119,92 @@ ticketsController.getByStatus = function(req, res, next) {
     });
 };
 
+ticketsController.getActive = function(req, res, next) {
+    var url = require('url');
+    var self = this;
+    self.content = {};
+    self.content.title = "Tickets";
+    self.content.nav = 'tickets';
+    self.content.subnav = 'tickets-active';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+
+    //Ticket Data
+    self.content.data.tickets = {};
+    async.waterfall([
+        function(callback) {
+            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                callback(err, grps);
+            });
+        },
+        function(grps, callback) {
+            ticketSchema.getTicketsByStatus(grps, 0, function(err, results0) {
+                if (err) return callback(err);
+
+                ticketSchema.getTicketsByStatus(grps, 1, function(err, results1) {
+                    if (err) return callback(err);
+
+                    ticketSchema.getTicketsByStatus(grps, 2, function(err, results2) {
+                        if (err) return callback(err);
+
+                        var combined = _.union(results0, results1, results2);
+
+                        callback(null, combined);
+                    });
+                });
+            });
+        }
+    ], function(err, results) {
+        if (err) return handleError(res, err);
+
+        self.content.data.tickets = results;
+
+        res.render('tickets', self.content);
+    });
+};
+
+ticketsController.getAssigned = function(req, res, next) {
+    var url = require('url');
+    var self = this;
+    self.content = {};
+    self.content.title = "Tickets";
+    self.content.nav = 'tickets';
+    self.content.subnav = 'tickets-assigned';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+
+    //Ticket Data
+    self.content.data.tickets = {};
+    async.waterfall([
+        function(callback) {
+            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                if (err) return callback(err);
+
+                callback(null, grps);
+            });
+        },
+        function(grps, callback) {
+            ticketSchema.getAssigned(req.user._id, function(err, tickets) {
+                if (err) return callback(err);
+
+                callback(null, tickets);
+            })
+        }
+    ], function(err, results) {
+        if (err) return handleError(res, err);
+
+        self.content.data.tickets = results;
+
+        res.render('tickets', self.content);
+    });
+};
+
 ticketsController.create = function(req, res, next) {
     var self = this;
     self.content = {};

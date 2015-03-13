@@ -39,6 +39,7 @@ var ticketSchema = mongoose.Schema({
     tags:       [String],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
+    closedDate:{ type: Date },
     comments:   [commentSchema],
     history:    [historySchema]
 });
@@ -58,6 +59,12 @@ ticketSchema.pre('save', function(next) {
 
 ticketSchema.methods.setStatus = function(status, callback) {
     if (_.isUndefined(status)) return callback('Invalid Status', null);
+
+    if (status === 3) {
+        this.closedDate = new Date();
+    } else {
+        this.closedDate = null;
+    }
 
     this.status = status;
     var historyItem = {
@@ -202,6 +209,18 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     if (_.isUndefined(id)) return callback("Invalid Id - TicketSchema.GetTicketById()", null);
 
     var q = this.model(COLLECTION).findOne({_id: id, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner']);
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getAssigned = function(user_id, callback) {
+    if (_.isUndefined(user_id)) return callback("Invalid Id - TicketSchema.GetAssigned()", null);
+
+    var q = this.model(COLLECTION).find({assignee: user_id, deleted: false})
         .populate('owner')
         .populate('assignee')
         .populate('type')

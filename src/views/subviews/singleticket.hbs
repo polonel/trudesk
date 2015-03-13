@@ -90,12 +90,16 @@
                             <div class="marginright5">
                                 <span>Type</span>
                                 {{#canUser data.user "ticket:edit"}}
-                                    <select name="tType" id="tType" class="chosen-select1"
-                                            ng-model="selected_type"
-                                            ng-options="t.name for t in types track by t._id"
-                                            ng-change="updateTicketType()"
-                                            data-ticketId="{{data.ticket._id}}">
-                                    </select>
+                                    {{#compare data.ticket.status '!=' 3}}
+                                        <select name="tType" id="tType" class="chosen-select1"
+                                                ng-model="selected_type"
+                                                ng-options="t.name for t in types track by t._id"
+                                                ng-change="updateTicketType()"
+                                                data-ticketId="{{data.ticket._id}}">
+                                        </select>
+                                    {{else}}
+                                        <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
+                                    {{/compare}}
                                 {{else}}
                                     <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
                                 {{/canUser}}
@@ -105,13 +109,17 @@
                             <div class="marginleft5">
                                 <span>Priority</span>
                                 {{#canUser data.user "ticket:edit"}}
-                                    <select name="tPriority" id="tPriority"
-                                            ng-model="selected_priority"
-                                            ng-options="p.name for p in priorities track by p.value"
-                                            ng-change="updateTicketPriority()"
-                                            data-ticketId="{{data.ticket._id}}">
+                                    {{#compare data.ticket.status '!=' 3}}
+                                        <select name="tPriority" id="tPriority"
+                                                ng-model="selected_priority"
+                                                ng-options="p.name for p in priorities track by p.value"
+                                                ng-change="updateTicketPriority()"
+                                                data-ticketId="{{data.ticket._id}}">
 
-                                    </select>
+                                        </select>
+                                    {{else}}
+                                        <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
+                                    {{/compare}}
                                 {{else}}
                                     <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
                                 {{/canUser}}
@@ -122,13 +130,17 @@
                             <div class="small-12 columns nopadding">
                                 <span>Group</span>
                                 {{#canUser data.user "ticket:edit"}}
-                                    <select name="tGroup" id="tGroup"
-                                            ng-model="selected_group"
-                                            ng-options="g.name for g in groups track by g._id"
-                                            ng-change="updateTicketGroup()"
-                                            data-ticketId="{{data.ticket._id}}">
+                                    {{#compare data.ticket.status '!=' 3}}
+                                        <select name="tGroup" id="tGroup"
+                                                ng-model="selected_group"
+                                                ng-options="g.name for g in groups track by g._id"
+                                                ng-change="updateTicketGroup()"
+                                                data-ticketId="{{data.ticket._id}}">
 
-                                    </select>
+                                        </select>
+                                    {{else}}
+                                        <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
+                                    {{/compare}}
                                 {{else}}
                                     <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
                                 {{/canUser}}

@@ -99,24 +99,23 @@ apiController.index = function(req, res, next) {
 
 apiController.login = function(req, res, next) {
     var userModel = require('../models/user');
-    var username = req.body.username;
-    var password = req.body.password;
-    var apitoken = req.body.apitoken;
-
-    if (_.isUndefined(username) ||
-        _.isUndefined(password) ||
-        _.isUndefined(apitoken)) {
-        return res.sendStatus(403);
-    }
+//    var username = req.body.username;
+//    var password = req.body.password;
+//    //var apitoken = req.body.apitoken;
+//
+//    if (_.isUndefined(username) ||
+//        _.isUndefined(password)) {
+//        return res.sendStatus(403);
+//    }
 
     passport.authenticate('local', function(err, user, info) {
         if (err) return next(err);
-        if (!user) return res.sendStatus(401);
+        if (!user) return res.status(401).send(info);
 
         req.logIn(user, function(err) {
             if (err) return res.send(err.message);
 
-            return res.send(200);
+            return res.status(200).send({'success': true});
         })
     })(req, res, next);
 };

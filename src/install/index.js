@@ -167,6 +167,7 @@ function setupConfig(next) {
                     }
 
                     config.mailer = {
+                        enable: true,
                         host: mailerConfig['mailer:host'],
                         port: mailerConfig['mailer:port'],
                         username: mailerConfig['mailer:username'],

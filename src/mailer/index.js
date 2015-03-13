@@ -18,7 +18,7 @@ var nodeMailer  = require('nodemailer');
 var winston     = require('winston');
 var nconf       = require('nconf');
 
-var MAILER_ENABLED = nconf.get('mailer:enable') ? nconf.get('mailer:enable') : true;
+var MAILER_ENABLED = nconf.get('mailer:enable');
 
 //var transporter = nodeMailer.createTransport({
 //    host:   'smtp.zoho.com',

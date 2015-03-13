@@ -9,7 +9,8 @@
         "database": "app31908899"
     },
     "mailer": {
-        "host": "127.0.0.1",
+        "enable": false,
+        "host": "127.0.0.11",
         "port": "25",
         "username": "",
         "password": ""

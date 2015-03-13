@@ -459,13 +459,6 @@ define('modules/ui', [
         helpers.hideAllpDropDowns();
     };
 
-    socketUi.updateNotificationsCount = function() {
-        socket.removeAllListeners('updateNotificationsCount');
-        socket.on('updateNotificationsCount', function(count) {
-
-        });
-    };
-
     socketUi.updateNotifications = function() {
         socket.removeAllListeners('updateNotifications');
         socket.on('updateNotifications', function(data) {
@@ -500,24 +493,13 @@ define('modules/ui', [
                         '<span>' + item.message + '</span>' +
                         '</div>' +
                         '<div class="messageDate">' +
-                        '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDTHH:MM") + '" class="timestamp">' + helpers.formatDate(item.created, "MM DD") + '</time>' +
+                        '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.created, "MMM DD, YYYY") + '</time>' +
                         '</div>' +
                         '</div>' +
                         '</a>' +
                         '</li>';
 
                 $notifications.append(html);
-                console.log(data.count);
-                var $notificationsCount = $('#btn_notifications').find('span');
-                if ($notificationsCount.length > 0) {
-                    if (data.count == 0) {
-                        $notificationsCount.html('0');
-                        $notificationsCount.addClass('hide');
-                    } else {
-                        $notificationsCount.removeClass('hide');
-                        $notificationsCount.html(data.count);
-                    }
-                }
 
                 var $nLinks = $('#notifications-Messages').find('a[data-notificationId]');
                 $.each($nLinks, function(k, val) {
@@ -536,6 +518,17 @@ define('modules/ui', [
                     });
                 });
             });
+
+            var $notificationsCount = $('#btn_notifications').find('span');
+            if ($notificationsCount.length > 0) {
+                if (data.count == 0) {
+                    $notificationsCount.html('0');
+                    $notificationsCount.addClass('hide');
+                } else {
+                    $notificationsCount.removeClass('hide');
+                    $notificationsCount.html(data.count);
+                }
+            }
         });
     };
 
