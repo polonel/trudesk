@@ -10,7 +10,7 @@
     },
     "mailer": {
         "enable": false,
-        "host": "127.0.0.11",
+        "host": "127.0.0.1",
         "port": "25",
         "username": "",
         "password": ""
