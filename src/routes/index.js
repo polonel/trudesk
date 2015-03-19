@@ -33,7 +33,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/resetpassword/:hash', controllers.main.resetPass);
 
     //Tickets
-    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.get);
+    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
     router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);

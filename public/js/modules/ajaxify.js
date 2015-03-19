@@ -257,6 +257,7 @@ define('modules/ajaxify', [
                 },
                 error: function(jqXHR, textStatus, errorThrown){
                     document.location.href = url;
+                    console.log('Error Loading Document!!!');
                     return false;
                 }
             }); // end ajax

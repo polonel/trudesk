@@ -55,6 +55,8 @@ if (!process.send) {
     winston.info('==========================================================================');
     winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2015 Polonel.com');
     winston.info('');
+    winston.info('Running in: ' + global.env);
+    winston.info('Time: ' + new Date());
 }
 
 var configFile = path.join(__dirname, '/config.json'),
@@ -88,19 +90,19 @@ function loadConfig() {
 function start() {
     loadConfig();
 
-    winston.info('Running in: ' + global.env);
-    winston.info('Time: ' + new Date());
+    var _db = require('./src/database');
 
-    require('./src/database').init(function(err, db) {
+    _db.init(function(err, db) {
         if (err) {
             winston.error('FETAL: ' + err.message);
             winston.warn('Retrying to connect to MongoDB in 10secs...');
             return setTimeout(function() {
-                require('./src/database').init(dbCallback);
+                _db.init(dbCallback);
             }, 10000);
-        }
 
-        dbCallback(err, db);
+        } else {
+            dbCallback(err, db);
+        }
     });
 }
 
