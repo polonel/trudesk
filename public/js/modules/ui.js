@@ -132,14 +132,40 @@ define('modules/ui', [
                 tStatusBox.addClass(c);
 
                 var ticketReply = $('.ticket-reply');
+                var ticketTypeSelect = $('select#tType');
+                var ticketPriority = $('select#tPriority');
+                var ticketGroup = $('select#tGroup');
+
                 if (status === 3) {
                     //Remove Comment Box
                     if (ticketReply.length > 0) {
                         ticketReply.addClass('hide');
                     }
+                    //Disabled Ticket Details
+                    if (ticketTypeSelect.length > 0) {
+                        ticketTypeSelect.prop('disabled', true);
+                    }
+                    if (ticketPriority.length > 0) {
+                        ticketPriority.prop('disabled', true);
+                    }
+                    if (ticketGroup.length > 0) {
+                        ticketGroup.prop('disabled', true);
+                    }
+
                 } else {
                     if (ticketReply.length > 0) {
                         ticketReply.removeClass('hide');
+                    }
+
+                    //Enable Ticket Details
+                    if (ticketTypeSelect.length > 0) {
+                        ticketTypeSelect.prop('disabled', false);
+                    }
+                    if (ticketPriority.length > 0) {
+                        ticketPriority.prop('disabled', false);
+                    }
+                    if (ticketGroup.length > 0) {
+                        ticketGroup.prop('disabled', false);
                     }
                 }
             }

@@ -375,11 +375,37 @@ function createAdmin(next) {
     });
 }
 
+function createCounter(next) {
+    var db = require('../database');
+    var countersSchema = require('../models/counters');
+
+    db.init(function(err) {
+        if (err) {
+            return next(err);
+        }
+
+        var Counter = new countersSchema({
+            _id: "tickets",
+            next: 1001
+        });
+
+        Counter.save(function(err) {
+            if (err) {
+                next(err);
+            }
+
+            next();
+        });
+
+    });
+}
+
 install.setup = function(callback) {
     async.series([
         checkSetupFlag,
         setupConfig,
-        createAdministrator
+        createAdministrator,
+        createCounter
 
     ], function(err) {
         if (err) {
