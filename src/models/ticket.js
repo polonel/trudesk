@@ -220,7 +220,7 @@ ticketSchema.statics.getTicketById = function(id, callback) {
 ticketSchema.statics.getAssigned = function(user_id, callback) {
     if (_.isUndefined(user_id)) return callback("Invalid Id - TicketSchema.GetAssigned()", null);
 
-    var q = this.model(COLLECTION).find({assignee: user_id, deleted: false})
+    var q = this.model(COLLECTION).find({assignee: user_id, deleted: false, status: {$ne: 3}})
         .populate('owner')
         .populate('assignee')
         .populate('type')
