@@ -12,9 +12,20 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'history'], function(angular, _, $, socket, nav) {
     return angular.module('trudesk.controllers.singleTicket', [])
         .controller('singleTicket', function($scope, $http, $q) {
+
+            //Setup Assignee Drop based on Status
+            var ticketStatus = $('#__ticketStatus').html();
+            var assigneeListBtn = $('.ticket-assignee > a');
+            if (assigneeListBtn.length > 0 && ticketStatus.length > 0) {
+                if (ticketStatus == '3') {
+                    assigneeListBtn.removeAttr('data-notifications');
+                    assigneeListBtn.removeAttr('data-updateUi');
+                    nav.notifications();
+                }
+            }
 
             $scope.showStatusSelect = function() {
                 var statusSelect = $('#statusSelect');

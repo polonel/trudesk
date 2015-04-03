@@ -15,10 +15,11 @@
 define('modules/ui', [
     'jquery',
     'modules/helpers',
+    'modules/navigation',
     'nicescroll',
     'history'
 
-], function($, helpers) {
+], function($, helpers, nav) {
     var socketUi = {},
         socket = io.connect();
 
@@ -132,6 +133,7 @@ define('modules/ui', [
                 tStatusBox.addClass(c);
 
                 var ticketReply = $('.ticket-reply');
+                var assigneeListBtn = $('.ticket-assignee > a');
                 var ticketTypeSelect = $('select#tType');
                 var ticketPriority = $('select#tPriority');
                 var ticketGroup = $('select#tGroup');
@@ -140,6 +142,13 @@ define('modules/ui', [
                     //Remove Comment Box
                     if (ticketReply.length > 0) {
                         ticketReply.addClass('hide');
+                    }
+
+                    //Setup assignee list on Closed
+                    if (assigneeListBtn.length > 0) {
+                        assigneeListBtn.removeAttr('data-notifications');
+                        assigneeListBtn.removeAttr('data-updateUi');
+                        nav.notifications();
                     }
                     //Disabled Ticket Details
                     if (ticketTypeSelect.length > 0) {
@@ -166,6 +175,14 @@ define('modules/ui', [
                     }
                     if (ticketGroup.length > 0) {
                         ticketGroup.prop('disabled', false);
+                    }
+
+                    //Setup assignee list
+                    if (assigneeListBtn.length > 0) {
+                        assigneeListBtn.attr('data-notifications', 'assigneeDropdown');
+                        assigneeListBtn.attr('data-updateui', 'assigneeList');
+                        nav.notifications();
+                        socketUi.updateUi();
                     }
                 }
             }
