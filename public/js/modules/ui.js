@@ -15,10 +15,11 @@
 define('modules/ui', [
     'jquery',
     'modules/helpers',
+    'modules/navigation',
     'nicescroll',
     'history'
 
-], function($, helpers) {
+], function($, helpers, nav) {
     var socketUi = {},
         socket = io.connect();
 
@@ -132,14 +133,30 @@ define('modules/ui', [
                 tStatusBox.addClass(c);
 
                 var ticketReply = $('.ticket-reply');
+                var assigneeListBtn = $('.ticket-assignee > a');
                 if (status === 3) {
                     //Remove Comment Box
                     if (ticketReply.length > 0) {
                         ticketReply.addClass('hide');
                     }
+
+                    //Setup assignee list on Closed
+                    if (assigneeListBtn.length > 0) {
+                        assigneeListBtn.removeAttr('data-notifications');
+                        assigneeListBtn.removeAttr('data-updateUi');
+                        nav.notifications();
+                    }
                 } else {
                     if (ticketReply.length > 0) {
                         ticketReply.removeClass('hide');
+                    }
+
+                    //Setup assignee list
+                    if (assigneeListBtn.length > 0) {
+                        assigneeListBtn.attr('data-notifications', 'assigneeDropdown');
+                        assigneeListBtn.attr('data-updateui', 'assigneeList');
+                        nav.notifications();
+                        socketUi.updateUi();
                     }
                 }
             }

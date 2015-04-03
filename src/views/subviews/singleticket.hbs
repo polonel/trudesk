@@ -5,6 +5,7 @@
                 <div class="page-title-border-right relative">
                     <p>Ticket #{{data.ticket.uid}}</p>
                     <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
+                    <div id="__ticketStatus" class="hide">{{data.ticket.status}}</div>
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
                             {{#canUser data.user "ticket:edit"}}
@@ -76,6 +77,7 @@
                                 </div>
                             </div>
                         {{/if}}
+
                         <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-override="true" data-left-offset="35" data-top-offset="123" class="notifications p-dropdown p-dropdown-left">
                             <div class="actions"><strong>Select Assignee</strong><div class="right"><a href="#" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
                             <div id="assigneeDropdown-content" class="" style="height: 215px;">
