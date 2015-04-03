@@ -38,7 +38,7 @@ mongoose.connection.on('connected', function() {
 var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }};
 
 module.exports.init = function(callback) {
-    if (db.connection && db.connection.state == 'connected') {
+    if (db.connection) {
         callback(null, db);
     } else {
         mongoose.connect(CONNECTION_URI, options, function(e) {
