@@ -37,7 +37,7 @@ var roles = {
         id: "mod",
         name: "Moderators",
         description: "Moderators",
-        allowedAction: ["mod:*", "ticket:*", "comment:*"]
+        allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view"]
     },
     user: {
         id: "user",

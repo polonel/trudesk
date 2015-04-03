@@ -26,5 +26,6 @@
         {{#canUser data.user "groups:view"}}<li {{#is nav 'groups'}} class='active' {{/is}}><a href="/groups"><i class="icon-groups"></i>Groups</a></li>{{/canUser}}
         <!--<li {{#is nav 'chat'}} class='active' {{/is}}><a href="/chat"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>-->
         <!--<li {{#is nav 'invoices'}} class='active' {{/is}}><a href="/invoices"><i class="icon-invoices"></i>Invoices</a></li>-->
+        {{#canUser data.user "reports:view"}}<li {{#is nav 'reports'}} class='active' {{/is}}><a href="/reports"><i class="fa fa-book fa-large"></i>Reports</a></li>{{/canUser}}
     </ul>
 </div>

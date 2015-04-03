@@ -1,0 +1,62 @@
+<div class="small-12 large-10 columns nopadding ticketContent" ng-controller="groupsCtrl">
+    <div class="page-title noshadow">
+        <p class="left">{{title}}</p>
+        <div class="right">
+            <ul class="button-group">
+
+                <li class="active" style="position:relative;">
+                    <a href="#" class="btn no-ajaxy" data-notifications="group-actions">Actions</a>
+                    <div id="group-actions" data-scroll="gAction-list" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
+                        <div class="actions"><strong>Report Actions</strong></div>
+                        <div id="gAction-list" class="notifications-Messages">
+                            <ul>
+                                <li>
+                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteGroups()">
+                                        <div class="clearfix">
+                                            <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                            <div class="messageAuthor"><strong>Delete</strong></div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                {{#canUser data.user "reports:create"}}<li class="active"><a href="/reports/create" role="button" class="btn">Create</a></li>{{/canUser}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="full-height page-right-content scrollable">
+        <div class="groupsList">
+            <table id="groupsTable" class="pDataTable stripe">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.groups}}
+                    <tr ng-click="editGroup($event)" data-groupOId="{{_id}}">
+                        <td>
+                            <input id="c_{{_id}}" type="checkbox"/>
+                            <label for="c_{{_id}}"></label>
+                        </td>
+                        <td>{{name}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/groups'], function(g) {
+            g.init();
+        });
+    </script>
+{{/contentFor}}

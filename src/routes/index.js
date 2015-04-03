@@ -75,6 +75,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/groups/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.getCreate);
     router.get('/groups/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.edit);
 
+    //Reports
+    router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
+
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
 
