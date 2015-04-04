@@ -261,6 +261,9 @@ ticketSchema.statics.getStatusCountByDate = function(status, date, callback) {
     yesterday.setDate(yesterday.getDate()-1);
 
     var q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+    if (status === 3) {
+        q = this.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+    }
 
     return q.exec(callback);
 };
