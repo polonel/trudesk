@@ -292,6 +292,8 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
         status = Number(status);
         if (status === 0) {
             q = this.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        } else if (status === 3) {
+            q = this.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
         } else {
             q = this.model(COLLECTION).count({status: status, date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
         }
