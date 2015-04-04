@@ -34,6 +34,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'fastclick',
         'placeholder',
         'foundation',
+        'pace',
         'nicescroll',
         'easypiechart'
 

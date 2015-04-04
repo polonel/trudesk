@@ -44,11 +44,12 @@ requirejs.config({
         moment:         'vendor/fullcalendar/moment.min',
         easypiechart:   'vendor/easypiechart/easypiechart',
         chosen:         'vendor/chosen/chosen.jquery.min',
-        autogrow:       'plugins/autogrow'
+        autogrow:       'plugins/autogrow',
+        pace:           'vendor/pace/pace.min'
     },
     shim: {
         foundation: {
-            deps: ['jquery', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history']
+            deps: ['jquery', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace']
         },
 
         angular: {
@@ -102,6 +103,10 @@ requirejs.config({
         },
 
         autogrow: {
+            deps: ['jquery']
+        },
+
+        pace: {
             deps: ['jquery']
         }
     },
