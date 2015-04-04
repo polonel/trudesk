@@ -232,7 +232,7 @@ ticketsController.create = function(req, res, next) {
             if (!_.isUndefined(results.groups)) self.content.data.groups = _.sortBy(results.groups, 'name');
             if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
 
-            res.render('subviews/newticket', self.content);
+            res.render('subviews/createTicket', self.content);
         }
     });
 };

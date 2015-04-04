@@ -13,7 +13,8 @@
  **/
 
 var async   = require('async'),
-    _       = require('lodash');
+    _       = require('lodash'),
+    winston = require('winston');
 
 var viewController = {};
 var viewdata = {};

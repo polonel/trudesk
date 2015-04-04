@@ -3,7 +3,7 @@
         <p class="left">Create Ticket</p>
         <div class="right">
             <ul class="button-group">
-                <li><a href="/tickets" role="button" class="btn">Cancel</a></li>
+                <li><a href="/tickets/" role="button" class="btn">Cancel</a></li>
                 <li class="active"><a id="saveTicketBtn" href="#" role="button" class="btn" ng-click="submitTicketForm()">Save</a></li>
             </ul>
         </div>
@@ -12,7 +12,7 @@
     <div class="page-wrapper scrollable no-overflow-x full-height">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createTicketForm" class="ticket-form" action="/tickets/create" method="POST">
+                <form id="createTicketForm" class="ticket-form" action="/tickets/create/" method="POST">
                     <label for="tSubject">Subject</label>
                     <input id="tSubject" name="tSubject" type="text" data-keyBindSubmit="#saveTicketBtn" />
                     <div class="row">
