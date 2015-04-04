@@ -21,4 +21,4 @@ var historySchema = mongoose.Schema({
     description:    { type: String }
 });
 
-module.exports = historySchema
+module.exports = historySchema;
