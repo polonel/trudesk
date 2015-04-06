@@ -29,8 +29,8 @@
     </div>
 
     <div class="full-height page-right-content scrollable">
-        <div class="groupsList">
-            <table id="groupsTable" class="pDataTable stripe">
+        <div class="reportList">
+            <table id="reportTable" class="pDataTable stripe">
                 <thead>
                 <tr>
                     <th></th>
@@ -55,8 +55,8 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['pages/groups'], function(g) {
-            g.init();
+        require(['pages/reports'], function(r) {
+            r.init();
         });
     </script>
 {{/contentFor}}

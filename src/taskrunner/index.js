@@ -15,9 +15,18 @@
 var _       = require('underscore');
 var async   = require('async');
 var winston = require('winston');
+var taskSchema   = require('../models/task');
 
 (function() {
     //Start up Task Runners
     winston.debug('Starting Runners...');
+
+    taskSchema.getTasks(function(err, items) {
+        if (err) {
+            return winston.warn('Task Runner Error: ' + err.message);
+        }
+
+        winston.warn('Number of Tasks: ' + _.size(items));
+    });
 
 })();

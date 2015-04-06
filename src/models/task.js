@@ -14,16 +14,21 @@
 
 var mongoose    = require('mongoose');
 var _           = require('underscore');
-var accountsSchema = require('./user');
-var groupSchema = require('./group');
 
-var COLLECTION = 'reports';
+var COLLECTION = 'tasks';
 
-var reportSchema = mongoose.Schema({
-    name:       { type: String, required: true },
-    runDate:    { type: Date, required: true, default: Date.now },
-    groups:     [{type: mongoose.Schema.Types.ObjectId, ref: 'groups'}],
-    data:       [mongoose.Schema.Types.Mixed]
+var taskSchema = mongoose.Schema({
+    type:    { type: Number, required: true },
+    title:   { type: String, required: true },
+    query:   { type: String, required: true },
+    nextRun: { type: Date, required: true },
+    lastRun: Date
+
 });
 
-module.exports = mongoose.model(COLLECTION, reportSchema);
+taskSchema.statics.getTasks = function(callback) {
+    return this.model(COLLECTION).find({}, callback);
+};
+
+
+module.exports = mongoose.model(COLLECTION, taskSchema);
