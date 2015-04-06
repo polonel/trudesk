@@ -51,8 +51,8 @@ define('modules/chat',[
             html += '<div class="messageSnippet">';
             html += '<span>' + onlineUser.title + '</span>';
             html += '</div>';
-            html += '<div class="messageDate">';
-            html += '<time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>';
+//            html += '<div class="messageDate">';
+//            html += '<time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>';
             html += '</div>';
             html += '</div>';
             html += '</a>';
@@ -125,6 +125,7 @@ define('modules/chat',[
                     //messages.children('.chat-message-list').append(messageDiv);
                     helpers.scrollToBottom(messages);
                     //messages.getNiceScroll(0).resize().doScrollTop(messages.height(), 100);
+                    if (v.length < 1) return;
                     socket.emit('chatMessage',
                         {
                             to: self.parents('.chat-box').attr('data-chat-userId'),
