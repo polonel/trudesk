@@ -14,9 +14,10 @@
 
 define('modules/ajaximgupload', [
     'jquery',
-    'underscore'
+    'underscore',
+    'modules/helpers'
 
-], function($, _) {
+], function($, _, helpers) {
     var aiu = {};
 
     aiu.init = function() {
@@ -29,6 +30,7 @@ define('modules/ajaximgupload', [
                 var formData = new FormData($(form)[0]);
                 var timestamp = new Date().getTime();
                 var imgSrc = form.find('img').attr('src') + '?' + timestamp;
+
                 $.ajax({
                     url: '/accounts/uploadImage',
                     type: 'POST',
@@ -41,7 +43,7 @@ define('modules/ajaximgupload', [
                         form.find('img').attr('src', data + '?' + timestamp);
                     },
                     error: function(err) {
-                        console.log(err);
+                        helpers.showFlash(err, true);
                     }
                 });
 

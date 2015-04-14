@@ -54,7 +54,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation
         $(document).on('mouseup', hideDropdownMouseUp);
     };
 
-    function clearNotifications(e) {
+    function clearNotifications() {
         socket.ui.clearNotifications();
     }
 

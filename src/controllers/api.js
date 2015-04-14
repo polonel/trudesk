@@ -120,6 +120,13 @@ apiController.login = function(req, res, next) {
     })(req, res, next);
 };
 
+apiController.logout = function(req, res, next) {
+    "use strict";
+    req.logout();
+    req.session.destroy();
+    return res.status(200).send({'success': true});
+};
+
 apiController.users = {};
 apiController.users.get = function(req, res, next) {
   var userModel = require('../models/user');
@@ -327,6 +334,8 @@ apiController.tickets.get = function(req, res, next) {
     //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
     if (_.isUndefined(user)) return res.send('Error: Not Currently Logged in.');
 
+    var limit = req.query.limit;
+
     var ticketModel = require('../models/ticket');
     var groupModel = require('../models/group');
 
@@ -337,10 +346,18 @@ apiController.tickets.get = function(req, res, next) {
             })
         },
         function(grps, callback) {
-            ticketModel.getTickets(grps, function(err, results) {
+            if (!_.isUndefined(limit)) {
+                ticketModel.getTicketsWithLimit(grps, limit, function(err, results) {
 
-                callback(err, results);
-            });
+                    callback(err, results);
+                });
+            } else {
+                ticketModel.getTickets(grps, function(err, results) {
+
+                    callback(err, results);
+                });
+            }
+
         }
     ], function(err, results) {
         if (err) return res.send('Error: ' + err.message);

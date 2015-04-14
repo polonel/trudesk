@@ -171,8 +171,28 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('assignee')
         .populate('type')
         .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
+        .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
+    }
+
+    var q = this.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
+        .sort({'uid': -1})
         .sort({'status': 1})
-        .limit(100);
+        .limit(limit);
 
     return q.exec(callback);
 };

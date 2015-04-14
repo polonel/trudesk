@@ -67,7 +67,7 @@ function handleQueue(err, size) {
 
     //Todo: Handle processing of mailqueue here
 
-    winston.log('debug', 'polling mailqueue: ' + size);
+    winston.debug('Number of Queued Mail Items: ' + size);
 }
 
 function checkQueue(callback) {

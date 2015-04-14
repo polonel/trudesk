@@ -200,6 +200,7 @@ mainController.loginPost = function(req, res, next) {
 mainController.logout = function(req, res, next) {
     "use strict";
     req.logout();
+    req.session.destroy();
     res.redirect('/');
 };
 

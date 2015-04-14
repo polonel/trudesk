@@ -12,10 +12,10 @@
 
  **/
 
-var _       = require('underscore');
-var async   = require('async');
-var winston = require('winston');
-var taskSchema   = require('../models/task');
+var _           = require('underscore');
+var async       = require('async');
+var winston     = require('winston');
+var taskSchema  = require('../models/task');
 
 (function() {
     //Start up Task Runners
@@ -26,7 +26,7 @@ var taskSchema   = require('../models/task');
             return winston.warn('Task Runner Error: ' + err.message);
         }
 
-        winston.warn('Number of Tasks: ' + _.size(items));
+        winston.debug('Number of Tasks: ' + _.size(items));
     });
 
 })();
