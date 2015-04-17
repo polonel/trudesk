@@ -30,7 +30,9 @@ var userSchema = mongoose.Schema({
         image:      String,
 
         resetPassHash: String,
-        resetPassExpire: Date
+        resetPassExpire: Date,
+
+        accessToken: { type: String, unique: true }
     });
 
 userSchema.pre('save', function(next) {

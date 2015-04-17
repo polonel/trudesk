@@ -176,6 +176,38 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    if (!_.isObject(object)) {
+        return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    var limit = (object.limit == null ? 10 : object.limit);
+    var page = (object.page == null ? 0 : object.page);
+    var closed = object.closed;
+
+    var q = this.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
+        .sort('-uid')
+        .sort({'status': 1})
+        .skip(page*limit)
+        .limit(limit);
+
+    if (!closed) q.where('status').ne(3);
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
     if (_.isUndefined(grpId)) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);

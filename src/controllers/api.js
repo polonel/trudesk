@@ -112,6 +112,10 @@ apiController.login = function(req, res, next) {
         if (err) return next(err);
         if (!user) return res.status(401).send(info);
 
+//        if (_.isNull(user.accessToken) || _.isUndefined(user.accessToken)) {
+//            return res.status(401).send({'success': false, 'error': 'No Access Token Found'});
+//        }
+
         req.logIn(user, function(err) {
             if (err) return res.send(err.message);
 
@@ -332,9 +336,18 @@ apiController.tickets.get = function(req, res, next) {
     var user = req.user;
     //var apiToken = req.headers.apitoken;
     //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
-    if (_.isUndefined(user)) return res.send('Error: Not Currently Logged in.');
+    if (_.isUndefined(user)) return res.status(401).json({Error: 'Not Currently Logged in.'});
 
     var limit = req.query.limit;
+    var page = req.query.page;
+    var closed = req.query.closed;
+    closed = !(closed != null && closed == 'false');
+
+    var object = {
+        limit: limit,
+        page: page,
+        closed: closed
+    };
 
     var ticketModel = require('../models/ticket');
     var groupModel = require('../models/group');
@@ -347,7 +360,7 @@ apiController.tickets.get = function(req, res, next) {
         },
         function(grps, callback) {
             if (!_.isUndefined(limit)) {
-                ticketModel.getTicketsWithLimit(grps, limit, function(err, results) {
+                ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
                     callback(err, results);
                 });
