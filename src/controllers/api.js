@@ -342,11 +342,14 @@ apiController.tickets.get = function(req, res, next) {
     var page = req.query.page;
     var closed = req.query.closed;
     closed = !(closed != null && closed == 'false');
+    var assignedSelf = req.query.assignedself;
 
     var object = {
+        user: user,
         limit: limit,
         page: page,
-        closed: closed
+        closed: closed,
+        assignedSelf: assignedSelf
     };
 
     var ticketModel = require('../models/ticket');

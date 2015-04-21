@@ -204,6 +204,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .limit(limit);
 
     if (!closed) q.where('status').ne(3);
+    if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee').equals(object.user);
 
     return q.exec(callback);
 };
