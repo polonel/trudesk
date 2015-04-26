@@ -90,6 +90,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/login', middleware.api, controllers.api.login);
     router.get('/api/logout', middleware.api, controllers.api.logout);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
+    router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
     router.get('/api/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);

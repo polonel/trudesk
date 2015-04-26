@@ -32,7 +32,9 @@ groupSchema.statics.getGroupByName = function(name, callback) {
 };
 
 groupSchema.statics.getAllGroups = function(callback) {
-    var q = this.model(COLLECTION).find({}).populate('members');
+    var q = this.model(COLLECTION).find({})
+        .populate('members')
+        .sort('name');
 
     return q.exec(callback);
 };
@@ -41,7 +43,8 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
     if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUser()");
 
     var q = this.model(COLLECTION).find({members: userId})
-        .populate('members');
+        .populate('members')
+        .sort('name');
 
     return q.exec(callback)
 };

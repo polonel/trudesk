@@ -16,6 +16,7 @@ var async = require('async');
 var mongoose = require('mongoose');
 var bcrypt = require('bcrypt');
 var _ = require('lodash');
+var Chance = require('chance');
 
 var SALT_FACTOR = 10;
 var COLLECTION = "accounts";
@@ -32,7 +33,9 @@ var userSchema = mongoose.Schema({
         resetPassHash: String,
         resetPassExpire: Date,
 
-        accessToken: { type: String, unique: true }
+        accessTokens: [{ type: String, unique: true }],
+
+        iOSDeviceToken: {type: String, unique: true}
     });
 
 userSchema.pre('save', function(next) {
@@ -50,6 +53,30 @@ userSchema.pre('save', function(next) {
         });
     })
 });
+
+userSchema.methods.addAccessToken = function(callback) {
+    var user = this;
+    var chance = new Chance();
+    var token = chance.hash();
+    user.accessTokens.push(token);
+    user.save(function(err, u) {
+        if (err) return callback(err, null);
+
+        callback(null, token);
+    });
+};
+
+userSchema.methods.removeAccessToken = function(token, callback) {
+    var user = this;
+    if (!hasAccessToken(user.accessTokens, token)) return callback();
+
+    user.accessTokens.splice(_.indexOf(this.accessTokens, token), 1);
+    user.save(function(err, u) {
+        if (err) return callback(err, null);
+
+        callback(null, u.accessTokens);
+    });
+};
 
 userSchema.statics.validate = function (password, dbPass) {
     return bcrypt.compareSync(password, dbPass);
@@ -91,6 +118,14 @@ userSchema.statics.getUserByResetHash = function(hash, callback) {
     return this.model(COLLECTION).findOne({resetPassHash: hash}, callback);
 };
 
+userSchema.statics.getUserByAccessToken = function(token, callback) {
+    if (_.isUndefined(token)) {
+        return callback("Invalid Token - UserSchema.GetUserByAccessToken()", null);
+    }
+
+    return this.model(COLLECTION).findOne({accessTokens: token}, callback);
+};
+
 userSchema.statics.getAssigneeUsers = function(callback) {
     return this.model(COLLECTION).find({$or: [{role: "mod"}, {role: "admin"}]}, callback);
 };
@@ -113,5 +148,15 @@ userSchema.statics.insertUser = function(data, callback) {
         return self.collection.insert(data, callback);
     });
 };
+
+function hasAccessToken(arr, token) {
+    var matches = _.filter(arr, function(value) {
+        if (value == token) {
+            return value;
+        }
+    });
+
+    return matches.length > 0;
+}
 
 module.exports = mongoose.model(COLLECTION, userSchema);

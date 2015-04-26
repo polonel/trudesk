@@ -18,7 +18,8 @@ var async = require('async'),
     winston = require('winston'),
     passport = require('passport'),
     permissions = require('../permissions'),
-    emitter = require('../emitter');
+    emitter = require('../emitter'),
+    userSchema = require('../models/user');
 
 var apiController = {};
 
@@ -99,36 +100,51 @@ apiController.index = function(req, res, next) {
 
 apiController.login = function(req, res, next) {
     var userModel = require('../models/user');
-//    var username = req.body.username;
-//    var password = req.body.password;
-//    //var apitoken = req.body.apitoken;
-//
-//    if (_.isUndefined(username) ||
-//        _.isUndefined(password)) {
-//        return res.sendStatus(403);
-//    }
+    var username = req.body.username;
+    var password = req.body.password;
 
-    passport.authenticate('local', function(err, user, info) {
-        if (err) return next(err);
-        if (!user) return res.status(401).send(info);
+    if (_.isUndefined(username) ||
+        _.isUndefined(password)) {
+        return res.sendStatus(403);
+    }
 
-//        if (_.isNull(user.accessToken) || _.isUndefined(user.accessToken)) {
-//            return res.status(401).send({'success': false, 'error': 'No Access Token Found'});
-//        }
+    userModel.getUserByUsername(username, function(err, user) {
+        if (err) return res.status(401).json({'success': false, 'error': err.message});
+        if (!user) return res.status(401).json({'success': false, 'error': 'Invalid User'});
 
-        req.logIn(user, function(err) {
-            if (err) return res.send(err.message);
+        if (!userModel.validate(password, user.password)) return res.status(401).json({'success': false, 'error': 'Invalid Password'});
 
-            return res.status(200).send({'success': true});
-        })
-    })(req, res, next);
+        var resUser = _.clone(user._doc);
+        delete resUser.resetPassExpire;
+        delete resUser.resetPassHash;
+        delete resUser.password;
+        delete resUser.iOSDeviceToken;
+
+        user.addAccessToken(function(err, token) {
+            if (err) return res.status(401).json({'success': false, 'error': err.message});
+            if (!token) return res.status(401).json({'success': false, 'error': 'Invalid AccessToken'});
+
+            return res.json({'success': true, 'accessToken': token, 'user': resUser});
+        });
+    });
 };
 
 apiController.logout = function(req, res, next) {
-    "use strict";
-    req.logout();
-    req.session.destroy();
-    return res.status(200).send({'success': true});
+    var token = req.headers.token;
+
+    userSchema.getUserByAccessToken(token, function(err, user) {
+        if (err) return res.status(400).json({'success': false, 'error': err.message});
+        if (!user) return res.status(200).json({'success': true});
+
+        user.removeAccessToken(token, function(err, u) {
+            if (err) return res.status(400).json({'success': false, 'error': err.message});
+
+            req.logout();
+            req.session.destroy();
+
+            return res.status(200).json({'success': true});
+        });
+    });
 };
 
 apiController.users = {};
@@ -238,13 +254,18 @@ apiController.users.single = function(req, res, next) {
 //Groups
 apiController.groups = {};
 apiController.groups.get = function(req, res, next) {
-    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
-    var groupSchema = require('../models/group');
-    var username = req.user._id;
-    groupSchema.getAllGroupsOfUser(username, function(err, groups) {
-        if (err) return res.send(err.message);
+    var accessToken = req.query.token;
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({'error': err.message});
+        if (!user) return res.status(401).json({'error': 'Unknown User'});
 
-        res.json(groups);
+        var groupSchema = require('../models/group');
+        groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
+            if (err) return res.send(err.message);
+
+            res.json(groups);
+        });
     });
 };
 
@@ -333,52 +354,71 @@ apiController.groups.deleteGroup = function(req, res) {
 //Tickets
 apiController.tickets = {};
 apiController.tickets.get = function(req, res, next) {
-    var user = req.user;
-    //var apiToken = req.headers.apitoken;
-    //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
-    if (_.isUndefined(user)) return res.status(401).json({Error: 'Not Currently Logged in.'});
+    var accessToken = req.query.token;
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({'error': err.message});
+        if (!user) return res.status(401).json({'error': 'Unknown User'});
 
-    var limit = req.query.limit;
-    var page = req.query.page;
-    var closed = req.query.closed;
-    closed = !(closed != null && closed == 'false');
-    var assignedSelf = req.query.assignedself;
+        var limit = req.query.limit;
+        var page = req.query.page;
+        var closed = req.query.closed;
+        closed = !(closed != null && closed == 'false');
+        var assignedSelf = req.query.assignedself;
 
-    var object = {
-        user: user,
-        limit: limit,
-        page: page,
-        closed: closed,
-        assignedSelf: assignedSelf
-    };
+        var object = {
+            user: user,
+            limit: limit,
+            page: page,
+            closed: closed,
+            assignedSelf: assignedSelf
+        };
 
-    var ticketModel = require('../models/ticket');
-    var groupModel = require('../models/group');
+        var ticketModel = require('../models/ticket');
+        var groupModel = require('../models/group');
 
-    async.waterfall([
-        function(callback) {
-            groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
-                callback(err, grps);
-            })
-        },
-        function(grps, callback) {
-            if (!_.isUndefined(limit)) {
+        async.waterfall([
+            function(callback) {
+                groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
+                    callback(err, grps);
+                })
+            },
+            function(grps, callback) {
                 ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
                     callback(err, results);
                 });
-            } else {
-                ticketModel.getTickets(grps, function(err, results) {
-
-                    callback(err, results);
-                });
             }
+        ], function(err, results) {
+            if (err) return res.send('Error: ' + err.message);
 
+            return res.json(results);
+        });
+    });
+};
+
+apiController.tickets.create = function(req, res) {
+    var user = req.user;
+    var response = {};
+    response.success = true;
+    //var apiToken = req.headers.apitoken;
+    //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
+    if (_.isUndefined(user)) return res.status(401).json({Error: 'Not Currently Logged in.'});
+
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(500).json({Error: 'Invalid Post Data'});
+
+    var ticketModel = require('../models/ticket');
+    var ticket = new ticketModel(postData);
+    ticket.save(function(err, t) {
+        if (err) {
+            response.success = false;
+            response.error = err;
+            return res.status(500).json(response);
         }
-    ], function(err, results) {
-        if (err) return res.send('Error: ' + err.message);
 
-        return res.json(results);
+        response.ticket = t;
+        res.json(response);
     });
 };
 
@@ -397,22 +437,29 @@ apiController.tickets.single = function(req, res, next) {
 };
 
 apiController.tickets.update = function(req, res, next) {
-    var oId = req.params.id;
-    var reqTicket = req.body;
-    if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
-    var ticketModel = require('../models/ticket');
-    ticketModel.getTicketById(oId, function(err, ticket) {
-        if (err) return res.send(err.message);
+    var accessToken = req.query.token;
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({'error': err.message});
+        if (!user) return res.status(401).json({'error': 'Unknown User'});
 
-        if (!_.isUndefined(reqTicket.status))
-            ticket.status = reqTicket.status;
-
-        if (!_.isUndefined(reqTicket.group))
-            ticket.group = reqTicket.group;
-
-        ticket.save(function(err, t) {
+        var oId = req.params.id;
+        var reqTicket = req.body;
+        if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+        var ticketModel = require('../models/ticket');
+        ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.send(err.message);
-            res.json(t);
+
+            if (!_.isUndefined(reqTicket.status))
+                ticket.status = reqTicket.status;
+
+            if (!_.isUndefined(reqTicket.group))
+                ticket.group = reqTicket.group;
+
+            ticket.save(function(err, t) {
+                if (err) return res.send(err.message);
+                res.json(t);
+            });
         });
     });
 };

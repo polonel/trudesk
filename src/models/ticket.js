@@ -39,7 +39,7 @@ var ticketSchema = mongoose.Schema({
     tags:       [String],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
-    closedDate:{ type: Date },
+    closedDate: { type: Date },
     comments:   [commentSchema],
     history:    [historySchema]
 });
