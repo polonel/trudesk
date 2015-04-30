@@ -341,6 +341,14 @@ ticketsController.submitTicket = function(req, res, next) {
         description: 'Ticket was created.'
     };
 
+    if (_.isUndefined(req.body.tIssue) || _.isNull(req.body.tIssue) || _.isEmpty(req.body.tIssue)
+        || _.isUndefined(req.body.tSubject) || _.isNull(req.body.tSubject) || _.isEmpty(req.body.tSubject)) {
+
+        result.error = "Please fill out all fields.";
+        result.success = false;
+        return res.json(result);
+    }
+
     Ticket.create({
         owner: req.user._id,
         group: req.body.tGroup,
