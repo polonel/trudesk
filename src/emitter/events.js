@@ -125,4 +125,9 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
         winston.warn('ticket deleted: ' + oId);
     });
 
+    emitter.on('ticket:comment:added', function(ticket) {
+        //Goes to client
+        io.sockets.emit('updateComments', ticket);
+    });
+
 })();

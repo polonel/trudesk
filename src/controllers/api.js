@@ -426,6 +426,10 @@ apiController.tickets.create = function(req, res) {
 
         var ticketModel = require('../models/ticket');
         var ticket = new ticketModel(postData);
+        var marked = require('marked');
+        var tIssue = ticket.issue;
+        tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        ticket.issue = marked(tIssue);
         ticket.save(function(err, t) {
             if (err) {
                 response.success = false;
@@ -490,6 +494,55 @@ apiController.tickets.delete = function(req, res, next) {
 
         emitter.emit('ticket:deleted', oId);
         res.sendStatus(200);
+    });
+};
+
+apiController.tickets.postComment = function(req, res, next) {
+    var accessToken = req.headers.accesstoken;
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({'error': err.message});
+        if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+        var commentJson = req.body;
+        var comment = commentJson.comment;
+        var owner = commentJson.ownerId;
+        var ticketId = commentJson._id;
+
+        if (_.isUndefined(ticketId)) return res.send("Invalid Ticket Id");
+        var ticketModel = require('../models/ticket');
+        ticketModel.getTicketById(ticketId, function(err, t) {
+            if (err) return res.send(err.message);
+
+            if (_.isUndefined(comment)) return res.send("Invalid Comment");
+
+            var marked = require('marked');
+            comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+            var Comment = {
+                owner: owner,
+                date: new Date(),
+                comment: marked(comment)
+            };
+
+            t.updated = Date.now();
+            t.comments.push(Comment);
+            var HistoryItem = {
+                action: 'ticket:comment:added',
+                description: 'Comment was added'
+            };
+            t.history.push(HistoryItem);
+
+            t.save(function(err, tt) {
+                if (err) return res.send(err.message);
+
+                ticketModel.populate(tt, 'comments.owner', function(err) {
+                    if (err) return true;
+
+                    emitter.emit('ticket:comment:added', tt);
+
+                    res.json({ticket: tt});
+                });
+            });
+        });
     });
 };
 

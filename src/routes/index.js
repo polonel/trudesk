@@ -97,6 +97,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
+    router.post('/api/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.get('/api/groups', middleware.api, controllers.api.groups.get);
     router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);

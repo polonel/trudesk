@@ -168,7 +168,6 @@ module.exports = function(ws) {
         });
 
         socket.on('updateComments', function(data) {
-            var userId = socket.request.user._id;
             var ticketId = data.ticketId;
             var ticketSchema = require('./models/ticket');
 
@@ -344,7 +343,7 @@ module.exports = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        ticketSchema.populate(tt, 'comments', function(err) {
+                        ticketSchema.populate(tt, 'comments.owner', function(err) {
                             if (err) return true;
                             utils.sendToAllConnectedClients(io, 'updateComments', tt);
                         });

@@ -481,11 +481,13 @@ define('modules/ui', [
         socket.on('updateComments', function(data) {
 
             var ticket = data;
+            console.log(ticket);
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
             //var comment = $(ticket.comments).get(-1);
 
             var commentText = 'Comments';
-            if(ticket.comments.length === 1) commentText = 'Comment';
+            //if (_.isUndefined(ticket.comments)) return;
+            if(_.size(ticket.comments) === 1) commentText = 'Comment';
 
             $('.page-top-comments > a[data-ticketId="' + ticket._id + '"]').html(ticket.comments.length + ' ' + commentText);
 

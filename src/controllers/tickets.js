@@ -403,11 +403,10 @@ ticketsController.postcomment = function(req, res, next) {
         };
         t.history.push(HistoryItem);
 
-        t.save(function (err) {
+        t.save(function (err, tt) {
             if (err) handleError(res, err);
 
-            res.status(200);
-            res.end();
+            return res.send(tt);
         });
     });
 };
