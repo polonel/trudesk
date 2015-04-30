@@ -33,10 +33,12 @@ define('pages/singleTicket', [
 
             //Setup Text
             var issueText = $('.issue-text').find('div.issue-body').html();
-            issueText = issueText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-            issueText = issueText.replace(/(<([^>]+)>)/ig,"");
-            issueText = issueText.trim();
-            $('#issueText').val(issueText);
+            if (!_.isUndefined(issueText)) {
+                issueText = issueText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
+                issueText = issueText.replace(/(<([^>]+)>)/ig,"");
+                issueText = issueText.trim();
+                $('#issueText').val(issueText);
+            }
         });
     };
 
