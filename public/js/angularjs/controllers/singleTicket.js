@@ -130,6 +130,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                     //Setup Text
                     var iText = $('.issue-text').find('div.issue-body').html();
+                    iText = iText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
                     iText = iText.replace(/(<([^>]+)>)/ig,"");
                     iText = iText.trim();
                     $('#issueText').val(iText);

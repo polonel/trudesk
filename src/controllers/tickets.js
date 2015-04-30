@@ -389,6 +389,7 @@ ticketsController.postcomment = function(req, res, next) {
     Ticket.getTicketById(id, function(err, t) {
         if (err) return handleError(res, err);
         var marked = require('marked');
+        comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
         var Comment = {
             owner: User._id,
             date: new Date(),

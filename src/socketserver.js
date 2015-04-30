@@ -17,7 +17,8 @@ var winston             = require('winston'),
     passportSocketIo    = require('passport.socketio'),
     cookieparser        = require('cookie-parser'),
     emitter             = require('./emitter'),
-    async               = require('async');
+    async               = require('async'),
+    marked              = require('marked');
 
 module.exports = function(ws) {
     var _ = require('lodash'),
@@ -308,11 +309,13 @@ module.exports = function(ws) {
             var issue = data.issue;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
-
+            issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+            var markedIssue = marked(issue);
+            winston.warn(markedIssue);
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.setIssue(issue, function(err, t) {
+                ticket.setIssue(markedIssue, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err, tt) {
