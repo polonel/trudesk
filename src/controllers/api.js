@@ -412,7 +412,7 @@ apiController.tickets.get = function(req, res, next) {
 };
 
 apiController.tickets.create = function(req, res) {
-    var accessToken = req.headers.accessToken;
+    var accessToken = req.headers.accesstoken;
 
     userSchema.getUserByAccessToken(accessToken, function(err, user) {
         if (err) return res.status(400).json({'success': false, 'error': err.message});
