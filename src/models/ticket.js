@@ -192,6 +192,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     var limit = (object.limit == null ? 10 : object.limit);
     var page = (object.page == null ? 0 : object.page);
     var closed = object.closed;
+    var status = object.status;
 
     var q = this.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
         .populate('owner')
@@ -199,11 +200,16 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('type')
         .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
         .sort('-uid')
-        .sort({'status': 1})
+        //.sort({'status': 1})
         .skip(page*limit)
         .limit(limit);
 
-    if (!closed) q.where('status').ne(3);
+    if (!_.isUndefined(status) && !_.isNull(status) && _.isNumber(status)) {
+        q.where('status').equal(status);
+    } else {
+        if (!closed) q.where('status').ne(3);
+    }
+
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee').equals(object.user);
 
     return q.exec(callback);
