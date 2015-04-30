@@ -109,6 +109,15 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     socket.ui.setTicketGroup(id, $scope.selected_group);
                 }
             };
+
+            $scope.updateTicketIssue = function() {
+                var id = $('#__ticketId').html();
+                if (id.length > 0) {
+                    var issue = $('form#edit-issue-form').find('textarea#issueText').val();
+                    issue = '<p>' + issue + '</p>';
+                    socket.ui.setTicketIssue(id, issue);
+                }
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

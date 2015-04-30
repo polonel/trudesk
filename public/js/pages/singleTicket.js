@@ -25,6 +25,17 @@ define('pages/singleTicket', [
                 self.off('click',  onRemoveCommentClick);
                 self.on('click', onRemoveCommentClick);
             });
+            $('.edit-issue').each(function() {
+                var self = $(this);
+                self.off('click', onEditIssueClick);
+                self.on('click', onEditIssueClick);
+            });
+
+            //Setup Text
+            var issueText = $('.issue-text').find('div.issue-body').html();
+            issueText = issueText.replace(/(<([^>]+)>)/ig,"");
+            issueText = issueText.trim();
+            $('#issueText').val(issueText);
         });
     };
 
@@ -37,6 +48,16 @@ define('pages/singleTicket', [
         var commentId = self.attr('data-commentId');
         if (commentId.length > 0 && ticketId.length > 0) {
             ui.removeComment(ticketId, commentId);
+        }
+    }
+
+    function onEditIssueClick(e) {
+        var issueForm = $('.edit-issue-form');
+        var issueText = $('.initial-issue').find('.issue-text').find('.issue-body');
+
+        if (!issueText.hasClass('hide')) {
+            issueText.addClass('hide');
+            issueForm.removeClass('hide');
         }
     }
 

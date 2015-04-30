@@ -303,6 +303,28 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('setTicketIssue', function(data) {
+            var ticketId = data.ticketId;
+            var issue = data.issue;
+            var ticketSchema = require('./models/ticket');
+            if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.setIssue(issue, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        //emitter.emit('ticket:updated', ticketId);
+                        utils.sendToAllConnectedClients(io, 'updateTicketIssue', tt);
+                    });
+                });
+            });
+        });
+
         socket.on('removeComment', function(data) {
             var ticketId = data.ticketId;
             var commentId = data.commentId;

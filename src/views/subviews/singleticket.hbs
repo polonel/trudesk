@@ -173,8 +173,24 @@
                             <h3>{{data.ticket.subject}}</h3>
                             <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                             <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
-                            <p>{{{data.ticket.issue}}}</p>
+                            <div class="issue-body">
+                                {{{data.ticket.issue}}}
+                            </div>
                         </div>
+                        {{#canUser data.user "tickets:edit"}}
+                            <div class="edit-issue-form clearfix hide" style="margin-bottom: 15px;">
+                                <form id="edit-issue-form" ng-submit="updateTicketIssue()" data-abide>
+                                    <div class="edit-issue-box">
+                                        <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                                        <small class="error">Please enter a valid issue. Issue must contain at least 5 characters.</small>
+                                    </div>
+                                    <div class="right">
+                                        <button type="submit" data-preventDefault="false">Save</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="edit-issue"><i class="fa fa-pencil fa-lg"></i></div>
+                        {{/canUser}}
                     </div>
                     <div class="comments" data-ticketId="{{data.ticket._id}}">
                         {{#foreach data.ticket.comments}}

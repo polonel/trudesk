@@ -246,9 +246,11 @@ div#ticketTable_wrapper
       color: #3d4854
       line-height: 20px
 
-  .ticket-comment
+  .ticket-comment,
+  .initial-issue
     position: relative
-    .remove-comment
+    .remove-comment,
+    .edit-issue
       position: absolute
       right: 25px
       top: 15px
@@ -259,12 +261,15 @@ div#ticketTable_wrapper
       display: none
       color: #8699ac
     &:hover
-      .remove-comment
+      .remove-comment,
+      .edit-issue
         display: block
 
-  .ticket-reply
+  .ticket-reply,
+  .initial-issue
     border-bottom: none
-    .comment-box
+    .comment-box,
+    .edit-issue-box
       //float: left
       width: 100%
       display: block

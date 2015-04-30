@@ -134,6 +134,18 @@ ticketSchema.methods.setTicketGroup = function(groupId, callback) {
     callback(null, this);
 };
 
+ticketSchema.methods.setIssue = function(issue, callback) {
+    this.issue = issue;
+    var historyItem = {
+        action: 'ticket:update:issue',
+        description: 'Ticket Issue was updated. '
+    };
+
+    this.history.push(historyItem);
+
+    callback(null, this);
+};
+
 ticketSchema.methods.removeComment = function(commentId, callback) {
     this.comments = _.reject(this.comments, function(o) { return o._id == commentId; });
 

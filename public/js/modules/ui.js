@@ -36,6 +36,7 @@ define('modules/ui', [
         this.updateTicketType();
         this.updateTicketPriority();
         this.updateTicketGroup();
+        this.updateTicketIssue();
 
         //Events
         this.onTicketCreated();
@@ -361,6 +362,28 @@ define('modules/ui', [
                 if (groupSelect.length > 0) {
                     groupSelect.html(data.group.name);
                 }
+            }
+        });
+    };
+
+    socketUi.setTicketIssue = function(ticketId, issue) {
+        var payload = {
+            ticketId: ticketId,
+            issue: issue
+        };
+
+        socket.emit('setTicketIssue', payload);
+    };
+
+    socketUi.updateTicketIssue = function() {
+        socket.removeAllListeners('updateTicketIssue');
+        socket.on('updateTicketIssue', function(data) {
+            var issueText = $('.initial-issue').find('div.issue-text').find('div.issue-body');
+            var issueForm = $('.edit-issue-form');
+            if (issueText.length > 0) {
+                issueText.html(data.issue);
+                issueForm.addClass('hide');
+                issueText.removeClass('hide');
             }
         });
     };
