@@ -240,8 +240,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         .populate('assignee')
         .populate('type')
         .deepPopulate(['group', 'group.members', 'comments', 'comments.owner'])
-        .sort({'status': 1})
-        .limit(100);
+        .sort({'uid': -1});
 
     return q.exec(callback);
 };

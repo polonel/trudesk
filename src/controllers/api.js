@@ -139,8 +139,8 @@ apiController.logout = function(req, res, next) {
         user.removeAccessToken(token, function(err, u) {
             if (err) return res.status(400).json({'success': false, 'error': err.message});
 
-            req.logout();
-            req.session.destroy();
+//            req.logout();
+//            req.session.destroy();
 
             return res.status(200).json({'success': true});
         });
@@ -255,18 +255,30 @@ apiController.users.single = function(req, res, next) {
 apiController.groups = {};
 apiController.groups.get = function(req, res, next) {
     var accessToken = req.query.token;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(401).json({'error': err.message});
-        if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
+        var user = req.user;
+        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
 
         var groupSchema = require('../models/group');
         groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
             if (err) return res.send(err.message);
 
-            res.json(groups);
+            return res.json(groups);
         });
-    });
+    } else {
+        userSchema.getUserByAccessToken(accessToken, function(err, user) {
+            if (err) return res.status(401).json({'error': err.message});
+            if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+            var groupSchema = require('../models/group');
+            groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
+                if (err) return res.send(err.message);
+
+                res.json(groups);
+            });
+        });
+    }
 };
 
 apiController.groups.create = function(req, res, next) {
@@ -355,9 +367,9 @@ apiController.groups.deleteGroup = function(req, res) {
 apiController.tickets = {};
 apiController.tickets.get = function(req, res, next) {
     var accessToken = req.query.token;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(400).json({error: 'Invalid Access Token'});
     userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(401).json({'error': err.message});
+        if (err) return res.status(400).json({'error': err.message});
         if (!user) return res.status(401).json({'error': 'Unknown User'});
 
         var limit = req.query.limit;
@@ -398,27 +410,30 @@ apiController.tickets.get = function(req, res, next) {
 };
 
 apiController.tickets.create = function(req, res) {
-    var user = req.user;
-    var response = {};
-    response.success = true;
-    //var apiToken = req.headers.apitoken;
-    //if (_.isUndefined(apiToken)) return res.send('Error: Not Currently Logged in.');
-    if (_.isUndefined(user)) return res.status(401).json({Error: 'Not Currently Logged in.'});
+    var accessToken = req.headers.accessToken;
 
-    var postData = req.body;
-    if (!_.isObject(postData)) return res.status(500).json({Error: 'Invalid Post Data'});
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(400).json({'success': false, 'error': err.message});
+        if (!user) return res.status(200).json({'success': true});
 
-    var ticketModel = require('../models/ticket');
-    var ticket = new ticketModel(postData);
-    ticket.save(function(err, t) {
-        if (err) {
-            response.success = false;
-            response.error = err;
-            return res.status(500).json(response);
-        }
+        var response = {};
+        response.success = true;
 
-        response.ticket = t;
-        res.json(response);
+        var postData = req.body;
+        if (!_.isObject(postData)) return res.status(500).json({'success': false, Error: 'Invalid Post Data'});
+
+        var ticketModel = require('../models/ticket');
+        var ticket = new ticketModel(postData);
+        ticket.save(function(err, t) {
+            if (err) {
+                response.success = false;
+                response.error = err;
+                return res.status(500).json(response);
+            }
+
+            response.ticket = t;
+            res.json(response);
+        });
     });
 };
 
