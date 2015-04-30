@@ -118,6 +118,23 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     socket.ui.setTicketIssue(id, issue);
                 }
             };
+
+            $scope.editIssueCancelClicked = function($event) {
+                $event.preventDefault();
+                var issueForm = $('.edit-issue-form');
+                var issueText = $('.initial-issue').find('.issue-text').find('.issue-body');
+
+                if (issueForm.length > 0 && issueText.length > 0) {
+                    issueText.removeClass('hide');
+                    issueForm.addClass('hide');
+
+                    //Setup Text
+                    var iText = $('.issue-text').find('div.issue-body').html();
+                    iText = iText.replace(/(<([^>]+)>)/ig,"");
+                    iText = iText.trim();
+                    $('#issueText').val(iText);
+                }
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

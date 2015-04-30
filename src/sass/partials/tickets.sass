@@ -287,7 +287,8 @@ div#ticketTable_wrapper
         -webkit-box-sizing: border-box
         -moz-box-sizing: border-box
         box-sizing: border-box
-    button[type=submit]
+    button[type=submit],
+    button[type=reset]
       font-family: "open sans", sans-serif
       font-size: 14px
       color: #ffffff
@@ -300,7 +301,11 @@ div#ticketTable_wrapper
         background: darken(#e74c3c, 5%)
       &:active, &:focus
         outline: none
+    button[type=reset]
+      background: #cdd5e4
 
+      &:hover
+        background: darken(#cdd5e4, 10%)
 
 
 //Ticket Form
