@@ -16,6 +16,7 @@ var async   = require('async'),
     path    = require('path'),
     fs      = require('fs'),
     winston = require('winston'),
+    wConfig = require('winston/lib/winston/config'),
     nconf = require('nconf'),
     pkg     = require('./package.json');
 
@@ -53,7 +54,7 @@ if (!process.send) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2015 Polonel.com');
+    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2015 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());

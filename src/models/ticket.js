@@ -26,7 +26,7 @@ var historySchema       = require('./history');
 var COLLECTION = 'tickets';
 
 var ticketSchema = mongoose.Schema({
-    uid:        { type: Number },
+    uid:        { type: Number, unique: true},
     owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
     group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups' },
     assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
@@ -47,13 +47,21 @@ var ticketSchema = mongoose.Schema({
 ticketSchema.plugin(deepPopulate);
 
 ticketSchema.pre('save', function(next) {
-    if (!_.isUndefined(this.uid)|| this.uid) return next();
+    if (!_.isUndefined(this.uid) || this.uid) return next();
 
     var c = require('./counters');
     var self = this;
-    c.increment('tickets', function(err, res) {
-        self.uid = res.next;
-        next();
+    c.increment('tickets', function(err, res, k) {
+        if (err) return next(err);
+
+        self.uid = res.value.next;
+
+        if (_.isUndefined(self.uid)) {
+            var error = new Error('Invalid UID.');
+            return next(error);
+        }
+
+        return next();
     });
 });
 

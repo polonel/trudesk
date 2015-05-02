@@ -130,4 +130,8 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
         io.sockets.emit('updateComments', ticket);
     });
 
+    emitter.on('notification:added', function(notification) {
+
+    });
+
 })();

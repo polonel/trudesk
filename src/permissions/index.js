@@ -59,6 +59,7 @@ var canThis = function(role, a) {
 
     var actionType = a.split(':')[0];
     var action = a.split(':')[1];
+
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false;
 
     var result = _.filter(rolePerm.allowedAction, function(value) {

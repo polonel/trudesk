@@ -13,7 +13,7 @@
  **/
 
 var async   = require('async'),
-    _       = require('lodash'),
+    _       = require('underscore'),
     winston = require('winston');
 
 var viewController = {};
