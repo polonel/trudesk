@@ -89,6 +89,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api', controllers.api.index);
     router.post('/api/login', middleware.api, controllers.api.login);
     router.get('/api/logout', middleware.api, controllers.api.logout);
+    router.post('/api/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
+    router.get('/api/devices/testiOS', middleware.api, controllers.api.devices.testApn);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
     router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);

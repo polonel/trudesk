@@ -539,7 +539,7 @@ define('modules/ui', [
             _.each(data.items, function(item) {
                 var html = '';
                 html += '<li>' +
-                    '<a class="messageNotification" href="/tickets/' + item.data.ticketuid + '" role="button" data-notificationId="' + item._id + '" >' +
+                    '<a class="messageNotification" href="/tickets/' + item.data.ticket.uid + '" role="button" data-notificationId="' + item._id + '" >' +
                         '<div class="clearfix">';
                 if (item.unread === true) {
                     html += '<div class="messageUnread"></div>';

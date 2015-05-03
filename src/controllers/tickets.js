@@ -406,6 +406,7 @@ ticketsController.postcomment = function(req, res, next) {
         t.save(function (err, tt) {
             if (err) handleError(res, err);
 
+            emitter.emit('ticket:comment:added', tt, Comment);
             return res.send(tt);
         });
     });

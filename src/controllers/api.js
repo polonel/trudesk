@@ -131,16 +131,29 @@ apiController.login = function(req, res, next) {
 
 apiController.logout = function(req, res, next) {
     var token = req.headers.token;
+    var deviceToken = req.headers.devicetoken;
 
     userSchema.getUserByAccessToken(token, function(err, user) {
         if (err) return res.status(400).json({'success': false, 'error': err.message});
         if (!user) return res.status(200).json({'success': true});
 
-        user.removeAccessToken(token, function(err, u) {
-            if (err) return res.status(400).json({'success': false, 'error': err.message});
+        async.series([
+            function(callback) {
+                user.removeAccessToken(token, function(err) {
+                    if (err) return callback(err);
 
-//            req.logout();
-//            req.session.destroy();
+                    callback();
+                });
+            },
+            function(callback) {
+                user.removeDeviceToken(deviceToken, 1, function(err) {
+                    if (err) return callback(err);
+
+                    callback();
+                });
+            }
+        ], function(err) {
+            if (err) return res.status(400).json({'success': false, 'error': err.message});
 
             return res.status(200).json({'success': true});
         });
@@ -249,6 +262,51 @@ apiController.users.single = function(req, res, next) {
 
         res.json(user);
     });
+};
+
+//Token
+apiController.devices = {};
+apiController.devices.setDeviceToken = function(req, res, next) {
+    var accessToken = req.headers.accesstoken;
+    var token = req.body.token;
+
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
+    if (_.isUndefined(token) || _.isNull(token)) return res.status(400).json({error: 'Invalid Device Token'});
+
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({error: err.message});
+        if (!user) return res.status(401).json({error: 'Unknown User'});
+
+        user.addDeviceToken(token, 1, function(err, u) {
+            if (err) return res.status(400).json({error: err.message});
+
+            res.json({success: true, token: token});
+        });
+    })
+};
+
+apiController.devices.testApn = function(req, res, next) {
+    var apn = require('apn');
+    var options = {
+        production: false,
+        cert: 'private/cert.pem',
+        key: 'private/key.pem',
+        passphrase: 'C04251986c'
+    };
+    var apnConnection = new apn.Connection(options);
+    var device = new apn.Device('6bd663ddb6d419d191159cd6f08094b687f2a75cfcb9a208cd38e9b5dbf80b6c');
+
+    var note = new apn.Notification();
+    note.expiry = Math.floor(Date.now() / 1000) + 3600;
+    note.badge = 1;
+    note.sound = "chime";
+    note.alert = "Test Notification";
+    note.payload = {'messageFrom': 'TruDesk Server!'};
+
+    apnConnection.pushNotification(note, device);
+
+    res.send();
+
 };
 
 //Groups

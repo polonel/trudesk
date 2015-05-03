@@ -4,7 +4,7 @@
         <ul>
             {{#each data.common.notifications.items}}
                 <li>
-                    <a class="messageNotification" href="/tickets/{{data.ticketuid}}" role="button" data-notificationId="{{_id}}" ng-click="markRead($event)">
+                    <a class="messageNotification" href="/tickets/{{data.ticket.uid}}" role="button" data-notificationId="{{_id}}" ng-click="markRead($event)">
                         <div class="clearfix">
                             {{#if unread}}
                                 <div class="messageUnread"></div>

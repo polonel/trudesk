@@ -18,6 +18,11 @@ var _ = require('lodash');
 
 var COLLECTION = "notification";
 
+//Types
+// Type 0 : Green Check
+// Type 1 : Warning
+// Type 2 : Red Exclamation
+
 var notificationSchema = mongoose.Schema({
     created: {type: Date, default: Date.now},
     owner: {type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},

@@ -35,7 +35,7 @@ var userSchema = mongoose.Schema({
 
         accessTokens: [{ type: String, unique: true }],
 
-        iOSDeviceToken: {type: String, unique: true}
+        iOSDeviceTokens: [{type: String, unique: true}]
     });
 
 userSchema.pre('save', function(next) {
@@ -76,6 +76,38 @@ userSchema.methods.removeAccessToken = function(token, callback) {
 
         callback(null, u.accessTokens);
     });
+};
+
+userSchema.methods.addDeviceToken = function(token, type, callback) {
+    if (_.isUndefined(token)) return callback("Invalid token");
+    var user = this;
+    //type 1 = iOS
+    //type 2 = Android
+    if (type === 1) {
+        if (hasDeviceToken(user, token, type)) return callback(null, token);
+
+        user.iOSDeviceTokens.push(token);
+        user.save(function(err, u) {
+            if (err) return callback(err, null);
+
+            callback(null, token);
+        });
+    }
+};
+
+userSchema.methods.removeDeviceToken = function(token, type, callback) {
+    var user = this;
+    if (type === 1) {
+        if (!hasDeviceToken(user, token, type)) return callback();
+
+        console.log('Removing Device: ' + token);
+        user.iOSDeviceTokens.splice(_.indexOf(this.iOSDeviceTokens, token), 1);
+        user.save(function(err, u) {
+            if (err) return callback(err, null);
+
+            callback(null, u.iOSDeviceTokens);
+        });
+    }
 };
 
 userSchema.statics.validate = function (password, dbPass) {
@@ -157,6 +189,20 @@ function hasAccessToken(arr, token) {
     });
 
     return matches.length > 0;
+}
+
+function hasDeviceToken(user, token, type) {
+    if (type === 1) {
+        var mataches = _.filter(user.iOSDeviceTokens, function(value) {
+            if (value == token) {
+                return value;
+            }
+        });
+
+        return mataches.length > 0;
+    }
+
+    return false;
 }
 
 module.exports = mongoose.model(COLLECTION, userSchema);

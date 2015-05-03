@@ -21,15 +21,19 @@ var winston             = require('winston');
 var emitter             = require('../emitter');
 var ticketSchema        = require('../models/ticket');
 var historySchema       = require('../models/history');
+var userSchema          = require('../models/user');
 var notificationSchema  = require('../models/notification');
 var mailqueue           = require('../mailer/mailqueue');
 var emailTemplates      = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 
+var notifications              = require('../notifications'); // Load Push Events
+
 (function() {
+    notifications.init(emitter);
     //winston.info('Binding to Events');
-    emitter.on('ticket:created', function(ticketOid) {
-         ticketSchema.getTicketById(ticketOid, function(err, ticket) {
+    emitter.on('ticket:created', function(ticketObj) {
+         ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
              if (err) return true;
 
              async.parallel([
@@ -91,12 +95,14 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
                              title: 'Ticket #' + ticket.uid + ' Created',
                              message: ticket.subject,
                              type: 0,
-                             data: {ticketuid: ticket.uid},
+                             data: {ticket: ticket},
                              unread: true
                          });
 
                          notification.save(function(err, data) {
                              if (err) return cb(err);
+
+                             notifications.pushNotification(data);
 
                              cb(null, data);
                          });
@@ -125,13 +131,54 @@ var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
         winston.warn('ticket deleted: ' + oId);
     });
 
-    emitter.on('ticket:comment:added', function(ticket) {
+    emitter.on('ticket:comment:added', function(ticket, comment) {
+        if (ticket.owner._id.toString() == comment.owner.toString()) return;
+        if (ticket.assignee._id.toString() == comment.owner.toString()) return;
+        async.parallel([
+            function(cb) {
+                var notification = new notificationSchema({
+                    owner: ticket.owner,
+                    title: 'Comment Added to Ticket#' + ticket.uid,
+                    message: ticket.subject,
+                    type: 0,
+                    data: {ticket: ticket},
+                    unread: true
+                });
+
+                notification.save(function(err) {
+                    if (err) return cb(err);
+
+                    notifications.pushNotification(notification);
+
+                    cb(null);
+                });
+            },
+            function(cb) {
+                if (ticket.owner._id.toString() == ticket.assignee._id.toString()) return cb();
+
+                var notification = new notificationSchema({
+                    owner: user,
+                    title: 'Comment Added to Ticket#' + ticket.uid,
+                    message: ticket.subject,
+                    type: 0,
+                    data: {ticket: ticket},
+                    unread: true
+                });
+
+                notification.save(function(err) {
+                    if (err) return cb(err);
+
+                    notifications.pushNotification(notification);
+
+                    cb(null);
+                });
+            }
+
+        ], function(err, result) {
+
+        });
+
         //Goes to client
         io.sockets.emit('updateComments', ticket);
     });
-
-    emitter.on('notification:added', function(notification) {
-
-    });
-
 })();
