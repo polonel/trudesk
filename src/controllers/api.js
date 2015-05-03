@@ -595,7 +595,7 @@ apiController.tickets.postComment = function(req, res, next) {
                 ticketModel.populate(tt, 'comments.owner', function(err) {
                     if (err) return true;
 
-                    emitter.emit('ticket:comment:added', tt);
+                    emitter.emit('ticket:comment:added', tt, Comment);
 
                     res.json({ticket: tt});
                 });
