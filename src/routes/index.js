@@ -106,6 +106,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/groups/:id', middleware.api, controllers.api.groups.updateGroup);
     router.get('/api/users', middleware.api, controllers.api.users.get);
     router.post('/api/users', controllers.api.users.insert);
+    router.get('/api/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
     router.get('/api/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/users/:username', middleware.api, controllers.api.users.update);
     router.delete('/api/users/:username', middleware.api, controllers.api.users.deleteUser);

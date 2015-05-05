@@ -264,6 +264,22 @@ apiController.users.single = function(req, res, next) {
     });
 };
 
+apiController.users.notificationCount = function(req, res) {
+    var accessToken = req.headers.accesstoken;
+
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({'error': 'Invalid Access Token'});
+
+    var notificationSchema = require('../models/notification');
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({error: err.message});
+        if (!user) return res.status(200).json({count: ''});
+
+        notificationSchema.getUnreadCount(user._id, function(err, count) {
+            return res.status(200).json({count: count.toString()});
+        });
+    });
+};
+
 //Token
 apiController.devices = {};
 apiController.devices.setDeviceToken = function(req, res, next) {

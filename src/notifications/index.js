@@ -13,6 +13,8 @@
  **/
 
 var _                   = require('underscore'),
+    path                = require('path'),
+    fs                  = require('fs'),
     async               = require('async'),
     apn                 = require('apn'),
     winston             = require('winston'),
@@ -29,33 +31,54 @@ var apnOptions = {
 };
 
 module.exports.pushNotification = function(notification) {
-    var apnConnection = new apn.Connection(apnOptions);
-    var note = new apn.Notification();
-    note.expiry = Math.floor(Date.now() / 1000) + 3600;
-    note.badge = 1;
-    note.sound = 'alert';
-    note.alert = notification.title;
-    note.payload = {
-        'ticketUID' : notification.data.ticket.uid,
-        'ticketOID' : notification.data.ticket._id
-    };
+    //Check Cert Exists
+    fs.readFile(path.join(__dirname, '../../', apnOptions.cert), function(err) {
+        if (err) {
+            winston.warn(err);
+        } else {
+            //Check Key Exists
+            fs.readFile(path.join(__dirname, '../../', apnOptions.key), function(err) {
+               if (err) {
+                   winston.warn(err);
+               } else {
+                   //Both exists. Fire Push notifications.
+                   var apnConnection = new apn.Connection(apnOptions);
+                   var note = new apn.Notification();
+                   note.expiry = Math.floor(Date.now() / 1000) + 3600;
+                   note.badge = 1;
+                   note.sound = 'alert';
+                   note.alert = notification.title;
+                   note.payload = {
+                       'ticketUID' : notification.data.ticket.uid,
+                       'ticketOID' : notification.data.ticket._id
+                   };
 
-    notificationSchema.getUnreadCount(notification.owner, function(err, c) {
-        var count = 1;
-        if (!err) {
-            count = c;
-        }
+                   notificationSchema.getUnreadCount(notification.owner, function(err, c) {
+                       var count = 1;
+                       if (!err) {
+                           count = c;
+                       }
 
-        note.badge = count;
+                       note.badge = count;
 
-        if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
-            async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
-                var device = new apn.Device(token);
+                       if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
+                           async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
+                               var device = new apn.Device(token);
+                               winston.debug('here');
+                               try {
+                                   apnConnection.pushNotification(note, device);
+                               } catch (e) {
+                                   winston.error(e);
+                               }
 
-                apnConnection.pushNotification(note, device);
-                winston.debug('Sending push notification to iOS Device: ' + token);
 
-                cb();
+                               winston.debug('Sending push notification to iOS Device: ' + token);
+
+                               cb();
+                           });
+                       }
+                   });
+               }
             });
         }
     });

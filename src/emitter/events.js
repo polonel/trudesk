@@ -132,6 +132,9 @@ var notifications              = require('../notifications'); // Load Push Event
     });
 
     emitter.on('ticket:comment:added', function(ticket, comment) {
+        //Goes to client
+        io.sockets.emit('updateComments', ticket);
+
         if (ticket.owner._id.toString() == comment.owner.toString()) return;
         if (ticket.assignee._id.toString() == comment.owner.toString()) return;
         async.parallel([
@@ -177,8 +180,5 @@ var notifications              = require('../notifications'); // Load Push Event
         ], function(err, result) {
 
         });
-
-        //Goes to client
-        io.sockets.emit('updateComments', ticket);
     });
 })();
