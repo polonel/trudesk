@@ -160,7 +160,7 @@ var notifications              = require('../notifications'); // Load Push Event
                 if (ticket.owner._id.toString() == ticket.assignee._id.toString()) return cb();
 
                 var notification = new notificationSchema({
-                    owner: user,
+                    owner: ticket.assignee,
                     title: 'Comment Added to Ticket#' + ticket.uid,
                     message: ticket.subject,
                     type: 0,
