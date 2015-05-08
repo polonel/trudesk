@@ -143,7 +143,7 @@ function handleErrors(err, req, res, next) {
 }
 
 function handle404(req, res, next) {
-    var err = new Error('Not Found');
+    var err = new Error('Not Found: ' + req.protocol + '://' + req.host + req.path);
     err.status = 404;
     next(err);
 }
