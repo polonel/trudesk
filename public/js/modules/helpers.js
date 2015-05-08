@@ -335,7 +335,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 var trackColor = $(this).attr('data-trackColor');
                 if (trackColor == null || trackColor.length <= 0)
                     trackColor = '#e74c3c';
-                var numCount = $(this).attr('data-numCount');
+                var numCount = $(this).attr('data-numcount');
                 if (numCount == null || numCount.length <= 0)
                     numCount = false;
 
@@ -347,7 +347,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                     barColor: trackColor,
                     trackColor: '#b5bbc9',
                     onStart: function(value, to) {
-                        $(this.el).find('.chart-value').text('0');
+                        $(this.el).find('.chart-value').text(value);
                     },
                     onStop: function(value, to) {
                         if (numCount) {
@@ -366,7 +366,9 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                             if (countVal != null && countVal > 0 && current != null) {
                                 var totalCount = Math.round(countVal*(100/Math.round(to)));
                                 var val = totalCount*(0.01*Math.round(percent));
-                                $(this.el).find('.chart-value').text(Math.round(val));
+                                var final = Math.round(val);
+                                if (isNaN(final)) return true;
+                                $(this.el).find('.chart-value').text(final);
                                 return true;
                             }
                         }
