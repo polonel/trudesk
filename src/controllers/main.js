@@ -258,6 +258,7 @@ mainController.forgotPass = function(req, res, next) {
                 template('password-reset', data, function(err, html) {
                     if (err) {
                         req.flash('Error: ' + err);
+                        winston.warn(err.message);
                         return res.status(400).send(err.message);
                     }
 
@@ -272,6 +273,7 @@ mainController.forgotPass = function(req, res, next) {
                     mailer.sendMail(mailOptions, function(err, info) {
                         if (err) {
                             req.flash('Error: ' + err.message);
+                            winston.warn(err.message);
                             return res.status(400).send(err.message);
                         }
 
