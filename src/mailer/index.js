@@ -33,7 +33,7 @@ var MAILER_ENABLED = nconf.get('mailer:enable');
 var transporter = nodeMailer.createTransport({
     host:   nconf.get('mailer:host') ? nconf.get('mailer:host') : '127.0.0.1',
     port:   nconf.get('mailer:port') ? nconf.get('mailer:port') : 25,
-    secure: true,
+    secure: nconf.get('mailer:secure') ? nconf.get('mailer:secure') : false,
     auth: {
         user: nconf.get('mailer:username') ? nconf.get('mailer:username') : '',
         pass: nconf.get('mailer:password') ? nconf.get('mailer:password') : ''
