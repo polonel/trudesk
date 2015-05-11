@@ -37,6 +37,9 @@ var transporter = nodeMailer.createTransport({
     auth: {
         user: nconf.get('mailer:username') ? nconf.get('mailer:username') : '',
         pass: nconf.get('mailer:password') ? nconf.get('mailer:password') : ''
+    },
+    tls: {
+        ciphers: 'SSLv3'
     }
 });
 
