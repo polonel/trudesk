@@ -43,7 +43,9 @@ var notifications              = require('../notifications'); // Load Push Event
                      async.each(ticket.group.members, function(member, cb) {
                          if (_.isUndefined(member.email)) return;
 
-                         emails.push(member.email);
+                         if (member.role == 'mod' || member.role == 'admin') {
+                             emails.push(member.email);
+                         }
 
                          cb();
                      }, function(err) {
@@ -90,6 +92,8 @@ var notifications              = require('../notifications'); // Load Push Event
                      async.each(ticket.group.members, function(member, cb) {
                          if (_.isUndefined(member)) return true;
 
+                         if (member.role != 'mod' && member.role != 'admin') return cb(null);
+
                          var notification = new notificationSchema({
                              owner: member,
                              title: 'Ticket #' + ticket.uid + ' Created',
@@ -128,7 +132,7 @@ var notifications              = require('../notifications'); // Load Push Event
 
     emitter.on('ticket:deleted', function(oId) {
         io.sockets.emit('ticket:delete', oId);
-        winston.warn('ticket deleted: ' + oId);
+        //winston.warn('ticket deleted: ' + oId);
     });
 
     emitter.on('ticket:comment:added', function(ticket, comment) {
