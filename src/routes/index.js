@@ -130,6 +130,11 @@ function handleErrors(err, req, res, next) {
     res.status(status);
     //req.flash('errorMessage', err.message);
 
+    if (status == 404) {
+        res.render('404', {layout: false});
+        return;
+    }
+
     if (status == 503) {
         res.render('503', {layout: false});
         return;
@@ -145,5 +150,6 @@ function handleErrors(err, req, res, next) {
 function handle404(req, res, next) {
     var err = new Error('Not Found: ' + req.protocol + '://' + req.hostname + req.path);
     err.status = 404;
+
     next(err);
 }
