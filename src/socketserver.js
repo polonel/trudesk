@@ -310,7 +310,7 @@ module.exports = function(ws) {
             if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
             issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
             var markedIssue = marked(issue);
-            winston.warn(markedIssue);
+
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
@@ -325,6 +325,33 @@ module.exports = function(ws) {
                     });
                 });
             });
+        });
+
+        socket.on('setCommentText', function(data) {
+            var ticketId = data.ticketId;
+            var commentId = data.commentId;
+            var comment = data.commentText;
+            var ticketSchema = require('./models/ticket');
+            if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
+            comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+            var markedComment = marked(comment);
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return winston.error(err);
+
+                ticket.updateComment(commentId, markedComment, function(err, t) {
+                    if (err) return winston.error(err);
+                    ticket.save(function(err, tt) {
+                        if (err) return winston.error(err);
+
+                        ticketSchema.populate(tt, 'comments.owner', function(err) {
+                            if (err) return winston.error(err);
+                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
+                        });
+                     });
+                });
+            });
+
         });
 
         socket.on('removeComment', function(data) {

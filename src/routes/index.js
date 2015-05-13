@@ -23,10 +23,10 @@ var express     = require('express'),
 var passport = require('passport');
 
 function mainRoutes(router, middleware, controllers) {
-    router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
+    router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
-    router.get('/login', middleware.redirectToLogin, middleware.redirectToDashboardIfLoggedIn);
+    router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
@@ -100,7 +100,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.post('/api/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
-    router.get('/api/groups', middleware.api, controllers.api.groups.get);
+    router.get('/api/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
     router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/groups/:id', middleware.api, controllers.api.groups.updateGroup);

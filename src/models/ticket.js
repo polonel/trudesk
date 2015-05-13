@@ -154,6 +154,21 @@ ticketSchema.methods.setIssue = function(issue, callback) {
     callback(null, this);
 };
 
+ticketSchema.methods.updateComment = function(commentId, commentText, callback) {
+    var comment = _.find(this.comments, function(c){return c._id.toString() == commentId.toString()});
+    if (_.isUndefined(comment)) return callback("Invalid Comment");
+
+    comment.comment = commentText;
+
+    var historyItem = {
+        action: 'ticket:comment:updated',
+        description: 'Comment was updated: ' + commentId
+    };
+    this.history.push(historyItem);
+
+    callback(null, this);
+};
+
 ticketSchema.methods.removeComment = function(commentId, callback) {
     this.comments = _.reject(this.comments, function(o) { return o._id == commentId; });
 

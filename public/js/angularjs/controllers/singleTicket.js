@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'history'], function(angular, _, $, socket, nav) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'tomarkdown', 'history'], function(angular, _, $, socket, nav, md) {
     return angular.module('trudesk.controllers.singleTicket', [])
         .controller('singleTicket', function($scope, $http, $q) {
 
@@ -130,8 +130,9 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                     //Setup Text
                     var iText = $('.issue-text').find('div.issue-body').html();
-                    iText = iText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-                    iText = iText.replace(/(<([^>]+)>)/ig,"");
+                    //iText = iText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
+                    //iText = iText.replace(/(<([^>]+)>)/ig,"");
+                    iText = md(iText);
                     iText = iText.trim();
                     $('#issueText').val(iText);
                 }

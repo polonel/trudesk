@@ -45,7 +45,8 @@ requirejs.config({
         easypiechart:   'vendor/easypiechart/easypiechart',
         chosen:         'vendor/chosen/chosen.jquery.min',
         autogrow:       'plugins/autogrow',
-        pace:           'vendor/pace/pace.min'
+        pace:           'vendor/pace/pace.min',
+        tomarkdown:     'vendor/tomarkdown/tomarkdown'
     },
     shim: {
         foundation: {

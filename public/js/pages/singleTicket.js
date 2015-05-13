@@ -15,8 +15,9 @@
 define('pages/singleTicket', [
     'jquery',
     'underscore',
-    'modules/ui'
-], function($, _, ui) {
+    'modules/ui',
+    'tomarkdown'
+], function($, _, ui, md) {
     var st = {};
     st.init = function() {
         $(document).ready(function() {
@@ -24,6 +25,11 @@ define('pages/singleTicket', [
                 var self = $(this);
                 self.off('click',  onRemoveCommentClick);
                 self.on('click', onRemoveCommentClick);
+            });
+            $('.edit-comment').each(function() {
+                var self = $(this);
+                self.off('click', onEditCommentClick);
+                self.on('click', onEditCommentClick);
             });
             $('.edit-issue').each(function() {
                 var self = $(this);
@@ -34,11 +40,45 @@ define('pages/singleTicket', [
             //Setup Text
             var issueText = $('.issue-text').find('div.issue-body').html();
             if (!_.isUndefined(issueText)) {
-                issueText = issueText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-                issueText = issueText.replace(/(<([^>]+)>)/ig,"");
+                //issueText = issueText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
+                //issueText = issueText.replace(/(<([^>]+)>)/ig,"");
+                issueText = md(issueText);
                 issueText = issueText.trim();
                 $('#issueText').val(issueText);
             }
+
+            // Set Comment Editing
+            $('div.edit-comment-form').find('form').each(function(idx, f) {
+                var form = $(f);
+                form.unbind('submit');
+                form.submit(function($event) {
+                    $event.preventDefault();
+                    var id = $('#__ticketId').html();
+                    if (id.length > 0) {
+                        var comment = $($event.currentTarget).find('textarea#commentText').val();
+                        var commentId = $($event.currentTarget).attr('data-commentId');
+                        comment + '<p>' + comment + '</p>';
+
+                        ui.setCommentText(id, commentId, comment);
+                    }
+                });
+            });
+
+            $('div.edit-comment-form').find('.resetForm').each(function(idx, item) {
+                var button = $(item);
+                button.off('click');
+                button.on('click', function($event) {
+                    $event.preventDefault();
+
+                    var grandParent = button.parents('div.edit-comment-form');
+                    var comment = button.parents('div.ticket-comment').find('.comment-body');
+
+                    if (grandParent.length > 0) {
+                        grandParent.addClass('hide');
+                        comment.removeClass('hide');
+                    }
+                });
+            });
         });
     };
 
@@ -51,6 +91,32 @@ define('pages/singleTicket', [
         var commentId = self.attr('data-commentId');
         if (commentId.length > 0 && ticketId.length > 0) {
             ui.removeComment(ticketId, commentId);
+        }
+    }
+
+    function onEditCommentClick(e) {
+        var self = $(e.currentTarget);
+        if (_.isUndefined(self))
+            return true;
+
+        var commentId = self.attr('data-commentId');
+        if (commentId.length > 0) {
+            var commentForm = $('.edit-comment-form[data-commentid="' + commentId + '"]');
+            if (commentForm.length < 1) return true;
+            var commentText = $('.ticket-comment[data-commentid="' + commentId + '"]').find('.issue-text').find('.comment-body');
+
+            //Setup Text
+            var commentHtml = commentText.html();
+            if (!_.isUndefined(commentHtml)) {
+                //commentHtml = commentHtml.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
+                //commentHtml = commentHtml.replace(/(<([^>]+)>)/ig,"");
+                commentHtml = commentHtml.trim();
+                commentHtml = md(commentHtml);
+                commentForm.find('textarea').val(commentHtml);
+            }
+
+            commentText.addClass('hide');
+            commentForm.removeClass('hide');
         }
     }
 

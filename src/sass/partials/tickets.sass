@@ -249,7 +249,7 @@ div#ticketTable_wrapper
   .ticket-comment,
   .initial-issue
     position: relative
-    .remove-comment,
+    .comment-actions,
     .edit-issue
       position: absolute
       right: 25px
@@ -261,15 +261,21 @@ div#ticketTable_wrapper
       display: none
       color: #8699ac
     &:hover
-      .remove-comment,
+      .comment-actions,
       .edit-issue
         display: block
+    .comment-actions div
+      float: right
+      display: inline-block
+      margin: 0 5px
 
   .ticket-reply,
+  .ticket-comment,
   .initial-issue
     border-bottom: none
     .comment-box,
-    .edit-issue-box
+    .edit-issue-box,
+    .edit-comment-box
       //float: left
       width: 100%
       display: block
@@ -307,6 +313,9 @@ div#ticketTable_wrapper
       &:hover
         background: darken(#cdd5e4, 10%)
 
+.ticket-comment,
+.initial-issue
+  border-bottom: 1px solid #dfe4ef !important
 
 //Ticket Form
 form.ticket-form,

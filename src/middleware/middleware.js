@@ -74,6 +74,14 @@ middleware.loadCommonData = function(req, res, next) {
     });
 };
 
+middleware.cache = function(seconds) {
+    return function(req, res, next) {
+        res.setHeader("Cache-Control", "public, max-age=" + seconds);
+
+        next();
+    }
+};
+
 //API
 middleware.api = function(req, res, next) {
     if (_.isUndefined(db)) {

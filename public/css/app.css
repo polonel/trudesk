@@ -1308,9 +1308,9 @@ div#ticketTable_wrapper {
 .comments-wrapper .ticket-comment,
 .comments-wrapper .initial-issue {
   position: relative; }
-  .comments-wrapper .ticket-comment .remove-comment,
+  .comments-wrapper .ticket-comment .comment-actions,
   .comments-wrapper .ticket-comment .edit-issue,
-  .comments-wrapper .initial-issue .remove-comment,
+  .comments-wrapper .initial-issue .comment-actions,
   .comments-wrapper .initial-issue .edit-issue {
     position: absolute;
     right: 25px;
@@ -1321,26 +1321,42 @@ div#ticketTable_wrapper {
     cursor: pointer;
     display: none;
     color: #8699ac; }
-  .comments-wrapper .ticket-comment:hover .remove-comment,
+  .comments-wrapper .ticket-comment:hover .comment-actions,
   .comments-wrapper .ticket-comment:hover .edit-issue,
-  .comments-wrapper .initial-issue:hover .remove-comment,
+  .comments-wrapper .initial-issue:hover .comment-actions,
   .comments-wrapper .initial-issue:hover .edit-issue {
     display: block; }
+  .comments-wrapper .ticket-comment .comment-actions div,
+  .comments-wrapper .initial-issue .comment-actions div {
+    float: right;
+    display: inline-block;
+    margin: 0 5px; }
 .comments-wrapper .ticket-reply,
+.comments-wrapper .ticket-comment,
 .comments-wrapper .initial-issue {
   border-bottom: none; }
   .comments-wrapper .ticket-reply .comment-box,
   .comments-wrapper .ticket-reply .edit-issue-box,
+  .comments-wrapper .ticket-reply .edit-comment-box,
+  .comments-wrapper .ticket-comment .comment-box,
+  .comments-wrapper .ticket-comment .edit-issue-box,
+  .comments-wrapper .ticket-comment .edit-comment-box,
   .comments-wrapper .initial-issue .comment-box,
-  .comments-wrapper .initial-issue .edit-issue-box {
+  .comments-wrapper .initial-issue .edit-issue-box,
+  .comments-wrapper .initial-issue .edit-comment-box {
     width: 100%;
     display: block;
     padding-left: 85px;
     margin-bottom: 1rem; }
     .comments-wrapper .ticket-reply .comment-box textarea,
     .comments-wrapper .ticket-reply .edit-issue-box textarea,
+    .comments-wrapper .ticket-reply .edit-comment-box textarea,
+    .comments-wrapper .ticket-comment .comment-box textarea,
+    .comments-wrapper .ticket-comment .edit-issue-box textarea,
+    .comments-wrapper .ticket-comment .edit-comment-box textarea,
     .comments-wrapper .initial-issue .comment-box textarea,
-    .comments-wrapper .initial-issue .edit-issue-box textarea {
+    .comments-wrapper .initial-issue .edit-issue-box textarea,
+    .comments-wrapper .initial-issue .edit-comment-box textarea {
       font-family: "open sans", sans-serif;
       font-size: 14px;
       color: #3d4854;
@@ -1358,6 +1374,8 @@ div#ticketTable_wrapper {
       box-sizing: border-box; }
   .comments-wrapper .ticket-reply button[type=submit],
   .comments-wrapper .ticket-reply button[type=reset],
+  .comments-wrapper .ticket-comment button[type=submit],
+  .comments-wrapper .ticket-comment button[type=reset],
   .comments-wrapper .initial-issue button[type=submit],
   .comments-wrapper .initial-issue button[type=reset] {
     font-family: "open sans", sans-serif;
@@ -1371,23 +1389,35 @@ div#ticketTable_wrapper {
     font-weight: 400; }
     .comments-wrapper .ticket-reply button[type=submit]:hover,
     .comments-wrapper .ticket-reply button[type=reset]:hover,
+    .comments-wrapper .ticket-comment button[type=submit]:hover,
+    .comments-wrapper .ticket-comment button[type=reset]:hover,
     .comments-wrapper .initial-issue button[type=submit]:hover,
     .comments-wrapper .initial-issue button[type=reset]:hover {
       background: #e43725; }
     .comments-wrapper .ticket-reply button[type=submit]:active, .comments-wrapper .ticket-reply button[type=submit]:focus,
     .comments-wrapper .ticket-reply button[type=reset]:active,
     .comments-wrapper .ticket-reply button[type=reset]:focus,
+    .comments-wrapper .ticket-comment button[type=submit]:active,
+    .comments-wrapper .ticket-comment button[type=submit]:focus,
+    .comments-wrapper .ticket-comment button[type=reset]:active,
+    .comments-wrapper .ticket-comment button[type=reset]:focus,
     .comments-wrapper .initial-issue button[type=submit]:active,
     .comments-wrapper .initial-issue button[type=submit]:focus,
     .comments-wrapper .initial-issue button[type=reset]:active,
     .comments-wrapper .initial-issue button[type=reset]:focus {
       outline: none; }
   .comments-wrapper .ticket-reply button[type=reset],
+  .comments-wrapper .ticket-comment button[type=reset],
   .comments-wrapper .initial-issue button[type=reset] {
     background: #cdd5e4; }
     .comments-wrapper .ticket-reply button[type=reset]:hover,
+    .comments-wrapper .ticket-comment button[type=reset]:hover,
     .comments-wrapper .initial-issue button[type=reset]:hover {
       background: #acb9d2; }
+
+.ticket-comment,
+.initial-issue {
+  border-bottom: 1px solid #dfe4ef !important; }
 
 form.ticket-form label,
 form.form label {

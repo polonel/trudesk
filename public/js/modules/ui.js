@@ -388,6 +388,16 @@ define('modules/ui', [
         });
     };
 
+    socketUi.setCommentText = function(ticketId, commentId, commentText) {
+        var payload = {
+            ticketId: ticketId,
+            commentId: commentId,
+            commentText: commentText
+        };
+
+        socket.emit('setCommentText', payload);
+    };
+
     socketUi.removeComment = function(ticketId, commentId) {
         var payload = {
             ticketId: ticketId,
@@ -481,7 +491,6 @@ define('modules/ui', [
         socket.on('updateComments', function(data) {
 
             var ticket = data;
-            console.log(ticket);
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
             //var comment = $(ticket.comments).get(-1);
 
@@ -496,15 +505,30 @@ define('modules/ui', [
                 var image = comment.owner.image;
                 if (_.isUndefined(image)) image = 'defaultProfile.jpg';
 
-                html +=  '<div class="ticket-comment">' +
+                html +=  '<div class="ticket-comment" data-commentid="' + comment._id + '">' +
                     '<img src="/uploads/users/' + image + '" alt=""/>' +
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
                     '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
-                    '<p>' + comment.comment + '</p>' +
+                    '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
+                    '<div class="edit-comment-form clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
+                        '<form data-commentid="' + comment._id + '" data-abide>' +
+                            '<div class="edit-comment-box">' +
+                                '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>' +
+                                '<small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>' +
+                            '</div>' +
+                            '<div class="right">' +
+                                '<button class="resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                                '<button type="submit" data-preventDefault="false">Save</button>' +
+                            '</div>' +
+                        '</form>' +
+                    '</div>' +
+                    '<div class="comment-actions">' +
                     '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>' +
+                    '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="fa fa-pencil fa-lg"></i></div>' +
+                    '</div>' +
                     '</div>';
             });
 
