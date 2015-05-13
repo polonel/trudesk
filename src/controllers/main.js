@@ -139,7 +139,7 @@ mainController.dashboard = function(req, res, next) {
         }
     }, function(err, results) {
         var activePercent = (results.activeCount / results.totalCount)*100;
-        var newPercent = (results.newCount / results.totalCount)*100;
+        var newPercent = (results.newCount / (results.activeCount + results.newCount))*100;
         var completedPercent = (results.closedCount / results.totalCount)*100;
         if (isNaN(completedPercent)) completedPercent = 0;
         if (isNaN(activePercent)) activePercent = 0;
