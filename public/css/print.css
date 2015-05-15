@@ -1,0 +1,27 @@
+body {
+    background: #eef1f7;
+}
+
+@media print {
+    html,body {
+        overflow: visible !important;
+    }
+
+    .top-bar-section,
+    .top-nav,
+    .sidebar{
+        display: none;
+    }
+
+    .scrollable {
+        overflow: visible !important;
+    }
+
+    .message-items, .page-left, .page-title-border-right {
+        border-right: none;
+    }
+
+    .ticket-status span {
+        color: #000000 !important;
+    }
+}

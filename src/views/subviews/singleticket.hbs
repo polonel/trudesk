@@ -159,6 +159,11 @@
                         {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
                     </a>
                 </div>
+                <div class="page-actions right">
+                    <div class="print-ticket">
+                        <a href="/tickets/print/{{data.ticket.uid}}" class="no-ajaxy" onclick="window.open(this.href); return false;" onkeypress="window.open(this.href); return false;"><i class="fa fa-print fa-lg"></i>Print</a>
+                    </div>
+                </div>
             </div>
 
             <div class="page-content full-height scrollable">

@@ -237,6 +237,38 @@ ticketsController.create = function(req, res, next) {
     });
 };
 
+ticketsController.print = function(req, res, next) {
+    var self = this;
+    var user = req.user;
+    var uid = req.params.id;
+    self.content = {};
+    self.content.title = "Tickets - " + req.params.id;
+    self.content.nav = 'tickets';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.ticket = {};
+
+    ticketSchema.getTicketByUid(uid, function(err, ticket) {
+        if (err) return handleError(res, err);
+        if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
+
+        if (!_.any(ticket.group.members, user._id)) {
+            winston.warn('User access ticket outside of group - UserId: ' + user._id);
+            return res.redirect('/tickets');
+        }
+
+        self.content.data.ticket = ticket;
+        self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
+        self.content.data.ticket.tagsArray = ticket.tags;
+        self.content.data.ticket.commentCount = _.size(ticket.comments);
+        self.content.layout = 'layout/print';
+
+        return res.render('subviews/printticket', self.content);
+    });
+};
+
 ticketsController.single = function(req, res, next) {
     var self = this;
     var user = req.user;

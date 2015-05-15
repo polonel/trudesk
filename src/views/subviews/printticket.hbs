@@ -1,0 +1,133 @@
+<div>
+    <div>
+        <div class="small-5 medium-5 large-3 columns message-list">
+            <div class="page-title page-title-small noshadow nopadding-right" >
+                <div class="page-title-border-right relative">
+                    <p>Ticket #{{data.ticket.uid}}</p>
+                    <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
+                    <div id="__ticketStatus" class="hide">{{data.ticket.status}}</div>
+                    <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
+                        {{#is data.ticket.status 0}}
+                                <div class="ticket-status ticket-new"><span>New</span></div>
+                        {{/is}}
+                        {{#is data.ticket.status 1}}
+                                <div class="ticket-status ticket-open"><span>Open</span></div>
+                        {{/is}}
+                        {{#is data.ticket.status 2}}
+                                <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                        {{/is}}
+                        {{#is data.ticket.status 3}}
+                                <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                        {{/is}}
+                    </div>
+                </div>
+            </div>
+
+            <div class="page-left full-height">
+                <div class="ticket-details-wrap clearfix">
+                    <div class="ticket-assignee-wrap clearfix" style="position: relative;">
+                        <h4>Assignee</h4>
+                        {{#if data.ticket.assignee}}
+                            <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
+                                <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                                    {{#if data.ticket.assignee.image}}
+                                        <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                                    {{else}}
+                                        <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                    {{/if}}
+                                </a>
+                                <div class="ticket-assignee-details">
+                                    <h3 style="display: block; margin-bottom: -1px;">{{data.ticket.assignee.fullname}}</h3>
+                                    <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}" style="display: inline-block; margin-bottom: 8px;">{{{data.ticket.assignee.email}}}</a>
+                                    <span style="display: block;">{{{data.ticket.assignee.title}}}</span>
+                                </div>
+                            </div>
+                        {{else}}
+                            <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
+                                <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="no-ajaxy">
+                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                </a>
+                                <div class="ticket-assignee-details">
+                                    <h3>No User Assigned</h3>
+                                </div>
+                            </div>
+                        {{/if}}
+                    </div>
+                    <div class="ticket-details row" style="min-height: 0; height: auto; margin-bottom: 25px !important;">
+                        <div class="small-6 columns nopadding">
+                            <div class="" style="margin-bottom: 10px;">
+                                <span>Type:</span>
+                                <p style="font-weight: 600; display: inline; margin-left: 28px;">{{data.ticket.type.name}}</p>
+                            </div>
+                        </div>
+                        <div class="small-6 columns nopadding">
+                            <div class="" style="margin-bottom: 10px;">
+                                <span>Priority:</span>
+                                <p style="font-weight: 600; display: inline; margin-left: 15px;">{{data.ticket.priorityname}}</p>
+                            </div>
+                        </div>
+
+                        <div class="small-12 columns nopadding">
+                            <div style="margin-bottom: 10px;">
+                                <span>Group:</span>
+                                <p style="font-weight: 600; display: inline; margin-left: 20px;">{{data.ticket.group.name}}</p>
+                            </div>
+                        </div>
+
+                        <!--<div class="row nomargin nopadding">-->
+                            <!--<div class="small-12 columns nopadding">-->
+                                <!--<span>Tags:</span>-->
+                                <!--<div class="tag-list1 clearfix">-->
+                                    <!--{{#each data.ticket.tagsArray}}-->
+                                        <!--<div class="item">{{this}}</div>-->
+                                    <!--{{/each}}-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="small-7 columns nopadding page-message">
+            <div class="page-content full-height scrollable">
+                <div class="comments-wrapper">
+                    <div class="initial-issue">
+                        {{#if data.ticket.owner.image}}
+                            <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
+                        {{else}}
+                            <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                        {{/if}}
+                        <div class="issue-text">
+                            <h3>{{data.ticket.subject}}</h3>
+                            <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
+                            <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
+                            <div class="issue-body">
+                                {{{data.ticket.issue}}}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comments" data-ticketId="{{data.ticket._id}}">
+                        {{#foreach data.ticket.comments}}
+                            <div class="ticket-comment" data-commentId="{{_id}}">
+                                {{#if owner.image}}
+                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                {{else}}
+                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                {{/if}}
+                                <div class="issue-text">
+                                    <h3>Re: {{../data.ticket.subject}}</h3>
+                                    <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                    <div class="comment-body">
+                                        <p>{{{comment}}}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/foreach}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

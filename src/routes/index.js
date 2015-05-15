@@ -43,6 +43,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
     router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
+    router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
 
     //Messages

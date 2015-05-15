@@ -1091,6 +1091,19 @@ div#ticketTable_wrapper {
       margin-bottom: 3px;
       cursor: pointer; }
 
+.page-actions .print-ticket a {
+  display: inline-block;
+  margin: 19px;
+  color: #707989;
+  font-size: 14px;
+  font-weight: 300; }
+  .page-actions .print-ticket a:hover {
+    color: #59606d; }
+.page-actions .print-ticket i {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 18px; }
+
 .page-top-comments .active > a,
 .page-top-comments .active > button {
   background: #cad2e2; }
