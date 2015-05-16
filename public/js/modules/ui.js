@@ -378,7 +378,7 @@ define('modules/ui', [
     socketUi.updateTicketIssue = function() {
         socket.removeAllListeners('updateTicketIssue');
         socket.on('updateTicketIssue', function(data) {
-            var issueText = $('.initial-issue').find('div.issue-text').find('div.issue-body');
+            var issueText = $('.initial-issue[data-ticketid="' + data._id + '"]').find('div.issue-text').find('div.issue-body');
             var issueForm = $('.edit-issue-form');
             if (issueText.length > 0) {
                 issueText.html(data.issue);

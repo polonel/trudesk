@@ -168,7 +168,7 @@
 
             <div class="page-content full-height scrollable">
                 <div class="comments-wrapper">
-                    <div class="initial-issue">
+                    <div class="initial-issue" data-ticketid="{{data.ticket._id}}">
                         {{#if data.ticket.owner.image}}
                             <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
                         {{else}}
