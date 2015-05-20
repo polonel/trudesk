@@ -1037,8 +1037,10 @@ input[type="checkbox"]:checked + label {
   .ticketContent {
     padding: 0 0 0 55px !important; } }
 
-div#ticketTable_wrapper,
-div#accountsTable_wrapper {
+.ticketList {
+  overflow: hidden; }
+
+div#ticketTable_wrapper {
   margin-bottom: 0; }
 
 .ticket-status span {
@@ -1540,22 +1542,24 @@ table.dataTable {
 
 div.dataTables_wrapper {
   background: #f6f8fb; }
-  div.dataTables_wrapper .dataTables_filter label, div.dataTables_wrapper .dataTables_filter input {
-    font-family: "open sans", sans-serif;
-    font-weight: 300;
-    font-size: 13px;
-    margin-right: 5px; }
-  div.dataTables_wrapper .dataTables_filter input {
-    margin: 7px 15px 7px 7px;
-    height: 30px;
-    padding: 8px;
-    border-radius: 4px;
-    -webkit-border-radius: 4px;
-    -moz-border-radius: 4px; }
-    div.dataTables_wrapper .dataTables_filter input:focus {
-      box-shadow: none;
-      -webkit-box-shadow: none;
-      -moz-box-shadow: none; }
+  div.dataTables_wrapper .dataTables_filter {
+    float: right; }
+    div.dataTables_wrapper .dataTables_filter label, div.dataTables_wrapper .dataTables_filter input {
+      font-family: "open sans", sans-serif;
+      font-weight: 300;
+      font-size: 13px;
+      margin-right: 5px; }
+    div.dataTables_wrapper .dataTables_filter input {
+      margin: 7px 15px 7px 7px;
+      height: 30px;
+      padding: 8px;
+      border-radius: 4px;
+      -webkit-border-radius: 4px;
+      -moz-border-radius: 4px; }
+      div.dataTables_wrapper .dataTables_filter input:focus {
+        box-shadow: none;
+        -webkit-box-shadow: none;
+        -moz-box-shadow: none; }
 
 .server-row {
   margin: 25px 0 0 0 !important; }
