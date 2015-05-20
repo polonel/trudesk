@@ -1037,9 +1037,9 @@ input[type="checkbox"]:checked + label {
   .ticketContent {
     padding: 0 0 0 55px !important; } }
 
-div#ticketTable_wrapper {
-  margin-bottom: 0;
-  background: white; }
+div#ticketTable_wrapper,
+div#accountsTable_wrapper {
+  margin-bottom: 0; }
 
 .ticket-status span {
   display: block;
@@ -1548,7 +1548,10 @@ div.dataTables_wrapper {
   div.dataTables_wrapper .dataTables_filter input {
     margin: 7px 15px 7px 7px;
     height: 30px;
-    padding: 8px; }
+    padding: 8px;
+    border-radius: 4px;
+    -webkit-border-radius: 4px;
+    -moz-border-radius: 4px; }
     div.dataTables_wrapper .dataTables_filter input:focus {
       box-shadow: none;
       -webkit-box-shadow: none;
