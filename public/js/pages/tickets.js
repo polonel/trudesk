@@ -29,7 +29,7 @@ define('pages/tickets', [
         $(document).ready(function() {
             var table = $('#ticketTable');
             table.dataTable({
-                searching: false,
+                searching: true,
                 bLengthChange: false,
                 bPaginate: false,
                 bInfo: false,
