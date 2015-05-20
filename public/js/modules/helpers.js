@@ -243,8 +243,6 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 var h = $(window).height();
                 if (self.css('borderTopStyle') === "solid")
                     h = h - 1;
-//                if (self.hasClass('ticketList'))
-//                    h = h - 44;
 
                 //self.css('overflow', 'hidden');
                 self.height(h - (self.offset().top));

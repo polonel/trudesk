@@ -1037,10 +1037,12 @@ input[type="checkbox"]:checked + label {
   .ticketContent {
     padding: 0 0 0 55px !important; } }
 
-.ticketList {
+.ticketList,
+.accountList {
   overflow: hidden; }
 
-div#ticketTable_wrapper {
+div#ticketTable_wrapper,
+div#accountsTable_wrapper {
   margin-bottom: 0; }
 
 .ticket-status span {
