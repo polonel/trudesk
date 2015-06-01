@@ -34,7 +34,7 @@
             <ul class="button-group">
                 <li class=""><a href="#" class="btn no-ajaxy" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
                 <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="forwardClicked()"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
                 <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
                 {{#is folder 'Trash'}}
                     <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>

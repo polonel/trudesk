@@ -32,7 +32,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 openNewMessageWindow.openWindowWithOptions(replyToId, subjectText, '');
             };
 
-            $scope.forwardClicked = function() {
+            $scope.forwardClicked = function($event) {
+                $event.preventDefault();
                 var messageContent = $('#message-content');
                 if (messageContent.length < 1) return true;
 
