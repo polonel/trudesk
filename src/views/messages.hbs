@@ -1,67 +1,75 @@
-<div class="small-5 medium-5 large-3 columns message-list">
-    <div class="page-title noshadow nopadding-right">
-        <div class="page-title-border-right">
-            <p>Messages</p>
+<div id="__folder" class="hide">{{folderNum}}</div>
+<div ng-controller="messagesCtrl">
+    <div class="small-5 medium-5 large-3 columns message-list">
+        <div class="page-title noshadow nopadding-right">
+            <div class="page-title-border-right">
+                <p>Messages</p>
+            </div>
+        </div>
+
+        <div class="full-height">
+            <form id="messagesForm" action="#" style="margin: 0">
+                <ul class="message-items full-height scrollable" data-folder="{{lowercase folder}}">
+                    <li class="message-folder">{{{folder}}}</li>
+
+                    {{#foreach data.messages.items}}
+                        <li class="{{#if unread}}unread message-tag{{/if}}" data-messageId="{{_id}}">
+                            <input id="c_{{_id}}" type="checkbox"/>
+                            <label for="c_{{_id}}"></label>
+                            <span class="message-date">{{calendarDate date "MM/DD/YYYY"}}</span>
+                            <span class="message-from">{{from.fullname}}</span>
+                            <span class="message-subject">{{subject}}</span>
+                        </li>
+                    {{/foreach}}
+
+
+
+                </ul>
+            </form>
+        </div>
+
+    </div>
+    <div class="small-7 columns nopadding page-message">
+        <div class="page-title-right noshadow">
+            <ul class="button-group">
+                <li class=""><a href="#" class="btn no-ajaxy" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="forwardClicked()"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
+                {{#is folder 'Trash'}}
+                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
+                {{else}}
+                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
+                {{/is}}
+                <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
+                <li>
+                    <ul id="drop1" class="f-dropdown" data-dropdown-content>
+                        <li><a href="#">Here</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+
+        <div id="message-content" class="page-content full-height scrollable">
+            {{#if data.messages.message}}
+                <div class="message-header">
+                    <h1>{{data.messages.message.subject}}</h1>
+                    <span>From:</span>
+                    <div class="message-from-id hide">{{data.messages.message.from._id}}</div>
+                    <a href="#" data-dropdown="drop" data-options="align:left" class="button dropdown no-ajaxy">{{data.messages.message.from.fullname}}</a>
+                    <ul id="drop"  class="f-dropdown" data-dropdown-content>
+                        <li><a href="#">Chat</a></li>
+                        <li><a href="#">View Contact</a></li>
+                    </ul>
+                </div>
+                <div class="message">
+                    {{{data.messages.message.message}}}
+                </div>
+            {{/if}}
         </div>
     </div>
 
-    <div class="full-height">
-        <form action="#" style="margin: 0">
-            <ul class="message-items full-height scrollable">
-                <li class="message-folder">{{{folder}}}</li>
-
-                {{#foreach data.messages.inbox}}
-                    <li class="{{#if unread}}unread message-tag{{/if}}" data-messageId="{{_id}}">
-                        <input id="c_{{_id}}" type="checkbox"/>
-                        <label for="c_{{_id}}"></label>
-                        <span class="message-date">{{formatDate date "MM/DD/YYYY"}}</span>
-                        <span class="message-from">{{from.fullname}}</span>
-                        <span class="message-subject">{{subject}}</span>
-                    </li>
-                {{/foreach}}
-
-
-
-            </ul>
-        </form>
-    </div>
-
 </div>
-<div class="small-7 columns nopadding page-message">
-    <div class="page-title-right noshadow">
-        <ul class="button-group">
-            <li class=""><a href="#" class="btn"><i class="fa fa-pencil"></i>New</a></li>
-            <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-reply"></i>Reply</a></li>
-            <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-mail-forward"></i>Forward</a></li>
-            <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
-            <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-trash-o"></i>Trash</a></li>
-            <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
-            <li>
-                <ul id="drop1" class="f-dropdown" data-dropdown-content>
-                    <li><a href="#">Here</a></li>
-                </ul>
-            </li>
-        </ul>
-    </div>
-
-    <div class="page-content full-height scrollable">
-        {{#if data.messages.message}}
-            <div class="message-header">
-                <h1>{{data.messages.message.subject}}</h1>
-                <span>From:</span>
-                <a href="#" data-dropdown="drop" data-options="align:left" class="button dropdown no-ajaxy">{{data.messages.message.from.fullname}}</a>
-                <ul id="drop"  class="f-dropdown" data-dropdown-content>
-                    <li><a href="#">Chat</a></li>
-                    <li><a href="#">View Contact</a></li>
-                </ul>
-            </div>
-            <div class="message">
-                {{{data.messages.message.message}}}
-            </div>
-        {{/if}}
-    </div>
-</div>
-
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">

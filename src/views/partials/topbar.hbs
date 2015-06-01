@@ -32,11 +32,11 @@
                         <li class="top-bar-icon">
                             <img src="/img/midDots.png" alt="" style="margin-right: 10px; margin-left: 10px; margin-top: -3px"/>
                         </li>
-                        <!--<li class="top-bar-icon">-->
-                            <!--<a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>-->
-                                <!--<span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>-->
-                            <!--</a>-->
-                        <!--</li>-->
+                        <li class="top-bar-icon">
+                            <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
+                                <span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
+                            </a>
+                        </li>
                         <li class="top-bar-icon">
                             <a id="btn_notifications" href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i>
                                 <span class="alert round label {{#compare data.common.notifications.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.notifications.unreadCount}}</span>
@@ -101,83 +101,9 @@
                             </ul>
                         </div>
                     </div>
-                    {{> topbar/notifications }}
-                    <div id="mail-notifications" data-scroll="mail-Messages" class="notifications p-dropdown">
-                        <div class="actions"><a href="/messages/inbox" class="blackLink">Inbox</a><div class="right"><a href="#" class="hoverUnderline">Send a New Message</a></div></div>
-                        <div id="mail-Messages" class="mail-Messages close-on-click">
-                            <ul>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>
-                                            <div class="messageAuthor"><strong>Chris Brame</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>Here is the content</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T11:00" class="timestamp">Aug 25</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>
-                                            <div class="messageAuthor"><strong>Rick Spencer</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>Need to order this part for Ticket #172.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>
-                                            <div class="messageAuthor"><strong>Jon Bullock</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>Don't forget to get on zoe, server was spiking this morning.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>
-                                            <div class="messageAuthor"><strong>Rick Spencer</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>Don't forget to get on zoe, server was spiking this morning.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="messageNotification" href="#" role="button">
-                                        <div class="clearfix">
-                                            <div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>
-                                            <div class="messageAuthor"><strong>Rick Spencer</strong></div>
-                                            <div class="messageSnippet">
-                                                <span>Don't forget to get on zoe, server was spiking this morning.</span>
-                                            </div>
-                                            <div class="messageDate">
-                                                <time datetime="2014-08-25T11:00" class="timestamp">Aug 23</time>
-                                            </div>
-                                        </div>
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
+                    <div ng-controller="commonCtrl">
+                        {{> topbar/notifications }}
+                        {{> topbar/messages }}
                     </div>
                 </div>
             </section>

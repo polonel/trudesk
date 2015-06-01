@@ -14,12 +14,14 @@
 
 define('modules/ui', [
     'jquery',
+    'underscore',
     'modules/helpers',
     'modules/navigation',
+    'modules/socket.io/messagesUI',
     'nicescroll',
     'history'
 
-], function($, helpers, nav) {
+], function($, _, helpers, nav, msgUI) {
     var socketUi = {},
         socket = io.connect();
 
@@ -41,7 +43,29 @@ define('modules/ui', [
         //Events
         this.onTicketCreated();
         this.onTicketDelete();
+
+        this.updateMessagesFolder(socket);
+        this.updateSingleMessageItem(socket);
     };
+
+    socketUi.setMessageRead = function(messageId) {
+        msgUI.setMessageRead(socket, messageId);
+    };
+
+    socketUi.sendUpdateMessageFolder = function(folder) {
+        socket.emit('updateMessageFolder', {folder: folder});
+    };
+
+    socketUi.moveMessageToFolder = function(messageIds, toFolder, folderToRefresh) {
+        socket.emit('moveMessageToFolder', messageIds, toFolder, folderToRefresh);
+    };
+
+    socketUi.deletedMessages = function(messageIds) {
+        socket.emit('deleteMessages', messageIds);
+    };
+
+    socketUi.updateSingleMessageItem = msgUI.updateSingleMessageItem;
+    socketUi.updateMessagesFolder = msgUI.updateMessagesFolder;
 
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');
@@ -85,12 +109,43 @@ define('modules/ui', [
         socket.removeAllListeners('updateMailNotifications');
         socket.on('updateMailNotifications', function(data) {
             var label = $('#btn_mail-notifications').find('> span');
-            if (data < 1) {
+            var count = data.unreadCount;
+            var items = data.unreadItems;
+            if (count < 1) {
                 label.hide();
             } else {
-                label.html(data);
+                label.html(count);
                 label.show();
             }
+
+            var mailDropList = $('div.mail-Messages').find('ul');
+            mailDropList.find('li').each(function() {
+                $(this).remove();
+            });
+
+            var html = "";
+
+            _.each(items, function(item) {
+                html    += '<li>';
+                html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
+                html    += '<div class="clearfix">';
+                if (item.from.image)
+                    html    += '<div class="profilePic left"><img src="/uploads/users/' + item.from.image + '" alt="profile"/></div>';
+                else
+                    html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
+                html    += '<div class="messageAuthor"><strong>' + item.from.fullname + '</strong></div>';
+                html    += '<div class="messageSnippet">';
+                html    += '<span>' + item.subject + '</span>';
+                html    += '</div>';
+                html    += '<div class="messageDate">';
+                html    += '<time datetime="' + helpers.formatDate(item.date, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.date, "MMM DD, YYYY") + '</time>';
+                html    += '</div>';
+                html    += '</div>';
+                html    += '</a>';
+                html    += '</li>';
+            });
+
+            mailDropList.append(html);
         });
     };
 

@@ -426,8 +426,7 @@ var helpers = {
         var buffer = "";
         // Better performance: http://jsperf.com/for-vs-forEach/2
         var i = 0;
-        var j = total;
-        while (i < j) {
+        while (i < total) {
             // stick an index property onto the item, starting
             // with 1, may make configurable later
             var item = array[i];
@@ -447,9 +446,17 @@ var helpers = {
         return moment(date).format(format);
     },
 
+    calendarDate: function(date) {
+        return moment(date).calendar();
+    },
+
     firstCap: function(str) {
         var _s = require('underscore.string');
         return _s.capitalize(str);
+    },
+
+    lowercase: function(str) {
+        return str.toLowerCase();
     },
 
     substring: function(start, len, options) {

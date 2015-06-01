@@ -109,6 +109,14 @@ requirejs.config({
 
         pace: {
             deps: ['jquery']
+        },
+
+        chosen: {
+            deps: ['jquery']
+        },
+
+        history: {
+            deps: ['jquery']
         }
     },
     priority: [

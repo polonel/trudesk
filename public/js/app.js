@@ -45,6 +45,12 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
                 patterns: {
                     is5Long: /.{5,}/
                 }
+            },
+            reveal: {
+                animation: 'fade',
+                animation_speed: 200,
+                close_on_background_click: true,
+                close_on_esc: true
             }
         });
 

@@ -24,6 +24,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         $(window).resize(layout);
 
         self.resizeFullHeight();
+        self.removeAllScrollers();
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
@@ -34,6 +35,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.bindKeys();
         self.ajaxFormSubmit();
         self.setupChosen();
+        self.bindNewMessageSubmit();
     };
 
     helpers.showFlash = function(message, error, sticky) {
@@ -233,6 +235,13 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         if (!niceScroll) return true;
 
         niceScroll.resize();
+    };
+
+    helpers.removeAllScrollers = function() {
+        $('.nicescroll-rails').each(function() {
+            var self = $(this);
+            self.remove();
+        });
     };
 
     helpers.resizeFullHeight = function() {
@@ -482,7 +491,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         $('.chosen-select').each(function() {
             var self = $(this);
             var nosearch = $(this).attr('data-nosearch');
-            var placeholder = 'Select Some Options';
+            var placeholder = '';
             var elePlaceHolder = $(this).attr('data-placeholder');
             var searchNum = 10;
             if (nosearch) searchNum = 90000;
@@ -497,6 +506,62 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             });
         });
     };
+
+    helpers.clearMessageContent = function() {
+        var contentDiv = $('#message-content');
+        if (contentDiv.length > 0)
+            contentDiv.html('');
+    };
+
+    helpers.closeMessageWindow = function() {
+        //Close reveal and refresh page.
+        $('#newMessageModal').foundation('reveal', 'close');
+        //Clear Fields
+        $("#newMessageTo").find("option").prop('selected', false);
+        $('#newMessageTo').trigger('chosen:updated');
+        $('#newMessageSubject').val('');
+        $('#newMessageText').val('');
+    };
+
+    helpers.bindNewMessageSubmit = function() {
+        var messageForm = $('#newMessageForm');
+        if (messageForm.length < 1) return;
+
+        messageForm.unbind('submit', newMessageSubmit);
+        messageForm.bind('submit', newMessageSubmit);
+    };
+
+    function newMessageSubmit(e) {
+        e.preventDefault();
+        var formData = $('#newMessageForm').serializeObject();
+
+        var data = {
+            to: formData.newMessageTo,
+            from: formData.from,
+            subject: formData.newMessageSubject,
+            message: formData.newMessageText
+        };
+
+        $.ajax({
+            method: 'POST',
+            url: '/api/messages/send',
+            data: JSON.stringify(data),
+            processData: false,
+            //headers: { 'Content-Type': 'application/json'}
+            contentType: "application/json; charset=utf-8",
+            dataType: "json"
+        })
+            .success(function() {
+                helpers.showFlash('Message Sent');
+
+                helpers.closeMessageWindow();
+            })
+            .error(function(err) {
+                helpers.closeMessageWindow();
+                helpers.showFlash(err.error, true);
+                console.log(err);
+            });
+    }
     
     return helpers;
 });

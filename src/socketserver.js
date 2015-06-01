@@ -83,10 +83,31 @@ module.exports = function(ws) {
         function updateMailNotifications() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
-            messageSchema.getUnreadInboxCount(userId, function(err, objs) {
+            var payload = {};
+            async.parallel([
+                function(callback) {
+                    messageSchema.getUnreadInboxCount(userId, function(err, objs) {
+                        if (err) return callback();
+                        payload.unreadCount = objs;
+
+                       callback();
+                    });
+                },
+
+                function(callback){
+                    messageSchema.getUserUnreadMessages(userId, function(err, objs) {
+                        if (err) return callback();
+                        payload.unreadItems = objs;
+
+                        callback();
+                    });
+                }
+            ], function(err) {
                 if (err) return true;
-                utils.sendToSelf(socket, 'updateMailNotifications', objs);
+
+                utils.sendToSelf(socket, 'updateMailNotifications', payload);
             });
+
         }
 
         socket.on('updateMailNotifications', function() {
@@ -175,6 +196,22 @@ module.exports = function(ws) {
                 if (err) return true;
 
                 utils.sendToAllConnectedClients(io, 'updateComments', ticket);
+            });
+        });
+
+        socket.on('updateMessageFolder', function(data) {
+            var messageSchema = require('./models/message');
+            var user = socket.request.user;
+            var folder = data.folder;
+            messageSchema.getUserFolder(user._id, folder, function(err, items) {
+                if (err) return true;
+
+                var payload = {
+                    folder: folder,
+                    items: items
+                };
+
+                utils.sendToSelf(socket, 'updateMessagesFolder', payload);
             });
         });
 
@@ -378,6 +415,88 @@ module.exports = function(ws) {
                 });
             });
 
+        });
+
+        socket.on('setMessageRead', function(messageId) {
+            var messageSchema = require('./models/message');
+            messageSchema.getMessageById(messageId, function(err, message) {
+                if (err) {
+                    winston.warn(err.message);
+                    return true;
+                }
+
+                if (!message.unread) return true;
+
+                message.updateUnread(false, function(err, m) {
+                    if (err) {
+                        winston.warn(err.message);
+                        return true;
+                    }
+
+                    utils.sendToSelf(socket, 'updateSingleMessageItem', m);
+                });
+            });
+        });
+
+        socket.on('moveMessageToFolder', function(messageIds, toFolder, folderToRefresh) {
+            var messageSchema = require('./models/message');
+            var infoMessage = undefined;
+            switch(toFolder) {
+                case 2:
+                    infoMessage = 'Message Successfully Move to Trash.';
+                    break;
+            }
+
+            async.each(messageIds, function(mId, callback) {
+                messageSchema.getMessageById(mId, function(err, message) {
+                    message.moveToFolder(toFolder, function(err, m) {
+                       callback(err);
+                    });
+                });
+            }, function(err) {
+                if (err) {
+                    return true;
+                }
+
+                var user = socket.request.user;
+                messageSchema.getUserFolder(user._id, folderToRefresh, function(err, items) {
+                    if (err) return true;
+
+                    var payload = {
+                        folder: folderToRefresh,
+                        items: items,
+                        infoMessage: infoMessage
+                    };
+
+                    utils.sendToSelf(socket, 'updateMessagesFolder', payload);
+                });
+            });
+        });
+
+        socket.on('deleteMessages', function(messageIds) {
+            var messageSchema = require('./models/message');
+            async.each(messageIds, function(mId, callback) {
+                messageSchema.deleteMessage(mId, function(err, message) {
+                    callback(err);
+                });
+            }, function(err) {
+                if (err) {
+                    return true;
+                }
+
+                var user = socket.request.user;
+                messageSchema.getUserFolder(user._id, 2, function(err, items) {
+                    if (err) return true;
+
+                    var payload = {
+                        folder: 2,
+                        items: items,
+                        infoMessage: 'Message Successfully Deleted.'
+                    };
+
+                    utils.sendToSelf(socket, 'updateMessagesFolder', payload);
+                });
+            });
         });
 
         socket.on('joinChatServer', function(data) {

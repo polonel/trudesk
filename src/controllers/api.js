@@ -94,6 +94,44 @@ apiController.import = function(req, res, next) {
     });
 };
 
+apiController.testPromo = function(req, res, next) {
+    var path                = require('path');
+    var mailer              = require('../mailer');
+    var emailTemplates      = require('email-templates');
+    var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
+
+    emailTemplates(templateDir, function(err, template) {
+        if (err) {
+            winston.error(err);
+        } else {
+
+            template('promo', function(err, html) {
+                if (err) {
+                    winston.error(err);
+                } else {
+                    var mailOptions = {
+                        from: 'no-reply@trudesk.io',
+                        to: 'chris.brame@granvillecounty.org',
+                        subject: 'Trudesk Launch',
+                        html: html,
+                        generateTextFromHTML: true
+                    };
+
+                    mailer.sendMail(mailOptions, function(err, info) {
+                        if (err) {
+                            winston.warn(err);
+                            return res.send(err);
+                        }
+
+
+                        return res.status(200).send('OK');
+                    });
+                }
+            });
+        }
+    });
+};
+
 apiController.index = function(req, res, next) {
     res.redirect('login');
 };
@@ -328,7 +366,7 @@ apiController.devices.testApn = function(req, res, next) {
 //Groups
 apiController.groups = {};
 apiController.groups.get = function(req, res, next) {
-    var accessToken = req.query.token;
+    var accessToken = req.headers.accesstoken;
 
     if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
         var user = req.user;
@@ -518,16 +556,24 @@ apiController.tickets.create = function(req, res) {
 };
 
 apiController.tickets.single = function(req, res, next) {
-    var uid = req.params.uid;
-    if (_.isUndefined(uid)) return res.send('Invalid Ticket Id');
+    var accessToken = req.headers.accesstoken;
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(400).json({'success': false, 'error': err.message});
+        if (!user) return res.status(200).json({'success': false, 'error': 'Invalid User from Access Token'});
 
-    var ticketModel = require('../models/ticket');
-    ticketModel.getTicketByUid(uid, function(err, ticket) {
-        if (err) return res.send(err);
+        var uid = req.params.uid;
+        if (_.isUndefined(uid)) return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
 
-        if (_.isUndefined(ticket) || _.isNull(ticket)) return res.send("Invalid Ticket Id");
+        var ticketModel = require('../models/ticket');
+        ticketModel.getTicketByUid(uid, function(err, ticket) {
+            if (err) return res.send(err);
 
-        return res.json(ticket);
+            if (_.isUndefined(ticket)
+                || _.isNull(ticket))
+                return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
+
+            return res.json({'success': true, 'ticket': ticket});
+        });
     });
 };
 
@@ -550,6 +596,11 @@ apiController.tickets.update = function(req, res, next) {
 
             if (!_.isUndefined(reqTicket.group))
                 ticket.group = reqTicket.group;
+
+            if (!_.isUndefined(reqTicket.closedDate))
+                ticket.closedDate = reqTicket.closedDate;
+
+
 
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);
@@ -724,6 +775,72 @@ apiController.roles = {};
 apiController.roles.get = function(req, res, next) {
     var roles = permissions.roles;
     return res.json(roles);
+};
+
+//Messages
+apiController.messages = {};
+apiController.messages.send = function(req, res, next) {
+    var accessToken = req.headers.accesstoken;
+    var messageData = req.body;
+
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
+        var user = req.user;
+        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
+
+        //if req.user is set
+        var messageSchema = require('../models/message');
+        var to = messageData.to;
+        if (!_.isArray(to)) {
+            to = [messageData.to]
+        }
+
+        async.each(to, function(owner, callback) {
+            async.parallel([
+                function(done) {
+                    var message = new messageSchema({
+                        owner: owner,
+                        from: user._id,
+                        subject: messageData.subject,
+                        message: messageData.message
+                    });
+
+                    message.save(function(err) {
+                        done(err);
+                    });
+                },
+                function(done) {
+                    //Save to Sent Items
+                    var message = new messageSchema({
+                        owner: user._id,
+                        from: owner,
+                        folder: 1,
+                        subject: messageData.subject,
+                        message: messageData.message
+                    });
+
+                    message.save(function(err) {
+                        done(err);
+                    });
+                }
+            ], function(err) {
+                if (err) return callback(err);
+                callback();
+            });
+        }, function(err) {
+            if (err) return res.status(400).json({error: err});
+
+            res.status(200).json({success: true});
+        });
+    } else {
+        //get user by access token
+        userSchema.getUserByAccessToken(accessToken, function(err, user) {
+            if (err) return res.status(401).json({'error': err.message});
+            if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+            var messageSchema = require('../models/message');
+
+        });
+    }
 };
 
 module.exports = apiController;

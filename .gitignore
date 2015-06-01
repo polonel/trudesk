@@ -31,3 +31,4 @@ node_modules
 
 #custom
 import.csv
+src/mailer/templates/promo/

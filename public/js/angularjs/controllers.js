@@ -23,20 +23,23 @@ define([
     'angularjs/controllers/accounts',
     'angularjs/controllers/groups',
     'angularjs/controllers/tickets',
-    'angularjs/controllers/singleTicket'
+    'angularjs/controllers/singleTicket',
+    'angularjs/controllers/messages'
 
     ], function($, angular, _) {
 
     return angular.module('trudesk.controllers',
         [
-            'trudesk.controllers.common',
             'trudesk.controllers.profile',
             'trudesk.controllers.accounts',
             'trudesk.controllers.groups',
             'trudesk.controllers.tickets',
-            'trudesk.controllers.singleTicket'
+            'trudesk.controllers.singleTicket',
+            'trudesk.controllers.messages',
+
+            'trudesk.controllers.common'
         ])
-        .controller('truCtrl', function($scope) {
+        .controller('truCtrl', ['openNewMessageWindow', '$scope', function(openNewMessageWindow, $scope) {
             $scope.submitForm = function(formName, $event) {
                 if (_.isNull(formName) || _.isUndefined(formName)) return true;
 
@@ -46,7 +49,6 @@ define([
                 if (!_.isUndefined(form)) {
                     form.submit();
                 }
-            }
-
-        });
+            };
+        }]);
 });

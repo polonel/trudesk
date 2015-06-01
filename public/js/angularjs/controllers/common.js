@@ -13,10 +13,8 @@
  **/
 
 define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
-    return angular.module('trudesk.controllers.common', [])
-        .controller('commonCtrl', function($scope, $http) {
-
-
+    return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
+        .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', function(openNewMessageWindow, $scope, $http) {
             $scope.clearNotifications = function($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -31,5 +29,10 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
                 socket.ui.markNotificationRead($id);
             };
 
-        });
+            $scope.openNewMessageWindow = function($event) {
+                $event.preventDefault();
+                openNewMessageWindow.openWindow();
+            }
+
+        }]);
 });

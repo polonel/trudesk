@@ -12,7 +12,9 @@
 
  **/
 
-var async = require('async');
+var _       = require('underscore'),
+    async   = require('async'),
+    userSchema = require('../models/user');
 
 var messagesController = {};
 
@@ -25,6 +27,7 @@ messagesController.get = function(req, res, next) {
     self.content.nav = 'messages';
     self.content.subnav = 'messages-inbox';
     self.content.folder = "Inbox";
+    self.content.folderNum = 0;
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
@@ -34,14 +37,16 @@ messagesController.get = function(req, res, next) {
     self.content.data.messages = {};
     async.parallel([
         function(callback) {
-            messages.getUserInbox(req.user._id, function(err, objs) {
-                self.content.data.messages.inbox = objs;
-
+            messages.getUserFolder(req.user._id, 0, function(err, objs) {
+                self.content.data.messages.items = objs;
+                self.content.data.messages.count = _.size(objs);
                 callback(err, objs);
             });
         }
     ],
     function(err, results) {
+        if (err) return res.render('error', err);
+
         res.render('messages', self.content);
     });
 
@@ -54,7 +59,7 @@ messagesController.getSentItems = function(req, res, next) {
     self.content.nav = 'messages';
     self.content.subnav = 'messages-sentitems';
     self.content.folder = "Sent Items";
-
+    self.content.folderNum = 1;
     //Setup Data
     self.content.data = {};
     self.content.data.user = req.user;
@@ -65,8 +70,9 @@ messagesController.getSentItems = function(req, res, next) {
     self.content.data.messages = {};
     async.parallel([
             function(callback) {
-                messages.getUserSentBox(req.user._id, function(err, objs) {
-                    self.content.data.messages.inbox = objs;
+                messages.getUserFolder(req.user._id, 1, function(err, objs) {
+                    self.content.data.messages.items = objs;
+                    self.content.data.messages.count = _.size(objs);
 
                     callback(err, objs);
                 });
@@ -85,6 +91,7 @@ messagesController.getTrashItems = function(req, res, next) {
     self.content.nav = 'messages';
     self.content.subnav = 'messages-trash';
     self.content.folder = "Trash";
+    self.content.folderNum = 2;
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
@@ -94,8 +101,9 @@ messagesController.getTrashItems = function(req, res, next) {
     self.content.data.messages = {};
     async.parallel([
             function(callback) {
-                messages.getUserTrashBox(req.user._id, function(err, objs) {
-                    self.content.data.messages.inbox = objs;
+                messages.getUserFolder(req.user._id, 2, function(err, objs) {
+                    self.content.data.messages.items = objs;
+                    self.content.data.messages.count = _.size(objs);
 
                     callback(err, objs);
                 });
@@ -114,6 +122,7 @@ messagesController.getById = function(req, res, next) {
     self.content.nav = 'messages';
     self.content.subnav = 'messages-inbox';
     self.content.folder = "Inbox";
+    self.content.folderNum = 0;
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
@@ -123,8 +132,9 @@ messagesController.getById = function(req, res, next) {
     self.content.data.messages = {};
     async.parallel([
             function(callback) {
-                messages.getUserInbox(req.user._id, function(err, objs) {
-                    self.content.data.messages.inbox = objs;
+                messages.getUserFolder(req.user._id, 0, function(err, objs) {
+                    self.content.data.messages.items = objs;
+                    self.content.data.messages.count = _.size(objs);
 
                     callback(err, objs);
                 });
@@ -132,11 +142,16 @@ messagesController.getById = function(req, res, next) {
             function(callback) {
                 messages.getMessageById(req.params.id, function(err, obj) {
                     self.content.data.messages.message = obj;
+
                     callback(err, obj);
                 });
             }
         ],
         function(err, results) {
+            if (err) {
+                throw new Error(err);
+            }
+
             res.render('messages', self.content);
         });
 };

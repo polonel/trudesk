@@ -112,6 +112,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/users/:username', middleware.api, controllers.api.users.update);
     router.delete('/api/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.get('/api/roles', middleware.api, controllers.api.roles.get);
+    router.post('/api/messages/send', middleware.api, controllers.api.messages.send);
 
     router.get('/api/import', middleware.api, controllers.api.import);
 }

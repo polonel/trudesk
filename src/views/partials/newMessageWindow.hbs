@@ -1,0 +1,26 @@
+<div id="newMessageModal" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog" data-options="animation:none;">
+    <h2 id="modalTitle">New Message</h2>
+    <div>
+        <form id="newMessageForm" action="#" method="POST" class="nomargin">
+            <input type="hidden" name="from" value="{{data.user._id}}"/>
+            <label for="newMessageTo">To:</label>
+            <select name="newMessageTo" id="newMessageTo" multiple class="chosen-select" data-placeholder=" ">
+                {{#each data.common.messages.users}}
+                    <option value="{{_id}}">{{fullname}}</option>
+                {{/each}}
+            </select>
+
+            <label for="newMessageSubject" style="margin-top: 10px;">Subject:</label>
+            <input id="newMessageSubject" name="newMessageSubject" type="text" />
+
+            <label for="newMessageText">Message:</label>
+            <textarea name="newMessageText" id="newMessageText" cols="30" rows="10"></textarea>
+
+            <div class="right">
+                <button class="btn nomargin" type="submit">Send Message</button>
+            </div>
+        </form>
+    </div>
+
+    <a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>
+</div>

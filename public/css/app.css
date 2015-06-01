@@ -339,6 +339,54 @@ div.ptooltip-box {
       font-weight: 300;
       font-size: 14px; }
 
+.reveal-modal h2 {
+  font-family: "Open Sans", sans-serif;
+  font-weight: 300; }
+.reveal-modal .chosen-container-multi .chosen-choices {
+  border: 1px solid #dfe4ef;
+  background: #f3f5f9;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px; }
+.reveal-modal .chosen-container-multi .chosen-drop {
+  background: white;
+  border-color: #dfe4ef; }
+.reveal-modal input,
+.reveal-modal textarea {
+  font-family: "open sans", sans-serif;
+  font-size: 14px;
+  color: #3d4854;
+  resize: none;
+  background: #f3f5f9;
+  border: 1px solid #dfe4ef;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  box-sizing: border-box;
+  box-shadow: none;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none; }
+  .reveal-modal input:focus, .reveal-modal input:active,
+  .reveal-modal textarea:focus,
+  .reveal-modal textarea:active {
+    background: #fafafa;
+    border-color: #dfe4ef;
+    outline: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none; }
+.reveal-modal button {
+  font-family: "open sans", sans-serif;
+  font-size: 14px;
+  color: white;
+  padding: 8px 16px;
+  font-weight: 300;
+  border-radius: 3px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px; }
+  .reveal-modal button:focus, .reveal-modal button:active {
+    outline: none; }
+
 .top-nav,
 .top-bar {
   background: #2c3e50;
@@ -891,6 +939,7 @@ ul.side-nav-sub {
       background: white;
       cursor: pointer; }
     .message-items li.message-folder:hover {
+      background: #f3f5f9;
       cursor: default; }
     .message-items li.active {
       background: white; }

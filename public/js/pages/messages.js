@@ -15,10 +15,12 @@
 define('pages/messages', [
     'jquery',
     'modules/helpers',
+    'modules/ui',
     'history'
 
-], function($, helpers) {
+], function($, helpers, ui) {
     var messagesPage = {};
+    var refreshInterval = null;
 
     messagesPage.init = function() {
         $(document).ready(function() {
@@ -44,11 +46,17 @@ define('pages/messages', [
                     self.addClass('active');
 
                     pageContent.html(page);
+
+                    ui.setMessageRead(id);
                 });
 
                 //e.preventDefault();
             });
 
+            var messageItems = $('ul.message-items');
+            if (messageItems.length > 0) {
+                messagesPage.startRefresh();
+            }
         });
     };
 
@@ -89,6 +97,24 @@ define('pages/messages', [
         }
     };
 
+    messagesPage.startRefresh = function() {
+        //Refresh Current Folder
+        var folder = $('#__folder').html();
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+
+        refreshInterval = setInterval(function() {
+            if (folder.length < 1) folder = 0;
+            ui.sendUpdateMessageFolder(folder);
+        }, 5000);
+    };
+
+    messagesPage.stopRefresh = function() {
+        if (refreshInterval) {
+            clearInterval(refreshInterval);
+        }
+    };
 
     return messagesPage;
 });

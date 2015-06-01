@@ -44,6 +44,18 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
+              viewController.getUserUnreadMessages(request, function(data) {
+                  viewdata.messages.unreadItems = data;
+                  callback();
+              });
+          },
+          function(callback) {
+              viewController.getUsers(request, function(users) {
+                  viewdata.messages.users = users;
+                  callback();
+              });
+          },
+          function(callback) {
               viewController.loggedInAccount(request, function(data) {
                   viewdata.loggedInAccount = data;
                   callback();
@@ -53,6 +65,7 @@ viewController.getData = function(request, cb) {
           if (err) {
               winston.warn('Error: ' + err);
           }
+
           cb(viewdata);
       });
 };
@@ -89,6 +102,30 @@ viewController.unreadMessageCount = function(request, callback) {
         }
 
         callback(data);
+    });
+};
+
+viewController.getUserUnreadMessages = function(request, callback) {
+    var messageSchema = require('../../models/message');
+    messageSchema.getUserUnreadMessages(request.user._id, function(err, data) {
+        if (err) {
+            return callback();
+        }
+
+        callback(data);
+    });
+};
+
+viewController.getUsers = function(request, callback) {
+    var userSchema = require('../../models/user');
+    userSchema.findAll(function(err, users) {
+        if (err) {
+            winston.warn(err);
+            return callback();
+        }
+        var u = _.sortBy(users, 'fullname');
+
+        callback(u);
     });
 };
 
