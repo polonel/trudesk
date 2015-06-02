@@ -793,7 +793,11 @@ apiController.messages.send = function(req, res, next) {
         if (!_.isArray(to)) {
             to = [messageData.to]
         }
-
+        var marked = require('marked');
+        var messageText = messageData.message;
+        messageText = messageText.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        messageData.message = marked(messageText);
+        
         async.each(to, function(owner, callback) {
             async.parallel([
                 function(done) {
