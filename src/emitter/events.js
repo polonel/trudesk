@@ -140,7 +140,7 @@ var notifications              = require('../notifications'); // Load Push Event
         io.sockets.emit('updateComments', ticket);
 
         if (ticket.owner._id.toString() == comment.owner.toString()) return;
-        if (ticket.assignee._id.toString() == comment.owner.toString()) return;
+        if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() == comment.owner.toString()) return;
         async.parallel([
             function(cb) {
                 var notification = new notificationSchema({
