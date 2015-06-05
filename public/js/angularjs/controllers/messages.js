@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'history'], function(angular, _, $, helpers, socket, md) {
     return angular.module('trudesk.controllers.messages', [])
         .controller('messagesCtrl', ['openNewMessageWindow', '$scope', '$http', '$window', function(openNewMessageWindow, $scope, $http, $window) {
             $scope.showNewMessage = function() {
@@ -39,7 +39,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                 var subjectText = messageContent.find('.message-header > h1').text().trim();
                 subjectText = 'Fwd: ' + subjectText;
-                var messageText = messageContent.find('.message').text().trim();
+                var messageText = messageContent.find('.message').html();
 
                 if (messageText.length < 1 || subjectText.length < 1) return true;
 
@@ -108,18 +108,23 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
         .factory('openNewMessageWindow', function() {
             return {
                 openWindow: function openWindow() {
-                    $("#newMessageTo").find("option").prop('selected', false);
-                    $('#newMessageTo').trigger('chosen:updated');
+                    var $newMessageTo = $('#newMessageTo');
+                    $newMessageTo.find("option").prop('selected', false);
+                    $newMessageTo.trigger('chosen:updated');
                     $('#newMessageSubject').val('');
                     $('#newMessageText').val('');
 
                     $('#newMessageModal').foundation('reveal', 'open');
                 },
                 openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
-                    $("#newMessageTo").find("option[value='" + to + "']").prop('selected', true);
-                    $('#newMessageTo').trigger('chosen:updated');
+                    var $newMessageTo = $('#newMessageTo');
+                    $newMessageTo.find("option").prop('selected', false);
+                    $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
+                    $newMessageTo.trigger('chosen:updated');
                     $('#newMessageSubject').val(subject);
-                    $('#newMessageText').val(text);
+                    var $mText = md(text);
+                    $mText = $mText.trim();
+                    $('#newMessageText').val($mText);
 
                     $('#newMessageModal').foundation('reveal', 'open');
                 },

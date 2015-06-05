@@ -53,14 +53,21 @@
         <div id="message-content" class="page-content full-height scrollable">
             {{#if data.messages.message}}
                 <div class="message-header">
+                    <div class="message-from-id hide">{{data.messages.message.from._id}}</div>
+                    <div class="message-profile-image">
+                        {{#if data.messages.message.from.image}}
+                            <img src="/uploads/users/{{data.messages.message.from.image}}" alt="{{data.messages.message.from.fullname}}"/>
+                        {{else}}
+                            <img src="/uploads/users/defaultProfile.jpg" alt="Default User Image"/>
+
+                        {{/if}}
+                    </div>
                     <h1>{{data.messages.message.subject}}</h1>
                     <span>From:</span>
-                    <div class="message-from-id hide">{{data.messages.message.from._id}}</div>
-                    <a href="#" data-dropdown="drop" data-options="align:left" class="button dropdown no-ajaxy">{{data.messages.message.from.fullname}}</a>
-                    <ul id="drop"  class="f-dropdown" data-dropdown-content>
-                        <li><a href="#">Chat</a></li>
-                        <li><a href="#">View Contact</a></li>
-                    </ul>
+                    <h5>{{data.messages.message.from.fullname}}</h5>
+                    <br/>
+                    <span>Sent:</span>
+                    <h5>{{formatDate data.messages.message.date "MM/DD/YYYY hh:mma"}}</h5>
                 </div>
                 <div class="message">
                     {{{data.messages.message.message}}}

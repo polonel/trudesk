@@ -93,24 +93,40 @@
 
 .message-header
   border-bottom: 1px solid #dfe4ef
-  padding: 20px 30px 20px 60px
+  padding: 20px 30px 30px 30px
   position: relative
 
-  h1
+  h1,h5
     display: block
     font-size: 30px
     font-family: "Open Sans", sans-serif
-    font-weight: normal
+    font-weight: 300
     color: #3d4854
-    margin-bottom: 25px
+    margin-bottom: 5px
+
+  h5
+    display: inline-block
+    font-size: 14px
 
   span
     display: inline-block
-    margin-right: 15px
+    width: 40px
+    margin-right: 5px
     padding-left: 3px
     color: #a2aabb
     font-family: "Open Sans", sans-serif
     font-size: 14px
+    font-weight: 300
+
+.message-profile-image
+  height: 96px
+  width: 96px
+  max-height: 100%
+  float: left
+  margin-right: 25px
+  img
+    +borderRadius(50%)
+
 
 input[type="checkbox"]
   visibility: hidden
