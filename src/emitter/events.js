@@ -40,12 +40,8 @@ var notifications              = require('../notifications'); // Load Push Event
                  function(c) {
                      var mailer = require('../mailer');
                      var emails = [];
-                     async.each(ticket.group.members, function(member, cb) {
+                     async.each(ticket.group.sendMailTo, function(member, cb) {
                          if (_.isUndefined(member.email)) return;
-
-                         if (member.role == 'mod' || member.role == 'admin') {
-                             emails.push(member.email);
-                         }
 
                          cb();
                      }, function(err) {

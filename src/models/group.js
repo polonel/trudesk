@@ -20,7 +20,8 @@ var COLLECTION = 'groups';
 
 var groupSchema = mongoose.Schema({
     name:       { type: String, required: true, unique: true },
-    members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
+    members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}],
+    sendMailTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
 });
 
 groupSchema.statics.getGroupByName = function(name, callback) {
@@ -34,6 +35,7 @@ groupSchema.statics.getGroupByName = function(name, callback) {
 groupSchema.statics.getAllGroups = function(callback) {
     var q = this.model(COLLECTION).find({})
         .populate('members')
+        .populate('sendMailTo')
         .sort('name');
 
     return q.exec(callback);
@@ -44,6 +46,7 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
 
     var q = this.model(COLLECTION).find({members: userId})
         .populate('members')
+        .populate('sendMailTo')
         .sort('name');
 
     return q.exec(callback)
@@ -52,7 +55,7 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
 groupSchema.statics.getGroupById = function(gId, callback) {
     if (_.isUndefined(gId)) return callback("Invalid GroupId - GroupSchema.GetGroupById()");
 
-    var q = this.model(COLLECTION).findOne({_id: gId}).populate('members');
+    var q = this.model(COLLECTION).findOne({_id: gId}).populate('members').populate('sendMailTo');
 
     return q.exec(callback);
 };
@@ -80,8 +83,31 @@ groupSchema.methods.removeMember = function(memberId, callback) {
     return callback(null, true);
 };
 
+groupSchema.methods.addSendMailTo = function(memberId, callback) {
+    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.AddSendMailTo()");
+
+    if (this.sendMailTo === null) this.sendMailTo = [];
+
+    if (isMember(this.sendMailTo, memberId)) return callback(null, false);
+
+    this.sendMailTo.push(memberId);
+    this.sendMailTo = _.uniq(this.members);
+
+    return callback(null, true);
+};
+
+groupSchema.methods.removeSendMailTo = function(memberId, callback) {
+    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.RemoveSendMailTo()");
+
+    if (!isMember(this.sendMailTo, memberId)) return callback();
+
+    this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.findWhere(this.sendMailTo, {"_id" : memberId})), 1);
+
+    return callback(null, true);
+};
+
 function isMember(arr, id) {
-    var matches = _.filter(arr, function(value) {
+    var matches = _.filter(arr, function (value) {
         if (value._id == id) {
             return value;
         }

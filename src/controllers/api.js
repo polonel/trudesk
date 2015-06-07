@@ -400,6 +400,8 @@ apiController.groups.create = function(req, res, next) {
 
     Group.name = req.body.name;
     Group.members = req.body.members;
+    Group.sendMailTo = req.body.sendMailTo;
+
     Group.save(function(err, group) {
         if (err) return res.status(400).send('Error: ' + err.message);
 
@@ -416,6 +418,7 @@ apiController.groups.updateGroup = function(req, res) {
 
         group.name = data.name;
         group.members = data.members;
+        group.sendMailTo = data.sendMailTo;
 
         group.save(function(err, g) {
             if (err) return res.status(400).send('Error: ' + err.message);

@@ -19,7 +19,7 @@ var winston     = require('winston');
 var nconf       = require('nconf');
 
 var MAILER_ENABLED = nconf.get('mailer:enable');
-
+var POOL_INTERVAL = nconf.get('mailer:polling') ? nconf.get('mailer:polling') : 3600000; //1hour
 //var transporter = nodeMailer.createTransport({
 //    host:   'smtp.zoho.com',
 //    port:   465,
@@ -52,7 +52,7 @@ mailer.queue = function() {
         if (!MAILER_ENABLED) return;
 
         checkQueue(handleQueue);
-    }, 3600000); //1hour
+    }, POOL_INTERVAL); //1hour
 };
 
 mailer.sendMail = function(data, callback) {

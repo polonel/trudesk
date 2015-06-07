@@ -19,11 +19,20 @@
                         <label for="gName">Group Name</label>
                         <input id="gName" name="gName" type="text"/>
 
-                        <div style="margin-bottom: 85px;">
+                        <div style="margin-bottom: 10px;">
                             <label for="gMembers">Members</label>
                             <select name="gMembers" id="gMembers" multiple class="chosen-select" data-placeholder="Add Group Members...">
                                 {{#each data.users}}
-                                    <option value="{{_id}}">{{fullname}}</option>
+                                    <option value="{{_id}}" {{#inArray ../data.group.members _id}} selected="selected" {{/inArray}}>{{fullname}}</option>
+                                {{/each}}
+                            </select>
+                        </div>
+
+                        <div style="margin-bottom: 85px;">
+                            <label for="gSendMailTo">Send Mail To:</label>
+                            <select name="gSendMailTo" id="gSendMailTo" multiple class="chosen-select" data-placeholder="Select Send Mail Users...">
+                                {{#each data.users}}
+                                    <option value="{{_id}}" {{#inArray ../data.group.sendMailTo _id}} selected="selected" {{/inArray}}>{{fullname}}</option>
                                 {{/each}}
                             </select>
                         </div>
