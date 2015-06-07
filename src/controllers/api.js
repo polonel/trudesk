@@ -579,11 +579,8 @@ apiController.tickets.single = function(req, res, next) {
 
 apiController.tickets.update = function(req, res, next) {
     var accessToken = req.query.token;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({error: 'Invalid Access Token'});
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(401).json({'error': err.message});
-        if (!user) return res.status(401).json({'error': 'Unknown User'});
-
+    var user = req.user;
+    if (!_.isUndefined(user) && !_.isNull(user)) {
         var oId = req.params.id;
         var reqTicket = req.body;
         if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
@@ -604,10 +601,42 @@ apiController.tickets.update = function(req, res, next) {
 
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);
-                res.json(t);
+                return res.json(t);
             });
         });
-    });
+
+    //Access Token
+    } else if (!_.isUndefined(accessToken) && !_.isNull(accessToken)) {
+        userSchema.getUserByAccessToken(accessToken, function (err, user) {
+            if (err) return res.status(401).json({'error': err.message});
+            if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+            var oId = req.params.id;
+            var reqTicket = req.body;
+            if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+            var ticketModel = require('../models/ticket');
+            ticketModel.getTicketById(oId, function (err, ticket) {
+                if (err) return res.send(err.message);
+
+                if (!_.isUndefined(reqTicket.status))
+                    ticket.status = reqTicket.status;
+
+                if (!_.isUndefined(reqTicket.group))
+                    ticket.group = reqTicket.group;
+
+                if (!_.isUndefined(reqTicket.closedDate))
+                    ticket.closedDate = reqTicket.closedDate;
+
+
+                ticket.save(function (err, t) {
+                    if (err) return res.send(err.message);
+                    return res.json(t);
+                });
+            });
+        });
+    } else {
+        return res.status(401).json({error: 'Invalid Access Token'});
+    }
 };
 
 apiController.tickets.delete = function(req, res, next) {
@@ -779,6 +808,11 @@ apiController.roles.get = function(req, res, next) {
 
 //Messages
 apiController.messages = {};
+apiController.messages.getForUser = function(req, res, next) {
+    var accessToken = req.headers.accesstoken;
+
+};
+
 apiController.messages.send = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
     var messageData = req.body;
@@ -797,7 +831,7 @@ apiController.messages.send = function(req, res, next) {
         var messageText = messageData.message;
         messageText = messageText.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
         messageData.message = marked(messageText);
-        
+
         async.each(to, function(owner, callback) {
             async.parallel([
                 function(done) {
