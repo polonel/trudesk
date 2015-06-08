@@ -416,6 +416,12 @@ apiController.groups.updateGroup = function(req, res) {
     groupSchema.getGroupById(data.id, function(err, group) {
         if (err) return res.status(400).send('Error: ' + err.message);
 
+        if (_.isUndefined(group.members)) group.members = [];
+        if (_.isUndefined(group.sendMailTo)) group.sendMailTo = [];
+
+        if (!_.isArray(data.members) && data.members !== null && !_.isUndefined(data.members)) data.members = [data.members];
+        if (!_.isArray(data.sendMailTo) && data.sendMailTo !== null && !_.isUndefined(data.sendMailTo)) data.sendMailTo = [data.sendMailTo];
+
         group.name = data.name;
         group.members = data.members;
         group.sendMailTo = data.sendMailTo;
