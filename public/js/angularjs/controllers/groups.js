@@ -33,7 +33,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 var formData = $('#createGroupForm').serializeObject();
                 var apiData = {
                     name: formData.gName,
-                    members: formData.gMembers
+                    members: formData.gMembers,
+                    sendMailTo: formData.gSendMailTo
                 };
 
                 $http({
@@ -57,7 +58,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 var apiData = {
                     id: formData.groupID,
                     name: formData.gName,
-                    members: formData.gMembers
+                    members: formData.gMembers,
+                    sendMailTo: formData.gSendMailTo
                 };
 
                 $http({

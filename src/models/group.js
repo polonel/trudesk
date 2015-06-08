@@ -91,7 +91,7 @@ groupSchema.methods.addSendMailTo = function(memberId, callback) {
     if (isMember(this.sendMailTo, memberId)) return callback(null, false);
 
     this.sendMailTo.push(memberId);
-    this.sendMailTo = _.uniq(this.members);
+    this.sendMailTo = _.uniq(this.sendMailTo);
 
     return callback(null, true);
 };
