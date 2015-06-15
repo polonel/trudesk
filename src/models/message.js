@@ -13,7 +13,7 @@
  **/
 
 var mongoose = require('mongoose');
-var _ = require('lodash');
+var _ = require('underscore');
 
 var COLLECTION = 'messages';
 
@@ -51,6 +51,29 @@ messageSchema.methods.moveToFolder = function(folder, callback) {
              callback(err, d);
         });
     });
+};
+
+messageSchema.statics.getMessagesWithObject = function(obj, callback) {
+    if (!_.isObject(obj)) {
+        return callback("Invalid Object (Must be of type Object) - MessageSchema.GetMessagesWithObject()", null);
+    }
+
+    if (_.isUndefined(obj.owner) || _.isNull(obj.owner)) {
+        return callback("Invalid Object Owner - MessageSchema.GetMessagesWithObject()", null);
+    }
+
+    var limit = (obj.limit == null ? 10 : obj.limit);
+    var page = (obj.page == null ? 0 : obj.page);
+    var folder = (obj.folder == null ? 0 : obj.folder);
+
+    var q = this.model(COLLECTION).find({owner: obj.owner, folder: folder})
+        .populate('owner')
+        .populate('from')
+        .sort('-date')
+        .skip(page*limit)
+        .limit(limit);
+
+    return q.exec(callback);
 };
 
 messageSchema.statics.getUnreadInboxCount = function(oId, callback) {

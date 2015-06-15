@@ -817,9 +817,32 @@ apiController.roles.get = function(req, res, next) {
 
 //Messages
 apiController.messages = {};
-apiController.messages.getForUser = function(req, res, next) {
+apiController.messages.get = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(400).json({error: 'Invalid Access Token'});
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(400).json({error: err.message});
+        if (!user) return res.status(401).json({error: 'Unknown User'});
 
+        var limit = req.query.limit;
+        var page = req.query.page;
+        var folder = req.query.folder;
+
+        var object = {
+            owner: user,
+            limit: limit,
+            page: page,
+            folder: folder
+        };
+
+        var messageSchema = require('../models/message');
+
+        messageSchema.getMessagesWithObject(object, function(err, results) {
+            if (err) return res.status(401).json({error: err.message});
+
+            return res.json(results);
+        });
+    });
 };
 
 apiController.messages.send = function(req, res, next) {
