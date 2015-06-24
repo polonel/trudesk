@@ -153,6 +153,12 @@ function dbCallback(err, db) {
                 next();
             },
             function(next) {
+                //Start Check Mail
+                var mailCheck = require('./src/mailer/mailCheck');
+                mailCheck.init();
+                next();
+            },
+            function(next) {
                 //Start Task Runners
                 var taskrunner = require('./src/taskrunner');
                 next();

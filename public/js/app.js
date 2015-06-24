@@ -28,6 +28,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
 
     require([
         'modules/navigation',
+        'modules/enjoyhint',
         'modules/socket',
         'modules/ajaxify',
         'modernizr',
@@ -38,7 +39,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'nicescroll',
         'easypiechart'
 
-    ], function(nav) {
+    ], function(nav, eh) {
         //Start App
         $(document).foundation({
             abide: {
@@ -55,6 +56,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         });
 
         nav.init();
-        helpers.fadeOutLoader(300);
+        helpers.fadeOutLoader(100);
+        //eh.init();
     });
 });

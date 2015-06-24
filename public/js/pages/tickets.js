@@ -15,6 +15,7 @@
 define('pages/tickets', [
     'jquery',
     'modules/helpers',
+    'modules/enjoyhint',
     'datatables',
     'dt_responsive',
     'dt_grouping',
@@ -22,7 +23,7 @@ define('pages/tickets', [
     'dt_scroller',
     'history'
 
-], function($, helpers) {
+], function($, helpers, eh) {
     var ticketsPage = {};
 
     ticketsPage.init = function() {

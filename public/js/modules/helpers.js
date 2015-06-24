@@ -396,11 +396,11 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 var $this = $(this);
                 var val = $this.attr('data-percent');
                 var i = 170*(0.01*val);
-                $this.find('span.bar-track').height(0);
-                $this.find('span.bar-track').animate({
-                    'height': i
-                }, 1000);
-            }); 
+                $this.find('span.bar-track').height(0)
+                    .animate({
+                        'height': i
+                    }, 1000);
+            });
         });
     };
 

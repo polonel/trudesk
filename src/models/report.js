@@ -21,6 +21,7 @@ var COLLECTION = 'reports';
 
 var reportSchema = mongoose.Schema({
     name:       { type: String, required: true },
+    type:       { type: Number, required: true },
     runDate:    { type: Date, required: true, default: Date.now },
     groups:     [{type: mongoose.Schema.Types.ObjectId, ref: 'groups'}],
     data:       [mongoose.Schema.Types.Mixed]

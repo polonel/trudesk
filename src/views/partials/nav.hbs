@@ -1,8 +1,8 @@
 
 <div class="sidebar small-1 large-2 columns nopadding full-height hide-for-small-down scrollable-dark">
     <ul class="side-nav">
-        <li {{#is nav 'dashboard'}} class='active' {{/is}}><a href="/dashboard"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
-        <li {{#is nav 'tickets'}} class='active' {{/is}}><a href="/tickets"><i class="fa fa-paste fa-large"></i>Tickets</a>
+        <li {{#is nav 'dashboard'}} class='active' {{/is}}><a class="navHome" href="/dashboard"><i class="fa fa-home fa-large"></i><span class="show-for-large-up">Home</span></a></li>
+        <li {{#is nav 'tickets'}} class='active' {{/is}}><a class="navTickets" href="/tickets"><i class="fa fa-paste fa-large"></i>Tickets</a>
             <ul id="side-nav-sub-tickets" class="side-nav-sub {{#is nav 'tickets'}} subMenuOpen {{/is}}">
                 <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><i class="fa fa-flask fa-sub-icon"></i>Active</a></li>
                 <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}><a href="/tickets/assigned"><i class="fa fa-location-arrow fa-sub-icon"></i>Assigned</a></li>

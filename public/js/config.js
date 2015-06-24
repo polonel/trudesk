@@ -17,6 +17,7 @@ requirejs.config({
     paths: {
         //Always Load
         jquery:         'vendor/jquery/jquery',
+        jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
         //foundation:     'vendor/foundation/foundation.min',
         foundation:     'https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/js/foundation.min',
         angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min',
@@ -46,11 +47,12 @@ requirejs.config({
         chosen:         'vendor/chosen/chosen.jquery.min',
         autogrow:       'plugins/autogrow',
         pace:           'vendor/pace/pace.min',
-        tomarkdown:     'vendor/tomarkdown/tomarkdown'
+        tomarkdown:     'vendor/tomarkdown/tomarkdown',
+        enjoyhint:      'vendor/enjoyhint/enjoyhint.min'
     },
     shim: {
         foundation: {
-            deps: ['jquery', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace']
+            deps: ['jquery', 'jquery_scrollTo', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace']
         },
 
         angular: {
@@ -58,6 +60,10 @@ requirejs.config({
         },
 
         angularRoute: ['angular'],
+
+        jquery_custom: {
+            deps: ['jquery']
+        },
 
         datatables: {
             deps: ['jquery']
@@ -117,6 +123,10 @@ requirejs.config({
 
         history: {
             deps: ['jquery']
+        },
+
+        enjoyhint: {
+            deps: ['jquery', 'jquery_scrollTo']
         }
     },
     priority: [

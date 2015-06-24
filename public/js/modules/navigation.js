@@ -59,6 +59,9 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation
     }
 
     function hideDropdownMouseUp(e) {
+        var hasEnjoyHint = $('.enjoyhint').length > 0;
+        if (hasEnjoyHint) return true;
+
         $('a[data-notifications]').each(function() {
             var drop = $('#' + $(this).attr('data-notifications'));
             if ($(this).has(e.target).length !== 0)

@@ -27,6 +27,10 @@ mailqueue.statics.getQueue = function(callback) {
     return this.model(COLLECTION).find({}, callback);
 };
 
+mailqueue.statics.removeQueue = function(oId, callback) {
+    return this.model(COLLECTION).remove({_id: oId}, callback);
+};
+
 mailqueue.statics.clearQueue = function(callback) {
     this.model(COLLECTION).remove({}, callback);
 };

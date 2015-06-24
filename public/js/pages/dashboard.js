@@ -16,14 +16,16 @@ define('pages/dashboard', [
     'jquery',
     'modules/helpers',
     'modules/flotchart',
+    'modules/navigation',
     'history'
 
-], function($, helpers, flotchart) {
+], function($, helpers, flotchart, nav) {
     var dashboardPage = {};
 
     dashboardPage.init = function() {
         $(document).ready(function() {
             getData();
+
         });
     };
 
@@ -37,6 +39,7 @@ define('pages/dashboard', [
                 success: updateFlot
             })
                 .error(function(err) {
+                    console.log(err);
                     setTimeout(getData, 25000);
                 });
 
