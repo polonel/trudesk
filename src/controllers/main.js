@@ -107,35 +107,41 @@ mainController.dashboard = function(req, res, next) {
             dates.reverse();
 
             var final = {};
-            for (var k = 0; k < dates.length; k++) {
-                (function(key) {
-                    final[key] = {date: dates[key]};
+            async.series([
+                function(next) {
+                    for (var k = 0; k < dates.length; k++) {
+                        (function(key) {
+                            final[key] = {date: dates[key]};
 
-                    async.series({
-                        total: function(next) {
-                            ticketSchema.getDateCount(dates[key], function(err, c) {
-                                if (err) return next(null, 0);
+                            async.series({
+                                total: function(next) {
+                                    ticketSchema.getDateCount(dates[key], function(err, c) {
+                                        if (err) return next(null, 0);
 
-                                next(null, c);
+                                        next(null, c);
+                                    });
+                                },
+                                closedCount: function(next) {
+                                    ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
+                                        if (err) return next(null, 0);
+
+                                        next(null, c);
+                                    });
+                                }
+                            }, function(err, done) {
+                                final[key].total = done.total;
+                                final[key].closedCount = done.closedCount;
+
+                                final[key].percent = (done.total / 25)*100;
+                                
+                                next(final);
                             });
-                        },
-                        closedCount: function(next) {
-                            ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
-                                if (err) return next(null, 0);
-
-                                next(null, c);
-                            });
-                        }
-                    }, function(err, done) {
-                        final[key].total = done.total;
-                        final[key].closedCount = done.closedCount;
-
-                        final[key].percent = (done.total / 25)*100;
-                    });
-                })(k);
-            }
-
-            callback(null, final);
+                        })(k);
+                    }
+                }
+            ], function(err, results) {
+                callback(err, results);
+            });
         }
     }, function(err, results) {
         var activePercent = (results.activeCount / results.totalCount)*100;
