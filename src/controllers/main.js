@@ -111,7 +111,7 @@ mainController.dashboard = function(req, res, next) {
                 (function(key) {
                     final[key] = {date: dates[key]};
 
-                    async.parallel({
+                    async.series({
                         total: function(next) {
                             ticketSchema.getDateCount(dates[key], function(err, c) {
                                 if (err) return next(null, 0);
