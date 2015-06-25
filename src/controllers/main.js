@@ -141,8 +141,7 @@ mainController.dashboard = function(req, res, next) {
                        next(err, final);
                     });
                 }
-            ], function(err, results) {
-                console.log(final);
+            ], function(err) {
                 callback(err, final);
             });
         }
