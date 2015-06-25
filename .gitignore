@@ -30,5 +30,6 @@ node_modules
 *.sassc
 
 #custom
+config.json
 import.csv
 src/mailer/templates/promo/
