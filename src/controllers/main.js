@@ -107,35 +107,43 @@ mainController.dashboard = function(req, res, next) {
             dates.reverse();
 
             var final = {};
-            for (var k = 0; k < dates.length; k++) {
-                (function(key) {
-                    final[key] = {date: dates[key]};
+            async.series([
+                function(next) {
+                    async.forEachOf(dates, function(value, k, cb) {
+                        (function(key) {
+                            final[key] = {date: dates[key]};
 
-                    async.parallel({
-                        total: function(next) {
-                            ticketSchema.getDateCount(dates[key], function(err, c) {
-                                if (err) return next(null, 0);
+                            async.series({
+                                total: function(next) {
+                                    ticketSchema.getDateCount(dates[key], function(err, c) {
+                                        if (err) return next(null, 0);
 
-                                next(null, c);
+                                        next(null, c);
+                                    });
+                                },
+                                closedCount: function(next) {
+                                    ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
+                                        if (err) return next(null, 0);
+
+                                        next(null, c);
+                                    });
+                                }
+                            }, function(err, done) {
+                                final[key].total = done.total;
+                                final[key].closedCount = done.closedCount;
+
+                                final[key].percent = (done.total / 25)*100;
+
+                                cb();
                             });
-                        },
-                        closedCount: function(next) {
-                            ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
-                                if (err) return next(null, 0);
-
-                                next(null, c);
-                            });
-                        }
-                    }, function(err, done) {
-                        final[key].total = done.total;
-                        final[key].closedCount = done.closedCount;
-
-                        final[key].percent = (done.total / 25)*100;
+                        })(k);
+                    }, function(err) {
+                       next(err, final);
                     });
-                })(k);
-            }
-
-            callback(null, final);
+                }
+            ], function(err) {
+                callback(err, final);
+            });
         }
     }, function(err, results) {
         var activePercent = (results.activeCount / results.totalCount)*100;
