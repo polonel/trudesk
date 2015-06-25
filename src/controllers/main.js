@@ -109,7 +109,7 @@ mainController.dashboard = function(req, res, next) {
             var final = {};
             async.series([
                 function(next) {
-                    for (var k = 0; k < dates.length; k++) {
+                    async.forEachOf(dates, function(value, k, cb) {
                         (function(key) {
                             final[key] = {date: dates[key]};
 
@@ -133,14 +133,17 @@ mainController.dashboard = function(req, res, next) {
                                 final[key].closedCount = done.closedCount;
 
                                 final[key].percent = (done.total / 25)*100;
-                                
-                                next(final);
+
+                                cb();
                             });
                         })(k);
-                    }
+                    }, function(err) {
+                       next(err, final);
+                    });
                 }
             ], function(err, results) {
-                callback(err, results);
+                console.log(final);
+                callback(err, final);
             });
         }
     }, function(err, results) {
