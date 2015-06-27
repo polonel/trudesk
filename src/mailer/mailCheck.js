@@ -21,6 +21,7 @@ var winston     = require('winston');
 var nconf       = require('nconf');
 var marked      = require('marked');
 
+var emitter     = require('../emitter');
 var userSchema  = require('../models/user');
 var groupSchema = require('../models/group');
 var ticketTypeSchema = require('../models/tickettype');
@@ -133,6 +134,8 @@ mailCheck.fetchMail = function() {
                                                                     winston.warn('Failed to Create ticket from Email: ' + err);
                                                                     return cb();
                                                                 }
+
+                                                                emitter.emit('ticket:created', t);
 
                                                                 cb();
                                                             });
