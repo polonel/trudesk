@@ -27,4 +27,10 @@ ticketTypeSchema.statics.getTypes = function(callback) {
     return q.exec(callback);
 };
 
+ticketTypeSchema.statics.getTypeByName = function(name, callback) {
+    var q = this.model(COLLECTION).findOne({name: name});
+
+    return q.exec(callback);
+};
+
 module.exports = mongoose.model(COLLECTION, ticketTypeSchema);
