@@ -373,6 +373,20 @@ ticketSchema.statics.getDateCount = function(date, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getTotalMonthCount = function(month, callback) {
+    if (_.isUndefined(month)) return callback("Invalid Month - TicketSchema.GetTotalMonthCount()", null);
+
+    month = Number(month);
+
+    var now = new Date();
+    var date = new Date(now.getFullYear(), month, 1);
+    var endDate = new Date(date).setMonth(date.getMonth() + 1);
+
+    var q = this.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getMonthCount = function(month, status, callback) {
     if (_.isUndefined(month)) return callback("Invalid Month - TicketSchema.GetMonthCount()", null);
 

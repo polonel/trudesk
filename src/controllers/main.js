@@ -57,6 +57,20 @@ mainController.dashboard = function(req, res, next) {
                 callback(null, count);
             });
         },
+        totalMonthCount: function(callback) {
+            var month = new Date().getMonth();
+            ticketSchema.getTotalMonthCount(month, function(err, count) {
+                if (err) return callback(err, null);
+                callback(null, count);
+            });
+        },
+        closedMonthCount: function(callback) {
+            var month = new Date().getMonth();
+            ticketSchema.getMonthCount(month, 3, function(err, count) {
+                if (err) return callback(err, null);
+                callback(null, count);
+            });
+        },
         newCount: function(callback) {
             ticketSchema.getStatusCount(0, function(err, count) {
                 if (err) return callback(err, null);
@@ -148,7 +162,7 @@ mainController.dashboard = function(req, res, next) {
     }, function(err, results) {
         var activePercent = (results.activeCount / results.totalCount)*100;
         var newPercent = (results.newCount / (results.activeCount + results.newCount))*100;
-        var completedPercent = (results.closedCount / results.totalCount)*100;
+        var completedPercent = (results.closedMonthCount / results.totalMonthCount)*100;
         if (isNaN(completedPercent)) completedPercent = 0;
         if (isNaN(activePercent)) activePercent = 0;
         if (isNaN(newPercent)) newPercent = 0;
