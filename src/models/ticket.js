@@ -20,6 +20,7 @@ var moment              = require('moment');
 //Needed!
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
+var userSchema          = require('./user');
 var commentSchema       = require('./comment');
 var historySchema       = require('./history');
 
@@ -88,13 +89,17 @@ ticketSchema.methods.setAssignee = function(userId, callback) {
     if (_.isUndefined(userId)) return callback('Invalid User Id', null);
 
     this.assignee = userId;
-    var historyItem = {
-        action: 'ticket:set:assignee',
-        description: userId + ' was set as assignee'
-    };
-    this.history.push(historyItem);
+    userSchema.getUser(userId, function(err, user) {
+        if (err) return callback(err, null);
 
-    callback(null, this);
+        var historyItem = {
+            action: 'ticket:set:assignee',
+            description: user.username + ' was set as assignee'
+        };
+        this.history.push(historyItem);
+
+        callback(null, this);
+    });
 };
 
 ticketSchema.methods.clearAssignee = function(callback) {
