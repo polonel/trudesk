@@ -128,7 +128,8 @@ mailCheck.fetchMail = function() {
                                                                 status: 0,
                                                                 priority: 1,
                                                                 subject: message.subject,
-                                                                issue: parseBody(message.body)
+                                                                issue: parseBody(message.body),
+                                                                history: []
                                                             }, function(err, t) {
                                                                 if (err) {
                                                                     winston.warn('Failed to Create ticket from Email: ' + err);

@@ -169,13 +169,14 @@ module.exports = function(ws) {
 
         socket.on('updateTicketStatus', function(data) {
             var ticketId = data.ticketId;
+            var ownerId = socket.request.user._id;
             var status = data.status;
             var ticketSchema = require('./models/ticket');
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.setStatus(status, function(err, t) {
+                ticket.setStatus(ownerId, status, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err) {
@@ -184,7 +185,7 @@ module.exports = function(ws) {
                         emitter.emit('ticket:updated', ticketId);
                         utils.sendToAllConnectedClients(io, 'updateTicketStatus', {tid: t._id, status: status});
                     });
-                })
+                });
             });
         });
 
@@ -230,13 +231,20 @@ module.exports = function(ws) {
 
         socket.on('setAssignee', function(data) {
             var userId = data._id;
+            var ownerId = socket.request.user._id;
             var ticketId = data.ticketId;
             var ticketSchema = require('./models/ticket');
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.setAssignee(userId, function(err, t) {
-                    if (err) return true;
+                console.log(ownerId);
+                console.log(userId);
+
+                ticket.setAssignee(ownerId, userId, function(err, t) {
+                    if (err) {
+                        winston.warn(err);
+                        return true;
+                    }
 
                     t.save(function(err, tt) {
                         if (err) return true;
@@ -254,12 +262,13 @@ module.exports = function(ws) {
         socket.on('setTicketType', function(data) {
             var ticketId = data.ticketId;
             var typeId = data.typeId;
+            var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
 
             if (_.isUndefined(ticketId) || _.isUndefined(typeId)) return true;
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
-                ticket.setTicketType(typeId, function(err, t) {
+                ticket.setTicketType(ownerId, typeId, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err, tt) {
@@ -279,12 +288,13 @@ module.exports = function(ws) {
         socket.on('setTicketPriority', function(data) {
             var ticketId = data.ticketId;
             var priority = data.priority.value;
+            var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
 
             if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true;
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
-                ticket.setTicketPriority(priority, function(err, t) {
+                ticket.setTicketPriority(ownerId, priority, function(err, t) {
                     if (err) return true;
                     t.save(function(err, tt) {
                         if (err) return true;
@@ -298,24 +308,28 @@ module.exports = function(ws) {
 
         socket.on('clearAssignee', function(id) {
             var ticketId = id;
+            var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.assignee = undefined;
-
-                ticket.save(function(err, t) {
+                ticket.clearAssignee(ownerId, function(err, t) {
                     if (err) return true;
 
-                    emitter.emit('ticket:updated', ticketId);
-                    utils.sendToAllConnectedClients(io, 'updateAssignee', t);
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        emitter.emit('ticket:updated', ticketId);
+                        utils.sendToAllConnectedClients(io, 'updateAssignee', tt);
+                    });
                 });
-            })
+            });
         });
 
         socket.on('setTicketGroup', function(data) {
             var ticketId = data.ticketId;
             var groupId = data.groupId;
+            var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
 
             if (_.isUndefined(ticketId) || _.isUndefined(groupId)) return true;
@@ -323,7 +337,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.setTicketGroup(groupId, function(err, t) {
+                ticket.setTicketGroup(ownerId, groupId, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err, tt) {
@@ -343,6 +357,7 @@ module.exports = function(ws) {
         socket.on('setTicketIssue', function(data) {
             var ticketId = data.ticketId;
             var issue = data.issue;
+            var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
             issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
@@ -351,7 +366,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.setIssue(markedIssue, function(err, t) {
+                ticket.setIssue(ownerId, markedIssue, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err, tt) {
@@ -365,6 +380,7 @@ module.exports = function(ws) {
         });
 
         socket.on('setCommentText', function(data) {
+            var ownerId = socket.request.user._id;
             var ticketId = data.ticketId;
             var commentId = data.commentId;
             var comment = data.commentText;
@@ -376,7 +392,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return winston.error(err);
 
-                ticket.updateComment(commentId, markedComment, function(err, t) {
+                ticket.updateComment(ownerId, commentId, markedComment, function(err, t) {
                     if (err) return winston.error(err);
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
@@ -392,6 +408,7 @@ module.exports = function(ws) {
         });
 
         socket.on('removeComment', function(data) {
+            var ownerId = socket.request.user._id;
             var ticketId = data.ticketId;
             var commentId = data.commentId;
             var ticketSchema = require('./models/ticket');
@@ -401,7 +418,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                ticket.removeComment(commentId, function(err, t) {
+                ticket.removeComment(ownerId, commentId, function(err, t) {
                     if (err) return true;
 
                     t.save(function(err, tt) {
@@ -549,7 +566,7 @@ module.exports = function(ws) {
             }
 
             var user = null;
-            var fromUser = null
+            var fromUser = null;
 
             _.find(usersOnline, function(v,k) {
                  if (String(v.user._id) === String(to)) {

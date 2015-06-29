@@ -13,7 +13,7 @@
  **/
 
 var mongoose            = require('mongoose');
-var _                   = require('lodash');
+var _                   = require('underscore');
 var deepPopulate        = require('mongoose-deep-populate');
 var moment              = require('moment');
 
@@ -66,7 +66,7 @@ ticketSchema.pre('save', function(next) {
     });
 });
 
-ticketSchema.methods.setStatus = function(status, callback) {
+ticketSchema.methods.setStatus = function(ownerId, status, callback) {
     if (_.isUndefined(status)) return callback('Invalid Status', null);
 
     if (status === 3) {
@@ -78,45 +78,51 @@ ticketSchema.methods.setStatus = function(status, callback) {
     this.status = status;
     var historyItem = {
         action: 'ticket:set:status',
-        description: 'Ticket Status set to: ' + status
+        description: 'Ticket Status set to: ' + status,
+        owner: ownerId
     };
     this.history.push(historyItem);
 
     callback(null, this);
 };
 
-ticketSchema.methods.setAssignee = function(userId, callback) {
+ticketSchema.methods.setAssignee = function(ownerId, userId, callback) {
     if (_.isUndefined(userId)) return callback('Invalid User Id', null);
 
     this.assignee = userId;
+    var self = this;
     userSchema.getUser(userId, function(err, user) {
         if (err) return callback(err, null);
 
         var historyItem = {
             action: 'ticket:set:assignee',
-            description: user.username + ' was set as assignee'
+            description: user.username + ' was set as assignee',
+            owner: ownerId
         };
-        this.history.push(historyItem);
 
-        callback(null, this);
+        self.history.push(historyItem);
+
+        callback(null, self);
     });
 };
 
-ticketSchema.methods.clearAssignee = function(callback) {
+ticketSchema.methods.clearAssignee = function(ownerId, callback) {
     this.assignee = undefined;
     var historyItem = {
         action: 'ticket:set:assignee',
-        description: 'Assignee was cleared'
+        description: 'Assignee was cleared',
+        owner: ownerId
     };
     this.history.push(historyItem);
     callback(null, this);
 };
 
-ticketSchema.methods.setTicketType = function(typeId, callback) {
+ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
     this.type = typeId;
     var historyItem = {
         action: 'ticket:set:type',
-        description: 'Ticket type set to: ' + typeId.name
+        description: 'Ticket type set to: ' + typeId.name,
+        owner: ownerId
     };
 
     this.history.push(historyItem);
@@ -124,34 +130,37 @@ ticketSchema.methods.setTicketType = function(typeId, callback) {
     callback(null, this);
 };
 
-ticketSchema.methods.setTicketPriority = function(priority, callback) {
+ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
     this.priority = priority;
     var historyItem = {
         action: 'ticket:set:priority',
-        description: 'Ticket Priority set to: ' + priority
+        description: 'Ticket Priority set to: ' + priority,
+        owner: ownerId
     };
     this.history.push(historyItem);
 
     callback(null, this);
 };
 
-ticketSchema.methods.setTicketGroup = function(groupId, callback) {
+ticketSchema.methods.setTicketGroup = function(ownerId, groupId, callback) {
     this.group = groupId;
 
     var historyItem = {
         action: 'ticket:set:group',
-        description: 'Ticket Group set to: ' + groupId
+        description: 'Ticket Group set to: ' + groupId,
+        owner: ownerId
     };
     this.history.push(historyItem);
 
     callback(null, this);
 };
 
-ticketSchema.methods.setIssue = function(issue, callback) {
+ticketSchema.methods.setIssue = function(ownerId, issue, callback) {
     this.issue = issue;
     var historyItem = {
         action: 'ticket:update:issue',
-        description: 'Ticket Issue was updated. '
+        description: 'Ticket Issue was updated.',
+        owner: ownerId
     };
 
     this.history.push(historyItem);
@@ -159,7 +168,7 @@ ticketSchema.methods.setIssue = function(issue, callback) {
     callback(null, this);
 };
 
-ticketSchema.methods.updateComment = function(commentId, commentText, callback) {
+ticketSchema.methods.updateComment = function(ownerId, commentId, commentText, callback) {
     var comment = _.find(this.comments, function(c){return c._id.toString() == commentId.toString()});
     if (_.isUndefined(comment)) return callback("Invalid Comment");
 
@@ -167,19 +176,21 @@ ticketSchema.methods.updateComment = function(commentId, commentText, callback) 
 
     var historyItem = {
         action: 'ticket:comment:updated',
-        description: 'Comment was updated: ' + commentId
+        description: 'Comment was updated: ' + commentId,
+        owner: ownerId
     };
     this.history.push(historyItem);
 
     callback(null, this);
 };
 
-ticketSchema.methods.removeComment = function(commentId, callback) {
+ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     this.comments = _.reject(this.comments, function(o) { return o._id == commentId; });
 
     var historyItem = {
         action: 'ticket:delete:comment',
-        description: 'Comment was deleted: ' + commentId
+        description: 'Comment was deleted: ' + commentId,
+        owner: ownerId
     };
     this.history.push(historyItem);
 
