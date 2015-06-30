@@ -112,13 +112,13 @@ mailCheck.fetchMail = function() {
                                                     !_.isUndefined(message.subject) && !_.isEmpty(message.subject)) {
 
                                                     groupSchema.getAllGroupsOfUser(message.owner._id, function(err, group) {
-                                                        if (err) return cb();
-                                                        if (!group) return cb();
+                                                        if (err) return cb(err);
+                                                        if (!group) return cb("Unknown Group for user.");
 
                                                         if (_.size(group) < 1) return cb();
 
                                                         ticketTypeSchema.getTypeByName(DEFAULT_TICKET_TYPE, function(err, type) {
-                                                            if (err) return cb();
+                                                            if (err) return cb(err);
 
                                                             //Create the Ticket Here
                                                             Ticket.create({
@@ -133,7 +133,7 @@ mailCheck.fetchMail = function() {
                                                             }, function(err, t) {
                                                                 if (err) {
                                                                     winston.warn('Failed to Create ticket from Email: ' + err);
-                                                                    return cb();
+                                                                    return cb(err);
                                                                 }
 
                                                                 emitter.emit('ticket:created', t);
@@ -157,7 +157,9 @@ mailCheck.fetchMail = function() {
                                     });
                                 });
                             }
-                        ], function() {
+                        ], function(err) {
+                            if (err) winston.warn(err);
+
                             f.once('error', function(err) {
                                 winston.error('Fetch error: ' + err);
                                 next(err);
