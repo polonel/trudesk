@@ -235,10 +235,7 @@ module.exports = function(ws) {
             var ticketId = data.ticketId;
             var ticketSchema = require('./models/ticket');
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
-                if (err) return true;
-
-                console.log(ownerId);
-                console.log(userId);
+                if (err) return true
 
                 ticket.setAssignee(ownerId, userId, function(err, t) {
                     if (err) {

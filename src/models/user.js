@@ -14,6 +14,7 @@
 
 var async = require('async');
 var mongoose = require('mongoose');
+var winston = require('winston');
 var bcrypt = require('bcrypt');
 var _ = require('lodash');
 var Chance = require('chance');
@@ -100,7 +101,7 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
     if (type === 1) {
         if (!hasDeviceToken(user, token, type)) return callback();
 
-        console.log('Removing Device: ' + token);
+        winston.debug('Removing Device: ' + token);
         user.iOSDeviceTokens.splice(_.indexOf(this.iOSDeviceTokens, token), 1);
         user.save(function(err, u) {
             if (err) return callback(err, null);

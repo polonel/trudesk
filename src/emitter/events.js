@@ -157,6 +157,7 @@ var notifications              = require('../notifications'); // Load Push Event
                 });
             },
             function(cb) {
+                if (_.isUndefined(ticket.assignee)) return cb();
                 if (ticket.owner._id.toString() == ticket.assignee._id.toString()) return cb();
 
                 var notification = new notificationSchema({
