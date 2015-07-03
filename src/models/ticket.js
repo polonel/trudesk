@@ -309,7 +309,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner']);
+        .deepPopulate(['group', 'comments', 'comments.owner']);
 
     return q.exec(callback);
 };

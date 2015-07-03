@@ -41,6 +41,7 @@ var notifications              = require('../notifications'); // Load Push Event
                      var mailer = require('../mailer');
                      var emails = [];
                      async.each(ticket.group.sendMailTo, function(member, cb) {
+                         //winston.debug('Sending Mail To: ' + member.email);
                          if (_.isUndefined(member.email)) return;
 
                          cb();
