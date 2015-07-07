@@ -42,7 +42,9 @@ var notifications              = require('../notifications'); // Load Push Event
                      var emails = [];
                      async.each(ticket.group.sendMailTo, function(member, cb) {
                          //winston.debug('Sending Mail To: ' + member.email);
-                         if (_.isUndefined(member.email)) return;
+                         if (_.isUndefined(member.email)) return cb();
+
+                         emails.push(member.email);
 
                          cb();
                      }, function(err) {
@@ -87,7 +89,7 @@ var notifications              = require('../notifications'); // Load Push Event
                  },
                  function (c) {
                      async.each(ticket.group.members, function(member, cb) {
-                         if (_.isUndefined(member)) return true;
+                         if (_.isUndefined(member)) return cb();
 
                          if (member.role != 'mod' && member.role != 'admin') return cb(null);
 
