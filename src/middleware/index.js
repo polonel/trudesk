@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -31,6 +31,7 @@ var path            = require('path'),
 
 
 var middleware = {};
+
 module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
     app.use(express.static(path.join(__dirname, '../../', 'public')));
@@ -50,6 +51,7 @@ module.exports = function(app, db, callback) {
     app.use(cookieParser());
 
     app.use(function(req, res, next) {
+        //todo: Set reconnection here
         if (mongoose.connection.readyState !== 1) {
             var err = new Error('MongoDb Error');
             err.status = 503;
@@ -82,6 +84,16 @@ module.exports = function(app, db, callback) {
             app.use(passportConfig.initialize());
             app.use(passportConfig.session());
             app.use(flash());
+
+            //Load after Passport!!
+            app.use('/uploads/tickets', function(req, res, next) {
+                if (!req.user) {
+                    return res.redirect('/');
+                }
+
+                next();
+            });
+            app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
             next(null, store);
         }

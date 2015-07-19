@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -7,9 +7,6 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
  **/
 
 var ticketSchema    = require('../models/ticket');
@@ -22,11 +19,50 @@ var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
 var emitter         = require('../emitter');
 
+/**
+ * @since 1.0
+ * @author Chris Brame <polonel@gmail.com>
+ * @copyright 2015 Chris Brame
+ **/
+
+/**
+ * @namespace
+ * @description Controller for each Ticket View
+ * @requires {@link Ticket}
+ * @requires {@link Group}
+ * @requires {@link TicketType}
+ * @requires {@link Emitter}
+ *
+ * @todo Redo Submit Ticket static function to submit ticket over API only.
+ * @todo Redo Post Comment static function to only allow comments over API.
+ */
 var ticketsController = {};
 
+/**
+ * @name ticketsController.content
+ * @description Main Content sent to the view
+ */
 ticketsController.content = {};
 
-ticketsController.get = function(req, res, next) {
+/**
+ * Get Default Ticket View
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Tickets";
+ * self.content.nav = 'tickets';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.tickets = [{{@link Ticket}}];
+ */
+ticketsController.get = function(req, res) {
     var self = this;
     self.content = {};
     self.content.title = "Tickets";
@@ -59,7 +95,26 @@ ticketsController.get = function(req, res, next) {
     });
 };
 
-ticketsController.getByStatus = function(req, res, next) {
+/**
+ * Get Ticket View based on ticket status
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Tickets";
+ * self.content.nav = 'tickets';
+ * self.content.subnav = 'tickets-{status}';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.tickets = [{Ticket}];
+ */
+ticketsController.getByStatus = function(req, res) {
     var url = require('url');
     var self = this;
     self.content = {};
@@ -119,7 +174,26 @@ ticketsController.getByStatus = function(req, res, next) {
     });
 };
 
-ticketsController.getActive = function(req, res, next) {
+/**
+ * Get Ticket View based on ticket active tickets
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Tickets";
+ * self.content.nav = 'tickets';
+ * self.content.subnav = 'tickets-active';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.tickets = [{Ticket}];
+ */
+ticketsController.getActive = function(req, res) {
     var url = require('url');
     var self = this;
     self.content = {};
@@ -166,7 +240,26 @@ ticketsController.getActive = function(req, res, next) {
     });
 };
 
-ticketsController.getAssigned = function(req, res, next) {
+/**
+ * Get Ticket View based on tickets assigned to a given user
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Tickets";
+ * self.content.nav = 'tickets';
+ * self.content.subnav = 'tickets-assigned';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.tickets = [{Ticket}];
+ */
+ticketsController.getAssigned = function(req, res) {
     var url = require('url');
     var self = this;
     self.content = {};
@@ -205,7 +298,13 @@ ticketsController.getAssigned = function(req, res, next) {
     });
 };
 
-ticketsController.create = function(req, res, next) {
+/**
+ * Get Create Ticket View
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ */
+ticketsController.create = function(req, res) {
     var self = this;
     self.content = {};
     self.content.title = "Tickets - Create";
@@ -237,7 +336,13 @@ ticketsController.create = function(req, res, next) {
     });
 };
 
-ticketsController.print = function(req, res, next) {
+/**
+ * Print Ticket View
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Subviews/PrintTicket View
+ */
+ticketsController.print = function(req, res) {
     var self = this;
     var user = req.user;
     var uid = req.params.id;
@@ -269,7 +374,28 @@ ticketsController.print = function(req, res, next) {
     });
 };
 
-ticketsController.single = function(req, res, next) {
+/**
+ * Get Single Ticket view based on UID
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Single Ticket View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Tickets - " + req.params.id;
+ * self.content.nav = 'tickets';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.ticket = ticket;
+ * self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
+ * self.content.data.ticket.tagsArray = ticket.tags;
+ * self.content.data.ticket.commentCount = _.size(ticket.comments);
+ */
+ticketsController.single = function(req, res) {
     var self = this;
     var user = req.user;
     var uid = req.params.id;
@@ -300,6 +426,13 @@ ticketsController.single = function(req, res, next) {
     });
 };
 
+/**
+ * Converts the Prioirty Int to Readable Name
+ * @memberof ticketsController
+ * @instance
+ * @param {Number} val Int Value of the Prioirty to convert
+ * @returns {string} Readable String for Priority
+ */
 function getPriorityName(val) {
     var p = '';
     switch(val) {
@@ -317,7 +450,32 @@ function getPriorityName(val) {
     return p;
 }
 
-ticketsController.editTicket = function(req, res, next) {
+/**
+ * Get Edit Ticket View
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Edit Ticket View
+ * @see Ticket
+ * @example
+ * //Content Object
+ * self.content.title = "Edit Ticket #" + req.params.id;
+ * self.content.nav = 'tickets';
+ *
+ * self.content.data = {};
+ * self.content.data.user = req.user;
+ * self.content.data.common = req.viewdata;
+ *
+ * //Ticket Data
+ * self.content.data.ticket = ticket;
+ * self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
+ * self.content.data.ticket.tagsArray = ticket.tags;
+ * self.content.data.ticket.commentCount = _.size(ticket.comments);
+ *
+ * if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+ * if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
+ * if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
+ */
+ticketsController.editTicket = function(req, res) {
     var self = this;
     var uid = req.params.id;
     self.content = {};
@@ -373,8 +531,12 @@ ticketsController.submitTicket = function(req, res, next) {
         description: 'Ticket was created.'
     };
 
-    if (_.isUndefined(req.body.tIssue) || _.isNull(req.body.tIssue) || _.isEmpty(req.body.tIssue)
-        || _.isUndefined(req.body.tSubject) || _.isNull(req.body.tSubject) || _.isEmpty(req.body.tSubject)) {
+    if (_.isUndefined(req.body.tIssue) ||
+        _.isNull(req.body.tIssue) ||
+        _.isEmpty(req.body.tIssue) ||
+        _.isUndefined(req.body.tSubject) ||
+        _.isNull(req.body.tSubject) ||
+        _.isEmpty(req.body.tSubject)) {
 
         result.error = "Please fill out all fields.";
         result.success = false;
@@ -441,6 +603,25 @@ ticketsController.postcomment = function(req, res, next) {
 
             emitter.emit('ticket:comment:added', tt, Comment);
             return res.send(tt);
+        });
+    });
+};
+
+ticketsController.uploadAttachment = function(req, res, next) {
+    var self = this;
+    var id = req.body._id;
+    var username = req.body.username;
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return handleError(res, err);
+
+        var fileName = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
+        user.image = fileName;
+
+        user.save(function(err) {
+            if (err) return handleError(res, err);
+
+            return res.status(200).send('/uploads/users/' + fileName);
         });
     });
 };

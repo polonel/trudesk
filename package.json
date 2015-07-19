@@ -57,6 +57,7 @@
     "grunt-cssc": "^0.2.6",
     "grunt-express-server": "^0.5.1",
     "grunt-htmlhint": "^0.4.1",
+    "grunt-jsdoc": "^0.6.7",
     "grunt-parallel": "^0.4.1",
     "matchdep": "^0.3.0"
   }

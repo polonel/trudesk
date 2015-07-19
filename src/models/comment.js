@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -13,7 +13,6 @@
  **/
 
 var mongoose            = require('mongoose');
-var _                   = require('lodash');
 
 var commentsSchema = mongoose.Schema({
     owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},

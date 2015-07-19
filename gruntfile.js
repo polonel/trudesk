@@ -50,6 +50,14 @@ module.exports = function(grunt) {
                     nospawn: true,
                     atBegin: true
                 }
+            },
+            docs: {
+                files: [
+                    '*.js',
+                    'src/**/*.js',
+                    'routes/**/*.js'
+                ],
+                tasks: ['jsdoc']
             }
         },
 
@@ -73,6 +81,17 @@ module.exports = function(grunt) {
                         grunt: true,
                         args: ['watch:web']
                     }]
+            },
+            docs: {
+                options: {
+                    stream: true
+                },
+                tasks: [
+                    {
+                        grunt: true,
+                        args: ['watch:docs']
+                    }
+                ]
             }
         },
 
@@ -126,12 +145,27 @@ module.exports = function(grunt) {
                     ]
                 }
             }
+        },
+
+        jsdoc : {
+            dist : {
+                src: ['README.md', 'src/**/*.js', 'public/js/*.js', 'public/js/angularjs/**/*.js', 'public/js/modules/**/*.js', 'public/js/pages/**/*.js'],
+                options: {
+                    destination: 'docs',
+                    template: 'docs/jaguarjs-jsdoc',
+                    configure: 'docs/jaguarjs-jsdoc/conf.json'
+                    //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
+                    //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
+                }
+            }
         }
 
     });
 
     grunt.registerTask('buildcss', ['sass', 'cssmin']);
     grunt.registerTask('minjs', ['uglify']);
+    grunt.registerTask('builddocs', ['jsdoc']);
+    grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('default', ['server']);
 };

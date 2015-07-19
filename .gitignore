@@ -33,3 +33,4 @@ node_modules
 config.json
 import.csv
 src/mailer/templates/promo/
+*.pem

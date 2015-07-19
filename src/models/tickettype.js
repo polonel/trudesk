@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -17,16 +17,44 @@ var _ = require('underscore');
 
 var COLLECTION = 'tickettypes';
 
+/**
+ * TicketType Schema
+ * @module models/tickettype
+ * @class TicketType
+
+ *
+ * @property {object} _id ```Required``` ```unique``` MongoDB Object ID
+ * @property {String} name ```Required``` ```unique``` Name of Ticket Type
+ */
 var ticketTypeSchema = mongoose.Schema({
-    name:       String
+    name:       { type: String, required: true, unique: true }
 });
 
+/**
+ * Return all Ticket Types
+ *
+ * @memberof TicketType
+ * @static
+ * @method getTypes
+ *
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
 ticketTypeSchema.statics.getTypes = function(callback) {
     var q = this.model(COLLECTION).find({});
 
     return q.exec(callback);
 };
 
+/**
+ * Return Single Ticket Type based on given type name
+ *
+ * @memberof TicketType
+ * @static
+ * @method getTypeByName
+ *
+ * @param {String} name Name of Ticket Type to search for
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
 ticketTypeSchema.statics.getTypeByName = function(name, callback) {
     var q = this.model(COLLECTION).findOne({name: name});
 

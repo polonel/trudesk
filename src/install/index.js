@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -384,19 +384,38 @@ function createCounter(next) {
             return next(err);
         }
 
-        var Counter = new countersSchema({
-            _id: "tickets",
-            next: 1001
-        });
+        async.series([
+            function(cb) {
+                var Counter = new countersSchema({
+                    _id: "tickets",
+                    next: 1001
+                });
 
-        Counter.save(function(err) {
-            if (err) {
-                next(err);
+                Counter.save(function(err) {
+                    if (err) {
+                        cb(err);
+                    }
+
+                    cb();
+                });
+            },
+            function(cb) {
+                var Counter = new countersSchema({
+                    _id: 'reports',
+                    next: 1001
+                });
+
+                Counter.save(function(err) {
+                    if (err) cb(err);
+
+                    cb();
+                });
             }
+        ], function(err) {
+            if (err) return next(err);
 
             next();
         });
-
     });
 }
 

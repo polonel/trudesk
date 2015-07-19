@@ -1,5 +1,5 @@
-/**
-      .                              .o8                     oooo
+/*
+      .                             .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
@@ -64,11 +64,10 @@ module.exports.pushNotification = function(notification) {
                        if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
                            async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
                                var device = new apn.Device(token);
-                               winston.debug('here');
                                try {
                                    apnConnection.pushNotification(note, device);
                                } catch (e) {
-                                   winston.error(e);
+                                   winston.warn('[trudesk:iOSPush] - ' + e);
                                }
 
 
@@ -76,6 +75,8 @@ module.exports.pushNotification = function(notification) {
 
                                cb();
                            });
+                       } else {
+                           cb();
                        }
                    });
                }

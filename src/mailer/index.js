@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -59,6 +59,10 @@ mailer.sendMail = function(data, callback) {
     if (!MAILER_ENABLED) {
         return callback(null, 'Mail Disabled');
     }
+
+    data.from = nconf.get('mailer:from') ? nconf.get('mailer:from') : '';
+    if (_.isUndefined(data.from) || _.isEmpty(data.from) || _.isNull(data.from))
+        return callback('No From Address Set.');
 
     transporter.sendMail(data, callback);
 };

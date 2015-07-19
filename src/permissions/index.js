@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -24,6 +24,7 @@ var _s      = require('underscore.string');
     delete      = delete permission for grp
     edit        = edit permission for grp
     editSelf    = edit Self Created Items
+    assignee    = Allowed to be assigned to a ticket
     view        = view permission for grp
  */
 var roles = {
@@ -46,6 +47,13 @@ var roles = {
         allowedAction: ["ticket:create editSelf", "comment:create editSelf" ]
     }
 };
+
+/***
+ * Checks to see if a role as the given action
+ * @param role [role to check against]
+ * @param a [action to check]
+ * @returns {boolean}
+ */
 
 var canThis = function(role, a) {
     if (_.isUndefined(role)) return false;

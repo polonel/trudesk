@@ -10,22 +10,37 @@
                             <div class="actions"><strong>Ticket Actions</strong></div>
                             <div id="tAction-list" class="notifications-Messages">
                                 <ul>
-                                    <li>
-                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
-                                            <div class="clearfix">
-                                                <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                                <div class="messageAuthor"><strong>Delete</strong></div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
-                                            <div class="clearfix">
-                                                <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                <div class="messageAuthor"><strong>Close</strong></div>
-                                            </div>
-                                        </a>
-                                    </li>
+                                    {{#canUser data.user "ticket:delete"}}
+                                        <li>
+                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
+                                                <div class="clearfix">
+                                                    <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                                    <div class="messageAuthor"><strong>Delete</strong></div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    {{/canUser}}
+                                    {{#canUser data.user "ticket:edit"}}
+                                        <li>
+                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                                <div class="clearfix">
+                                                    <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                    <div class="messageAuthor"><strong>Close</strong></div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    {{else}}
+                                        {{#canUser data.user "ticket:editSelf"}}
+                                            <li>
+                                                <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                                    <div class="clearfix">
+                                                        <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                        <div class="messageAuthor"><strong>Close</strong></div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        {{/canUser}}
+                                    {{/canUser}}
                                 </ul>
                             </div>
                         </div>

@@ -68,9 +68,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             "status": 3
                         }
                     ).success(function() {
-                            console.log('updated! ' + id);
+
                         }).error(function(d) {
-                            console.log(d);
+                            console.log('[trudesk:tickets] - ' + d);
+                            helpers.showFlash('Error: ' + d, true);
                         });
                 });
 

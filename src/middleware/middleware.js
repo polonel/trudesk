@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -57,7 +57,9 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
 
 middleware.redirectToLogin = function(req, res, next) {
     if (!req.user) {
-        req.session.redirectUrl = req.url;
+        if (!_.isUndefined(req.session))
+            req.session.redirectUrl = req.url;
+
         res.redirect('/');
     } else {
         next();

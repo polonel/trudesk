@@ -22,7 +22,7 @@ define('modules/ajaximgupload', [
 
     aiu.init = function() {
         $(document).ready(function() {
-            $('#inputFile').on('change', function() {
+            $('#profileImageInput').on('change', function() {
                 var val = $(this).val();
                 if (val === '') return true;
 
@@ -49,8 +49,6 @@ define('modules/ajaximgupload', [
 
                 $(this).val('');
             });
-
-
         });
     };
 

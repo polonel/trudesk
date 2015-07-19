@@ -51,7 +51,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
             };
 
             $scope.accountEditPic = function() {
-                $('#inputFile').trigger('click');
+                $('#profileImageInput').trigger('click');
             };
 
             function getChecked() {

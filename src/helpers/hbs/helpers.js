@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -10,9 +10,9 @@
  Created:    02/10/2015
  Author:     Chris Brame
 
- **/
+ */
 
-/**
+/*
  * Handlebars Comparison Helpers
  * Copyright (c) 2013 Jon Schlinkert, Brian Woodward, contributors
  * Licensed under the MIT License (MIT).
@@ -94,7 +94,7 @@ var helpers = {
         }
     },
 
-    /**
+    /*
      * Or
      * Conditionally render a block if one of the values is truthy.
      */
@@ -106,7 +106,7 @@ var helpers = {
         }
     },
 
-    /**
+    /*
      * ifNth
      * Conditionally render a block if mod(nr, v) is 0
      */
@@ -184,9 +184,9 @@ var helpers = {
      *
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{if_eq this compare=that}}
      */
@@ -201,9 +201,9 @@ var helpers = {
      * {{unless_eq}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{unless_eq this compare=that}}
      */
@@ -218,9 +218,9 @@ var helpers = {
      * {{if_gt}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{if_gt this compare=that}}
      */
@@ -235,9 +235,9 @@ var helpers = {
      * {{unless_gt}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{unless_gt this compare=that}}
      */
@@ -252,9 +252,9 @@ var helpers = {
      * {{if_lt}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{if_lt this compare=that}}
      */
@@ -269,9 +269,9 @@ var helpers = {
      * {{unless_lt}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{unless_lt this compare=that}}
      */
@@ -286,9 +286,9 @@ var helpers = {
      * {{if_gteq}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{if_gteq this compare=that}}
      */
@@ -303,9 +303,9 @@ var helpers = {
      * {{unless_gteq}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{unless_gteq this compare=that}}
      */
@@ -320,9 +320,9 @@ var helpers = {
      * {{if_lteq}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{if_lteq this compare=that}}
      */
@@ -337,9 +337,9 @@ var helpers = {
      * {{unless_lteq}}
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{unless_lteq this compare=that}}
      */
@@ -355,9 +355,9 @@ var helpers = {
      * Similar to {{#if}} block helper but accepts multiple arguments.
      * @author: Dan Harper <http://github.com/danharper>
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{ifAny this compare=that}}
      */
@@ -386,9 +386,9 @@ var helpers = {
      * @author: Stack Overflow Answer <http://stackoverflow.com/questions/18976274/odd-and-even-number-comparison-helper-for-handlebars/18993156#18993156>
      * @author: Michael Sheedy <http://github.com/sheedy> (found code and added to repo)
      *
-     * @param  {[type]} context [description]
-     * @param  {[type]} options [description]
-     * @return {[type]}         [description]
+     * @param  context
+     * @param  options
+     * @return {Boolean}
      *
      * @example: {{ifEven @index}}
      */
@@ -404,9 +404,8 @@ var helpers = {
      * {{forEach}}
      * Credit: http://bit.ly/14HLaDR
      *
-     * @param  {[type]}   array [description]
-     * @param  {Function} fn    [description]
-     * @return {[type]}         [description]
+     * @param  {Array}   array
+     * @param  {Function} fn
      *
      * @example:
      *   var accounts = [
