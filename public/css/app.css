@@ -1378,8 +1378,40 @@ div#accountsTable_wrapper {
     font-size: 12px;
     color: #76797e;
     display: block;
-    margin-bottom: 30px;
+    margin-bottom: 4px;
     margin-left: 2px; }
+  .comments-wrapper .initial-issue .attachments,
+  .comments-wrapper .ticket-comment .attachments,
+  .comments-wrapper .ticket-reply .attachments {
+    margin: 0;
+    margin-bottom: 25px;
+    font-size: 12px;
+    font-family: "open sans", sans-serif;
+    color: #76797e;
+    list-style: none;
+    display: inline-block; }
+    .comments-wrapper .initial-issue .attachments li,
+    .comments-wrapper .ticket-comment .attachments li,
+    .comments-wrapper .ticket-reply .attachments li {
+      position: relative;
+      padding-left: 15px;
+      margin-right: 8px;
+      display: inline-block; }
+      .comments-wrapper .initial-issue .attachments li:before,
+      .comments-wrapper .ticket-comment .attachments li:before,
+      .comments-wrapper .ticket-reply .attachments li:before {
+        content: "\f016";
+        font-family: "FontAwesome";
+        position: absolute;
+        top: 0;
+        left: 0;
+        padding-right: 0.5em;
+        color: #76797e; }
+    .comments-wrapper .initial-issue .attachments a,
+    .comments-wrapper .ticket-comment .attachments a,
+    .comments-wrapper .ticket-reply .attachments a {
+      font-size: 12px;
+      color: #6a6c71; }
   .comments-wrapper .initial-issue p,
   .comments-wrapper .ticket-comment p,
   .comments-wrapper .ticket-reply p {
@@ -1392,8 +1424,10 @@ div#accountsTable_wrapper {
   position: relative; }
   .comments-wrapper .ticket-comment .comment-actions,
   .comments-wrapper .ticket-comment .edit-issue,
+  .comments-wrapper .ticket-comment .add-attachment,
   .comments-wrapper .initial-issue .comment-actions,
-  .comments-wrapper .initial-issue .edit-issue {
+  .comments-wrapper .initial-issue .edit-issue,
+  .comments-wrapper .initial-issue .add-attachment {
     position: absolute;
     right: 25px;
     top: 15px;
@@ -1403,10 +1437,15 @@ div#accountsTable_wrapper {
     cursor: pointer;
     display: none;
     color: #8699ac; }
+  .comments-wrapper .ticket-comment .add-attachment,
+  .comments-wrapper .initial-issue .add-attachment {
+    right: 55px; }
   .comments-wrapper .ticket-comment:hover .comment-actions,
   .comments-wrapper .ticket-comment:hover .edit-issue,
+  .comments-wrapper .ticket-comment:hover .add-attachment,
   .comments-wrapper .initial-issue:hover .comment-actions,
-  .comments-wrapper .initial-issue:hover .edit-issue {
+  .comments-wrapper .initial-issue:hover .edit-issue,
+  .comments-wrapper .initial-issue:hover .add-attachment {
     display: block; }
   .comments-wrapper .ticket-comment .comment-actions div,
   .comments-wrapper .initial-issue .comment-actions div {

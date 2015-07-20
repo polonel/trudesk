@@ -29,7 +29,6 @@ define('modules/ajaximgupload', [
                 var form = $('#aUploadImageForm');
                 var formData = new FormData($(form)[0]);
                 var timestamp = new Date().getTime();
-                var imgSrc = form.find('img').attr('src') + '?' + timestamp;
 
                 $.ajax({
                     url: '/accounts/uploadImage',
@@ -43,7 +42,7 @@ define('modules/ajaximgupload', [
                         form.find('img').attr('src', data + '?' + timestamp);
                     },
                     error: function(err) {
-                        helpers.showFlash(err, true);
+                        helpers.showFlash(err.responseText, true);
                     }
                 });
 

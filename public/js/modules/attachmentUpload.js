@@ -18,39 +18,44 @@ define('modules/attachmentUpload', [
     'modules/helpers'
 
 ], function($, _, helpers) {
-    var aiu = {};
+    var attachmentUploader = {};
 
-    aiu.init = function() {
+    attachmentUploader.init = function() {
         $(document).ready(function() {
-            $('#profileImageInput').on('change', function() {
-                var val = $(this).val();
-                if (val === '') return true;
+            $('.attachmentInput').each(function() {
+                $(this).on('change', function() {
+                    var self = $(this);
+                    var val = self.val();
+                    if (val === '') return true;
 
-                var form = $('#aUploadImageForm');
-                var formData = new FormData($(form)[0]);
-                var timestamp = new Date().getTime();
-                var imgSrc = form.find('img').attr('src') + '?' + timestamp;
+                    var form = $('#attachmentForm');
+                    if (_.isUndefined(form) || _.isNull(form)) return;
 
-                $.ajax({
-                    url: '/accounts/uploadImage',
-                    type: 'POST',
-                    data: formData,
-                    //async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function(data) {
-                        form.find('img').attr('src', data + '?' + timestamp);
-                    },
-                    error: function(err) {
-                        helpers.showFlash(err, true);
-                    }
+                    var formData = new FormData($(form)[0]);
+                    console.log(formData);
+                    $.ajax({
+                        url: '/tickets/uploadattachment',
+                        type: 'POST',
+                        data: formData,
+                        //async: false,
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        success: function (data) {
+                            helpers.showFlash('Attachment Successfully Uploaded.');
+                            //Refresh Attachments
+
+                        },
+                        error: function (err) {
+                            helpers.showFlash(err.responseText, true);
+                        }
+                    });
+
+                    self.val('');
                 });
-
-                $(this).val('');
             });
         });
     };
 
-    return aiu;
+    return attachmentUploader;
 });

@@ -137,6 +137,15 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     $('#issueText').val(iText);
                 }
             };
+
+            $scope.showUploadAttachment = function($event) {
+                $event.preventDefault();
+                var self = $($event.currentTarget);
+                var inputField = self.parents('form').find('input.attachmentInput');
+                if (inputField.length > 0) {
+                    $(inputField).trigger('click');
+                }
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

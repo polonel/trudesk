@@ -17,7 +17,7 @@ var mongoose            = require('mongoose');
 var attachmentSchema = mongoose.Schema({
     owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},
     name:       { type: String, required: true },
-    date:       { type: Date, required: true },
+    date:       { type: Date, required: true, default: Date.now },
     path:       { type: String, required: true },
     type:       { type: String, required: true }
 });

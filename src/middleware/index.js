@@ -34,7 +34,7 @@ var middleware = {};
 
 module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
-    app.use(express.static(path.join(__dirname, '../../', 'public')));
+
 
     app.set('views', path.join(__dirname, '../views/'));
     app.engine('hbs', hbs.express3({
@@ -94,6 +94,8 @@ module.exports = function(app, db, callback) {
                 next();
             });
             app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
+
+            app.use(express.static(path.join(__dirname, '../../', 'public')));
 
             next(null, store);
         }

@@ -34,3 +34,4 @@ config.json
 import.csv
 src/mailer/templates/promo/
 *.pem
+public/uploads/tickets/

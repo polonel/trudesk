@@ -178,6 +178,11 @@
                             <h3>{{data.ticket.subject}}</h3>
                             <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                             <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
+                            <ul class="attachments">
+                                {{#each data.ticket.attachments}}
+                                    <li><a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a></li>
+                                {{/each}}
+                            </ul>
                             <div class="issue-body">
                                 {{{data.ticket.issue}}}
                             </div>
@@ -213,6 +218,13 @@
                                 <div class="edit-issue"><i class="fa fa-pencil fa-lg"></i></div>
                             {{/canEditSelf}}
                         {{/canUser}}
+                        <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
+                            <div class="add-attachment" ng-click="showUploadAttachment($event)"><i class="fa fa-paperclip fa-lg"></i></div>
+
+                            <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
+                            <input type="hidden" name="ownerId" value="{{data.user._id}}" />
+                            <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
+                        </form>
                     </div>
                     <div class="comments" data-ticketId="{{data.ticket._id}}">
                         {{#foreach data.ticket.comments}}
@@ -279,8 +291,9 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['pages/singleTicket'], function(st) {
+        require(['pages/singleTicket', 'modules/attachmentUpload'], function(st, aU) {
             st.init();
+            aU.init();
         });
     </script>
 {{/contentFor}}

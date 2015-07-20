@@ -42,8 +42,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
-    router.post('/tickets/addAttachment', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/tickets'), rename: function(fieldname, filename) {
-
+    router.post('/tickets/uploadattachment', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/tickets'), rename: function(fieldname, filename) {
+        return fieldname + '_' + filename;
     }}), controllers.tickets.uploadAttachment);
 
     //Messages

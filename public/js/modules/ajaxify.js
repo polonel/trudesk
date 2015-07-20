@@ -23,6 +23,7 @@ define('modules/ajaxify', [
     'pages/accounts',
     'pages/groups',
     'modules/ajaximgupload',
+    'modules/attachmentUpload',
     'pages/editaccount',
     'pages/singleTicket',
     'pages/reports',
@@ -30,7 +31,7 @@ define('modules/ajaxify', [
     'modules/chat',
     'history'
 
-], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage, ajaxImgUpload, editAccountPage, singleTicketPage, reportsPage, ui) {
+], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage, ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, ui) {
     $(window).on('statechangecomplete', function() {
         //Global
         var $ele = $('#page-content');
@@ -55,6 +56,7 @@ define('modules/ajaxify', [
         ui.init();
         helpers.init();
         ajaxImgUpload.init();
+        attachmentUpload.init();
         nav.init();
 
         //Dashbaord

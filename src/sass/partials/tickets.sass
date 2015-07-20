@@ -256,8 +256,35 @@ div#accountsTable_wrapper
       font-size: 12px
       color: #76797e
       display: block
-      margin-bottom: 30px
+      margin-bottom: 4px
       margin-left: 2px
+
+    .attachments
+      margin: 0
+      margin-bottom: 25px
+      font-size: 12px
+      font-family: "open sans", sans-serif
+      color: #76797e
+      list-style: none
+      display: inline-block
+
+      li
+        position: relative
+        padding-left: 15px
+        margin-right: 8px
+        display: inline-block
+
+        &:before
+          content: "\f016"
+          font-family: "FontAwesome"
+          position: absolute
+          top: 0
+          left: 0
+          padding-right: 0.5em
+          color: #76797e
+      a
+        font-size: 12px
+        color: darken(#76797e, 5)
 
     p
       font-family: "open sans", sans-serif
@@ -269,7 +296,8 @@ div#accountsTable_wrapper
   .initial-issue
     position: relative
     .comment-actions,
-    .edit-issue
+    .edit-issue,
+    .add-attachment
       position: absolute
       right: 25px
       top: 15px
@@ -279,9 +307,12 @@ div#accountsTable_wrapper
       cursor: pointer
       display: none
       color: #8699ac
+    .add-attachment
+      right: 55px
     &:hover
       .comment-actions,
-      .edit-issue
+      .edit-issue,
+      .add-attachment
         display: block
     .comment-actions div
       float: right

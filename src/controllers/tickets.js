@@ -608,20 +608,45 @@ ticketsController.postcomment = function(req, res, next) {
 };
 
 ticketsController.uploadAttachment = function(req, res, next) {
-    var self = this;
-    var id = req.body._id;
-    var username = req.body.username;
+    var fs = require('fs');
+    var Attachment = require('../models/attachment');
+    var History = require('../models/history');
 
-    userSchema.getUser(id, function(err, user) {
-        if (err) return handleError(res, err);
+    var ticketId = req.body.ticketId;
+    var ownerId = req.body.ownerId;
 
-        var fileName = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
-        user.image = fileName;
+    if (_.isUndefined(ticketId) || _.isUndefined(ownerId))
+        return res.status(500).send('Invalid IDs');
 
-        user.save(function(err) {
-            if (err) return handleError(res, err);
+    ticketSchema.getTicketById(ticketId, function(err, ticket) {
+        if (err) throw err;
 
-            return res.status(200).send('/uploads/users/' + fileName);
+        var filename = req.files['ticket_' + ticket.uid + '_attachment'];
+        var path = filename.path;
+        var attachment = {
+            owner: ownerId,
+            name: filename.name.replace('ticket_' + ticket.uid + '_attachment_', ''),
+            path: '/uploads/tickets/' + filename.name,
+            type: filename.extension
+        };
+        ticket.attachments.push(attachment);
+
+        var historyItem = {
+            action: 'ticket:added:attachment',
+            description: 'Attachment ' + filename.name + ' was Added',
+            owner: ownerId
+        };
+        ticket.history.push(historyItem);
+
+        ticket.updated = Date.now();
+
+        ticket.save(function(err, t) {
+            if (err) {
+                fs.unlinkSync(path);
+                return handleError(res, err);
+            }
+
+            return res.json(t);
         });
     });
 };
@@ -629,6 +654,8 @@ ticketsController.uploadAttachment = function(req, res, next) {
 function handleError(res, err) {
     if (err) {
         winston.warn(err);
+        if (!err.status) res.status = 500;
+        else res.status = err.status;
         return res.render('error', {layout: false, error: err, message: err.message});
     }
 }
