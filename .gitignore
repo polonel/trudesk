@@ -35,3 +35,4 @@ import.csv
 src/mailer/templates/promo/
 *.pem
 public/uploads/tickets/
+coverage.html
