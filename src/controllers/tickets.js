@@ -11,6 +11,7 @@
 
 var ticketSchema    = require('../models/ticket');
 var async           = require('async');
+var path            = require('path');
 var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
@@ -609,46 +610,61 @@ ticketsController.postcomment = function(req, res, next) {
 
 ticketsController.uploadAttachment = function(req, res, next) {
     var fs = require('fs');
-    var Attachment = require('../models/attachment');
-    var History = require('../models/history');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({headers: req.headers });
 
     var ticketId = req.body.ticketId;
     var ownerId = req.body.ownerId;
 
-    if (_.isUndefined(ticketId) || _.isUndefined(ownerId))
-        return res.status(500).send('Invalid IDs');
+    //if (_.isUndefined(ticketId) || _.isUndefined(ownerId))
+    //    return res.status(500).send('Invalid IDs');
 
-    ticketSchema.getTicketById(ticketId, function(err, ticket) {
-        if (err) throw err;
-
-        var filename = req.files['ticket_' + ticket.uid + '_attachment'];
-        var path = filename.path;
-        var attachment = {
-            owner: ownerId,
-            name: filename.name.replace('ticket_' + ticket.uid + '_attachment_', ''),
-            path: '/uploads/tickets/' + filename.name,
-            type: filename.extension
-        };
-        ticket.attachments.push(attachment);
-
-        var historyItem = {
-            action: 'ticket:added:attachment',
-            description: 'Attachment ' + filename.name + ' was Added',
-            owner: ownerId
-        };
-        ticket.history.push(historyItem);
-
-        ticket.updated = Date.now();
-
-        ticket.save(function(err, t) {
-            if (err) {
-                fs.unlinkSync(path);
-                return handleError(res, err);
-            }
-
-            return res.json(t);
-        });
+    var savePath = path.join(__dirname, '../../public/uploads/tickets');
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        console.log('Field [' + fieldname + ']: value: ' + val);
     });
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        winston.debug(filename);
+        winston.warn(fieldname);
+    });
+    busboy.on('finish', function() {
+        console.log('Done!');
+
+        return res.status(200).send();
+    });
+    req.pipe(busboy);
+
+    //ticketSchema.getTicketById(ticketId, function(err, ticket) {
+    //    if (err) throw err;
+    //
+    //    var filename = req.files['ticket_' + ticket.uid + '_attachment'];
+    //    var path = filename.path;
+    //    var attachment = {
+    //        owner: ownerId,
+    //        name: filename.name.replace('ticket_' + ticket.uid + '_attachment_', ''),
+    //        path: '/uploads/tickets/' + filename.name,
+    //        type: filename.extension
+    //    };
+    //    ticket.attachments.push(attachment);
+    //
+    //    var historyItem = {
+    //        action: 'ticket:added:attachment',
+    //        description: 'Attachment ' + filename.name + ' was Added',
+    //        owner: ownerId
+    //    };
+    //    ticket.history.push(historyItem);
+    //
+    //    ticket.updated = Date.now();
+    //
+    //    ticket.save(function(err, t) {
+    //        if (err) {
+    //            fs.unlinkSync(path);
+    //            return handleError(res, err);
+    //        }
+    //
+    //        return res.json(t);
+    //    });
+    //});
 };
 
 function handleError(res, err) {

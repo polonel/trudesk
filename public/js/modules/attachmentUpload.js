@@ -32,7 +32,7 @@ define('modules/attachmentUpload', [
                     if (_.isUndefined(form) || _.isNull(form)) return;
 
                     var formData = new FormData($(form)[0]);
-                    console.log(formData);
+
                     $.ajax({
                         url: '/tickets/uploadattachment',
                         type: 'POST',
@@ -47,6 +47,7 @@ define('modules/attachmentUpload', [
 
                         },
                         error: function (err) {
+                            console.log(err);
                             helpers.showFlash(err.responseText, true);
                         }
                     });

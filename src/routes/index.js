@@ -15,9 +15,22 @@ var express     = require('express'),
     path        = require('path'),
     multer      = require('multer'),
     winston     = require('winston'),
-    mongoose    = require('mongoose');
+    mongoose    = require('mongoose'),
+    passport = require('passport');
 
-var passport = require('passport');
+var profileUploads = multer({dest: path.join(__dirname, '../../', 'public/uploads/users'), fileFilter: fileFilter, rename: function(fieldname, filename) {
+    return fieldname;
+}});
+
+function fileFilter (req, file, cb) {
+    winston.debug(file);
+    if (file.extension === 'png') {
+        cb(null, true);
+    }
+    if (file.extension === 'exe') {
+        cb(null, false);
+    }
+}
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
@@ -42,9 +55,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
-    router.post('/tickets/uploadattachment', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/tickets'), rename: function(fieldname, filename) {
-        return fieldname + '_' + filename;
-    }}), controllers.tickets.uploadAttachment);
+    router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
+    //router.post('/tickets/uploadattachment', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/tickets'), rename: function(fieldname, filename) {
+    //    return fieldname + '_' + filename;
+    //}, fileFilter: fileFilter}), controllers.tickets.uploadAttachment);
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
@@ -67,9 +81,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
     router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
     router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
-    router.post('/accounts/uploadimage', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/users'), rename: function(fieldname, filename) {
-        return fieldname;
-    }}), controllers.accounts.uploadImage);
+    router.post('/accounts/uploadimage', middleware.redirectToLogin, profileUploads.single(), controllers.accounts.uploadImage);
 
     //Groups
     router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get);

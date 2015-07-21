@@ -3,13 +3,15 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./app"
+    "start": "node ./app",
+    "test": "mocha"
   },
   "dependencies": {
     "apn": "^1.7.3",
     "async": "^1.2.1",
     "bcrypt": "^0.8.2",
     "body-parser": "^1.12.3",
+    "busboy": "^0.2.9",
     "chance": "^0.7.4",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^0.8.1",
@@ -49,6 +51,7 @@
     "winston": "^0.9.0"
   },
   "devDependencies": {
+    "chai": "*",
     "grunt": "^0.4.5",
     "grunt-contrib-cssmin": "^0.12.2",
     "grunt-contrib-sass": "^0.9.2",
@@ -59,6 +62,7 @@
     "grunt-htmlhint": "^0.4.1",
     "grunt-jsdoc": "^0.6.7",
     "grunt-parallel": "^0.4.1",
-    "matchdep": "^0.3.0"
+    "matchdep": "^0.3.0",
+    "mocha": "*"
   }
 }

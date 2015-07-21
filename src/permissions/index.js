@@ -1,3 +1,4 @@
+
 /*
       .                              .o8                     oooo
    .o8                             "888                     `888
@@ -24,8 +25,9 @@ var _s      = require('underscore.string');
     delete      = delete permission for grp
     edit        = edit permission for grp
     editSelf    = edit Self Created Items
-    assignee    = Allowed to be assigned to a ticket
+    assignee    = allowed to be assigned to a ticket
     view        = view permission for grp
+    attachment  = can add attachment
  */
 var roles = {
     admin: {
@@ -44,7 +46,7 @@ var roles = {
         id: "user",
         name: "User",
         description: "User",
-        allowedAction: ["ticket:create editSelf", "comment:create editSelf" ]
+        allowedAction: ["ticket:create editSelf attachment", "comment:create editSelf" ]
     }
 };
 

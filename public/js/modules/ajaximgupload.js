@@ -42,6 +42,7 @@ define('modules/ajaximgupload', [
                         form.find('img').attr('src', data + '?' + timestamp);
                     },
                     error: function(err) {
+                        console.log(err);
                         helpers.showFlash(err.responseText, true);
                     }
                 });
