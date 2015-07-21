@@ -431,6 +431,18 @@ module.exports = function(ws) {
 
         });
 
+        socket.on('refreshTicketAttachments', function(data) {
+            var ticketId = data.ticketId;
+            var ticketSchema = require('./models/ticket');
+            if (_.isUndefined(ticketId)) return true;
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                utils.sendToAllConnectedClients(io, 'updateTicketAttachments', ticket);
+            });
+        });
+
         socket.on('setMessageRead', function(messageId) {
             var messageSchema = require('./models/message');
             messageSchema.getMessageById(messageId, function(err, message) {

@@ -608,63 +608,121 @@ ticketsController.postcomment = function(req, res, next) {
     });
 };
 
-ticketsController.uploadAttachment = function(req, res, next) {
+ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs');
     var Busboy = require('busboy');
-    var busboy = new Busboy({headers: req.headers });
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: 10*1024*1024 // 10mb limit
+        }
+    });
 
-    var ticketId = req.body.ticketId;
-    var ownerId = req.body.ownerId;
+    var object = {}, error;
 
-    //if (_.isUndefined(ticketId) || _.isUndefined(ownerId))
-    //    return res.status(500).send('Invalid IDs');
-
-    var savePath = path.join(__dirname, '../../public/uploads/tickets');
     busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
-        console.log('Field [' + fieldname + ']: value: ' + val);
+        if (fieldname === 'ticketId') object.ticketId = val;
+        if (fieldname === 'ownerId') object.ownerId = val;
     });
+
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        winston.debug(filename);
-        winston.warn(fieldname);
+        winston.debug(mimetype);
+
+        if (mimetype.indexOf('image/') == -1 &&
+            mimetype.indexOf('text/') == -1 &&
+            mimetype.indexOf('application/x-zip-compressed') == -1) {
+            error = {
+                status: 500,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId);
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        object.filePath = path.join(savePath, 'attachment_' + filename);
+        object.filename = filename;
+        object.mimetype = mimetype;
+
+        if (fs.existsSync(object.filePath)) {
+            error = {
+                status: 500,
+                message: 'File already exists'
+            };
+
+            return file.resume();
+        }
+
+        file.on('limit', function() {
+            error = {
+                status: 500,
+                message: 'File too large'
+            };
+
+            // Delete the temp file
+            if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath);
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
     });
+
     busboy.on('finish', function() {
-        console.log('Done!');
+        if (error) return res.status(error.status).send(error.message);
 
-        return res.status(200).send();
+        if (_.isUndefined(object.ticketId) ||
+            _.isUndefined(object.ownerId) ||
+            _.isUndefined(object.filePath)) {
+
+            return res.status(500).send('Invalid Form Data');
+        }
+
+        // Everything Checks out lets make sure the file exists and then add it to the attachments array
+        if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');
+
+        ticketSchema.getTicketById(object.ticketId, function(err, ticket) {
+            if (err) {
+                winston.warn(err);
+                return res.status(500).send(err.message);
+            }
+
+            var attachment = {
+                owner: object.ownerId,
+                name: object.filename,
+                path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
+                type: object.mimetype
+            };
+            ticket.attachments.push(attachment);
+
+            var historyItem = {
+                action: 'ticket:added:attachment',
+                description: 'Attachment ' + object.filename + ' was added.',
+                owner: object.ownerId
+            };
+            ticket.history.push(historyItem);
+
+            ticket.updated = Date.now();
+            ticket.save(function(err, t) {
+                if (err) {
+                    fs.unlinkSync(object.filePath);
+                    winston.warn(err);
+                    return res.status(500).send(err.message);
+                }
+
+                var returnData = {
+                    ticket: t
+                };
+
+                return res.json(returnData);
+            });
+        });
     });
-    req.pipe(busboy);
 
-    //ticketSchema.getTicketById(ticketId, function(err, ticket) {
-    //    if (err) throw err;
-    //
-    //    var filename = req.files['ticket_' + ticket.uid + '_attachment'];
-    //    var path = filename.path;
-    //    var attachment = {
-    //        owner: ownerId,
-    //        name: filename.name.replace('ticket_' + ticket.uid + '_attachment_', ''),
-    //        path: '/uploads/tickets/' + filename.name,
-    //        type: filename.extension
-    //    };
-    //    ticket.attachments.push(attachment);
-    //
-    //    var historyItem = {
-    //        action: 'ticket:added:attachment',
-    //        description: 'Attachment ' + filename.name + ' was Added',
-    //        owner: ownerId
-    //    };
-    //    ticket.history.push(historyItem);
-    //
-    //    ticket.updated = Date.now();
-    //
-    //    ticket.save(function(err, t) {
-    //        if (err) {
-    //            fs.unlinkSync(path);
-    //            return handleError(res, err);
-    //        }
-    //
-    //        return res.json(t);
-    //    });
-    //});
+    req.pipe(busboy);
 };
 
 function handleError(res, err) {

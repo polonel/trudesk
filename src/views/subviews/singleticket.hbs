@@ -178,7 +178,7 @@
                             <h3>{{data.ticket.subject}}</h3>
                             <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                             <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
-                            <ul class="attachments">
+                            <ul class="attachments" data-ticketid="{{data.ticket._id}}">
                                 {{#each data.ticket.attachments}}
                                     <li><a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a></li>
                                 {{/each}}

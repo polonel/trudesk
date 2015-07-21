@@ -39,6 +39,7 @@ define('modules/ui', [
         this.updateTicketPriority();
         this.updateTicketGroup();
         this.updateTicketIssue();
+        this.updateTicketAttachments();
 
         //Events
         this.onTicketCreated();
@@ -461,6 +462,30 @@ define('modules/ui', [
 
 
         socket.emit('removeComment', payload);
+    };
+
+    socketUi.refreshTicketAttachments = function(ticketId) {
+        var payload = {
+            ticketId: ticketId
+        };
+
+        socket.emit('refreshTicketAttachments', payload);
+    };
+
+    socketUi.updateTicketAttachments = function() {
+        socket.removeAllListeners('updateTicketAttachments');
+        socket.on('updateTicketAttachments', function(ticket) {
+            //Rebuild ticket attachments on view
+            var $ul = $('ul.attachments[data-ticketid="' + ticket._id + '"]');
+            if ($ul.length < 1) return true;
+
+            $ul.empty();
+            _.each(ticket.attachments, function(attachment) {
+                var html = '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a></li>';
+
+                $ul.append(html);
+            });
+        });
     };
 
     socketUi.updateUi = function() {

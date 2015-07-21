@@ -15,9 +15,10 @@
 define('modules/attachmentUpload', [
     'jquery',
     'underscore',
-    'modules/helpers'
+    'modules/helpers',
+    'modules/socket'
 
-], function($, _, helpers) {
+], function($, _, helpers, socket) {
     var attachmentUploader = {};
 
     attachmentUploader.init = function() {
@@ -43,8 +44,10 @@ define('modules/attachmentUpload', [
                         processData: false,
                         success: function (data) {
                             helpers.showFlash('Attachment Successfully Uploaded.');
-                            //Refresh Attachments
+                            //Refresh Attachments - Socket.IO
+                            if (_.isUndefined(data.ticket)) return;
 
+                            socket.ui.refreshTicketAttachments(data.ticket._id);
                         },
                         error: function (err) {
                             console.log(err);
