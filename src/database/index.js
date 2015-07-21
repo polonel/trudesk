@@ -39,7 +39,7 @@ var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, c
 
 module.exports.init = function(callback, connectionString) {
     if (connectionString) CONNECTION_URI = connectionString;
-
+    
     if (db.connection) {
         callback(null, db);
     } else {
