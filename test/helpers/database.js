@@ -6,9 +6,9 @@ module.exports.clearCollections = function(mongoose, callback) {
 
     async.series([
         function(done) {
-            mongoose.connection.db.dropDatabase();
-            mongoose.connection.collections = {};
-            done();
+            mongoose.connection.db.dropDatabase(function(){
+                done()
+            });
         },
         function(done) {
             var counter = require('../../src/models/counters');
