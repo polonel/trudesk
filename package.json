@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "dependencies": {
     "apn": "^1.7.3",
