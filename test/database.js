@@ -4,10 +4,11 @@ var should = require('chai').should();
 var assert = require('chai').assert;
 var winston = require('winston');
 var async = require('async');
+var mongoose = require('mongoose');
 
 winston.setLevels(winston.config.cli.levels);
 winston.remove(winston.transports.Console);
-var database = require('../src/database');
+var database;
 var CONNECTION_URI = 'mongodb://localhost/polonel_trudesk31908899';
 
 describe('Database', function() {
@@ -19,6 +20,7 @@ describe('Database', function() {
 
         done();
     });
+
     it ('should throw error for incorrect CONNECTION_URI', function(done) {
         database.init(function(err, db) {
             expect(err).to.exists;

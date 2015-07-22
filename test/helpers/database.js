@@ -2,19 +2,31 @@ var _        = require('underscore');
 var async    = require('async');
 
 module.exports.clearCollections = function(mongoose, callback) {
-  if (_.isUndefined(mongoose)) return callback('Not Connected to MongoDB Instance');
-  var collections = _.keys(mongoose.connection.collections);
+    if (_.isUndefined(mongoose)) return callback('Not Connected to MongoDB Instance');
 
-  async.forEach(collections, function(collectionName, done) {
-      var collection = mongoose.connection.collections[collectionName];
-      collection.drop(function(err) {
-          if (err) return done(err);
+    async.series([
+        function(done) {
+            mongoose.connection.db.dropDatabase();
+            mongoose.connection.collections = {};
+            done();
+        },
+        function(done) {
+            var counter = require('../../src/models/counters');
+            counter.create({
+                _id: 'tickets',
+                next: 1000
+            }, function(err) {
+                if (err) return done(err);
 
-          done(null);
-      });
-  }, function(err) {
-      if (err) return callback(err);
+                done();
+            });
+        }
+    ], function(err) {
+        if (err) return callback(err);
+        var collections = _.keys(mongoose.connection.collections);
 
-      callback();
-  });
+        if (_.size(collections) > 1) return callback('Collections not Clean');
+
+        callback();
+    });
 };
