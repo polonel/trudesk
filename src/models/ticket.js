@@ -537,6 +537,10 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
     }
 
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
+    }
+
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, status: status, deleted: false})
@@ -787,7 +791,8 @@ ticketSchema.statics.getTotalMonthCount = function(month, callback) {
  * @param {Number} status Status to query
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
- * ticketSchema.getMonthCount(7, 0, function(err, count) {
+ * _//Status = -1 returns total count_
+ * ticketSchema.getMonthCount(7, -1, function(err, count) {
  *    if (err) throw err;
  *    //Count
  *    var totalMonthCount = count;
@@ -805,9 +810,9 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
 
     var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 
-    if (!_.isUndefined(status)) {
+    if (!_.isUndefined(status) && !_.isNaN(status)) {
         status = Number(status);
-        if (status === 0) {
+        if (status === -1) { //Get Total Count
             q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
         } else if (status === 3) {
             q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
@@ -830,10 +835,11 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
  * @param {Number} status Status to query
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
- * ticketSchema.getYearCount(2015, 0, function(err, count) {
+ * _//Status=-1 return total count_
+ * ticketSchema.getYearCount(2015, -1, function(err, count) {
  *    if (err) throw err;
  *    //Count
- *    var totalMonthCount = count;
+ *    var totalYearCount = count;
  * });
  */
 ticketSchema.statics.getYearCount = function(year, status, callback) {
@@ -844,13 +850,15 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
     year = Number(year);
 
     var date = new Date(year, 0, 1);
-    var endDate = date;
-    endDate.setYear(endDate.getFullYear() + 1);
+    var endDate = new Date(date.getFullYear() + 1, 0, 1);
 
-    var q = self.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false});
+    var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 
-    if (!_.isUndefined(status) && _.isNumber(status)) {
-        q = self.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false, status: status});
+    if (!_.isUndefined(status) && _.isNumber(status) && status !== -1) {
+        if (status === 3) {
+            q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        } else
+            q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false, status: status});
     }
 
     return q.exec(callback);

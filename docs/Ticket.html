@@ -488,7 +488,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line29">line 29</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line30">line 30</a>
         </div>
         
     </div>
@@ -907,6 +907,29 @@
 	
         <tr>
             
+                <td class="name"><code>attachments</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">Array</span>
+
+
+            
+            </td>
+            
+            
+            
+            
+            
+            <td class="description last"><p>An Array of <code>Attachment</code> items</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
                 <td class="name"><code>histor</code></td>
             
             
@@ -986,6 +1009,8 @@
         
             <li><code>Comment</code></li>
         
+            <li><code>Attachment</code></li>
+        
             <li><code>History</code></li>
         </ul>
     
@@ -1010,7 +1035,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line352">line 352</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line370">line 370</a>
         </div>
         
     </div>
@@ -1138,7 +1163,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line594">line 594</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line616">line 616</a>
         </div>
         
     </div>
@@ -1286,7 +1311,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line699">line 699</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line721">line 721</a>
         </div>
         
     </div>
@@ -1437,7 +1462,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line761">line 761</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line783">line 783</a>
         </div>
         
     </div>
@@ -1590,7 +1615,8 @@
         
 
     
-    <pre class="prettyprint"><code><p>ticketSchema.getMonthCount(7, 0, function(err, count) {
+    <pre class="prettyprint"><code><p><em>//Status = -1 returns total count</em>
+ticketSchema.getMonthCount(7, -1, function(err, count) {
    if (err) throw err;
    //Count
    var totalMonthCount = count;
@@ -1611,7 +1637,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line638">line 638</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line660">line 660</a>
         </div>
         
     </div>
@@ -1762,7 +1788,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line664">line 664</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line686">line 686</a>
         </div>
         
     </div>
@@ -1936,7 +1962,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line557">line 557</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line579">line 579</a>
         </div>
         
     </div>
@@ -2075,7 +2101,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line534">line 534</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line556">line 556</a>
         </div>
         
     </div>
@@ -2214,7 +2240,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line381">line 381</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line399">line 399</a>
         </div>
         
     </div>
@@ -2353,7 +2379,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line506">line 506</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line524">line 524</a>
         </div>
         
     </div>
@@ -2516,7 +2542,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line472">line 472</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line490">line 490</a>
         </div>
         
     </div>
@@ -2679,7 +2705,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line411">line 411</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line429">line 429</a>
         </div>
         
     </div>
@@ -2856,7 +2882,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line616">line 616</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line638">line 638</a>
         </div>
         
     </div>
@@ -2984,7 +3010,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line729">line 729</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line751">line 751</a>
         </div>
         
     </div>
@@ -3135,7 +3161,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line804">line 804</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line827">line 827</a>
         </div>
         
     </div>
@@ -3288,10 +3314,11 @@
         
 
     
-    <pre class="prettyprint"><code><p>ticketSchema.getYearCount(2015, 0, function(err, count) {
+    <pre class="prettyprint"><code><p><em>//Status=-1 return total count</em>
+ticketSchema.getYearCount(2015, -1, function(err, count) {
    if (err) throw err;
    //Count
-   var totalMonthCount = count;
+   var totalYearCount = count;
 });</p></code></pre>
     
 
@@ -3309,7 +3336,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line841">line 841</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line867">line 867</a>
         </div>
         
     </div>
@@ -3449,7 +3476,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line166">line 166</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line170">line 170</a>
         </div>
         
     </div>
@@ -3588,7 +3615,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line328">line 328</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line332">line 332</a>
         </div>
         
     </div>
@@ -3750,7 +3777,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line136">line 136</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line140">line 140</a>
         </div>
         
     </div>
@@ -3912,7 +3939,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line260">line 260</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line264">line 264</a>
         </div>
         
     </div>
@@ -4087,7 +4114,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line97">line 97</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line101">line 101</a>
         </div>
         
     </div>
@@ -4261,7 +4288,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line236">line 236</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line240">line 240</a>
         </div>
         
     </div>
@@ -4423,7 +4450,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line211">line 211</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line215">line 215</a>
         </div>
         
     </div>
@@ -4585,7 +4612,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line187">line 187</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line191">line 191</a>
         </div>
         
     </div>
@@ -4747,7 +4774,7 @@
     
         
         <div class="tag-source">
-            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line292">line 292</a>
+            <a href="models_ticket.js.html">models/ticket.js</a>, <a href="models_ticket.js.html#line296">line 296</a>
         </div>
         
     </div>
@@ -4951,7 +4978,7 @@
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 19 2015 14:37:52 GMT-0400 (Eastern Daylight Time)
+            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Jul 22 2015 23:25:39 GMT-0400 (Eastern Daylight Time)
         </footer>
     </div>
 </div>

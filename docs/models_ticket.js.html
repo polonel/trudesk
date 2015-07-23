@@ -490,6 +490,7 @@ var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var userSchema          = require('./user');
 var commentSchema       = require('./comment');
+var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
 
 var COLLECTION = 'tickets';
@@ -502,6 +503,7 @@ var COLLECTION = 'tickets';
  * @requires {@link TicketType}
  * @requires {@link User}
  * @requires {@link Comment}
+ * @requires {@link Attachment}
  * @requires {@link History}
  *
  * @property {object} _id ```Required``` ```unique``` MongoDB Object ID
@@ -520,6 +522,7 @@ var COLLECTION = 'tickets';
  * @property {String} issue ```Required``` Detailed information about the ticket problem/task
  * @property {Date} closedDate show the datetime the ticket was moved to status 3.
  * @property {Array} comments An array of {@link Comment} items
+ * @property {Array} attachments An Array of {@link Attachment} items
  * @property {Array} histor An array of {@link History} items
  */
 var ticketSchema = mongoose.Schema({
@@ -538,6 +541,7 @@ var ticketSchema = mongoose.Schema({
     issue:      { type: String, required: true },
     closedDate: { type: Date },
     comments:   [commentSchema],
+    attachments:[attachmentSchema],
     history:    [historySchema]
 });
 
@@ -817,6 +821,20 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     callback(null, self);
 };
 
+ticketSchema.methods.removeAttachment = function(ownerId, attachmentId, callback) {
+    var self = this;
+    self.attachments = _.reject(self.attachments, function(o) { return o._id == attachmentId; });
+
+    var historyItem = {
+        action: 'ticket:delete:attachment',
+        description: 'Attachment was deleted: ' + attachmentId,
+        owner: ownerId
+    };
+    self.history.push(historyItem);
+
+    callback(null, self);
+};
+
 /**
  * Gets all tickets that are not marked as deleted &lt;br> &lt;br>
  *
@@ -985,6 +1003,10 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
 ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
     if (_.isUndefined(grpId)) {
         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
     }
 
     var self = this;
@@ -1237,7 +1259,8 @@ ticketSchema.statics.getTotalMonthCount = function(month, callback) {
  * @param {Number} status Status to query
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
- * ticketSchema.getMonthCount(7, 0, function(err, count) {
+ * _//Status = -1 returns total count_
+ * ticketSchema.getMonthCount(7, -1, function(err, count) {
  *    if (err) throw err;
  *    //Count
  *    var totalMonthCount = count;
@@ -1255,9 +1278,9 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
 
     var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 
-    if (!_.isUndefined(status)) {
+    if (!_.isUndefined(status) &amp;&amp; !_.isNaN(status)) {
         status = Number(status);
-        if (status === 0) {
+        if (status === -1) { //Get Total Count
             q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
         } else if (status === 3) {
             q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
@@ -1280,10 +1303,11 @@ ticketSchema.statics.getMonthCount = function(month, status, callback) {
  * @param {Number} status Status to query
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
- * ticketSchema.getYearCount(2015, 0, function(err, count) {
+ * _//Status=-1 return total count_
+ * ticketSchema.getYearCount(2015, -1, function(err, count) {
  *    if (err) throw err;
  *    //Count
- *    var totalMonthCount = count;
+ *    var totalYearCount = count;
  * });
  */
 ticketSchema.statics.getYearCount = function(year, status, callback) {
@@ -1294,13 +1318,15 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
     year = Number(year);
 
     var date = new Date(year, 0, 1);
-    var endDate = date;
-    endDate.setYear(endDate.getFullYear() + 1);
+    var endDate = new Date(date.getFullYear() + 1, 0, 1);
 
-    var q = self.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false});
+    var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 
-    if (!_.isUndefined(status) &amp;&amp; _.isNumber(status)) {
-        q = self.model(COLLECTION).count({date: {$lte: endDate, $gte: date}, deleted: false, status: status});
+    if (!_.isUndefined(status) &amp;&amp; _.isNumber(status) &amp;&amp; status !== -1) {
+        if (status === 3) {
+            q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
+        } else
+            q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false, status: status});
     }
 
     return q.exec(callback);
@@ -1337,7 +1363,7 @@ module.exports = mongoose.model(COLLECTION, ticketSchema);</code></pre>
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sun Jul 19 2015 14:37:52 GMT-0400 (Eastern Daylight Time)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Jul 22 2015 23:25:39 GMT-0400 (Eastern Daylight Time)
         </footer>
     </div>
 </div>

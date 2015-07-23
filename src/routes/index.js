@@ -81,7 +81,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
     router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
     router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
-    router.post('/accounts/uploadimage', middleware.redirectToLogin, profileUploads.single(), controllers.accounts.uploadImage);
+    //router.post('/accounts/uploadimage', middleware.redirectToLogin, profileUploads.single(), controllers.accounts.uploadImage);
 
     //Groups
     router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get);

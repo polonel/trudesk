@@ -1,11 +1,10 @@
 require('blanket');
-var async = require('async');
-var expect = require('chai').expect;
-var should = require('chai').should();
-var winston = require('winston');
-var database = require('../../src/database');
-var dbHelper = require('../helpers/database');
-var m = require('mongoose');
+var async       = require('async');
+var expect      = require('chai').expect;
+var should      = require('chai').should();
+var winston     = require('winston');
+var database    = require('../../src/database');
+var m           = require('mongoose');
 
 var ticketSchema = require('../../src/models/ticket');
 
@@ -40,6 +39,13 @@ describe('ticket.js', function() {
             });
 
         }, 'mongodb://localhost/polonel_trudesk31908899');
+    });
+
+    after(function(done) {
+        this.timeout(5000);
+        m.connection.close(function() {
+            done();
+        });
     });
 
     //it('should clear collections.', function(done) {
@@ -301,6 +307,277 @@ describe('ticket.js', function() {
             function(cb) {
                 ticketSchema.getTickets(1, function(err, tickets) {
                     expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get all tickets for group with limit', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getTicketsWithLimit([m.Types.ObjectId()], 10, function(err, tickets) {
+                    expect(err).to.not.exist;
+                    expect(tickets).to.have.length(0);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTicketsWithLimit(m.Types.ObjectId(), 10, function(err, tickets) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTicketsWithLimit(undefined, 10, function(err, tickets) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get all tickets for group by status', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getTicketsByStatus([m.Types.ObjectId()], 0, function(err, tickets) {
+                    expect(err).to.not.exist;
+                    expect(tickets).to.have.length(0);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTicketsByStatus(undefined, 0, function(err, tickets) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTicketsByStatus(m.Types.ObjectId(), 0, function(err, tickets) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get ticket by _id', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getTicketById(m.Types.ObjectId(), function(err, ticket) {
+                    expect(err).to.not.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTicketById(undefined, function(err, ticket) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get tickets by assignee', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getAssigned(m.Types.ObjectId(), function(err, tickets) {
+                    expect(err).to.not.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getAssigned(undefined, function(err, tickets) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get total count of tickets', function(done) {
+        ticketSchema.getTotalCount(function(err, count) {
+            expect(err).to.not.exist;
+            expect(count).to.be.equal(1);
+
+            done();
+        });
+    });
+
+    it('should get count for tickets with status=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getStatusCount(0, function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getStatusCount(undefined, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get count for tickets with status=x and date=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getStatusCountByDate(0, new Date(), function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getStatusCountByDate(undefined, undefined, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getStatusCountByDate(3, new Date(), function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(0);
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get count for tickets with date=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getDateCount(new Date(), function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getDateCount(undefined, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get count for tickets with month=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getTotalMonthCount(new Date().getMonth(), function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getTotalMonthCount(undefined, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get count for tickets with month=x and status=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getMonthCount(new Date().getMonth(), 0, function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getMonthCount(undefined, 0, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getMonthCount(new Date().getMonth(), 3, function(err, count) {
+                    expect(err).to.not.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getMonthCount(new Date().getMonth(), -1, function(err, count) {
+                    expect(err).to.not.exist;
+
+                    cb();
+                });
+            }
+        ], function() {
+            done();
+        });
+    });
+
+    it('should get count for tickets with year=x and status=x', function(done) {
+        async.parallel([
+            function(cb) {
+                ticketSchema.getYearCount(new Date().getFullYear(), 0, function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(1);
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getYearCount(undefined, 0, function(err, count) {
+                    expect(err).to.exist;
+
+                    cb();
+                });
+            },
+            function(cb) {
+                ticketSchema.getYearCount(new Date().getFullYear(), 3, function(err, count) {
+                    expect(err).to.not.exist;
+                    expect(count).to.be.equal(0);
 
                     cb();
                 });
