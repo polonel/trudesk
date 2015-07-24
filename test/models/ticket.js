@@ -1,53 +1,10 @@
-require('blanket');
 var async       = require('async');
 var expect      = require('chai').expect;
 var should      = require('chai').should();
-var winston     = require('winston');
-var database    = require('../../src/database');
 var m           = require('mongoose');
-
 var ticketSchema = require('../../src/models/ticket');
 
-var mongoose;
-
 describe('ticket.js', function() {
-    before(function(done) {
-        this.timeout(5000);
-        m.connection.close();
-        database.init(function(err, db) {
-            expect(err).to.not.exist;
-            expect(db).to.be.a('object');
-            expect(db.connection).to.exist;
-
-            mongoose = db;
-
-            m.connection.db.dropDatabase(function() {
-                //create counter
-                var counter = require('../../src/models/counters');
-                counter.create({
-                    _id: 'tickets',
-                    next: 1000
-                }, function(err) {
-                    expect(err).to.not.exist;
-
-                    done();
-
-                    //m.connection.close(function() {
-                    //    done();
-                    //});
-                });
-            });
-
-        }, 'mongodb://localhost/polonel_trudesk31908899');
-    });
-
-    after(function(done) {
-        this.timeout(5000);
-        m.connection.close(function() {
-            done();
-        });
-    });
-
     //it('should clear collections.', function(done) {
     //    expect(mongoose).to.exist;
     //
@@ -125,7 +82,7 @@ describe('ticket.js', function() {
                     username: 'trudesk',
                     password: 'password',
                     fullname: 'Trudesk',
-                    email: 'trudesk@trudkes.io',
+                    email: 'trudesk@trudesk.io',
                     role: 'admin'
                 }, function(err, user) {
                     expect(err).to.not.exist;
