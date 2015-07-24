@@ -374,22 +374,84 @@ accountsController.postCreate = function(req, res) {
 };
 
 accountsController.uploadImage = function(req, res, next) {
-    var self = this;
-    var id = req.body._id;
-    var username = req.body.username;
+    var fs = require('fs');
+    var path = require('path');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: 1*1024*1024 // 1mb limit
+        }
+    });
 
-    userSchema.getUser(id, function(err, user) {
-        if (err) return handleError(res, err);
+    var object = {}, error;
 
-        var fileName = 'aProfile_' + username + '.' + req.files["aProfile_" + username].extension;
-        user.image = fileName;
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        if (fieldname === '_id') object._id = val;
+        if (fieldname === 'username') object.username = val;
+    });
 
-        user.save(function(err) {
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') == -1) {
+            error = {
+                status: 500,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../public/uploads/users');
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        object.filePath = path.join(savePath, 'aProfile_' + object.username + path.extname(filename));
+        object.filename = 'aProfile_' + object.username + path.extname(filename);
+        object.mimetype = mimetype;
+
+        file.on('limit', function() {
+            error = {
+                status: 500,
+                message: 'File too large'
+            };
+
+            // Delete the temp file
+            //if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath);
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).send(error.message);
+
+        if (_.isUndefined(object._id) ||
+            _.isUndefined(object.username) ||
+            _.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename)) {
+
+            return res.status(500).send('Invalid Form Data');
+        }
+
+        // Everything Checks out lets make sure the file exists and then add it to the attachments array
+        if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');
+
+        userSchema.getUser(object._id, function(err, user) {
             if (err) return handleError(res, err);
 
-            return res.status(200).send('/uploads/users/' + fileName);
+            user.image = object.filename;
+
+            user.save(function(err) {
+                if (err) return handleError(res, err);
+
+                return res.status(200).send('/uploads/users/' + object.filename);
+            });
         });
     });
+
+    req.pipe(busboy);
 };
 
 function handleError(res, err) {
