@@ -18,7 +18,6 @@ var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
 var path = require('path');
-var multer = require('multer');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
@@ -26,7 +25,6 @@ var app,
     middleware = {};
 
 middleware.db = function(req, res, next) {
-    winston.info('Checking MongoDB Status...');
     if (mongoose.connection.readyState !== 1) {
         winston.warn('MongoDB ReadyState = ' + mongoose.connection.readyState);
         db.init(function(e, database) {
@@ -37,12 +35,6 @@ middleware.db = function(req, res, next) {
             req.db = database;
         });
     }
-
-    next();
-};
-
-middleware.multerToUserDir = function(req, res, next) {
-    multer({dest: path.join(__dirname, '../../', 'public/uploads/users')});
 
     next();
 };
@@ -86,15 +78,16 @@ middleware.cache = function(seconds) {
 
 //API
 middleware.api = function(req, res, next) {
-    if (_.isUndefined(db)) {
-      res.send('Invalid DB - Middleware.Api()');
-    }
-    if (_.isUndefined(req.db)) {
-      req.db = db;
-    }
+    middleware.db(req, res, function() {
+        if (_.isUndefined(db)) {
+          res.send('Invalid DB - Middleware.Api()');
+        }
+        if (_.isUndefined(req.db)) {
+          req.db = db;
+        }
 
-    next();
-
+        next();
+    });
 };
 
 module.exports = function(server) {
