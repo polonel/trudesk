@@ -387,6 +387,32 @@ div.ptooltip-box {
   .reveal-modal button:focus, .reveal-modal button:active {
     outline: none; }
 
+.pagination {
+  margin-right: 8px; }
+  .pagination .pagination-info {
+    font-family: "Open Sans", sans-serif;
+    font-size: 13px;
+    font-weight: 300;
+    float: left;
+    display: inline-block;
+    margin-right: 10px;
+    padding-top: 25px; }
+  .pagination .button-group {
+    float: left; }
+    .pagination .button-group li .btn {
+      margin-right: 0;
+      padding: 2px 16px;
+      background: white;
+      border-radius: 3px 0 0 3px;
+      -webkit-border-radius: 3px 0 0 3px;
+      -moz-border-radius: 3px 0 0 3px; }
+      .pagination .button-group li .btn i {
+        margin-right: 0; }
+    .pagination .button-group li:last-child .btn {
+      border-radius: 0 3px 3px 0;
+      -webkit-border-radius: 0 3px 3px 0;
+      -moz-border-radius: 0 3px 3px 0; }
+
 .top-nav,
 .top-bar {
   background: #2c3e50;

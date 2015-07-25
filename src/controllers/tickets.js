@@ -90,7 +90,7 @@ ticketsController.get = function(req, res) {
     ], function(err, results) {
         if (err) return handleError(res, err);
 
-        //self.content.data.tickets = results;
+        self.content.data.tickets = results;
 
         res.render('tickets', self.content);
     });
@@ -115,17 +115,23 @@ ticketsController.get = function(req, res) {
  * //Ticket Data
  * self.content.data.tickets = [{Ticket}];
  */
-ticketsController.getByStatus = function(req, res) {
+ticketsController.getByStatus = function(req, res, next) {
     var url = require('url');
     var self = this;
-    self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-';
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'active';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: []
+    };
 
     var pathname = url.parse(req.url).pathname;
     var arr = pathname.split('/');
@@ -151,28 +157,12 @@ ticketsController.getByStatus = function(req, res) {
             break;
     }
 
-    self.content.subnav += tType;
-    //Ticket Data
-    self.content.data.tickets = {};
-    async.waterfall([
-        function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                callback(err, grps);
-            });
-        },
-        function(grps, callback) {
-            ticketSchema.getTicketsByStatus(grps, s, function(err, results) {
+    self.processor.subnav += tType;
+    self.processor.pagetype = tType;
+    self.processor.object.status.push(s);
 
-                callback(err, results);
-            });
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
-
-        self.content.data.tickets = results;
-
-        res.render('tickets', self.content);
-    });
+    req.processor = self.processor;
+    next();
 };
 
 /**
@@ -194,51 +184,26 @@ ticketsController.getByStatus = function(req, res) {
  * //Ticket Data
  * self.content.data.tickets = [{Ticket}];
  */
-ticketsController.getActive = function(req, res) {
-    var url = require('url');
+ticketsController.getActive = function(req, res, next) {
     var self = this;
-    self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-active';
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-active';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'active';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: [0,1,2]
+    };
 
+    req.processor = self.processor;
 
-    //Ticket Data
-    self.content.data.tickets = {};
-    async.waterfall([
-        function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                callback(err, grps);
-            });
-        },
-        function(grps, callback) {
-            ticketSchema.getTicketsByStatus(grps, 0, function(err, results0) {
-                if (err) return callback(err);
-
-                ticketSchema.getTicketsByStatus(grps, 1, function(err, results1) {
-                    if (err) return callback(err);
-
-                    ticketSchema.getTicketsByStatus(grps, 2, function(err, results2) {
-                        if (err) return callback(err);
-
-                        var combined = _.union(results0, results1, results2);
-
-                        callback(null, combined);
-                    });
-                });
-            });
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
-
-        self.content.data.tickets = results;
-
-        res.render('tickets', self.content);
-    });
+    next();
 };
 
 /**
@@ -260,42 +225,106 @@ ticketsController.getActive = function(req, res) {
  * //Ticket Data
  * self.content.data.tickets = [{Ticket}];
  */
-ticketsController.getAssigned = function(req, res) {
-    var url = require('url');
+ticketsController.getAssigned = function(req, res, next) {
     var self = this;
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
+
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-assigned';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'assigned';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: [0,1,2],
+        assignedSelf: true,
+        user: req.user._id
+    };
+
+    req.processor = self.processor;
+
+    next();
+};
+
+ticketsController.processor = function(req, res) {
+    var self = this;
+    var processor = req.processor;
+    if (_.isUndefined(processor)) return res.redirect('/dashboard');
+
     self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-assigned';
+    self.content.title = processor.title;
+    self.content.nav = processor.nav;
+    self.content.subnav = processor.subnav;
 
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
+    var object = processor.object;
+    object.limit = (object.limit === 1) ? 10 : object.limit;
 
     //Ticket Data
     self.content.data.tickets = {};
+    self.content.data.totalCount = 0;
+    self.content.data.pagination = {};
+    self.content.data.pagination.type = processor.pagetype;
+    self.content.data.pagination.currentpage = object.page;
+    self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
+    self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+    self.content.data.pagination.enabled = false;
+
     async.waterfall([
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                if (err) return callback(err);
-
-                callback(null, grps);
+                callback(err, grps);
             });
         },
         function(grps, callback) {
-            ticketSchema.getAssigned(req.user._id, function(err, tickets) {
+            ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
-                callback(null, tickets);
-            })
+                callback(null, results);
+            });
         }
     ], function(err, results) {
         if (err) return handleError(res, err);
 
         self.content.data.tickets = results;
 
-        res.render('tickets', self.content);
+        var countObject = {
+            status: object.status,
+            assignedUserId: object.user
+        };
+
+        //Get Pagination
+        async.waterfall([
+            function(callback) {
+                groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                    callback(err, grps);
+                });
+            },
+            function(grpIds, callback) {
+                ticketSchema.getCountWithObject(grpIds, countObject, function(err, count) {
+                    callback(err, count)
+                });
+            }
+        ], function(err, totalCount) {
+            if (err) return handleError(res, err);
+
+            self.content.data.pagination.total = totalCount;
+            if (self.content.data.pagination.total > object.limit)
+                self.content.data.pagination.enabled = true;
+
+            self.content.data.pagination.prevpage = (object.page == 0) ? 0 : Number(object.page) - 1;
+            self.content.data.pagination.prevEnabled = (object.page != 0);
+            self.content.data.pagination.nextpage = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total) ? Number(object.page) + 1 : object.page;
+            self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
+
+            res.render(processor.renderpage, self.content);
+        });
     });
 };
 

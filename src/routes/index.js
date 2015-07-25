@@ -28,17 +28,23 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/resetpassword/:hash', controllers.main.resetPass);
 
     //Tickets
-    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
+    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
-    router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
-    router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned);
-    router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
+    router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/open/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/pending/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/closed/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
+    router.get('/tickets/assigned/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
+    router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
@@ -87,7 +93,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
     router.get('/api/devices/testiOS', middleware.api, controllers.api.devices.testApn);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
-    router.get('/api/tickets/datatable', middleware.api, controllers.api.tickets.datatable);
+    //router.get('/api/tickets/datatable', middleware.api, controllers.api.tickets.datatable);
     router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);

@@ -149,7 +149,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
             self.resizeScroller();
-            self.resizeDataTables('.ticketList', true);
+            self.resizeDataTables('.ticketList');
         }, 100);
     };
 

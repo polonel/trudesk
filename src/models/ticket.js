@@ -463,12 +463,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     var limit = (object.limit == null ? 10 : object.limit);
     var page = (object.page == null ? 0 : object.page);
-    var skip = (object.skip == null ? -1 : object.skip);
-    if (skip == -1)
-        skip = page*limit;
-
-    var closed = object.closed;
-    var status = object.status;
+    var _status = object.status;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
         .populate('owner')
@@ -477,18 +472,44 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
         .sort('-uid')
         //.sort({'status': 1})
-        .skip(skip)
+        .skip(page*limit)
         .limit(limit);
 
-    if (!_.isUndefined(status) && !_.isNull(status) && _.isNumber(status)) {
-        q.where('status').equal(status);
-    } else {
-        if (!closed) q.where('status').ne(3);
+    if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
+        q.where({status: {$in: _status}});
     }
 
-    if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee').equals(object.user);
+    if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
 
     return q.exec(callback);
+};
+
+ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    if (!_.isObject(object)) {
+        return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    var self = this;
+
+    var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
+
+    if (!_.isUndefined(object.status) && _.isArray(object.status)) {
+        q.where({status: {$in: object.status} });
+    }
+
+    if (!_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+        q.where('assignee', object.assignedUserId);
+    }
+
+    return q.exec(callback)
 };
 
 /**
