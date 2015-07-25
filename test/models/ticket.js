@@ -78,18 +78,13 @@ describe('ticket.js', function() {
         var userSchema = require('../../src/models/user');
         async.waterfall([
             function(cb) {
-                userSchema.create({
-                    username: 'trudesk',
-                    password: 'password',
-                    fullname: 'Trudesk',
-                    email: 'trudesk@trudesk.io',
-                    role: 'admin'
-                }, function(err, user) {
+                userSchema.getUserByUsername('trudesk', function(err, user) {
                     expect(err).to.not.exist;
                     expect(user).to.be.a('object');
+                    expect(user).to.have.property('_id');
 
                     cb(null, user._id);
-                });
+                })
             },
             function(userId, cb) {
                 ticketSchema.getTicketByUid(1000, function(err, ticket) {

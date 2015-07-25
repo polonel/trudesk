@@ -45,6 +45,21 @@ before(function(done) {
                 });
             },
             function(cb) {
+                var userSchema = require('../src/models/user');
+                userSchema.create({
+                    username: 'trudesk',
+                    password: 'password',
+                    fullname: 'Trudesk',
+                    email: 'trudesk@trudesk.io',
+                    role: 'admin'
+                }, function(err, user) {
+                    expect(err).to.not.exist;
+                    expect(user).to.be.a('object');
+
+                    cb();
+                });
+            },
+            function(cb) {
                 var ws = require('../src/webserver');
                 ws.init(db, function(err) {
                     expect(err).to.not.exist;

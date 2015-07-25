@@ -149,7 +149,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
             self.resizeScroller();
-            self.resizeDataTables('.ticketList');
+            self.resizeDataTables('.ticketList', true);
         }, 100);
     };
 
@@ -260,9 +260,13 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         });
     };
     
-    helpers.resizeDataTables = function(selector) {
+    helpers.resizeDataTables = function(selector, hasFooter) {
         if (_.isUndefined(selector)) {
             return true;
+        }
+
+        if (_.isUndefined(hasFooter)) {
+            hasFooter = false;
         }
 
         var self = this;
@@ -273,7 +277,10 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             if (scroller.length !== 0) {
                 var tableHead = ticketList.find('.dataTables_scrollHead');
                 var searchHead = ticketList.find('.dataTables_filter');
-                scroller.css({'height': (ticketList.height() - tableHead.height() - searchHead.height()) + 'px'});
+                var footerHeight = 0;
+                if (hasFooter)
+                    footerHeight = tableHead.height();
+                scroller.css({'height': (ticketList.height() - tableHead.height() - searchHead.height() - footerHeight) + 'px'});
                 self.setupScrollers(selector + ' .dataTables_scrollBody');
             }
         });

@@ -37,5 +37,8 @@
                 </ul>
             </li>
         {{/canUser}}
+        {{#canUser data.user "notices:view"}}
+            <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
+        {{/canUser}}
     </ul>
 </div>

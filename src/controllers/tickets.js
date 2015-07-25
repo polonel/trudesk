@@ -90,7 +90,7 @@ ticketsController.get = function(req, res) {
     ], function(err, results) {
         if (err) return handleError(res, err);
 
-        self.content.data.tickets = results;
+        //self.content.data.tickets = results;
 
         res.render('tickets', self.content);
     });

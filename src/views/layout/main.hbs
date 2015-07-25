@@ -30,6 +30,20 @@
 <body>
 <div id="loader"></div>
 <div class="wrapper" style="height: 100%;">
+    <div id="notice-banner" style="
+        width: 100%;
+        height: 30px;
+        background: #e74c3c;
+        color: white;
+        font-size: 13px;
+        font-weight: 500;
+        font-family: 'Open Sans', sans-serif;
+        text-align: center;
+        padding-top: 7px;" {{#if data.notice}} class="show" {{else}} class="hide" {{/if}}>
+
+        {{formatDate data.notice.date "MM/DD/YYYY H:mm"}} - Important: {{data.notice.message}}
+    </div>
+
     {{> topbar }}
     <div class="row" style="background: #223140;">
         {{> nav }}

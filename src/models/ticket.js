@@ -463,6 +463,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     var limit = (object.limit == null ? 10 : object.limit);
     var page = (object.page == null ? 0 : object.page);
+    var skip = (object.skip == null ? -1 : object.skip);
+    if (skip == -1)
+        skip = page*limit;
+
     var closed = object.closed;
     var status = object.status;
 
@@ -473,7 +477,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
         .sort('-uid')
         //.sort({'status': 1})
-        .skip(page*limit)
+        .skip(skip)
         .limit(limit);
 
     if (!_.isUndefined(status) && !_.isNull(status) && _.isNumber(status)) {
