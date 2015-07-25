@@ -65,9 +65,13 @@ if (nconf.get('config')) {
 }
 configExists = fs.existsSync(configFile);
 
+if (process.env.HEROKU === true) {
+    start();
+}
+
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
     start();
-} else if (nconf.get('setup') || nconf.get('install') || !configExists) {
+} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
     setup();
 } else if (nconf.get('upgrade')) {
     //upgrade();

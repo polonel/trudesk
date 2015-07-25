@@ -40,6 +40,7 @@ var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, c
 
 module.exports.init = function(callback, connectionString) {
     if (connectionString) CONNECTION_URI = connectionString;
+    if (process.env.MONGOHQ_URL) CONNECTION_URI = process.env.MONGOHQ_URL;
     
     if (db.connection) {
         callback(null, db);
