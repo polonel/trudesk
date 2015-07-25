@@ -65,7 +65,8 @@ if (nconf.get('config')) {
 }
 configExists = fs.existsSync(configFile);
 
-if (process.env.HEROKU === true) {
+if (process.env.HEROKU == true) {
+    fs.closeSync(fs.openSync(configFile, 'w'));
     start();
 }
 
