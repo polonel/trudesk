@@ -65,7 +65,7 @@ if (nconf.get('config')) {
 }
 configExists = fs.existsSync(configFile);
 
-if (process.env.HEROKU == true) {
+if (process.env.HEROKU) {
     //Build Config for Heroku
     var configHeroku = {
         "url": "http://localhost:8118",
@@ -79,15 +79,13 @@ if (process.env.HEROKU == true) {
         }
     };
 
-    fs.writeFile(configFile, JSON.stringify(configHeroku, null, 4), function(err) {
-        if (err) {
-            winston.error(err);
-            process.exit();
-        } else {
-            winston.info('Heroku Config File Saved!');
-            start();
-        }
-    });
+    winston.info('Creating heroku config file...');
+    var config = JSON.stringify(configHeroku, null, 4);
+
+    fs.unlinkSync(configFile);
+    fs.writeFileSync(configFile, config);
+
+    start();
 }
 
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
