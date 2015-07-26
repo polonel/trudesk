@@ -249,8 +249,6 @@
             
                 <li data-name="ticketsController.create"><a href="ticketsController.html#.create">create</a></li>
             
-                <li data-name="ticketsController.editTicket"><a href="ticketsController.html#.editTicket">editTicket</a></li>
-            
                 <li data-name="ticketsController.get"><a href="ticketsController.html#.get">get</a></li>
             
                 <li data-name="ticketsController.getActive"><a href="ticketsController.html#.getActive">getActive</a></li>
@@ -260,6 +258,8 @@
                 <li data-name="ticketsController.getByStatus"><a href="ticketsController.html#.getByStatus">getByStatus</a></li>
             
                 <li data-name="ticketsController.print"><a href="ticketsController.html#.print">print</a></li>
+            
+                <li data-name="ticketsController.processor"><a href="ticketsController.html#.processor">processor</a></li>
             
                 <li data-name="ticketsController.single"><a href="ticketsController.html#.single">single</a></li>
             
@@ -519,6 +519,7 @@ ticketsController.content = {};
  * @param {object} res Express Response
  * @return {View} Tickets View
  * @see Ticket
+ * @deprecated
  * @example
  * //Content Object
  * self.content.title = "Tickets";
@@ -568,32 +569,26 @@ ticketsController.get = function(req, res) {
  * Get Ticket View based on ticket status
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @return {View} Tickets View
+ * @param {callback} next Sends the ```req.processor``` object to the processor
  * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-{status}';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
  */
-ticketsController.getByStatus = function(req, res) {
+ticketsController.getByStatus = function(req, res, next) {
     var url = require('url');
     var self = this;
-    self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-';
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'active';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: []
+    };
 
     var pathname = url.parse(req.url).pathname;
     var arr = pathname.split('/');
@@ -619,64 +614,109 @@ ticketsController.getByStatus = function(req, res) {
             break;
     }
 
-    self.content.subnav += tType;
-    //Ticket Data
-    self.content.data.tickets = {};
-    async.waterfall([
-        function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                callback(err, grps);
-            });
-        },
-        function(grps, callback) {
-            ticketSchema.getTicketsByStatus(grps, s, function(err, results) {
+    self.processor.subnav += tType;
+    self.processor.pagetype = tType;
+    self.processor.object.status.push(s);
 
-                callback(err, results);
-            });
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
-
-        self.content.data.tickets = results;
-
-        res.render('tickets', self.content);
-    });
+    req.processor = self.processor;
+    next();
 };
 
 /**
  * Get Ticket View based on ticket active tickets
  * @param {object} req Express Request
  * @param {object} res Express Response
+ * @param {callback} next Sends the ```req.processor``` object to the processor
+ * @see Ticket
+ */
+ticketsController.getActive = function(req, res, next) {
+    var self = this;
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
+
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-active';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'active';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: [0,1,2]
+    };
+
+    req.processor = self.processor;
+
+    next();
+};
+
+/**
+ * Get Ticket View based on tickets assigned to a given user
+ * _calls ```next()``` to send to processor_
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @param {callback} next Sends the ```req.processor``` object to the processor
+ * @see Ticket
+ */
+ticketsController.getAssigned = function(req, res, next) {
+    var self = this;
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
+
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    self.processor.subnav = 'tickets-assigned';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'assigned';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: [0,1,2],
+        assignedSelf: true,
+        user: req.user._id
+    };
+
+    req.processor = self.processor;
+
+    next();
+};
+
+/**
+ * Process the ```req.processor``` object and render the correct view
+ * @param {object} req Express Request
+ * @param {object} res Express Response
  * @return {View} Tickets View
  * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-active';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
  */
-ticketsController.getActive = function(req, res) {
-    var url = require('url');
+ticketsController.processor = function(req, res) {
     var self = this;
+    var processor = req.processor;
+    if (_.isUndefined(processor)) return res.redirect('/dashboard');
+
     self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-active';
+    self.content.title = processor.title;
+    self.content.nav = processor.nav;
+    self.content.subnav = processor.subnav;
 
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
+    var object = processor.object;
+    object.limit = (object.limit === 1) ? 10 : object.limit;
 
     //Ticket Data
     self.content.data.tickets = {};
+    self.content.data.totalCount = 0;
+    self.content.data.pagination = {};
+    self.content.data.pagination.type = processor.pagetype;
+    self.content.data.pagination.currentpage = object.page;
+    self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
+    self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+    self.content.data.pagination.enabled = false;
+
     async.waterfall([
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
@@ -684,86 +724,48 @@ ticketsController.getActive = function(req, res) {
             });
         },
         function(grps, callback) {
-            ticketSchema.getTicketsByStatus(grps, 0, function(err, results0) {
+            ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
-                ticketSchema.getTicketsByStatus(grps, 1, function(err, results1) {
-                    if (err) return callback(err);
+                callback(null, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return handleError(res, err);
 
-                    ticketSchema.getTicketsByStatus(grps, 2, function(err, results2) {
-                        if (err) return callback(err);
+        self.content.data.tickets = results;
 
-                        var combined = _.union(results0, results1, results2);
+        var countObject = {
+            status: object.status,
+            assignedUserId: object.user
+        };
 
-                        callback(null, combined);
-                    });
+        //Get Pagination
+        async.waterfall([
+            function(callback) {
+                groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                    callback(err, grps);
                 });
-            });
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
+            },
+            function(grpIds, callback) {
+                ticketSchema.getCountWithObject(grpIds, countObject, function(err, count) {
+                    callback(err, count)
+                });
+            }
+        ], function(err, totalCount) {
+            if (err) return handleError(res, err);
 
-        self.content.data.tickets = results;
+            self.content.data.pagination.total = totalCount;
+            if (self.content.data.pagination.total > object.limit)
+                self.content.data.pagination.enabled = true;
 
-        res.render('tickets', self.content);
-    });
-};
+            self.content.data.pagination.prevpage = (object.page == 0) ? 0 : Number(object.page) - 1;
+            self.content.data.pagination.prevEnabled = (object.page != 0);
+            self.content.data.pagination.nextpage = ((object.page * object.limit) + object.limit &lt;= self.content.data.pagination.total) ? Number(object.page) + 1 : object.page;
+            self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit &lt;= self.content.data.pagination.total);
 
-/**
- * Get Ticket View based on tickets assigned to a given user
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {View} Tickets View
- * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-assigned';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
- */
-ticketsController.getAssigned = function(req, res) {
-    var url = require('url');
-    var self = this;
-    self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-    self.content.subnav = 'tickets-assigned';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-
-
-    //Ticket Data
-    self.content.data.tickets = {};
-    async.waterfall([
-        function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                if (err) return callback(err);
-
-                callback(null, grps);
-            });
-        },
-        function(grps, callback) {
-            ticketSchema.getAssigned(req.user._id, function(err, tickets) {
-                if (err) return callback(err);
-
-                callback(null, tickets);
-            })
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
-
-        self.content.data.tickets = results;
-
-        res.render('tickets', self.content);
+            res.render(processor.renderpage, self.content);
+        });
     });
 };
 
@@ -918,72 +920,6 @@ function getPriorityName(val) {
 
     return p;
 }
-
-/**
- * Get Edit Ticket View
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {View} Edit Ticket View
- * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Edit Ticket #" + req.params.id;
- * self.content.nav = 'tickets';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.ticket = ticket;
- * self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
- * self.content.data.ticket.tagsArray = ticket.tags;
- * self.content.data.ticket.commentCount = _.size(ticket.comments);
- *
- * if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
- * if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
- * if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
- */
-ticketsController.editTicket = function(req, res) {
-    var self = this;
-    var uid = req.params.id;
-    self.content = {};
-    self.content.title = "Edit Ticket #" + req.params.id;
-    self.content.nav = 'tickets';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.ticket = {};
-
-    async.parallel({
-        groups: function (callback) {
-            groupSchema.getAllGroups(function (err, objs) {
-                callback(err, objs);
-            });
-        },
-        types: function(callback) {
-            typeSchema.getTypes(function(err, objs) {
-                callback(err, objs);
-            });
-        },
-        ticket: function(callback) {
-            ticketSchema.getTicketByUid(uid, function(err, ticket) {
-                callback(err, ticket);
-            });
-        }
-    }, function(err, results) {
-        if (err) {
-            res.render('error', {error: err, message: err.message});
-        } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
-            if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
-            if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
-
-            res.render('subviews/editticket', self.content);
-        }
-    });
-};
 
 ticketsController.submitTicket = function(req, res, next) {
     var marked = require('marked');
@@ -1214,7 +1150,7 @@ module.exports = ticketsController;</code></pre>
         
 
         <footer>
-            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Jul 22 2015 23:25:39 GMT-0400 (Eastern Daylight Time)
+            Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sat Jul 25 2015 22:27:37 GMT-0400 (Eastern Daylight Time)
         </footer>
     </div>
 </div>

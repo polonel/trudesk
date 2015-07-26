@@ -48,7 +48,7 @@ before(function(done) {
                 var userSchema = require('../src/models/user');
                 userSchema.create({
                     username: 'trudesk',
-                    password: 'password',
+                    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
                     fullname: 'Trudesk',
                     email: 'trudesk@trudesk.io',
                     role: 'admin'

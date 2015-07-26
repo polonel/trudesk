@@ -51,6 +51,7 @@ ticketsController.content = {};
  * @param {object} res Express Response
  * @return {View} Tickets View
  * @see Ticket
+ * @deprecated
  * @example
  * //Content Object
  * self.content.title = "Tickets";
@@ -100,20 +101,8 @@ ticketsController.get = function(req, res) {
  * Get Ticket View based on ticket status
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @return {View} Tickets View
+ * @param {callback} next Sends the ```req.processor``` object to the processor
  * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-{status}';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
  */
 ticketsController.getByStatus = function(req, res, next) {
     var url = require('url');
@@ -169,20 +158,8 @@ ticketsController.getByStatus = function(req, res, next) {
  * Get Ticket View based on ticket active tickets
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @return {View} Tickets View
+ * @param {callback} next Sends the ```req.processor``` object to the processor
  * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-active';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
  */
 ticketsController.getActive = function(req, res, next) {
     var self = this;
@@ -208,22 +185,11 @@ ticketsController.getActive = function(req, res, next) {
 
 /**
  * Get Ticket View based on tickets assigned to a given user
+ * _calls ```next()``` to send to processor_
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @return {View} Tickets View
+ * @param {callback} next Sends the ```req.processor``` object to the processor
  * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- * self.content.subnav = 'tickets-assigned';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{Ticket}];
  */
 ticketsController.getAssigned = function(req, res, next) {
     var self = this;
@@ -249,6 +215,13 @@ ticketsController.getAssigned = function(req, res, next) {
     next();
 };
 
+/**
+ * Process the ```req.processor``` object and render the correct view
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @return {View} Tickets View
+ * @see Ticket
+ */
 ticketsController.processor = function(req, res) {
     var self = this;
     var processor = req.processor;
@@ -479,72 +452,6 @@ function getPriorityName(val) {
 
     return p;
 }
-
-/**
- * Get Edit Ticket View
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {View} Edit Ticket View
- * @see Ticket
- * @example
- * //Content Object
- * self.content.title = "Edit Ticket #" + req.params.id;
- * self.content.nav = 'tickets';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.ticket = ticket;
- * self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
- * self.content.data.ticket.tagsArray = ticket.tags;
- * self.content.data.ticket.commentCount = _.size(ticket.comments);
- *
- * if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
- * if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
- * if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
- */
-ticketsController.editTicket = function(req, res) {
-    var self = this;
-    var uid = req.params.id;
-    self.content = {};
-    self.content.title = "Edit Ticket #" + req.params.id;
-    self.content.nav = 'tickets';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.ticket = {};
-
-    async.parallel({
-        groups: function (callback) {
-            groupSchema.getAllGroups(function (err, objs) {
-                callback(err, objs);
-            });
-        },
-        types: function(callback) {
-            typeSchema.getTypes(function(err, objs) {
-                callback(err, objs);
-            });
-        },
-        ticket: function(callback) {
-            ticketSchema.getTicketByUid(uid, function(err, ticket) {
-                callback(err, ticket);
-            });
-        }
-    }, function(err, results) {
-        if (err) {
-            res.render('error', {error: err, message: err.message});
-        } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
-            if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
-            if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;
-
-            res.render('subviews/editticket', self.content);
-        }
-    });
-};
 
 ticketsController.submitTicket = function(req, res, next) {
     var marked = require('marked');

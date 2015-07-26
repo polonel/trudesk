@@ -249,8 +249,6 @@
             
                 <li data-name="ticketsController.create"><a href="ticketsController.html#.create">create</a></li>
             
-                <li data-name="ticketsController.editTicket"><a href="ticketsController.html#.editTicket">editTicket</a></li>
-            
                 <li data-name="ticketsController.get"><a href="ticketsController.html#.get">get</a></li>
             
                 <li data-name="ticketsController.getActive"><a href="ticketsController.html#.getActive">getActive</a></li>
@@ -260,6 +258,8 @@
                 <li data-name="ticketsController.getByStatus"><a href="ticketsController.html#.getByStatus">getByStatus</a></li>
             
                 <li data-name="ticketsController.print"><a href="ticketsController.html#.print">print</a></li>
+            
+                <li data-name="ticketsController.processor"><a href="ticketsController.html#.processor">processor</a></li>
             
                 <li data-name="ticketsController.single"><a href="ticketsController.html#.single">single</a></li>
             
@@ -608,7 +608,7 @@
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line308">line 308</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line310">line 310</a>
         </div>
         
     </div>
@@ -769,202 +769,6 @@
             
 <dt>
     <div class="nameContainer">
-        <h4 class="name" id=".editTicket">
-            
-            <span class="type-signature static">static</span>ticketsController.editTicket<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
-        </h4>
-    
-        
-        <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line479">line 479</a>
-        </div>
-        
-    </div>
-
-    
-</dt>
-<dd>
-    
-    
-    <div class="description">
-        <p>Get Edit Ticket View</p>
-    </div>
-    
-
-    
-    
-    
-    
-    
-        
-
-<table class="params">
-    <thead>
-	<tr>
-		
-		<th>Name</th>
-		
-		
-		<th>Type</th>
-		
-		
-		
-		<th class="last">Description</th>
-	</tr>
-	</thead>
-	
-	<tbody>
-	
-	
-        <tr>
-            
-                <td class="name"><code>req</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                <p>Express Request</p></td>
-        </tr>
-	
-	
-	
-        <tr>
-            
-                <td class="name"><code>res</code></td>
-            
-            
-            <td class="type">
-            
-                
-<span class="param-type">object</span>
-
-
-            
-            </td>
-            
-            
-            
-            <td class="description last">
-                
-                <p>Express Response</p></td>
-        </tr>
-	
-	
-	</tbody>
-</table>
-    
-    
-    
-<dl class="details">
-    
-        
-    
-    
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <dt class="tag-see">See:</dt>
-    <dd class="tag-see">
-        <ul>
-            <li><a href="Ticket.html">Ticket</a></li>
-        </ul>
-    </dd>
-    
-    
-    
-</dl>
-
-    
-    
-
-    
-
-    
-    
-    
-    
-    
-    <h5>Returns:</h5>
-    
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        View
-                        
-                    
-            </td>
-            <td class="description last">Edit Ticket View</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code><p>//Content Object
-self.content.title = &quot;Edit Ticket #&quot; + req.params.id;
-self.content.nav = 'tickets';</p>
-<p>self.content.data = {};
-self.content.data.user = req.user;
-self.content.data.common = req.viewdata;</p>
-<p>//Ticket Data
-self.content.data.ticket = ticket;
-self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
-self.content.data.ticket.tagsArray = ticket.tags;
-self.content.data.ticket.commentCount = _.size(ticket.comments);</p>
-<p>if (!<em>.isUndefined(results.groups)) self.content.data.groups = results.groups;
-if (!</em>.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
-if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;</p></code></pre>
-    
-
-    
-</dd>
-
-        
-            
-<dt>
-    <div class="nameContainer">
         <h4 class="name" id=".get">
             
             <span class="type-signature static">static</span>ticketsController.get<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
@@ -972,7 +776,7 @@ if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;</
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line66">line 66</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line67">line 67</a>
         </div>
         
     </div>
@@ -1070,6 +874,8 @@ if (!_.isUndefined(results.ticket)) self.content.data.ticket = results.ticket;</
     
 
     
+        <dt class="important tag-deprecated">Deprecated</dt><dd class="yes-def tag-deprecated"><ul class="dummy"><li>Yes</li></ul></dd>
+    
     
     
     
@@ -1157,12 +963,12 @@ self.content.data.tickets = [{<a href="Ticket.html"><code>Ticket</code></a>}];</
     <div class="nameContainer">
         <h4 class="name" id=".getActive">
             
-            <span class="type-signature static">static</span>ticketsController.getActive<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
+            <span class="type-signature static">static</span>ticketsController.getActive<span class="signature">(req, res, next)</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line197">line 197</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line164">line 164</a>
         </div>
         
     </div>
@@ -1247,6 +1053,29 @@ self.content.data.tickets = [{<a href="Ticket.html"><code>Ticket</code></a>}];</
         </tr>
 	
 	
+	
+        <tr>
+            
+                <td class="name"><code>next</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">callback</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>Sends the <code>req.processor</code> object to the processor</p></td>
+        </tr>
+	
+	
 	</tbody>
 </table>
     
@@ -1293,52 +1122,7 @@ self.content.data.tickets = [{<a href="Ticket.html"><code>Ticket</code></a>}];</
     
     
     
-    <h5>Returns:</h5>
     
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        View
-                        
-                    
-            </td>
-            <td class="description last">Tickets View</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code><p>//Content Object
-self.content.title = &quot;Tickets&quot;;
-self.content.nav = 'tickets';
-self.content.subnav = 'tickets-active';</p>
-<p>self.content.data = {};
-self.content.data.user = req.user;
-self.content.data.common = req.viewdata;</p>
-<p>//Ticket Data
-self.content.data.tickets = [{Ticket}];</p></code></pre>
-    
-
     
 </dd>
 
@@ -1348,12 +1132,12 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     <div class="nameContainer">
         <h4 class="name" id=".getAssigned">
             
-            <span class="type-signature static">static</span>ticketsController.getAssigned<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
+            <span class="type-signature static">static</span>ticketsController.getAssigned<span class="signature">(req, res, next)</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line263">line 263</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line194">line 194</a>
         </div>
         
     </div>
@@ -1364,7 +1148,8 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     
     
     <div class="description">
-        <p>Get Ticket View based on tickets assigned to a given user</p>
+        <p>Get Ticket View based on tickets assigned to a given user
+<em>calls <code>next()</code> to send to processor</em></p>
     </div>
     
 
@@ -1438,6 +1223,29 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
         </tr>
 	
 	
+	
+        <tr>
+            
+                <td class="name"><code>next</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">callback</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>Sends the <code>req.processor</code> object to the processor</p></td>
+        </tr>
+	
+	
 	</tbody>
 </table>
     
@@ -1484,52 +1292,7 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     
     
     
-    <h5>Returns:</h5>
     
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        View
-                        
-                    
-            </td>
-            <td class="description last">Tickets View</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code><p>//Content Object
-self.content.title = &quot;Tickets&quot;;
-self.content.nav = 'tickets';
-self.content.subnav = 'tickets-assigned';</p>
-<p>self.content.data = {};
-self.content.data.user = req.user;
-self.content.data.common = req.viewdata;</p>
-<p>//Ticket Data
-self.content.data.tickets = [{Ticket}];</p></code></pre>
-    
-
     
 </dd>
 
@@ -1539,12 +1302,12 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     <div class="nameContainer">
         <h4 class="name" id=".getByStatus">
             
-            <span class="type-signature static">static</span>ticketsController.getByStatus<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
+            <span class="type-signature static">static</span>ticketsController.getByStatus<span class="signature">(req, res, next)</span>
         </h4>
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line118">line 118</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line107">line 107</a>
         </div>
         
     </div>
@@ -1629,6 +1392,29 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
         </tr>
 	
 	
+	
+        <tr>
+            
+                <td class="name"><code>next</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">callback</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>Sends the <code>req.processor</code> object to the processor</p></td>
+        </tr>
+	
+	
 	</tbody>
 </table>
     
@@ -1675,52 +1461,7 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     
     
     
-    <h5>Returns:</h5>
     
-
-
-<table class="params">
-    <thead>
-    <tr>
-        
-        <th>Type</th>
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-    <tbody>
-    
-        <tr>
-            
-            <td class="type">
-            
-                        View
-                        
-                    
-            </td>
-            <td class="description last">Tickets View</td>
-        </tr>
-    
-    </tbody>
-</table>
-
-    
-    
-    
-        <h5>Example</h5>
-        
-
-    
-    <pre class="prettyprint"><code><p>//Content Object
-self.content.title = &quot;Tickets&quot;;
-self.content.nav = 'tickets';
-self.content.subnav = 'tickets-{status}';</p>
-<p>self.content.data = {};
-self.content.data.user = req.user;
-self.content.data.common = req.viewdata;</p>
-<p>//Ticket Data
-self.content.data.tickets = [{Ticket}];</p></code></pre>
-    
-
     
 </dd>
 
@@ -1735,7 +1476,7 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line346">line 346</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line348">line 348</a>
         </div>
         
     </div>
@@ -1896,6 +1637,181 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
             
 <dt>
     <div class="nameContainer">
+        <h4 class="name" id=".processor">
+            
+            <span class="type-signature static">static</span>ticketsController.processor<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
+        </h4>
+    
+        
+        <div class="tag-source">
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line225">line 225</a>
+        </div>
+        
+    </div>
+
+    
+</dt>
+<dd>
+    
+    
+    <div class="description">
+        <p>Process the <code>req.processor</code> object and render the correct view</p>
+    </div>
+    
+
+    
+    
+    
+    
+    
+        
+
+<table class="params">
+    <thead>
+	<tr>
+		
+		<th>Name</th>
+		
+		
+		<th>Type</th>
+		
+		
+		
+		<th class="last">Description</th>
+	</tr>
+	</thead>
+	
+	<tbody>
+	
+	
+        <tr>
+            
+                <td class="name"><code>req</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>Express Request</p></td>
+        </tr>
+	
+	
+	
+        <tr>
+            
+                <td class="name"><code>res</code></td>
+            
+            
+            <td class="type">
+            
+                
+<span class="param-type">object</span>
+
+
+            
+            </td>
+            
+            
+            
+            <td class="description last">
+                
+                <p>Express Response</p></td>
+        </tr>
+	
+	
+	</tbody>
+</table>
+    
+    
+    
+<dl class="details">
+    
+        
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <dt class="tag-see">See:</dt>
+    <dd class="tag-see">
+        <ul>
+            <li><a href="Ticket.html">Ticket</a></li>
+        </ul>
+    </dd>
+    
+    
+    
+</dl>
+
+    
+    
+
+    
+
+    
+    
+    
+    
+    
+    <h5>Returns:</h5>
+    
+
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Type</th>
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+    <tbody>
+    
+        <tr>
+            
+            <td class="type">
+            
+                        View
+                        
+                    
+            </td>
+            <td class="description last">Tickets View</td>
+        </tr>
+    
+    </tbody>
+</table>
+
+    
+    
+    
+</dd>
+
+        
+            
+<dt>
+    <div class="nameContainer">
         <h4 class="name" id=".single">
             
             <span class="type-signature static">static</span>ticketsController.single<span class="signature">(req, res)</span><span class="glyphicon glyphicon-circle-arrow-right"></span><span class="type-signature returnType">{View}</span>
@@ -1903,7 +1819,7 @@ self.content.data.tickets = [{Ticket}];</p></code></pre>
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line399">line 399</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line401">line 401</a>
         </div>
         
     </div>
@@ -2096,7 +2012,7 @@ self.content.data.ticket.commentCount = _.size(ticket.comments);</p></code></pre
     
         
         <div class="tag-source">
-            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line437">line 437</a>
+            <a href="controllers_tickets.js.html">controllers/tickets.js</a>, <a href="controllers_tickets.js.html#line439">line 439</a>
         </div>
         
     </div>
@@ -2247,7 +2163,7 @@ self.content.data.ticket.commentCount = _.size(ticket.comments);</p></code></pre
         
 
         <footer>
-            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Wed Jul 22 2015 23:25:39 GMT-0400 (Eastern Daylight Time)
+            Documentation generated by <a target="_blank" href="https://github.com/jsdoc3/jsdoc">JSDoc 3.3.2</a> on Sat Jul 25 2015 22:27:38 GMT-0400 (Eastern Daylight Time)
         </footer>
     </div>
 </div>
