@@ -74,7 +74,7 @@ if (process.env.HEROKU) {
             "enable": false,
 
             "check": {
-                "enable": false,
+                "enable": false
             }
         }
     };

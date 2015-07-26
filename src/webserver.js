@@ -30,7 +30,7 @@ server = require('http').createServer(WebServer);
 (function (app) {
     "use strict";
 
-    var port = process.env.TD_PORT || 8118;
+    var port = process.env.PORT || 8118;
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {
