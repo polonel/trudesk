@@ -82,7 +82,9 @@ if (process.env.HEROKU) {
     winston.info('Creating heroku config file...');
     var config = JSON.stringify(configHeroku, null, 4);
 
-    fs.unlinkSync(configFile);
+    if (configExists)
+        fs.unlinkSync(configFile);
+
     fs.writeFileSync(configFile, config);
 
     start();
