@@ -66,8 +66,26 @@ if (nconf.get('config')) {
 configExists = fs.existsSync(configFile);
 
 if (process.env.HEROKU == true) {
-    fs.closeSync(fs.openSync(configFile, 'w'));
-    start();
+    //Build Config for Heroku
+    var configHeroku = {
+        "url": "http://localhost:8118",
+        "port": "8118",
+        "mailer": {
+            "enable": false,
+
+            "check": {
+                "enable": false,
+            }
+        }
+    };
+
+    fs.writeFile(configFile, JSON.stringify(configHeroku, null, 4), function(err) {
+        if (err) {
+            process.exit();
+        } else {
+            start();
+        }
+    });
 }
 
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
