@@ -81,8 +81,10 @@ if (process.env.HEROKU == true) {
 
     fs.writeFile(configFile, JSON.stringify(configHeroku, null, 4), function(err) {
         if (err) {
+            winston.error(err);
             process.exit();
         } else {
+            winston.info('Heroku Config File Saved!');
             start();
         }
     });
