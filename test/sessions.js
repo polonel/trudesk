@@ -5,7 +5,7 @@ var request     = require('supertest');
 var superagent  = require('superagent');
 
 
-describe('request', function() {
+describe('sessions', function() {
     var agent   = superagent.agent();
     var unauthAgent = superagent.agent();
     var user = { "login-username": 'trudesk', "login-password": '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW'};

@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-    "test": "mocha --recursive"
+    "test": "mocha --recursive",
+    "coverage": "mocha --recursive --require blanket -R html-cov > coverage.html"
   },
   "dependencies": {
     "apn": "^1.7.3",
