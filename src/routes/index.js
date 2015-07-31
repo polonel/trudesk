@@ -86,6 +86,9 @@ function mainRoutes(router, middleware, controllers) {
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
 
+    //Notices
+    router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard'); });
+
     //API
     router.get('/api', controllers.api.index);
     router.post('/api/login', middleware.api, controllers.api.login);
@@ -93,7 +96,6 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
     router.get('/api/devices/testiOS', middleware.api, controllers.api.devices.testApn);
     router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
-    //router.get('/api/tickets/datatable', middleware.api, controllers.api.tickets.datatable);
     router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
