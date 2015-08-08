@@ -67,4 +67,42 @@ describe('message.js', function() {
             });
         });
     });
+
+    it('should get message with object', function(done) {
+        var object = {
+            limit: 10,
+            page: 0,
+            folder: 1,
+            owner: ownerId
+        };
+
+        messageSchema.getMessagesWithObject(object, function(err, messages) {
+            expect(err).to.not.exist;
+            expect(messages).to.be.a('array');
+            expect(messages).to.have.length(1);
+
+            var message = messages[0];
+            expect(message._id).to.exist;
+
+            done();
+        });
+    });
+
+    it('should get unread message count of INBOX', function(done) {
+        messageSchema.getUnreadInboxCount(ownerId, function(err, count) {
+            expect(err).to.not.exist;
+            expect(count).to.equal(0);
+
+            done();
+        });
+    });
+
+    it('should get user folder', function(done) {
+        messageSchema.getUserFolder(ownerId, 1, function(err, messages) {
+            expect(err).to.not.exist;
+            expect(messages).to.have.length(1);
+
+            done();
+        });
+    });
 });
