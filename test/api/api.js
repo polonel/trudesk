@@ -45,6 +45,8 @@ describe('api/api.js', function() {
 
     it ('should return a 404 error (\'/api/404\')', function(done) {
         request(server).get('/api/404').expect(404, done);
-    })
+    });
+
+
 
 });
