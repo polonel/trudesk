@@ -39,4 +39,4 @@ coverage.html
 *.bk
 apidocs
 docs
-#public/js/
+public/js/

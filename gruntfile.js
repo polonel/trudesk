@@ -152,7 +152,7 @@ module.exports = function(grunt) {
                 src: "src/controllers/",
                 dest: "apidocs/",
                 options: {
-                    debug: true,
+                    //debug: true,
                     includeFilters: ['.*\\.js$'],
                     excludeFilters: ['node_modules/']
                 }
@@ -161,7 +161,7 @@ module.exports = function(grunt) {
 
         jsdoc : {
             dist : {
-                src: ['README.md', 'src/**/*.js', 'public/js/*.js', 'public/js/angularjs/**/*.js', 'public/js/modules/**/*.js', 'public/js/pages/**/*.js'],
+                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js'],
                 options: {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',

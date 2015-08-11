@@ -10,6 +10,7 @@ before_script:
   - npm install -g requirejs
   - npm install -g grunt
   - npm install -g grunt-cli
+  - gem install sass
 
 script:
   - npm test
