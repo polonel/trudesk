@@ -7,4 +7,5 @@ services:
   - mongodb
 
 after_success:
+  - npm run build
   - ./node_modules/.bin/mocha --recursive --require blanket -R mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
