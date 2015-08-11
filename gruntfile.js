@@ -57,7 +57,7 @@ module.exports = function(grunt) {
                     'src/**/*.js',
                     'routes/**/*.js'
                 ],
-                tasks: ['jsdoc']
+                tasks: ['jsdoc', 'apidoc']
             }
         },
 
@@ -147,6 +147,18 @@ module.exports = function(grunt) {
             }
         },
 
+        apidoc: {
+            trudesk: {
+                src: "src/controllers/",
+                dest: "apidocs/",
+                options: {
+                    debug: true,
+                    includeFilters: ['.*\\.js$'],
+                    excludeFilters: ['node_modules/']
+                }
+            }
+        },
+
         jsdoc : {
             dist : {
                 src: ['README.md', 'src/**/*.js', 'public/js/*.js', 'public/js/angularjs/**/*.js', 'public/js/modules/**/*.js', 'public/js/pages/**/*.js'],
@@ -159,12 +171,11 @@ module.exports = function(grunt) {
                 }
             }
         }
-
     });
 
     grunt.registerTask('buildcss', ['sass', 'cssmin']);
     grunt.registerTask('minjs', ['uglify']);
-    grunt.registerTask('builddocs', ['jsdoc']);
+    grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('default', ['server']);

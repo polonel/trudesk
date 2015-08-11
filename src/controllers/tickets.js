@@ -46,58 +46,6 @@ var ticketsController = {};
 ticketsController.content = {};
 
 /**
- * Get Default Ticket View
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {View} Tickets View
- * @see Ticket
- * @deprecated
- * @example
- * //Content Object
- * self.content.title = "Tickets";
- * self.content.nav = 'tickets';
- *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
- *
- * //Ticket Data
- * self.content.data.tickets = [{{@link Ticket}}];
- */
-ticketsController.get = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Tickets";
-    self.content.nav = 'tickets';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-
-    //Ticket Data
-    self.content.data.tickets = {};
-    async.waterfall([
-        function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                callback(err, grps);
-            })
-        },
-        function(grps, callback) {
-            ticketSchema.getTickets(grps, function(err, results) {
-
-                callback(err, results);
-            });
-        }
-    ], function(err, results) {
-        if (err) return handleError(res, err);
-
-        self.content.data.tickets = results;
-
-        res.render('tickets', self.content);
-    });
-};
-
-/**
  * Get Ticket View based on ticket status
  * @param {object} req Express Request
  * @param {object} res Express Response
@@ -249,9 +197,13 @@ ticketsController.processor = function(req, res) {
     self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
     self.content.data.pagination.enabled = false;
 
+    var userGroups = [];
+
     async.waterfall([
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                userGroups = grps;
+
                 callback(err, grps);
             });
         },
@@ -273,18 +225,7 @@ ticketsController.processor = function(req, res) {
         };
 
         //Get Pagination
-        async.waterfall([
-            function(callback) {
-                groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
-                    callback(err, grps);
-                });
-            },
-            function(grpIds, callback) {
-                ticketSchema.getCountWithObject(grpIds, countObject, function(err, count) {
-                    callback(err, count)
-                });
-            }
-        ], function(err, totalCount) {
+        ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
             if (err) return handleError(res, err);
 
             self.content.data.pagination.total = totalCount;

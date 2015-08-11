@@ -37,3 +37,6 @@ src/mailer/templates/promo/
 public/uploads/tickets/
 coverage.html
 *.bk
+apidocs
+docs
+#public/js/
