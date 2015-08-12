@@ -62,7 +62,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
             $scope.groups = [];
 
             $scope.selected_priority = _.findWhere($scope.priorities, {value: $scope.ticketPriority});
-            var ticketTypes = $http.get('/api/tickets/types').
+            var ticketTypes = $http.get('/api/v1/tickets/types').
                                 success(function(data) {
                                     _.each(data, function(item) {
                                         $scope.types.push(item);
@@ -75,7 +75,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
             });
 
-            var groupHttpGet = $http.get('/api/groups').
+            var groupHttpGet = $http.get('/api/v1/groups').
                                 success(function(data) {
                                     _.each(data, function(item) {
                                         $scope.groups.push(item);

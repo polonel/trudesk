@@ -37,7 +37,7 @@ var COLLECTION = "accounts";
  * @property {String} image Filename of user image
  * @property {String} resetPassHash Password reset has for recovery password link.
  * @property {Date} resetPassExpire Date when the password recovery link will expire
- * @property {Array} accessTokens Array of String based access tokens for API
+ * @property {String} accessToken API Access Token
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  */
 var userSchema = mongoose.Schema({
@@ -52,7 +52,7 @@ var userSchema = mongoose.Schema({
         resetPassHash: String,
         resetPassExpire: Date,
 
-        accessTokens: [{ type: String, unique: true }],
+        accessToken: { type: String, unique: true },
 
         iOSDeviceTokens: [{type: String, unique: true}]
     });
@@ -77,23 +77,23 @@ userSchema.methods.addAccessToken = function(callback) {
     var user = this;
     var chance = new Chance();
     var token = chance.hash();
-    user.accessTokens.push(token);
-    user.save(function(err, u) {
+    user.accessToken = token;
+    user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback(null, token);
+        callback(null, user.accessToken);
     });
 };
 
 userSchema.methods.removeAccessToken = function(token, callback) {
     var user = this;
-    if (!hasAccessToken(user.accessTokens, token)) return callback();
+    if (!user.accessToken) return callback();
 
-    user.accessTokens.splice(_.indexOf(this.accessTokens, token), 1);
-    user.save(function(err, u) {
+    user.accessToken = null;
+    user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback(null, u.accessTokens);
+        callback();
     });
 };
 
@@ -233,7 +233,7 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
         return callback("Invalid Token - UserSchema.GetUserByAccessToken()", null);
     }
 
-    return this.model(COLLECTION).findOne({accessTokens: token}, callback);
+    return this.model(COLLECTION).findOne({accessToken: token}, callback);
 };
 
 /**

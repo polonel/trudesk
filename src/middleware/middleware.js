@@ -78,16 +78,10 @@ middleware.cache = function(seconds) {
 
 //API
 middleware.api = function(req, res, next) {
-    middleware.db(req, res, function() {
-        if (_.isUndefined(db)) {
-          res.send('Invalid DB - Middleware.Api()');
-        }
-        if (_.isUndefined(req.db)) {
-          req.db = db;
-        }
+    //Check for Logged in User or Access token.
 
-        next();
-    });
+
+    next();
 };
 
 module.exports = function(server) {

@@ -91,34 +91,34 @@ function mainRoutes(router, middleware, controllers) {
 
     //API
     router.get('/api', controllers.api.index);
-    router.post('/api/login', middleware.api, controllers.api.login);
-    router.get('/api/logout', middleware.api, controllers.api.logout);
-    router.post('/api/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
-    router.get('/api/devices/testiOS', middleware.api, controllers.api.devices.testApn);
-    router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
-    router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
-    router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
-    router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    router.get('/api/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
-    router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
-    router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
-    router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
-    router.post('/api/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
-    router.get('/api/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
-    router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
-    router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
-    router.put('/api/groups/:id', middleware.api, controllers.api.groups.updateGroup);
-    router.get('/api/users', middleware.api, controllers.api.users.get);
-    router.post('/api/users', controllers.api.users.insert);
-    router.get('/api/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
-    router.get('/api/users/:username', middleware.api, controllers.api.users.single);
-    router.put('/api/users/:username', middleware.api, controllers.api.users.update);
-    router.delete('/api/users/:username', middleware.api, controllers.api.users.deleteUser);
-    router.get('/api/roles', middleware.api, controllers.api.roles.get);
-    router.get('/api/messages', middleware.api, controllers.api.messages.get);
-    router.post('/api/messages/send', middleware.api, controllers.api.messages.send);
+    router.post('/api/v1/login', middleware.api, controllers.api.login);
+    router.get('/api/v1/logout', middleware.api, controllers.api.logout);
+    router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
+    router.get('/api/v1/devices/testiOS', middleware.api, controllers.api.devices.testApn);
+    router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
+    router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
+    router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
+    router.get('/api/v1/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
+    router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
+    router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
+    router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
+    router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
+    router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
+    router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
+    router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
+    router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
+    router.get('/api/v1/users', middleware.api, controllers.api.users.get);
+    router.post('/api/v1/users', controllers.api.users.insert);
+    router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
+    router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
+    router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
+    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
+    router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
+    router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
+    router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
 
-    router.get('/api/import', middleware.api, controllers.api.import);
+    router.get('/api/v1/import', middleware.api, controllers.api.import);
 }
 
 module.exports = function(app, middleware) {
