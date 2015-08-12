@@ -30,6 +30,7 @@ requirejs.config({
         //socketio:       '/socket.io/socket.io',
         //socketio:       'https://cdn.socket.io/socket.io-1.2.1',
         history:        'vendor/history/jquery.history',
+        app:            'app',
 
         jquery_custom:  'plugins/jquery.custom',
         datatables:     'vendor/datatables/jquery.dataTables',

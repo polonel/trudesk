@@ -21,18 +21,18 @@ module.exports = function(grunt) {
                 files: ['gruntfile.js'],
                 tasks: ['minjs']
             },
-            frontend: {
-                options: {
-                    livereload: true
-                },
-                files: [
-                    'public/**/*.css',
-                    'public/**/*.js',
-                    'views/**/*.hbs',
-                    '!public/js/main.min.js'
-                ],
-                tasks: ['minjs']
-            },
+            //frontend: {
+            //    options: {
+            //        livereload: true
+            //    },
+            //    files: [
+            //        'public/**/*.css',
+            //        'public/**/*.js',
+            //        'views/**/*.hbs',
+            //        '!public/js/main.min.js'
+            //    ],
+            //    tasks: ['minjs']
+            //},
             sass: {
                 files: [
                     'src/sass/**/*.sass'
@@ -71,10 +71,11 @@ module.exports = function(grunt) {
                         grunt: true,
                         args: ['watch:gruntfile']
                     },
+                    //{
+                    //    grunt: true,
+                    //    args: ['watch:frontend']
+                    //},
                     {
-                        grunt: true,
-                        args: ['watch:frontend']
-                    }, {
                         grunt: true,
                         args: ['watch:sass']
                     }, {

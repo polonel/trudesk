@@ -5,6 +5,11 @@
     dir: 'public/js',
     removeCombined: true,
     preserveLicenseComments: false,
+    kipDirOptimize: false,
+    optimize: 'uglify2',
+    uglify2: {
+        mangle: false
+    },
     modules: [
         {
             name: 'trudesk.min',
@@ -21,6 +26,9 @@
                 'nicescroll',
                 'underscore',
                 'history',
+
+                'angularjs/main',
+                'angularjs/controllers',
                 'app',
 
                 'modules/ajaxify',
@@ -35,19 +43,24 @@
                 'pages/reports',
                 'pages/singleTicket',
                 'pages/tickets'
-            ]
-        },
-        {
-            name: 'page-accounts',
-            create: true,
-            include: [ 'pages/accounts' ],
-            exclude: [ 'trudesk.min' ]
+            ],
+            shim: {
+                angular: {
+                    exports: 'angular'
+                }
+            }
         }
+        //{
+        //    name: 'page-accounts',
+        //    create: true,
+        //    include: [ 'pages/accounts' ],
+        //    exclude: [ 'trudesk.min' ]
+        //}
     ],
     paths: {
         foundation: 'empty:',
         angular: 'empty:',
         angularRoute: 'empty:'
-    }
-    //keepBuildDir: true
+    },
+    keepBuildDir: true
 })
