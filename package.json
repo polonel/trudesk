@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-    "postinstall": "r.js -o rBuild.js",
+    "postinstall": "npm install -g requirejs && r.js -o rBuild.js",
     "buildwin": "r.js.cmd -o rBuild.js",
     "build": "r.js -o rBuild.js",
     "test": "mocha --recursive",
