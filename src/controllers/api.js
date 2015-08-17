@@ -207,14 +207,17 @@ apiController.login = function(req, res) {
         delete resUser.password;
         delete resUser.iOSDeviceToken;
 
+        if (_.isUndefined(resUser.accessToken) || _.isNull(resUser.accessToken))
+            return res.status(200).json({'success': false, 'error': 'No API Key assigned to this User.'});
+
         req.user = resUser;
 
-        user.addAccessToken(function(err, token) {
-            if (err) return res.status(401).json({'success': false, 'error': err.message});
-            if (!token) return res.status(401).json({'success': false, 'error': 'Invalid AccessToken'});
+        //user.addAccessToken(function(err, token) {
+        //    if (err) return res.status(401).json({'success': false, 'error': err.message});
+        //    if (!token) return res.status(401).json({'success': false, 'error': 'Invalid AccessToken'});
 
-            return res.json({'success': true, 'accessToken': token, 'user': resUser});
-        });
+            return res.json({'success': true, 'accessToken': resUser.accessToken, 'user': resUser});
+        //});
     });
 };
 
@@ -470,17 +473,43 @@ apiController.users.single = function(req, res) {
  * }
  */
 apiController.users.notificationCount = function(req, res) {
-    var accessToken = req.headers.accesstoken;
-
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(401).json({'error': 'Invalid Access Token'});
-
     var notificationSchema = require('../models/notification');
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+    userSchema.getUser(req.user._id, function(err, user) {
         if (err) return res.status(401).json({error: err.message});
         if (!user) return res.status(200).json({count: ''});
 
         notificationSchema.getUnreadCount(user._id, function(err, count) {
             return res.status(200).json({count: count.toString()});
+        });
+    });
+};
+
+apiController.users.generateApiKey = function(req, res) {
+    var id = req.params.id;
+    if (_.isUndefined(id) || _.isNull(id)) return res.status(500).send('Invalid User Id Submitted.');
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(500).send(err.message);
+
+        user.addAccessToken(function(err, token) {
+            if (err) return res.status(500).send(err.message);
+
+            res.json({token: token});
+        });
+    });
+};
+
+apiController.users.removeApiKey = function(req, res) {
+    var id = req.params.id;
+    if (_.isUndefined(id) || _.isNull(id)) return res.status(500).send('Invalid User Id Submitted.');
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(500).send(err.message);
+
+        user.removeAccessToken(function(err, user) {
+            if (err) return res.status(500).send(err.message);
+
+            return res.send();
         });
     });
 };

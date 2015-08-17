@@ -406,7 +406,8 @@ ticketsController.submitTicket = function(req, res, next) {
 
     var HistoryItem = {
         action: 'ticket:created',
-        description: 'Ticket was created.'
+        description: 'Ticket was created.',
+        owner: req.user._id
     };
 
     if (_.isUndefined(req.body.tIssue) ||

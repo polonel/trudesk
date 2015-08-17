@@ -76,8 +76,7 @@ userSchema.pre('save', function(next) {
 userSchema.methods.addAccessToken = function(callback) {
     var user = this;
     var chance = new Chance();
-    var token = chance.hash();
-    user.accessToken = token;
+    user.accessToken = chance.hash();
     user.save(function(err) {
         if (err) return callback(err, null);
 
@@ -85,7 +84,7 @@ userSchema.methods.addAccessToken = function(callback) {
     });
 };
 
-userSchema.methods.removeAccessToken = function(token, callback) {
+userSchema.methods.removeAccessToken = function(callback) {
     var user = this;
     if (!user.accessToken) return callback();
 
@@ -246,7 +245,20 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getAssigneeUsers = function(callback) {
-    return this.model(COLLECTION).find({$or: [{role: "mod"}, {role: "admin"}]}, callback);
+    var permissions = require('../permissions');
+    this.model(COLLECTION).find({}, function(err, users) {
+        if (err) return callback(err, null);
+        var canAssignUsers = [];
+        async.each(users, function(user) {
+            if (permissions.canThis(user.role, 'ticket:assignee')) {
+                canAssignUsers.push(user);
+            }
+
+            canAssignUsers = _.unique(canAssignUsers);
+
+            callback(null, canAssignUsers);
+        });
+    });
 };
 
 /**

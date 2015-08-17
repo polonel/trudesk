@@ -78,10 +78,24 @@ middleware.cache = function(seconds) {
 
 //API
 middleware.api = function(req, res, next) {
-    //Check for Logged in User or Access token.
+    var accessToken = req.headers.accesstoken;
 
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
+        var user = req.user;
+        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
 
-    next();
+        next();
+    } else {
+        var userSchema = require('../models/user');
+        userSchema.getUserByAccessToken(accessToken, function(err, user) {
+            if (err) return res.status(401).json({'error': err.message});
+            if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+            req.user = user;
+
+            next();
+        });
+    }
 };
 
 module.exports = function(server) {

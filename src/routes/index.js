@@ -91,7 +91,7 @@ function mainRoutes(router, middleware, controllers) {
 
     //API
     router.get('/api', controllers.api.index);
-    router.post('/api/v1/login', middleware.api, controllers.api.login);
+    router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
     router.get('/api/v1/devices/testiOS', middleware.api, controllers.api.devices.testApn);
@@ -114,11 +114,13 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
+    router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
+    router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
 
-    router.get('/api/v1/import', middleware.api, controllers.api.import);
+    //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }
 
 module.exports = function(app, middleware) {

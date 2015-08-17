@@ -72,45 +72,39 @@ var api_tickets = {};
  *
  */
 api_tickets.get = function(req, res) {
-    var accessToken = req.header.accesstoken;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(400).json({success: false, error: 'Invalid Access Token'});
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(400).json({success: false, 'error': err.message});
-        if (!user) return res.status(401).json({success: false, 'error': 'Unknown User'});
+    var limit = req.query.limit;
+    var page = req.query.page;
+    var assignedSelf = req.query.assignedself;
+    var status = req.query.status;
+    var user = req.user;
 
-        var limit = req.query.limit;
-        var page = req.query.page;
-        var assignedSelf = req.query.assignedself;
-        var status = req.query.status;
+    var object = {
+        user: user,
+        limit: limit,
+        page: page,
+        assignedSelf: assignedSelf,
+        status: status
+    };
 
-        var object = {
-            user: user,
-            limit: limit,
-            page: page,
-            assignedSelf: assignedSelf,
-            status: status
-        };
+    var ticketModel = require('../../../models/ticket');
+    var groupModel = require('../../../models/group');
 
-        var ticketModel = require('../../../models/ticket');
-        var groupModel = require('../../../models/group');
+    async.waterfall([
+        function(callback) {
+            groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
+                callback(err, grps);
+            })
+        },
+        function(grps, callback) {
+            ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
-        async.waterfall([
-            function(callback) {
-                groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
-                    callback(err, grps);
-                })
-            },
-            function(grps, callback) {
-                ticketModel.getTicketsWithObject(grps, object, function(err, results) {
+                callback(err, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.send('Error: ' + err.message);
 
-                    callback(err, results);
-                });
-            }
-        ], function(err, results) {
-            if (err) return res.send('Error: ' + err.message);
-
-            return res.json(results);
-        });
+        return res.json(results);
     });
 };
 
@@ -169,7 +163,6 @@ api_tickets.single = function(req, res, next) {
 };
 
 api_tickets.update = function(req, res, next) {
-    var accessToken = req.query.token;
     var user = req.user;
     if (!_.isUndefined(user) && !_.isNull(user)) {
         var oId = req.params.id;
@@ -180,7 +173,6 @@ api_tickets.update = function(req, res, next) {
             if (err) return res.send(err.message);
 
             //Check the user has permission to update ticket.
-
 
             if (!_.isUndefined(reqTicket.status))
                 ticket.status = reqTicket.status;
@@ -193,41 +185,12 @@ api_tickets.update = function(req, res, next) {
 
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);
+
+                emitter.emit('ticket:updated', t);
+
                 return res.json(t);
             });
         });
-
-        //Access Token
-    } else if (!_.isUndefined(accessToken) && !_.isNull(accessToken)) {
-        userSchema.getUserByAccessToken(accessToken, function (err, user) {
-            if (err) return res.status(401).json({'error': err.message});
-            if (!user) return res.status(401).json({'error': 'Unknown User'});
-
-            var oId = req.params.id;
-            var reqTicket = req.body;
-            if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
-            var ticketModel = require('../../../models/ticket');
-            ticketModel.getTicketById(oId, function (err, ticket) {
-                if (err) return res.send(err.message);
-
-                if (!_.isUndefined(reqTicket.status))
-                    ticket.status = reqTicket.status;
-
-                if (!_.isUndefined(reqTicket.group))
-                    ticket.group = reqTicket.group;
-
-                if (!_.isUndefined(reqTicket.closedDate))
-                    ticket.closedDate = reqTicket.closedDate;
-
-
-                ticket.save(function (err, t) {
-                    if (err) return res.send(err.message);
-                    return res.json(t);
-                });
-            });
-        });
-    } else {
-        return res.status(401).json({error: 'Invalid Access Token'});
     }
 };
 
@@ -273,7 +236,8 @@ api_tickets.postComment = function(req, res, next) {
             t.comments.push(Comment);
             var HistoryItem = {
                 action: 'ticket:comment:added',
-                description: 'Comment was added'
+                description: 'Comment was added',
+                owner: user._id
             };
             t.history.push(HistoryItem);
 

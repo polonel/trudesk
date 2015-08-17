@@ -551,7 +551,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
 
         $.ajax({
             method: 'POST',
-            url: '/api/messages/send',
+            url: '/api/v1/messages/send',
             data: JSON.stringify(data),
             processData: false,
             //headers: { 'Content-Type': 'application/json'}

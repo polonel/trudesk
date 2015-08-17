@@ -12,8 +12,6 @@
 
  **/
 
-"use strict";
-
 var _                   = require('underscore');
 var path                = require('path');
 var async               = require('async');
@@ -31,6 +29,7 @@ var notifications              = require('../notifications'); // Load Push Event
 
 (function() {
     notifications.init(emitter);
+
     //winston.info('Binding to Events');
     emitter.on('ticket:created', function(ticketObj) {
          ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
@@ -123,8 +122,8 @@ var notifications              = require('../notifications'); // Load Push Event
          });
     });
 
-    emitter.on('ticket:updated', function(ticketOid) {
-
+    emitter.on('ticket:updated', function(ticket) {
+        io.sockets.emit('updateTicketStatus', {tid: ticket._id, status: ticket.status});
     });
 
     emitter.on('ticket:deleted', function(oId) {

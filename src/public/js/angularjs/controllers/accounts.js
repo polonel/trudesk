@@ -33,7 +33,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 var usernames = getChecked();
                 _.each(usernames, function(username) {
                     $http.delete(
-                            '/api/users/' + username
+                            '/api/v1/users/' + username
                     ).success(function(data) {
                             if (!data.success) {
                                 helpers.showFlash(data.error, true);

@@ -20,14 +20,15 @@ var _s      = require('underscore.string');
     Permissions for TruDesk. Define Roles / Groups.
     --- group:action action action
 
-    *           = all permissions for grp
-    create      = create permission for grp
-    delete      = delete permission for grp
-    edit        = edit permission for grp
-    editSelf    = edit Self Created Items
-    assignee    = allowed to be assigned to a ticket
-    view        = view permission for grp
-    attachment  = can add attachment
+    *                   = all permissions for grp
+    create              = create permission for grp
+    delete              = delete permission for grp
+    edit                = edit permission for grp
+    editSelf            = edit Self Created Items
+    assignee            = allowed to be assigned to a ticket
+    view                = view permission for grp
+    attachment          = can add attachment
+    ticket:viewHistory  = can view ticket history on single page
  */
 var roles = {
     admin: {
@@ -41,6 +42,12 @@ var roles = {
         name: "Moderators",
         description: "Moderators",
         allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view"]
+    },
+    support: {
+        id: "support",
+        name: "Support",
+        description: "Support User",
+        allowedAction: ["ticket:*", "comment:editSelf create", "reports:view"]
     },
     user: {
         id: "user",

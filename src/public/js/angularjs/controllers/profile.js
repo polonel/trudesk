@@ -22,7 +22,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 var data = getFormData();
 
                 $http.put(
-                    '/api/users/' + id,
+                    '/api/v1/users/' + id,
                     {
                         _id: id,
                         fullname: data.fullname,
@@ -41,6 +41,43 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
             $scope.back = function($event) {
                 History.go(-1);
                 $event.preventDefault();
+            };
+
+            $scope.generateApiKey = function($event) {
+                $event.preventDefault();
+
+                var id = $('div[data-user_id]').attr('data-user_id');
+                if (_.isUndefined(id)) return;
+
+                $http.post(
+                    '/api/v1/users/' + id + '/generateapikey'
+                ).success(function(tokenJson) {
+                        $('#aApiKey').val(tokenJson.token);
+                        $('.removeApiButton').removeClass('hide');
+                        $('.generateApiButton').addClass('hide');
+                        helpers.showFlash('API Key Successfully Generated');
+                    }).error(function(e) {
+                        helpers.showFlash('Error: ' + e, true);
+                    });
+
+            };
+
+            $scope.removeApiKey = function($event) {
+                $event.preventDefault();
+
+                var id = $('div[data-user_id]').attr('data-user_id');
+                if (_.isUndefined(id)) return;
+
+                $http.post(
+                    '/api/v1/users/' + id + '/removeapikey'
+                ).success(function(d) {
+                        $('#aApiKey').val('');
+                        $('.generateApiButton').removeClass('hide');
+                        $('.removeApiButton').addClass('hide');
+                        helpers.showFlash('API Key Successfully Revoked');
+                    }).error(function(e) {
+                        helpers.showFlash('Error: ' + e, true);
+                    });
             };
 
             function getFormData() {

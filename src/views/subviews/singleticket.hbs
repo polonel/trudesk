@@ -148,6 +148,21 @@
                             </div>
                         </div>
                     </div>
+                    {{#canUser data.user "ticket:viewHistory"}}
+                        <div class="ticket-details row" style="height: 250px;">
+                            Ticket History
+                            <hr style="padding: 0; margin: 0 0 12px 0;"/>
+                            <div class="history-items scrollable">
+                                {{#each data.ticket.history}}
+                                    <div class="history-item">
+                                        <time datetime="{{formatDate date "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                        <em>Action by: <span>{{owner.fullname}}</span></em>
+                                        <p>{{description}}</p>
+                                    </div>
+                                {{/each}}
+                            </div>
+                        </div>
+                    {{/canUser}}
                 </div>
             </div>
 

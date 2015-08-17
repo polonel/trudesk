@@ -39,7 +39,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
                 $http({
                     method: 'POST',
-                    url: '/api/groups/create',
+                    url: '/api/v1/groups/create',
                     data: apiData,
                     headers: { 'Content-Type': 'application/json'}
                 })
@@ -64,7 +64,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
                 $http({
                     method: 'PUT',
-                    url: '/api/groups/' + apiData.id,
+                    url: '/api/v1/groups/' + apiData.id,
                     data: apiData,
                     headers: {'Content-Type': 'application/json' }
                 })
@@ -82,7 +82,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 var ids = getChecked();
                 _.each(ids, function(id) {
                      $http.delete(
-                         '/api/groups/' + id
+                         '/api/v1/groups/' + id
                      ).success(function(data) {
                         if (!data.success) {
                             helpers.showFlash(data.error, true);

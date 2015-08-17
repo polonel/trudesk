@@ -149,11 +149,15 @@ ticketSchema.methods.setStatus = function(ownerId, status, callback) {
  */
 ticketSchema.methods.setAssignee = function(ownerId, userId, callback) {
     if (_.isUndefined(userId)) return callback('Invalid User Id', null);
+    var permissions = require('../permissions');
     var self = this;
 
     self.assignee = userId;
     userSchema.getUser(userId, function(err, user) {
         if (err) return callback(err, null);
+
+        if (!permissions.canThis(user.role, 'ticket:assignee'))
+            return callback('User does not have permission to be set as an assignee.', null);
 
         var historyItem = {
             action: 'ticket:set:assignee',
@@ -390,7 +394,7 @@ ticketSchema.statics.getAll = function(callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner'])
         .sort({'status': 1});
 
     return q.exec(callback);
@@ -420,7 +424,7 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner'])
         .sort({'status': 1});
 
     return q.exec(callback);
@@ -469,7 +473,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner'])
         .sort('-uid')
         //.sort({'status': 1})
         .skip(page*limit)
@@ -538,7 +542,7 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner'])
         .sort({'uid': -1})
         .sort({'status': 1})
         .limit(limit);
@@ -572,7 +576,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner'])
         .sort({'uid': -1});
 
     return q.exec(callback);
@@ -596,7 +600,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'comments', 'comments.owner']);
+        .deepPopulate(['group', 'comments', 'comments.owner', 'history.owner']);
 
     return q.exec(callback);
 };
@@ -619,7 +623,7 @@ ticketSchema.statics.getTicketById = function(id, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner']);
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner']);
 
     return q.exec(callback);
 };
@@ -633,7 +637,7 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner']);
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner']);
 
     return q.exec(callback);
 };

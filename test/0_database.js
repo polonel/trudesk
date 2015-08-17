@@ -51,7 +51,8 @@ before(function(done) {
                     password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
                     fullname: 'Trudesk',
                     email: 'trudesk@trudesk.io',
-                    role: 'admin'
+                    role: 'admin',
+                    accessToken: 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
                 }, function(err, user) {
                     expect(err).to.not.exist;
                     expect(user).to.be.a('object');
