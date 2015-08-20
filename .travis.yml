@@ -7,7 +7,6 @@ services:
   - mongodb
 
 before_install:
-  - npm install -g requirejs
   - npm install -g grunt
   - npm install -g grunt-cli
   - gem install sass
@@ -15,8 +14,6 @@ before_install:
 script:
   - npm test
   - npm run build
-  - grunt buildcss
-  - grunt builddocs
 
 after_success:
   - ./node_modules/.bin/mocha --recursive --require blanket -R mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
