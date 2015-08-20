@@ -54,6 +54,7 @@ var COLLECTION = 'tickets';
  * @property {String} issue ```Required``` Detailed information about the ticket problem/task
  * @property {Date} closedDate show the datetime the ticket was moved to status 3.
  * @property {Array} comments An array of {@link Comment} items
+ * @property {Array} notes An array of {@link Comment} items for internal notes
  * @property {Array} attachments An Array of {@link Attachment} items
  * @property {Array} histor An array of {@link History} items
  */
@@ -73,6 +74,7 @@ var ticketSchema = mongoose.Schema({
     issue:      { type: String, required: true },
     closedDate: { type: Date },
     comments:   [commentSchema],
+    notes:      [commentSchema],
     attachments:[attachmentSchema],
     history:    [historySchema]
 });
@@ -129,7 +131,7 @@ ticketSchema.methods.setStatus = function(ownerId, status, callback) {
     self.status = status;
     var historyItem = {
         action: 'ticket:set:status',
-        description: 'Ticket Status set to: ' + status,
+        description: 'Ticket Status set to: ' + statusToString(status),
         owner: ownerId
     };
     self.history.push(historyItem);
@@ -911,5 +913,28 @@ ticketSchema.statics.softDelete = function(oId, callback) {
 
     return self.model(COLLECTION).findOneAndUpdate({_id: oId}, {deleted: true}, callback);
 };
+
+function statusToString(status) {
+    var str;
+    switch (status) {
+        case 0:
+            str = 'New';
+            break;
+        case 1:
+            str = 'Open';
+            break;
+        case 2:
+            str = 'Pending';
+            break;
+        case 3:
+            str = 'Closed';
+            break;
+        default:
+            str = status;
+            break;
+    }
+
+    return str;
+}
 
 module.exports = mongoose.model(COLLECTION, ticketSchema);

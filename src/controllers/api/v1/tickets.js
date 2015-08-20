@@ -109,56 +109,43 @@ api_tickets.get = function(req, res) {
 };
 
 api_tickets.create = function(req, res) {
-    var accessToken = req.headers.accesstoken;
+    var response = {};
+    response.success = true;
 
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(400).json({'success': false, 'error': err.message});
-        if (!user) return res.status(200).json({'success': true});
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(500).json({'success': false, Error: 'Invalid Post Data'});
 
-        var response = {};
-        response.success = true;
+    var ticketModel = require('../../../models/ticket');
+    var ticket = new ticketModel(postData);
+    var marked = require('marked');
+    var tIssue = ticket.issue;
+    tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+    ticket.issue = marked(tIssue);
+    ticket.save(function(err, t) {
+        if (err) {
+            response.success = false;
+            response.error = err;
+            return res.status(500).json(response);
+        }
 
-        var postData = req.body;
-        if (!_.isObject(postData)) return res.status(500).json({'success': false, Error: 'Invalid Post Data'});
-
-        var ticketModel = require('../../../models/ticket');
-        var ticket = new ticketModel(postData);
-        var marked = require('marked');
-        var tIssue = ticket.issue;
-        tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-        ticket.issue = marked(tIssue);
-        ticket.save(function(err, t) {
-            if (err) {
-                response.success = false;
-                response.error = err;
-                return res.status(500).json(response);
-            }
-
-            response.ticket = t;
-            res.json(response);
-        });
+        response.ticket = t;
+        res.json(response);
     });
 };
 
 api_tickets.single = function(req, res, next) {
-    var accessToken = req.headers.accesstoken;
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(400).json({'success': false, 'error': err.message});
-        if (!user) return res.status(200).json({'success': false, 'error': 'Invalid User from Access Token'});
+    var uid = req.params.uid;
+    if (_.isUndefined(uid)) return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
 
-        var uid = req.params.uid;
-        if (_.isUndefined(uid)) return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketByUid(uid, function(err, ticket) {
+        if (err) return res.send(err);
 
-        var ticketModel = require('../../../models/ticket');
-        ticketModel.getTicketByUid(uid, function(err, ticket) {
-            if (err) return res.send(err);
+        if (_.isUndefined(ticket)
+            || _.isNull(ticket))
+            return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
 
-            if (_.isUndefined(ticket)
-                || _.isNull(ticket))
-                return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
-
-            return res.json({'success': true, 'ticket': ticket});
-        });
+        return res.json({'success': true, 'ticket': ticket});
     });
 };
 
