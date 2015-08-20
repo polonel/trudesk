@@ -49,7 +49,8 @@ requirejs.config({
         autogrow:       'plugins/autogrow',
         pace:           'vendor/pace/pace.min',
         tomarkdown:     'vendor/tomarkdown/tomarkdown',
-        enjoyhint:      'vendor/enjoyhint/enjoyhint.min'
+        enjoyhint:      'vendor/enjoyhint/enjoyhint.min',
+        colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker'
     },
     shim: {
         foundation: {
@@ -128,6 +129,10 @@ requirejs.config({
 
         enjoyhint: {
             deps: ['jquery', 'jquery_scrollTo']
+        },
+
+        colorpicker: {
+            deps: ['jquery']
         }
     },
     priority: [

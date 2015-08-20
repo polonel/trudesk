@@ -19,6 +19,7 @@
     <link rel="stylesheet" href="/js/vendor/enjoyhint/enjoyhint.css" />
 
     <link rel="stylesheet" href="/css/vendor/font-awesome.min.css"/>
+    <link rel="stylesheet" href="/css/plugins.min.css"/>
     <link rel="stylesheet" href="/css/app.min.css"/>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -34,15 +35,15 @@
     <div id="notice-banner" style="
         width: 100%;
         height: 30px;
-        background: #e74c3c;
+        background: {{data.common.notice.color}};
         color: white;
         font-size: 13px;
         font-weight: 500;
         font-family: 'Open Sans', sans-serif;
         text-align: center;
-        padding-top: 7px;" {{#if data.notice}} class="show" {{else}} class="hide" {{/if}}>
+        padding-top: 7px;" {{#if data.common.notice}} class="show" {{else}} class="hide" {{/if}}>
 
-        {{formatDate data.notice.date "MM/DD/YYYY H:mm"}} - Important: {{data.notice.message}}
+        {{formatDate data.common.notice.date "MM/DD/YYYY HH:mm"}} - Important: {{data.common.notice.message}}
     </div>
 
     {{> topbar }}

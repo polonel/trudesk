@@ -24,6 +24,13 @@ viewdata.messages = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+              viewController.getActiveNotice(function(err, data) {
+                  if (err) return callback(err);
+                  viewdata.notice = data;
+                  callback();
+              });
+          },
+          function(callback) {
               viewController.getUserNotifications(request, function(err, data) {
                   if (err) return callback(err);
                   viewdata.notifications.items = data;
@@ -68,6 +75,18 @@ viewController.getData = function(request, cb) {
 
           cb(viewdata);
       });
+};
+
+viewController.getActiveNotice = function(callback) {
+    var noticeSchema = require('../../models/notice');
+    noticeSchema.getActive(function(err, notice) {
+        if (err) {
+            winston.warn(err.message);
+            return callback(err);
+        }
+
+        callback(null, notice);
+    });
 };
 
 viewController.getUserNotifications = function(request, callback) {

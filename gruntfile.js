@@ -17,10 +17,10 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            gruntfile: {
-                files: ['gruntfile.js'],
-                tasks: ['minjs']
-            },
+            //gruntfile: {
+            //    files: ['gruntfile.js'],
+            //    tasks: ['minjs']
+            //},
             //frontend: {
             //    options: {
             //        livereload: true
@@ -67,10 +67,10 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
-                    {
-                        grunt: true,
-                        args: ['watch:gruntfile']
-                    },
+                    //{
+                    //    grunt: true,
+                    //    args: ['watch:gruntfile']
+                    //},
                     //{
                     //    grunt: true,
                     //    args: ['watch:frontend']
@@ -97,6 +97,17 @@ module.exports = function(grunt) {
         },
 
         cssmin: {
+            target: {
+                files:  {
+                    'public/css/plugins.css' : [
+                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
+                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css'
+                        //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
+
+
+                    ]
+                }
+            },
             minify: {
                 expand: true,
                 cwd: 'public/css/',
@@ -110,40 +121,6 @@ module.exports = function(grunt) {
             build: {
                 files: {
                     'public/css/app.css': 'src/sass/app.sass'
-                }
-            }
-        },
-
-        uglify: {
-            options: {
-//                compress: {
-//                    drop_console: true
-//                }
-            },
-            target: {
-                files: {
-                    'public/js/trudesk.min.js':
-                        [
-//                            'public/js/vendor/modernizr/modernizr.js',
-//                            'public/js/vendor/jquery/jquery.js',
-//                            'public/js/vendor/fastclick/fastclick.js',
-//                            'public/js/vendor/foundation/foundation.min.js',
-//                            'public/js/vendor/datatables/jquery.dataTables.js',
-//
-//                            'public/js/vendor/datatables/dataTables.responsive.js',
-//                            'public/js/vendor/flot/jquery.flot.js',
-//                            'public/js/vendor/flot/jquery.flot.symbol.min.js',
-//                            'public/js/vendor/flot/jquery.flot.time.min.js',
-//                            'public/js/vendor/flot/jquery.flot.tooltip.js',
-//                            'public/js/vendor/fullcalendar/moment.min.js',
-//                            'public/js/vendor/fullcalendar/fullcalendar.min.js',
-//                            'public/js/plugins/plugins.min.js',
-//                            'public/js/client.js',
-//
-//                            //RequireJS
-//                            'public/js/vendor/requirejs/requirejs.min.js'
-
-                    ]
                 }
             }
         },
@@ -175,7 +152,6 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildcss', ['sass', 'cssmin']);
-    grunt.registerTask('minjs', ['uglify']);
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);

@@ -87,7 +87,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
 
     //Notices
-    router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard'); });
+    router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
+    router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
+    router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
     //API
     router.get('/api', controllers.api.index);
@@ -119,6 +121,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
+    router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
+    router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
+    router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
 
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }

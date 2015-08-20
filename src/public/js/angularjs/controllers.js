@@ -24,7 +24,8 @@ define([
     'angularjs/controllers/groups',
     'angularjs/controllers/tickets',
     'angularjs/controllers/singleTicket',
-    'angularjs/controllers/messages'
+    'angularjs/controllers/messages',
+    'angularjs/controllers/notices'
 
     ], function($, angular, _) {
 
@@ -36,6 +37,7 @@ define([
             'trudesk.controllers.tickets',
             'trudesk.controllers.singleTicket',
             'trudesk.controllers.messages',
+            'trudesk.controllers.notices',
 
             'trudesk.controllers.common'
         ])

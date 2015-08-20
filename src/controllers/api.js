@@ -23,7 +23,8 @@ var async = require('async'),
     userSchema = require('../models/user'),
 
     //Sub APIs
-    api_tickets_v1 = require('./api/v1/tickets');
+    api_tickets_v1 = require('./api/v1/tickets'),
+    api_notices_v1 = require('./api/v1/notices');
 
 /**
  * @since 1.0
@@ -43,6 +44,7 @@ var async = require('async'),
  */
 var apiController = {};
 apiController.tickets = api_tickets_v1;
+apiController.notices = api_notices_v1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');
@@ -237,33 +239,21 @@ apiController.login = function(req, res) {
  * var deviceToken = req.headers.devicetoken;
  */
 apiController.logout = function(req, res) {
-    var token = req.headers.token;
     var deviceToken = req.headers.devicetoken;
+    var user = req.user;
 
-    userSchema.getUserByAccessToken(token, function(err, user) {
+    async.series([
+        function(callback) {
+            user.removeDeviceToken(deviceToken, 1, function(err) {
+                if (err) return callback(err);
+
+                callback();
+            });
+        }
+    ], function(err) {
         if (err) return res.status(400).json({'success': false, 'error': err.message});
-        if (!user) return res.status(200).json({'success': true});
 
-        async.series([
-            function(callback) {
-                user.removeAccessToken(token, function(err) {
-                    if (err) return callback(err);
-
-                    callback();
-                });
-            },
-            function(callback) {
-                user.removeDeviceToken(deviceToken, 1, function(err) {
-                    if (err) return callback(err);
-
-                    callback();
-                });
-            }
-        ], function(err) {
-            if (err) return res.status(400).json({'success': false, 'error': err.message});
-
-            return res.status(200).json({'success': true});
-        });
+        return res.status(200).json({'success': true});
     });
 };
 
@@ -665,7 +655,7 @@ apiController.groups.create = function(req, res) {
  */
 apiController.groups.updateGroup = function(req, res) {
     var data = req.body;
-    if (_.isUndefined(data) || !_.isObject(data)) return res.status(400).send('Error: Misformated Data.');
+    if (_.isUndefined(data) || !_.isObject(data)) return res.status(400).send('Error: Malformated Data.');
     var groupSchema = require('../models/group');
     groupSchema.getGroupById(data.id, function(err, group) {
         if (err) return res.status(400).send('Error: ' + err.message);

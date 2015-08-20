@@ -41,13 +41,13 @@ var roles = {
         id: "mod",
         name: "Moderators",
         description: "Moderators",
-        allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view"]
+        allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view", "notices:*"]
     },
     support: {
         id: "support",
         name: "Support",
         description: "Support User",
-        allowedAction: ["ticket:*", "comment:editSelf create", "reports:view"]
+        allowedAction: ["ticket:*", "comment:editSelf create", "reports:view", "notices:*"]
     },
     user: {
         id: "user",

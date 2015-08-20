@@ -525,6 +525,19 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('setShowNotice', function(noticeId) {
+            var noticeSchema = require('./models/notice');
+            noticeSchema.getNotice(noticeId, function(err, notice) {
+                if (err) return true;
+
+                utils.sendToAllConnectedClients(io, 'updateShowNotice', notice);
+            });
+        });
+
+        socket.on('setClearNotice', function() {
+            utils.sendToAllConnectedClients(io, 'updateClearNotice');
+        });
+
         socket.on('joinChatServer', function(data) {
             var user = socket.request.user;
             var exists = false;
