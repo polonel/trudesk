@@ -35,6 +35,7 @@ import.csv
 src/mailer/templates/promo/
 *.pem
 public/uploads/tickets/
+public/uploads/users/
 coverage.html
 *.bk
 apidocs
