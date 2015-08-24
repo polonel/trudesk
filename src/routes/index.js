@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -7,20 +7,15 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
  **/
 
 var express     = require('express'),
     router      = express.Router(),
     controllers = require('../controllers/index.js'),
     path        = require('path'),
-    multer      = require('multer'),
     winston     = require('winston'),
-    mongoose    = require('mongoose');
-
-var passport = require('passport');
+    mongoose    = require('mongoose'),
+    passport = require('passport');
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
@@ -33,18 +28,25 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/resetpassword/:hash', controllers.main.resetPass);
 
     //Tickets
-    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
+    router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
-    router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus);
-    router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive);
-    router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned);
-    router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
+    router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/open/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/pending', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/pending/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/closed', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/closed/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
+    router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
+    router.get('/tickets/assigned/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
+    router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
+    router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
@@ -67,9 +69,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
     router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
     router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
-    router.post('/accounts/uploadimage', middleware.redirectToLogin, multer({dest: path.join(__dirname, '../../', 'public/uploads/users'), rename: function(fieldname, filename) {
-        return fieldname;
-    }}), controllers.accounts.uploadImage);
+    router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage);
 
     //Groups
     router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get);
@@ -86,36 +86,46 @@ function mainRoutes(router, middleware, controllers) {
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
 
+    //Notices
+    router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
+    router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
+    router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
+
     //API
     router.get('/api', controllers.api.index);
-    router.post('/api/login', middleware.api, controllers.api.login);
-    router.get('/api/logout', middleware.api, controllers.api.logout);
-    router.post('/api/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
-    router.get('/api/devices/testiOS', middleware.api, controllers.api.devices.testApn);
-    router.get('/api/tickets', middleware.api, controllers.api.tickets.get);
-    router.post('/api/tickets/create', middleware.api, controllers.api.tickets.create);
-    router.get('/api/tickets/types', middleware.api, controllers.api.tickets.getTypes);
-    router.get('/api/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    router.get('/api/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
-    router.get('/api/tickets/:uid', middleware.api, controllers.api.tickets.single);
-    router.put('/api/tickets/:id', middleware.api, controllers.api.tickets.update);
-    router.delete('/api/tickets/:id', middleware.api, controllers.api.tickets.delete);
-    router.post('/api/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
-    router.get('/api/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
-    router.post('/api/groups/create', middleware.api, controllers.api.groups.create);
-    router.delete('/api/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
-    router.put('/api/groups/:id', middleware.api, controllers.api.groups.updateGroup);
-    router.get('/api/users', middleware.api, controllers.api.users.get);
-    router.post('/api/users', controllers.api.users.insert);
-    router.get('/api/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
-    router.get('/api/users/:username', middleware.api, controllers.api.users.single);
-    router.put('/api/users/:username', middleware.api, controllers.api.users.update);
-    router.delete('/api/users/:username', middleware.api, controllers.api.users.deleteUser);
-    router.get('/api/roles', middleware.api, controllers.api.roles.get);
-    router.get('/api/messages', middleware.api, controllers.api.messages.get);
-    router.post('/api/messages/send', middleware.api, controllers.api.messages.send);
+    router.post('/api/v1/login', controllers.api.login);
+    router.get('/api/v1/logout', middleware.api, controllers.api.logout);
+    router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
+    router.get('/api/v1/devices/testiOS', middleware.api, controllers.api.devices.testApn);
+    router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
+    router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
+    router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
+    router.get('/api/v1/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
+    router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
+    router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
+    router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
+    router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
+    router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
+    router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
+    router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
+    router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
+    router.get('/api/v1/users', middleware.api, controllers.api.users.get);
+    router.post('/api/v1/users', controllers.api.users.insert);
+    router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
+    router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
+    router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
+    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
+    router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
+    router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
+    router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
+    router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
+    router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
+    router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
+    router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
+    router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
 
-    router.get('/api/import', middleware.api, controllers.api.import);
+    //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }
 
 module.exports = function(app, middleware) {
@@ -128,12 +138,12 @@ module.exports = function(app, middleware) {
 };
 
 function handleErrors(err, req, res, next) {
-    winston.warn(err.stack);
     var status = err.status || 500;
     res.status(status);
     //req.flash('errorMessage', err.message);
 
     if (status == 404) {
+        winston.warn(err.message);
         res.render('404', {layout: false});
         return;
     }
@@ -143,11 +153,14 @@ function handleErrors(err, req, res, next) {
         return;
     }
 
+    winston.warn(err.stack);
+
     res.render('error', {
         message: err.message,
         error: err,
         layout: false
     });
+
 }
 
 function handle404(req, res, next) {

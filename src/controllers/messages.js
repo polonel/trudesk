@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -31,7 +31,10 @@ messagesController.get = function(req, res, next) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
-
+    //self.content.data.notice = {
+    //    message: 'Internet Connectivity Issues',
+    //    date: new Date(2015, 7, 23, 21, 13, 0)
+    //};
 
     var messages = require('../models/message');
     self.content.data.messages = {};

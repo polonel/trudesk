@@ -33,3 +33,12 @@ node_modules
 config.json
 import.csv
 src/mailer/templates/promo/
+*.pem
+public/uploads/tickets/
+public/uploads/users/
+coverage.html
+*.bk
+apidocs
+docs
+public/js/*
+public/css/app.css.map

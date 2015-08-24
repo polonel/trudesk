@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -17,7 +17,7 @@ var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
-var reportSchema     = require('../models/report');
+var reports     = require('../models/report');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
 
@@ -36,13 +36,28 @@ reportsController.get = function(req, res, next) {
     self.content = {};
     self.content.title = "Reports";
     self.content.nav = 'reports';
+    self.content.subnav = 'reports-completed';
 
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.groups = {};
 
-    res.render('reports', self.content);
+    self.content.data.reports = {};
+    async.parallel([
+            function(callback) {
+                reports.getReportByStatus(2, function(err, objs) {
+                    self.content.data.reports.items = objs;
+                    self.content.data.reports.count = _.size(objs);
+                    callback(err, objs);
+                });
+            }
+        ],
+        function(err) {
+            if (err) return handleError(res, err);
+
+            return res.render('reports', self.content);
+        });
 };
 
 function handleError(res, err) {

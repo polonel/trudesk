@@ -19,7 +19,7 @@
                     <input type="hidden" name="_id" value="{{data.account._id}}" />
                     <input type="hidden" name="username" value="{{data.account.username}}" />
                     <div class="largeProfilePic cursor-pointer" style="position: absolute; left: 15px; top: 0;" ng-click="accountEditPic()">
-                        <input id="inputFile" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
+                        <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
                         {{#if data.account.image}}
                             <img src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
                         {{else}}
@@ -47,6 +47,16 @@
 
                         <label for="aEmail">Email</label>
                         <input id="aEmail" name="aEmail" type="text" value="{{data.account.email}}"/>
+
+                        <div class="small-10 columns" style="padding-left: 0; padding-right: 0;">
+                            <label for="aApiKey">API Key</label>
+                            <input id="aApiKey" name="aApiKey" type="text" value="{{data.account.accessToken}}" disabled/>
+                        </div>
+                        <div class="small-2 columns" style="margin-top: 25px; padding-right: 0; padding-left: 0;">
+                                <button class="btn right {{#unless data.account.accessToken}} hide {{/unless}} removeApiButton" style="height: 37px;" type="button" ng-click="removeApiKey($event)">Remove Key</button>
+
+                                <button class="btn right {{#if data.account.accessToken}} hide {{/if}} generateApiButton" style="height: 37px;" type="button" ng-click="generateApiKey($event)">Generate Key</button>
+                        </div>
                     </div>
                 </form>
             </div>

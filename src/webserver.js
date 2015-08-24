@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -10,7 +10,7 @@
  Created:    02/10/2015
  Author:     Chris Brame
 
- **/
+ */
 
 var nconf = require('nconf'),
     async = require('async'),
@@ -33,7 +33,8 @@ server = require('http').createServer(WebServer);
     var port = process.env.PORT || 8118;
 
     module.exports.server = server;
-    module.exports.init = function(db, callback) {
+    module.exports.init = function(db, callback, p) {
+        if (p !== undefined) port = p;
         middleware(app, db, function(middleware, store) {
             module.exports.sessionStore = store;
 

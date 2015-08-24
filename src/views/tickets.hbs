@@ -3,29 +3,59 @@
         <div class="page-title noshadow">
             <p class="left">Tickets</p>
             <div class="right">
-                <ul class="button-group">
+                <div class="pagination left">
+                    <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
+                    <ul class="button-group">
+                        {{#is data.pagination.prevEnabled true}}
+                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                        {{else}}
+                            <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                        {{/is}}
+                        {{#is data.pagination.nextEnabled true}}
+                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                        {{else}}
+                            <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                        {{/is}}
+                    </ul>
+                </div>
+                <ul class="button-group left">
                     <li class="active" style="position:relative;">
                         <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions">Actions</a>
                         <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
                             <div class="actions"><strong>Ticket Actions</strong></div>
                             <div id="tAction-list" class="notifications-Messages">
                                 <ul>
-                                    <li>
-                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
-                                            <div class="clearfix">
-                                                <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                                <div class="messageAuthor"><strong>Delete</strong></div>
-                                            </div>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
-                                            <div class="clearfix">
-                                                <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                <div class="messageAuthor"><strong>Close</strong></div>
-                                            </div>
-                                        </a>
-                                    </li>
+                                    {{#canUser data.user "ticket:delete"}}
+                                        <li>
+                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
+                                                <div class="clearfix">
+                                                    <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                                    <div class="messageAuthor"><strong>Delete</strong></div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    {{/canUser}}
+                                    {{#canUser data.user "ticket:edit"}}
+                                        <li>
+                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                                <div class="clearfix">
+                                                    <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                    <div class="messageAuthor"><strong>Close</strong></div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    {{else}}
+                                        {{#canUser data.user "ticket:editSelf"}}
+                                            <li>
+                                                <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                                    <div class="clearfix">
+                                                        <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                        <div class="messageAuthor"><strong>Close</strong></div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        {{/canUser}}
+                                    {{/canUser}}
                                 </ul>
                             </div>
                         </div>
@@ -37,8 +67,8 @@
 
 
 
-        <div class="full-height">
-            <div class="ticketList full-height dt-borderTop">
+        <div class="full-height" style="position:relative; background-color: rgb(246, 248, 251);">
+            <div class="ticketList dt-borderTop full-height">
                 <table id="ticketTable" class="pDataTable stripe">
                     <thead>
                     <tr>

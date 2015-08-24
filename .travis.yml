@@ -1,0 +1,19 @@
+sudo: false
+language: node_js
+node_js:
+  - "0.10"
+  - "0.12"
+services:
+  - mongodb
+
+before_install:
+  - npm install -g grunt
+  - npm install -g grunt-cli
+  - gem install sass
+
+script:
+  - npm test
+  - npm run build
+
+after_success:
+  - ./node_modules/.bin/mocha --recursive --require blanket -R mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js

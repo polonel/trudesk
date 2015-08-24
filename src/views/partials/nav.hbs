@@ -29,13 +29,16 @@
         {{#canUser data.user "reports:view"}}
             <li {{#is nav 'reports'}} class='active' {{/is}}><a href="/reports"><i class="fa fa-book fa-large"></i>Reports</a>
                 <ul id="side-nav-sub-reports" class="side-nav-sub {{#is nav 'reports'}} subMenuOpen {{/is}}">
-                    <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/reports/create"><i class="fa fa-plus fa-sub-icon"></i>Create</a></li>
+                    <li {{#is subnav 'messages-create'}} class='active' {{/is}}><a href="/reports/create"><i class="fa fa-plus fa-sub-icon"></i>Create</a></li>
                     <hr/>
-                    <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>
-                    <li {{#is subnav 'messages-sentitems'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>
-                    <li {{#is subnav 'messages-trash'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>
+                    <li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>
+                    <li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>
+                    <li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>
                 </ul>
             </li>
+        {{/canUser}}
+        {{#canUser data.user "notices:view"}}
+            <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
         {{/canUser}}
     </ul>
 </div>

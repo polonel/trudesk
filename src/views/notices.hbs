@@ -1,0 +1,84 @@
+<div class="small-12 large-10 columns nopadding ticketContent" ng-controller="noticesCtrl">
+    <div class="page-title noshadow">
+        <p class="left">{{title}}</p>
+        <div class="right">
+            <ul class="button-group">
+
+                <li class="active" style="position:relative;">
+                    <a href="#" class="btn no-ajaxy" data-notifications="notice-actions">Actions</a>
+                    <div id="notice-actions" data-scroll="nAction-List" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
+                        <div class="actions"><strong>Notice Actions</strong></div>
+                        <div id="nAction-List" class="notifications-Messages">
+                            <ul>
+                                <li>
+                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="activateNotice()">
+                                        <div class="clearfix">
+                                            <div class="messageIcon left"><i class="fa fa-clock-o"></i></div>
+                                            <div class="messageAuthor"><strong>Activate</strong></div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="clearNotice()">
+                                        <div class="clearfix">
+                                            <div class="messageIcon left"><i class="fa fa-check"></i></div>
+                                            <div class="messageAuthor"><strong>Clear Notice</strong></div>
+                                        </div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteGroups()">
+                                        <div class="clearfix">
+                                            <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                            <div class="messageAuthor"><strong>Delete</strong></div>
+                                        </div>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+
+                {{#canUser data.user "notices:create"}}<li class="active"><a href="/notices/create" role="button" class="btn">Create</a></li>{{/canUser}}
+            </ul>
+        </div>
+    </div>
+
+    <div class="full-height page-right-content scrollable">
+        <div class="noticesList">
+            <table id="noticesTable" class="pDataTable stripe">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.notices}}
+                    <tr ng-click="editNotice($event)" data-noticeOId="{{_id}}">
+                        <td>
+                            <input id="c_{{_id}}" type="checkbox"/>
+                            <label for="c_{{_id}}"></label>
+                        </td>
+                        <td>{{name}}</td>
+                        <td>{{message}}</td>
+                        <td>{{formatDate date "MMM DD, YYYY h:mma"}}</td>
+                        <td><span style="display: block;width:15px; height:15px; background: {{color}}"></span></td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/notices'], function(n) {
+            n.init();
+        });
+    </script>
+{{/contentFor}}

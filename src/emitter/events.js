@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -11,8 +11,6 @@
  Author:     Chris Brame
 
  **/
-
-"use strict";
 
 var _                   = require('underscore');
 var path                = require('path');
@@ -31,6 +29,7 @@ var notifications              = require('../notifications'); // Load Push Event
 
 (function() {
     notifications.init(emitter);
+
     //winston.info('Binding to Events');
     emitter.on('ticket:created', function(ticketObj) {
          ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
@@ -55,6 +54,7 @@ var notifications              = require('../notifications'); // Load Push Event
                          emailTemplates(templateDir, function(err, template) {
                              if (err) {
                                  winston.error(err);
+                                 return c(err);
                              } else {
                                  var locals = {
                                      ticket: ticket
@@ -63,9 +63,9 @@ var notifications              = require('../notifications'); // Load Push Event
                                  template('new-ticket', locals, function(err, html) {
                                      if (err) {
                                          winston.error(err);
+                                         return c(err);
                                      } else {
                                          var mailOptions = {
-                                             from: 'no-reply@trudesk.io',
                                              to: emails.join(),
                                              subject: 'Ticket #' + ticket.uid + '-' + ticket.subject,
                                              html: html,
@@ -74,10 +74,8 @@ var notifications              = require('../notifications'); // Load Push Event
 
                                          mailer.sendMail(mailOptions, function(err, info) {
                                              if (err) {
-                                                 winston.warn(err);
                                                  return c(err, null);
                                              }
-
 
                                              return c(null, info);
                                          });
@@ -116,8 +114,7 @@ var notifications              = require('../notifications'); // Load Push Event
                  }
              ], function(err) {
                     if (err) {
-                        winston.warn('Error: Event: ticket:created');
-                        return winston.warn(err.message);
+                        return winston.warn('Error: [ticket:created]: ' + err);
                     }
 
                  io.sockets.emit('ticket:created');
@@ -125,8 +122,8 @@ var notifications              = require('../notifications'); // Load Push Event
          });
     });
 
-    emitter.on('ticket:updated', function(ticketOid) {
-
+    emitter.on('ticket:updated', function(ticket) {
+        io.sockets.emit('updateTicketStatus', {tid: ticket._id, status: ticket.status});
     });
 
     emitter.on('ticket:deleted', function(oId) {

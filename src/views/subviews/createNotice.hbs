@@ -1,0 +1,54 @@
+<div class="small-12 large-10 columns nopadding page-right-content"  ng-controller="noticesCtrl">
+    <div class="page-title">
+        <p class="left">{{title}}</p>
+        <div class="right">
+            <ul class="button-group">
+                <li><a href="/notices" role="button" class="btn">Cancel</a></li>
+                <li class="active"><button class="btn" ng-click="submitCreateNoticeForm()">Save</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper scrollable no-overflow-x full-height">
+        <div class="row padtop20 padleft30 padright20">
+            <div class="small-12 columns">
+                <form id="createNoticeForm" class="form nomargin" action="/" method="POST">
+                    <div>
+                        <label for="nName">Notice Name</label>
+                        <input id="nName" name="nName" type="text"/>
+
+                        <label for="nMessage">Notice Message</label>
+                        <input id="nMessage" name="nMessage" type="text"/>
+
+                        <div style="margin-bottom: 85px;">
+                            <label for="nColor">Notice Color:</label>
+                            <select id="nColor" name="nColor">
+                                <option value="#7bd148">Green</option>
+                                <option value="#5484ed">Bold blue</option>
+                                <option value="#a4bdfc">Blue</option>
+                                <option value="#46d6db">Turquoise</option>
+                                <option value="#7ae7bf">Light green</option>
+                                <option value="#51b749">Bold green</option>
+                                <option value="#fbd75b">Yellow</option>
+                                <option value="#ffb878">Orange</option>
+                                <option value="#ff887c">Red</option>
+                                <option value="#dc2127">Bold red</option>
+                                <option value="#dbadff">Purple</option>
+                                <option value="#e1e1e1">Gray</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/createNotice'], function(createNotice) {
+            createNotice.init();
+        });
+    </script>
+{{/contentFor}}

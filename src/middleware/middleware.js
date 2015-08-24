@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -18,7 +18,6 @@ var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
 var path = require('path');
-var multer = require('multer');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
@@ -26,7 +25,6 @@ var app,
     middleware = {};
 
 middleware.db = function(req, res, next) {
-    winston.info('Checking MongoDB Status...');
     if (mongoose.connection.readyState !== 1) {
         winston.warn('MongoDB ReadyState = ' + mongoose.connection.readyState);
         db.init(function(e, database) {
@@ -41,12 +39,6 @@ middleware.db = function(req, res, next) {
     next();
 };
 
-middleware.multerToUserDir = function(req, res, next) {
-    multer({dest: path.join(__dirname, '../../', 'public/uploads/users')});
-
-    next();
-};
-
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
         res.redirect('/dashboard');
@@ -57,7 +49,9 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
 
 middleware.redirectToLogin = function(req, res, next) {
     if (!req.user) {
-        req.session.redirectUrl = req.url;
+        if (!_.isUndefined(req.session))
+            req.session.redirectUrl = req.url;
+
         res.redirect('/');
     } else {
         next();
@@ -84,15 +78,24 @@ middleware.cache = function(seconds) {
 
 //API
 middleware.api = function(req, res, next) {
-    if (_.isUndefined(db)) {
-      res.send('Invalid DB - Middleware.Api()');
-    }
-    if (_.isUndefined(req.db)) {
-      req.db = db;
-    }
+    var accessToken = req.headers.accesstoken;
 
-    next();
+    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
+        var user = req.user;
+        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
 
+        next();
+    } else {
+        var userSchema = require('../models/user');
+        userSchema.getUserByAccessToken(accessToken, function(err, user) {
+            if (err) return res.status(401).json({'error': err.message});
+            if (!user) return res.status(401).json({'error': 'Unknown User'});
+
+            req.user = user;
+
+            next();
+        });
+    }
 };
 
 module.exports = function(server) {

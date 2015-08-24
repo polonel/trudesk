@@ -1,0 +1,245 @@
+util.print: Use console.log instead
+.main {
+  padding: 20px 20px;
+  margin-left: 250px;
+}
+.main .page-title {
+  display: none;
+}
+.main h1 {
+  font-weight: bold;
+  font-size: 1.6em;
+  margin: 0;
+}
+.main h2 {
+  font-weight: bold;
+  font-size: 1.5em;
+  margin: 0;
+}
+.main h3 {
+  font-weight: bold;
+  font-size: 12px;
+  margin: 5px 0;
+}
+.main h4 {
+  font-weight: bold;
+  font-size: 1em;
+}
+.main h5 {
+  font-weight: bold;
+  font-size: 12px;
+}
+.main dd {
+  font-size: 12px;
+}
+.main h4.name span.type-signature {
+  display: inline-block;
+  border-radius: 3px;
+  background-color: gray;
+  color: #fff;
+  font-size: 0.7em;
+  padding: 2px 4px;
+}
+.main h4.name span.type {
+  margin-left: 5px;
+}
+.main h4.name span.glyphicon {
+  display: inline-block;
+  vertical-align: middle;
+  color: #e1e1e1;
+  margin-left: 7px;
+}
+.main h4.name span.returnType {
+  margin-left: 3px;
+  background-color: transparent!important;
+  color: gray!important;
+}
+.main span.static {
+  display: inline-block;
+  border-radius: 3px;
+  background-color: #e74c3c !important;
+  color: #fff;
+  font-size: 0.7em;
+  padding: 2px 4px;
+  margin-right: 8px;
+}
+.main span.number {
+  background-color: gray!important;
+}
+.main span.string {
+  background-color: gray!important;
+}
+.main span.object {
+  background-color: #2a6496 !important;
+}
+.main span.array {
+  background-color: #2a6496 !important;
+}
+.main span.boolean {
+  background-color: #ee7d7d !important;
+}
+.main .subsection-title {
+  font-size: 14px;
+  margin-top: 30px;
+  color: #e74c3c;
+}
+.main .description {
+  margin-top: 10px;
+  font-size: 13px;
+}
+.main .description ul,
+.main .description ol {
+  margin-bottom: 15px;
+}
+.main .description p {
+  font-size: 13px;
+}
+.main .description h2 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #efefef;
+}
+.main .description pre {
+  margin: 10px 0;
+}
+.main .tag-source {
+  font-size: 12px;
+}
+.main dt.tag-source {
+  margin-top: 5px;
+}
+.main dt.tag-todo {
+  font-size: 10px;
+  display: inline-block;
+  background-color: #2a6496;
+  color: #fff;
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+.main .type-signature {
+  font-size: 12px;
+}
+.main .tag-deprecated {
+  display: inline-block;
+  font-size: 10px;
+}
+.main .important {
+  background-color: #ee7d7d;
+  color: #fff;
+  padding: 2px 4px;
+  border-radius: 5px;
+}
+.main .nameContainer {
+  position: relative;
+  margin-top: 20px;
+  padding-top: 5px;
+  border-top: 1px solid #e1e1e1;
+}
+.main .nameContainer .inherited {
+  display: inline-block;
+  border-radius: 3px;
+  background-color: #888!important;
+  font-size: 0.7em;
+  padding: 2px 4px;
+  margin-right: 5px;
+}
+.main .nameContainer .inherited a {
+  color: #fff;
+}
+.main .nameContainer .tag-source {
+  position: absolute;
+  top: 17px;
+  right: 0;
+  font-size: 10px;
+}
+.main .nameContainer .tag-source a {
+  color: gray;
+}
+.main .nameContainer.inherited {
+  color: gray;
+}
+.main .nameContainer h4 {
+  margin-right: 150px;
+  line-height: 1.3;
+}
+.main .nameContainer h4 .signature {
+  font-size: 13px;
+  font-weight: normal;
+  font-family: Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+.main .nameContainer h4 .type-signature.type a {
+  color: #fff;
+}
+.main pre {
+  font-size: 11px;
+}
+.main table {
+  width: 100%;
+  margin-bottom: 15px;
+}
+.main table th {
+  padding: 3px 3px;
+}
+.main table td {
+  vertical-align: top;
+  padding: 5px 3px;
+}
+.main table .name {
+  width: 110px;
+}
+.main table .type {
+  width: 60px;
+  color: #aaa;
+  font-size: 11px;
+}
+.main table .attributes {
+  width: 80px;
+  color: #aaa;
+  font-size: 11px;
+}
+.main table .description {
+  font-size: 12px;
+}
+.main table .description p {
+  margin: 0;
+}
+.main table .optional {
+  float: left;
+  border-radius: 3px;
+  background-color: #ddd!important;
+  font-size: 0.7em;
+  padding: 2px 4px;
+  margin-right: 5px;
+  color: gray;
+}
+.main .readme p {
+  margin-top: 15px;
+  line-height: 1.2;
+  font-size: 0.85em;
+}
+.main .readme h1 {
+  font-size: 1.7em;
+}
+.main .readme h2 {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e1e1e1;
+}
+.main .readme li {
+  font-size: 0.9em;
+  margin-bottom: 10px;
+}
+.main article ol,
+.main article ul {
+  margin-left: 25px;
+}
+.main article ol > li {
+  list-style-type: decimal;
+  margin-bottom: 5px;
+}
+.main article ul > li {
+  margin-bottom: 5px;
+  list-style-type: disc;
+}

@@ -1,4 +1,5 @@
-/**
+
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -19,12 +20,15 @@ var _s      = require('underscore.string');
     Permissions for TruDesk. Define Roles / Groups.
     --- group:action action action
 
-    *           = all permissions for grp
-    create      = create permission for grp
-    delete      = delete permission for grp
-    edit        = edit permission for grp
-    editSelf    = edit Self Created Items
-    view        = view permission for grp
+    *                   = all permissions for grp
+    create              = create permission for grp
+    delete              = delete permission for grp
+    edit                = edit permission for grp
+    editSelf            = edit Self Created Items
+    assignee            = allowed to be assigned to a ticket
+    view                = view permission for grp
+    attachment          = can add attachment
+    ticket:viewHistory  = can view ticket history on single page
  */
 var roles = {
     admin: {
@@ -37,15 +41,28 @@ var roles = {
         id: "mod",
         name: "Moderators",
         description: "Moderators",
-        allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view"]
+        allowedAction: ["mod:*", "ticket:*", "comment:*", "reports:view", "notices:*"]
+    },
+    support: {
+        id: "support",
+        name: "Support",
+        description: "Support User",
+        allowedAction: ["ticket:*", "comment:editSelf create", "reports:view", "notices:*"]
     },
     user: {
         id: "user",
         name: "User",
         description: "User",
-        allowedAction: ["ticket:create editSelf", "comment:create editSelf" ]
+        allowedAction: ["ticket:create editSelf attachment", "comment:create editSelf" ]
     }
 };
+
+/***
+ * Checks to see if a role as the given action
+ * @param role [role to check against]
+ * @param a [action to check]
+ * @returns {boolean}
+ */
 
 var canThis = function(role, a) {
     if (_.isUndefined(role)) return false;

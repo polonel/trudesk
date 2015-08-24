@@ -17,22 +17,22 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            gruntfile: {
-                files: ['gruntfile.js'],
-                tasks: ['minjs']
-            },
-            frontend: {
-                options: {
-                    livereload: true
-                },
-                files: [
-                    'public/**/*.css',
-                    'public/**/*.js',
-                    'views/**/*.hbs',
-                    '!public/js/main.min.js'
-                ],
-                tasks: ['minjs']
-            },
+            //gruntfile: {
+            //    files: ['gruntfile.js'],
+            //    tasks: ['minjs']
+            //},
+            //frontend: {
+            //    options: {
+            //        livereload: true
+            //    },
+            //    files: [
+            //        'public/**/*.css',
+            //        'public/**/*.js',
+            //        'views/**/*.hbs',
+            //        '!public/js/main.min.js'
+            //    ],
+            //    tasks: ['minjs']
+            //},
             sass: {
                 files: [
                     'src/sass/**/*.sass'
@@ -50,6 +50,14 @@ module.exports = function(grunt) {
                     nospawn: true,
                     atBegin: true
                 }
+            },
+            docs: {
+                files: [
+                    '*.js',
+                    'src/**/*.js',
+                    'routes/**/*.js'
+                ],
+                tasks: ['jsdoc', 'apidoc']
             }
         },
 
@@ -59,24 +67,47 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
+                    //{
+                    //    grunt: true,
+                    //    args: ['watch:gruntfile']
+                    //},
+                    //{
+                    //    grunt: true,
+                    //    args: ['watch:frontend']
+                    //},
                     {
-                        grunt: true,
-                        args: ['watch:gruntfile']
-                    },
-                    {
-                        grunt: true,
-                        args: ['watch:frontend']
-                    }, {
                         grunt: true,
                         args: ['watch:sass']
                     }, {
                         grunt: true,
                         args: ['watch:web']
                     }]
+            },
+            docs: {
+                options: {
+                    stream: true
+                },
+                tasks: [
+                    {
+                        grunt: true,
+                        args: ['watch:docs']
+                    }
+                ]
             }
         },
 
         cssmin: {
+            target: {
+                files:  {
+                    'public/css/plugins.css' : [
+                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
+                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css'
+                        //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
+
+
+                    ]
+                }
+            },
             minify: {
                 expand: true,
                 cwd: 'public/css/',
@@ -94,44 +125,107 @@ module.exports = function(grunt) {
             }
         },
 
-        uglify: {
-            options: {
-//                compress: {
-//                    drop_console: true
-//                }
-            },
-            target: {
-                files: {
-                    'public/js/trudesk.min.js':
-                        [
-//                            'public/js/vendor/modernizr/modernizr.js',
-//                            'public/js/vendor/jquery/jquery.js',
-//                            'public/js/vendor/fastclick/fastclick.js',
-//                            'public/js/vendor/foundation/foundation.min.js',
-//                            'public/js/vendor/datatables/jquery.dataTables.js',
-//
-//                            'public/js/vendor/datatables/dataTables.responsive.js',
-//                            'public/js/vendor/flot/jquery.flot.js',
-//                            'public/js/vendor/flot/jquery.flot.symbol.min.js',
-//                            'public/js/vendor/flot/jquery.flot.time.min.js',
-//                            'public/js/vendor/flot/jquery.flot.tooltip.js',
-//                            'public/js/vendor/fullcalendar/moment.min.js',
-//                            'public/js/vendor/fullcalendar/fullcalendar.min.js',
-//                            'public/js/plugins/plugins.min.js',
-//                            'public/js/client.js',
-//
-//                            //RequireJS
-//                            'public/js/vendor/requirejs/requirejs.min.js'
+        apidoc: {
+            trudesk: {
+                src: "src/controllers/",
+                dest: "apidocs/",
+                options: {
+                    //debug: true,
+                    includeFilters: ['.*\\.js$'],
+                    excludeFilters: ['node_modules/']
+                }
+            }
+        },
 
-                    ]
+        jsdoc : {
+            dist : {
+                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js'],
+                options: {
+                    destination: 'docs',
+                    template: 'docs/jaguarjs-jsdoc',
+                    configure: 'docs/jaguarjs-jsdoc/conf.json'
+                    //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
+                    //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
+                }
+            }
+        },
+
+        requirejs: {
+            compile: {
+                options: {
+                    appDir: 'src/public/js',
+                    baseUrl: './',
+                    mainConfigFile: 'src/public/js/config.js',
+                    dir: 'public/js',
+                    removeCombined: true,
+                    preserveLicenseComments: false,
+                    kipDirOptimize: false,
+                    optimize: 'uglify2',
+                    uglify2: {
+                        mangle: false
+                    },
+                    modules: [
+                        {
+                            name: 'trudesk.min',
+                            create: true,
+                            include: [
+                                'jquery',
+                                'jquery_scrollTo',
+                                'foundation',
+                                'angular',
+                                'angularRoute',
+                                'modernizr',
+                                'fastclick',
+                                'placeholder',
+                                'nicescroll',
+                                'underscore',
+                                'history',
+
+                                'angularjs/main',
+                                'angularjs/controllers',
+                                'app',
+
+                                'modules/ajaxify',
+                                'modules/ajaximgupload',
+                                'modules/attachmentUpload',
+
+                                'pages/accounts',
+                                'pages/dashboard',
+                                'pages/editaccount',
+                                'pages/groups',
+                                'pages/messages',
+                                'pages/reports',
+                                'pages/singleTicket',
+                                'pages/tickets'
+                            ],
+                            shim: {
+                                angular: {
+                                    exports: 'angular'
+                                }
+                            }
+                        }
+                        //{
+                        //    name: 'page-accounts',
+                        //    create: true,
+                        //    include: [ 'pages/accounts' ],
+                        //    exclude: [ 'trudesk.min' ]
+                        //}
+                    ],
+                    paths: {
+                        foundation: 'empty:',
+                        angular: 'empty:',
+                        angularRoute: 'empty:'
+                    },
+                    keepBuildDir: true
                 }
             }
         }
-
     });
 
     grunt.registerTask('buildcss', ['sass', 'cssmin']);
-    grunt.registerTask('minjs', ['uglify']);
+    grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
+    grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
+    grunt.registerTask('build', ['buildcss', 'builddocs', 'requirejs']);
     grunt.registerTask('default', ['server']);
 };

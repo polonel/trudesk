@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -7,9 +7,6 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
  **/
 
 var async   = require('async'),
@@ -68,9 +65,34 @@ if (nconf.get('config')) {
 }
 configExists = fs.existsSync(configFile);
 
+if (process.env.HEROKU) {
+    //Build Config for Heroku
+    var configHeroku = {
+        "url": "http://localhost:8118",
+        "port": "8118",
+        "mailer": {
+            "enable": false,
+
+            "check": {
+                "enable": false
+            }
+        }
+    };
+
+    winston.info('Creating heroku config file...');
+    var config = JSON.stringify(configHeroku, null, 4);
+
+    if (configExists)
+        fs.unlinkSync(configFile);
+
+    fs.writeFileSync(configFile, config);
+
+    start();
+}
+
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
     start();
-} else if (nconf.get('setup') || nconf.get('install') || !configExists) {
+} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
     setup();
 } else if (nconf.get('upgrade')) {
     //upgrade();
@@ -154,8 +176,12 @@ function dbCallback(err, db) {
             },
             function(next) {
                 //Start Check Mail
-                var mailCheck = require('./src/mailer/mailCheck');
-                mailCheck.init();
+                var mailerEnabled = nconf.get('mailer:enable');
+                if (mailerEnabled) {
+                    var mailCheck = require('./src/mailer/mailCheck');
+                    mailCheck.init();
+                }
+
                 next();
             },
             function(next) {
