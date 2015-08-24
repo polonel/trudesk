@@ -14,6 +14,8 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 ###Requirements
 + Node.JS v0.10 or later
 + MongoDB 2.6 or later
++ Ruby 2.0.0 or later
++ __Sass__ Gem Installed
 
 ###Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```

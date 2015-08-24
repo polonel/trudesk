@@ -246,18 +246,21 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
  */
 userSchema.statics.getAssigneeUsers = function(callback) {
     var permissions = require('../permissions');
-    this.model(COLLECTION).find({}, function(err, users) {
-        if (err) return callback(err, null);
-        var canAssignUsers = [];
-        async.each(users, function(user) {
-            if (permissions.canThis(user.role, 'ticket:assignee')) {
-                canAssignUsers.push(user);
-            }
+    var roles = permissions.roles;
+    var assigneeRoles = [];
+    async.each(roles, function(role) {
+        if (permissions.canThis(role.id, 'ticket:assignee'))
+            assigneeRoles.push(role.id);
+    });
 
-            canAssignUsers = _.unique(canAssignUsers);
+    assigneeRoles = _.uniq(assigneeRoles);
+    this.model(COLLECTION).find({role: {$in: assigneeRoles}}, function(err, users) {
+        if (err) {
+            winston.warn(err);
+            return callback(err);
+        }
 
-            callback(null, canAssignUsers);
-        });
+        callback(null, users);
     });
 };
 
