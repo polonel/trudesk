@@ -24,14 +24,14 @@ var async = require('async'),
 var api_tickets = {};
 
 /**
- * @api {get} /api/v1/tickets/ Gets tickets
+ * @api {get} /api/v1/tickets/ Get Tickets
  * @apiName getTickets
  * @apiDescription Gets tickets for the given User
  * @apiVersion 0.1.0
  * @apiGroup Ticket
  * @apiHeader {string} accesstoken The access token for the logged in user
  * @apiExample Example usage:
- * curl -l http://localhost/api/v1/tickets
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
  *
  * @apiSuccess {object}     _id                 The MongoDB ID
  * @apiSuccess {number}     uid                 Unique ID (seq num)
@@ -108,12 +108,40 @@ api_tickets.get = function(req, res) {
     });
 };
 
+/**
+ * @api {post} /api/v1/tickets/create Create Ticket
+ * @apiName createTicket
+ * @apiDescription Creates a ticket with the given post data.
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} ticket Saved Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+        {
+            "error": "Invalid Post Data"
+        }
+ */
+
 api_tickets.create = function(req, res) {
     var response = {};
     response.success = true;
 
     var postData = req.body;
-    if (!_.isObject(postData)) return res.status(500).json({'success': false, Error: 'Invalid Post Data'});
+    if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    var HistoryItem = {
+        action: 'ticket:created',
+        description: 'Ticket was created.',
+        owner: req.user._id
+    };
 
     var ticketModel = require('../../../models/ticket');
     var ticket = new ticketModel(postData);
@@ -121,11 +149,12 @@ api_tickets.create = function(req, res) {
     var tIssue = ticket.issue;
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
     ticket.issue = marked(tIssue);
+    ticket.history = [HistoryItem];
     ticket.save(function(err, t) {
         if (err) {
             response.success = false;
             response.error = err;
-            return res.status(500).json(response);
+            return res.status(400).json(response);
         }
 
         response.ticket = t;
