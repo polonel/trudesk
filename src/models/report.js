@@ -11,7 +11,7 @@
 
 var mongoose        = require('mongoose');
 var _               = require('underscore');
-var deepPopulate    = require('mongoose-deep-populate');
+var deepPopulate    = require('mongoose-deep-populate')(mongoose);
 var accountsSchema  = require('./user');
 var groupSchema     = require('./group');
 
