@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-
+    "postinstall": "npm install -g requirejs && grunt build",
     "build": "grunt build",
     "test": "mocha --recursive",
     "coverage": "mocha --recursive --require blanket -R html-cov > coverage.html"
