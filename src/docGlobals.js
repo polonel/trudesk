@@ -11,3 +11,12 @@
  * @param {object} err Error
  * @param {Ticket} ticket Ticket Object
  */
+
+/**
+ * Task Type
+ * @typedef TaskType
+ * @type {Number}
+ * @property {number} Report 1
+ *
+ *
+ */
