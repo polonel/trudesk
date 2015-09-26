@@ -124,6 +124,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
     router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
+    router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }

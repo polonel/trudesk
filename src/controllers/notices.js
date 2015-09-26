@@ -71,7 +71,6 @@ noticesController.create = function(req, res) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
 
     res.render('subviews/createNotice', self.content);
 };
@@ -91,9 +90,12 @@ noticesController.edit = function(req, res) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
+    noticeSchema.getNotice(req.params.id, function(err, notice) {
+        if (err) return handleError(res, err);
+        self.content.data.notice = notice;
 
-    res.render('subviews/createNotice', self.content);
+        res.render('subviews/editNotice', self.content);
+    });
 };
 
 function handleError(res, err) {

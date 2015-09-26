@@ -53,25 +53,26 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     });
             };
 
-            $scope.submitSaveGroup = function() {
-                var formData = $('#editGroupForm').serializeObject();
+            $scope.submitEditNoticeForm = function() {
+                var noticeId = $('#__noticeId').text();
+                console.log(noticeId);
+                var formData = $('#editNoticeForm').serializeObject();
                 var apiData = {
-                    id: formData.groupID,
-                    name: formData.gName,
-                    members: formData.gMembers,
-                    sendMailTo: formData.gSendMailTo
+                    name: formData.nName,
+                    message: formData.nMessage,
+                    color: formData.nColor
                 };
 
                 $http({
                     method: 'PUT',
-                    url: '/api/v1/groups/' + apiData.id,
+                    url: '/api/v1/notices/' + noticeId,
                     data: apiData,
-                    headers: {'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' }
                 })
                     .success(function() {
-                        helpers.showFlash('Group Saved Successfully');
+                        helpers.showFlash('Notice Saved Successfully.');
 
-                        History.pushState(null, null, '/groups/');
+                        History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
                         helpers.showFlash(err, true);
@@ -125,6 +126,26 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
                 helpers.hideAllpDropDowns();
                 helpers.hideDropDownScrolls();
+            };
+
+            $scope.deleteNotices = function() {
+                var ids = getChecked();
+                _.each(ids, function(id) {
+                    $http.delete(
+                        '/api/v1/notices/' + id
+                    ).success(function(data) {
+                            if (!data.success) {
+                                helpers.showFlash(data.error, true);
+                                return;
+                            }
+
+                            removeCheckedFromGrid(id);
+                            helpers.resizeDataTables('.noticesList');
+                            helpers.showFlash('Notice Successfully Deleted');
+                        }).error(function(err) {
+                            helpers.showFlash(err, true);
+                        });
+                });
             };
 
             $scope.deleteGroups = function() {

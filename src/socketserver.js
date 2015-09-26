@@ -529,8 +529,15 @@ module.exports = function(ws) {
             var noticeSchema = require('./models/notice');
             noticeSchema.getNotice(noticeId, function(err, notice) {
                 if (err) return true;
+                notice.activeDate = new Date();
+                notice.save(function(err) {
+                    if (err) {
+                        winston.warn(err);
+                        return true;
+                    }
 
-                utils.sendToAllConnectedClients(io, 'updateShowNotice', notice);
+                    utils.sendToAllConnectedClients(io, 'updateShowNotice', notice);
+                });
             });
         });
 

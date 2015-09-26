@@ -43,7 +43,7 @@
         text-align: center;
         padding-top: 7px;" {{#if data.common.notice}} class="show" {{else}} class="hide" {{/if}}>
 
-        {{formatDate data.common.notice.date "MM/DD/YYYY HH:mm"}} - Important: {{data.common.notice.message}}
+        {{formatDate data.common.notice.activeDate "MM/DD/YYYY HH:mm"}} - Important: {{data.common.notice.message}}
     </div>
 
     {{> topbar }}

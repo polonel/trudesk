@@ -65,4 +65,17 @@ api_notices.clearActive = function(req, res) {
     });
 };
 
+api_notices.deleteNotice = function(req, res) {
+    var id = req.params.id;
+    noticeSchema.getNotice(id, function(err, notice) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        notice.remove(function(err) {
+            if (err) return res.status(400).json({success: false, error: err});
+
+            res.json({success: true});
+        });
+    });
+};
+
 module.exports = api_notices;
