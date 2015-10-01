@@ -24,13 +24,23 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor/requirejs/requirejs.min.js"></script>
-    <!--<script src="/js/config.js"></script>-->
     <script src="/js/trudesk.min.js"></script>
-    <!--<script src="/js/app.js"></script>-->
 
 </head>
 <body>
 <div id="loader"></div>
+<div id="nomobile" class="hide-for-large-up" style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    z-index: 99999999;
+    background: #f6f6f6;
+">
+<div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 32px; font-weight: 300;">Currently No Mobile Support.</div>
+</div>
+
 <div class="wrapper" style="height: 100%;">
     <div id="notice-banner" style="
         width: 100%;
