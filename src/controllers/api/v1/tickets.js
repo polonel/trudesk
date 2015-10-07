@@ -137,6 +137,13 @@ api_tickets.create = function(req, res) {
     var postData = req.body;
     if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
+    var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
+    var tags = [];
+    if (!_.isUndefined(postData.tags)) {
+        var t = _s.clean(postData.tags);
+        tags = _.compact(t.split(','));
+    }
+
     var HistoryItem = {
         action: 'ticket:created',
         description: 'Ticket was created.',
@@ -145,17 +152,22 @@ api_tickets.create = function(req, res) {
 
     var ticketModel = require('../../../models/ticket');
     var ticket = new ticketModel(postData);
+    ticket.owner = req.user._id;
     var marked = require('marked');
     var tIssue = ticket.issue;
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
     ticket.issue = marked(tIssue);
+    ticket.tags = tags;
     ticket.history = [HistoryItem];
     ticket.save(function(err, t) {
         if (err) {
             response.success = false;
             response.error = err;
+            winston.debug(response);
             return res.status(400).json(response);
         }
+
+        emitter.emit('ticket:created', {socketId: socketId, ticket: t});
 
         response.ticket = t;
         res.json(response);

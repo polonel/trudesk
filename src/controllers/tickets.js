@@ -394,64 +394,6 @@ function getPriorityName(val) {
     return p;
 }
 
-ticketsController.submitTicket = function(req, res, next) {
-    var marked = require('marked');
-    var Ticket = ticketSchema;
-    var tags = [];
-    var result = {};
-    if (!_.isUndefined(req.body.tTags)) {
-        var t = _s.clean(req.body.tTags);
-        tags = _.compact(t.split(','));
-    }
-
-    var HistoryItem = {
-        action: 'ticket:created',
-        description: 'Ticket was created.',
-        owner: req.user._id
-    };
-
-    if (_.isUndefined(req.body.tIssue) ||
-        _.isNull(req.body.tIssue) ||
-        _.isEmpty(req.body.tIssue) ||
-        _.isUndefined(req.body.tSubject) ||
-        _.isNull(req.body.tSubject) ||
-        _.isEmpty(req.body.tSubject)) {
-
-        result.error = "Please fill out all fields.";
-        result.success = false;
-        return res.json(result);
-    }
-
-    Ticket.create({
-        owner: req.user._id,
-        group: req.body.tGroup,
-        status: 0,
-        tags: tags,
-        date: new Date(),
-        subject: req.body.tSubject,
-        issue: marked(req.body.tIssue),
-        priority: req.body.tPriority,
-        type: req.body.tType,
-        history: [HistoryItem]
-
-    }, function(err, t) {
-        if (err) {
-            winston.warn(err);
-            result.error = err.message;
-            result.success = false;
-            return res.json(result);
-        }
-
-        //Trigger Event that a ticket was submitted.
-        emitter.emit('ticket:created', t);
-
-        result.ticket = t;
-        result.success = true;
-
-        return res.json(result);
-    });
-};
-
 ticketsController.postcomment = function(req, res, next) {
     var Ticket = ticketSchema;
     var id = req.body.ticketId;

@@ -32,7 +32,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
-    router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
     router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
@@ -110,7 +109,6 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
-    router.get('/api/v1/users', middleware.api, controllers.api.users.get);
     router.post('/api/v1/users', controllers.api.users.insert);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);

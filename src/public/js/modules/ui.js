@@ -26,6 +26,8 @@ define('modules/ui', [
     var socketUi = {},
         socket = io.connect();
 
+    socketUi.socket = socket;
+
     socketUi.init = function() {
         this.onReconnect();
         this.onDisconnect();
@@ -721,14 +723,15 @@ define('modules/ui', [
     socketUi.onTicketCreated = function() {
         socket.removeAllListeners('ticket:created');
         socket.on('ticket:created', function(data) {
-           socket.emit('updateNotifications');
+            socket.emit('updateNotifications');
+            $('a#refreshTicketGrid').trigger('click');
         });
     };
 
     socketUi.onTicketDelete = function() {
         socket.removeAllListeners('ticket:delete');
         socket.on('ticket:delete', function(data) {
-            //helpers.showFlash('Ticket Deleted Successful.');
+            $('a#refreshTicketGrid').trigger('click');
         });
     };
 

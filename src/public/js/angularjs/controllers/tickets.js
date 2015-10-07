@@ -17,11 +17,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
         .controller('ticketsCtrl', function($scope, $http, $window) {
 
             $scope.submitTicketForm = function() {
+                var socketId = socket.ui.socket.io.engine.id;
+                var data = {};
+                $('#createTicketForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                data.socketId = socketId;
                 $http({
                     method: 'POST',
-                    url: '/tickets/create',
-                    data: $('#createTicketForm').serialize(),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+                    url: '/api/v1/tickets/create',
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
                 })
                     .success(function(data) {
                         if (!data.success) {
@@ -36,6 +40,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         helpers.showFlash('Ticket Created Successfully.');
 
                         History.pushState(null, null, '/tickets/');
+
+                    }).error(function(err) {
+                        console.log(err.error);
+                        helpers.showFlash('Error: ' + err.error.message, true);
                     });
             };
 
@@ -43,7 +51,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var $ids = getChecked();
                 _.each($ids, function(id) {
                     $http.delete(
-                        '/api/tickets/' + id
+                        '/api/v1/tickets/' + id
                     ).success(function() {
                             clearChecked();
                             removeCheckedFromGrid();
@@ -79,6 +87,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 clearChecked();
                 helpers.hideAllpDropDowns();
                 helpers.hideDropDownScrolls();
+            };
+
+            $scope.RefreshTicketGrid = function(event) {
+                var path = $window.location.pathname;
+                History.pushState(null, null, path + '?update=' + Math.random());
+                event.preventDefault();
             };
 
             function clearChecked() {

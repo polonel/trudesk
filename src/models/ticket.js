@@ -47,7 +47,7 @@ var COLLECTION = 'tickets';
  * @property {Date} updated Date ticket was last updated
  * @property {Boolean} deleted ```Required``` [default: false] If they ticket is flagged as deleted.
  * @property {TicketType} type ```Required``` Reference to the TicketType
- * @property {Number} status ```Required``` Ticket Status. (See {@link Ticket#setStatus})
+ * @property {Number} status ```Required``` [default: 0] Ticket Status. (See {@link Ticket#setStatus})
  * @property {Number} prioirty ```Required```
  * @property {Array} tags An array of Strings.
  * @property {String} subject ```Required``` The subject of the ticket. (Overview)
@@ -56,7 +56,7 @@ var COLLECTION = 'tickets';
  * @property {Array} comments An array of {@link Comment} items
  * @property {Array} notes An array of {@link Comment} items for internal notes
  * @property {Array} attachments An Array of {@link Attachment} items
- * @property {Array} histor An array of {@link History} items
+ * @property {Array} history An array of {@link History} items
  */
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number, unique: true},
@@ -67,7 +67,7 @@ var ticketSchema = mongoose.Schema({
     updated:    { type: Date},
     deleted:    { type: Boolean, default: false, required: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
-    status:     { type: Number, required: true },
+    status:     { type: Number, default: 0, required: true },
     priority:   { type: Number, required: true },
     tags:       [String],
     subject:    { type: String, required: true },
@@ -163,7 +163,7 @@ ticketSchema.methods.setAssignee = function(ownerId, userId, callback) {
 
         var historyItem = {
             action: 'ticket:set:assignee',
-            description: user.username + ' was set as assignee',
+            description: user.fullname + ' was set as assignee',
             owner: ownerId
         };
 

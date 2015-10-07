@@ -13,6 +13,8 @@
  **/
 
 var _       = require('lodash');
+var __      = require('underscore');
+var winston = require('winston');
 
 module.exports.sendToSelf = function (socket, method, data) {
     socket.emit(method, data);
@@ -40,5 +42,13 @@ module.exports.sendToUser = function(socketList, userList, username, method, dat
         var i = socketList[o];
         if (_.isUndefined(i)) return true;
         i.emit(method, data);
+    });
+};
+
+module.exports.sendToAllExcept = function(io, exceptSocketId, method, data) {
+    __.each(io.sockets.sockets, function(socket) {
+        if (socket.id != exceptSocketId) {
+            socket.emit(method, data);
+        }
     });
 };

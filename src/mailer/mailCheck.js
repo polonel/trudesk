@@ -142,7 +142,7 @@ mailCheck.fetchMail = function() {
                                                                     return cb(err);
                                                                 }
 
-                                                                emitter.emit('ticket:created', t);
+                                                                emitter.emit('ticket:created', {socketId: '', ticket: t});
 
                                                                 cb();
                                                             });

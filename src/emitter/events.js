@@ -17,6 +17,7 @@ var path                = require('path');
 var async               = require('async');
 var winston             = require('winston');
 var emitter             = require('../emitter');
+var util                = require('../helpers/utils');
 var ticketSchema        = require('../models/ticket');
 var historySchema       = require('../models/history');
 var userSchema          = require('../models/user');
@@ -25,13 +26,15 @@ var mailqueue           = require('../mailer/mailqueue');
 var emailTemplates      = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-var notifications              = require('../notifications'); // Load Push Events
+var notifications       = require('../notifications'); // Load Push Events
 
 (function() {
     notifications.init(emitter);
 
     //winston.info('Binding to Events');
-    emitter.on('ticket:created', function(ticketObj) {
+    emitter.on('ticket:created', function(data) {
+         var socketId = data.socketId;
+         var ticketObj = data.ticket;
          ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
              if (err) return true;
 
@@ -117,7 +120,10 @@ var notifications              = require('../notifications'); // Load Push Event
                         return winston.warn('Error: [ticket:created]: ' + err);
                     }
 
-                 io.sockets.emit('ticket:created');
+                 //Send Ticket..
+                 //io.sockets.emit('ticket:created', ticket);
+
+                 util.sendToAllExcept(io, socketId, 'ticket:created', ticket);
              });
          });
     });
