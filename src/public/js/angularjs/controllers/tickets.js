@@ -42,7 +42,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         History.pushState(null, null, '/tickets/');
 
                     }).error(function(err) {
-                        console.log(err.error);
+                        console.log('[trudesk:tickets:submitTicketForm] - ' + e.error);
                         helpers.showFlash('Error: ' + err.error.message, true);
                     });
             };
@@ -56,8 +56,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             clearChecked();
                             removeCheckedFromGrid();
                             helpers.showFlash('Ticket Deleted Successfully.')
-                        }).error(function(err) {
-                           helpers.showFlash('Error: ' + err, true);
+                        }).error(function(e) {
+                            console.log('[trudesk:tickets:deleteTickets] - ' + e);
+                            helpers.showFlash('Error: ' + e, true);
                         });
                 });
 
@@ -77,9 +78,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         }
                     ).success(function() {
 
-                        }).error(function(d) {
-                            console.log('[trudesk:tickets] - ' + d);
-                            helpers.showFlash('Error: ' + d, true);
+                        }).error(function(e) {
+                            console.log('[trudesk:tickets:closeTickets] - ' + e);
+                            helpers.showFlash('Error: ' + e, true);
                         });
                 });
 

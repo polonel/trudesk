@@ -49,8 +49,6 @@ define('pages/messages', [
 
                     ui.setMessageRead(id);
                 });
-
-                //e.preventDefault();
             });
 
             var messageItems = $('ul.message-items');
@@ -60,17 +58,14 @@ define('pages/messages', [
         });
     };
 
-    //TODO: Change to load from API
     messagesPage.loadMessage = function(id, callback) {
         var rootUrl = History.getRootUrl();
         var msgUrl = rootUrl + 'messages/' + id;
-        //History.pushState(null, null, msgUrl);
         $.ajax({
             url:        msgUrl,
             type:       'GET',
             success:    function(data) {
                             callback(data);
-                            //History.pushState(null, null, msgUrl);
             },
             error:      function(error) {
                             throw new Error(error);

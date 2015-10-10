@@ -49,6 +49,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         History.pushState(null, null, '/groups/');
                     })
                     .error(function(err) {
+                        console.log('[trudesk:groups:submitCreateGroupForm] - ' + err);
                         helpers.showFlash(err, true);
                     });
             };
@@ -74,6 +75,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         History.pushState(null, null, '/groups/');
                     })
                     .error(function(err) {
+                        console.log('[trudesk:groups:submitSaveGroup] - ' + err);
                         helpers.showFlash(err, true);
                     });
             };
@@ -91,7 +93,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                             removeCheckedFromGrid(id);
                             helpers.showFlash('Group Successfully Deleted');
                         }).error(function(err) {
-                            helpers.showFlash(err, true);
+                             console.log('[trudesk:groups:deleteGroups] - ' + err);
+                                helpers.showFlash(err, true);
                          });
                 });
 

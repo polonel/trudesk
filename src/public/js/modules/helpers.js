@@ -566,7 +566,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             .error(function(err) {
                 helpers.closeMessageWindow();
                 helpers.showFlash(err.error, true);
-                console.log(err);
+                console.log('[trudesk:helpers:newMessageSubmit] Error - ' + err);
             });
     }
     

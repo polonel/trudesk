@@ -58,7 +58,7 @@ define('modules/socket.io/messagesUI', [
 
             var messageItems = $('.message-items[data-folder="' + folderName + '"]');
             if (messageItems.length < 1) {
-                console.log('cant find message-items container! [foldername=' + folderName + ']');
+                console.log('[trudesk:messagesUI] Error - Cant Find message-items Container. [foldername=' + folderName + ']');
                 return true;
             }
 

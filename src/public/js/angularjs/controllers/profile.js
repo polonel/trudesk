@@ -34,6 +34,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         resetForm();
                         helpers.showFlash('Profile Successfully Saved!');
                     }).error(function(e) {
+                        console.log('[trudesk:profile:updateUser] - ' + e);
                         helpers.showFlash('Error: ' + e, true);
                     });
             };
@@ -57,6 +58,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         $('.generateApiButton').addClass('hide');
                         helpers.showFlash('API Key Successfully Generated');
                     }).error(function(e) {
+                        console.log('[trudesk:profile:generateApiKey] - ' + e);
                         helpers.showFlash('Error: ' + e, true);
                     });
 
@@ -76,6 +78,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         $('.removeApiButton').addClass('hide');
                         helpers.showFlash('API Key Successfully Revoked');
                     }).error(function(e) {
+                        console.log('[trudesk:profile:removeApiKey] - ' + e);
                         helpers.showFlash('Error: ' + e, true);
                     });
             };
@@ -91,10 +94,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
             }
 
             function resetForm() {
-                //$('#aFullname').val(data.fullname);
                 $('#aPass').val('');
                 $('#aPassConfirm').val('');
-                //$('#aEmail').val(data.email);
             }
         });
 });
