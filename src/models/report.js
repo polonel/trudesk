@@ -31,9 +31,6 @@ var COLLECTION = 'reports';
  * @property {String} name ```Required``` Name of the report
  * @property {Number} type ```Required``` Report Type
  * @property {Date} runDate ```Required``` [default:Date.now] Date the Report was ran.
- * @property {Boolean} recurring ```Required``` [default:false] Is the report Recurring?
- * @property {Number} interval The interval the report should run. *Only when recurring.*
- * @property {Date} lastRun Last datetime the report was ran. *Only when recurring.*
  * @property {Number} status ```Required``` [default:0] Status of report.
  * @property {Array} data ```Required``` Data for the given report. *Based on report type*
  */
@@ -42,9 +39,6 @@ var reportSchema = mongoose.Schema({
     name:       { type: String, required: true },
     type:       { type: Number, required: true },
     runDate:    { type: Date, required: true, default: Date.now },
-    recurring:  { type: Boolean, required: true, default: false },
-    interval:   { type: Number },
-    lastRun:    { type: Date },
     status:     { type: Number, required: true, default: 0},
     data:       { type: [mongoose.Schema.Types.Mixed], required: true}
 });

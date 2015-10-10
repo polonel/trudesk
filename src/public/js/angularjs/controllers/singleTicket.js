@@ -82,7 +82,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                                     });
                                 }).
                                 error(function(data) {
-
+                                    console.log('[ticket:singleTicket.js] Error: ' + data);
                                 });
 
             $q.all([groupHttpGet]).then(function(ret) {

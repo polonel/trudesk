@@ -1,8 +1,15 @@
-<div ng-controller="ticketsCtrl">
+<div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
     <div class="small-12 large-10 columns nopadding ticketContent">
         <div class="page-title noshadow">
             <p class="left">Tickets</p>
             <div class="right">
+                <div class="autorefresh left">
+                    <!--<span style="display: inline-block; margin-right: 5px;position:relative;top: 11px; font-size: 14px">Auto Refresh </span>-->
+                    <!--<div class="switch small radius" style="display: inline-block; margin-right: 10px; top: 20px;">-->
+                        <!--<input type="checkbox" id="autoRefreshSwitch"/>-->
+                        <!--<label for="autoRefreshSwitch"></label>-->
+                    <!--</div>-->
+                </div>
                 <div class="pagination left">
                     <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
                     <ul class="button-group">
@@ -19,6 +26,14 @@
                     </ul>
                 </div>
                 <div class="pagination left">
+                    <div class="onoffswitch left" style="margin-right: 5px; position: relative; top: 18px;">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="refreshSwitch" ng-model="preferences_autoRefreshTicketGrid" ng-change="GridRefreshChanged()"
+                            {{#is data.user.preferences.autoRefreshTicketGrid true}} checked {{/is}}>
+                        <label class="onoffswitch-label" for="refreshSwitch">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
                     <ul class="button-group">
                         <li class="pagination"><a id="refreshTicketGrid" href="#" class="btn" style="border-radius: 3px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a></li>
                     </ul>
@@ -93,7 +108,7 @@
                         {{#if_eq status compare=0}}
                             <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-new"><span>New</span></td>
@@ -121,7 +136,7 @@
                         {{#is status 1}}
                             <tr class="ticket-open" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-open"><span>Open</span></td>
@@ -149,7 +164,7 @@
                         {{#is status 2}}
                             <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-pending"><span>Pending</span></td>
@@ -177,7 +192,7 @@
                         {{#is status 3}}
                             <tr class="ticket-closed" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-closed"><span>Closed</span></td>

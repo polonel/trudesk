@@ -88,8 +88,8 @@ define('modules/socket.io/messagesUI', [
                 if (_.contains(checkedItems, message._id)) checked = ' checked ';
 
                 html += '<li class="' + unread + active + '" data-messageId="' + message._id + '">' +
-                        '   <input id="c_' + message._id + '" type="checkbox" ' + checked + '/>' +
-                        '   <label for="c_' + message._id + '"></label>' +
+                        '   <input id="c_' + message._id + '" type="checkbox" ' + checked + ' class="poloCheckbox" />' +
+                        '   <label for="c_' + message._id + '" style="top:23px;"></label>' +
                         '   <span class="message-date">' + dateFormated + '</span>' +
                         '   <span class="message-from">' + message.from.fullname + '</span>' +
                         '   <span class="message-subject">' + message.subject + '</span>' +

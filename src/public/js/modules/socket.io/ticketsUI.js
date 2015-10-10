@@ -12,7 +12,7 @@
 
  **/
 
-define('modules/socket.io/noticeUI', [
+define('modules/socket.io/ticketsUI', [
     'jquery',
     'underscore',
     'moment',
@@ -21,13 +21,13 @@ define('modules/socket.io/noticeUI', [
     'history'
 
 ], function($, _, moment, helpers, nav) {
-    var noticeUI = {};
+    var ticketsUI = {};
 
-    noticeUI.setShowNotice = function(socket, notice) {
+    ticketsUI.setShowNotice = function(socket, notice) {
         socket.emit('setShowNotice', notice);
     };
 
-    noticeUI.updateShowNotice = function(socket) {
+    ticketsUI.updateShowNotice = function(socket) {
         socket.removeAllListeners('updateShowNotice');
         socket.on('updateShowNotice', function(notice) {
             var $noticeDiv = $('div#notice-banner');
@@ -40,16 +40,16 @@ define('modules/socket.io/noticeUI', [
         });
     };
 
-    noticeUI.setClearNotice = function(socket) {
+    ticketsUI.setClearNotice = function(socket) {
         socket.emit('setClearNotice');
     };
 
-    noticeUI.updateClearNotice = function(socket) {
+    ticketsUI.updateClearNotice = function(socket) {
         socket.removeAllListeners('updateClearNotice');
         socket.on('updateClearNotice', function() {
             $('div#notice-banner').addClass('hide');
         });
     };
 
-    return noticeUI;
+    return ticketsUI;
 });

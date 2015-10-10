@@ -47,6 +47,7 @@ define('modules/ui', [
         //Events
         this.onTicketCreated();
         this.onTicketDelete();
+        this.onUpdateTicketGrid();
 
         this.updateMessagesFolder(socket);
         this.updateSingleMessageItem(socket);
@@ -724,6 +725,8 @@ define('modules/ui', [
         socket.removeAllListeners('ticket:created');
         socket.on('ticket:created', function(data) {
             socket.emit('updateNotifications');
+            var audio = $('audio#newticketaudio');
+            if (audio.length > 0) audio.trigger('play');
             $('a#refreshTicketGrid').trigger('click');
         });
     };
@@ -731,7 +734,18 @@ define('modules/ui', [
     socketUi.onTicketDelete = function() {
         socket.removeAllListeners('ticket:delete');
         socket.on('ticket:delete', function(data) {
-            $('a#refreshTicketGrid').trigger('click');
+            var refreshEnabled = $('input#refreshSwitch:checked');
+            if (refreshEnabled.length > 0)
+                $('a#refreshTicketGrid').trigger('click');
+        });
+    };
+
+    socketUi.onUpdateTicketGrid = function() {
+        socket.removeAllListeners('ticket:updategrid');
+        socket.on('ticket:updategrid', function() {
+            var refreshEnabled = $('input#refreshSwitch:checked');
+            if (refreshEnabled.length > 0)
+                $('a#refreshTicketGrid').trigger('click');
         });
     };
 

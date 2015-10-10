@@ -71,7 +71,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                 _.each($ids, function(id) {
                     $http.put(
-                        '/api/tickets/' + id,
+                        '/api/v1/tickets/' + id,
                         {
                             "status": 3
                         }
@@ -89,9 +89,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 helpers.hideDropDownScrolls();
             };
 
+            $scope.GridRefreshChanged = function() {
+                $http.put(
+                    '/api/v1/users/' + $scope.username + '/updatepreferences',
+                    {
+                        "preference": 'autoRefreshTicketGrid',
+                        "value": $scope.preferences_autoRefreshTicketGrid
+                    }
+                ).success(function() {
+
+                    }).error(function(e) {
+                        console.log('[trudesk:tickets:GridRefreshChanged] - ' + e);
+                        helpers.showFlash('Error: ' + e.message, true);
+                    });
+            };
+
             $scope.RefreshTicketGrid = function(event) {
                 var path = $window.location.pathname;
-                History.pushState(null, null, path + '?update=' + Math.random());
+                History.pushState(null, null, path + '?r=' + Math.random());
                 event.preventDefault();
             };
 

@@ -167,6 +167,10 @@ module.exports = function(ws) {
 
         });
 
+        socket.on('ticket:updategrid', function() {
+            utils.sendToAllConnectedClients(io, 'ticket:updategrid');
+        });
+
         socket.on('updateTicketStatus', function(data) {
             var ticketId = data.ticketId;
             var ownerId = socket.request.user._id;

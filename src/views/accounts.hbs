@@ -29,7 +29,7 @@
     </div>
 
     <div class="full-height">
-        <div class="accountList full-height dt-borderTop">
+        <div class="accountList full-height dt-borderTop" style="background: #f6f8fb;">
             <table id="accountsTable" class="pDataTable stripe">
                 <thead>
                 <tr>
@@ -46,7 +46,7 @@
                 {{#each data.accounts}}
                     <tr ng-click="editAccount($event)" data-username="{{username}}">
                         <td>
-                            <input id="c_{{_id}}" type="checkbox"/>
+                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                             <label for="c_{{_id}}"></label>
                         </td>
                         <td>{{fullname}}</td>

@@ -28,7 +28,7 @@
         </div>
     </div>
 
-    <div class="full-height page-right-content scrollable">
+    <div class="full-height page-right-content scrollable" style="background: #d5dae6;">
         <div class="groupsList">
             <table id="groupsTable" class="pDataTable stripe">
                 <thead>
@@ -41,7 +41,7 @@
                 {{#each data.groups}}
                     <tr ng-click="editGroup($event)" data-groupOId="{{_id}}">
                         <td>
-                            <input id="c_{{_id}}" type="checkbox"/>
+                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                             <label for="c_{{_id}}"></label>
                         </td>
                         <td>{{name}}</td>

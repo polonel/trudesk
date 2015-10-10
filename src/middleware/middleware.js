@@ -89,7 +89,7 @@ middleware.api = function(req, res, next) {
         var userSchema = require('../models/user');
         userSchema.getUserByAccessToken(accessToken, function(err, user) {
             if (err) return res.status(401).json({'error': err.message});
-            if (!user) return res.status(401).json({'error': 'Unknown User'});
+            if (!user) return res.status(401).json({'error': 'Invalid Access Token'});
 
             req.user = user;
 
