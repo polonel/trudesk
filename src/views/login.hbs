@@ -132,8 +132,8 @@
 </head>
 <body>
 <div class="wrapper">
-    <div class="alert-message {{#if flash}} {{else}} hide {{/if}}">
-        <p class="message">{{{flash}}}</p>
+    <div class="alert-message {{#if flash}} {{else}} hide {{/if}} {{#if flash.success}} green {{/if}}">
+        <p class="message">{{#if flash.message}} {{{flash.message}}} {{else}} {{{flash}}}{{/if}}</p>
     </div>
     <img src="/img/logoLarge.png" alt="Trudesk Logo" /> <br />
     <div class="loginForm">

@@ -374,7 +374,7 @@ mainController.resetPass = function(req, res, next) {
                                 return res.status(500).send(err.message);
                             }
 
-                            return res.redirect('/');
+                            return res.render('login', { flash: { success: true, message: 'Password Reset Successful' } });
                         });
                     });
                 });
