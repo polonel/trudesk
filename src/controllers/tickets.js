@@ -203,7 +203,7 @@ ticketsController.processor = function(req, res) {
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
                 userGroups = grps;
-
+                self.content.data.common.groups = grps;
                 callback(err, grps);
             });
         },

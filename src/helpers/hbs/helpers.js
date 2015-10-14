@@ -496,6 +496,15 @@ var helpers = {
         }
     },
 
+    checkRole: function(role, perm, options) {
+        var P = require('../../permissions');
+        if (P.canThis(role, perm)) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
     checkEditSelf: function(user, owner, options) {
         var P = require('../../permissions');
         if (P.canThis(user.role, 'ticket:editSelf')) {
@@ -535,6 +544,7 @@ helpers.ifLtEq     = helpers.if_lteq;
 helpers.unlessLtEq = helpers.unless_lteq;
 helpers.foreach    = helpers.forEach;
 helpers.canUser    = helpers.checkPerm;
+helpers.canUserRole = helpers.checkRole;
 helpers.canEditSelf = helpers.checkEditSelf;
 helpers.inArray    = helpers.hasGroup;
 

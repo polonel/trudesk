@@ -259,7 +259,7 @@
                                 </div>
                                 {{#canUser ../data.user "comment:edit"}}
                                     <div class="edit-comment-form clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                        <form ng-submit="updateComment($event)" data-commentid="{{_id}}" data-abide>
+                                        <form data-commentid="{{_id}}" data-abide>
                                             <div class="edit-comment-box">
                                                 <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
                                                 <small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>

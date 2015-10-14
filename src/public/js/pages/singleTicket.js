@@ -57,7 +57,7 @@ define('pages/singleTicket', [
                     if (id.length > 0) {
                         var comment = $($event.currentTarget).find('textarea#commentText').val();
                         var commentId = $($event.currentTarget).attr('data-commentId');
-                        comment = comment + '<p>' + comment + '</p>';
+                        comment = '<p>' + comment + '</p>';
 
                         ui.setCommentText(id, commentId, comment);
                     }

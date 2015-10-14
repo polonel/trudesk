@@ -22,7 +22,7 @@
 
                         <div style="margin-bottom: 10px;">
                             <label for="gMembers">Members</label>
-                            <select name="gMembers" id="gMembers" multiple class="chosen-select" data-placeholder="Add Group Members...">
+                            <select name="gMembers" id="gMembers" multiple class="chosen-select chosen-style-2" data-placeholder="Add Group Members...">
                                 {{#each data.users}}
                                     <option value="{{_id}}" {{#inArray ../data.group.members _id}} selected="selected" {{/inArray}}>{{fullname}}</option>
                                 {{/each}}

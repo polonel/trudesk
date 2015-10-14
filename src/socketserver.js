@@ -389,7 +389,8 @@ module.exports = function(ws) {
             if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
             comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
             var markedComment = marked(comment);
-
+            console.log(comment);
+            console.log(markedComment);
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return winston.error(err);
 

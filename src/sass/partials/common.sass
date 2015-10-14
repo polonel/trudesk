@@ -115,6 +115,13 @@ div.ptooltip-box
       background: lighten(#f3f5f9, 10%)
       border-color: #dfe4ef
 
+  span
+    font-size: 0.875rem
+    color: #4d4d4d
+    font-weight: normal
+    line-height: 1.5
+    margin-bottom: 0
+
   input,
   textarea
     font-family: "open sans", sans-serif
@@ -174,3 +181,8 @@ div.ptooltip-box
       &:last-child
         .btn
           +borderRadius(0 3px 3px 0)
+
+.datepicker td span.active,
+.datepicker td.active.day,
+.datepicker td.active.year
+  background: lighten(#e74c3c, 5%)
