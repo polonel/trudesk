@@ -8,7 +8,7 @@
             overflow-x: hidden;
         }
         body {
-            background: #223140;
+            background: #141d27;
             text-align: center;
             font-family: "Open Sans", Arial, sans-serif;
         }
@@ -33,8 +33,8 @@
             height: 20px;
             text-align: left;
             padding: 15px 20px;
-            background: #384b5f;
-            border: 1px solid #1c2937;
+            background: #0c131a;
+            border: 1px solid #070b10;
             font-size: 20px;
             color: #fff;
             margin-bottom: 15px;
@@ -70,7 +70,7 @@
         a {
             display: inline-block;
             padding-right: 10px;
-            color: #879eb7;
+            color: #cccccc;
             font-size: 14px;
             float: right;
             text-decoration: none;
@@ -82,18 +82,18 @@
         }
 
         ::-webkit-input-placeholder { /* WebKit browsers */
-            color:    #6a7b8c;
+            color:    #cccccc;
         }
         :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            color:    #6a7b8c;
+            color:    #cccccc;
             opacity:  1;
         }
         ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            color:    #6a7b8c;
+            color:    #cccccc;
             opacity:  1;
         }
         :-ms-input-placeholder { /* Internet Explorer 10+ */
-            color:    #6a7b8c;
+            color:    #cccccc;
         }
 
         .alert-message {
@@ -135,7 +135,7 @@
     <div class="alert-message {{#if flash}} {{else}} hide {{/if}} {{#if flash.success}} green {{/if}}">
         <p class="message">{{#if flash.message}} {{{flash.message}}} {{else}} {{{flash}}}{{/if}}</p>
     </div>
-    <img src="/img/logoLarge.png" alt="Trudesk Logo" /> <br />
+    <img src="/img/themes/bw/logoLarge.png" alt="Trudesk Logo" /> <br />
     <div class="loginForm">
         <form method="post" action="/login">
             <input id="login-username" name="login-username" type="text" placeholder="Username" />

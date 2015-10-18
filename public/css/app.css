@@ -1846,17 +1846,15 @@ div.dataTables_wrapper {
   position: fixed;
   bottom: 0;
   left: 0;
-  height: 25px;
-  width: 100%;
-  border: 1px solid red;
-  background: #646464; }
+  height: 0;
+  width: 100%; }
 
 .chat-dock {
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  height: 28px;
+  height: 0;
   width: 100%;
   z-index: 300; }
   .chat-dock .chat-box-wrapper {
@@ -1864,7 +1862,7 @@ div.dataTables_wrapper {
     display: block; }
     .chat-dock .chat-box-wrapper .chat-box-position {
       position: relative;
-      top: -252px;
+      top: -280px;
       left: 0; }
     .chat-dock .chat-box-wrapper .chat-box {
       float: right;
