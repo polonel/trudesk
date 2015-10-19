@@ -257,14 +257,17 @@ ticketSchema.methods.setTicketGroup = function(ownerId, groupId, callback) {
     var self = this;
     self.group = groupId;
 
-    var historyItem = {
-        action: 'ticket:set:group',
-        description: 'Ticket Group set to: ' + groupId,
-        owner: ownerId
-    };
-    self.history.push(historyItem);
+    self.populate('group', function(err, ticket) {
+        var historyItem = {
+            action: 'ticket:set:group',
+            description: 'Ticket Group set to: ' + ticket.group.name,
+            owner: ownerId
+        };
+        self.history.push(historyItem);
 
-    callback(null, self);
+        callback(null, ticket);
+
+    });
 };
 
 /**
