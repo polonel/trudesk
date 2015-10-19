@@ -3,6 +3,7 @@ var expect      = require('chai').expect;
 var should      = require('chai').should();
 var m           = require('mongoose');
 var ticketSchema = require('../../src/models/ticket');
+var groupSchema = require('../../src/models/group');
 
 describe('ticket.js', function() {
     //it('should clear collections.', function(done) {
@@ -127,14 +128,21 @@ describe('ticket.js', function() {
     });
 
     it('should set ticket group', function(done) {
-        ticketSchema.getTicketByUid(1000, function(err, ticket) {
-            var group = m.Types.ObjectId();
-            var ownerId = m.Types.ObjectId();
-            ticket.setTicketGroup(ownerId, group, function(err, ticket) {
-                expect(err).to.not.exist;
-                expect(ticket.group).to.equal(group);
+        var grp = groupSchema({
+            name: 'Test'
+        });
+        grp.save(function(err, group) {
+            expect(err).to.not.exist;
+            expect(group).to.be.a('object');
 
-                done();
+            ticketSchema.getTicketByUid(1000, function(err, ticket) {
+                var ownerId = m.Types.ObjectId();
+                ticket.setTicketGroup(ownerId, group._id, function(err, ticket) {
+                    expect(err).to.not.exist;
+                    expect(ticket.group.name).to.equal('Test');
+
+                    done();
+                });
             });
         });
     });
