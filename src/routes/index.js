@@ -105,6 +105,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
+    router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
     router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);

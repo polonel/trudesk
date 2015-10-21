@@ -444,7 +444,18 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                utils.sendToAllConnectedClients(io, 'updateTicketAttachments', ticket);
+                var user = socket.request.user;
+                if (_.isUndefined(user)) return true;
+
+                var permissions = require('./permissions');
+                var canRemoveAttachments = permissions.canThis(user.role, "ticket:removeAttachment");
+
+                var data = {
+                    ticket: ticket,
+                    canRemoveAttachments: canRemoveAttachments
+                };
+
+                utils.sendToAllConnectedClients(io, 'updateTicketAttachments', data);
             });
         });
 

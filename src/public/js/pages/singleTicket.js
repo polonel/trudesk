@@ -16,11 +16,17 @@ define('pages/singleTicket', [
     'jquery',
     'underscore',
     'modules/ui',
-    'tomarkdown'
-], function($, _, ui, md) {
+    'tomarkdown',
+    'modules/helpers'
+], function($, _, ui, md, helpers) {
     var st = {};
     st.init = function() {
         $(document).ready(function() {
+            $('.remove-attachment').each(function() {
+                var self = $(this);
+                self.off('click', onRemoveAttachmentClick);
+                self.on('click', onRemoveAttachmentClick);
+            });
             $('.remove-comment').each(function() {
                 var self = $(this);
                 self.off('click',  onRemoveCommentClick);
@@ -81,6 +87,29 @@ define('pages/singleTicket', [
             });
         });
     };
+
+    function onRemoveAttachmentClick(e) {
+        var self = $(e.currentTarget);
+        if (_.isUndefined(self))
+            return true;
+
+        var ticketId = $('#__ticketId').html();
+        var attachmentId = self.attr('data-attachmentId');
+        if (attachmentId.length > 0 && ticketId.length > 0) {
+            $.ajax({
+                url: '/api/v1/tickets/' + ticketId + '/attachments/remove/' + attachmentId,
+                type: 'DELETE',
+                success: function(res) {
+                    ui.refreshTicketAttachments(ticketId);
+                },
+                error: function(err) {
+                    var res = err.responseJSON;
+                    console.log('[trudesk:singleTicket:onRemoveAttachmentClick] - ' + res.error);
+                    helpers.showFlash(res.error, true);
+                }
+            })
+        }
+    }
 
     function onRemoveCommentClick(e) {
         var self = $(e.currentTarget);

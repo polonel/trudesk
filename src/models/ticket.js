@@ -57,6 +57,7 @@ var COLLECTION = 'tickets';
  * @property {Array} notes An array of {@link Comment} items for internal notes
  * @property {Array} attachments An Array of {@link Attachment} items
  * @property {Array} history An array of {@link History} items
+ * @property {Array} subscribers An array of user _ids that receive notifications on ticket changes.
  */
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number, unique: true},
@@ -76,7 +77,8 @@ var ticketSchema = mongoose.Schema({
     comments:   [commentSchema],
     notes:      [commentSchema],
     attachments:[attachmentSchema],
-    history:    [historySchema]
+    history:    [historySchema],
+    subscribers:{ type: [mongoose.Schema.Types.ObjectId], ref: 'accounts' }
 });
 
 ticketSchema.plugin(deepPopulate);
@@ -362,15 +364,24 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     callback(null, self);
 };
 
+ticketSchema.methods.getAttachment = function(attachmentId, callback) {
+    var self = this;
+    var attachment = _.find(self.attachments, function(o){return o._id == attachmentId; });
+
+    callback(attachment);
+};
+
 ticketSchema.methods.removeAttachment = function(ownerId, attachmentId, callback) {
     var self = this;
+    var attachment = _.find(self.attachments, function(o) { return o._id == attachmentId; });
     self.attachments = _.reject(self.attachments, function(o) { return o._id == attachmentId; });
 
     var historyItem = {
         action: 'ticket:delete:attachment',
-        description: 'Attachment was deleted: ' + attachmentId,
+        description: 'Attachment was deleted: ' + attachment.name,
         owner: ownerId
     };
+
     self.history.push(historyItem);
 
     callback(null, self);

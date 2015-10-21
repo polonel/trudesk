@@ -383,4 +383,38 @@ api_tickets.getYearData = function(req, res) {
     });
 };
 
+api_tickets.removeAttachment = function(req, res) {
+    var ticketId = req.params.tid;
+    var attachmentId = req.params.aid;
+    if (_.isUndefined(ticketId) || _.isUndefined(attachmentId)) return res.status(400).json({'error': 'Invalid Attachment'});
+
+    //Check user perm
+    var user = req.user;
+    if (_.isUndefined(user)) return res.status(400).json({'error': 'Invalid User Auth.'});
+
+    var permissions = require('../../../permissions');
+    if (!permissions.canThis(user.role, 'tickets:removeAttachment')) return res.status(401).json({'error': 'Invalid Permissions'});
+
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(ticketId, function(err, ticket) {
+        if (err) return res.status(400).send('Invalid Ticket Id');
+        ticket.getAttachment(attachmentId, function(a) {
+            ticket.removeAttachment(user._id, attachmentId, function(err, ticket) {
+                if (err) return res.status(400).json({'error': 'Invalid Request.'});
+
+                var fs = require('fs');
+                var path = require('path');
+                var dir = path.join(__dirname, '../../../../public', a.path);
+                console.log(dir);
+                if (fs.existsSync(dir)) fs.unlinkSync(dir);
+
+                ticket.save(function(err, t) {
+                    if (err) return res.status(401).json({'error': 'Invalid Request.'});
+                    res.send(t);
+                });
+            });
+        });
+    });
+};
+
 module.exports = api_tickets;

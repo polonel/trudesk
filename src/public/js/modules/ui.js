@@ -491,16 +491,26 @@ define('modules/ui', [
 
     socketUi.updateTicketAttachments = function() {
         socket.removeAllListeners('updateTicketAttachments');
-        socket.on('updateTicketAttachments', function(ticket) {
+        socket.on('updateTicketAttachments', function(data) {
             //Rebuild ticket attachments on view
+            var ticket = data.ticket;
+            var canRemoveAttachments = data.canRemoveAttachments;
+
             var $ul = $('ul.attachments[data-ticketid="' + ticket._id + '"]');
             if ($ul.length < 1) return true;
 
             $ul.empty();
             _.each(ticket.attachments, function(attachment) {
-                var html = '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a></li>';
+                var html =  '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a>';
+                if (canRemoveAttachments) {
+                    html += '<a href="#" class="remove-attachment" data-attachmentId="' + attachment._id + '"><i class="fa fa-remove"></i></a></li>';
+                }
 
                 $ul.append(html);
+            });
+
+            require(['pages/singleTicket'], function(st) {
+                st.init();
             });
         });
     };

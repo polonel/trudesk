@@ -195,7 +195,12 @@
                             <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
                             <ul class="attachments" data-ticketid="{{data.ticket._id}}">
                                 {{#each data.ticket.attachments}}
-                                    <li><a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a></li>
+                                    <li>
+                                        <a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a>
+                                        {{#canUser ../data.user "ticket:removeAttachment"}}
+                                            <a href="#" class="remove-attachment" data-attachmentId="{{_id}}"><i class="fa fa-remove"></i></a>
+                                        {{/canUser}}
+                                    </li>
                                 {{/each}}
                             </ul>
                             <div class="issue-body">
