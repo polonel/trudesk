@@ -156,13 +156,13 @@ define('modules/chat',[
             $('.chat-box-title').off('click');
             $('.chat-box-title').click(function() {
                 var p = $(this).parents('.chat-box-position');
-                if (p.css('top') === '-252px') {
+                if (p.css('top') === '-280px') {
                     p.animate({
-                        top: -4
+                        top: -29
                     }, 250);
                 } else {
                     p.animate({
-                        top: -252
+                        top: -280
                     }, 250);
                 }
             });

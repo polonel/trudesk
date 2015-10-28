@@ -39,6 +39,8 @@ var COLLECTION = "accounts";
  * @property {Date} resetPassExpire Date when the password recovery link will expire
  * @property {String} accessToken API Access Token
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
+ * @property {Object} preferences Object to hold user preferences
+ * @property {Boolean} preferences.autoRefreshTicketGrid Enable the auto refresh of the ticket grid.
  */
 var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
@@ -54,7 +56,11 @@ var userSchema = mongoose.Schema({
 
         accessToken: { type: String, unique: true },
 
-        iOSDeviceTokens: [{type: String, unique: true}]
+        iOSDeviceTokens: [{type: String, unique: true}],
+
+        preferences: {
+            autoRefreshTicketGrid: { type: Boolean, default: true }
+        }
     });
 
 userSchema.pre('save', function(next) {

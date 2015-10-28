@@ -31,7 +31,7 @@ define('modules/socket.io/noticeUI', [
         socket.removeAllListeners('updateShowNotice');
         socket.on('updateShowNotice', function(notice) {
             var $noticeDiv = $('div#notice-banner');
-            var $dateFormated = moment(notice.date).format('MM/DD/YYYY HH:mm');
+            var $dateFormated = moment(notice.activeDate).format('MM/DD/YYYY HH:mm');
             var $message = ' - Important: ' + notice.message;
             var $bgColor = notice.color;
             $noticeDiv.css('background', $bgColor);

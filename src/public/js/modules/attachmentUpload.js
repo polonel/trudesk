@@ -50,7 +50,7 @@ define('modules/attachmentUpload', [
                             socket.ui.refreshTicketAttachments(data.ticket._id);
                         },
                         error: function (err) {
-                            console.log(err);
+                            console.log('[trudesk:attachmentUpload:onChange] Error - ' + err);
                             helpers.showFlash(err.responseText, true);
                         }
                     });

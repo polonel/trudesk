@@ -17,6 +17,23 @@ var _           = require('underscore');
 
 var COLLECTION = 'tasks';
 
+/**
+ * @since 1.0
+ * @author Chris Brame <polonel@gmail.com>
+ * @copyright 2015 Chris Brame
+ **/
+
+/**
+ * Task Object Schema for MongoDB
+ * @module models/task
+ * @class Task
+ * @property {Number} type ```Required``` Type of Task {@link TaskType}
+ * @property {String} title ```Required``` Title for Task
+ * @property {String} query ```Required``` MongoDB Query to run for this task
+ * @property {Date} nextRun ```Required``` Next run date for the task
+ * @property {Date} lastRun Last run date for the task
+ */
+
 var taskSchema = mongoose.Schema({
     type:    { type: Number, required: true },
     title:   { type: String, required: true },

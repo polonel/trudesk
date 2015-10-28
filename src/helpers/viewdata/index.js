@@ -18,6 +18,7 @@ var async   = require('async'),
 
 var viewController = {};
 var viewdata = {};
+viewdata.tickets = {};
 viewdata.notifications = {};
 viewdata.messages = {};
 
@@ -59,6 +60,7 @@ viewController.getData = function(request, cb) {
           function(callback) {
               viewController.getUsers(request, function(users) {
                   viewdata.messages.users = users;
+
                   callback();
               });
           },

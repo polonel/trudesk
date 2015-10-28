@@ -26,7 +26,7 @@ describe('message.js', function() {
             subject: 'This is the Subject',
             message: 'This is the message'
         }, function(err, message) {
-            expect(err).to.not.exists;
+            expect(err).to.not.exist;
             expect(message).to.be.a('object');
             expect(message._doc).to.include.keys(
                 '_id', 'owner', 'folder', 'unread', 'from', 'subject', 'date', 'message'

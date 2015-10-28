@@ -86,6 +86,33 @@ questions.mailer = [
         name: 'mailer:password',
         description: 'Password for your SMTP user',
         hidden: true
+    },
+    {
+        name: 'mailer:fromAddress',
+        description: 'Send Mail As (from address)'
+    },
+    {
+        name: 'mailer:check:enable',
+        description: 'Enable checking of email account for new tickers',
+        default: nconf.get('mailer:check:enable') || true
+    }
+];
+
+questions.mailerCheck = [
+    {
+        name: 'mailer:check:host',
+        description: 'Host IP or address of Mail Server',
+        default: nconf.get('mailer:check:host') || '127.0.0.1'
+    },
+    {
+        name: 'mailer:check:user',
+        description: 'User mailbox to check mail',
+        default: nconf.get('mailer:check:user') || ''
+    },
+    {
+        name: 'mailer:check:password',
+        description: 'Password for User mailbox',
+        hidden: true
     }
 ];
 
@@ -171,10 +198,34 @@ function setupConfig(next) {
                         host: mailerConfig['mailer:host'],
                         port: mailerConfig['mailer:port'],
                         username: mailerConfig['mailer:username'],
-                        password: mailerConfig['mailer:password']
+                        password: mailerConfig['mailer:password'],
+                        from: mailerConfig['mailer:fromAddress'],
+                        check: {
+                            enable: mailerConfig['mailer:check:enable']
+                        }
                     };
 
-                    completeConfigSetup(err, config, next);
+                    if (config.mailer.check.enable == true) {
+                        prompt.get(questions.mailerCheck, function(err, mailerCheckConfig) {
+                            if (err) {
+                                process.stdout.write('\n\n');
+                                winston.warn('trudesk setup ' + err.message);
+                                process.exit();
+                            }
+
+                            config.mailer.check = {
+                                enable: true,
+                                host: mailerCheckConfig['mailer:check:host'],
+                                user: mailerCheckConfig['mailer:check:user'],
+                                password: mailerCheckConfig['mailer:check:password']
+                            };
+
+                            completeConfigSetup(err, config, next);
+                        });
+
+                    } else {
+                        completeConfigSetup(err, config, next);
+                    }
                 });
             });
         });
@@ -419,12 +470,57 @@ function createCounter(next) {
     });
 }
 
+function createDefaultTicketTypes(next) {
+    var db = require('../database');
+    var ticketTypeSchema = require('../models/tickettype');
+
+    db.init(function(err) {
+        if (err) {
+            return next(err);
+        }
+
+        async.series([
+            function(cb) {
+                var type = new ticketTypeSchema({
+                    name: 'Issue'
+                });
+
+                type.save(function(err) {
+                    if (err) {
+                        return cb(err)
+                    }
+
+                    cb();
+                });
+            },
+            function(cb) {
+                var type = new ticketTypeSchema({
+                    name: 'Task'
+                });
+
+                type.save(function(err) {
+                    if (err) {
+                        return cb(err);
+                    }
+
+                    cb();
+                });
+            }
+        ], function(err) {
+            if (err) return next(err);
+
+            next();
+        });
+    });
+}
+
 install.setup = function(callback) {
     async.series([
         checkSetupFlag,
         setupConfig,
         createAdministrator,
-        createCounter
+        createCounter,
+        createDefaultTicketTypes
 
     ], function(err) {
         if (err) {

@@ -1,0 +1,55 @@
+<div id="__noticeId" class="hide">{{data.notice._id}}</div>
+<div class="small-12 large-10 columns nopadding page-right-content"  ng-controller="noticesCtrl">
+    <div class="page-title">
+        <p class="left">{{title}}</p>
+        <div class="right">
+            <ul class="button-group">
+                <li><a href="/notices" role="button" class="btn">Cancel</a></li>
+                <li class="active"><button class="btn" ng-click="submitEditNoticeForm()">Save</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper scrollable no-overflow-x full-height">
+        <div class="row padtop20 padleft30 padright20">
+            <div class="small-12 columns">
+                <form id="editNoticeForm" class="form nomargin" action="/" method="POST">
+                    <div>
+                        <label for="nName">Notice Name</label>
+                        <input id="nName" name="nName" type="text" value="{{data.notice.name}}"/>
+
+                        <label for="nMessage">Notice Message</label>
+                        <input id="nMessage" name="nMessage" type="text" value="{{data.notice.message}}"/>
+
+                        <div style="margin-bottom: 85px;">
+                            <label for="nColor">Notice Color:</label>
+                            <select id="nColor" name="nColor">
+                                <option value="#7bd148" {{#compare data.notice.color '==' '#7bd148'}} selected {{/compare}}>Green</option>
+                                <option value="#5484ed" {{#compare data.notice.color '==' '#5484ed'}} selected {{/compare}}>Bold blue</option>
+                                <option value="#a4bdfc" {{#compare data.notice.color '==' '#a4bdfc'}} selected {{/compare}}>Blue</option>
+                                <option value="#46d6db" {{#compare data.notice.color '==' '#46d6db'}} selected {{/compare}}>Turquoise</option>
+                                <option value="#7ae7bf" {{#compare data.notice.color '==' '#7ae7bf'}} selected {{/compare}}>Light green</option>
+                                <option value="#51b749" {{#compare data.notice.color '==' '#51b749'}} selected {{/compare}}>Bold green</option>
+                                <option value="#fbd75b" {{#compare data.notice.color '==' '#fbd75b'}} selected {{/compare}}>Yellow</option>
+                                <option value="#ffb878" {{#compare data.notice.color '==' '#ffb878'}} selected {{/compare}}>Orange</option>
+                                <option value="#ff887c" {{#compare data.notice.color '==' '#ff887c'}} selected {{/compare}}>Red</option>
+                                <option value="#e74c3c" {{#compare data.notice.color '==' '#e74c3c'}} selected {{/compare}}>Bold red</option>
+                                <option value="#dbadff" {{#compare data.notice.color '==' '#dbadff'}} selected {{/compare}}>Purple</option>
+                                <option value="#e1e1e1" {{#compare data.notice.color '==' '#e1e1e1'}} selected {{/compare}}>Gray</option>
+                            </select>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/createNotice'], function(createNotice) {
+            createNotice.init();
+        });
+    </script>
+{{/contentFor}}

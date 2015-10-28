@@ -11,7 +11,7 @@
 
 var mongoose        = require('mongoose');
 var _               = require('underscore');
-var deepPopulate    = require('mongoose-deep-populate');
+var deepPopulate    = require('mongoose-deep-populate')(mongoose);
 var accountsSchema  = require('./user');
 var groupSchema     = require('./group');
 
@@ -38,7 +38,8 @@ var noticeSchema = mongoose.Schema({
     date:       { type: Date, default: Date.now, required: true},
     color:      { type: String, default: '#e74c3c', required: true},
     message:    { type: String, required: true },
-    active:     { type: Boolean, default: false, required: true}
+    active:     { type: Boolean, default: false, required: true},
+    activeDate: { type: Date, default: Date.now }
 });
 
 noticeSchema.plugin(deepPopulate);

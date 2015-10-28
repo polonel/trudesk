@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-    require('matchdep').filterDev("grunt-*").forEach(grunt.loadNpmTasks);
+    require('matchdep').filterAll("grunt-*").forEach(grunt.loadNpmTasks);
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
@@ -101,8 +101,9 @@ module.exports = function(grunt) {
                 files:  {
                     'public/css/plugins.css' : [
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
-                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css'
+                        'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
+                        'public/css/plugins/datepicker/foundation-datepicker.css'
 
 
                     ]

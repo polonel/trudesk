@@ -14,8 +14,8 @@
 
                     {{#foreach data.messages.items}}
                         <li class="{{#if unread}}unread message-tag{{/if}}" data-messageId="{{_id}}">
-                            <input id="c_{{_id}}" type="checkbox"/>
-                            <label for="c_{{_id}}"></label>
+                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
+                            <label for="c_{{_id}}" style="top: 23px"></label>
                             <span class="message-date">{{calendarDate date "MM/DD/YYYY"}}</span>
                             <span class="message-from">{{from.fullname}}</span>
                             <span class="message-subject">{{subject}}</span>

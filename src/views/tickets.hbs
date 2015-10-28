@@ -1,51 +1,76 @@
-<div ng-controller="ticketsCtrl">
+<div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
     <div class="small-12 large-10 columns nopadding ticketContent">
         <div class="page-title noshadow">
             <p class="left">Tickets</p>
             <div class="right">
+                <div class="autorefresh left">
+                    <!--<span style="display: inline-block; margin-right: 5px;position:relative;top: 11px; font-size: 14px">Auto Refresh </span>-->
+                    <!--<div class="switch small radius" style="display: inline-block; margin-right: 10px; top: 20px;">-->
+                        <!--<input type="checkbox" id="autoRefreshSwitch"/>-->
+                        <!--<label for="autoRefreshSwitch"></label>-->
+                    <!--</div>-->
+                </div>
                 <div class="pagination left">
                     <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
                     <ul class="button-group">
                         {{#is data.pagination.prevEnabled true}}
-                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+
+                            {{#is data.pagination.type 'filter'}}
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            {{else}}
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            {{/is}}
+
                         {{else}}
                             <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-left"></i></a></li>
                         {{/is}}
+
                         {{#is data.pagination.nextEnabled true}}
-                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+
+                            {{#is data.pagination.type 'filter'}}
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            {{else}}
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            {{/is}}
+
                         {{else}}
                             <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-right"></i></a></li>
                         {{/is}}
                     </ul>
                 </div>
-                <ul class="button-group left">
-                    <li class="active" style="position:relative;">
-                        <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions">Actions</a>
-                        <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
-                            <div class="actions"><strong>Ticket Actions</strong></div>
-                            <div id="tAction-list" class="notifications-Messages">
-                                <ul>
-                                    {{#canUser data.user "ticket:delete"}}
-                                        <li>
-                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
-                                                <div class="clearfix">
-                                                    <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                                    <div class="messageAuthor"><strong>Delete</strong></div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    {{/canUser}}
-                                    {{#canUser data.user "ticket:edit"}}
-                                        <li>
-                                            <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
-                                                <div class="clearfix">
-                                                    <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                    <div class="messageAuthor"><strong>Close</strong></div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    {{else}}
-                                        {{#canUser data.user "ticket:editSelf"}}
+                <div class="pagination left" style="margin-right: 5px;">
+                    <div class="onoffswitch left" style="margin-right: 5px; position: relative; top: 18px;">
+                        <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="refreshSwitch" ng-model="preferences_autoRefreshTicketGrid" ng-change="GridRefreshChanged()"
+                            {{#is data.user.preferences.autoRefreshTicketGrid true}} checked {{/is}}>
+                        <label class="onoffswitch-label" for="refreshSwitch">
+                            <span class="onoffswitch-inner"></span>
+                            <span class="onoffswitch-switch"></span>
+                        </label>
+                    </div>
+                    <ul class="button-group">
+                        <li class="pagination"><a id="refreshTicketGrid" href="#" class="btn" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a></li>
+                        <li class="pagination"><a href="" class="btn no-ajaxy" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)"><i class="fa fa-large fa-filter"></i></a></li>
+                    </ul>
+                </div>
+                <div class="pagination left">
+                    <ul class="button-group left">
+                        <li class="pagination" style="position:relative;">
+                            <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
+                            <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall">
+                                <div class="actions"><strong>Ticket Actions</strong></div>
+                                <div id="tAction-list" class="notifications-Messages">
+                                    <ul>
+                                        {{#canUser data.user "ticket:delete"}}
+                                            <li>
+                                                <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
+                                                    <div class="clearfix">
+                                                        <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
+                                                        <div class="messageAuthor"><strong>Delete</strong></div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        {{/canUser}}
+                                        {{#canUser data.user "ticket:edit"}}
                                             <li>
                                                 <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
                                                     <div class="clearfix">
@@ -54,12 +79,25 @@
                                                     </div>
                                                 </a>
                                             </li>
+                                        {{else}}
+                                            {{#canUser data.user "ticket:editSelf"}}
+                                                <li>
+                                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
+                                                        <div class="clearfix">
+                                                            <div class="messageIcon left"><i class="fa fa-check green"></i></div>
+                                                            <div class="messageAuthor"><strong>Close</strong></div>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            {{/canUser}}
                                         {{/canUser}}
-                                    {{/canUser}}
-                                </ul>
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
-                    </li>
+                        </li>
+                    </ul>
+                </div>
+                <ul class="button-group left">
                     {{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create/" role="button" class="btn">Create</a></li>{{/canUser}}
                 </ul>
             </div>
@@ -69,6 +107,7 @@
 
         <div class="full-height" style="position:relative; background-color: rgb(246, 248, 251);">
             <div class="ticketList dt-borderTop full-height">
+                <div class="table-options row" style="height: 45px;"></div>
                 <table id="ticketTable" class="pDataTable stripe">
                     <thead>
                     <tr>
@@ -88,7 +127,7 @@
                         {{#if_eq status compare=0}}
                             <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-new"><span>New</span></td>
@@ -116,7 +155,7 @@
                         {{#is status 1}}
                             <tr class="ticket-open" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-open"><span>Open</span></td>
@@ -144,7 +183,7 @@
                         {{#is status 2}}
                             <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-pending"><span>Pending</span></td>
@@ -172,7 +211,7 @@
                         {{#is status 3}}
                             <tr class="ticket-closed" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td>
-                                    <input id="c_{{_id}}" type="checkbox"/>
+                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
                                 <td class="ticket-status ticket-closed"><span>Closed</span></td>

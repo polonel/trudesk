@@ -68,7 +68,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                                         $scope.types.push(item);
                                     });
                                 }).
-                                error(function(data) {
+                                error(function(e) {
+                                    console.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
             $q.all([ticketTypes]).then(function(ret) {
@@ -81,8 +82,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                                         $scope.groups.push(item);
                                     });
                                 }).
-                                error(function(data) {
-
+                                error(function(e) {
+                                    console.log('[trudesk:singleTicket:groupHttpGet] - ' + e);
                                 });
 
             $q.all([groupHttpGet]).then(function(ret) {

@@ -120,6 +120,12 @@ mailCheck.fetchMail = function() {
                                                         ticketTypeSchema.getTypeByName(DEFAULT_TICKET_TYPE, function(err, type) {
                                                             if (err) return cb(err);
 
+                                                            var HistoryItem = {
+                                                                action: 'ticket:created',
+                                                                description: 'Ticket was created.',
+                                                                owner: req.user._id
+                                                            };
+
                                                             //Create the Ticket Here
                                                             Ticket.create({
                                                                 owner: message.owner._id,
@@ -129,14 +135,14 @@ mailCheck.fetchMail = function() {
                                                                 priority: 1,
                                                                 subject: message.subject,
                                                                 issue: parseBody(message.body),
-                                                                history: []
+                                                                history: [HistoryItem]
                                                             }, function(err, t) {
                                                                 if (err) {
                                                                     winston.warn('Failed to Create ticket from Email: ' + err);
                                                                     return cb(err);
                                                                 }
 
-                                                                emitter.emit('ticket:created', t);
+                                                                emitter.emit('ticket:created', {socketId: '', ticket: t});
 
                                                                 cb();
                                                             });

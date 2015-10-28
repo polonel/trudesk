@@ -12,50 +12,42 @@
     <div class="page-wrapper scrollable no-overflow-x full-height">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createTicketForm" class="ticket-form" action="/tickets/create/" method="POST">
-                    <label for="tSubject">Subject</label>
-                    <input id="tSubject" name="tSubject" type="text" data-keyBindSubmit="#saveTicketBtn" />
+                <form id="createTicketForm" class="ticket-form" action="#" method="POST">
+                    <input id="socketId" name="socketId" type="hidden" value="{{data.user.socket.id}}"/>
+                    <label for="subject">Subject</label>
+                    <input id="subject" name="subject" type="text" data-keyBindSubmit="#saveTicketBtn" />
                     <div class="row">
                         <div class="small-3 columns">
-                            <label for="tType">Type</label>
-                            <select name="tType" id="tType">
+                            <label for="type">Type</label>
+                            <select name="type" id="type">
                                 {{#each data.ticketTypes}}
                                     <option value="{{{_id}}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
                         <div class="small-3 columns">
-                            <label for="tGroup">Group</label>
-                            <select name="tGroup" id="tGroup">
+                            <label for="group">Group</label>
+                            <select name="group" id="group">
                                 {{#each data.groups}}
                                     <option value="{{{_id}}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
                         <div class="small-3 columns">
-                            <label for="tPriority">Priority</label>
-                            <select name="tPriority" id="tPriority">
+                            <label for="priority">Priority</label>
+                            <select name="priority" id="priority">
                                 <option value="1">Normal</option>
                                 <option value="2">Urgent</option>
                                 <option value="3">Critical</option>
                             </select>
                         </div>
                         <div class="small-3 columns">
-                            <label for="tTags">Tags</label>
-                            <input type="text" name="tTags" id="tags" data-keyBindSubmit="#saveTicketBtn" />
+                            <label for="tags">Tags</label>
+                            <input type="text" name="tags" id="tags" data-keyBindSubmit="#saveTicketBtn" />
                         </div>
-                        <!--<div class="small-3 columns">-->
-                            <!--<label for="tStatus">Status</label>-->
-                            <!--<select name="tStatus" id="tStatus">-->
-                                <!--<option value="0">New</option>-->
-                                <!--<option value="1">Open</option>-->
-                                <!--<option value="2">Pending</option>-->
-                                <!--<option value="3">Closed</option>-->
-                            <!--</select>-->
-                        <!--</div>-->
                     </div>
-                    <label for="tIssue">Issue</label>
-                    <textarea name="tIssue" id="tIssue" cols="30" rows="10"></textarea>
+                    <label for="issue">Issue</label>
+                    <textarea name="issue" id="issue" cols="30" rows="10" data-keyBindSubmit="#saveTicketBtn"></textarea>
                 </form>
             </div>
         </div>

@@ -24,14 +24,14 @@ var async = require('async'),
 var api_tickets = {};
 
 /**
- * @api {get} /api/v1/tickets/ Gets tickets
+ * @api {get} /api/v1/tickets/ Get Tickets
  * @apiName getTickets
  * @apiDescription Gets tickets for the given User
  * @apiVersion 0.1.0
  * @apiGroup Ticket
  * @apiHeader {string} accesstoken The access token for the logged in user
  * @apiExample Example usage:
- * curl -l http://localhost/api/v1/tickets
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
  *
  * @apiSuccess {object}     _id                 The MongoDB ID
  * @apiSuccess {number}     uid                 Unique ID (seq num)
@@ -108,25 +108,66 @@ api_tickets.get = function(req, res) {
     });
 };
 
+/**
+ * @api {post} /api/v1/tickets/create Create Ticket
+ * @apiName createTicket
+ * @apiDescription Creates a ticket with the given post data.
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} ticket Saved Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+        {
+            "error": "Invalid Post Data"
+        }
+ */
+
 api_tickets.create = function(req, res) {
     var response = {};
     response.success = true;
 
     var postData = req.body;
-    if (!_.isObject(postData)) return res.status(500).json({'success': false, Error: 'Invalid Post Data'});
+    if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
+    var tags = [];
+    if (!_.isUndefined(postData.tags)) {
+        var t = _s.clean(postData.tags);
+        tags = _.compact(t.split(','));
+    }
+
+    var HistoryItem = {
+        action: 'ticket:created',
+        description: 'Ticket was created.',
+        owner: req.user._id
+    };
 
     var ticketModel = require('../../../models/ticket');
     var ticket = new ticketModel(postData);
+    ticket.owner = req.user._id;
     var marked = require('marked');
     var tIssue = ticket.issue;
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
     ticket.issue = marked(tIssue);
+    ticket.tags = tags;
+    ticket.history = [HistoryItem];
     ticket.save(function(err, t) {
         if (err) {
             response.success = false;
             response.error = err;
-            return res.status(500).json(response);
+            winston.debug(response);
+            return res.status(400).json(response);
         }
+
+        emitter.emit('ticket:created', {socketId: socketId, ticket: t});
 
         response.ticket = t;
         res.json(response);
@@ -339,6 +380,40 @@ api_tickets.getYearData = function(req, res) {
         returnData.closedCount = done.closedCount;
 
         res.json(returnData);
+    });
+};
+
+api_tickets.removeAttachment = function(req, res) {
+    var ticketId = req.params.tid;
+    var attachmentId = req.params.aid;
+    if (_.isUndefined(ticketId) || _.isUndefined(attachmentId)) return res.status(400).json({'error': 'Invalid Attachment'});
+
+    //Check user perm
+    var user = req.user;
+    if (_.isUndefined(user)) return res.status(400).json({'error': 'Invalid User Auth.'});
+
+    var permissions = require('../../../permissions');
+    if (!permissions.canThis(user.role, 'tickets:removeAttachment')) return res.status(401).json({'error': 'Invalid Permissions'});
+
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(ticketId, function(err, ticket) {
+        if (err) return res.status(400).send('Invalid Ticket Id');
+        ticket.getAttachment(attachmentId, function(a) {
+            ticket.removeAttachment(user._id, attachmentId, function(err, ticket) {
+                if (err) return res.status(400).json({'error': 'Invalid Request.'});
+
+                var fs = require('fs');
+                var path = require('path');
+                var dir = path.join(__dirname, '../../../../public', a.path);
+                console.log(dir);
+                if (fs.existsSync(dir)) fs.unlinkSync(dir);
+
+                ticket.save(function(err, t) {
+                    if (err) return res.status(401).json({'error': 'Invalid Request.'});
+                    res.send(t);
+                });
+            });
+        });
     });
 };
 

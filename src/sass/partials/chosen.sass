@@ -4,7 +4,7 @@
 
   .chosen-results
     li.highlighted
-      background: #3498db none
+      background: #ea6153 none
 
 .chosen-container-single
   .chosen-single
@@ -43,12 +43,14 @@
     min-height: 2.3125rem !important
 
     li.search-choice
-      background: #3498db none
+      background: #ea6153 none
       border: none
       color: white
       font-size: 13px
-      padding: 8px 25px 8px 8px
+      padding: 3px 25px 3px 10px
       +boxShadow(none)
+      span
+        color: white
 
       .search-choice-close
         top: 9px
@@ -58,6 +60,10 @@
       input[type="text"]
         height: 32px
         margin-left: 2px
+
+#gMembers_chosen li.search-choice,
+#gSendMailTo_chosen li.search-choice
+  padding: 8px 25px 8px 8px
 
 .chosen-container-active
   .chosen-choices

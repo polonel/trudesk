@@ -128,22 +128,34 @@
     +borderRadius(50%)
 
 
-input[type="checkbox"]
+input[type="checkbox"].poloCheckbox
   visibility: hidden
 
-input[type="checkbox"] + label
+input[type="checkbox"].poloCheckbox + label
   display: inline-block
   height: 14px
   width: 16px
   background: url(/img/checkbox.png) 0 0 no-repeat
   cursor: pointer
   position: absolute
-  top: 24px
-  left: 25px
+  top: 19px
+  left: 10px
 
-input[type="checkbox"]:checked + label
+input[type="checkbox"]:checked.poloCheckbox + label
   background-position: 0 -14px
 
+//.switch input[type="checkbox"] + label,
+//.onoffswitch input[type="checkbox"] + label
+//  background: #ddd
+//  position: relative
+//  top: 0
+//  left: 0
+//  width: auto
+//  height: auto
+//
+//.switch input[type="checkbox"]:checked + label,
+//.onoffswitch input[type="checkbox"]:checked + label
+//  background: #e74c3c
 
 .message
   padding: 30px 30px 30px 60px

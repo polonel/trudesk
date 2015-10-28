@@ -50,7 +50,8 @@ requirejs.config({
         pace:           'vendor/pace/pace.min',
         tomarkdown:     'vendor/tomarkdown/tomarkdown',
         enjoyhint:      'vendor/enjoyhint/enjoyhint.min',
-        colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker'
+        colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
+        datepicker:     'vendor/datepicker/foundation-datepicker'
     },
     shim: {
         foundation: {
@@ -133,6 +134,10 @@ requirejs.config({
 
         colorpicker: {
             deps: ['jquery']
+        },
+
+        datepicker: {
+            deps: ['jquery', 'foundation']
         }
     },
     priority: [

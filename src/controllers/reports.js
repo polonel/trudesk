@@ -17,7 +17,7 @@ var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
-var reports     = require('../models/report');
+var reports         = require('../models/report');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
 

@@ -12,16 +12,24 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history', 'datepicker'], function(angular, _, $, helpers, socket) {
     return angular.module('trudesk.controllers.tickets', [])
-        .controller('ticketsCtrl', function($scope, $http, $window) {
+        .controller('ticketsCtrl', ['openFilterTicketWindow', '$scope', '$http', '$window', function(openFilterTicketWindow, $scope, $http, $window) {
+
+            $scope.openFilterTicketWindow = function() {
+                openFilterTicketWindow.openWindow();
+            };
 
             $scope.submitTicketForm = function() {
+                var socketId = socket.ui.socket.io.engine.id;
+                var data = {};
+                $('#createTicketForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                data.socketId = socketId;
                 $http({
                     method: 'POST',
-                    url: '/tickets/create',
-                    data: $('#createTicketForm').serialize(),
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded'}
+                    url: '/api/v1/tickets/create',
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
                 })
                     .success(function(data) {
                         if (!data.success) {
@@ -36,6 +44,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         helpers.showFlash('Ticket Created Successfully.');
 
                         History.pushState(null, null, '/tickets/');
+
+                    }).error(function(err) {
+                        console.log('[trudesk:tickets:submitTicketForm] - ' + e.error);
+                        helpers.showFlash('Error: ' + err.error.message, true);
                     });
             };
 
@@ -43,13 +55,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var $ids = getChecked();
                 _.each($ids, function(id) {
                     $http.delete(
-                        '/api/tickets/' + id
+                        '/api/v1/tickets/' + id
                     ).success(function() {
                             clearChecked();
                             removeCheckedFromGrid();
                             helpers.showFlash('Ticket Deleted Successfully.')
-                        }).error(function(err) {
-                           helpers.showFlash('Error: ' + err, true);
+                        }).error(function(e) {
+                            console.log('[trudesk:tickets:deleteTickets] - ' + e);
+                            helpers.showFlash('Error: ' + e, true);
                         });
                 });
 
@@ -63,15 +76,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                 _.each($ids, function(id) {
                     $http.put(
-                        '/api/tickets/' + id,
+                        '/api/v1/tickets/' + id,
                         {
                             "status": 3
                         }
                     ).success(function() {
 
-                        }).error(function(d) {
-                            console.log('[trudesk:tickets] - ' + d);
-                            helpers.showFlash('Error: ' + d, true);
+                        }).error(function(e) {
+                            console.log('[trudesk:tickets:closeTickets] - ' + e);
+                            helpers.showFlash('Error: ' + e, true);
                         });
                 });
 
@@ -79,6 +92,58 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 clearChecked();
                 helpers.hideAllpDropDowns();
                 helpers.hideDropDownScrolls();
+            };
+
+            $scope.GridRefreshChanged = function() {
+                $http.put(
+                    '/api/v1/users/' + $scope.username + '/updatepreferences',
+                    {
+                        "preference": 'autoRefreshTicketGrid',
+                        "value": $scope.preferences_autoRefreshTicketGrid
+                    }
+                ).success(function() {
+
+                    }).error(function(e) {
+                        console.log('[trudesk:tickets:GridRefreshChanged] - ' + e);
+                        helpers.showFlash('Error: ' + e.message, true);
+                    });
+            };
+
+            $scope.RefreshTicketGrid = function(event) {
+                var path = $window.location.pathname;
+                History.pushState(null, null, path + '?r=' + Math.random());
+                event.preventDefault();
+            };
+
+            $scope.submitFilter = function() {
+                var data = {};
+                $('#ticketFilterForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                var querystring = '?f=1';
+                if (!_.isEmpty(data.filterSubject))
+                    querystring += '&fs=' + data.filterSubject;
+                if (!_.isEmpty(data.filterDate_Start))
+                    querystring += '&ds=' + data.filterDate_Start;
+                if (!_.isEmpty(data.filterDate_End))
+                    querystring += '&de=' + data.filterDate_End;
+
+                var filterStatus = $('#ticketFilterForm select#filterStatus').val();
+                _.each(filterStatus, function(item) {
+                    querystring += '&st=' + item;
+                });
+
+                var filterGroup = $('#ticketFilterForm select#filterGroup').val();
+                _.each(filterGroup, function(item) {
+                    querystring += '&gp=' + item;
+                });
+
+                openFilterTicketWindow.closeWindow();
+                History.pushState(null, null, '/tickets/filter/' + querystring + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+            };
+
+            $scope.clearFilterForm = function(e) {
+                $(':input', '#ticketFilterForm').not(':button, :submit, :reset, :hidden').val('');
+                $('#ticketFilterForm option:selected').removeAttr('selected').trigger('chosen:updated');
+                e.preventDefault();
             };
 
             function clearChecked() {
@@ -115,5 +180,81 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 });
             }
 
+        }])
+        .factory('openFilterTicketWindow', function() {
+            return {
+                openWindow: function openWindow() {
+                    $('.pDatePicker').fdatepicker({
+
+                    });
+
+                    //$('#filterTags').find('option').remove().end();
+                    //$('#filterTags').trigger("chosen:updated");
+                    ////Chosen Tag Filters
+                    //var dropDown = $('#filterTags_chosen').find('.chosen-drop');
+                    //// Make the chosen drop-down dynamic. If a given option is not in the list, the user can still add it
+                    //dropDown.parent().find('.search-field input[type=text]').keydown(
+                    //    function (evt) {
+                    //        var stroke, _ref, target, list;
+                    //        // get keycode
+                    //        stroke = (_ref = evt.which) != null ? _ref : evt.keyCode;
+                    //        // If enter or tab key
+                    //        var chosenList;
+                    //        var matchList;
+                    //        var highlightedList;
+                    //        if (stroke === 13) {
+                    //            evt.preventDefault();
+                    //            target = $(evt.target);
+                    //            // get the list of current options
+                    //            chosenList = target.parents('.chosen-container').find('.chosen-choices li.search-choice > span').map(function () {
+                    //                return $(this).text();
+                    //            }).get();
+                    //            // get the list of matches from the existing drop-down
+                    //            matchList = target.parents('.chosen-container').find('.chosen-results li').map(function () {
+                    //                return $(this).text();
+                    //            }).get();
+                    //            // highlighted option
+                    //            highlightedList = target.parents('.chosen-container').find('.chosen-results li.highlighted').map(function () {
+                    //                return $(this).text();
+                    //            }).get();
+                    //            // Get the value which the user has typed in
+                    //            var newString = $.trim(target.val());
+                    //            // if the option does not exists, and the text doesn't exactly match an existing option, and there is not an option highlighted in the list
+                    //            if ($.inArray(newString, matchList) < 0 && $.inArray(newString, chosenList) < 0 && highlightedList.length == 0) {
+                    //                // Create a new option and add it to the list (but don't make it selected)
+                    //                var newOption = '<option value="' + newString + '">' + newString + '</option>';
+                    //                $("#filterTags").prepend(newOption);
+                    //                // trigger the update event
+                    //                $("#filterTags").trigger("chosen:updated");
+                    //                // tell chosen to close the list box
+                    //                $("#filterTags").trigger("chosen:close");
+                    //                return true;
+                    //            }
+                    //            // otherwise, just let the event bubble up
+                    //            return true;
+                    //        }
+                    //    }
+                    //);
+
+                    $('#ticketFilterModal').foundation('reveal', 'open');
+                },
+                openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
+                    var $newMessageTo = $('#newMessageTo');
+                    $newMessageTo.find("option").prop('selected', false);
+                    $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
+                    $newMessageTo.trigger('chosen:updated');
+                    $('#newMessageSubject').val(subject);
+                    var $mText = md(text);
+                    $mText = $mText.trim();
+                    $('#newMessageText').val($mText);
+
+                    $('#ticketFilterModal').foundation('reveal', 'open');
+                },
+                closeWindow: function closeWindow() {
+                    //Close reveal and refresh page.
+                    $('#ticketFilterModal').foundation('reveal', 'close');
+
+                }
+            }
         });
 });

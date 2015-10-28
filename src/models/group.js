@@ -51,7 +51,7 @@ groupSchema.methods.addMember = function(memberId, callback) {
 groupSchema.methods.removeMember = function(memberId, callback) {
     if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.RemoveMember()");
 
-    if (!isMember(this.members, memberId)) return callback();
+    if (!isMember(this.members, memberId)) return callback(null, false);
 
     this.members.splice(_.indexOf(this.members, _.findWhere(this.members, {"_id" : memberId})), 1);
 
@@ -74,7 +74,7 @@ groupSchema.methods.addSendMailTo = function(memberId, callback) {
 groupSchema.methods.removeSendMailTo = function(memberId, callback) {
     if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.RemoveSendMailTo()");
 
-    if (!isMember(this.sendMailTo, memberId)) return callback();
+    if (!isMember(this.sendMailTo, memberId)) return callback(null, false);
 
     this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.findWhere(this.sendMailTo, {"_id" : memberId})), 1);
 

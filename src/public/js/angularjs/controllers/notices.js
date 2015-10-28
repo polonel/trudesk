@@ -49,31 +49,34 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                         History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
+                        console.log('[trudesk:notices:submitCreateNoticeForm] - ' + err);
                         helpers.showFlash(err, true);
                     });
             };
 
-            $scope.submitSaveGroup = function() {
-                var formData = $('#editGroupForm').serializeObject();
+            $scope.submitEditNoticeForm = function() {
+                var noticeId = $('#__noticeId').text();
+                console.log(noticeId);
+                var formData = $('#editNoticeForm').serializeObject();
                 var apiData = {
-                    id: formData.groupID,
-                    name: formData.gName,
-                    members: formData.gMembers,
-                    sendMailTo: formData.gSendMailTo
+                    name: formData.nName,
+                    message: formData.nMessage,
+                    color: formData.nColor
                 };
 
                 $http({
                     method: 'PUT',
-                    url: '/api/v1/groups/' + apiData.id,
+                    url: '/api/v1/notices/' + noticeId,
                     data: apiData,
-                    headers: {'Content-Type': 'application/json' }
+                    headers: { 'Content-Type': 'application/json' }
                 })
                     .success(function() {
-                        helpers.showFlash('Group Saved Successfully');
+                        helpers.showFlash('Notice Saved Successfully.');
 
-                        History.pushState(null, null, '/groups/');
+                        History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
+                        console.log('[trudesk:notices:submitEditNoticeForm] - ' + err);
                         helpers.showFlash(err, true);
                     });
             };
@@ -101,6 +104,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                                 History.pushState(null, null, '/notices/');
                             })
                             .error(function(err) {
+                                console.log('[trudesk:notices:activateNotice] - ' + err);
                                 helpers.showFlash(err, true);
                             });
                     })
@@ -120,6 +124,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                         helpers.showFlash('Notice has been deactivated');
                     })
                     .error(function(err) {
+                        console.log('[trudesk:notices:clearNotice] - ' + err);
                         helpers.showFlash(err.message, true);
                     });
 
@@ -127,25 +132,25 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                 helpers.hideDropDownScrolls();
             };
 
-            $scope.deleteGroups = function() {
+            $scope.deleteNotices = function() {
                 var ids = getChecked();
                 _.each(ids, function(id) {
-                     $http.delete(
-                         '/api/v1/groups/' + id
-                     ).success(function(data) {
-                        if (!data.success) {
-                            helpers.showFlash(data.error, true);
-                            return;
-                        }
-                            removeCheckedFromGrid(id);
-                            helpers.showFlash('Group Successfully Deleted');
-                        }).error(function(err) {
-                            helpers.showFlash(err, true);
-                         });
-                });
+                    $http.delete(
+                        '/api/v1/notices/' + id
+                    ).success(function(data) {
+                            if (!data.success) {
+                                helpers.showFlash(data.error, true);
+                                return;
+                            }
 
-                helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
+                            removeCheckedFromGrid(id);
+                            helpers.resizeDataTables('.noticesList');
+                            helpers.showFlash('Notice Successfully Deleted');
+                        }).error(function(err) {
+                            console.log('[trudesk:notices:deleteNotices] - ' + err);
+                            helpers.showFlash(err, true);
+                        });
+                });
             };
 
             function clearChecked() {

@@ -27,7 +27,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteGroups()">
+                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteNotices()">
                                         <div class="clearfix">
                                             <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
                                             <div class="messageAuthor"><strong>Delete</strong></div>
@@ -60,7 +60,7 @@
                 {{#each data.notices}}
                     <tr ng-click="editNotice($event)" data-noticeOId="{{_id}}">
                         <td>
-                            <input id="c_{{_id}}" type="checkbox"/>
+                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                             <label for="c_{{_id}}"></label>
                         </td>
                         <td>{{name}}</td>

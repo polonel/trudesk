@@ -14,7 +14,7 @@
 
 var mongoose            = require('mongoose');
 var _                   = require('underscore');
-var deepPopulate        = require('mongoose-deep-populate');
+var deepPopulate        = require('mongoose-deep-populate')(mongoose);
 var moment              = require('moment');
 
 //Needed!
@@ -47,7 +47,7 @@ var COLLECTION = 'tickets';
  * @property {Date} updated Date ticket was last updated
  * @property {Boolean} deleted ```Required``` [default: false] If they ticket is flagged as deleted.
  * @property {TicketType} type ```Required``` Reference to the TicketType
- * @property {Number} status ```Required``` Ticket Status. (See {@link Ticket#setStatus})
+ * @property {Number} status ```Required``` [default: 0] Ticket Status. (See {@link Ticket#setStatus})
  * @property {Number} prioirty ```Required```
  * @property {Array} tags An array of Strings.
  * @property {String} subject ```Required``` The subject of the ticket. (Overview)
@@ -56,7 +56,8 @@ var COLLECTION = 'tickets';
  * @property {Array} comments An array of {@link Comment} items
  * @property {Array} notes An array of {@link Comment} items for internal notes
  * @property {Array} attachments An Array of {@link Attachment} items
- * @property {Array} histor An array of {@link History} items
+ * @property {Array} history An array of {@link History} items
+ * @property {Array} subscribers An array of user _ids that receive notifications on ticket changes.
  */
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number, unique: true},
@@ -67,7 +68,7 @@ var ticketSchema = mongoose.Schema({
     updated:    { type: Date},
     deleted:    { type: Boolean, default: false, required: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
-    status:     { type: Number, required: true },
+    status:     { type: Number, default: 0, required: true },
     priority:   { type: Number, required: true },
     tags:       [String],
     subject:    { type: String, required: true },
@@ -76,7 +77,8 @@ var ticketSchema = mongoose.Schema({
     comments:   [commentSchema],
     notes:      [commentSchema],
     attachments:[attachmentSchema],
-    history:    [historySchema]
+    history:    [historySchema],
+    subscribers:{ type: [mongoose.Schema.Types.ObjectId], ref: 'accounts' }
 });
 
 ticketSchema.plugin(deepPopulate);
@@ -163,7 +165,7 @@ ticketSchema.methods.setAssignee = function(ownerId, userId, callback) {
 
         var historyItem = {
             action: 'ticket:set:assignee',
-            description: user.username + ' was set as assignee',
+            description: user.fullname + ' was set as assignee',
             owner: ownerId
         };
 
@@ -257,14 +259,17 @@ ticketSchema.methods.setTicketGroup = function(ownerId, groupId, callback) {
     var self = this;
     self.group = groupId;
 
-    var historyItem = {
-        action: 'ticket:set:group',
-        description: 'Ticket Group set to: ' + groupId,
-        owner: ownerId
-    };
-    self.history.push(historyItem);
+    self.populate('group', function(err, ticket) {
+        var historyItem = {
+            action: 'ticket:set:group',
+            description: 'Ticket Group set to: ' + ticket.group.name,
+            owner: ownerId
+        };
+        self.history.push(historyItem);
 
-    callback(null, self);
+        callback(null, ticket);
+
+    });
 };
 
 /**
@@ -359,15 +364,27 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     callback(null, self);
 };
 
+ticketSchema.methods.getAttachment = function(attachmentId, callback) {
+    var self = this;
+    var attachment = _.find(self.attachments, function(o){return o._id == attachmentId; });
+
+    callback(attachment);
+};
+
 ticketSchema.methods.removeAttachment = function(ownerId, attachmentId, callback) {
     var self = this;
+    var attachment = _.find(self.attachments, function(o) { return o._id == attachmentId; });
     self.attachments = _.reject(self.attachments, function(o) { return o._id == attachmentId; });
+
+    if (_.isUndefined(attachment))
+        return callback(null, self);
 
     var historyItem = {
         action: 'ticket:delete:attachment',
-        description: 'Attachment was deleted: ' + attachmentId,
+        description: 'Attachment was deleted: ' + attachment.name,
         owner: ownerId
     };
+
     self.history.push(historyItem);
 
     callback(null, self);
@@ -471,6 +488,11 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     var page = (object.page == null ? 0 : object.page);
     var _status = object.status;
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
+        var g = _.pluck(grpId, '_id').map(String);
+        grpId = _.intersection(object.filter.groups, g);
+    }
+
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
         .populate('owner')
         .populate('assignee')
@@ -485,7 +507,20 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({status: {$in: _status}});
     }
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
+        var startDate = new Date(2000, 0, 1, 0, 0, 1);
+        var endDate = new Date();
+        if (!_.isUndefined(object.filter.date.start))
+            startDate = new Date(object.filter.date.start);
+        if (!_.isUndefined(object.filter.date.end))
+            endDate = new Date(object.filter.date.end);
+
+        q.where({date: {$gte: startDate, $lte: endDate}});
+    }
 
     return q.exec(callback);
 };
@@ -505,13 +540,21 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
 
     var self = this;
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
+        var g = _.pluck(grpId, '_id').map(String);
+        grpId = _.intersection(object.filter.groups, g);
+    }
+
     var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
 
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
-        q.where({status: {$in: object.status} });
+        var status = object.status.map(Number);
+        q.where({status: {$in: status} });
     }
 
-    if (!_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+
+    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf == true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
         q.where('assignee', object.assignedUserId);
     }
 

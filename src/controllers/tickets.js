@@ -163,6 +163,55 @@ ticketsController.getAssigned = function(req, res, next) {
     next();
 };
 
+ticketsController.filter = function(req, res, next) {
+    var self = this;
+
+    var page = req.query.page;
+    if (_.isUndefined(page)) page = 0;
+
+    var queryString = req.query;
+    var subject = queryString.fs;
+    var dateStart = queryString.ds;
+    var dateEnd = queryString.de;
+    var status = queryString.st;
+    var groups = queryString.gp;
+
+    var rawNoPage = req.originalUrl.replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
+                                    .replace(new RegExp('([?&])page=[^&]*&'), '$1');
+
+    if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
+    if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
+
+    var filter = {
+        subject: subject,
+        date: {
+            start: dateStart,
+            end: dateEnd
+        },
+        status: status,
+        groups: groups,
+        raw: rawNoPage
+    };
+
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    //self.processor.subnav = 'tickets-assigned';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'filter';
+    self.processor.object = {
+        limit: 50,
+        page: page,
+        status: filter.status,
+        user: req.user._id,
+        filter: filter
+    };
+
+    req.processor = self.processor;
+
+    next();
+};
+
 /**
  * Process the ```req.processor``` object and render the correct view
  * @param {object} req Express Request
@@ -173,7 +222,7 @@ ticketsController.getAssigned = function(req, res, next) {
 ticketsController.processor = function(req, res) {
     var self = this;
     var processor = req.processor;
-    if (_.isUndefined(processor)) return res.redirect('/dashboard');
+    if (_.isUndefined(processor)) return res.redirect('/');
 
     self.content = {};
     self.content.title = processor.title;
@@ -184,8 +233,11 @@ ticketsController.processor = function(req, res) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
+
     var object = processor.object;
     object.limit = (object.limit === 1) ? 10 : object.limit;
+
+    self.content.data.filter = object.filter;
 
     //Ticket Data
     self.content.data.tickets = {};
@@ -203,7 +255,7 @@ ticketsController.processor = function(req, res) {
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
                 userGroups = grps;
-
+                self.content.data.common.groups = grps;
                 callback(err, grps);
             });
         },
@@ -221,7 +273,9 @@ ticketsController.processor = function(req, res) {
 
         var countObject = {
             status: object.status,
-            assignedUserId: object.user
+            assignedSelf: object.assignedSelf,
+            assignedUserId: object.user,
+            filter: object.filter
         };
 
         //Get Pagination
@@ -393,64 +447,6 @@ function getPriorityName(val) {
 
     return p;
 }
-
-ticketsController.submitTicket = function(req, res, next) {
-    var marked = require('marked');
-    var Ticket = ticketSchema;
-    var tags = [];
-    var result = {};
-    if (!_.isUndefined(req.body.tTags)) {
-        var t = _s.clean(req.body.tTags);
-        tags = _.compact(t.split(','));
-    }
-
-    var HistoryItem = {
-        action: 'ticket:created',
-        description: 'Ticket was created.',
-        owner: req.user._id
-    };
-
-    if (_.isUndefined(req.body.tIssue) ||
-        _.isNull(req.body.tIssue) ||
-        _.isEmpty(req.body.tIssue) ||
-        _.isUndefined(req.body.tSubject) ||
-        _.isNull(req.body.tSubject) ||
-        _.isEmpty(req.body.tSubject)) {
-
-        result.error = "Please fill out all fields.";
-        result.success = false;
-        return res.json(result);
-    }
-
-    Ticket.create({
-        owner: req.user._id,
-        group: req.body.tGroup,
-        status: 0,
-        tags: tags,
-        date: new Date(),
-        subject: req.body.tSubject,
-        issue: marked(req.body.tIssue),
-        priority: req.body.tPriority,
-        type: req.body.tType,
-        history: [HistoryItem]
-
-    }, function(err, t) {
-        if (err) {
-            winston.warn(err);
-            result.error = err.message;
-            result.success = false;
-            return res.json(result);
-        }
-
-        //Trigger Event that a ticket was submitted.
-        emitter.emit('ticket:created', t);
-
-        result.ticket = t;
-        result.success = true;
-
-        return res.json(result);
-    });
-};
 
 ticketsController.postcomment = function(req, res, next) {
     var Ticket = ticketSchema;

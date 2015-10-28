@@ -167,6 +167,10 @@ module.exports = function(ws) {
 
         });
 
+        socket.on('ticket:updategrid', function() {
+            utils.sendToAllConnectedClients(io, 'ticket:updategrid');
+        });
+
         socket.on('updateTicketStatus', function(data) {
             var ticketId = data.ticketId;
             var ownerId = socket.request.user._id;
@@ -385,7 +389,8 @@ module.exports = function(ws) {
             if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
             comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
             var markedComment = marked(comment);
-
+            console.log(comment);
+            console.log(markedComment);
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return winston.error(err);
 
@@ -439,7 +444,18 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
 
-                utils.sendToAllConnectedClients(io, 'updateTicketAttachments', ticket);
+                var user = socket.request.user;
+                if (_.isUndefined(user)) return true;
+
+                var permissions = require('./permissions');
+                var canRemoveAttachments = permissions.canThis(user.role, "ticket:removeAttachment");
+
+                var data = {
+                    ticket: ticket,
+                    canRemoveAttachments: canRemoveAttachments
+                };
+
+                utils.sendToAllConnectedClients(io, 'updateTicketAttachments', data);
             });
         });
 
@@ -529,8 +545,15 @@ module.exports = function(ws) {
             var noticeSchema = require('./models/notice');
             noticeSchema.getNotice(noticeId, function(err, notice) {
                 if (err) return true;
+                notice.activeDate = new Date();
+                notice.save(function(err) {
+                    if (err) {
+                        winston.warn(err);
+                        return true;
+                    }
 
-                utils.sendToAllConnectedClients(io, 'updateShowNotice', notice);
+                    utils.sendToAllConnectedClients(io, 'updateShowNotice', notice);
+                });
             });
         });
 

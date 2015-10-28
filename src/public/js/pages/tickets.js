@@ -33,7 +33,7 @@ define('pages/tickets', [
             table.dataTable({
                 //serverSide: true,
                 //processing: true,
-                searching: true,
+                searching: false,
                 bLengthChange: false,
                 //paging: true,
                 //"sPaginationType": "full_numbers",
@@ -142,6 +142,7 @@ define('pages/tickets', [
                 //handle ticket link here
                 History.pushState(null, 'Ticket - ' + i, '/tickets/' + i);
             });
+
         });
     };
 

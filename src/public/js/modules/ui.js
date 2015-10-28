@@ -26,6 +26,8 @@ define('modules/ui', [
     var socketUi = {},
         socket = io.connect();
 
+    socketUi.socket = socket;
+
     socketUi.init = function() {
         this.onReconnect();
         this.onDisconnect();
@@ -45,6 +47,7 @@ define('modules/ui', [
         //Events
         this.onTicketCreated();
         this.onTicketDelete();
+        this.onUpdateTicketGrid();
 
         this.updateMessagesFolder(socket);
         this.updateSingleMessageItem(socket);
@@ -488,16 +491,26 @@ define('modules/ui', [
 
     socketUi.updateTicketAttachments = function() {
         socket.removeAllListeners('updateTicketAttachments');
-        socket.on('updateTicketAttachments', function(ticket) {
+        socket.on('updateTicketAttachments', function(data) {
             //Rebuild ticket attachments on view
+            var ticket = data.ticket;
+            var canRemoveAttachments = data.canRemoveAttachments;
+
             var $ul = $('ul.attachments[data-ticketid="' + ticket._id + '"]');
             if ($ul.length < 1) return true;
 
             $ul.empty();
             _.each(ticket.attachments, function(attachment) {
-                var html = '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a></li>';
+                var html =  '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a>';
+                if (canRemoveAttachments) {
+                    html += '<a href="#" class="remove-attachment" data-attachmentId="' + attachment._id + '"><i class="fa fa-remove"></i></a></li>';
+                }
 
                 $ul.append(html);
+            });
+
+            require(['pages/singleTicket'], function(st) {
+                st.init();
             });
         });
     };
@@ -721,14 +734,28 @@ define('modules/ui', [
     socketUi.onTicketCreated = function() {
         socket.removeAllListeners('ticket:created');
         socket.on('ticket:created', function(data) {
-           socket.emit('updateNotifications');
+            socket.emit('updateNotifications');
+            var audio = $('audio#newticketaudio');
+            if (audio.length > 0) audio.trigger('play');
+            $('a#refreshTicketGrid').trigger('click');
         });
     };
 
     socketUi.onTicketDelete = function() {
         socket.removeAllListeners('ticket:delete');
         socket.on('ticket:delete', function(data) {
-            //helpers.showFlash('Ticket Deleted Successful.');
+            var refreshEnabled = $('input#refreshSwitch:checked');
+            if (refreshEnabled.length > 0)
+                $('a#refreshTicketGrid').trigger('click');
+        });
+    };
+
+    socketUi.onUpdateTicketGrid = function() {
+        socket.removeAllListeners('ticket:updategrid');
+        socket.on('ticket:updategrid', function() {
+            var refreshEnabled = $('input#refreshSwitch:checked');
+            if (refreshEnabled.length > 0)
+                $('a#refreshTicketGrid').trigger('click');
         });
     };
 

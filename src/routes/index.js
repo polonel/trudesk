@@ -29,10 +29,11 @@ function mainRoutes(router, middleware, controllers) {
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
+    //router.get('/tickets/filter/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
-    router.post('/tickets/create', middleware.redirectToLogin, controllers.tickets.submitTicket);
     router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
@@ -106,15 +107,16 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
+    router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
     router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
-    router.get('/api/v1/users', middleware.api, controllers.api.users.get);
     router.post('/api/v1/users', controllers.api.users.insert);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
+    router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
@@ -124,6 +126,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
     router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
+    router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }

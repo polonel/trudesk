@@ -25,7 +25,6 @@ define('pages/dashboard', [
     dashboardPage.init = function() {
         $(document).ready(function() {
             getData();
-
         });
     };
 
@@ -39,7 +38,7 @@ define('pages/dashboard', [
                 success: updateFlot
             })
                 .error(function(err) {
-                    console.log(err);
+                    console.log('[trudesk:dashboard:getData] Error - ' + err);
                     setTimeout(getData, 25000);
                 });
 
