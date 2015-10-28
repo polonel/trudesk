@@ -376,6 +376,9 @@ ticketSchema.methods.removeAttachment = function(ownerId, attachmentId, callback
     var attachment = _.find(self.attachments, function(o) { return o._id == attachmentId; });
     self.attachments = _.reject(self.attachments, function(o) { return o._id == attachmentId; });
 
+    if (_.isUndefined(attachment))
+        return callback(null, self);
+
     var historyItem = {
         action: 'ticket:delete:attachment',
         description: 'Attachment was deleted: ' + attachment.name,
@@ -485,6 +488,11 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     var page = (object.page == null ? 0 : object.page);
     var _status = object.status;
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
+        var g = _.pluck(grpId, '_id').map(String);
+        grpId = _.intersection(object.filter.groups, g);
+    }
+
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
         .populate('owner')
         .populate('assignee')
@@ -498,6 +506,8 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
         q.where({status: {$in: _status}});
     }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
 
@@ -519,13 +529,21 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
 
     var self = this;
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
+        var g = _.pluck(grpId, '_id').map(String);
+        grpId = _.intersection(object.filter.groups, g);
+    }
+
     var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
 
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
-        q.where({status: {$in: object.status} });
+        var status = object.status.map(Number);
+        q.where({status: {$in: status} });
     }
 
-    if (!_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+
+    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf == true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
         q.where('assignee', object.assignedUserId);
     }
 

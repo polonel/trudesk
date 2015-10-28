@@ -163,6 +163,49 @@ ticketsController.getAssigned = function(req, res, next) {
     next();
 };
 
+ticketsController.filter = function(req, res, next) {
+    var self = this;
+
+    var page = req.query.page;
+    if (_.isUndefined(page)) page = 0;
+
+    var queryString = req.query;
+    var subject = queryString.fs;
+    var status = queryString.st;
+    var groups = queryString.gp;
+
+    var rawNoPage = req.originalUrl.replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
+                                    .replace(new RegExp('([?&])page=[^&]*&'), '$1');
+
+    if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
+    if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
+
+    var filter = {
+        subject: subject,
+        status: status,
+        groups: groups,
+        raw: rawNoPage
+    };
+
+    self.processor = {};
+    self.processor.title = "Tickets";
+    self.processor.nav = 'tickets';
+    //self.processor.subnav = 'tickets-assigned';
+    self.processor.renderpage = 'tickets';
+    self.processor.pagetype = 'filter';
+    self.processor.object = {
+        limit: 5,
+        page: page,
+        status: filter.status,
+        user: req.user._id,
+        filter: filter
+    };
+
+    req.processor = self.processor;
+
+    next();
+};
+
 /**
  * Process the ```req.processor``` object and render the correct view
  * @param {object} req Express Request
@@ -173,7 +216,7 @@ ticketsController.getAssigned = function(req, res, next) {
 ticketsController.processor = function(req, res) {
     var self = this;
     var processor = req.processor;
-    if (_.isUndefined(processor)) return res.redirect('/dashboard');
+    if (_.isUndefined(processor)) return res.redirect('/');
 
     self.content = {};
     self.content.title = processor.title;
@@ -184,8 +227,11 @@ ticketsController.processor = function(req, res) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
+
     var object = processor.object;
     object.limit = (object.limit === 1) ? 10 : object.limit;
+
+    self.content.data.filter = object.filter;
 
     //Ticket Data
     self.content.data.tickets = {};
@@ -221,7 +267,9 @@ ticketsController.processor = function(req, res) {
 
         var countObject = {
             status: object.status,
-            assignedUserId: object.user
+            assignedSelf: object.assignedSelf,
+            assignedUserId: object.user,
+            filter: object.filter
         };
 
         //Get Pagination

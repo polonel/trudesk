@@ -29,6 +29,8 @@ function mainRoutes(router, middleware, controllers) {
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
+    router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
+    //router.get('/tickets/filter/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);

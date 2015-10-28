@@ -14,12 +14,25 @@
                     <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
                     <ul class="button-group">
                         {{#is data.pagination.prevEnabled true}}
-                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+
+                            {{#is data.pagination.type 'filter'}}
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            {{else}}
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            {{/is}}
+
                         {{else}}
                             <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-left"></i></a></li>
                         {{/is}}
+
                         {{#is data.pagination.nextEnabled true}}
-                            <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            
+                            {{#is data.pagination.type 'filter'}}
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            {{else}}
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            {{/is}}
+
                         {{else}}
                             <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-right"></i></a></li>
                         {{/is}}
@@ -229,8 +242,6 @@
             </div>
         </div>
     </div>
-
-    {{> ticketFilterWindow }}
 </div>
 
 {{#contentFor 'js-plugins'}}

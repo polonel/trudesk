@@ -115,6 +115,33 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 event.preventDefault();
             };
 
+            $scope.submitFilter = function() {
+                var data = {};
+                $('#ticketFilterForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                var querystring = '?f=1';
+                if (!_.isEmpty(data.filterSubject))
+                    querystring += '&fs=' + data.filterSubject;
+                if (!_.isEmpty(data.filterDate_Start))
+                    querystring += '&ds=' + data.filterDate_Start;
+                if (!_.isEmpty(data.filterDate_End))
+                    querystring += '&de=' + data.filterDate_End;
+
+                var filterStatus = $('#ticketFilterForm select#filterStatus').val();
+                _.each(filterStatus, function(item) {
+                    querystring += '&st=' + item;
+                });
+
+                var filterGroup = $('#ticketFilterForm select#filterGroup').val();
+                _.each(filterGroup, function(item) {
+                    querystring += '&gp=' + item;
+                });
+
+                console.log(data);
+
+                openFilterTicketWindow.closeWindow();
+                History.pushState(null, null, '/tickets/filter/' + querystring + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+            };
+
             function clearChecked() {
                 $('#ticketTable input[type="checkbox"]:checked').each(function() {
                     var self = $(this);
@@ -222,11 +249,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 closeWindow: function closeWindow() {
                     //Close reveal and refresh page.
                     $('#ticketFilterModal').foundation('reveal', 'close');
-                    //Clear Fields
-                    $("#newMessageTo").find("option").prop('selected', false);
-                    $('#newMessageTo').trigger('chosen:updated');
-                    $('#newMessageSubject').val('');
-                    $('#newMessageText').val('');
+
                 }
             }
         });

@@ -1,18 +1,18 @@
-<div id="ticketFilterModal" class="reveal-modal small" data-reveal aria-labelledby="ticketFilterModal" aria-hidden="true" role="dialog" data-options="animation:none;">
+<div id="ticketFilterModal" class="reveal-modal small" data-reveal aria-labelledby="ticketFilterModal" aria-hidden="true" role="dialog" data-options="animation:none;" ng-controller="truCtrl">
     <h2 id="modalTitle">Filter</h2>
     <div ng-controller="ticketsCtrl">
-        <form id="ticketFilterForm" action="#" class="nomargin" >
+        <form id="ticketFilterForm" class="nomargin" ng-submit="submitFilter()" >
             <label for="filterSubject">Subject</label>
             <input name="filterSubject" id="filterSubject" type="text" />
             <!--<span>Date Range:</span>-->
             <div class="row">
                 <div class="small-6 columns" style="padding: 0 15px 0 0;">
-                    <label for="filterDateRange_Start">Date Start</label>
-                    <input id="filterDateRange_Start" name="filterDateRange_Start" type="text" class="pDatePicker" />
+                    <label for="filterDate_Start">Date Start</label>
+                    <input id="filterDate_Start" name="filterDate_Start" type="text" class="pDatePicker" />
                 </div>
                 <div class="small-6 columns" style="padding: 0 0 0 15px;">
-                    <label for="filterDateRange_End">Date End</label>
-                    <input id="filterDateRange_End" name="filterDateRange_End" type="text" class="pDatePicker" />
+                    <label for="filterDate_End">Date End</label>
+                    <input id="filterDate_End" name="filterDate_End" type="text" class="pDatePicker" />
                 </div>
             </div>
 
@@ -27,7 +27,7 @@
             <div class="row">
                 <div class="small-12 columns nopadding" style="margin: 5px 0;">
                     <label for="filterGroup">Group:</label>
-                    <select name="filterGroup[]" id="filterGroup" multiple class="chosen-select" data-placeholder=" ">
+                    <select name="filterGroup" id="filterGroup" multiple class="chosen-select" data-placeholder=" ">
                         {{#each data.common.groups}}
                             <option value="{{_id}}">{{name}}</option>
                         {{/each}}
@@ -38,7 +38,7 @@
             <div class="row">
                 <div class="small-12 columns nopadding" style="margin: 5px 0;">
                     <label for="filterAssignee">Assignee:</label>
-                    <select name="filterAssignee[]" id="filterAssignee" class="chosen-select" multiple data-placeholder=" ">
+                    <select name="filterAssignee" id="filterAssignee" class="chosen-select" multiple data-placeholder=" ">
                         {{#each data.common.messages.users}}
                             {{#canUserRole role "ticket:assingee"}}
                                 <option value="{{_id}}">{{fullname}}</option>
