@@ -136,10 +136,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     querystring += '&gp=' + item;
                 });
 
-                console.log(data);
-
                 openFilterTicketWindow.closeWindow();
                 History.pushState(null, null, '/tickets/filter/' + querystring + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+            };
+
+            $scope.clearFilterForm = function(e) {
+                $(':input', '#ticketFilterForm').not(':button, :submit, :reset, :hidden').val('');
+                $('#ticketFilterForm option:selected').removeAttr('selected').trigger('chosen:updated');
+                e.preventDefault();
             };
 
             function clearChecked() {

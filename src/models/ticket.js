@@ -511,6 +511,17 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
+        var startDate = new Date(2000, 0, 1, 0, 0, 1);
+        var endDate = new Date();
+        if (!_.isUndefined(object.filter.date.start))
+            startDate = new Date(object.filter.date.start);
+        if (!_.isUndefined(object.filter.date.end))
+            endDate = new Date(object.filter.date.end);
+
+        q.where({date: {$gte: startDate, $lte: endDate}});
+    }
+
     return q.exec(callback);
 };
 

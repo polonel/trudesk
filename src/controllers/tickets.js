@@ -171,6 +171,8 @@ ticketsController.filter = function(req, res, next) {
 
     var queryString = req.query;
     var subject = queryString.fs;
+    var dateStart = queryString.ds;
+    var dateEnd = queryString.de;
     var status = queryString.st;
     var groups = queryString.gp;
 
@@ -182,6 +184,10 @@ ticketsController.filter = function(req, res, next) {
 
     var filter = {
         subject: subject,
+        date: {
+            start: dateStart,
+            end: dateEnd
+        },
         status: status,
         groups: groups,
         raw: rawNoPage
@@ -194,7 +200,7 @@ ticketsController.filter = function(req, res, next) {
     self.processor.renderpage = 'tickets';
     self.processor.pagetype = 'filter';
     self.processor.object = {
-        limit: 5,
+        limit: 50,
         page: page,
         status: filter.status,
         user: req.user._id,
