@@ -175,12 +175,14 @@ ticketsController.filter = function(req, res, next) {
     var dateEnd = queryString.de;
     var status = queryString.st;
     var groups = queryString.gp;
+    var assignee = queryString.au;
 
     var rawNoPage = req.originalUrl.replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
                                     .replace(new RegExp('([?&])page=[^&]*&'), '$1');
 
     if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
     if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
+    if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee];
 
     var filter = {
         subject: subject,
@@ -190,6 +192,7 @@ ticketsController.filter = function(req, res, next) {
         },
         status: status,
         groups: groups,
+        assignee: assignee,
         raw: rawNoPage
     };
 
@@ -233,7 +236,6 @@ ticketsController.processor = function(req, res) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
-
     var object = processor.object;
     object.limit = (object.limit === 1) ? 10 : object.limit;
 
@@ -255,7 +257,6 @@ ticketsController.processor = function(req, res) {
         function(callback) {
             groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
                 userGroups = grps;
-                self.content.data.common.groups = grps;
                 callback(err, grps);
             });
         },

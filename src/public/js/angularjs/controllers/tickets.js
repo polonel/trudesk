@@ -136,6 +136,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     querystring += '&gp=' + item;
                 });
 
+                var filterAssignee = $('#ticketFilterForm select#filterAssignee').val();
+                _.each(filterAssignee, function(item) {
+                    querystring += '&au=' + item;
+                });
+
                 openFilterTicketWindow.closeWindow();
                 History.pushState(null, null, '/tickets/filter/' + querystring + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
             };

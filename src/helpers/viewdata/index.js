@@ -69,6 +69,15 @@ viewController.getData = function(request, cb) {
                   viewdata.loggedInAccount = data;
                   callback();
               });
+          },
+          function(callback) {
+              viewController.getGroups(request, function(err, data) {
+                  if (err) return callback(null, null);
+
+                  viewdata.groups = data;
+
+                  callback();
+              });
           }
       ], function(err) {
           if (err) {
@@ -158,6 +167,18 @@ viewController.loggedInAccount = function(request, callback) {
         }
 
         callback(data);
+    });
+};
+
+viewController.getGroups = function(request, callback) {
+    var groupSchema = require('../../models/group');
+    groupSchema.getAllGroupsOfUser(request.user._id, function(err, data) {
+        if (err) {
+            winston.debug(err);
+            callback(err);
+        }
+
+        callback(null, data);
     });
 };
 

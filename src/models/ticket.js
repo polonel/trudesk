@@ -507,6 +507,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({status: {$in: _status}});
     }
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
+        q.where({assignee: {$in: object.filter.assignee}});
+    }
+
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
@@ -550,6 +554,11 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
         var status = object.status.map(Number);
         q.where({status: {$in: status} });
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
+        console.log(object.filter.assignee);
+        q.where({assignee: {$in: object.filter.assignee}});
     }
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
