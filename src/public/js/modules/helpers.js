@@ -276,11 +276,11 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             var scroller = ticketList.find('.dataTables_scrollBody');
             if (scroller.length !== 0) {
                 var tableHead = ticketList.find('.dataTables_scrollHead');
-                var searchHead = ticketList.find('.dataTables_filter');
+                var optionsHead = ticketList.find('.table-options');
                 var footerHeight = 0;
                 if (hasFooter)
                     footerHeight = tableHead.height();
-                scroller.css({'height': (ticketList.height() - tableHead.height() - searchHead.height() - footerHeight) + 'px'});
+                scroller.css({'height': (ticketList.height() - tableHead.height() - optionsHead.height() - footerHeight) + 'px'});
                 self.setupScrollers(selector + ' .dataTables_scrollBody');
             }
         });
