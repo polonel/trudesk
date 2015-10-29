@@ -15,7 +15,7 @@
                 <form id="createTicketForm" class="ticket-form" action="#" method="POST">
                     <input id="socketId" name="socketId" type="hidden" value="{{data.user.socket.id}}"/>
                     <label for="subject">Subject</label>
-                    <input id="subject" name="subject" type="text" data-keyBindSubmit="#saveTicketBtn" />
+                    <input id="subject" name="subject" type="text" />
                     <div class="row">
                         <div class="small-3 columns">
                             <label for="type">Type</label>
@@ -43,11 +43,11 @@
                         </div>
                         <div class="small-3 columns">
                             <label for="tags">Tags</label>
-                            <input type="text" name="tags" id="tags" data-keyBindSubmit="#saveTicketBtn" />
+                            <input type="text" name="tags" id="tags" />
                         </div>
                     </div>
                     <label for="issue">Issue</label>
-                    <textarea name="issue" id="issue" cols="30" rows="10" data-keyBindSubmit="#saveTicketBtn"></textarea>
+                    <textarea name="issue" id="issue" cols="30" rows="10"></textarea>
                 </form>
             </div>
         </div>

@@ -109,7 +109,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             });
         }
 
-        var ticketIssue = $('#tIssue');
+        var ticketIssue = $('#createTicketForm textarea#issue');
         if (ticketIssue.length > 0) {
             ticketIssue.off('keydown');
             ticketIssue.on('keydown', function(e) {
@@ -132,7 +132,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                     if (itemObj.length > 0) {
                         item.on('keydown', function(e) {
                             var keyCode = (e.which ? e.which : e.keyCode);
-                            if (keyCode === 10 || keyCode === 13 && e.ctrlKey || keyCode === 13) {
+                            if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
                                 itemObj.trigger('click');
                             }
                         });

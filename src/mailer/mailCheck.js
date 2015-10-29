@@ -123,7 +123,7 @@ mailCheck.fetchMail = function() {
                                                             var HistoryItem = {
                                                                 action: 'ticket:created',
                                                                 description: 'Ticket was created.',
-                                                                owner: req.user._id
+                                                                owner: message.owner._id
                                                             };
 
                                                             //Create the Ticket Here
