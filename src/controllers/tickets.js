@@ -241,16 +241,6 @@ ticketsController.processor = function(req, res) {
 
     self.content.data.filter = object.filter;
 
-    //Ticket Data
-    self.content.data.tickets = {};
-    self.content.data.totalCount = 0;
-    self.content.data.pagination = {};
-    self.content.data.pagination.type = processor.pagetype;
-    self.content.data.pagination.currentpage = object.page;
-    self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
-    self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
-    self.content.data.pagination.enabled = false;
-
     var userGroups = [];
 
     async.waterfall([
@@ -269,6 +259,15 @@ ticketsController.processor = function(req, res) {
         }
     ], function(err, results) {
         if (err) return handleError(res, err);
+
+        //Ticket Data
+        self.content.data.totalCount = 0;
+        self.content.data.pagination = {};
+        self.content.data.pagination.type = processor.pagetype;
+        self.content.data.pagination.currentpage = object.page;
+        self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
+        self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+        self.content.data.pagination.enabled = false;
 
         self.content.data.tickets = results;
 
@@ -449,11 +448,13 @@ function getPriorityName(val) {
     return p;
 }
 
+//Move to API
 ticketsController.postcomment = function(req, res, next) {
     var Ticket = ticketSchema;
     var id = req.body.ticketId;
     var comment = req.body.commentReply;
     var User = req.user;
+
     //TODO: Error check fields
 
     Ticket.getTicketById(id, function(err, t) {
@@ -474,11 +475,25 @@ ticketsController.postcomment = function(req, res, next) {
         };
         t.history.push(HistoryItem);
 
-        t.save(function (err, tt) {
-            if (err) handleError(res, err);
+        async.series({
+            subscribers: function(callback) {
+                t.addSubscriber(User._id, function (err, _t) {
+                    if (err) return callback(err);
+                    emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
+                    callback();
+                });
+            },
+            save: function (callback) {
+                t.save(function (err, tt) {
+                    callback(err, tt);
+                });
+            }
+        }, function(err, T) {
+            if (err) return handleError(res, err);
 
-            emitter.emit('ticket:comment:added', tt, Comment);
-            return res.send(tt);
+            emitter.emit('ticket:comment:added', T.save, Comment);
+
+            return res.send(T);
         });
     });
 };
