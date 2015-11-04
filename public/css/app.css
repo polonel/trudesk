@@ -2369,6 +2369,8 @@ div.dataTables_wrapper {
   -webkit-user-select: none;
   -moz-user-select: none;
   -ms-user-select: none; }
+  .onoffswitch.subscribeSwitch {
+    width: 100px !important; }
 
 .onoffswitch-checkbox {
   display: none; }
@@ -2408,6 +2410,14 @@ div.dataTables_wrapper {
   background-color: #E74C3C;
   color: #FFFFFF; }
 
+.subscribeSwitch-inner:before {
+  content: "Subscribe";
+  background-color: #29b955; }
+
+.onSwitch-inner:before {
+  content: "On";
+  background-color: #29b955; }
+
 .onoffswitch-inner:after {
   content: "OFF";
   padding-right: 7px;
@@ -2427,6 +2437,8 @@ div.dataTables_wrapper {
   border: 1px solid #dae0ec;
   border-radius: 5px;
   transition: all 0.3s ease-in 0s; }
+  .onoffswitch-switch.subscribeSwitch-switch {
+    right: 72px; }
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner {
   margin-left: 0; }

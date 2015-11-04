@@ -14,7 +14,36 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-        .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', function(openNewMessageWindow, $scope, $http) {
+        .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
+
+            //NG Init function
+            $scope.loadNoticeAlertWindow = function() {
+                //Load the function In the next Tick...
+                $timeout(function() {
+                    $scope.noticeAlertWindow = $('#noticeAlertWindow');
+
+                    if ($scope.noticeAlertWindow.length > 0) {
+                        var cookieName = $('#__noticeCookieName').text();
+                        if (cookieName == 'undefined' || _.isEmpty(cookieName)) return true;
+                        var shouldShowNotice = ($cookies.get(cookieName) == 'true' || $cookies.get(cookieName) == undefined);
+
+                        if (shouldShowNotice) {
+                            $scope.noticeAlertWindow.foundation('reveal', 'open');
+                        }
+                    }
+                }, 0, false);
+            };
+
+            $scope.confirmNoticeClick = function() {
+                if ($scope.noticeAlertWindow.length < 1) return;
+                var cookieName = $('#__noticeCookieName').text();
+                var expiresDate = new Date();
+                expiresDate.setDate(expiresDate.getDate() + 1);
+                $cookies.put(cookieName, 'false', {expires: expiresDate});
+
+                $scope.noticeAlertWindow.foundation('reveal', 'close');
+            };
+
             $scope.clearNotifications = function($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
@@ -32,7 +61,12 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
             $scope.openNewMessageWindow = function($event) {
                 $event.preventDefault();
                 openNewMessageWindow.openWindow();
-            }
+            };
+
+            $scope.closeNoticeAlert = function($event) {
+                $event.preventDefault();
+                $('#noticeAlertWindow').foundation('reveal', 'close');
+            };
 
         }]);
 });

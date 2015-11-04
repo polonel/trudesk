@@ -37,6 +37,9 @@ define('modules/socket.io/noticeUI', [
             $noticeDiv.css('background', $bgColor);
             $noticeDiv.html($dateFormated + $message);
             $noticeDiv.removeClass('hide');
+
+            if (notice.alertWindow)
+                showNoticeAlertWindow(notice);
         });
     };
 
@@ -48,8 +51,35 @@ define('modules/socket.io/noticeUI', [
         socket.removeAllListeners('updateClearNotice');
         socket.on('updateClearNotice', function() {
             $('div#notice-banner').addClass('hide');
+            hideNoticeAlertWindow();
         });
     };
+
+    function showNoticeAlertWindow(notice) {
+        var noticeAlertWindow = $('#noticeAlertWindow');
+        if (noticeAlertWindow.length < 1) return true;
+
+        var noticeTitle = noticeAlertWindow.find('#noticeTitle');
+        var noticeText = noticeAlertWindow.find('#noticeText');
+        var noticeBG = noticeAlertWindow.find('#noticeBG');
+        var noticeCookieName = noticeAlertWindow.find('#__noticeCookieName');
+        noticeCookieName.html(notice.name + "_" + moment(notice.activeDate).format("MMMDDYYYY_HHmmss"));
+
+        noticeBG.css('background-color', notice.color);
+        noticeTitle.css('color', notice.fontColor);
+
+        noticeTitle.html(notice.name);
+        noticeText.html(notice.message);
+
+        noticeAlertWindow.foundation('reveal', 'open');
+    }
+
+    function hideNoticeAlertWindow() {
+        var noticeAlertWindow = $('#noticeAlertWindow');
+        if (noticeAlertWindow.length < 1) return true;
+
+        noticeAlertWindow.foundation('reveal', 'close');
+    }
 
     return noticeUI;
 });

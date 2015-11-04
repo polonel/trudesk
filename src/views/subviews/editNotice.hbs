@@ -22,8 +22,33 @@
                         <label for="nMessage">Notice Message</label>
                         <input id="nMessage" name="nMessage" type="text" value="{{data.notice.message}}"/>
 
+                        <div class="clearfix" style="">
+                            <p class="left" style="
+                                padding-top: 3px;
+                                margin-right: 15px;
+                                font-size: 14px;
+                                font-weight: 400;
+                                color: #2c3e50;
+                                display: inline-block;">Alert Window: </p>
+                            <div class="onoffswitch onSwitch left">
+                                <input type="checkbox" name="nAlertWindow" class="onoffswitch-checkbox" id="nAlertWindow" {{#compare data.notice.alertWindow '==' true}} checked {{/compare}}>
+                                <label class="onoffswitch-label" for="nAlertWindow">
+                                    <span class="onoffswitch-inner onSwitch-inner"></span>
+                                    <span class="onoffswitch-switch onSwitch-switch"></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div style="">
+                            <label for="nFontColor" style="margin-right: 33px;">Font Color:</label>
+                            <select id="nFontColor" name="nFontColor">
+                                <option value="#f6f6f6">White</option>
+                                <option value="#000000">Black</option>
+                            </select>
+                        </div>
+
                         <div style="margin-bottom: 85px;">
-                            <label for="nColor">Notice Color:</label>
+                            <label for="nColor" style="margin-right: 23px;">Notice Color:</label>
                             <select id="nColor" name="nColor">
                                 <option value="#7bd148" {{#compare data.notice.color '==' '#7bd148'}} selected {{/compare}}>Green</option>
                                 <option value="#5484ed" {{#compare data.notice.color '==' '#5484ed'}} selected {{/compare}}>Bold blue</option>

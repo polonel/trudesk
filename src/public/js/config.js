@@ -20,8 +20,9 @@ requirejs.config({
         jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
         //foundation:     'vendor/foundation/foundation.min',
         foundation:     'https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/js/foundation.min',
-        angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular.min',
-        angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.3.5/angular-route',
+        angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min',
+        angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route',
+        angularCookies: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',
@@ -59,10 +60,16 @@ requirejs.config({
         },
 
         angular: {
+            deps: ['foundation'],
             exports: 'angular'
         },
 
-        angularRoute: ['angular'],
+        angularRoute:  {
+            deps: ['angular']
+        },
+        angularCookies: {
+            deps: ['angular']
+        },
 
         jquery_custom: {
             deps: ['jquery']

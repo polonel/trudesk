@@ -14,7 +14,8 @@
 
 var async   = require('async'),
     _       = require('underscore'),
-    winston = require('winston');
+    winston = require('winston'),
+    moment  = require('moment');
 
 var viewController = {};
 var viewdata = {};
@@ -28,6 +29,11 @@ viewController.getData = function(request, cb) {
               viewController.getActiveNotice(function(err, data) {
                   if (err) return callback(err);
                   viewdata.notice = data;
+                  viewdata.noticeCookieName = undefined;
+
+                  if (!_.isUndefined(data) && !_.isNull(data))
+                    viewdata.noticeCookieName = data.name + "_" + moment(data.activeDate).format("MMMDDYYYY_HHmmss");
+
                   callback();
               });
           },

@@ -35,11 +35,13 @@ var COLLECTION = 'notices';
  */
 var noticeSchema = mongoose.Schema({
     name:       { type: String, required: true },
-    date:       { type: Date, default: Date.now, required: true},
-    color:      { type: String, default: '#e74c3c', required: true},
+    date:       { type: Date, default: Date.now, required: true },
+    color:      { type: String, default: '#e74c3c', required: true },
+    fontColor:  { type: String, default: '#ffffff', required: true},
     message:    { type: String, required: true },
-    active:     { type: Boolean, default: false, required: true},
-    activeDate: { type: Date, default: Date.now }
+    active:     { type: Boolean, default: false, required: true },
+    activeDate: { type: Date, default: Date.now },
+    alertWindow:{ type: Boolean, default: false }
 });
 
 noticeSchema.plugin(deepPopulate);

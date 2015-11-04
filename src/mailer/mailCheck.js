@@ -178,7 +178,7 @@ mailCheck.fetchMail = function() {
                     });
                 }
             ], function(err) {
-                if (err) return winston.warn(err);
+                if (err) winston.warn(err);
                 mailCheck.Imap.closeBox(true, function(err) {
                     mailCheck.Imap.end();
                 });

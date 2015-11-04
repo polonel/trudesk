@@ -1,0 +1,18 @@
+<div id="noticeAlertModal">
+    <div ng-controller="commonCtrl" ng-init="loadNoticeAlertWindow()">
+        <div id="__noticeCookieName" class="hide">{{data.common.noticeCookieName}}</div>
+        <div id="noticeAlertWindow" class="reveal-modal large" data-reveal aria-labelledby="noticeTitle" aria-hidden="true" role="dialog" data-options="animation:none;close_on_background_click:false;"
+             style="padding-top: 70px;"
+                >
+            <div id="noticeBG" style="width: 100%; height: 50px; background-color: {{data.common.notice.color}}; margin-bottom: 5px;position:absolute;top: 0;left: 0; padding: 7px 25px;">
+                <h4 id="noticeTitle" style="font-weight: 300;color: {{data.common.notice.fontColor}};">{{data.common.notice.name}}</h4>
+            </div>
+            <div>
+                <p id="noticeText" style="color: #000;">{{formatDate data.common.notice.activeDate "MM/DD/YYYY HH:mm"}} - Important: {{data.common.notice.message}}</p>
+                <button class="btn right" type="button" style="margin-bottom: 0;" ng-click="confirmNoticeClick();">Confirm</button>
+            </div>
+
+            <!--<a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>-->
+        </div>
+    </div>
+</div>

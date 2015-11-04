@@ -3,7 +3,9 @@
     width: 85px !important
     -webkit-user-select: none 
     -moz-user-select: none 
-    -ms-user-select: none 
+    -ms-user-select: none
+    &.subscribeSwitch
+        width: 100px !important
 
 .onoffswitch-checkbox
     display: none 
@@ -41,7 +43,15 @@
     content: "Refresh"
     padding-left: 7px 
     background-color: #E74C3C 
-    color: #FFFFFF 
+    color: #FFFFFF
+
+.subscribeSwitch-inner:before
+    content: "Subscribe"
+    background-color: #29b955
+
+.onSwitch-inner:before
+    content: "On"
+    background-color: #29b955
 
 .onoffswitch-inner:after
     content: "OFF"
@@ -62,6 +72,8 @@
     border: 1px solid #dae0ec
     border-radius: 5px 
     transition: all 0.3s ease-in 0s
+    &.subscribeSwitch-switch
+        right: 72px
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-inner
     margin-left: 0 

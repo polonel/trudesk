@@ -34,7 +34,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                 var apiData = {
                     name: formData.nName,
                     message: formData.nMessage,
-                    color: formData.nColor
+                    color: formData.nColor,
+                    fontColor: formData.nFontColor,
+                    alertWindow: (formData.nAlertWindow == 'on')
                 };
 
                 $http({
@@ -56,12 +58,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
             $scope.submitEditNoticeForm = function() {
                 var noticeId = $('#__noticeId').text();
-                console.log(noticeId);
                 var formData = $('#editNoticeForm').serializeObject();
                 var apiData = {
                     name: formData.nName,
                     message: formData.nMessage,
-                    color: formData.nColor
+                    color: formData.nColor,
+                    fontColor: formData.nFontColor,
+                    alertWindow: (formData.nAlertWindow == 'on')
                 };
 
                 $http({

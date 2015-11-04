@@ -93,6 +93,10 @@ module.exports = function(app, db, callback) {
             });
             app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
+            //Docs
+            app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
+            app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
+
             app.use(express.static(path.join(__dirname, '../../', 'public')));
 
             next(null, store);

@@ -25,6 +25,7 @@ define('pages/createNotice', [
     createNotice.init = function() {
         $(document).ready(function() {
             $('select[name="nColor"]').simplecolorpicker({theme: 'fontawesome'});
+            $('select[name="nFontColor"]').simplecolorpicker({theme: 'fontawesome'});
         });
     };
 

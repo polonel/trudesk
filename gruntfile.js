@@ -175,6 +175,7 @@ module.exports = function(grunt) {
                                 'foundation',
                                 'angular',
                                 'angularRoute',
+                                'angularCookies',
                                 'modernizr',
                                 'fastclick',
                                 'placeholder',
@@ -215,7 +216,8 @@ module.exports = function(grunt) {
                     paths: {
                         foundation: 'empty:',
                         angular: 'empty:',
-                        angularRoute: 'empty:'
+                        angularRoute: 'empty:',
+                        angularCookies: 'empty:'
                     },
                     keepBuildDir: true
                 }

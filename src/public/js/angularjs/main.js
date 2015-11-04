@@ -12,8 +12,8 @@
 
  **/
 
-define(['angular', 'angularjs/controllers', 'angularRoute'], function(angular) {
-    return angular.module('trudesk', ['ngRoute', 'trudesk.controllers'])
+define(['angular', 'angularjs/controllers', 'angularRoute', 'angularCookies'], function(angular) {
+    return angular.module('trudesk', ['ngRoute', 'ngCookies', 'trudesk.controllers'])
         .config(function($interpolateProvider) {
             $interpolateProvider.startSymbol('{[{');
             $interpolateProvider.endSymbol('}]}');
