@@ -20,6 +20,14 @@ module.exports.sendToSelf = function (socket, method, data) {
     socket.emit(method, data);
 };
 
+module.exports._sendToSelf = function(io, socketId, method, data) {
+    __.each(io.sockets.sockets, function(socket) {
+        if (socket.id == socketId) {
+            socket.emit(method, data);
+        }
+    });
+};
+
 module.exports.sendToAllConnectedClients = function (io, method, data) {
     io.sockets.emit(method, data);
 };

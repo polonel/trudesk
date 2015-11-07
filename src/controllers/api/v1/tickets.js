@@ -115,6 +115,12 @@ api_tickets.get = function(req, res) {
  * @apiVersion 0.1.0
  * @apiGroup Ticket
  * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "subject": "Subject",
+ * }
+ *
  * @apiExample Example usage:
  * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
  *
@@ -159,6 +165,7 @@ api_tickets.create = function(req, res) {
     ticket.issue = marked(tIssue);
     ticket.tags = tags;
     ticket.history = [HistoryItem];
+    ticket.subscribers = [req.user._id];
     ticket.save(function(err, t) {
         if (err) {
             response.success = false;
@@ -405,13 +412,45 @@ api_tickets.removeAttachment = function(req, res) {
                 var fs = require('fs');
                 var path = require('path');
                 var dir = path.join(__dirname, '../../../../public', a.path);
-                console.log(dir);
                 if (fs.existsSync(dir)) fs.unlinkSync(dir);
 
                 ticket.save(function(err, t) {
                     if (err) return res.status(401).json({'error': 'Invalid Request.'});
                     res.send(t);
                 });
+            });
+        });
+    });
+};
+
+api_tickets.subscribe = function(req, res) {
+    var ticketId = req.params.id;
+    var data = req.body;
+    if (_.isUndefined(data.user) || _.isUndefined(data.subscribe)) return res.status(400).json({'error': 'Invalid Payload.'});
+
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(ticketId, function(err, ticket) {
+        if (err) return res.status(400).json({'error': 'Invalid Ticket Id'});
+
+        async.series([
+            function(callback) {
+                if (data.subscribe) {
+                    ticket.addSubscriber(data.user, function() {
+                        callback();
+                    });
+                } else {
+                    ticket.removeSubscriber(data.user, function() {
+                        callback();
+                    });
+                }
+            }
+        ], function() {
+            ticket.save(function(err) {
+                if (err) return res.status(400).json({'error': err});
+
+                emitter.emit('ticket:subscribers:update');
+
+                res.json({'success': true});
             });
         });
     });

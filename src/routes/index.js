@@ -105,6 +105,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
+    router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
     router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
@@ -127,6 +128,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
+    //router.get('/debug/sendmail', controllers.debug.sendmail);
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
 }
 

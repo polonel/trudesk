@@ -19,10 +19,11 @@ define('modules/ui', [
     'modules/navigation',
     'modules/socket.io/messagesUI',
     'modules/socket.io/noticeUI',
+    'modules/socket.io/ticketsUI',
     'nicescroll',
     'history'
 
-], function($, _, helpers, nav, msgUI, noticeUI) {
+], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI) {
     var socketUi = {},
         socket = io.connect();
 
@@ -53,6 +54,7 @@ define('modules/ui', [
         this.updateSingleMessageItem(socket);
         this.updateShowNotice(socket);
         this.updateClearNotice(socket);
+        this.updateSubscribe(socket);
     };
 
     socketUi.setMessageRead = function(messageId) {
@@ -84,6 +86,8 @@ define('modules/ui', [
 
     socketUi.updateShowNotice = noticeUI.updateShowNotice;
     socketUi.updateClearNotice = noticeUI.updateClearNotice;
+
+    socketUi.updateSubscribe = ticketsUI.updateSubscribe;
 
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');

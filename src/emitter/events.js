@@ -196,8 +196,8 @@ var notifications       = require('../notifications'); // Load Push Events
                 var mailer = require('../mailer');
                 var emails = [];
                 async.each(ticket.subscribers, function(member, cb) {
-                    if (_.isUndefined(member.email)) return cb();
-                    if (member._id.toString() == comment.owner._id.toString()) return cb();
+                    if (_.isUndefined(member) || _.isUndefined(member.email)) return cb();
+                    if (member._id.toString() == comment.owner.toString()) return cb();
 
                     emails.push(member.email);
 
@@ -212,38 +212,44 @@ var notifications       = require('../notifications'); // Load Push Events
                             winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
                             return c(err);
                         } else {
-                            var locals = {
-                                ticket: ticket,
-                                comment: comment
-                            };
+                            ticket.populate('comments.owner', function(err, ticket) {
+                                if (err) return true;
 
-                            template('ticket-comment-added', locals, function(err, html) {
-                                if (err) {
-                                    winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
-                                    return c(err);
-                                } else {
-                                    var mailOptions = {
-                                        to: emails.join(),
-                                        subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
-                                        html: html,
-                                        generateTextFromHTML: true
-                                    };
+                                var locals = {
+                                    ticket: ticket,
+                                    comment: comment
+                                };
 
-                                    mailer.sendMail(mailOptions, function(err, info) {
-                                        if (err) {
-                                            return c(err, null);
-                                        }
+                                template('ticket-comment-added', locals, function(err, html) {
+                                    if (err) {
+                                        winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
+                                        return c(err);
+                                    } else {
+                                        var mailOptions = {
+                                            to: emails.join(),
+                                            subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
+                                            html: html,
+                                            generateTextFromHTML: true
+                                        };
 
-                                        return c(null, info);
-                                    });
-                                }
+                                        mailer.sendMail(mailOptions, function(err, info) {
+                                            if (err) {
+                                                winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
+                                                return c();
+                                            }
+
+                                            winston.debug('Sent Subscriber Mail.');
+                                            return c(null, info);
+                                        });
+                                    }
+                                });
                             });
                         }
                     });
                 });
             }
         ], function(err, result) {
-
+            //Blank
         });
     });
 })();

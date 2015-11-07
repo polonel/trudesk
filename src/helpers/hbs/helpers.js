@@ -489,6 +489,8 @@ var helpers = {
 
     checkPerm: function(user, perm, options) {
         var P = require('../../permissions');
+        if (_.isUndefined(user)) return options.inverse(this);
+
         if (P.canThis(user.role, perm)) {
             return options.fn(this);
         } else {
@@ -528,6 +530,15 @@ var helpers = {
         } else {
             return options.inverse(this);
         }
+    },
+
+    isSubscribed: function(arr, value) {
+        var result = _.some(arr, function(i) {
+            if (_.isUndefined(i) || _.isUndefined(value)) return false;
+            return i._id.toString() == value.toString();
+        });
+
+        return !!result;
     }
 };
 

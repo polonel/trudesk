@@ -21,7 +21,9 @@ var Controllers = {
     groups: require('./groups'),
     reports: require('./reports'),
     notices: require('./notices'),
-    api: require('./api')
+    api: require('./api'),
+
+    debug: require('./debug')
 };
 
 module.exports = Controllers;

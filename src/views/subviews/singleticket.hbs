@@ -1,4 +1,10 @@
-<div ng-init="ticketType='{{data.ticket.type._id}}';ticketPriority={{data.ticket.priority}};ticketGroup='{{data.ticket.group._id}}';">
+<div ng-init="
+    ticketType='{{data.ticket.type._id}}';
+    ticketPriority={{data.ticket.priority}};
+    ticketGroup='{{data.ticket.group._id}}';
+    subscribed={{isSubscribed data.ticket.subscribers data.common.loggedInAccount._id}};
+    user='{{data.common.loggedInAccount._id}}';">
+
     <div ng-controller="singleTicket">
         <div class="small-5 medium-5 large-3 columns message-list">
             <div class="page-title page-title-small noshadow nopadding-right" >
@@ -174,10 +180,22 @@
                         {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
                     </a>
                 </div>
-                <div class="page-actions right">
-                    <div class="print-ticket">
-                        <a href="/tickets/print/{{data.ticket.uid}}" class="no-ajaxy" onclick="window.open(this.href); return false;" onkeypress="window.open(this.href); return false;"><i class="fa fa-print fa-lg"></i>Print</a>
-                    </div>
+                <div class="onoffswitch subscribeSwitch right" style="margin-right: 10px; position: relative; top: 18px;">
+                    <input type="checkbox" name="subscribeSwitch" class="onoffswitch-checkbox" id="subscribeSwitch" ng-model="subscribed" ng-change="SubscriberChange()"
+                           data-subscribe-userId="{{data.common.loggedInAccount._id}}" >
+                    <label class="onoffswitch-label" for="subscribeSwitch">
+                        <span class="onoffswitch-inner subscribeSwitch-inner"></span>
+                        <span class="onoffswitch-switch subscribeSwitch-switch"></span>
+                    </label>
+                </div>
+                <div class="pagination right" style="margin-right: 5px;">
+                    <ul class="button-group">
+                        <li class="pagination">
+                            <a href="/tickets/print/{{data.ticket.uid}}" class="btn no-ajaxy" style="border-radius: 3px; margin-right: 5px;" onclick="window.open(this.href); return false;" onkeypress="window.open(this.href); return false;">
+                                <i class="fa fa-large fa-print"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
             </div>
 

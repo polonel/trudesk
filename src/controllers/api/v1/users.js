@@ -93,6 +93,12 @@ api_users.update = function(req, res) {
  * @apiExample Example usage:
  * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X PUT -d "{\"preference\":\"{preference_name}\",\"value\":{value}}" -l http://localhost/api/v1/users/{username}/updatepreferences
  *
+ * @apiParamExample {json} Request:
+ * {
+ *      "preference": "preference_name",
+ *      "value": "preference_value"
+ * }
+ *
  * @apiSuccess {object} user Saved User Object [Stripped]
  *
  * @apiError InvalidPostData The data was invalid

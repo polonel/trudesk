@@ -23,31 +23,16 @@ define('modules/socket.io/ticketsUI', [
 ], function($, _, moment, helpers, nav) {
     var ticketsUI = {};
 
-    ticketsUI.setShowNotice = function(socket, notice) {
-        socket.emit('setShowNotice', notice);
-    };
-
-    ticketsUI.updateShowNotice = function(socket) {
-        socket.removeAllListeners('updateShowNotice');
-        socket.on('updateShowNotice', function(notice) {
-            var $noticeDiv = $('div#notice-banner');
-            var $dateFormated = moment(notice.activeDate).format('MM/DD/YYYY HH:mm');
-            var $message = ' - Important: ' + notice.message;
-            var $bgColor = notice.color;
-            $noticeDiv.css('background', $bgColor);
-            $noticeDiv.html($dateFormated + $message);
-            $noticeDiv.removeClass('hide');
-        });
-    };
-
-    ticketsUI.setClearNotice = function(socket) {
-        socket.emit('setClearNotice');
-    };
-
-    ticketsUI.updateClearNotice = function(socket) {
-        socket.removeAllListeners('updateClearNotice');
-        socket.on('updateClearNotice', function() {
-            $('div#notice-banner').addClass('hide');
+    ticketsUI.updateSubscribe = function(socket) {
+        socket.removeAllListeners('ticket:subscriber:update');
+        socket.on('ticket:subscriber:update', function(data) {
+            var $subscribeSwitch = $('input#subscribeSwitch[data-subscribe-userId="' + data.user + '"]');
+            if ($subscribeSwitch.length > 0) {
+                if (data.subscribe)
+                    $subscribeSwitch.prop('checked', true);
+                else
+                    $subscribeSwitch.prop('checked', false);
+            }
         });
     };
 

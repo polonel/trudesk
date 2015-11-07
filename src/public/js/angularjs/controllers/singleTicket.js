@@ -147,6 +147,22 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     $(inputField).trigger('click');
                 }
             };
+
+            $scope.SubscriberChange = function() {
+                var id = $('#__ticketId').html();
+                $http.put(
+                    '/api/v1/tickets/' + id + '/subscribe',
+                    {
+                        "user" : $scope.user,
+                        "subscribe": $scope.subscribed
+                    }
+                ).success(function() {
+
+                    }).error(function(e) {
+                        console.log('[trudesk:singleTicket:SubscriberChange] - ' + e);
+                        helpers.showFlash('Error: ' + e.message, true);
+                    });
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

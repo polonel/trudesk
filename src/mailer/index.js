@@ -39,6 +39,7 @@ var transporter = nodeMailer.createTransport({
         pass: nconf.get('mailer:password') ? nconf.get('mailer:password') : ''
     },
     tls: {
+        rejectUnauthorized: false,
         ciphers: 'SSLv3'
     }
 });

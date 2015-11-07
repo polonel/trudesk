@@ -239,24 +239,35 @@ module.exports = function(ws) {
             var ticketId = data.ticketId;
             var ticketSchema = require('./models/ticket');
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
-                if (err) return true
+                if (err) return true;
 
-                ticket.setAssignee(ownerId, userId, function(err, t) {
-                    if (err) {
-                        winston.warn(err);
-                        return true;
+                async.parallel({
+                    setAssignee: function(callback) {
+                        ticket.setAssignee(ownerId, userId, function(err, ticket) {
+                            callback(err, ticket);
+                        });
+                    },
+                    subscriber: function(callback) {
+                        ticket.addSubscriber(userId, function(err, ticket) {
+                            callback(err, ticket);
+                        });
                     }
+                }, function(err, results) {
+                    if (err) return true;
 
-                    t.save(function(err, tt) {
+                    ticket = results.subscriber;
+                    ticket.save(function(err, ticket) {
                         if (err) return true;
-                        ticketSchema.populate(tt, 'assignee', function(err){
+                        ticketSchema.populate(ticket, 'assignee', function(err) {
                             if (err) return true;
 
+                            emitter.emit('ticket:subscriber:update', {user: userId, subscribe: true});
                             emitter.emit('ticket:updated', ticketId);
-                            utils.sendToAllConnectedClients(io, 'updateAssignee', tt);
+                            utils.sendToAllConnectedClients(io, 'updateAssignee', ticket);
                         });
                     });
-                })
+
+                });
             });
         });
 
@@ -389,8 +400,7 @@ module.exports = function(ws) {
             if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
             comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
             var markedComment = marked(comment);
-            console.log(comment);
-            console.log(markedComment);
+
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return winston.error(err);
 
