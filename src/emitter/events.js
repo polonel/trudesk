@@ -56,8 +56,8 @@ var notifications       = require('../notifications'); // Load Push Events
 
                          emailTemplates(templateDir, function(err, template) {
                              if (err) {
-                                 winston.error(err);
-                                 return c(err);
+                                 winston.error('[trudesk:events:ticket:created] - Error: ' + err);
+                                 return c();
                              } else {
                                  var locals = {
                                      ticket: ticket
@@ -65,8 +65,8 @@ var notifications       = require('../notifications'); // Load Push Events
 
                                  template('new-ticket', locals, function(err, html) {
                                      if (err) {
-                                         winston.error(err);
-                                         return c(err);
+                                         winston.error('[trudesk:events:ticket:created] - Error: ' + err);
+                                         return c();
                                      } else {
                                          var mailOptions = {
                                              to: emails.join(),
@@ -77,7 +77,8 @@ var notifications       = require('../notifications'); // Load Push Events
 
                                          mailer.sendMail(mailOptions, function(err, info) {
                                              if (err) {
-                                                 return c(err, null);
+                                                 winston.warn('[trudesk:events:ticket:created] - Error: ' + err)
+                                                 return c();
                                              }
 
                                              return c(null, info);
@@ -117,7 +118,7 @@ var notifications       = require('../notifications'); // Load Push Events
                  }
              ], function(err) {
                     if (err) {
-                        return winston.warn('Error: [ticket:created]: ' + err);
+                        return winston.warn('[trudesk:events:ticket:created] - Error: ' + err);
                     }
 
                  //Send Ticket..
@@ -139,12 +140,17 @@ var notifications       = require('../notifications'); // Load Push Events
         //winston.warn('ticket deleted: ' + oId);
     });
 
+    emitter.on('ticket:subscriber:update', function(data) {
+        io.sockets.emit('ticket:subscriber:update', data);
+    });
+
     emitter.on('ticket:comment:added', function(ticket, comment) {
         //Goes to client
         io.sockets.emit('updateComments', ticket);
 
         if (ticket.owner._id.toString() == comment.owner.toString()) return;
         if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() == comment.owner.toString()) return;
+
         async.parallel([
             function(cb) {
                 var notification = new notificationSchema({
@@ -184,8 +190,58 @@ var notifications       = require('../notifications'); // Load Push Events
 
                     cb(null);
                 });
-            }
+            },
+            //Send email to subscribed users
+            function(c) {
+                var mailer = require('../mailer');
+                var emails = [];
+                async.each(ticket.subscribers, function(member, cb) {
+                    if (_.isUndefined(member.email)) return cb();
+                    if (member._id.toString() == comment.owner._id.toString()) return cb();
 
+                    emails.push(member.email);
+
+                    cb();
+                }, function(err) {
+                    if (err) return c(err);
+
+                    emails = _.uniq(emails);
+
+                    emailTemplates(templateDir, function(err, template) {
+                        if (err) {
+                            winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
+                            return c(err);
+                        } else {
+                            var locals = {
+                                ticket: ticket,
+                                comment: comment
+                            };
+
+                            template('ticket-comment-added', locals, function(err, html) {
+                                if (err) {
+                                    winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
+                                    return c(err);
+                                } else {
+                                    var mailOptions = {
+                                        to: emails.join(),
+                                        subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
+                                        html: html,
+                                        generateTextFromHTML: true
+                                    };
+
+                                    mailer.sendMail(mailOptions, function(err, info) {
+                                        if (err) {
+                                            return c(err, null);
+                                        }
+
+                                        return c(null, info);
+                                    });
+                                }
+                            });
+                        }
+                    });
+                });
+            }
         ], function(err, result) {
 
         });
