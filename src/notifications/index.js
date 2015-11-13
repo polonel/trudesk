@@ -32,6 +32,16 @@ var apnOptions = {
 
 module.exports.pushNotification = function(notification) {
     //Check Cert Exists
+    try {
+        if (fs.statSync(path.join(__dirname, '../../', apnOptions.cert)).length < 1)
+            return true;
+    }
+    catch (e) {
+        //winston.debug(e);
+        //Exit out if the File Doesn't Exist
+        return true;
+    }
+
     fs.readFile(path.join(__dirname, '../../', apnOptions.cert), function(err) {
         if (err) {
             winston.warn(err);
