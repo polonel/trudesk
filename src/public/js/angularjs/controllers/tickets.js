@@ -136,6 +136,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     querystring += '&gp=' + item;
                 });
 
+                var filterType = $('#ticketFilterForm select#filterType').val();
+                _.each(filterType, function(item) {
+                    querystring += '&tt=' + item;
+                });
+
                 var filterAssignee = $('#ticketFilterForm select#filterAssignee').val();
                 _.each(filterAssignee, function(item) {
                     querystring += '&au=' + item;

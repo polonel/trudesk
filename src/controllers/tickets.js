@@ -175,6 +175,7 @@ ticketsController.filter = function(req, res, next) {
     var dateEnd = queryString.de;
     var status = queryString.st;
     var groups = queryString.gp;
+    var types = queryString.tt;
     var assignee = queryString.au;
 
     var rawNoPage = req.originalUrl.replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
@@ -182,6 +183,7 @@ ticketsController.filter = function(req, res, next) {
 
     if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
     if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
+    if (!_.isUndefined(types) && !_.isArray(types)) types = [types];
     if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee];
 
     var filter = {
@@ -192,6 +194,7 @@ ticketsController.filter = function(req, res, next) {
         },
         status: status,
         groups: groups,
+        types: types,
         assignee: assignee,
         raw: rawNoPage
     };

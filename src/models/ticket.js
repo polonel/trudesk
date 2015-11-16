@@ -532,6 +532,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({status: {$in: _status}});
     }
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
+        q.where({type: {$in: object.filter.types}});
+    }
+    
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
         q.where({assignee: {$in: object.filter.assignee}});
     }
