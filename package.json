@@ -42,7 +42,7 @@
     "marked": "^0.3.3",
     "matchdep": "^0.3.0",
     "moment": "^2.10.2",
-    "mongoose": "^4.0.2",
+    "mongoose": "4.2.5",
     "mongoose-deep-populate": "2.0.1",
     "morgan": "^1.5.2",
     "nconf": "^0.7.1",
