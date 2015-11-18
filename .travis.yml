@@ -3,9 +3,14 @@ language: node_js
 node_js:
   - "0.10"
   - "0.12"
-  - "5.0.0"
 services:
   - mongodb
+addons:
+  apt:
+    sources:
+      - mongodb-3.0-precise
+    packages:
+      - mongodb-org-server
 
 before_install:
   - npm install -g grunt
