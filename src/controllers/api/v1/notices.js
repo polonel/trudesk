@@ -24,13 +24,43 @@ var async = require('async'),
 
 var api_notices = {};
 
+
+/**
+ * @api {post} /api/v1/notices/create Create Notice
+ * @apiName create
+ * @apiDescription Creates a notice with the given post data.
+ * @apiVersion 0.1.0
+ * @apiGroup Notice
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "name": "Notice Name",
+ *      "messages": "Notice Message",
+ *      "color": "#CCCCC",
+ *      "fontColor": "#000000",
+ *      "alterWindow": true
+ * }
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/notices/create
+ *
+ * @apiSuccess {object} notice Notice Object that was created.
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
 api_notices.create = function(req, res) {
     var postData = req.body;
     var notice = new noticeSchema(postData);
     notice.save(function(err, notice) {
         if (err) {
-            winston.warn(err);
-            return res.status(400).send({success: false, error: err.message});
+            winston.debug(err);
+            return res.status(400).send({success: false, error: "Invalid Post Data"});
         }
 
         return res.json(notice);
