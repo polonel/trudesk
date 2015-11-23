@@ -42,3 +42,4 @@ apidocs
 docs
 public/js/*
 public/css/app.css.map
+*.diff

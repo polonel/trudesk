@@ -12,6 +12,7 @@
 
  **/
 
+var async               = require('async');
 var mongoose            = require('mongoose');
 var _                   = require('underscore');
 var deepPopulate        = require('mongoose-deep-populate')(mongoose);
@@ -977,6 +978,88 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
     }
 
     return q.exec(callback);
+};
+
+
+/**
+ * Gets count of X Top Groups
+ *
+ * @memberof Ticket
+ * @static
+ * @method getTopTicketGroups
+ *
+ * @param {Number} top Top number of Groups to return (default: 5)
+ * @param {QueryCallback} callback MongoDB Query Callback
+ * @example
+ * ticketSchema.getTopTicketGroups(5, function(err, results) {
+ *    if (err) throw err;
+ *
+ *    //results is an array with name of group and count of total tickets
+ *    results[x].name
+ *    results[x].count
+ * });
+ */
+ticketSchema.statics.getTopTicketGroups = function(top, callback) {
+    if (_.isUndefined(top) || _.isNaN(top)) top = 5;
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({deleted: false})
+        .deepPopulate('group')
+        .select('group')
+        .sort('group');
+
+    var topCount = [];
+
+    async.waterfall([
+        function(next) {
+            q.exec(function(err, g) {
+                if (err) return next(err);
+
+                var a = [];
+
+                _.each(g, function(item) {
+                    var o = {};
+                    o.name = item.group.name;
+                    o._id = item.group._id;
+
+                    if (!_.where(a, {'name': o.name}).length) a.push(o);
+
+                });
+
+                var final = _.uniq(a);
+
+                next(null, final);
+            });
+        },
+        function(grps, next) {
+            console.log(grps);
+            async.each(grps, function(grp, cb) {
+                var cq = self.model(COLLECTION).count({'group': grp._id, deleted: false});
+
+                cq.exec(function(err, count) {
+                    if (err) return cb(err);
+
+                    topCount.push({'name': grp.name, 'count': count});
+
+                    cb();
+                });
+            }, function(err) {
+                if (err) return next(err);
+
+                topCount = _.sortBy(topCount, function(o) { return -o.count; });
+
+                topCount = topCount.slice(0, top);
+
+                next(null, topCount);
+            });
+        }
+
+    ], function(err, result) {
+        if (err) return callback(err);
+
+        callback(null, result);
+    });
 };
 
 /**

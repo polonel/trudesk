@@ -102,6 +102,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
     router.get('/api/v1/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
+    router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
+    router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
@@ -147,7 +149,7 @@ function handleErrors(err, req, res, next) {
     //req.flash('errorMessage', err.message);
 
     if (status == 404) {
-        winston.warn(err.message);
+        winston.debug(err.message);
         res.render('404', {layout: false});
         return;
     }

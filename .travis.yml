@@ -5,6 +5,12 @@ node_js:
   - "0.12"
 services:
   - mongodb
+addons:
+  apt:
+    sources:
+      - mongodb-3.0-precise
+    packages:
+      - mongodb-org-server
 
 before_install:
   - npm install -g grunt
