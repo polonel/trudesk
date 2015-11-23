@@ -265,13 +265,6 @@ ticketsController.processor = function(req, res) {
 
         //Ticket Data
         self.content.data.totalCount = 0;
-        self.content.data.pagination = {};
-        self.content.data.pagination.type = processor.pagetype;
-        self.content.data.pagination.currentpage = object.page;
-        self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
-        self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
-        self.content.data.pagination.enabled = false;
-
         self.content.data.tickets = results;
 
         var countObject = {
@@ -284,6 +277,13 @@ ticketsController.processor = function(req, res) {
         //Get Pagination
         ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
             if (err) return handleError(res, err);
+
+            self.content.data.pagination = {};
+            self.content.data.pagination.type = processor.pagetype;
+            self.content.data.pagination.currentpage = object.page;
+            self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
+            self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+            self.content.data.pagination.enabled = false;
 
             self.content.data.pagination.total = totalCount;
             if (self.content.data.pagination.total > object.limit)
