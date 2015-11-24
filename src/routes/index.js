@@ -104,7 +104,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
-    router.get('/api/v1/tickets/:uid/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
+    router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
