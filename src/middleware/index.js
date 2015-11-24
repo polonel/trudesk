@@ -34,7 +34,6 @@ var middleware = {};
 module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
 
-
     app.set('views', path.join(__dirname, '../views/'));
     app.engine('hbs', hbs.express3({
         defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
@@ -91,11 +90,8 @@ module.exports = function(app, db, callback) {
 
                 next();
             });
-            app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
-            //Docs
-            app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
-            app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
+            app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
             app.use(express.static(path.join(__dirname, '../../', 'public')));
 

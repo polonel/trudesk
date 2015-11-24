@@ -135,8 +135,11 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
-    mainRoutes(router, middleware, controllers);
+    //Docs
+    app.use('/docs', middleware.redirectToLogin, express.static(path.join(__dirname, '../../', 'docs')));
+    app.use('/apidocs', middleware.redirectToLogin, express.static(path.join(__dirname, '../../', 'apidocs')));
 
+    mainRoutes(router, middleware, controllers);
     app.use('/', router);
 
     app.use(handle404);
