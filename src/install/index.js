@@ -69,6 +69,11 @@ questions.mongo = [
 
 questions.mailer = [
     {
+        name: 'mailer:enable',
+        description: 'Enable sending of mail items',
+        default: nconf.get('mailer:enable') || true
+    },
+    {
         name: 'mailer:host',
         description: 'Host IP or address of your SMTP host',
         default: nconf.get('mailer:host') || '127.0.0.1'
@@ -194,7 +199,7 @@ function setupConfig(next) {
                     }
 
                     config.mailer = {
-                        enable: true,
+                        enable: mailerConfig['mailer:enable'],
                         host: mailerConfig['mailer:host'],
                         port: mailerConfig['mailer:port'],
                         username: mailerConfig['mailer:username'],

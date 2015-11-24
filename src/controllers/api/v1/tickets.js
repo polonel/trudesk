@@ -181,7 +181,29 @@ api_tickets.create = function(req, res) {
     });
 };
 
-api_tickets.single = function(req, res, next) {
+/**
+ * @api {get} /api/v1/tickets/:uid Get Single Ticket
+ * @apiName singleTicket
+ * @apiDescription Gets a ticket with the given UID.
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/1000
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} ticket Ticket Object
+ *
+ * @apiError InvalidRequest The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Ticket"
+ }
+ */
+api_tickets.single = function(req, res) {
     var uid = req.params.uid;
     if (_.isUndefined(uid)) return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
 
@@ -197,7 +219,7 @@ api_tickets.single = function(req, res, next) {
     });
 };
 
-api_tickets.update = function(req, res, next) {
+api_tickets.update = function(req, res) {
     var user = req.user;
     if (!_.isUndefined(user) && !_.isNull(user)) {
         var oId = req.params.id;

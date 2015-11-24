@@ -1033,7 +1033,6 @@ ticketSchema.statics.getTopTicketGroups = function(top, callback) {
             });
         },
         function(grps, next) {
-            console.log(grps);
             async.each(grps, function(grp, cb) {
                 var cq = self.model(COLLECTION).count({'group': grp._id, deleted: false});
 
