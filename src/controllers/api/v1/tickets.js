@@ -219,15 +219,37 @@ api_tickets.single = function(req, res) {
     });
 };
 
+/**
+ * @api {put} /api/v1/tickets/:id Update Ticket
+ * @apiName updateTicket
+ * @apiDescription Updates ticket via given OID
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X PUT -d "{\"status\": {status},\"group\": \"{group}\"}" -l http://localhost/api/v1/tickets/{id}
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} ticket Updated Ticket Object
+ *
+ * @apiError InvalidRequest The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
 api_tickets.update = function(req, res) {
     var user = req.user;
     if (!_.isUndefined(user) && !_.isNull(user)) {
         var oId = req.params.id;
         var reqTicket = req.body;
-        if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+        if (_.isUndefined(oId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
-            if (err) return res.send(err.message);
+            if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
             //Check the user has permission to update ticket.
 
@@ -245,24 +267,52 @@ api_tickets.update = function(req, res) {
 
                 emitter.emit('ticket:updated', t);
 
-                return res.json(t);
+                return res.json({
+                    success: true,
+                    error: null,
+                    ticket: t
+                });
             });
         });
+    } else {
+        return res.status(403).json({success: false, error: "Invalid Access Token"});
     }
 };
 
+/**
+ * @api {delete} /api/v1/tickets/:id Delete Ticket
+ * @apiName deleteTicket
+ * @apiDescription Deletes ticket via given OID
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/{id}
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ *
+ * @apiError InvalidRequest The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
 api_tickets.delete = function(req, res, next) {
     var oId = req.params.id;
-    if (_.isUndefined(oId)) return res.send("Invalid Ticket Id");
+    if (_.isUndefined(oId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
     var ticketModel = require('../../../models/ticket');
     ticketModel.softDelete(oId, function(err) {
-        if (err) return res.status(400).send(err.message);
+        if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
         emitter.emit('ticket:deleted', oId);
-        res.sendStatus(200);
+        res.res.json({success: true, error: null});
     });
 };
 
+//TODO: Revamp For correct API Structure.
 api_tickets.postComment = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
     userSchema.getUserByAccessToken(accessToken, function(err, user) {
@@ -313,10 +363,24 @@ api_tickets.postComment = function(req, res, next) {
     });
 };
 
-api_tickets.getTypes = function(req, res, next) {
+/**
+ * @api {get} /api/v1/tickets/types Get Ticket Types
+ * @apiName getTicketTypes
+ * @apiDescription Gets all available ticket types.
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/types
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
+api_tickets.getTypes = function(req, res) {
     var ticketType = require('../../../models/tickettype');
     ticketType.getTypes(function(err, types) {
-        if (err) return res.send(err);
+        if (err) return res.status(400).json({error: "Invalid Post Data"});
 
         res.json(types);
     })
@@ -376,10 +440,6 @@ api_tickets.getMonthData = function(req, res) {
         data.push(closedData);
         res.json(data);
     });
-};
-
-api_tickets.flotData = function(req, res) {
-
 };
 
 api_tickets.getYearData = function(req, res) {
@@ -475,10 +535,31 @@ api_tickets.removeAttachment = function(req, res) {
     });
 };
 
+/**
+ * @api {put} /api/v1/tickets/:id/subscribe Subscribe/Unsubscribe
+ * @apiName subscribeTicket
+ * @apiDescription Subscribe/Unsubscribe user to the given ticket OID
+ * @apiVersion 0.1.4
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X PUT -d "{\"user\": {user},\"subscribe\": {boolean}}" -l http://localhost/api/v1/tickets/{id}
+ *
+ * @apiParamExample {json} Request-Example:
+   {
+       "user": {user},
+       "subscribe": {boolean}
+   }
+ *
+ * @apiSuccess {boolean} success Successfully?
+ *
+ * @apiError InvalidPostData Invalid Post Data
+ */
 api_tickets.subscribe = function(req, res) {
     var ticketId = req.params.id;
     var data = req.body;
-    if (_.isUndefined(data.user) || _.isUndefined(data.subscribe)) return res.status(400).json({'error': 'Invalid Payload.'});
+    if (_.isUndefined(data.user) || _.isUndefined(data.subscribe)) return res.status(400).json({'error': 'Invalid Post Data.'});
 
     var ticketModel = require('../../../models/ticket');
     ticketModel.getTicketById(ticketId, function(err, ticket) {
