@@ -12,6 +12,7 @@ addons:
   apt:
     sources:
       - mongodb-3.0-precise
+      - ubuntu-toolchain-r-test
     packages:
       - mongodb-org-server
       - gcc-4.8
