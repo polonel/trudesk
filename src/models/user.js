@@ -271,18 +271,18 @@ userSchema.statics.getAssigneeUsers = function(callback) {
 };
 
 /**
- * Inserts a user with the given data object
+ * Creates a user with the given data object
  *
  * @memberof User
  * @static
- * @method insertUser
+ * @method createUser
  *
  * @param {User} data JSON data object of new User
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.insertUser = function(data, callback) {
+userSchema.statics.createUser = function(data, callback) {
     if (_.isUndefined(data)) {
-        return callback("Invalid User Data - UserSchema.InsertUser()", null);
+        return callback("Invalid User Data - UserSchema.CreateUser()", null);
     }
     var self = this;
 

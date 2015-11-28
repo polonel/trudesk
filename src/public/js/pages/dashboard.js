@@ -33,7 +33,7 @@ define('pages/dashboard', [
         if ($ticketLines.length > 0) {
             $.ajaxSetup({cache: false});
             $.ajax({
-                url: '/api/v1/tickets/count/month/0',
+                url: '/api/v1/tickets/count/month',
                 method: 'GET',
                 success: updateFlot
             })

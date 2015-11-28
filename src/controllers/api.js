@@ -216,12 +216,7 @@ apiController.login = function(req, res) {
 
         req.user = resUser;
 
-        //user.addAccessToken(function(err, token) {
-        //    if (err) return res.status(401).json({'success': false, 'error': err.message});
-        //    if (!token) return res.status(401).json({'success': false, 'error': 'Invalid AccessToken'});
-
-            return res.json({'success': true, 'accessToken': resUser.accessToken, 'user': resUser});
-        //});
+        return res.json({'success': true, 'accessToken': resUser.accessToken, 'user': resUser});
     });
 };
 

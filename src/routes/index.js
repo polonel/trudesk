@@ -101,7 +101,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    router.get('/api/v1/tickets/count/month/:month', middleware.api, controllers.api.tickets.getMonthData);
+    router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
@@ -114,7 +114,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
-    router.post('/api/v1/users', controllers.api.users.insert);
+    router.post('/api/v1/users/create', middleware.api, controllers.api.users.create);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);

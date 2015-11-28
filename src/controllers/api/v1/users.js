@@ -34,7 +34,7 @@ var api_users = {};
  * @return {User|Error} Inserted User Object | Error
  * @deprecated
  */
-api_users.insert = function(req, res) {
+api_users.create = function(req, res) {
     var data = req.body;
 
     userSchema.insertUser(data, function(err, r) {

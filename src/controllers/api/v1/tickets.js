@@ -119,10 +119,19 @@ api_tickets.get = function(req, res) {
  * @apiParamExample {json} Request-Example:
  * {
  *      "subject": "Subject",
+ *      "issue": "Issue Exmaple",
+ *      "owner": {OwnerId},
+ *      "group": {GroupId},
+ *      "type": {TypeId},
+ *      "prioirty": 0-3
  * }
  *
  * @apiExample Example usage:
- * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets
+ * curl -X POST
+ *      -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"subject\":\"{subject}\",\"owner\":{ownerId}, group: \"{groupId}\", type: \"{typeId}\", issue: \"{issue}\", prioirty: \"{prioirty}\"}"
+ *      -l http://localhost/api/v1/tickets/create
  *
  * @apiSuccess {boolean} success If the Request was a success
  * @apiSuccess {object} error Error, if occurred
@@ -228,7 +237,10 @@ api_tickets.single = function(req, res) {
  * @apiHeader {string} accesstoken The access token for the logged in user
  *
  * @apiExample Example usage:
- * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X PUT -d "{\"status\": {status},\"group\": \"{group}\"}" -l http://localhost/api/v1/tickets/{id}
+ * curl -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -X PUT -d "{\"status\": {status},\"group\": \"{group}\"}"
+ *      -l http://localhost/api/v1/tickets/{id}
  *
  * @apiSuccess {boolean} success If the Request was a success
  * @apiSuccess {object} error Error, if occurred
@@ -300,9 +312,14 @@ api_tickets.update = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_tickets.delete = function(req, res, next) {
+api_tickets.delete = function(req, res) {
     var oId = req.params.id;
-    if (_.isUndefined(oId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
+    var user = req.user;
+
+    if (_.isUndefined(oId) || _.isUndefined(user)) return res.status(400).json({success: false, error: "Invalid Post Data"});
+
+
+
     var ticketModel = require('../../../models/ticket');
     ticketModel.softDelete(oId, function(err) {
         if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
@@ -312,52 +329,77 @@ api_tickets.delete = function(req, res, next) {
     });
 };
 
-//TODO: Revamp For correct API Structure.
-api_tickets.postComment = function(req, res, next) {
-    var accessToken = req.headers.accesstoken;
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(401).json({'error': err.message});
-        if (!user) return res.status(401).json({'error': 'Unknown User'});
+/**
+ * @api {post} /api/v1/tickets/addcomment Add Comment
+ * @apiName addComment
+ * @apiDescription Adds comment to the given Ticket Id
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -X POST
+ *      -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"comment\":\"{comment}\",\"owner\":{ownerId}, ticketId: \"{ticketId}\"}"
+ *      -l http://localhost/api/v1/tickets/addcomment
+ *
+ * @apiParamExample {json} Request:
+ * {
+ *      "comment": "Comment Text",
+ *      "owner": {OwnerId},
+ *      "ticketid": {TicketId}
+ * }
+ *
+ * @apiSuccess {boolean} success Successful
+ * @apiSuccess {string} error Error if occurrred
+ * @apiSuccess {object} ticket Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_tickets.postComment = function(req, res) {
+    var commentJson = req.body;
+    var comment = commentJson.comment;
+    var owner = commentJson.ownerId;
+    var ticketId = commentJson._id;
 
-        var commentJson = req.body;
-        var comment = commentJson.comment;
-        var owner = commentJson.ownerId;
-        var ticketId = commentJson._id;
+    if (_.isUndefined(ticketId)) return res.status(400).json({error: "Invalid Post Data"});
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(ticketId, function(err, t) {
+        if (err) return res.status(400).json({error: "Invalid Post Data"});
 
-        if (_.isUndefined(ticketId)) return res.send("Invalid Ticket Id");
-        var ticketModel = require('../../../models/ticket');
-        ticketModel.getTicketById(ticketId, function(err, t) {
+        if (_.isUndefined(comment)) return res.status(400).json({error: "Invalid Post Data"});
+
+        var marked = require('marked');
+        comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        var Comment = {
+            owner: owner,
+            date: new Date(),
+            comment: marked(comment)
+        };
+
+        t.updated = Date.now();
+        t.comments.push(Comment);
+        var HistoryItem = {
+            action: 'ticket:comment:added',
+            description: 'Comment was added',
+            owner: user._id
+        };
+        t.history.push(HistoryItem);
+
+        t.save(function(err, tt) {
             if (err) return res.send(err.message);
 
-            if (_.isUndefined(comment)) return res.send("Invalid Comment");
+            ticketModel.populate(tt, 'comments.owner', function(err) {
+                if (err) return true;
 
-            var marked = require('marked');
-            comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-            var Comment = {
-                owner: owner,
-                date: new Date(),
-                comment: marked(comment)
-            };
+                emitter.emit('ticket:comment:added', tt, Comment);
 
-            t.updated = Date.now();
-            t.comments.push(Comment);
-            var HistoryItem = {
-                action: 'ticket:comment:added',
-                description: 'Comment was added',
-                owner: user._id
-            };
-            t.history.push(HistoryItem);
-
-            t.save(function(err, tt) {
-                if (err) return res.send(err.message);
-
-                ticketModel.populate(tt, 'comments.owner', function(err) {
-                    if (err) return true;
-
-                    emitter.emit('ticket:comment:added', tt, Comment);
-
-                    res.json({ticket: tt});
-                });
+                res.json({success: true, error: null, ticket: tt});
             });
         });
     });
@@ -502,6 +544,23 @@ api_tickets.getTopTicketGroups = function(req, res) {
     });
 };
 
+/**
+ * @api {delete} /api/v1/tickets/:tid/attachments/remove/:aid Remove Attachment
+ * @apiName removeAttachment
+ * @apiDescription Remove Attachemtn with given Attachment ID from given Ticket ID
+ * @apiVersion 0.1.0
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/:tid/attachments/remove/:aid
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {object} ticket Ticket Object
+ *
+ * @apiError InvalidRequest Invalid Request
+ * @apiError InvalidPermissions Invalid Permissions
+ */
 api_tickets.removeAttachment = function(req, res) {
     var ticketId = req.params.tid;
     var attachmentId = req.params.aid;
@@ -527,8 +586,9 @@ api_tickets.removeAttachment = function(req, res) {
                 if (fs.existsSync(dir)) fs.unlinkSync(dir);
 
                 ticket.save(function(err, t) {
-                    if (err) return res.status(401).json({'error': 'Invalid Request.'});
-                    res.send(t);
+                    if (err) return res.status(400).json({'error': 'Invalid Request.'});
+
+                    res.json({success: true, ticket: t});
                 });
             });
         });
