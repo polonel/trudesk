@@ -1708,7 +1708,8 @@ table.dataTable {
     font-size: 14px; }
 
 div.dataTables_wrapper {
-  background: #f6f8fb; }
+  background: #f6f8fb;
+  margin-bottom: 0; }
   div.dataTables_wrapper .dataTables_filter {
     float: right; }
     div.dataTables_wrapper .dataTables_filter label, div.dataTables_wrapper .dataTables_filter input {

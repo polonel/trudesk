@@ -78,7 +78,10 @@ api_users.update = function(req, res) {
                 winston.warn('Error: ' + err);
                 return res.status(500).send(err);
             }
-            return res.json(nUser);
+
+            var resUser = StripUserFields(nUser);
+
+            return res.json(resUser);
         });
     });
 };
@@ -217,8 +220,7 @@ api_users.single = function(req, res) {
 
         if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request.'});
 
-        user.password = undefined;
-        user.__v = undefined;
+        user = StripUserFields(user);
 
         res.json(user);
     });

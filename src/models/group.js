@@ -81,28 +81,20 @@ groupSchema.methods.removeSendMailTo = function(memberId, callback) {
     return callback(null, true);
 };
 
-/**
- * Get group with the given name
- *
- * @memberof Group
- * @static
- * @method getGroupByName
- *
- * @param {String} name Name to query MongoDB
- * @param {QueryCallback} callback MongoDb Query Callback
- */
 groupSchema.statics.getGroupByName = function(name, callback) {
     if (_.isUndefined(name) || name.length < 1) return callback("Invalid Group Name - GroupSchema.GetGroupByName()");
 
-    var q = this.model(COLLECTION).findOne({name: name}).populate('members');
+    var q = this.model(COLLECTION).findOne({name: name})
+        .populate('members', 'username fullname email role preferences image title')
+        .populate('sendMailTo', 'username fullname email role preferences image title');
 
     return q.exec(callback);
 };
 
 groupSchema.statics.getAllGroups = function(callback) {
     var q = this.model(COLLECTION).find({})
-        .populate('members')
-        .populate('sendMailTo')
+        .populate('members', 'username fullname email role preferences image title')
+        .populate('sendMailTo', 'username fullname email role preferences image title')
         .sort('name');
 
     return q.exec(callback);
@@ -112,8 +104,8 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
     if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUser()");
 
     var q = this.model(COLLECTION).find({members: userId})
-        .populate('members')
-        .populate('sendMailTo')
+        .populate('members', 'username fullname email role preferences image title')
+        .populate('sendMailTo', 'username fullname email role preferences image title')
         .sort('name');
 
     return q.exec(callback)
@@ -122,7 +114,9 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
 groupSchema.statics.getGroupById = function(gId, callback) {
     if (_.isUndefined(gId)) return callback("Invalid GroupId - GroupSchema.GetGroupById()");
 
-    var q = this.model(COLLECTION).findOne({_id: gId}).populate('members').populate('sendMailTo');
+    var q = this.model(COLLECTION).findOne({_id: gId})
+        .populate('members', 'username fullname email role preferences image title')
+        .populate('sendMailTo', 'username fullname email role preferences image title');
 
     return q.exec(callback);
 };

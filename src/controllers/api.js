@@ -23,9 +23,11 @@ var async = require('async'),
     userSchema = require('../models/user'),
 
     //Sub APIs
-    api_tickets_v1 = require('./api/v1/tickets'),
-    api_notices_v1 = require('./api/v1/notices'),
-    api_users_v1   = require('./api/v1/users');
+    api_tickets_v1      = require('./api/v1/tickets'),
+    api_notices_v1      = require('./api/v1/notices'),
+    api_users_v1        = require('./api/v1/users'),
+    api_messages_v1     = require('./api/v1/messages'),
+    api_groups_v1       = require('./api/v1/groups');
 
 /**
  * @since 1.0
@@ -47,6 +49,8 @@ var apiController = {};
 apiController.tickets = api_tickets_v1;
 apiController.notices = api_notices_v1;
 apiController.users = api_users_v1;
+apiController.messages = api_messages_v1;
+apiController.groups = api_groups_v1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');
@@ -221,7 +225,7 @@ apiController.login = function(req, res) {
 };
 
 /**
- * Preforms logout and removes accesstoken as well as device token from
+ * Preforms logout
  * {@link User} object.
  *
  * @todo Fix so it doesn't error out of the user doesn't have a device token stored.
@@ -294,197 +298,43 @@ apiController.devices.setDeviceToken = function(req, res) {
     })
 };
 
-apiController.devices.testApn = function(req, res, next) {
+apiController.devices.testApn = function(req, res) {
     var apn = require('apn');
+    var fs = require('fs');
+    var path = require('path');
     var options = {
         production: false,
         cert: 'private/cert.pem',
         key: 'private/key.pem',
         passphrase: 'C04251986c'
     };
-    var apnConnection = new apn.Connection(options);
-    var device = new apn.Device('6bd663ddb6d419d191159cd6f08094b687f2a75cfcb9a208cd38e9b5dbf80b6c');
 
-    var note = new apn.Notification();
-    note.expiry = Math.floor(Date.now() / 1000) + 3600;
-    note.badge = 1;
-    note.sound = "chime";
-    note.alert = "Test Notification";
-    note.payload = {'messageFrom': 'TruDesk Server!'};
 
-    apnConnection.pushNotification(note, device);
+    try {
+        //Check for Cert File.
+        fs.statSync(path.join(__dirname, '../../', options.cert));
+        fs.statSync(path.join(__dirname, '../../', options.key));
 
-    res.send();
+        var apnConnection = new apn.Connection(options);
+        var device = new apn.Device('6bd663ddb6d419d191159cd6f08094b687f2a75cfcb9a208cd38e9b5dbf80b6c');
 
-};
+        var note = new apn.Notification();
+        note.expiry = Math.floor(Date.now() / 1000) + 3600;
+        note.badge = 1;
+        note.sound = "chime";
+        note.alert = "Test Notification";
+        note.payload = {'messageFrom': 'TruDesk Server!'};
 
-/**
- * @name apiController.groups
- * @description Stores all group related static functions
- * @namespace
- */
-apiController.groups = {};
 
-/**
- * Gets all groups of given user, via access token or currently logged in user account. <br><br>
- * Route: **[get] /api/groups **
- *
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {JSON} Array of {@link Group}
- */
-apiController.groups.get = function(req, res) {
-    var accessToken = req.headers.accesstoken;
+        apnConnection.pushNotification(note, device);
+    } catch (e) {
+        if (e.code == 'ENOENT') return res.send('Error: Cert File Not Found.');
 
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
-        var user = req.user;
-        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
-
-        var groupSchema = require('../models/group');
-        groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
-            if (err) return res.send(err.message);
-
-            return res.json(groups);
-        });
-    } else {
-        userSchema.getUserByAccessToken(accessToken, function(err, user) {
-            if (err) return res.status(401).json({'error': err.message});
-            if (!user) return res.status(401).json({'error': 'Unknown User'});
-
-            var groupSchema = require('../models/group');
-            groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
-                if (err) return res.send(err.message);
-
-                res.json(groups);
-            });
-        });
+        return res.send(e);
     }
-};
 
-/**
- * Creates a group object. <br> <br>
- * Route: **[post] /api/groups/create**
- *
- * @todo revamp to support access token
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {Group} Created Group Object
- * @example
- * Group.name = req.body.name;
- * Group.members = req.body.members;
- * Group.sendMailTo = req.body.sendMailTo;
- */
-apiController.groups.create = function(req, res) {
-    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
-    var groupSchema = require('../models/group');
-    var Group = new groupSchema();
+    return res.send('Sent!');
 
-    Group.name = req.body.name;
-    Group.members = req.body.members;
-    Group.sendMailTo = req.body.sendMailTo;
-
-    Group.save(function(err, group) {
-        if (err) return res.status(400).send('Error: ' + err.message);
-
-        res.status(200).json(group);
-    });
-};
-
-/**
- * Updates a group object. <br> <br>
- * Route: **[put] /api/groups/:id**
- *
- * @todo revamp to support access token
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {Group} Updated Group Object
- * @example
- * group.name = data.name;
- * group.members = data.members;
- * group.sendMailTo = data.sendMailTo;
- */
-apiController.groups.updateGroup = function(req, res) {
-    var data = req.body;
-    if (_.isUndefined(data) || !_.isObject(data)) return res.status(400).send('Error: Malformated Data.');
-    var groupSchema = require('../models/group');
-    groupSchema.getGroupById(data.id, function(err, group) {
-        if (err) return res.status(400).send('Error: ' + err.message);
-
-        if (_.isUndefined(group.members)) group.members = [];
-        if (_.isUndefined(group.sendMailTo)) group.sendMailTo = [];
-
-        if (!_.isArray(data.members) && data.members !== null && !_.isUndefined(data.members)) data.members = [data.members];
-        if (!_.isArray(data.sendMailTo) && data.sendMailTo !== null && !_.isUndefined(data.sendMailTo)) data.sendMailTo = [data.sendMailTo];
-
-        group.name = data.name;
-        group.members = data.members;
-        group.sendMailTo = data.sendMailTo;
-
-        group.save(function(err, g) {
-            if (err) return res.status(400).send('Error: ' + err.message);
-
-            res.json(g);
-        });
-    });
-};
-
-/**
- * Deletes a group object. <br> <br>
- * Route: **[delete] /api/groups/:id**
- *
- * @todo revamp to support access token
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {JSON} Success/Error Json Object
- */
-apiController.groups.deleteGroup = function(req, res) {
-    if (_.isUndefined(req.user)) return res.send('Error: Not Currently Logged in.');
-    var groupSchema = require('../models/group');
-    var ticketSchema = require('../models/ticket');
-    var id = req.params.id;
-    if (_.isUndefined(id)) return res.status(400).send('Error: Invalid Group Id.');
-    var returnData = {
-        success: true
-    };
-
-    async.series([
-        function(next) {
-            var grps = [id];
-            ticketSchema.getTickets(grps, function(err, tickets) {
-                if (err) {
-                    return next('Error: ' + err.message);
-                }
-
-                if (_.size(tickets) > 0) {
-                    return next('Error: Cannot delete a group with tickets.');
-                }
-
-                next();
-            });
-        },
-        function(next) {
-            groupSchema.getGroupById(id, function(err, group) {
-                if (err) return next('Error: ' + err.message);
-
-                group.remove(function(err, success) {
-                    if (err) return next('Error: ' + err.message);
-
-                    winston.warn('Group Deleted: ' + group._id);
-                    next(null, success);
-                });
-            });
-        }
-    ], function(err, done) {
-        if (err) {
-            returnData.success = false;
-            returnData.error = err;
-
-            return res.status(200).json(returnData);
-        }
-
-        returnData.success = true;
-        return res.status(200).json(returnData);
-    });
 };
 
 /**
@@ -494,113 +344,9 @@ apiController.groups.deleteGroup = function(req, res) {
  */
 apiController.roles = {};
 
-apiController.roles.get = function(req, res, next) {
+apiController.roles.get = function(req, res) {
     var roles = permissions.roles;
     return res.json(roles);
-};
-
-/**
- * @name apiController.messsages
- * @description Stores all message related static functions
- * @namespace
- */
-apiController.messages = {};
-
-
-apiController.messages.get = function(req, res, next) {
-    var accessToken = req.headers.accesstoken;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(400).json({error: 'Invalid Access Token'});
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(400).json({error: err.message});
-        if (!user) return res.status(401).json({error: 'Unknown User'});
-
-        var limit = req.query.limit;
-        var page = req.query.page;
-        var folder = req.query.folder;
-
-        var object = {
-            owner: user,
-            limit: limit,
-            page: page,
-            folder: folder
-        };
-
-        var messageSchema = require('../models/message');
-
-        messageSchema.getMessagesWithObject(object, function(err, results) {
-            if (err) return res.status(401).json({error: err.message});
-
-            return res.json(results);
-        });
-    });
-};
-
-apiController.messages.send = function(req, res, next) {
-    var accessToken = req.headers.accesstoken;
-    var messageData = req.body;
-
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
-        var user = req.user;
-        if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
-
-        //if req.user is set
-        var messageSchema = require('../models/message');
-        var to = messageData.to;
-        if (!_.isArray(to)) {
-            to = [messageData.to]
-        }
-        var marked = require('marked');
-        var messageText = messageData.message;
-        messageText = messageText.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-        messageData.message = marked(messageText);
-
-        async.each(to, function(owner, callback) {
-            async.parallel([
-                function(done) {
-                    var message = new messageSchema({
-                        owner: owner,
-                        from: user._id,
-                        subject: messageData.subject,
-                        message: messageData.message
-                    });
-
-                    message.save(function(err) {
-                        done(err);
-                    });
-                },
-                function(done) {
-                    //Save to Sent Items
-                    var message = new messageSchema({
-                        owner: user._id,
-                        from: owner,
-                        folder: 1,
-                        subject: messageData.subject,
-                        message: messageData.message
-                    });
-
-                    message.save(function(err) {
-                        done(err);
-                    });
-                }
-            ], function(err) {
-                if (err) return callback(err);
-                callback();
-            });
-        }, function(err) {
-            if (err) return res.status(400).json({error: err});
-
-            res.status(200).json({success: true});
-        });
-    } else {
-        //get user by access token
-        userSchema.getUserByAccessToken(accessToken, function(err, user) {
-            if (err) return res.status(401).json({'error': err.message});
-            if (!user) return res.status(401).json({'error': 'Unknown User'});
-
-            var messageSchema = require('../models/message');
-
-        });
-    }
 };
 
 module.exports = apiController;

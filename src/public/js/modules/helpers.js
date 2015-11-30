@@ -20,9 +20,6 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
     helpers.init = function() {
         var self = this;
 
-        var layout = self.onWindowResize();
-        $(window).resize(layout);
-
         self.resizeFullHeight();
         self.removeAllScrollers();
         self.setupScrollers();
@@ -36,6 +33,9 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         self.ajaxFormSubmit();
         self.setupChosen();
         self.bindNewMessageSubmit();
+
+        var layout = self.onWindowResize();
+        $(window).resize(layout);
     };
 
     helpers.showFlash = function(message, error, sticky) {
@@ -109,7 +109,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             });
         }
 
-        var ticketIssue = $('#createTicketForm textarea#issue');
+        var ticketIssue = $('#createTicketForm').find('textarea#issue');
         if (ticketIssue.length > 0) {
             ticketIssue.off('keydown');
             ticketIssue.on('keydown', function(e) {
@@ -148,8 +148,12 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             self.resizeFullHeight();
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
-            self.resizeScroller();
+
             self.resizeDataTables('.ticketList');
+            self.resizeDataTables('.groupsList');
+            self.resizeDataTables('.accountList');
+
+            self.resizeScroller();
         }, 100);
     };
 
@@ -203,8 +207,12 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
             self.resizeFullHeight();
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
-            self.resizeScroller();
+
             self.resizeDataTables('.ticketList');
+            self.resizeDataTables('.groupsList');
+            self.resizeDataTables('.accountList');
+
+            self.resizeScroller();
         }, 100);
 
         l();
@@ -227,14 +235,12 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
 
                 ns.resize();
             });
+        } else {
+            var niceScroll = $(scrollerObject).getNiceScroll(0);
+            if (!niceScroll) return true;
 
-            return true;
+            niceScroll.resize();
         }
-
-        var niceScroll = $(scrollerObject).getNiceScroll(0);
-        if (!niceScroll) return true;
-
-        niceScroll.resize();
     };
 
     helpers.removeAllScrollers = function() {
@@ -272,16 +278,23 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         var self = this;
 
         $(document).ready(function() {
-            var ticketList = $(selector);
-            var scroller = ticketList.find('.dataTables_scrollBody');
+            var $selector = $(selector);
+            var scroller = $selector.find('.dataTables_scrollBody');
             if (scroller.length !== 0) {
-                var tableHead = ticketList.find('.dataTables_scrollHead');
-                var optionsHead = ticketList.find('.table-options');
+                var tableHead = $selector.find('.dataTables_scrollHead');
+                var optionsHead = $selector.find('.table-options');
+                var hasFilter = $selector.find('.dataTables_filter');
+                var headHeight = 0;
+                if (optionsHead.length !== 0)
+                    headHeight = optionsHead.height();
+                else if (hasFilter.length !== 0)
+                    headHeight = hasFilter.height();
                 var footerHeight = 0;
                 if (hasFooter)
                     footerHeight = tableHead.height();
-                scroller.css({'height': (ticketList.height() - tableHead.height() - optionsHead.height() - footerHeight) + 'px'});
+                scroller.css({'height': ($selector.height() - tableHead.height() - headHeight - footerHeight) + 'px'});
                 self.setupScrollers(selector + ' .dataTables_scrollBody');
+                self.resizeScroller(selector + ' .dataTables_scrollBody');
             }
         });
     };
@@ -524,8 +537,9 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
         //Close reveal and refresh page.
         $('#newMessageModal').foundation('reveal', 'close');
         //Clear Fields
-        $("#newMessageTo").find("option").prop('selected', false);
-        $('#newMessageTo').trigger('chosen:updated');
+        var $newMessageTo = $("#newMessageTo");
+        $newMessageTo.find("option").prop('selected', false);
+        $newMessageTo.trigger('chosen:updated');
         $('#newMessageSubject').val('');
         $('#newMessageText').val('');
     };

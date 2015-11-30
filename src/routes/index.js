@@ -96,7 +96,6 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
-    router.get('/api/v1/devices/testiOS', middleware.api, controllers.api.devices.testApn);
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
@@ -110,7 +109,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
-    router.get('/api/v1/groups', middleware.api, middleware.cache(5*60), controllers.api.groups.get);
+    router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
@@ -132,6 +131,7 @@ function mainRoutes(router, middleware, controllers) {
 
     //router.get('/debug/sendmail', controllers.debug.sendmail);
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
+    router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
 }
 
 module.exports = function(app, middleware) {

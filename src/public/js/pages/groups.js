@@ -29,9 +29,10 @@ define('pages/groups', [
         $(document).ready(function() {
             var table = $('#groupsTable');
             table.dataTable({
-                searching: false,
+                searching: true,
                 bLengthChange: false,
                 bPaginate: false,
+                iDisplayLength: 99999,
                 bInfo: false,
                 scrollY: '100%',
                 order: [[1, 'asc']],
