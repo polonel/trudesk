@@ -78,7 +78,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
             var groupHttpGet = $http.get('/api/v1/groups').
                                 success(function(data) {
-                                    _.each(data, function(item) {
+                                    _.each(data.groups, function(item) {
                                         $scope.groups.push(item);
                                     });
                                 }).

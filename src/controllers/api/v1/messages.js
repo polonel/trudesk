@@ -24,29 +24,45 @@ var async = require('async'),
 
 var api_messages = {};
 
+/**
+ * @api {get} /api/v1/messages Get Messages
+ * @apiName getMessages
+ * @apiDescription Gets messages for the current logged in user
+ * @apiVersion 0.1.0
+ * @apiGroup Messages
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/messages
+ *
+ * @apiSuccess {boolean}    success             Successful?
+ * @apiSuccess {array}      messages
+ * @apiSuccess {object}     messages._id        The MongoDB ID
+ * @apiSuccess {object}     messages.owner      Message Owner
+ * @apiSuccess {object}     messages.from       Message From
+ * @apiSuccess {string}     messages.subject    Message Subject
+ * @apiSuccess {string}     messages.message    Message Text
+ * @apiSuccess {date}       messages.date       Message Date
+ * @apiSuccess {boolean}    messages.unread     Unread?
+ * @apiSuccess {number}     messages.folder     Message Folder
+ *
+ */
 api_messages.get = function(req, res) {
-    var accessToken = req.headers.accesstoken;
-    if (_.isUndefined(accessToken) || _.isNull(accessToken)) return res.status(400).json({error: 'Invalid Access Token'});
-    userSchema.getUserByAccessToken(accessToken, function(err, user) {
-        if (err) return res.status(400).json({error: err.message});
-        if (!user) return res.status(401).json({error: 'Unknown User'});
+    var user = req.user;
+    var limit = req.query.limit;
+    var page = req.query.page;
+    var folder = req.query.folder;
 
-        var limit = req.query.limit;
-        var page = req.query.page;
-        var folder = req.query.folder;
+    var object = {
+        owner: user,
+        limit: limit,
+        page: page,
+        folder: folder
+    };
 
-        var object = {
-            owner: user,
-            limit: limit,
-            page: page,
-            folder: folder
-        };
+    messageSchema.getMessagesWithObject(object, function(err, results) {
+        if (err) return res.status(400).json({success: false, error: err.message});
 
-        messageSchema.getMessagesWithObject(object, function(err, results) {
-            if (err) return res.status(401).json({error: err.message});
-
-            return res.json(results);
-        });
+        return res.json({success: true, messages: results});
     });
 };
 

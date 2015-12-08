@@ -35,10 +35,12 @@ var api_groups = {};
  * @apiExample Example usage:
  * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/groups
  *
- * @apiSuccess {object}     _id                 The MongoDB ID
- * @apiSuccess {string}     name                Group Name
- * @apiSuccess {array}      sendMailTo          Array of Users to send Mail to
- * @apiSuccess {array}      members             Array of Users that are members of this group
+ * @apiSuccess {boolean}    success             Successful?
+ * @apiSuccess {array}      groups              Array of returned Groups
+ * @apiSuccess {object}     groups._id          The MongoDB ID
+ * @apiSuccess {string}     groups.name         Group Name
+ * @apiSuccess {array}      groups.sendMailTo   Array of Users to send Mail to
+ * @apiSuccess {array}      groups.members      Array of Users that are members of this group
  *
  */
 api_groups.get = function(req, res) {
@@ -47,7 +49,7 @@ api_groups.get = function(req, res) {
     groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
-        return res.json(groups);
+        return res.json({success: true, groups: groups});
     });
 };
 
