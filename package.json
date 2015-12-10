@@ -63,7 +63,7 @@
     "winston": "^2.1.1"
   },
   "devDependencies": {
-    "blanket": "*",
+    "blanket": "1.1.7",
     "chai": "*",
     "coveralls": "^2.11.3",
     "grunt-contrib-watch": "^0.6.1",

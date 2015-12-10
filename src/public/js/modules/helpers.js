@@ -386,6 +386,8 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                             $(this.el).find('.chart-value').text(totalNum);
                             return true;
                         }
+
+                        if (to == Infinity) to = 0;
                         $(this.el).find('.chart-value').text(Math.round(to));
                     },
                     onStep: function(from, to, percent) {
@@ -403,6 +405,7 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                             }
                         }
 
+                        if (percent == Infinity) percent = 0;
                         $(this.el).find('.chart-value').text(Math.round(percent));
                     }
                 });
