@@ -507,9 +507,9 @@ var helpers = {
         }
     },
 
-    checkEditSelf: function(user, owner, options) {
+    checkEditSelf: function(user, owner, perm, options) {
         var P = require('../../permissions');
-        if (P.canThis(user.role, 'ticket:editSelf')) {
+        if (P.canThis(user.role, perm + ':editSelf')) {
             if (user._id.toString() == owner._id.toString()) {
                 return options.fn(this);
             } else {

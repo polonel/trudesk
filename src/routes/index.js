@@ -27,6 +27,8 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
 
+    router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
+
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);

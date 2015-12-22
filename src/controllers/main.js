@@ -38,6 +38,22 @@ mainController.index = function(req, res, next) {
     res.render('login', self.content);
 };
 
+mainController.about = function(req, res) {
+    pkg = require('../../package.json');
+    var self = {};
+    self.content = {};
+    self.content.title = "About";
+    self.content.nav = 'about';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    self.content.data.version = pkg.version;
+
+    res.render('about', self.content);
+};
+
 mainController.dashboard = function(req, res, next) {
     var self = mainController;
     self.content = {};

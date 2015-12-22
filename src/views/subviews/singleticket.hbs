@@ -241,7 +241,7 @@
                             </div>
                             <div class="edit-issue"><i class="fa fa-pencil fa-lg"></i></div>
                         {{else}}
-                            {{#canEditSelf data.user data.ticket.owner}}
+                            {{#canEditSelf data.user data.ticket.owner 'ticket'}}
                                 <div class="edit-issue-form clearfix hide" style="margin-bottom: 15px;">
                                     <form id="edit-issue-form" ng-submit="updateTicketIssue()" data-abide>
                                         <div class="edit-issue-box">
@@ -281,7 +281,7 @@
                                         <p>{{{comment}}}</p>
                                     </div>
                                 </div>
-                                {{#canUser ../data.user "comment:edit"}}
+                                {{#canUser ../../data.common.loggedInAccount "comment:edit"}}
                                     <div class="edit-comment-form clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
                                         <form data-commentid="{{_id}}" data-abide>
                                             <div class="edit-comment-box">
@@ -294,10 +294,33 @@
                                             </div>
                                         </form>
                                     </div>
+                                {{else}}
+                                    {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                        <div class="edit-comment-form clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                            <form data-commentid="{{_id}}" data-abide>
+                                                <div class="edit-comment-box">
+                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
+                                                    <small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>
+                                                </div>
+                                                <div class="right">
+                                                    <button class="resetForm" type="reset">Cancel</button>
+                                                    <button type="submit" data-preventDefault="false">Save</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    {{/canEditSelf}}
                                 {{/canUser}}
                                 <div class="comment-actions">
-                                    <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
-                                    <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
+                                    {{#canUser ../../data.common.loggedInAccount "comment:delete"}}
+                                        <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                                    {{/canUser}}
+                                    {{#canUser ../../data.common.loggedInAccount "comment:edit"}}
+                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
+                                    {{else}}
+                                        {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
+                                        {{/canEditSelf}}
+                                    {{/canUser}}
                                 </div>
                             </div>
                         {{/foreach}}
