@@ -42,8 +42,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                             removeCheckedFromGrid(username);
                             helpers.showFlash('Account Successfully Deleted');
                         }).error(function(err) {
-                            console.log('[trudesk:accounts:deleteAccount] - ' + err);
-                            helpers.showFlash(err, true);
+                            console.log('[trudesk:accounts:deleteAccount] - ' + err.error);
+                            helpers.showFlash(err.error, true);
                         });
                 });
 

@@ -207,6 +207,10 @@ var notifications       = require('../notifications'); // Load Push Events
 
                     emails = _.uniq(emails);
 
+                    if (_.size(emails) < 1) {
+                        return c();
+                    }
+
                     emailTemplates(templateDir, function(err, template) {
                         if (err) {
                             winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
@@ -238,7 +242,7 @@ var notifications       = require('../notifications'); // Load Push Events
                                                 return c();
                                             }
 
-                                            winston.debug('Sent Subscriber Mail.');
+                                            //winston.debug('Sent Subscriber Mail.');
                                             return c(null, info);
                                         });
                                     }

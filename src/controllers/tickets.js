@@ -347,6 +347,9 @@ ticketsController.print = function(req, res) {
     var self = this;
     var user = req.user;
     var uid = req.params.id;
+    if (isNaN(uid)) {
+        return res.redirect('/tickets');
+    }
     self.content = {};
     self.content.title = "Tickets - " + req.params.id;
     self.content.nav = 'tickets';
@@ -400,6 +403,9 @@ ticketsController.single = function(req, res) {
     var self = this;
     var user = req.user;
     var uid = req.params.id;
+    if (isNaN(uid)) {
+        return res.redirect('/tickets');
+    }
     self.content = {};
     self.content.title = "Tickets - " + req.params.id;
     self.content.nav = 'tickets';
@@ -571,7 +577,7 @@ ticketsController.uploadAttachment = function(req, res) {
             _.isUndefined(object.ownerId) ||
             _.isUndefined(object.filePath)) {
 
-            return res.status(500).send('Invalid Form Data');
+            return res.status(400).send('Invalid Form Data');
         }
 
         // Everything Checks out lets make sure the file exists and then add it to the attachments array

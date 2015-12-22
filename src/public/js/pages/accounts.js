@@ -58,6 +58,7 @@ define('pages/accounts', [
 //            });
 
             helpers.resizeDataTables('.accountList');
+
         });
     };
 

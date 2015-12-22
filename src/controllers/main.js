@@ -169,6 +169,7 @@ mainController.dashboard = function(req, res, next) {
         activePercent = Math.round(activePercent);
         completedPercent = Math.round(completedPercent);
         newPercent = Math.round(newPercent);
+        if (self.content.data.summary == undefined) self.content.data.summary = {};
         self.content.data.summary.totalCount = results.totalCount;
         self.content.data.summary.newCount = results.newCount;
         self.content.data.summary.newPercent = newPercent;
@@ -220,7 +221,6 @@ mainController.loginPost = function(req, res, next) {
 };
 
 mainController.logout = function(req, res, next) {
-    "use strict";
     req.logout();
     req.session.destroy();
     res.redirect('/');
@@ -285,7 +285,7 @@ mainController.forgotPass = function(req, res, next) {
                     }
 
                     var mailOptions = {
-                        from: 'no-reply@trudesk.io',
+                        from: nconf.get('mailer:from'),
                         to: email,
                         subject: '[TruDesk] Password Reset Request',
                         html: html,

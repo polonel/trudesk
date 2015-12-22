@@ -387,7 +387,7 @@ api_tickets.postComment = function(req, res) {
         var HistoryItem = {
             action: 'ticket:comment:added',
             description: 'Comment was added',
-            owner: user._id
+            owner: owner
         };
         t.history.push(HistoryItem);
 

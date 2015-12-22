@@ -42,13 +42,13 @@ var roles = {
         id: "mod",
         name: "Moderators",
         description: "Moderators",
-        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "users:view", "comment:*", "reports:view", "notices:*"]
+        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "users:view edit", "comment:*", "reports:view", "notices:*"]
     },
     support: {
         id: "support",
         name: "Support",
         description: "Support User",
-        allowedAction: ["ticket:*", "users:create edit view", "comment:editSelf create", "reports:view", "notices:*"]
+        allowedAction: ["ticket:*", "users:create edit view delete", "comment:editSelf create", "reports:view", "notices:*"]
     },
     user: {
         id: "user",
