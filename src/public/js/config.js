@@ -33,6 +33,7 @@ requirejs.config({
         history:        'vendor/history/jquery.history',
         app:            'app',
 
+        async:          'vendor/async/async',
         jquery_custom:  'plugins/jquery.custom',
         datatables:     'vendor/datatables/jquery.dataTables',
         dt_responsive:  'vendor/datatables/dataTables.responsive',

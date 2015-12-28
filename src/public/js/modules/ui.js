@@ -583,7 +583,7 @@ define('modules/ui', [
 
                                 var tId = $('input[name="ticketId"]').val();
 
-                                socket.emit('updateComments', {ticketId: tId});
+                                //socket.emit('updateComments', {ticketId: tId});
 
                                 var obj = $('.comments').parents('.page-content');
                                 helpers.resizeFullHeight();
@@ -600,7 +600,6 @@ define('modules/ui', [
 
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
-
             var ticket = data;
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
             //var comment = $(ticket.comments).get(-1);
@@ -620,7 +619,7 @@ define('modules/ui', [
                     '<img src="/uploads/users/' + image + '" alt=""/>' +
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
-                    '<a href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
+                    '<a class="comment-email-link" href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
                     '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
                     '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
@@ -636,11 +635,16 @@ define('modules/ui', [
                             '</div>' +
                         '</form>' +
                     '</div>' +
-                    '<div class="comment-actions">' +
-                    '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>' +
-                    '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="fa fa-pencil fa-lg"></i></div>' +
-                    '</div>' +
-                    '</div>';
+                    '<div class="comment-actions">';
+                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>';
+                    }
+                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="fa fa-pencil fa-lg"></i></div>';
+                    }
+
+                    html += '</div>' +
+                        '</div>';
             });
 
             commentContainer.html(html);

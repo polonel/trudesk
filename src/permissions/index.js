@@ -15,48 +15,8 @@
 
 var _       = require('lodash');
 var _s      = require('underscore.string');
+var roles   = require('./roles');
 
-/*
-    Permissions for TruDesk. Define Roles / Groups.
-    --- group:action action action
-
-    *                       = all permissions for grp
-    create                  = create permission for grp
-    delete                  = delete permission for grp
-    edit                    = edit permission for grp
-    editSelf                = edit Self Created Items
-    assignee                = allowed to be assigned to a ticket
-    view                    = view permission for grp
-    ticket:attachment       = can add attachment
-    ticket:removeAttachment = can remove attachment
-    ticket:viewHistory      = can view ticket history on single page
- */
-var roles = {
-    admin: {
-        id: "admin",
-        name: "Administrators",
-        description: "Administrators",
-        allowedAction: ["*"]
-    },
-    mod: {
-        id: "mod",
-        name: "Moderators",
-        description: "Moderators",
-        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "users:view edit", "comment:*", "reports:view", "notices:*"]
-    },
-    support: {
-        id: "support",
-        name: "Support",
-        description: "Support User",
-        allowedAction: ["ticket:*", "users:create edit view delete", "comment:editSelf create", "reports:view", "notices:*"]
-    },
-    user: {
-        id: "user",
-        name: "User",
-        description: "User",
-        allowedAction: ["ticket:create editSelf attachment", "comment:create editSelf" ]
-    }
-};
 
 /***
  * Checks to see if a role as the given action

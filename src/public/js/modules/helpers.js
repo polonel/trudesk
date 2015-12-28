@@ -14,7 +14,7 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiechart', 'chosen'], function($, _, moment) {
+define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', 'easypiechart', 'chosen'], function($, _, moment) {
     var helpers = {};
 
     helpers.init = function() {
@@ -586,6 +586,53 @@ define(['jquery', 'underscore', 'moment', 'foundation', 'nicescroll', 'easypiech
                 console.log('[trudesk:helpers:newMessageSubmit] Error - ' + err);
             });
     }
-    
+
+    helpers.canUser = function(a) {
+        var role = $('div#__loggedInAccount_role').text();
+        if (_.isUndefined(role)) return false;
+
+        var rolePerm = _.find(roles, {'id': role});
+        if (_.isUndefined(rolePerm)) return false;
+
+        if (rolePerm.allowedAction === '*') return true;
+
+        if (_.indexOf(rolePerm.allowedAction, '*') !== -1) return true;
+
+        var actionType = a.split(':')[0];
+        var action = a.split(':')[1];
+
+        if (_.isUndefined(actionType) || _.isUndefined(action)) return false;
+
+        var result = _.filter(rolePerm.allowedAction, function(value) {
+            if (stringStartsWith(value, actionType + ':')) return value;
+        });
+
+        if (_.isUndefined(result) || _.size(result) < 1) return false;
+        if (_.size(result) === 1) {
+            if (result[0] === '*') return true;
+        }
+
+        var typePerm = result[0].split(':')[1].split(' ');
+        typePerm = _.uniq(typePerm);
+
+        if (_.indexOf(typePerm, '*') !== -1) return true;
+
+        return _.indexOf(typePerm, action) !== -1;
+    };
+
+    helpers.canUserEditSelf = function(ownerId, perm) {
+        var id = $('div#__loggedInAccount__id').text();
+
+        if (helpers.canUser(perm + ':editSelf')) {
+            return id.toString() == ownerId.toString();
+        } else {
+            return false;
+        }
+    };
+
+    function stringStartsWith(string, prefix) {
+        return string.slice(0, prefix.length) == prefix;
+    }
+
     return helpers;
 });

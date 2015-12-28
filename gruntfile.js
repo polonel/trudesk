@@ -183,6 +183,8 @@ module.exports = function(grunt) {
                                 'underscore',
                                 'history',
 
+                                '../../src/permissions/roles',
+
                                 'angularjs/main',
                                 'angularjs/controllers',
                                 'app',

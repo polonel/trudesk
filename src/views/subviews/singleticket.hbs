@@ -281,7 +281,7 @@
                                         <p>{{{comment}}}</p>
                                     </div>
                                 </div>
-                                {{#canUser ../../data.common.loggedInAccount "comment:edit"}}
+                                {{#canUser ../data.common.loggedInAccount "comment:edit"}}
                                     <div class="edit-comment-form clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
                                         <form data-commentid="{{_id}}" data-abide>
                                             <div class="edit-comment-box">
@@ -311,10 +311,14 @@
                                     {{/canEditSelf}}
                                 {{/canUser}}
                                 <div class="comment-actions">
-                                    {{#canUser ../../data.common.loggedInAccount "comment:delete"}}
+                                    {{#canUser ../data.common.loggedInAccount "comment:delete"}}
                                         <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                                    {{else}}
+                                        {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                                        {{/canEditSelf}}
                                     {{/canUser}}
-                                    {{#canUser ../../data.common.loggedInAccount "comment:edit"}}
+                                    {{#canUser ../data.common.loggedInAccount "comment:edit"}}
                                         <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
                                     {{else}}
                                         {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
