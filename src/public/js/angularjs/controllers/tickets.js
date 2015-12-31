@@ -23,7 +23,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             $scope.submitTicketForm = function() {
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
-                $('#createTicketForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                var form = $('#createTicketForm');
+                form.serializeArray().map(function(x){data[x.name] = x.value;});
+                data.tags = form.find('#tags').val();
                 data.socketId = socketId;
                 $http({
                     method: 'POST',
@@ -46,9 +48,48 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         History.pushState(null, null, '/tickets/');
 
                     }).error(function(err) {
-                        console.log('[trudesk:tickets:submitTicketForm] - ' + e.error);
+                        console.log('[trudesk:tickets:submitTicketForm] - ' + err.error);
                         helpers.showFlash('Error: ' + err.error.message, true);
                     });
+            };
+
+            $scope.showTags = function(event) {
+                event.preventDefault();
+                var tagModal = $('#addTagModal');
+                if (tagModal.length > 0) {
+                    tagModal.find('input').val('');
+                    tagModal.foundation('reveal', 'open');
+                }
+            };
+
+            $scope.submitAddTag = function(event) {
+                event.preventDefault();
+                var form = $('form#addTagForm');
+                if (form.length > 0) {
+                    var tag = form.find('#tag').val();
+                    var data = {
+                        tag: tag
+                    };
+
+                    $http({
+                        method: "POST",
+                        url: '/api/v1/tickets/addtag',
+                        data: data,
+                        headers: { 'Content-Type': 'application/json'}
+                    })
+                        .success(function(data) {
+                            var tagModal = $('#addTagModal');
+                            var tagFormField = $('#tags');
+                            tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
+                            tagFormField.trigger('chosen:updated');
+                            if (tagModal.length > 0) tagModal.foundation('reveal', 'close');
+
+                        })
+                        .error(function(err) {
+                            console.log('[trudesk:tickets:addTag} - Error: ' + err.error);
+                            helpers.showFlash('Error: ' + err.error, true);
+                        });
+                }
             };
 
             $scope.deleteTickets = function() {
@@ -139,6 +180,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var filterType = $('#ticketFilterForm select#filterType').val();
                 _.each(filterType, function(item) {
                     querystring += '&tt=' + item;
+                });
+
+                var filterTags = $('#ticketFilterForm select#filterTags').val();
+                _.each(filterTags, function(item) {
+                    querystring += '&tag=' + item;
                 });
 
                 var filterAssignee = $('#ticketFilterForm select#filterAssignee').val();

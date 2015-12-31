@@ -153,10 +153,26 @@ api_tickets.create = function(req, res) {
     if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
-    var tags = [];
-    if (!_.isUndefined(postData.tags)) {
-        var t = _s.clean(postData.tags);
-        tags = _.compact(t.split(','));
+    var tagSchema = require('../../../models/tag');
+    //var tags = [];
+    //if (!_.isUndefined(postData.tags)) {
+    //    var t = _s.clean(postData.tags);
+    //    tags = _.compact(t.split(','));
+    //}
+    //
+    //postData.tags = [];
+    //_.each(tags, function(tag) {
+    //    var Tag = new tagSchema({
+    //        name: tag
+    //    });
+    //
+    //    postData.tags.push(Tag);
+    //});
+
+    if (_.isUndefined(postData.tags) || _.isNull(postData.tags)) {
+        postData.tags = [];
+    } else if (!_.isArray(postData.tags)) {
+        postData.tags = [postData.tags];
     }
 
     var HistoryItem = {
@@ -172,9 +188,9 @@ api_tickets.create = function(req, res) {
     var tIssue = ticket.issue;
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
     ticket.issue = marked(tIssue);
-    ticket.tags = tags;
     ticket.history = [HistoryItem];
     ticket.subscribers = [req.user._id];
+
     ticket.save(function(err, t) {
         if (err) {
             response.success = false;
@@ -264,7 +280,6 @@ api_tickets.update = function(req, res) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
             //Check the user has permission to update ticket.
-
             if (!_.isUndefined(reqTicket.status))
                 ticket.status = reqTicket.status;
 
@@ -273,6 +288,9 @@ api_tickets.update = function(req, res) {
 
             if (!_.isUndefined(reqTicket.closedDate))
                 ticket.closedDate = reqTicket.closedDate;
+
+            if (!_.isUndefined(reqTicket.tags))
+                ticket.tags = reqTicket.tags;
 
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);
@@ -325,7 +343,7 @@ api_tickets.delete = function(req, res) {
         if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
         emitter.emit('ticket:deleted', oId);
-        res.res.json({success: true, error: null});
+        res.json({success: true, error: null});
     });
 };
 
@@ -646,6 +664,43 @@ api_tickets.subscribe = function(req, res) {
                 res.json({'success': true});
             });
         });
+    });
+};
+
+/**
+ * @api {post} /api/v1/tickets/addtag Add Ticket Tag
+ * @apiName addTag
+ * @apiDescription Adds a Ticket Tag
+ * @apiVersion 0.1.6
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "Content-Type: application/json" -H "accesstoken: {accesstoken}" -X POST -d "{\"tag\": {tag}}" -l http://localhost/api/v1/tickets/addtag
+ *
+ * @apiParamExample {json} Request-Example:
+ {
+     "tag": {tag}
+ }
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {boolean} tag Saved Tag
+ *
+ * @apiError InvalidPostData Invalid Post Data
+ */
+api_tickets.addTag = function(req, res) {
+    var data = req.body;
+    if (_.isUndefined(data.tag)) return res.status(400).json({error: 'Invalid Post Data'});
+
+    var tagSchema = require('../../../models/tag');
+    var Tag = new tagSchema({
+        name: data.tag
+    });
+
+    Tag.save(function(err, T) {
+        if (err) return res.status(400).json({error: err.message});
+
+        return res.json({success: true, tag: T});
     });
 };
 

@@ -26,6 +26,17 @@
 
             <div class="row">
                 <div class="small-12 columns nopadding" style="margin: 5px 0;">
+                    <label for="filterTags">Tags:</label>
+                    <select name="filterTags" id="filterTags" class="chosen-select" multiple data-placeholder=" ">
+                        {{#each data.common.ticketTags}}
+                            <option value="{{_id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="small-12 columns nopadding" style="margin: 5px 0;">
                     <label for="filterType">Type:</label>
                     <select name="filterType" id="filterType" multiple class="chosen-select" data-placeholder=" ">
                         {{#each data.common.ticketTypes}}
@@ -58,15 +69,6 @@
                     </select>
                 </div>
             </div>
-
-            <!--<div class="row">-->
-                <!--<div class="small-12 columns nopadding" style="margin: 5px 0;">-->
-                    <!--<label for="filterTags">Tags:</label>-->
-                    <!--<select name="filterTags" id="filterTags" class="chosen-select" multiple data-placeholder=" ">-->
-
-                    <!--</select>-->
-                <!--</div>-->
-            <!--</div>-->
 
             <div class="right" style="margin-top: 15px;">
                 <button class="btn" style="margin-right: 5px; background: #777;" type="reset" ng-click="clearFilterForm($event)">Clear</button>

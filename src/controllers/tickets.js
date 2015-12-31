@@ -176,6 +176,7 @@ ticketsController.filter = function(req, res, next) {
     var status = queryString.st;
     var groups = queryString.gp;
     var types = queryString.tt;
+    var tags = queryString.tag;
     var assignee = queryString.au;
 
     var rawNoPage = req.originalUrl.replace(new RegExp('[?&]page=[^&#]*(#.*)?$'), '$1')
@@ -184,6 +185,7 @@ ticketsController.filter = function(req, res, next) {
     if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
     if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
     if (!_.isUndefined(types) && !_.isArray(types)) types = [types];
+    if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags];
     if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee];
 
     var filter = {
@@ -194,6 +196,7 @@ ticketsController.filter = function(req, res, next) {
         },
         status: status,
         groups: groups,
+        tags: tags,
         types: types,
         assignee: assignee,
         raw: rawNoPage
@@ -411,7 +414,7 @@ ticketsController.single = function(req, res) {
     self.content.nav = 'tickets';
 
     self.content.data = {};
-    self.content.data.user = req.user;
+    self.content.data.user = user;
     self.content.data.common = req.viewdata;
     self.content.data.ticket = {};
 
@@ -426,7 +429,8 @@ ticketsController.single = function(req, res) {
 
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
-        self.content.data.ticket.tagsArray = ticket.tags;
+        //self.content.data.ticket.tagsArray = ticket.tags;
+        console.log(ticket.tags);
         self.content.data.ticket.commentCount = _.size(ticket.comments);
 
         return res.render('subviews/singleticket', self.content);

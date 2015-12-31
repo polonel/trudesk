@@ -93,6 +93,15 @@ viewController.getData = function(request, cb) {
 
                   callback();
               });
+          },
+          function(callback) {
+              viewController.getTags(request, function(err, data) {
+                  if (err) return callback();
+
+                  viewdata.ticketTags = data;
+
+                  callback();
+              });
           }
       ], function(err) {
           if (err) {
@@ -202,6 +211,19 @@ viewController.getTypes = function(request, callback) {
 
     typeSchema.getTypes(function(err, data) {
         if (err) {
+            winston.debug(err);
+            callback(err);
+        }
+
+        callback(null, data);
+    });
+};
+
+viewController.getTags = function(request, callback) {
+    var tagSchema = require('../../models/tag');
+
+    tagSchema.getTags(function(err, data) {
+        if (err){
             winston.debug(err);
             callback(err);
         }

@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'tomarkdown', 'history'], function(angular, _, $, socket, nav, md) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, socket, nav, md, helpers) {
     return angular.module('trudesk.controllers.singleTicket', [])
         .controller('singleTicket', function($scope, $http, $q) {
 
@@ -163,6 +163,29 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                         helpers.showFlash('Error: ' + e.message, true);
                     });
             };
+
+            $scope.submitAddTags = function(event) {
+                event.preventDefault();
+                var id = $('#__ticketId').text();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var tagField = form.find('#tags');
+                if (tagField.length < 1) return;
+                //var user = form.find('input[name="from"]').val();
+                $http.put('/api/v1/tickets/' + id,
+                    {
+                        "tags": tagField.val()
+
+                    }).success(function(data) {
+                        helpers.showFlash('Tags have been added.');
+                        //socket.ui.updateTicketTags(id);
+
+                        $('#addTagModal').foundation('reveal', 'close');
+                }).error(function(e) {
+                    console.log('[trudesk:singleTicket:submitAddTags] - ' + e);
+                    helpers.showFlash('Error: ' + e.message, true);
+                });
+            }
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

@@ -516,16 +516,22 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
             var nosearch = $(this).attr('data-nosearch');
             var placeholder = '';
             var elePlaceHolder = $(this).attr('data-placeholder');
+            var noResults = 'No Results Found For ';
+            var eleNoResults = $(this).attr('data-noresults');
             var searchNum = 10;
             if (nosearch) searchNum = 90000;
             if (!_.isUndefined(elePlaceHolder) && elePlaceHolder.length > 0) {
                 placeholder = elePlaceHolder;
             }
+            if (!_.isUndefined(eleNoResults) && eleNoResults.length > 0) {
+                noResults = eleNoResults;
+            }
 
             self.chosen({
                 disable_search_threshold: searchNum,
                 placeholder_text_single: placeholder,
-                placeholder_text_multiple: placeholder
+                placeholder_text_multiple: placeholder,
+                no_results_text: noResults
             });
         });
     };

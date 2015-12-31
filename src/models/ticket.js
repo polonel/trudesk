@@ -25,6 +25,7 @@ var userSchema          = require('./user');
 var commentSchema       = require('./comment');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
+var tagSchema           = require('./tag');
 
 var COLLECTION = 'tickets';
 
@@ -50,7 +51,7 @@ var COLLECTION = 'tickets';
  * @property {TicketType} type ```Required``` Reference to the TicketType
  * @property {Number} status ```Required``` [default: 0] Ticket Status. (See {@link Ticket#setStatus})
  * @property {Number} prioirty ```Required```
- * @property {Array} tags An array of Strings.
+ * @property {Array} tags An array of Tags.
  * @property {String} subject ```Required``` The subject of the ticket. (Overview)
  * @property {String} issue ```Required``` Detailed information about the ticket problem/task
  * @property {Date} closedDate show the datetime the ticket was moved to status 3.
@@ -71,7 +72,7 @@ var ticketSchema = mongoose.Schema({
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true },
     priority:   { type: Number, required: true },
-    tags:       [String],
+    tags:       [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
     closedDate: { type: Date },
@@ -536,6 +537,11 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
         q.where({type: {$in: object.filter.types}});
     }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.tags)) {
+        console.log(object.filter.tags);
+        q.where({tags: {$in: object.filter.tags}});
+    }
     
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
         q.where({assignee: {$in: object.filter.assignee}});
@@ -687,6 +693,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
