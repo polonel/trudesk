@@ -924,8 +924,16 @@ ticketSchema.statics.getTotalMonthCount = function(month, callback) {
  */
 ticketSchema.statics.getMonthCount = function($date, status, callback) {
     if (_.isUndefined($date)) return callback("Invalid Date - TicketSchema.GetMonthCount()", null);
-    var date = new Date($date);
+    var date;
+    if (!_.isDate($date))
+        date = new Date($date);
+    else
+        date = $date;
+
     if (_.isUndefined(date) || !_.isDate(date)) return callback("Invalid Date - TicketSchema.GetMonthCount()", null);
+
+    //Make sure Date is set to 1st Day of the Month
+    date.setDate(1);
 
     var self = this;
     //var month = date.getMonth();

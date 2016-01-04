@@ -484,7 +484,7 @@ describe('ticket.js', function() {
     it('should get count for tickets with month=x and status=x', function(done) {
         async.parallel([
             function(cb) {
-                ticketSchema.getMonthCount(new Date().getMonth(), 0, function(err, count) {
+                ticketSchema.getMonthCount(new Date().getTime(), 0, function(err, count) {
                     expect(err).to.not.exist;
                     expect(count).to.be.equal(1);
 
@@ -499,14 +499,14 @@ describe('ticket.js', function() {
                 });
             },
             function(cb) {
-                ticketSchema.getMonthCount(new Date().getMonth(), 3, function(err, count) {
+                ticketSchema.getMonthCount(new Date().getTime(), 3, function(err, count) {
                     expect(err).to.not.exist;
 
                     cb();
                 });
             },
             function(cb) {
-                ticketSchema.getMonthCount(new Date().getMonth(), -1, function(err, count) {
+                ticketSchema.getMonthCount(new Date().getTime(), -1, function(err, count) {
                     expect(err).to.not.exist;
 
                     cb();
