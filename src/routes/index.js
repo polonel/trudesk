@@ -101,6 +101,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
+    router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
     router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
@@ -111,7 +113,6 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
-    router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);

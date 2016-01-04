@@ -231,6 +231,10 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     $('#addTagModal').foundation('reveal', 'close');
                 });
             };
+
+            $scope.closeAddTagModal = function() {
+                $('#addTagModal').foundation('reveal', 'close');
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

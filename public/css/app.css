@@ -246,7 +246,7 @@ a.button {
     padding: 7px 25px 7px 7px;
     background: #a7b5d5; }
     .search-container .chosen-container-multi .chosen-choices li.search-choice span {
-      color: #55616e; }
+      color: white; }
   .search-container .chosen-container .chosen-results li.highlighted {
     background: #b8c3dd;
     color: #55616e; }
@@ -436,6 +436,12 @@ div.ptooltip-box {
     color: #59606d; }
     .reveal-modal button.cancel:hover, .reveal-modal button.cancel:active {
       background: #c3cddf; }
+  .reveal-modal button.red {
+    background: #F95E56;
+    color: white;
+    font-weight: 500; }
+    .reveal-modal button.red:hover, .reveal-modal button.red:active {
+      background: #f72f25; }
 
 .pagination {
   margin-right: 8px; }

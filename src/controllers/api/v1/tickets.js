@@ -709,4 +709,32 @@ api_tickets.addTag = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /api/v1/tickets/tags Get Ticket Tags
+ * @apiName getTags
+ * @apiDescription Gets all ticket tags
+ * @apiVersion 0.1.6
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {boolean} tags Array of Tags
+ *
+ */
+api_tickets.getTags = function(req, res) {
+    var tagSchema = require('../../../models/tag');
+    tagSchema.getTags(function(err, tags) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        _.each(tags, function(item) {
+            item.__v = undefined;
+        });
+
+        res.json({success: true, tags: tags});
+    });
+};
+
 module.exports = api_tickets;

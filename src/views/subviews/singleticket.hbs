@@ -365,8 +365,11 @@
                         {{/each}}
                     </select>
 
+                    <div class="left" style="margin-top: 15px;">
+                        <button class="red nomargin" type="button" ng-click="clearTags($event)">Clear</button>
+                    </div>
                     <div class="right" style="margin-top: 15px;">
-                        <button class="cancel nomargin" type="button" ng-click="clearTags($event)">Clear Tags</button>
+                        <button class="cancel nomargin" type="button" ng-click="closeAddTagModal()">Cancel</button>
                         <button class="btn nomargin" type="submit">Add Tags</button>
                     </div>
                 </form>
