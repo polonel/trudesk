@@ -539,7 +539,6 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     }
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.tags)) {
-        console.log(object.filter.tags);
         q.where({tags: {$in: object.filter.tags}});
     }
     
