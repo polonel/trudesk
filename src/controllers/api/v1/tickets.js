@@ -461,7 +461,7 @@ api_tickets.getMonthData = function(req, res) {
         _d.setDate(1);
         dates.push(_d.getTime());
     }
-    console.log(dates);
+
     async.series({
         total: function(cb) {
             async.forEachSeries(dates, function(value, next) {
