@@ -185,6 +185,7 @@ mainController.dashboard = function(req, res, next) {
         activePercent = Math.round(activePercent);
         completedPercent = Math.round(completedPercent);
         newPercent = Math.round(newPercent);
+        if (completedPercent > 100) completedPercent = 100;
         if (self.content.data.summary == undefined) self.content.data.summary = {};
         self.content.data.summary.totalCount = results.totalCount;
         self.content.data.summary.newCount = results.newCount;

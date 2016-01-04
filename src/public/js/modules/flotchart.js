@@ -20,44 +20,6 @@ define('modules/flotchart', [
     'flot_symbol',
     'flot_tooltip'
 ], function($) {
-    var data1 = [
-        [gd(2014, 0, 1), 25],
-        [gd(2014, 1, 1), 700],
-        [gd(2014, 2, 1), 550],
-        [gd(2014, 3, 1), 1250],
-        [gd(2014, 4, 1), 1050],
-        [gd(2014, 5, 1), 400],
-        [gd(2014, 6, 1), 560],
-        [gd(2014, 7, 1), 620],
-        [gd(2014, 8, 1), 1175],
-        [gd(2014, 9, 1), 850],
-        [gd(2014, 10, 1), 1495],
-        [gd(2014, 11, 2), 125]
-    ];
-    var data2 = [
-        [gd(2014, 0, 1), 580],
-        [gd(2014, 1, 1), 231],
-        [gd(2014, 2, 1), 444],
-        [gd(2014, 3, 1), 1123],
-        [gd(2014, 4, 1), 111],
-        [gd(2014, 5, 1), 640],
-        [gd(2014, 6, 1), 235],
-        [gd(2014, 7, 1), 100],
-        [gd(2014, 8, 1), 240],
-        [gd(2014, 9, 1), 600],
-        [gd(2014, 10, 1), 1058],
-        [gd(2014, 11, 2), 290]
-    ];
-
-    var dataset = [
-        { data: data1, label: "New"},
-        { data: data2, label: "Closed"}
-    ];
-
-    function gd(year, month, day) {
-        return new Date(year, month, day).getTime();
-    }
-
     var options = {
         series: {
             lines: {
@@ -73,10 +35,11 @@ define('modules/flotchart', [
         },
         xaxis: {
             mode: "time",
-            min: (new Date(2015, 0, 0)).getTime(),
+            //min: (new Date(new Date().getFullYear(), 0, 0)).getTime(),
+            min: calcMin(),
             tickSize: [1, "month"],
             tickLength: 0,
-            label: "2015",
+            //label: "2015",
             font: {
                 size: 14,
                 weight: 500,
@@ -130,8 +93,14 @@ define('modules/flotchart', [
         colors: ["#e74c3c", "#2fb150"]
     };
 
+    function calcMin() {
+        var now = new Date();
+        var date = new Date();
+        date.setMonth(now.getMonth() - 12);
+        return date.getTime();
+    }
+
     return {
-        options: options,
-        dataset: dataset
+        options: options
     }
 });

@@ -911,25 +911,25 @@ ticketSchema.statics.getTotalMonthCount = function(month, callback) {
  * @static
  * @method getMonthCount
  *
- * @param {Number} month Month to query
+ * @param {Number} $date Date to query
  * @param {Number} status Status to query
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
  * _//Status = -1 returns total count_
- * ticketSchema.getMonthCount(7, -1, function(err, count) {
+ * ticketSchema.getMonthCount(new Date(new Date().getFullYear(), 7, 1), -1, function(err, count) {
  *    if (err) throw err;
  *    //Count
  *    var totalMonthCount = count;
  * });
  */
-ticketSchema.statics.getMonthCount = function(month, status, callback) {
-    if (_.isUndefined(month)) return callback("Invalid Month - TicketSchema.GetMonthCount()", null);
+ticketSchema.statics.getMonthCount = function($date, status, callback) {
+    if (_.isUndefined($date)) return callback("Invalid Date - TicketSchema.GetMonthCount()", null);
+    var date = new Date($date);
+    if (_.isUndefined(date) || !_.isDate(date)) return callback("Invalid Date - TicketSchema.GetMonthCount()", null);
 
     var self = this;
-    month = Number(month);
+    //var month = date.getMonth();
 
-    var now = new Date();
-    var date = new Date(now.getFullYear(), month, 1);
     var endDate = new Date(date).setMonth(date.getMonth() + 1);
 
     var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});

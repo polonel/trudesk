@@ -453,16 +453,22 @@ api_tickets.getMonthData = function(req, res) {
     var newData = {data: [], label: 'New'};
     var closedData = {data: [], label: 'Closed'};
 
-    var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-
-
+    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+    var dates = [];
+    for (var i = 0; i < 12; i++) {
+        var _d = new Date();
+        _d.setMonth(_d.getMonth() - i);
+        _d.setDate(1);
+        dates.push(_d.getTime());
+    }
+    console.log(dates);
     async.series({
         total: function(cb) {
             async.forEachSeries(dates, function(value, next) {
                 var d = [];
-                var date = new Date(now.getFullYear(), value, 1).getTime();
+                var date = new Date(value).getTime();
                 d.push(date);
-                ticketModel.getMonthCount(value, -1, function(err, count) {
+                ticketModel.getMonthCount(date, -1, function(err, count) {
                     if (err) return next(err);
 
                     d.push(Math.round(count));
@@ -478,7 +484,7 @@ api_tickets.getMonthData = function(req, res) {
         closed: function(cb) {
             async.forEachSeries(dates, function(value, next) {
                 var d = [];
-                var date = new Date(now.getFullYear(), value, 1).getTime();
+                var date = new Date(value).getTime();
                 d.push(date);
                 ticketModel.getMonthCount(value, 3, function(err, count) {
                     if (err) return next(err);
