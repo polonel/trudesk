@@ -443,12 +443,11 @@ api_tickets.getTypes = function(req, res) {
         if (err) return res.status(400).json({error: "Invalid Post Data"});
 
         res.json(types);
-    })
+    });
 };
 
 api_tickets.getMonthData = function(req, res) {
     var ticketModel = require('../../../models/ticket');
-    var now = new Date();
     var data = [];
     var newData = {data: [], label: 'New'};
     var closedData = {data: [], label: 'Closed'};

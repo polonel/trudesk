@@ -216,6 +216,7 @@ define('modules/ui', [
                 var ticketTypeSelect = $('select#tType');
                 var ticketPriority = $('select#tPriority');
                 var ticketGroup = $('select#tGroup');
+                var ticketTags = $('div#editTags');
 
                 if (status === 3) {
                     //Remove Comment Box
@@ -239,6 +240,9 @@ define('modules/ui', [
                     if (ticketGroup.length > 0) {
                         ticketGroup.prop('disabled', true);
                     }
+                    if (ticketTags.length > 0) {
+                        ticketTags.addClass('hide');
+                    }
 
                 } else {
                     if (ticketReply.length > 0) {
@@ -254,6 +258,9 @@ define('modules/ui', [
                     }
                     if (ticketGroup.length > 0) {
                         ticketGroup.prop('disabled', false);
+                    }
+                    if (ticketTags.length > 0) {
+                        ticketTags.removeClass('hide');
                     }
 
                     //Setup assignee list

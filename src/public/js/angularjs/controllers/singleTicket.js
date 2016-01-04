@@ -168,6 +168,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
+                    tagModal.find('option').prop('selected', false);
+                    //tagModal.find('select').trigger('chosen:updated');
                     var selectedItems = [];
                     $('.__TAG_SELECTED').each(function() {
                         var i = $(this).text();
@@ -180,7 +182,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                         option.prop('selected', 'selected');
                     });
 
-                    tagModal.find('#tags').trigger('chosen:updated');
+                    tagModal.find('select').trigger('chosen:updated');
+
                     tagModal.foundation('reveal', 'open');
                 }
             };
@@ -205,8 +208,29 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 }).error(function(e) {
                     console.log('[trudesk:singleTicket:submitAddTags] - ' + e);
                     helpers.showFlash('Error: ' + e.message, true);
+
+                    $('#addTagModal').foundation('reveal', 'close');
                 });
-            }
+            };
+
+            $scope.clearTags = function(event) {
+                event.preventDefault();
+                var id = $('#__ticketId').text();
+                $http.put('/api/v1/tickets/' + id,
+                    {
+                        "tags": []
+                    }
+                ).success(function(data) {
+                    socket.ui.refreshTicketTags(id);
+                    $('#addTagModal').find('option').prop('selected', false);
+                    $('#addTagModal').find('select').trigger('chosen:updated');
+                    $('#addTagModal').foundation('reveal', 'close');
+                }).error(function(e) {
+                    console.log('[trudesk:singleTicket:clearTags] - ' + e.message);
+                    helpers.showFlash('Error: ' + e.message, true);
+                    $('#addTagModal').foundation('reveal', 'close');
+                });
+            };
         })
         .directive('closeMouseUp', ['$document', function($document) {
             return {

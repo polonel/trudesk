@@ -145,7 +145,7 @@
 
                         <div class="row nomargin nopadding">
                             <div class="small-12 columns nopadding">
-                                <span>Tags - <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)">Add Tags</a></span>
+                                <span>Tags <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>- <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)">Edit Tags</a></div></span>
                                 <div class="tag-list clearfix">
                                     {{#each data.ticket.tags}}
                                         <div class="__TAG_SELECTED hide" style="display:none; opacity: 0; visibility: hidden;">{{_id}}</div>
@@ -366,7 +366,7 @@
                     </select>
 
                     <div class="right" style="margin-top: 15px;">
-                        <button class="cancel nomargin" type="button">Clear Tags</button>
+                        <button class="cancel nomargin" type="button" ng-click="clearTags($event)">Clear Tags</button>
                         <button class="btn nomargin" type="submit">Add Tags</button>
                     </div>
                 </form>
