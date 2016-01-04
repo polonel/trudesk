@@ -57,7 +57,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
-                    tagModal.find('input').val('');
+                    var option = tagModal.find('#tags').find('option[value="5684b1f898864004168b811b"]');
+                    console.log(option);
+                    option.prop('selected', 'selected');
+                    tagModal.find('#tags').trigger('chosen:updated');
                     tagModal.foundation('reveal', 'open');
                 }
             };

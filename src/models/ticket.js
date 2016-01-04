@@ -717,6 +717,7 @@ ticketSchema.statics.getTicketById = function(id, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);

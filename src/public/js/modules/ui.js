@@ -44,6 +44,7 @@ define('modules/ui', [
         this.updateTicketGroup();
         this.updateTicketIssue();
         this.updateTicketAttachments();
+        this.updateTicketTags();
 
         //Events
         this.onTicketCreated();
@@ -516,6 +517,34 @@ define('modules/ui', [
             require(['pages/singleTicket'], function(st) {
                 st.init();
             });
+        });
+    };
+
+    socketUi.refreshTicketTags = function(ticketId) {
+        var payload = {
+            ticketId: ticketId
+        };
+
+        socket.emit('refreshTicketTags', payload);
+    };
+
+    socketUi.updateTicketTags = function() {
+        socket.removeAllListeners('updateTicketTags');
+        socket.on('updateTicketTags', function(data) {
+            //Rebuild Ticket Tags
+            var ticket = data.ticket;
+            var tagsDiv = $('.tag-list');
+            if (tagsDiv.length < 1) return true;
+
+            tagsDiv.html('');
+            var html = '';
+            if (_.isUndefined(ticket.tags) && _.size(ticket.tags) < 1) return true;
+            _.each(ticket.tags, function(item) {
+                 html += '<div class="__TAG_SELECTED hide" style="display:none; opacity: 0; visibility: hidden;">' + item._id + '</div>' +
+                         '<div class="item">' + item.name + '</div>';
+            });
+
+            tagsDiv.html(html);
         });
     };
 

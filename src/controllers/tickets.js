@@ -430,7 +430,6 @@ ticketsController.single = function(req, res) {
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
         //self.content.data.ticket.tagsArray = ticket.tags;
-        console.log(ticket.tags);
         self.content.data.ticket.commentCount = _.size(ticket.comments);
 
         return res.render('subviews/singleticket', self.content);

@@ -289,7 +289,7 @@ api_tickets.update = function(req, res) {
             if (!_.isUndefined(reqTicket.closedDate))
                 ticket.closedDate = reqTicket.closedDate;
 
-            if (!_.isUndefined(reqTicket.tags))
+            if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                 ticket.tags = reqTicket.tags;
 
             ticket.save(function(err, t) {

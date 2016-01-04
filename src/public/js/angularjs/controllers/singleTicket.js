@@ -164,6 +164,27 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     });
             };
 
+            $scope.showTags = function(event) {
+                event.preventDefault();
+                var tagModal = $('#addTagModal');
+                if (tagModal.length > 0) {
+                    var selectedItems = [];
+                    $('.__TAG_SELECTED').each(function() {
+                        var i = $(this).text();
+                        if (i.length > 0) {
+                            selectedItems.push(i);
+                        }
+                    });
+                    _.each(selectedItems, function(item) {
+                        var option = tagModal.find('#tags').find('option[value="' + item + '"]');
+                        option.prop('selected', 'selected');
+                    });
+
+                    tagModal.find('#tags').trigger('chosen:updated');
+                    tagModal.foundation('reveal', 'open');
+                }
+            };
+
             $scope.submitAddTags = function(event) {
                 event.preventDefault();
                 var id = $('#__ticketId').text();
@@ -178,7 +199,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                     }).success(function(data) {
                         helpers.showFlash('Tags have been added.');
-                        //socket.ui.updateTicketTags(id);
+                        socket.ui.refreshTicketTags(id);
 
                         $('#addTagModal').foundation('reveal', 'close');
                 }).error(function(e) {

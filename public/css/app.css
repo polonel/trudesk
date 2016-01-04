@@ -431,6 +431,11 @@ div.ptooltip-box {
   -moz-border-radius: 3px; }
   .reveal-modal button:focus, .reveal-modal button:active {
     outline: none; }
+  .reveal-modal button.cancel {
+    background: #cdd5e4;
+    color: #59606d; }
+    .reveal-modal button.cancel:hover, .reveal-modal button.cancel:active {
+      background: #c3cddf; }
 
 .pagination {
   margin-right: 8px; }
