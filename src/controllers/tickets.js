@@ -251,7 +251,7 @@ ticketsController.processor = function(req, res) {
 
     async.waterfall([
         function(callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 userGroups = grps;
                 callback(err, grps);
             });
@@ -319,7 +319,7 @@ ticketsController.create = function(req, res) {
     self.content.data.common = req.viewdata;
     async.parallel({
         groups: function (callback) {
-            groupSchema.getAllGroupsOfUser(req.user._id, function (err, objs) {
+            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, objs) {
                 callback(err, objs);
             });
         },

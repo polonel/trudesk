@@ -521,10 +521,15 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     }
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role preferences image title')
+        .populate('assignee', 'username fullname email role preferences image title')
         .populate('type')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .populate('group')
+        .populate('group.members', 'username fullname email role preferences image title')
+        .populate('group.sendMailTo', 'username fullname email role preferences image title')
+        .populate('subscribers', 'username fullname email role preferences image title')
+        .populate('comments').populate('comments.owner', 'username fullname email role preferences image title')
+        .populate('history.owner', 'username fullname email role preferences image title')
         .sort('-uid')
         //.sort({'status': 1})
         .skip(page*limit)

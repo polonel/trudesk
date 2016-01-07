@@ -111,6 +111,15 @@ groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
     return q.exec(callback)
 };
 
+groupSchema.statics.getAllGroupsOfUserNoPopulate = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUserNoPopulate()");
+
+    var q = this.model(COLLECTION).find({members: userId})
+        .sort('name');
+
+    return q.exec(callback);
+};
+
 groupSchema.statics.getGroupById = function(gId, callback) {
     if (_.isUndefined(gId)) return callback("Invalid GroupId - GroupSchema.GetGroupById()");
 

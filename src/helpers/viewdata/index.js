@@ -196,7 +196,7 @@ viewController.loggedInAccount = function(request, callback) {
 
 viewController.getGroups = function(request, callback) {
     var groupSchema = require('../../models/group');
-    groupSchema.getAllGroupsOfUser(request.user._id, function(err, data) {
+    groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function(err, data) {
         if (err) {
             winston.debug(err);
             callback(err);

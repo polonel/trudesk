@@ -91,7 +91,7 @@ api_tickets.get = function(req, res) {
 
     async.waterfall([
         function(callback) {
-            groupModel.getAllGroupsOfUser(user._id, function(err, grps) {
+            groupModel.getAllGroupsOfUserNoPopulate(user._id, function(err, grps) {
                 callback(err, grps);
             })
         },
