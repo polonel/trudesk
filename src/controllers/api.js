@@ -299,39 +299,33 @@ apiController.devices.setDeviceToken = function(req, res) {
 };
 
 apiController.devices.testApn = function(req, res) {
-    var apn = require('apn');
-    var fs = require('fs');
-    var path = require('path');
-    var options = {
-        production: false,
-        cert: 'private/cert.pem',
-        key: 'private/key.pem',
-        passphrase: 'C04251986c'
-    };
+    var notification = {};
+    notification.title = "Test Push Notification [trudesk]";
 
+    var userModel = require('../models/user');
+    var ticketModel = require('../models/ticket');
+    userModel.getUser('5472dbcd925a4d04c80089ee', function(err, user) {
+        if (err) {
+            winston.warn(err);
+            return true;
+        }
 
-    try {
-        //Check for Cert File.
-        fs.statSync(path.join(__dirname, '../../', options.cert));
-        fs.statSync(path.join(__dirname, '../../', options.key));
+        notification.owner = user;
 
-        var apnConnection = new apn.Connection(options);
-        var device = new apn.Device('6bd663ddb6d419d191159cd6f08094b687f2a75cfcb9a208cd38e9b5dbf80b6c');
+        ticketModel.getTicketByUid(1777, function(err, ticket) {
+            if (err) {
+                winston.warn(err);
+                return true;
+            }
 
-        var note = new apn.Notification();
-        note.expiry = Math.floor(Date.now() / 1000) + 3600;
-        note.badge = 1;
-        note.sound = "chime";
-        note.alert = "Test Notification";
-        note.payload = {'messageFrom': 'TruDesk Server!'};
+            notification.data = {};
+            notification.data.ticket = ticket;
 
+            var apn = require('../notifications');
+            apn.pushNotification(notification);
+        });
 
-        apnConnection.pushNotification(note, device);
-    } catch (e) {
-        if (e.code == 'ENOENT') return res.send('Error: Cert File Not Found.');
-
-        return res.send(e);
-    }
+    });
 
     return res.send('Sent!');
 

@@ -15,6 +15,7 @@
 var _                   = require('underscore'),
     path                = require('path'),
     fs                  = require('fs'),
+    nconf               = require('nconf'),
     async               = require('async'),
     apn                 = require('apn'),
     winston             = require('winston'),
@@ -24,73 +25,63 @@ var _                   = require('underscore'),
     ticketSchema        = require('../models/ticket');
 
 var apnOptions = {
-    production: false,
-    cert: 'private/cert.pem',
-    key: 'private/key.pem',
-    passphrase: 'C04251986c'
+    production: nconf.get('apn:production'),
+    pfx: nconf.get('apn:pfx'),
+    passphrase: nconf.get('apn:passphrase')
 };
 
 module.exports.pushNotification = function(notification) {
+    if (_.isUndefined(apnOptions.production) || _.isUndefined(apnOptions.pfx) || _.isUndefined(apnOptions.passphrase)) {
+        winston.warn('[trudesk:ApplePushNotification] - Error: Invalid APN Options!');
+        return true;
+    }
+
     //Check Cert Exists
     try {
-        if (fs.statSync(path.join(__dirname, '../../', apnOptions.cert)).length < 1)
+        if (fs.statSync(path.join(__dirname, '../../', apnOptions.pfx)).length < 1)
             return true;
     }
     catch (e) {
-        //winston.debug(e);
+        winston.debug(e);
         //Exit out if the File Doesn't Exist
         return true;
     }
 
-    fs.readFile(path.join(__dirname, '../../', apnOptions.cert), function(err) {
-        if (err) {
-            winston.warn(err);
-        } else {
-            //Check Key Exists
-            fs.readFile(path.join(__dirname, '../../', apnOptions.key), function(err) {
-               if (err) {
-                   winston.warn(err);
-               } else {
-                   //Both exists. Fire Push notifications.
-                   var apnConnection = new apn.Connection(apnOptions);
-                   var note = new apn.Notification();
-                   note.expiry = Math.floor(Date.now() / 1000) + 3600;
-                   note.badge = 1;
-                   note.sound = 'alert';
-                   note.alert = notification.title;
-                   note.payload = {
-                       'ticketUID' : notification.data.ticket.uid,
-                       'ticketOID' : notification.data.ticket._id
-                   };
+    var apnConnection = new apn.Connection(apnOptions);
+    var note = new apn.Notification();
+    note.expiry = Math.floor(Date.now() / 1000) + 3600;
+    note.badge = 1;
+    note.sound = 'chime';
+    note.alert = notification.title;
+    note.payload = {
+        'ticketUID' : notification.data.ticket.uid,
+        'ticketOID' : notification.data.ticket._id
+    };
 
-                   notificationSchema.getUnreadCount(notification.owner, function(err, c) {
-                       var count = 1;
-                       if (!err) {
-                           count = c;
-                       }
+    notificationSchema.getUnreadCount(notification.owner, function(err, c) {
+        var count = 1;
+        if (!err) {
+            count = c;
+        }
 
-                       note.badge = count;
+        note.badge = count;
 
-                       if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
-                           async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
-                               var device = new apn.Device(token);
-                               try {
-                                   apnConnection.pushNotification(note, device);
-                               } catch (e) {
-                                   winston.warn('[trudesk:iOSPush] - ' + e);
-                               }
+        if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
+            async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
+                var device = new apn.Device(token);
+                try {
+                    apnConnection.pushNotification(note, device);
+                } catch (e) {
+                    winston.warn('[trudesk:iOSPush] - ' + e);
+                }
 
 
-                               winston.debug('Sending push notification to iOS Device: ' + token);
+                winston.debug('Sent push notification to iOS Device: ' + token);
 
-                               cb();
-                           });
-                       } else {
-                           cb();
-                       }
-                   });
-               }
+                cb();
             });
+        } else {
+            cb();
         }
     });
 };
