@@ -17,72 +17,62 @@ var _                   = require('underscore'),
     fs                  = require('fs'),
     nconf               = require('nconf'),
     async               = require('async'),
-    apn                 = require('apn'),
     winston             = require('winston'),
+    request             = require('request'),
     notificationSchema  = require('../models/notification'),
     groupSchema         = require('../models/group'),
     userSchema          = require('../models/user'),
     ticketSchema        = require('../models/ticket');
 
-var apnOptions = {
-    production: nconf.get('apn:production'),
-    pfx: nconf.get('apn:pfx'),
-    passphrase: nconf.get('apn:passphrase')
-};
-
 module.exports.pushNotification = function(notification) {
-    if (_.isUndefined(apnOptions.production) || _.isUndefined(apnOptions.pfx) || _.isUndefined(apnOptions.passphrase)) {
-        winston.warn('[trudesk:ApplePushNotification] - Error: Invalid APN Options!');
-        return true;
-    }
+    var apiKey = nconf.get("tps:apikey");
+    var tps_username = nconf.get("tps:username");
 
-    //Check Cert Exists
-    try {
-        if (fs.statSync(path.join(__dirname, '../../', apnOptions.pfx)).length < 1)
-            return true;
-    }
-    catch (e) {
-        winston.debug(e);
-        //Exit out if the File Doesn't Exist
-        return true;
-    }
+    if (_.isUndefined(apiKey) || _.isUndefined(tps_username)) return true;
 
-    var apnConnection = new apn.Connection(apnOptions);
-    var note = new apn.Notification();
-    note.expiry = Math.floor(Date.now() / 1000) + 3600;
-    note.badge = 1;
-    note.sound = 'chime';
-    note.alert = notification.title;
-    note.payload = {
-        'ticketUID' : notification.data.ticket.uid,
-        'ticketOID' : notification.data.ticket._id
-    };
+    async.parallel({
+        badgeCount: function(cb) {
+            notificationSchema.getUnreadCount(notification.owner, function(err, c) {
+                var count = 1;
+                if (!err) count = c;
 
-    notificationSchema.getUnreadCount(notification.owner, function(err, c) {
-        var count = 1;
-        if (!err) {
-            count = c;
-        }
-
-        note.badge = count;
-
-        if (!_.isUndefined(notification.owner.iOSDeviceTokens)) {
-            async.each(notification.owner.iOSDeviceTokens, function(token, cb) {
-                var device = new apn.Device(token);
-                try {
-                    apnConnection.pushNotification(note, device);
-                } catch (e) {
-                    winston.warn('[trudesk:iOSPush] - ' + e);
-                }
-
-
-                winston.debug('Sent push notification to iOS Device: ' + token);
-
-                cb();
+                cb(null, count);
             });
-        } else {
-            cb();
         }
+    }, function(err, results) {
+        if (err) return winston.debug("[trudesk:TPS:pushNotification] Error - " + err);
+
+        var body = {
+            "username": tps_username,
+            "notification": {
+                "title": notification.title,
+                "deviceIds": notification.owner.iOSDeviceTokens,
+                "data": {
+                    "unreadCount": results.badgeCount,
+                    "ticket": {
+                        "_id": notification.data.ticket._id,
+                        "uid": notification.data.ticket.uid
+                    }
+                }
+            }
+        };
+
+        request({
+            url: 'http://192.168.1.101:8119/api/pushNotification',
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'accesstoken': apiKey
+            },
+            body: JSON.stringify(body)
+        }, function(err, response, body) {
+            if (err)
+                winston.debug(err);
+            else {
+                if (response.statusCode == 401)
+                    winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.');
+            }
+        });
     });
 };
 
