@@ -57,7 +57,10 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         });
 
         nav.init();
-        helpers.fadeOutLoader(100);
+        //helpers.fadeOutLoader(100);
+        setTimeout(function(){
+            wdtLoading.done();
+        }, 2000);
         //eh.init();
     });
 });
