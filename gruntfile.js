@@ -100,6 +100,12 @@ module.exports = function(grunt) {
             target: {
                 files:  {
                     'public/css/plugins.css' : [
+                        'public/css/plugins/datatables/dataTables.scroller.css',
+                        'public/css/plugins/datatables/dataTables.foundation.css',
+                        'public/js/vendor/chosen/chosen.css',
+                        'public/js/vendor/pace/pace.theme.css',
+                        'public/js/vendor/enjoyhint/enjoyhint.css',
+                        'public/css/vendor/font-awesome.min.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
