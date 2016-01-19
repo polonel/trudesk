@@ -10,7 +10,7 @@
 
     <!--Keep Separate for Loader-->
     <link rel="stylesheet" href="/js/vendor/wdtLoading/wdtLoading.css"/>
-    <script src="/js/vendor/wdtLoading/wdtLoading.min.js" type="text/javascript"></script>
+    <script src="/js/vendor/wdtLoading/wdtLoading.js" type="text/javascript"></script>
     {{#block 'css'}}
 
     {{/block}}
@@ -27,16 +27,16 @@
 <div class="wdt-loading-screen">
     <div class="wdt-loading-phrases">
         <div class="wdt-loading-phrase-category" data-category="default">
-            <div class="wdt-loading-phrase">Doing great things...</div>
+            <div class="wdt-loading-phrase">Warming engines...</div>
             <div class="wdt-loading-phrase">Writing project descriptions...</div>
-            <div class="wdt-loading-phrase">Feeding the unicorns...</div>
-            <div class="wdt-loading-phrase">Collecting jobs for you...</div>
-            <div class="wdt-loading-phrase">Calculating scores...</div>
-            <div class="wdt-loading-phrase">Finding best talented people...</div>
+            <div class="wdt-loading-phrase">Looking for work...</div>
+            <div class="wdt-loading-phrase">Collecting Tickets...</div>
+            <div class="wdt-loading-phrase">Calculating Graphs...</div>
+            <div class="wdt-loading-phrase">Populating the cloud...</div>
             <div class="wdt-loading-phrase">Fixing responsive issues...</div>
-            <div class="wdt-loading-phrase">Painting office walls...</div>
+            <div class="wdt-loading-phrase">Generating Colors...</div>
             <div class="wdt-loading-phrase">Coffee break...</div>
-            <div class="wdt-loading-phrase">Feeding cats...</div>
+            <div class="wdt-loading-phrase">Engine Check...</div>
             <div class="wdt-loading-phrase">Health check...</div>
             <div class="wdt-loading-phrase">Storage check...</div>
         </div>
@@ -53,10 +53,10 @@
 </div>
 <script type="text/javascript">
     wdtLoading.start({
-        speed: 800
+        speed: 1000
     });
 </script>
-<div id="nomobile" class="hide-for-large-up" style="
+<div id="nomobile" class="hide-for-medium-up" style="
     position: fixed;
     top: 0;
     left: 0;
@@ -72,7 +72,7 @@
 <div id="__loggedInAccount_username" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.username}}</div>
 <div id="__loggedInAccount_role" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.role}}</div>
 
-<div class="wrapper show-for-large-up" style="height: 100%;">
+<div class="wrapper show-for-medium-up" style="height: 100%;">
     <div id="notice-banner" style="
         width: 100%;
         height: 30px;
