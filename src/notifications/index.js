@@ -42,10 +42,13 @@ module.exports.pushNotification = function(notification) {
     }, function(err, results) {
         if (err) return winston.debug("[trudesk:TPS:pushNotification] Error - " + err);
 
+
+        //TODO: Refractor this when Android support is complete
         var body = {
             "username": tps_username,
             "notification": {
                 "title": notification.title,
+                "deviceType": "ios",
                 "deviceIds": notification.owner.iOSDeviceTokens,
                 "data": {
                     "unreadCount": results.badgeCount,
