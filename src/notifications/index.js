@@ -25,6 +25,8 @@ var _                   = require('underscore'),
     ticketSchema        = require('../models/ticket');
 
 module.exports.pushNotification = function(notification) {
+    var enabled = nconf.get('tps:enable') ? nconf.get('tps:enable') : true;
+    if (!enabled) return true;
     var apiKey = nconf.get("tps:apikey");
     var tps_username = nconf.get("tps:username");
 
@@ -40,7 +42,7 @@ module.exports.pushNotification = function(notification) {
             });
         }
     }, function(err, results) {
-        if (err) return winston.debug("[trudesk:TPS:pushNotification] Error - " + err);
+        if (err) return winston.warn("[trudesk:TPS:pushNotification] Error - " + err);
 
 
         //TODO: Refractor this when Android support is complete
@@ -61,7 +63,7 @@ module.exports.pushNotification = function(notification) {
         };
 
         request({
-            url: 'http://192.168.1.101:8119/api/pushNotification',
+            url: 'http://push.trudesk.io/api/pushNotification',
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
