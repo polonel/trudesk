@@ -1,0 +1,53 @@
+<div class="small-12 large-10 columns nopadding ticketContent" ng-controller="reportsCtrl">
+    <div class="page-title noshadow">
+        <p class="left" style="font-weight: 300;">{{title}}</p>
+        <div class="right">
+            <ul class="button-group">
+
+                <li style="position: relative;">
+                    <div style="margin-top: 20px; margin-right: 5px;">
+                        <select name="range" id="range" class="chosen-select">
+                            <option value="30">Last 30 Days</option>
+                            <option value="60">Last 60 Days</option>
+                            <option value="90">Last 90 Days</option>
+                            <option value="180">Last 180 Days</option>
+                            <option value="365">Last 365 Days</option>
+                        </select>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="full-height page-right-content scrollable padtop20">
+        <div class="small-12 columns">
+
+            <div class="panel trupanel nopadding" style="min-height: 300px;">
+                <div class="left">
+                    <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                </div>
+                <div class="right">
+                    <button class="action-link"><i class="fa fa-refresh"></i></button>
+                    <button class="action-link" data-dropdown="hover1" data-options="pip:center; align:bottom; is_hover:true; hover_timeout:500;"><i class="fa fa-ellipsis-v"></i></button>
+                </div>
+                <hr class="nomargin-top">
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<ul id="hover1" class="f-dropdown xtiny noarrow" data-dropdown-content>
+    <li><a href="#">This is a Link</a></li>
+    <li><a href="#">This is a Link</a></li>
+    <li><a href="#">This is a Link</a></li>
+</ul>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/reports'], function(r) {
+            r.init();
+        });
+    </script>
+{{/contentFor}}

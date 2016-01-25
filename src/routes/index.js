@@ -79,11 +79,11 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/groups/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.edit);
 
     //Reports
-    router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
-    router.get('/reports/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
-    router.get('/reports/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
-    router.get('/reports/inactive', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
-    router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.get);
+    router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    router.get('/reports/overview', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    router.get('/reports/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    router.get('/reports/inactive', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
 
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});

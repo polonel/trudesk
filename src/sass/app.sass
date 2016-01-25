@@ -39,6 +39,8 @@ pre
 
 .nomargin
   margin: 0 !important
+.nomargin-top
+  margin-top: 0 !important
 .marginright20
   margin-right: 20px !important
 .marginright30
@@ -199,19 +201,55 @@ a.button
     margin-right: 10px
     font-size: 14px
 
-.f-dropdown.open:before
-  left: 10px !important
-.f-dropdown.open:after
-  left: 9px !important
+//.f-dropdown.open:before
+//  left: 10px !important
+//.f-dropdown.open:after
+//  left: 9px !important
 
-#loader
-  position: fixed
-  left: 0
-  top: 0
-  width: 100%
-  height: 100%
-  background: white
-  z-index: 999999
+.f-dropdown
+  background: lighten(#eef1f7, 5%)
+  border: darken(#eef1f7, 15%)
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
+  &.noarrow
+    &:before
+      border: none
+    &:after
+      border: none
+
+.f-dropdown.xtiny
+  max-width: 150px
+
+.panel
+  &.trupanel
+    background: #eef1f7
+    border: darken(#eef1f7, 15%)
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
+
+.action-link
+  background: transparent
+  padding: 0
+  border: none
+  margin: 0
+  +borderRadius(0)
+  &:hover, &:active, &:focus, &:visited
+    background: none
+  &:last-child
+    margin-right: 10px
+  i
+    color: #727272
+    padding: 8px 0 0 0
+    margin: 4px 4px 0 0
+    font-size: 18px
+    cursor: pointer
+    width: 32px !important
+    height: 32px !important
+    text-align: center
+    -webkit-transition: background 280ms ease-out, color 280ms ease-out
+    transition: background 280ms ease-out, color 280ms ease-out
+    +borderRadius(50%)
+    -webkit-tap-highlight-color: transparent
+    &:hover
+      background: darken(#eef1f7, 10%)
 
 @import "partials/common"
 @import "partials/topnav"

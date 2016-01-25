@@ -25,7 +25,7 @@ var reportsController = {};
 
 reportsController.content = {};
 
-reportsController.get = function(req, res, next) {
+reportsController.overview = function(req, res, next) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
         req.flash('message', 'Permission Denied.');
@@ -34,9 +34,9 @@ reportsController.get = function(req, res, next) {
 
     var self = this;
     self.content = {};
-    self.content.title = "Reports";
+    self.content.title = "Overview";
     self.content.nav = 'reports';
-    self.content.subnav = 'reports-completed';
+    self.content.subnav = 'reports-overview';
 
     self.content.data = {};
     self.content.data.user = req.user;
@@ -56,7 +56,7 @@ reportsController.get = function(req, res, next) {
         function(err) {
             if (err) return handleError(res, err);
 
-            return res.render('reports', self.content);
+            return res.render('subviews/reports/overview', self.content);
         });
 };
 
