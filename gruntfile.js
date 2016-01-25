@@ -105,13 +105,12 @@ module.exports = function(grunt) {
                         'public/js/vendor/chosen/chosen.css',
                         'public/js/vendor/pace/pace.theme.css',
                         'public/js/vendor/enjoyhint/enjoyhint.css',
+                        'public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
                         'public/css/plugins/datepicker/foundation-datepicker.css'
-
-
                     ]
                 }
             },
@@ -188,6 +187,8 @@ module.exports = function(grunt) {
                                 'nicescroll',
                                 'underscore',
                                 'history',
+                                'd3',
+                                'metricsgraphics',
 
                                 '../../src/permissions/roles',
 

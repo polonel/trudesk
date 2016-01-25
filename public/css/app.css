@@ -243,10 +243,14 @@ a.button {
 .f-dropdown.xtiny {
   max-width: 150px; }
 
+.panel hr {
+  margin: 0; }
 .panel.trupanel {
   background: #eef1f7;
   border: #bac6df;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24); }
+.panel .panel-body {
+  padding: 15px; }
 
 .action-link {
   background: transparent;

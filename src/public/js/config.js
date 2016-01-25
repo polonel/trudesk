@@ -53,7 +53,9 @@ requirejs.config({
         tomarkdown:     'vendor/tomarkdown/tomarkdown',
         enjoyhint:      'vendor/enjoyhint/enjoyhint.min',
         colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
-        datepicker:     'vendor/datepicker/foundation-datepicker'
+        datepicker:     'vendor/datepicker/foundation-datepicker',
+        d3:             'vendor/d3/d3.min',
+        metricsgraphics:'vendor/metricsgraphics/metricsgraphics.min'
     },
     shim: {
         foundation: {
@@ -146,6 +148,14 @@ requirejs.config({
 
         datepicker: {
             deps: ['jquery', 'foundation']
+        },
+
+        d3: {
+            deps: []
+        },
+
+        metricsgraphics: {
+            deps: ['d3', 'jquery']
         }
     },
     priority: [
