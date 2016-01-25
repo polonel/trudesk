@@ -164,6 +164,15 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     });
             };
 
+            $scope.showAddTags = function(event) {
+                event.preventDefault();
+                var tagModal = $('#addTagModal');
+                if (tagModal.length > 0) {
+                    tagModal.find('#tags').trigger('chosen:updated');
+                    tagModal.foundation('reveal', 'open');
+                }
+            };
+
             $scope.showTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
@@ -185,6 +194,40 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     tagModal.find('select').trigger('chosen:updated');
 
                     tagModal.foundation('reveal', 'open');
+                }
+            };
+
+            $scope.submitAddNewTag = function(event) {
+                event.preventDefault();
+                var form = $('form#addTagForm');
+                if (form.length > 0) {
+                    var tag = form.find('#tag').val();
+                    var data = {
+                        tag: tag
+                    };
+
+                    $http({
+                        method: "POST",
+                        url: '/api/v1/tickets/addtag',
+                        data: data,
+                        headers: { 'Content-Type': 'application/json'}
+                    })
+                        .success(function(data) {
+                            var tagModal = $('#addTagModal');
+                            var tagFormField = $('#tags');
+                            tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
+                            tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
+                            tagFormField.trigger('chosen:updated');
+                            tagFormField.find('#tag').val('');
+                            if (tagModal.length > 0) tagModal.foundation('reveal', 'close');
+                            setTimeout(function() {
+                                $scope.showAddTags(event);
+                            }, 250);
+                        })
+                        .error(function(err) {
+                            console.log('[trudesk:tickets:addTag} - Error: ' + err.error);
+                            helpers.showFlash('Error: ' + err.error, true);
+                        });
                 }
             };
 

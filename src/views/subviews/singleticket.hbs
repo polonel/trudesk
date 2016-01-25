@@ -359,11 +359,15 @@
             <div>
                 <form id="addTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddTags($event)">
                     <!--<label for="tags">Tag:</label>-->
-                    <select name="tags" id="tags" class="chosen-select" multiple>
-                        {{#each data.common.ticketTags}}
-                            <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
+                    <div class="search-container">
+                        <!--<input type="text" name="tags" id="tags" />-->
+                        <select name="tags" id="tags" class="chosen-select" multiple data-placeholder=" " data-noresults="No Tags Found for ">
+                            {{#each data.common.ticketTags}}
+                                <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                        <button ng-click="showAddTags($event)"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                    </div>
 
                     <div class="left" style="margin-top: 15px;">
                         <button class="red nomargin" type="button" ng-click="clearTags($event)">Clear</button>
@@ -378,6 +382,20 @@
             <a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>
         </div>
 
+        <div id="addTagModal" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog" data-options="animation:none;">
+            <h5 id="modalTitle" style="font-weight: 300;">Add Tags</h5>
+            <div>
+                <form id="addTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddNewTag($event)">
+                    <input type="text" id="tag" name="tag" />
+
+                    <div class="right">
+                        <button class="btn nomargin" type="submit">Add Tags</button>
+                    </div>
+                </form>
+            </div>
+
+            <a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>
+        </div>
 
     </div>
 </div>

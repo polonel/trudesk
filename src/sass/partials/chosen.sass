@@ -1,3 +1,46 @@
+.search-container
+  max-height: 300px
+  height: auto
+  //overflow: hidden
+  width: 100%
+  vertical-align: middle
+  white-space: nowrap
+  .chosen-container,
+  input[type="text"],
+  select
+    width: 100%
+    float: left
+    padding-right: 49px
+  input[type=text][disabled]
+    background: #eceff6
+
+  .chosen-container .chosen-choices
+    border: 1px solid #9aa1ad
+    +borderRadius(0)
+
+  .chosen-container-multi .chosen-choices li.search-choice
+    padding: 0 25px 0px 7px
+    background: darken(#eceff6, 20%)
+    span
+      color: white
+      line-height: 27px
+  .chosen-container .chosen-results li.highlighted
+    background: darken(#eceff6, 15%)
+    color: #55616e
+
+  button
+    padding: 5px 10px
+    height: 37px
+    width: 50px
+    margin-left: -50px
+    background: darken(#eceff6, 8%)
+    border-top: 1px solid #9aa1ad
+    border-bottom: 1px solid #9aa1ad
+    border-right: 1px solid #9aa1ad
+    +borderRadius(0 3px 3px 0)
+    i
+      color: #55616e
+
 .chosen-container
   .chosen-drop
     +boxShadow(none)

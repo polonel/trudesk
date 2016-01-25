@@ -1081,6 +1081,16 @@ ticketSchema.statics.getTopTicketGroups = function(top, callback) {
     });
 };
 
+ticketSchema.statics.getTagCount = function(tagId, callback) {
+    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTagCount()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).count({tags: tagId, deleted: false});
+
+    return q.exec(callback);
+};
+
 /**
  * Mark a ticket as deleted in MongoDb <br/><br/>
  * *Ticket has its ```deleted``` flag set to true*
