@@ -167,6 +167,7 @@ module.exports = function(grunt) {
                     preserveLicenseComments: false,
                     kipDirOptimize: false,
                     optimize: 'uglify2',
+                    //optimize: 'none',
                     uglify2: {
                         mangle: false
                     },
@@ -215,12 +216,6 @@ module.exports = function(grunt) {
                                 }
                             }
                         }
-                        //{
-                        //    name: 'page-accounts',
-                        //    create: true,
-                        //    include: [ 'pages/accounts' ],
-                        //    exclude: [ 'trudesk.min' ]
-                        //}
                     ],
                     paths: {
                         foundation: 'empty:',

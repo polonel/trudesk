@@ -11,6 +11,9 @@ body {
   font-family: "Open Sans", sans-serif;
   height: 100%; }
 
+a {
+  text-decoration: none !important; }
+
 pre {
   word-wrap: normal;
   padding: 16px;
@@ -2540,5 +2543,16 @@ div.dataTables_wrapper {
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
   right: 0; }
+
+.mGraph .mg-histogram .axis text,
+.mGraph .mg-x-axis text,
+.mGraph .mg-y-axis text {
+  font-size: 11px; }
+
+.mGraph .mg-active-datapoint {
+  font-size: 13px; }
+
+.mGraph-panel {
+  padding-bottom: 20px; }
 
 /*# sourceMappingURL=app.css.map */

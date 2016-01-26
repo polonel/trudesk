@@ -26,28 +26,67 @@
                 <div class="left">
                     <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
                 </div>
-                <div class="right">
+                <div class="right" style="position:relative;">
                     <button class="action-link"><i class="fa fa-refresh"></i></button>
-                    <button class="action-link" data-dropdown="hover1" data-options="pip:center; align:bottom; is_hover:true; hover_timeout:500;"><i class="fa fa-ellipsis-v"></i></button>
+                    <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
+                        <button class="action-link"><i class="fa fa-ellipsis-v"></i></button>
+                        <div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">
+                            <ul class="uk-nav">
+                                <li><a href="/tickets">This is a Link</a></li>
+                                <li><a href="#">This is a Link</a></li>
+                                <li><a href="#">This is a Link</a></li>
+                            </ul>
+                        </div>
+
+                    </div>
                 </div>
                 <hr class="nomargin-top">
                 <div class="panel-body2">
-                    <div id="test">
+                    <div id="test" class="mGraph mGraph-panel">
 
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="small-12 columns nopadding">
+            <div class="small-3 columns">
+                <div class="panel trupanel nopadding" style="min-height: 200px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                    </div>
 
+                </div>
+            </div>
+            <div class="small-3 columns">
+                <div class="panel trupanel nopadding" style="min-height: 200px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                    </div>
+
+                </div>
+            </div>
+            <div class="small-3 columns">
+                <div class="panel trupanel nopadding" style="min-height: 200px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                    </div>
+
+                </div>
+            </div>
+            <div class="small-3 columns">
+                <div class="panel trupanel nopadding" style="min-height: 200px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                    </div>
+
+                </div>
+            </div>
         </div>
 
     </div>
 </div>
 
-<ul id="hover1" class="f-dropdown xtiny noarrow" data-dropdown-content>
-    <li><a href="#">This is a Link</a></li>
-    <li><a href="#">This is a Link</a></li>
-    <li><a href="#">This is a Link</a></li>
-</ul>
+
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
