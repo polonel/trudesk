@@ -938,11 +938,19 @@ ticketSchema.statics.getMonthCount = function($date, status, callback) {
 
     //Make sure Date is set to 1st Day of the Month
     date.setDate(1);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
 
     var self = this;
     //var month = date.getMonth();
 
-    var endDate = new Date(date).setMonth(date.getMonth() + 1);
+    var endDate = new Date(date);
+    endDate.setMonth(date.getMonth() + 1);
+    endDate.setDate(0);
+    endDate.setHours(23);
+    endDate.setMinutes(59);
+    endDate.setSeconds(59);
 
     var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 
