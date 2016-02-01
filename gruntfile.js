@@ -110,7 +110,9 @@ module.exports = function(grunt) {
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
-                        'public/css/plugins/datepicker/foundation-datepicker.css'
+                        'public/css/plugins/datepicker/foundation-datepicker.css',
+                        'public/js/vendor/uikit/css/uikit.almost-flat.css',
+                        'public/js/vendor/uikit/css/uikit_custom.css'
                     ]
                 }
             },
@@ -166,8 +168,8 @@ module.exports = function(grunt) {
                     removeCombined: true,
                     preserveLicenseComments: false,
                     kipDirOptimize: false,
-                    optimize: 'uglify2',
-                    //optimize: 'none',
+                    //optimize: 'uglify2',
+                    optimize: 'none',
                     uglify2: {
                         mangle: false
                     },
@@ -179,6 +181,7 @@ module.exports = function(grunt) {
                                 'jquery',
                                 'jquery_scrollTo',
                                 'foundation',
+                                'uikit',
                                 'angular',
                                 'angularRoute',
                                 'angularCookies',
@@ -190,6 +193,10 @@ module.exports = function(grunt) {
                                 'history',
                                 'd3',
                                 'metricsgraphics',
+                                'peity',
+                                'countup',
+                                'selectize',
+                                'waves',
 
                                 '../../src/permissions/roles',
 
@@ -226,6 +233,12 @@ module.exports = function(grunt) {
                     keepBuildDir: true
                 }
             }
+        },
+
+        shell: {
+            requirejs: {
+                command: 'r.js.cmd -o rBuild.js'
+            }
         }
     });
 
@@ -233,6 +246,7 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['buildcss', 'builddocs', 'requirejs']);
+    grunt.registerTask('build', ['requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('sbuild', ['shell:requirejs']);
     grunt.registerTask('default', ['server']);
 };

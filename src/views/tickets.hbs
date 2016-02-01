@@ -16,25 +16,25 @@
                         {{#is data.pagination.prevEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                         {{/is}}
 
                         {{#is data.pagination.nextEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                         {{/is}}
                     </ul>
                 </div>
@@ -48,47 +48,30 @@
                         </label>
                     </div>
                     <ul class="button-group">
-                        <li class="pagination"><a id="refreshTicketGrid" href="#" class="btn" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a></li>
-                        <li class="pagination"><a href="" class="btn no-ajaxy" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)"><i class="fa fa-large fa-filter"></i></a></li>
+                        <li class="pagination"><a id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a></li>
+                        <li class="pagination"><a href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)"><i class="fa fa-large fa-filter"></i></a></li>
                     </ul>
                 </div>
                 <div class="pagination left">
                     <ul class="button-group left">
                         <li class="pagination" style="position:relative;">
-                            <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
-                            <div id="ticket-actions" data-scroll="tAction-list" data-override="true" data-top-offset="60" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall">
-                                <div class="actions"><strong>Ticket Actions</strong></div>
-                                <div id="tAction-list" class="notifications-Messages">
-                                    <ul>
+                            <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
+                                <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
+                                <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
+                                    <ul class="uk-nav">
                                         {{#canUser data.user "ticket:delete"}}
                                             <li>
-                                                <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteTickets()">
-                                                    <div class="clearfix">
-                                                        <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                                        <div class="messageAuthor"><strong>Delete</strong></div>
-                                                    </div>
-                                                </a>
+                                                <a class="no-ajaxify" href="#" role="button" ng-click="deleteTickets()">Delete</a>
+                                            </li>
+                                            <li>
+                                                <hr style="margin: 5px 0;">
                                             </li>
                                         {{/canUser}}
-                                        {{#canUser data.user "ticket:edit"}}
-                                            <li>
-                                                <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
-                                                    <div class="clearfix">
-                                                        <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                        <div class="messageAuthor"><strong>Close</strong></div>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                        {{#canUser data.user "ticket:Edit"}}
+                                            <li><a href="#" class="no-ajaxify" ng-click="closeTickets()">Close</a></li>
                                         {{else}}
                                             {{#canUser data.user "ticket:editSelf"}}
-                                                <li>
-                                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="closeTickets()">
-                                                        <div class="clearfix">
-                                                            <div class="messageIcon left"><i class="fa fa-check green"></i></div>
-                                                            <div class="messageAuthor"><strong>Close</strong></div>
-                                                        </div>
-                                                    </a>
-                                                </li>
+                                                <li><a href="#" class="no-ajaxify" ng-click="closeTickets()">Close</a></li>
                                             {{/canUser}}
                                         {{/canUser}}
                                     </ul>
@@ -97,9 +80,9 @@
                         </li>
                     </ul>
                 </div>
-                <ul class="button-group left">
-                    {{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create/" role="button" class="btn">Create</a></li>{{/canUser}}
-                </ul>
+                <!--<ul class="button-group left">-->
+                    <!--{{#canUser data.user "ticket:create"}}<li class="active"><a href="/tickets/create/" role="button" class="btn md-btn-wave-light">Create</a></li>{{/canUser}}-->
+                <!--</ul>-->
             </div>
         </div>
 

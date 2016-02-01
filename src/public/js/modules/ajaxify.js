@@ -51,7 +51,7 @@ define('modules/ajaxify', [
             },
             reveal: {
                 animation: 'fade',
-                animation_speed: 200,
+                animation_speed: 280,
                 close_on_background_click: true,
                 close_on_esc: true
             }
@@ -59,6 +59,7 @@ define('modules/ajaxify', [
 
         ui.init();
         helpers.init();
+        helpers.hideAllUiKitDropdowns();
         ajaxImgUpload.init();
         attachmentUpload.init();
         nav.init();
@@ -88,6 +89,10 @@ define('modules/ajaxify', [
         noticesPage.init();
         createNoticePage.init();
 
+
+        //Load UI Animations Load
+        helpers.UI.cardShow();
+        helpers.countUpMe();
     });
     // Prepare our Variables
     var

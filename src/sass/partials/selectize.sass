@@ -1,0 +1,384 @@
+/* selectize
+/**
+ * selectize.css (v0.12.1)
+ * Copyright (c) 2013â€“2015 Brian Reavis & contributors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
+ * file except in compliance with the License. You may obtain a copy of the License at:
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software distributed under
+ * the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF
+ * ANY KIND, either express or implied. See the License for the specific language
+ * governing permissions and limitations under the License.
+ *
+ * @author Brian Reavis <brian@thirdroute.com>
+
+.selectize-control.plugin-drag_drop
+  &.multi > .selectize-input > div.ui-sortable-placeholder
+    visibility: visible !important
+    background: #f2f2f2 !important
+    background: rgba(0, 0, 0, 0.06) !important
+    border: 0 none !important
+    box-shadow: inset 0 0 12px 4px #ffffff
+  .ui-sortable-placeholder::after
+    content: '!'
+    visibility: hidden
+  .ui-sortable-helper
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2)
+
+.selectize-dropdown-header
+  position: relative
+  padding: 5px 8px
+  border-bottom: 1px solid #d0d0d0
+  background: #f8f8f8
+  border-radius: 3px 3px 0 0
+
+.selectize-dropdown-header-close
+  position: absolute
+  right: 8px
+  top: 50%
+  color: #303030
+  opacity: 0.4
+  margin-top: -12px
+  line-height: 20px
+  font-size: 20px !important
+  &:hover
+    color: #000000
+
+.selectize-dropdown.plugin-optgroup_columns
+  .optgroup
+    border-right: 1px solid #f2f2f2
+    border-top: 0 none
+    float: left
+    box-sizing: border-box
+    &:last-child
+      border-right: 0 none
+    &:before
+      display: none
+  .optgroup-header
+    border-top: 0 none
+
+.selectize-control
+  &.plugin-remove_button
+    [data-value]
+      position: relative
+      padding-right: 24px !important
+      .remove
+        z-index: 1
+        /* fixes ie bug (see #392)
+        position: absolute
+        top: 0
+        right: 0
+        bottom: 0
+        width: 17px
+        text-align: center
+        font-weight: bold
+        font-size: 12px
+        color: inherit
+        text-decoration: none
+        vertical-align: middle
+        display: inline-block
+        padding: 2px 0 0 0
+        border-left: 1px solid #d0d0d0
+        border-radius: 0 2px 2px 0
+        box-sizing: border-box
+        &:hover
+          background: rgba(0, 0, 0, 0.05)
+      &.active .remove
+        border-left-color: #cacaca
+    .disabled [data-value] .remove
+      &:hover
+        background: none
+      border-left-color: #ffffff
+  position: relative
+
+.selectize-dropdown
+  color: #303030
+  font-family: Roboto, sans-serif
+  font-size: 13px
+  line-height: 18px
+  -webkit-font-smoothing: inherit
+
+.selectize-input
+  color: #303030
+  font-family: Roboto, sans-serif
+  font-size: 13px
+  line-height: 18px
+  -webkit-font-smoothing: inherit
+  input
+    color: #303030
+    font-family: Roboto, sans-serif
+    font-size: 13px
+    line-height: 18px
+    -webkit-font-smoothing: inherit
+  background: #eef1f7
+  cursor: text
+  display: inline-block
+
+.selectize-control.single .selectize-input.input-active
+  background: #eef1f7
+  cursor: text
+  display: inline-block
+
+.selectize-input
+  border: 1px solid #d0d0d0
+  padding: 8px 8px
+  display: inline-block
+  width: 100%
+  overflow: hidden
+  position: relative
+  z-index: 1
+  box-sizing: border-box
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1)
+  border-radius: 3px
+
+.selectize-control.multi .selectize-input.has-items
+  padding: 6px 8px 3px
+
+.selectize-input
+  &.full
+    background-color: #eef1f7
+  &.disabled
+    cursor: default !important
+    *
+      cursor: default !important
+  &.focus
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15)
+  &.dropdown-active
+    border-radius: 3px 3px 0 0
+  > *
+    vertical-align: baseline
+    display: -moz-inline-stack
+    display: inline-block
+    zoom: 1
+    *display: inline
+
+.selectize-control.multi .selectize-input
+  > div
+    cursor: pointer
+    margin: 0 3px 3px 0
+    padding: 2px 6px
+    background: #e0e0e0
+    color: #303030
+    border: 0 solid #d0d0d0
+    &.active
+      background: #e8e8e8
+      color: #303030
+      border: 0 solid #cacaca
+  &.disabled > div
+    color: #7d7d7d
+    background: #eef1f7
+    border: 0 solid #eef1f7
+    &.active
+      color: #7d7d7d
+      background: #eef1f7
+      border: 0 solid #eef1f7
+
+.selectize-input
+  > input
+    display: inline-block !important
+    padding: 0 !important
+    min-height: 0 !important
+    max-height: none !important
+    max-width: 100% !important
+    margin: 0 2px 0 0 !important
+    text-indent: 0 !important
+    border: 0 none !important
+    background: none !important
+    line-height: inherit !important
+    -webkit-user-select: auto !important
+    box-shadow: none !important
+    &::-ms-clear
+      display: none
+    &:focus
+      outline: none !important
+  &::after
+    content: ' '
+    display: block
+    clear: left
+  &.dropdown-active::before
+    content: ' '
+    display: block
+    position: absolute
+    background: #f0f0f0
+    height: 1px
+    bottom: 0
+    left: 0
+    right: 0
+
+.selectize-dropdown
+  position: absolute
+  z-index: 10
+  border: 1px solid #d0d0d0
+  background: #eef1f7
+  margin: -1px 0 0 0
+  border-top: 0 none
+  box-sizing: border-box
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1)
+  border-radius: 0 0 3px 3px
+  [data-selectable]
+    cursor: pointer
+    overflow: hidden
+    .highlight
+      background: rgba(125, 168, 208, 0.2)
+      border-radius: 1px
+    padding: 5px 8px
+  .optgroup-header
+    padding: 5px 8px
+  .optgroup:first-child .optgroup-header
+    border-top: 0 none
+  .optgroup-header
+    color: #303030
+    background: #eef1f7
+    cursor: default
+  .active
+    background-color: #f5fafd
+    color: #495c68
+    &.create
+      color: #495c68
+  .create
+    color: rgba(48, 48, 48, 0.5)
+
+.selectize-white
+  .selectize-input,
+  .selectize-input.input-active
+    background: #fff !important
+
+.selectize-dropdown
+  &.selectize-white
+    background: white !important
+
+.selectize-dropdown-content
+  overflow-y: auto
+  overflow-x: hidden
+  max-height: 200px
+
+.selectize-control
+  &.single .selectize-input
+    cursor: pointer
+    input
+      cursor: pointer
+    &.input-active
+      cursor: text
+      input
+        cursor: text
+    &:after
+      content: ' '
+      display: block
+      position: absolute
+      top: 50%
+      right: 15px
+      margin-top: -3px
+      width: 0
+      height: 0
+      border-style: solid
+      border-width: 5px 5px 0 5px
+      border-color: #808080 transparent transparent transparent
+    &.dropdown-active:after
+      margin-top: -4px
+      border-width: 0 5px 5px 5px
+      border-color: transparent transparent #808080 transparent
+  &.rtl
+    &.single .selectize-input:after
+      left: 15px
+      right: auto
+    .selectize-input > input
+      margin: 0 4px 0 -2px !important
+  .selectize-input.disabled
+    opacity: 0.5
+    background-color: #fafafa
+
+.selectize-input
+  border-color: rgba(0, 0, 0, 0.12)
+  line-height: 25px
+  padding: 6px 8px
+  border-radius: 0
+  box-shadow: none
+  &.focus
+    border-radius: 0
+    box-shadow: none
+  &:before, &.focus:before
+    display: none
+
+.md-input-danger .selectize-input
+  border-color: #e53935
+
+.selectize-input.dropdown-active:before
+  display: none
+
+.selectize-dropdown
+  margin-top: -40px
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)
+  color: #212121
+  z-index: 1210
+  [data-selectable]
+    padding-top: 11px
+    padding-bottom: 10px
+    font-size: 15px
+  .active
+    background: rgba(0, 0, 0, 0.085)
+    color: inherit
+  .optgroup-header
+    font-size: 14px
+    color: #aaa
+    padding-top: 8px
+  &.multi .item-icon
+    margin-right: 4px
+  &.selectize_fs
+    z-index: 9999
+
+.selectize-control
+  .selectize-input
+    min-height: 40px
+  &.multi .selectize-input
+    line-height: 21px
+    > div
+      border-radius: 18px
+      padding: 3px 8px 2px
+      font-size: 14px
+    .selectize-input.has-items
+      padding: 4px
+    .item-icon
+      margin-right: 4px
+    input
+      height: 26px
+      font-size: 15px
+  &.plugin-remove_button [data-value]
+    padding-right: 32px !important
+    .remove
+      border: none
+      width: auto
+      padding: 4px 10px 0 0
+      &:hover
+        background: none
+      &:after
+        color: #727272
+        content: '\e5cd'
+        font-family: "Material Icons"
+        font-size: 18px
+  &.single
+    height: 40px
+    margin-top: 0px
+    .selectize-input
+      border-width: 0 0 1px
+      padding: 8px 8px 9px
+      &:after
+        border: none !important
+        content: '\e5c5'
+        font-family: "Material Icons"
+        font-size: 28px
+        margin-top: -12px !important
+        right: 28px
+        color: rgba(0, 0, 0, 0.3)
+      .item, input
+        font-size: 15px
+        font-family: Roboto, sans-serif
+
+.selectize_fix
+  overflow: hidden
+  height: 0
+  width: 100%
+
+.selectize-control.single .selectize-input > input
+  height: 26px !important

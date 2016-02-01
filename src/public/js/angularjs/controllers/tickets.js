@@ -20,6 +20,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 openFilterTicketWindow.openWindow();
             };
 
+            $scope.test = function(event) {
+                console.log('test');
+            };
+
             $scope.submitTicketForm = function() {
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
@@ -243,66 +247,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $('.pDatePicker').fdatepicker({
 
                     });
-
-                    //$('#filterTags').find('option').remove().end();
-                    //$('#filterTags').trigger("chosen:updated");
-                    ////Chosen Tag Filters
-                    //var dropDown = $('#filterTags_chosen').find('.chosen-drop');
-                    //// Make the chosen drop-down dynamic. If a given option is not in the list, the user can still add it
-                    //dropDown.parent().find('.search-field input[type=text]').keydown(
-                    //    function (evt) {
-                    //        var stroke, _ref, target, list;
-                    //        // get keycode
-                    //        stroke = (_ref = evt.which) != null ? _ref : evt.keyCode;
-                    //        // If enter or tab key
-                    //        var chosenList;
-                    //        var matchList;
-                    //        var highlightedList;
-                    //        if (stroke === 13) {
-                    //            evt.preventDefault();
-                    //            target = $(evt.target);
-                    //            // get the list of current options
-                    //            chosenList = target.parents('.chosen-container').find('.chosen-choices li.search-choice > span').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // get the list of matches from the existing drop-down
-                    //            matchList = target.parents('.chosen-container').find('.chosen-results li').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // highlighted option
-                    //            highlightedList = target.parents('.chosen-container').find('.chosen-results li.highlighted').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // Get the value which the user has typed in
-                    //            var newString = $.trim(target.val());
-                    //            // if the option does not exists, and the text doesn't exactly match an existing option, and there is not an option highlighted in the list
-                    //            if ($.inArray(newString, matchList) < 0 && $.inArray(newString, chosenList) < 0 && highlightedList.length == 0) {
-                    //                // Create a new option and add it to the list (but don't make it selected)
-                    //                var newOption = '<option value="' + newString + '">' + newString + '</option>';
-                    //                $("#filterTags").prepend(newOption);
-                    //                // trigger the update event
-                    //                $("#filterTags").trigger("chosen:updated");
-                    //                // tell chosen to close the list box
-                    //                $("#filterTags").trigger("chosen:close");
-                    //                return true;
-                    //            }
-                    //            // otherwise, just let the event bubble up
-                    //            return true;
-                    //        }
-                    //    }
-                    //);
-
-                    $('#ticketFilterModal').foundation('reveal', 'open');
-                },
-                openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
-                    var $newMessageTo = $('#newMessageTo');
-                    $newMessageTo.find("option").prop('selected', false);
-                    $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
-                    $newMessageTo.trigger('chosen:updated');
-                    $('#newMessageSubject').val(subject);
-                    var $mText = md(text);
-                    $mText = $mText.trim();
-                    $('#newMessageText').val($mText);
 
                     $('#ticketFilterModal').foundation('reveal', 'open');
                 },

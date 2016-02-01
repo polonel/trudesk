@@ -22,6 +22,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         //Static Bootstraps
         angular.bootstrap($('.top-bar'), ['trudesk']);
         angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
+        angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
 
         //Dynamic Bootstrap
         angular.bootstrap($('#page-content'), ['trudesk']);
@@ -30,6 +31,8 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
     require([
         'modules/navigation',
         'modules/enjoyhint',
+        'foundation',
+        'uikit',
         'modules/socket',
         'modules/ajaxify',
         'modernizr',
@@ -40,7 +43,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, eh) {
+    ], function(nav, eh, UI) {
         //Start App
         $(document).foundation({
             abide: {
@@ -60,6 +63,9 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         //helpers.fadeOutLoader(100);
         setTimeout(function(){
             wdtLoading.done();
+
+            helpers.countUpMe();
+            helpers.UI.cardShow();
         }, 2000);
         //eh.init();
     });

@@ -72,6 +72,7 @@
     "grunt-express-server": "^0.5.1",
     "grunt-htmlhint": "^0.9.12-fix",
     "grunt-parallel": "^0.4.1",
+    "grunt-shell": "^1.1.2",
     "mocha": "*",
     "mocha-lcov-reporter": "1.0.0",
     "request": "^2.60.0",

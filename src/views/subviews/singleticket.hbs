@@ -193,7 +193,7 @@
                     <ul class="button-group">
                         <li class="pagination">
                             <a href="/tickets/print/{{data.ticket.uid}}" class="btn no-ajaxy" style="border-radius: 3px; margin-right: 5px;" onclick="window.open(this.href); return false;" onkeypress="window.open(this.href); return false;">
-                                <i class="fa fa-large fa-print"></i>
+                                <i class="material-icons">&#xE8AD;</i>
                             </a>
                         </li>
                     </ul>
@@ -240,7 +240,7 @@
                                     </div>
                                 </form>
                             </div>
-                            <div class="edit-issue"><i class="fa fa-pencil fa-lg"></i></div>
+                            <div class="edit-issue"><i class="material-icons">&#xE254;</i></div>
                         {{else}}
                             {{#canEditSelf data.user data.ticket.owner 'ticket'}}
                                 <div class="edit-issue-form clearfix hide" style="margin-bottom: 15px;">
@@ -255,11 +255,11 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="edit-issue"><i class="fa fa-pencil fa-lg"></i></div>
+                                <div class="edit-issue"><i class="material-icons">&#xE254;</i></div>
                             {{/canEditSelf}}
                         {{/canUser}}
                         <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
-                            <div class="add-attachment" ng-click="showUploadAttachment($event)"><i class="fa fa-paperclip fa-lg"></i></div>
+                            <div class="add-attachment" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
 
                             <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
                             <input type="hidden" name="ownerId" value="{{data.user._id}}" />
@@ -313,17 +313,17 @@
                                 {{/canUser}}
                                 <div class="comment-actions">
                                     {{#canUser ../data.common.loggedInAccount "comment:delete"}}
-                                        <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                                        <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                     {{else}}
                                         {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
-                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="fa fa-times fa-lg"></i></div>
+                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                         {{/canEditSelf}}
                                     {{/canUser}}
                                     {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
+                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
                                     {{else}}
                                         {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
-                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="fa fa-pencil fa-lg"></i></div>
+                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
                                         {{/canEditSelf}}
                                     {{/canUser}}
                                 </div>

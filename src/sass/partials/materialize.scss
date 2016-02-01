@@ -1,0 +1,633 @@
+@import "../materialize/components/color";
+$primary-color: color("materialize-red", "lighten-2") !default;
+$primary-color-light: lighten($primary-color, 15%) !default;
+$primary-color-dark: darken($primary-color, 15%) !default;
+
+$secondary-color: color("blue", "darken-2") !default;
+$success-color: color("green", "base") !default;
+$error-color: color("red", "base") !default;
+$link-color: color("light-blue", "darken-1") !default;
+
+$gutter-width: 1.5rem !default;
+
+/*** Forms ***/
+// Text Inputs + Textarea
+$input-border-color: color("grey", "base") !default;
+$input-bg-color: #fff !default;
+$input-error-color: $error-color !default;
+$input-success-color: $success-color !default;
+$input-focus-color: $secondary-color !default;
+$label-font-size: .8rem !default;
+$input-disabled-color: rgba(0,0,0, .26) !default;
+$input-disabled-solid-color: #BDBDBD !default;
+
+// Radio Buttons
+$radio-fill-color: $secondary-color !default;
+$radio-empty-color: #5a5a5a !default;
+
+// Media Query Ranges
+$small-screen-up: 601px !default;
+$medium-screen-up: 993px !default;
+$large-screen-up: 1201px !default;
+$small-screen: 600px !default;
+$medium-screen: 992px !default;
+$large-screen: 1200px !default;
+
+$medium-and-up: "only screen and (min-width : #{$small-screen-up})" !default;
+$large-and-up: "only screen and (min-width : #{$medium-screen-up})" !default;
+$small-and-down: "only screen and (max-width : #{$small-screen})" !default;
+$medium-and-down: "only screen and (max-width : #{$medium-screen})" !default;
+$medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width : #{$medium-screen})" !default;
+
+.md-switch,
+.md-switch * {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -ms-user-select: none;
+}
+
+.md-switch label {
+  cursor: pointer;
+}
+
+.md-switch label input[type=checkbox]{
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.md-switch label input[type=checkbox]:checked + .lever {
+  background-color: lighten(#E74C3C, 15%);
+}
+
+.md-switch label input[type=checkbox]:checked + .lever:after {
+  background-color: #E74C3C;
+}
+
+.md-switch.md-blue label input[type=checkbox]:checked + .lever {
+  background-color: lighten(#2196f3, 15%);
+}
+
+.md-switch.md-blue label input[type=checkbox]:checked + .lever:after {
+  background-color: #2196f3;
+}
+
+
+
+.md-switch label .lever {
+  content: "";
+  display: inline-block;
+  position: relative;
+  width: 40px;
+  height: 15px;
+  background-color: #ccc;
+  border-radius: 15px;
+  margin-right: 10px;
+  transition: background 0.3s ease;
+  vertical-align: middle;
+  margin: 0 16px;
+}
+
+.md-switch label .lever:after {
+  content: "";
+  position: absolute;
+  display: inline-block;
+  width: 21px;
+  height: 21px;
+  background-color: #fff;
+  border-radius: 21px;
+  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
+  left: -5px;
+  top: -3px;
+  transition: left 0.3s ease, background .3s ease, box-shadow 0.1s ease;
+}
+
+// Switch active style
+input[type=checkbox]:checked:not(:disabled) ~ .lever:active:after {
+  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4), 0 0 0 15px transparentize(#fff, .9);
+}
+
+input[type=checkbox]:not(:disabled) ~ .lever:active:after {
+  box-shadow: 0 1px 3px 1px rgba(0,0,0,.4), 0 0 0 15px rgba(0, 0, 0, .08);
+}
+
+.md-switch label input[type=checkbox]:checked + .lever:after {
+  left: 24px;
+}
+
+// Disabled Styles
+.md-switch input[type=checkbox][disabled] + .lever{
+  cursor: default;
+}
+.md-switch label input[type=checkbox][disabled] + .lever:after,
+.md-switch label input[type=checkbox][disabled]:checked + .lever:after {
+  background-color: #ccc;
+}
+
+/* buttons */
+
+.md-btn {
+  background: #fff;
+  border: none;
+  border-radius: 2px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  min-height: 31px;
+  min-width: 70px;
+  padding: 2px 16px;
+  text-align: center;
+  text-shadow: none;
+  text-transform: uppercase;
+  -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
+  color: #212121;
+  box-sizing: border-box;
+  cursor: pointer;
+  -webkit-appearance: none;
+  display: inline-block;
+  vertical-align: middle;
+  font: 500 14px / 31px "Roboto", sans-serif !important;
+  margin-bottom: 0 !important;
+  &:hover, &:focus, &:active {
+    background: #fff;
+    outline: none;
+    text-decoration: none;
+    color: #212121;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  }
+}
+
+.uk-button-dropdown.uk-open > .md-btn {
+  background: #fff;
+  outline: none;
+  text-decoration: none;
+  color: #212121;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+}
+
+.md-btn:active, .uk-button-dropdown.uk-open > .md-btn {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
+}
+
+.md-btn-flat {
+  box-shadow: none !important;
+  background: none;
+  &:hover, &:focus {
+    background: rgba(153, 153, 153, 0.2);
+  }
+  &:active {
+    background: rgba(153, 153, 153, 0.4);
+  }
+}
+
+.md-btn-flat-danger {
+  color: #e53935;
+  &:hover, &:focus, &:active {
+    color: #e53935;
+  }
+  &:hover, &:focus, &:active {
+    background: #fceaea;
+  }
+}
+
+.md-btn-flat-primary {
+  color: #1976d2;
+  &:hover, &:focus, &:active {
+    color: #1976d2;
+  }
+  &:hover, &:focus, &:active {
+    background: #e3f2fd;
+  }
+}
+
+.md-btn-flat-success {
+  color: #7cb342;
+  &:hover, &:focus, &:active {
+    color: #7cb342;
+  }
+  &:hover, &:focus, &:active {
+    background: #e1efd2;
+  }
+}
+
+.md-btn-flat-warning {
+  color: #ffa000;
+  &:hover, &:focus, &:active {
+    color: #ffa000;
+  }
+  &:hover, &:focus, &:active {
+    background: #ffeccc;
+  }
+}
+
+.md-btn-flat.disabled {
+  background: none !important;
+}
+
+.md-btn-danger {
+  background: #e53935;
+  color: #fff;
+  &:hover, &:focus, &:active {
+    background: #e53935;
+    color: #fff;
+  }
+}
+
+.md-btn-primary {
+  background: #2196f3;
+  color: #fff;
+  &:hover, &:focus, &:active {
+    background: #2196f3;
+    color: #fff;
+  }
+}
+
+.md-btn-success {
+  background: #7cb342;
+  color: #fff;
+  &:hover, &:focus, &:active {
+    background: #7cb342;
+    color: #fff;
+  }
+}
+
+.md-btn-warning {
+  background: #ffa000;
+  color: #fff;
+  &:hover, &:focus, &:active {
+    background: #ffa000;
+    color: #fff;
+  }
+}
+
+.md-btn.disabled {
+  color: #a8a8a8;
+  background: #eaeaea;
+  box-shadow: none !important;
+  cursor: default;
+  pointer-events: none;
+  &:hover, &:focus, &:active {
+    color: #a8a8a8;
+    background: #eaeaea;
+    box-shadow: none !important;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+.md-btn-small {
+  line-height: 27px !important;
+  min-width: 14px;
+  font-size: 11px !important;
+}
+
+.md-btn-large {
+  line-height: 42px !important;
+  font-size: 16px !important;
+}
+
+.md-btn {
+  &::-moz-focus-inner {
+    border: 0;
+    padding: 0;
+  }
+  + .md-btn {
+    margin-left: 8px;
+  }
+}
+
+.md-btn-block {
+  width: 100%;
+}
+
+.md-btn + .md-btn-group {
+  margin-left: 16px;
+}
+
+/***************
+  Radio Buttons
+***************/
+
+/* Remove default Radio Buttons */
+[type="radio"]:not(:checked),
+[type="radio"]:checked {
+  position: absolute;
+  left: -9999px;
+  visibility: hidden;
+}
+
+[type="radio"]:not(:checked) + label,
+[type="radio"]:checked + label {
+  position: relative;
+  padding-left: 30px;
+  cursor: pointer;
+  display: inline-block;
+  height: 25px;
+  line-height: 25px;
+  font-size: 1rem;
+  transition: .28s ease;
+  margin-right: 8px;
+  margin-left: 0;
+
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  user-select: none;
+}
+
+[type="radio"] + label:before,
+[type="radio"] + label:after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  margin: 5px;
+  width: 16px;
+  height: 16px;
+  z-index: 0;
+  transition: .28s ease;
+}
+
+/* Unchecked styles */
+[type="radio"]:not(:checked) + label:before {
+  border-radius: 50%;
+  border: 2px solid $radio-empty-color;
+}
+[type="radio"]:not(:checked) + label:after {
+  border-radius: 50%;
+  border: 2px solid $radio-empty-color;
+  z-index: -1;
+
+  transform: scale(0);
+}
+
+/* Checked styles */
+[type="radio"]:checked + label:before {
+  border-radius: 50%;
+  border: 2px solid transparent;
+}
+[type="radio"]:checked + label:after {
+  border-radius: 50%;
+  border: 2px solid $radio-fill-color;
+  background-color: $radio-fill-color;
+  z-index: 0;
+  transform: scale(1.02);
+}
+
+/* Radio With gap */
+[type="radio"].with-gap:checked + label:before {
+  border-radius: 50%;
+  border: 2px solid $radio-fill-color;
+}
+[type="radio"].with-gap:checked + label:after {
+  border-radius: 50%;
+  border: 2px solid $radio-fill-color;
+  background-color: $radio-fill-color;
+  z-index: 0;
+  transform: scale(.5);
+}
+
+/* Disabled Radio With gap */
+[type="radio"].with-gap:disabled:checked + label:before {
+  border: 2px solid $input-disabled-color;
+}
+[type="radio"].with-gap:disabled:checked + label:after {
+  border: none;
+  background-color: $input-disabled-color;
+}
+
+/* Disabled style */
+[type="radio"]:disabled:not(:checked) + label:before,
+[type="radio"]:disabled:checked + label:before {
+  background-color: transparent;
+  border-color: $input-disabled-color;
+}
+[type="radio"]:disabled + label {
+  color: $input-disabled-color;
+}
+[type="radio"]:disabled:not(:checked) + label:before {
+  border-color: $input-disabled-color;
+}
+[type="radio"]:disabled:checked + label:after {
+  background-color: $input-disabled-color;
+  border-color: $input-disabled-solid-color;
+}
+
+//
+//
+///***************************
+//   Text Inputs + Textarea
+//****************************/
+//
+//// Style Placeholders
+//::-webkit-input-placeholder {
+//  color: lighten($input-border-color, 20%);
+//}
+//
+//:-moz-placeholder { /* Firefox 18- */
+//  color: lighten($input-border-color, 20%);
+//}
+//
+//::-moz-placeholder {  /* Firefox 19+ */
+//  color: lighten($input-border-color, 20%);
+//}
+//
+//:-ms-input-placeholder {
+//  color: lighten($input-border-color, 20%);
+//}
+//
+//// Text inputs
+//input:not([type]),
+//input[type=text],
+//input[type=password],
+//input[type=email],
+//input[type=url],
+//input[type=time],
+//input[type=date],
+//input[type=datetime-local],
+//input[type=tel],
+//input[type=number],
+//input[type=search],
+//textarea.materialize-textarea {
+//
+//  // General Styles
+//  background-color: transparent;
+//  border: none;
+//  border-bottom: 1px solid $input-border-color;
+//  border-radius: 0;
+//  outline: none;
+//  height: 3rem;
+//  width: 100%;
+//
+//  font-size: 1rem;
+//  margin: 0 0 15px 0;
+//  padding: 0;
+//  box-shadow: none;
+//  box-sizing: content-box;
+//  transition: all .3s;
+//
+//
+//  // Disabled input style
+//  &:disabled, &[readonly="readonly"] {
+//    color: $input-disabled-color;
+//    border-bottom: 1px dotted $input-disabled-color;
+//  }
+//  // Disabled label style
+//  &:disabled+label, &[readonly="readonly"]+label {
+//    color: $input-disabled-color;
+//  }
+//  // Focused input style
+//  &:focus:not([readonly]) {
+//    border-bottom: 1px solid $input-focus-color;
+//    box-shadow: 0 1px 0 0 $input-focus-color;
+//  }
+//  // Focused label style
+//  &:focus:not([readonly])+label {
+//    color: $input-focus-color;
+//  }
+//  // Valid Input Style
+//  &.valid,
+//  &:focus.valid {
+//    border-bottom: 1px solid $input-success-color;
+//    box-shadow: 0 1px 0 0 $input-success-color;
+//  }
+//  // Custom Success Message
+//  &.valid + label:after,
+//  &:focus.valid + label:after {
+//    content: attr(data-success);
+//    color: $input-success-color;
+//    opacity: 1;
+//  }
+//  // Invalid Input Style
+//  &.invalid,
+//  &:focus.invalid {
+//    border-bottom: 1px solid $input-error-color;
+//    box-shadow: 0 1px 0 0 $input-error-color;
+//  }
+//  // Custom Error message
+//  &.invalid + label:after,
+//  &:focus.invalid + label:after {
+//    content: attr(data-error);
+//    color: $input-error-color;
+//    opacity: 1;
+//  }
+//
+//  // Form Message Shared Styles
+//  & + label:after {
+//    display: block;
+//    content: "";
+//    position: absolute;
+//    top: 65px;
+//    opacity: 0;
+//    transition: .2s opacity ease-out, .2s color ease-out;
+//  }
+//}
+//
+//// Styling for input field wrapper
+//.input-field {
+//  position: relative;
+//  margin-top: 1rem;
+//
+//  label {
+//    color: $input-border-color;
+//    position: absolute;
+//    top: 0.8rem;
+//    left: $gutter-width / 2;
+//    font-size: 1rem;
+//    cursor: text;
+//    transition: .2s ease-out;
+//  }
+//  label.active {
+//    font-size: $label-font-size;
+//    transform: translateY(-140%);
+//  }
+//
+//  // Prefix Icons
+//  .prefix {
+//    position: absolute;
+//    width: 3rem;
+//    font-size: 2rem;
+//    transition: color .2s;
+//
+//    &.active { color: $input-focus-color; }
+//  }
+//  .prefix ~ input,
+//  .prefix ~ textarea {
+//    margin-left: 3rem;
+//    width: 92%;
+//    width: calc(100% - 3rem);
+//  }
+//  .prefix ~ textarea { padding-top: .8rem; }
+//  .prefix ~ label { margin-left: 3rem; }
+//
+//  @media #{$medium-and-down} {
+//    .prefix ~ input {
+//      width: 86%;
+//      width: calc(100% - 3rem);
+//    }
+//  }
+//  @media #{$small-and-down} {
+//    .prefix ~ input {
+//      width: 80%;
+//      width: calc(100% - 3rem);
+//    }
+//  }
+//}
+//
+//// Search Field
+//.input-field input[type=search] {
+//  display: block;
+//  line-height: inherit;
+//  padding-left: 4rem;
+//  width: calc(100% - 4rem);
+//
+//  &:focus {
+//    background-color: $input-bg-color;
+//    border: 0;
+//    box-shadow: none;
+//    color: #444;
+//
+//    & + label i,
+//    & ~ .mdi-navigation-close,
+//    & ~ .material-icons {
+//      color: #444;
+//    }
+//  }
+//
+//  & + label {
+//    left: 1rem;
+//  }
+//
+//  & ~ .mdi-navigation-close,
+//  & ~ .material-icons {
+//    position: absolute;
+//    top: 0;
+//    right: 1rem;
+//    color: transparent;
+//    cursor: pointer;
+//    font-size: 2rem;
+//    transition: .3s color;
+//  }
+//}
+//
+//
+//// Default textarea
+//textarea {
+//  width: 100%;
+//  height: 3rem;
+//  background-color: transparent;
+//
+//  &.materialize-textarea {
+//    overflow-y: hidden; /* prevents scroll bar flash */
+//    padding: 1.6rem 0; /* prevents text jump on Enter keypress */
+//    resize: none;
+//    min-height: 3rem;
+//  }
+//}
+//
+//// For textarea autoresize
+//.hiddendiv {
+//  display: none;
+//  white-space: pre-wrap;
+//  word-wrap: break-word;
+//  overflow-wrap: break-word; /* future version of deprecated 'word-wrap' */
+//  padding-top: 1.2rem; /* prevents text jump on Enter keypress */
+//}

@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history'], function(angular, _, $, socket, UI) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
         .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
 
@@ -20,6 +20,23 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
             $scope.loadNoticeAlertWindow = function() {
                 //Load the function In the next Tick...
                 $timeout(function() {
+                    //Bind to Events
+                    UI.$html.on('hide.uk.modal', function(event) {
+                        var modal = $(event.target);
+                        if (modal.length > 0) {
+                            modal.find('form')[0].reset();
+                            modal.find('option').prop('selected', false);
+                            var $select = modal.find('form').find('select');
+                            $select.each(function() {
+                                var self = $(this);
+                                var $selectize = self[0].selectize;
+                                //$selectize.addOption({value: -1, text: "Select Group..."});
+                                //$selectize.refreshOptions();
+                                //$selectize.setValue(-1);
+                                $selectize.clear();
+                            });
+                        }
+                    });
                     $scope.noticeAlertWindow = $('#noticeAlertWindow');
 
                     if ($scope.noticeAlertWindow.length > 0) {
@@ -68,5 +85,29 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
                 $('#noticeAlertWindow').foundation('reveal', 'close');
             };
 
+        }])
+        .directive('closeUkDropdown', ['$document', '$timeout', function($document, $timeout) {
+            return {
+                restrict: 'A',
+                link: function(scope, element, attr) {
+                    //$document.off('mouseup', mouseup);
+                    //$document.on('mouseup', mouseup);
+
+                    element.off('mouseup', mouseup);
+                    element.on('mouseup', mouseup);
+
+                    function mouseup($event) {
+                        var this_dropdown = element.parents('.uk-dropdown');
+
+                        this_dropdown.removeClass('uk-dropdown-shown');
+
+                        $timeout(function() {
+                            this_dropdown.removeClass('uk-dropdown-active');
+                            this_dropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
+
+                        },280);
+                    }
+                }
+            }
         }]);
 });

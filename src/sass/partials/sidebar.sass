@@ -22,8 +22,10 @@ ul.side-nav
       border-left: 2px solid #e74c3c
       font-family: "Roboto", sans-serif !important
       background: #192633 !important
-      i
+
+      i,svg
         color: white
+        fill: white
 
   a
     padding: 0 0.875rem !important
@@ -40,8 +42,9 @@ ul.side-nav
     &:hover
       border-left: 2px solid #e74c3c
       background: #192633 !important
-      i
+      i,svg
         color: white
+        fill: white
         &.icon-accounts
           background-position: 0 -24px
         &.icon-groups
@@ -49,13 +52,15 @@ ul.side-nav
         &.icon-invoices
           background-position: 0 -20px
 
-    i
+    i,svg
+      line-height: 26px
       margin-right: 15px
       color: #536679
       margin-top: 5px
       position: absolute
       top: 5px
       left: 15px
+      fill: #536679
 
 ul.side-nav-sub
   @extend .side-nav
@@ -80,12 +85,16 @@ ul.side-nav-sub
         background: #131e29 !important
         color: #e74c3c !important
         border: none
-        i
+        i,svg
           color: #e74c3c !important
+          fill: #e74c3c !important
         .fa-sub-icon
+          line-height: 20px
           font-size: 20px
           left: 20px
           top: 0
+          &.material-icons
+            font-size: 24px
 
         .icon-inbox
           background-position: 0 -18px
@@ -105,8 +114,9 @@ ul.side-nav-sub
       border: none
       color: #e74c3c !important
       background: inherit !important
-      i
+      i,svg
         color: #e74c3c !important
+        fill: #e74c3c !important
       .icon-inbox
         background-position: 0 -18px
       .icon-sent
@@ -115,10 +125,13 @@ ul.side-nav-sub
         background-position: -32px -16px
       .icon-check
         background-position: 0 -16px
-    .fa-sub-icon
+    .fa-sub-icon,svg
+      line-height: 20px
       font-size: 20px
       left: 20px
       top: 0
+      &.material-icons
+        font-size: 24px
 
 .icon-inbox,
 .icon-sent,

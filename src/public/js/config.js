@@ -23,6 +23,7 @@ requirejs.config({
         angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min',
         angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route',
         angularCookies: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies',
+        uikit:          'vendor/uikit/js/uikit_custom',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',
@@ -55,11 +56,21 @@ requirejs.config({
         colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
         datepicker:     'vendor/datepicker/foundation-datepicker',
         d3:             'vendor/d3/d3.min',
-        metricsgraphics:'vendor/metricsgraphics/metricsgraphics.min'
+        metricsgraphics:'vendor/metricsgraphics/metricsgraphics.min',
+        peity:          'vendor/peity/jquery.peity.min',
+        countup:        'vendor/countup/countUp.min',
+        velocity:       'vendor/velocity/velocity.min',
+        selectize:      'vendor/selectize/selectize',
+        waves:          'vendor/waves/waves'
+    },
+    config: {
+        "uikit": {
+            base: "/js/vendor/uikit/js"
+        }
     },
     shim: {
         foundation: {
-            deps: ['jquery', 'jquery_scrollTo', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace']
+            deps: ['jquery', 'jquery_scrollTo', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace', 'velocity']
         },
 
         angular: {
@@ -70,8 +81,13 @@ requirejs.config({
         angularRoute:  {
             deps: ['angular']
         },
+
         angularCookies: {
             deps: ['angular']
+        },
+
+        uikit: {
+            deps: ['jquery', 'moment']
         },
 
         jquery_custom: {
@@ -156,6 +172,22 @@ requirejs.config({
 
         metricsgraphics: {
             deps: ['d3', 'jquery']
+        },
+
+        peity: {
+            deps: ['jquery']
+        },
+
+        countup: {
+            deps: ['jquery']
+        },
+
+        selectize: {
+            deps: ['jquery']
+        },
+
+        waves: {
+            deps: ['jquery']
         }
     },
     priority: [

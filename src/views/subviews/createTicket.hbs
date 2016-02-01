@@ -3,8 +3,8 @@
         <p class="left">Create Ticket</p>
         <div class="right">
             <ul class="button-group">
-                <li><a href="/tickets/" role="button" class="btn">Cancel</a></li>
-                <li class="active"><a id="saveTicketBtn" href="#" role="button" class="btn" ng-click="submitTicketForm()">Save</a></li>
+                <li><a href="/tickets/" role="button" class="btn md-btn-wave-light">Cancel</a></li>
+                <li class="active"><a id="saveTicketBtn" href="#" role="button" class="btn md-btn-wave-light" ng-click="submitTicketForm()">Save</a></li>
             </ul>
         </div>
     </div>
@@ -12,37 +12,37 @@
     <div class="page-wrapper scrollable no-overflow-x full-height">
         <div class="row padtop20 padleft30 padright20">
             <div class="small-12 columns">
-                <form id="createTicketForm" class="ticket-form" action="#" method="POST">
+                <form id="createTicketForm" class="ticket-form1" action="#" method="POST">
                     <input id="socketId" name="socketId" type="hidden" value="{{data.user.socket.id}}"/>
                     <label for="subject">Subject</label>
-                    <input id="subject" name="subject" type="text" />
+                    <input id="subject" name="subject" type="text" class="md-input" />
                     <div class="row clearfix">
                         <div class="small-2 columns">
-                            <label for="type">Type</label>
-                            <select name="type" id="type">
+                            <label for="type" style="margin-bottom: 5px;">Type</label>
+                            <select name="type" id="type" data-md-selectize data-md-selectize-bottom="true">
                                 {{#each data.ticketTypes}}
                                     <option value="{{{_id}}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
                         <div class="small-2 columns">
-                            <label for="priority">Priority</label>
-                            <select name="priority" id="priority">
+                            <label for="priority" style="margin-bottom: 5px;">Priority</label>
+                            <select name="priority" id="priority" data-md-selectize data-md-selectize-bottom="true">
                                 <option value="1">Normal</option>
                                 <option value="2">Urgent</option>
                                 <option value="3">Critical</option>
                             </select>
                         </div>
                         <div class="small-4 columns">
-                            <label for="group">Group</label>
-                            <select name="group" id="group">
+                            <label for="group" style="margin-bottom: 5px;">Group</label>
+                            <select name="group" id="group" data-md-selectize data-md-selectize-bottom="true">
                                 {{#each data.groups}}
                                     <option value="{{{_id}}}">{{name}}</option>
                                 {{/each}}
                             </select>
                         </div>
                         <div class="small-4 columns">
-                            <label for="tags" style="display: block;">Tags</label>
+                            <label for="tags" style="display: block; margin-bottom: 5px;">Tags</label>
                             <div class="search-container">
                                 <!--<input type="text" name="tags" id="tags" />-->
                                 <select name="tags" id="tags" class="chosen-select" multiple data-placeholder=" " data-noresults="No Tags Found for ">
@@ -54,8 +54,10 @@
                             </div>
                         </div>
                     </div>
-                    <label for="issue">Issue</label>
-                    <textarea name="issue" id="issue" cols="30" rows="10"></textarea>
+                    <div style="margin-top: 10px;">
+                        <label for="issue">Ticket Issue Description</label>
+                        <textarea name="issue" id="issue" cols="30" rows="10" class="md-input"></textarea>
+                    </div>
                 </form>
             </div>
         </div>

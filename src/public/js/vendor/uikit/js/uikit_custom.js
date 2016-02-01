@@ -2464,7 +2464,7 @@
     });
 
 })(UIkit);
-
+/*! UIkit 2.24.3 | http://www.getuikit.com | (c) 2014 YOOtheme | MIT License */
 (function(UI) {
 
     "use strict";
@@ -2661,7 +2661,6 @@
 
             // init code
             UI.$html.on("click.modal.uikit", "[data-uk-modal]", function(e) {
-
                 var ele = UI.$(this);
 
                 if (ele.is("a")) {
@@ -2690,7 +2689,6 @@
         },
 
         init: function() {
-
             var $this = this;
 
             this.options = UI.$.extend({
@@ -8969,17 +8967,18 @@
 });
 
 // http://getuikit.com/docs/documentation_javascript.html#js-override
+var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
 if (typeof UIkit !== 'undefined') {
     UIkit.on('beforeready.uk.dom', function () {
 
         // accrodion
-        //if (typeof UIkit.components.accordion !== "undefined") { // check if accordion component is defined
-        //    $.extend(UIkit.components.accordion.prototype.defaults, {
-        //        easing: $.bez(easing_swiftOut),
-        //        duration: 200
-        //    });
-        //}
+        if (typeof UIkit.components.accordion !== "undefined") { // check if accordion component is defined
+            $.extend(UIkit.components.accordion.prototype.defaults, {
+                easing: easing_swiftOut,
+                duration: 200
+            });
+        }
 
         // dropdown
         if (typeof UIkit.components.dropdown.prototype !== "undefined") { // check if dropdown component is defined
@@ -9025,15 +9024,17 @@ if (typeof UIkit !== 'undefined') {
 
         // modal
         if (typeof UIkit.components.modal !== "undefined") { // check if modal component is defined
+
             $.extend(UIkit.components.modal.prototype.defaults, {
                 center: true
             });
 
-            $body = $('body');
+            var $body = $('body');
 
             UIkit.modal.dialog.template = '<div class="uk-modal uk-modal-dialog-replace"><div class="uk-modal-dialog" style="min-height:0;"></div></div>';
             $body
                 .on('show.uk.modal', '.uk-modal-dialog-replace', function () {
+                    console.log('HERE!');
                     // customize uikit dialog
                     setTimeout(function () {
                         var dialogReplace = $('.uk-modal-dialog-replace');

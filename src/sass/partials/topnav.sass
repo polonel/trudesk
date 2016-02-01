@@ -23,15 +23,37 @@
         padding-bottom: 8px !important
         &:hover
           color: lighten(#536679, 10%) !important
+          svg
+            fill: lighten(#536679, 10%) !important
 
       &.top-bar-icon,
       &.top-bar-icon a
         font-size: 30px
         font-family: "FontAwesome"
 
-        i
+        button
+          background: none
+          color: #536679
+          padding: 15px 5px
+          margin: 0
+          height: auto
+          top: auto
+          &:hover
+            color: lighten(#536679, 10%) !important
+          i
+            margin-right: 0
+
+        i,svg
           font-style: normal
-          //margin: 0 10px 0 20px
+          font-size: 30px
+          fill: #536679
+          &.material-icons
+            margin-top: 5px
+            line-height: 40px
+        svg
+          width: 32px !important
+          height: 32px !important
+          margin-top: 10px !important
 
         span.label
           font-size: 9px
@@ -42,6 +64,8 @@
           right: 5px
           bottom: 15px
           +background-opacity(#e74c3c, 0.9)
+      &.top-bar-icon a
+        padding: 15px 8px !important
 
 .top-bar-section ul li.profile-area
   font-family: "Lato", sans-serif
@@ -223,6 +247,7 @@ div.actions
         line-height: 59px
         text-align: center
         color: black
+        background: transparent !important
         &.warn
           color: #e7a13c
         &.green

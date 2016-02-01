@@ -1,35 +1,99 @@
 <div class="small-12 large-10 columns nopadding ticketContent" ng-controller="reportsCtrl">
     <div class="page-title noshadow">
         <p class="left" style="font-weight: 300;">{{title}}</p>
-        <div class="right">
-            <ul class="button-group">
-
-                <li style="position: relative;">
-                    <div style="margin-top: 20px; margin-right: 5px;">
-                        <select name="range" id="range" class="chosen-select">
-                            <option value="30">Last 30 Days</option>
-                            <option value="60">Last 60 Days</option>
-                            <option value="90">Last 90 Days</option>
-                            <option value="180">Last 180 Days</option>
-                            <option value="365">Last 365 Days</option>
-                        </select>
+        <div class="right clearfix" style="min-width: 250px;">
+            <div class="md-fab-wrapper">
+                <div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">
+                    <i class="material-icons" style="color: white">&#xE8BE;</i>
+                    <div class="md-fab-toolbar-actions">
+                        <button type="submit" id="user_edit_save" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i class="material-icons md-color-white">&#xE161;</i></button>
+                        <button type="submit" id="user_edit_print" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i class="material-icons md-color-white">&#xE555;</i></button>
+                        <button type="submit" id="user_edit_delete" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i class="material-icons md-color-white">&#xE872;</i></button>
                     </div>
-                </li>
+                </div>
+            </div>
+            <div style="margin-top: 8px;">
+                <select data-md-selectize>
+                    <option value="30" selected>Last 30 Days</option>
+                    <option value="60">Last 60 Days</option>
+                    <option value="90">Last 90 Days</option>
+                    <option value="180">Last 180 Days</option>
+                    <option value="365">Last 365 Days</option>
+                </select>
+            </div>
+            <ul class="button-group">
+                <!--<li style="position: relative;">-->
+                    <!--<div style="margin-top: 20px; margin-right: 5px;">-->
+                        <!--<select name="range" id="range" class="chosen-select">-->
+                            <!--<option value="30">Last 30 Days</option>-->
+                            <!--<option value="60">Last 60 Days</option>-->
+                            <!--<option value="90">Last 90 Days</option>-->
+                            <!--<option value="180">Last 180 Days</option>-->
+                            <!--<option value="365">Last 365 Days</option>-->
+                        <!--</select>-->
+                    <!--</div>-->
+                <!--</li>-->
             </ul>
         </div>
     </div>
 
-    <div class="full-height page-right-content scrollable padtop20">
+    <div class="full-height page-right-content scrollable">
+
+        <div style="margin-top: 20px;">
+            <div class="small-12 columns nopadding">
+                <div class="small-4 columns">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top uk-margin-small-right">
+                                <span class="peity-bar">5,3,9,6,5,9,7</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Total Tickets (last 30d)</span>
+                            <h2 class="uk-margin-remove">
+                                <span class="countUpMe">899</span>
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="small-4 columns">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span class="peity-pie">64/100</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Tickets Completed</span>
+                            <h2 class="uk-margin-remove">
+                                <span class="countUpMe">64</span>%
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="small-4 columns">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span class="peity-line">5,3,9,6,5,9,7,3,5,2</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Avg Response Time</span>
+                            <h2 class="uk-margin-remove">
+                                <span class="countUpMe">34</span> minutes
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="small-12 columns">
 
-            <div class="panel trupanel nopadding" style="min-height: 300px;">
+            <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 300px;">
                 <div class="left">
                     <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
                 </div>
                 <div class="right" style="position:relative;">
-                    <button class="action-link"><i class="fa fa-refresh"></i></button>
+                    <button class="action-link"><i class="material-icons">refresh</i></button>
                     <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
-                        <button class="action-link"><i class="fa fa-ellipsis-v"></i></button>
+                        <button class="action-link"><i class="material-icons">more_vert</i></button>
                         <div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">
                             <ul class="uk-nav">
                                 <li><a href="/tickets">This is a Link</a></li>
@@ -42,7 +106,7 @@
                 </div>
                 <hr class="nomargin-top">
                 <div class="panel-body2">
-                    <div id="test" class="mGraph mGraph-panel">
+                    <div id="test" class="mGraph mGraph-panel graph-blue1">
 
                     </div>
                 </div>
@@ -50,19 +114,42 @@
         </div>
         <div class="small-12 columns nopadding">
             <div class="small-3 columns">
-                <div class="panel trupanel nopadding" style="min-height: 200px;">
-                    <div class="left">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
+                <div class="panel trupanel nopadding">
+                    <div class="tru-card tru-card-overlay">
+                        <div class="tru-card-content">
+                            <div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">
+                                <span class="epc_chart_icon">
+                                    <i class="fa fa-user"></i>
+                                </span>
+                            </div>
+                        </div>
+                        <div class="tru-card-overlay-content">
+                            <div class="clearfix tru-card-overlay-header">
+                                <i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>
+                                <h3>User Messages</h3>
+                            </div>
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.
+                        </div>
                     </div>
-
                 </div>
             </div>
             <div class="small-3 columns">
                 <div class="panel trupanel nopadding" style="min-height: 200px;">
-                    <div class="left">
+                    <div>
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Chart</h6>
                     </div>
-
+                    <div class="md-switch">
+                        <label>
+                            <input type="checkbox">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
+                    <div class="md-switch md-blue">
+                        <label>
+                            <input type="checkbox">
+                            <span class="lever"></span>
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class="small-3 columns">
@@ -90,8 +177,9 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['pages/reports', 'metricsgraphics'], function(r) {
+        require(['pages/reports', 'modules/helpers', 'metricsgraphics', 'peity'], function(r, helpers) {
             r.init();
+
             MG.data_graphic({
                 data: [
                     {'date':new Date('2015-11-01'),'value':12},
@@ -133,8 +221,9 @@
                 target: '#test',
                 x_accessor: 'date',
                 y_accessor: 'value',
+                y_extended_ticks: true,
                 show_tooltips: false
-            })
+            });
         });
     </script>
 {{/contentFor}}

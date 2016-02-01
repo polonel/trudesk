@@ -1,0 +1,82 @@
+/*!
+ ** Waves v0.7.4
+ ** http://fian.my.id/Waves
+ **
+ ** Copyright 2014 Alfiana E. Sibuea and other contributors
+ ** Released under the MIT license
+ ** https://github.com/fians/Waves/blob/master/LICENSE
+
+.waves-effect
+  position: relative
+  cursor: pointer
+  overflow: hidden
+  -webkit-tap-highlight-color: transparent
+  .waves-ripple
+    position: absolute
+    border-radius: 50%
+    width: 80px
+    height: 80px
+    margin-top: -40px
+    margin-left: -40px
+    opacity: 0
+    background: rgba(0, 0, 0, 0.2)
+    -webkit-transition: all 500ms ease-out
+    transition: all 500ms ease-out
+    -webkit-transition-property: -webkit-transform, opacity
+    transition-property: transform, opacity
+    -webkit-transform: scale(0) translate(0, 0)
+    transform: scale(0) translate(0, 0)
+    pointer-events: none
+  &.waves-light .waves-ripple
+    background: rgba(255, 255, 255, 0.45)
+  &.md-btn-flat
+    background: none
+  &.waves-default .waves-ripple
+    background: rgba(153, 153, 153, 0.2)
+  &.md-btn-flat-primary .waves-ripple
+    background: rgba(33, 150, 243, 0.4)
+  &.md-btn-flat-danger .waves-ripple
+    background: rgba(229, 57, 53, 0.4)
+  &.md-btn-flat-warning .waves-ripple
+    background: rgba(255, 160, 0, 0.4)
+  &.md-btn-flat-success .waves-ripple
+    background: rgba(124, 179, 66, 0.4)
+
+.waves-notransition
+  -webkit-transition: none !important
+  transition: none !important
+
+.waves-button, .waves-circle
+  -webkit-transform: translateZ(0)
+  transform: translateZ(0)
+
+.waves-input-wrapper
+  border-radius: 0.2em
+  vertical-align: bottom
+  &.waves-button
+    padding: 0
+  .waves-button-input
+    position: relative
+    top: 0
+    left: 0
+    z-index: 1
+
+.waves-circle
+  text-align: center
+  width: 2.5em
+  height: 2.5em
+  line-height: 2.5em
+  border-radius: 50%
+
+.waves-float
+  -webkit-mask-image: none
+  -webkit-transition: all 300ms
+  transition: all 300ms
+
+.waves-block
+  display: block
+
+/* Firefox Bug: link not triggered
+
+a.waves-effect .waves-ripple
+  z-index: -1

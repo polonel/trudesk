@@ -32,14 +32,14 @@
     <div class="small-7 columns nopadding page-message">
         <div class="page-title-right noshadow">
             <ul class="button-group">
-                <li class=""><a href="#" class="btn no-ajaxy" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
+                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                <li class="hide-for-medium-down"><a href="#" class="btn md-btn-wave-light"><i class="fa fa-print"></i>Print</a></li>
                 {{#is folder 'Trash'}}
-                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
                 {{else}}
-                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
+                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
                 {{/is}}
                 <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
                 <li>

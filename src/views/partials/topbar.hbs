@@ -29,58 +29,78 @@
                 <!-- Right Nav Section -->
                 <div class="top-menu right">
                     <ul>
-                        <li class="top-bar-icon"><a href="/tickets/create/" style="margin-top: 3px;"><i class="fa fa-plus"></i></a></li>
+                        <!--<li class="top-bar-icon"><a href="/tickets/create/"><i class="material-icons">&#xE145;</i></a></li>-->
+                        {{#canUser data.user "ticket:create"}}
+                            <li class="top-bar-icon"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
+                        {{/canUser}}
                         <li class="top-bar-icon">
                             <img src="/img/midDots.png" alt="" style="margin-right: 10px; margin-left: 10px; margin-top: -3px"/>
                         </li>
                         <li class="top-bar-icon">
-                            <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="fa-envelope"></i>
+                            <a id="btn_mail-notifications" href="#" class="no-ajaxy" data-notifications="mail-notifications"><i class="material-icons">email</i>
                                 <span class="alert round label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
                             </a>
                         </li>
                         <li class="top-bar-icon">
-                            <a id="btn_notifications" href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="fa-exclamation-circle"></i>
+                            <a id="btn_notifications" href="#" class="no-ajaxy" data-updateUi="notifications" data-notifications="notifications"><i class="material-icons">&#xE88E;</i>
                                 <span class="alert round label {{#compare data.common.notifications.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.notifications.unreadCount}}</span>
                             </a>
                         </li>
-                        <li class="top-bar-icon"><a href="#" class="no-ajaxy" data-updateUi="online-Users" data-notifications="online-Users"><i class="fa-comments"></i></a></li>
+                        <li class="top-bar-icon">
+                            <a href="#" class="no-ajaxy" data-updateUi="online-Users" data-notifications="online-Users">
+                                <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                                    <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M16,14V13C16,11.67 13.33,11 12,11C10.67,11 8,11.67 8,13V14H16M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6Z" />
+                                </svg>
+                            </a>
+                        </li>
                         <li class="profile-area profile-name" data-username="{{data.user.username}}" data-userId="{{data.user._id}}"><span>{{data.user.fullname}}</span>
                             <div style="position: relative; display: inline-block;">
-                                <a href="#" class="profile-pic no-ajaxy" data-notifications="profile-actions" style="position: relative;">
-                                    {{#isNull data.user.image}}
-                                        <img src="/uploads/users/defaultProfile.jpg" alt="Profile"/>
-                                    {{else}}
-                                        <img src="/uploads/users/{{data.user.image}}" alt="Profile"/>
-                                    {{/isNull}}
-                                </a>
-
-                                <div id="profile-actions" data-scroll="profileAction-list" data-override="true" data-top-offset="78" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall" ng-controller="profileCtrl">
-                                    <div class="actions"><strong>{{data.user.fullname}}</strong></div>
-                                    <div id="profileAction-list" class="notifications-Messages close-on-click">
-                                        <ul>
-                                            <li>
-                                                <a class="messageNotification" href="/profile" role="button">
-                                                    <div class="clearfix">
-                                                        <div class="messageIcon left"><i class="fa fa-user"></i></div>
-                                                        <div class="messageAuthor"><strong>Profile</strong></div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="messageNotification no-ajaxify" href="/logout" role="button">
-                                                    <div class="clearfix">
-                                                        <div class="messageIcon left"><i class="fa fa-sign-out"></i></div>
-                                                        <div class="messageAuthor"><strong>Logout</strong></div>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                <div data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
+                                    <a href="#" class="profile-pic no-ajaxy">
+                                        {{#isNull data.user.image}}
+                                            <img src="/uploads/users/defaultProfile.jpg" alt="Profile"/>
+                                        {{else}}
+                                            <img src="/uploads/users/{{data.user.image}}" alt="Profile"/>
+                                        {{/isNull}}
+                                    </a>
+                                    <div class="nopadding-left nopadding-right uk-dropdown uk-dropdown-small">
+                                        <ul class="uk-nav uk-topbar" style="margin: 0 !important;">
+                                            <li class="uk-nav-header">{{data.user.fullname}}</li>
+                                            <li class="uk-dropdown-close"><a href="/profile" close-uk-dropdown>Profile</a></li>
+                                            <li><hr style="margin: 5px 0;" /></li>
+                                            <li class="uk-dropdown-close"><a href="/logout">Logout</a></li>
                                         </ul>
                                     </div>
                                 </div>
+
+
+                                <!--<div id="profile-actions" data-scroll="profileAction-list" data-override="true" data-top-offset="78" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall" ng-controller="profileCtrl">-->
+                                    <!--<div class="actions"><strong>{{data.user.fullname}}</strong></div>-->
+                                    <!--<div id="profileAction-list" class="notifications-Messages close-on-click">-->
+                                        <!--<ul>-->
+                                            <!--<li>-->
+                                                <!--<a class="messageNotification" href="/profile" role="button">-->
+                                                    <!--<div class="clearfix">-->
+                                                        <!--<div class="messageIcon left"><i class="fa fa-user"></i></div>-->
+                                                        <!--<div class="messageAuthor"><strong>Profile</strong></div>-->
+                                                    <!--</div>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                            <!--<li>-->
+                                                <!--<a class="messageNotification no-ajaxify" href="/logout" role="button">-->
+                                                    <!--<div class="clearfix">-->
+                                                        <!--<div class="messageIcon left"><i class="fa fa-sign-out"></i></div>-->
+                                                        <!--<div class="messageAuthor"><strong>Logout</strong></div>-->
+                                                    <!--</div>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                        <!--</ul>-->
+                                    <!--</div>-->
+                                <!--</div>-->
                             </div>
                         </li>
                     </ul>
-                    <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown">
+                    <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown" data-top-offset="-12" data-left-offset="-3">
                         <div class="actions"><strong>Online Users</strong>
                             <!--<div class="right"><a class="hoverUnderline" href="#">Settings</a></div>-->
                         </div>

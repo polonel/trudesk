@@ -32,8 +32,10 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 if (statusSelect.length > 0) {
                     if (statusSelect.hasClass('hide')) {
                         statusSelect.removeClass('hide');
+                        statusSelect.addClass('shown');
                     } else {
                         statusSelect.addClass('hide');
+                        statusSelect.removeClass('shown');
                     }
                 }
             };
@@ -41,7 +43,10 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
             $scope.changeStatus = function(status) {
                 var id = $('#__ticketId').html();
                 var statusSelectBox = $('#statusSelect');
-                if (statusSelectBox.length > 0) statusSelectBox.addClass('hide');
+                if (statusSelectBox.length > 0) {
+                    statusSelectBox.addClass('hide');
+                    statusSelectBox.removeClass('shown');
+                }
 
                 socket.ui.sendUpdateTicketStatus(id, status);
             };
@@ -292,6 +297,10 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                         if (!element.hasClass('hide')) {
                             element.addClass('hide');
+                        }
+
+                        if (element.hasClass('shown')) {
+                            element.removeClass('shown');
                         }
                     }
                 }

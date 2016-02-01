@@ -44,3 +44,4 @@ public/js/*
 public/css/app.css.map
 *.diff
 private/
+.sass-cache/
