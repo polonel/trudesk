@@ -43,7 +43,7 @@
       bottom: 0
       top: 0
       left: 0
-      border-left: 4px solid #e74c3c
+      border-left: 4px solid $accent_color
 
     &.message-tag-blue:before
       border-left: 4px solid #2980b9 !important
@@ -59,9 +59,9 @@
   line-height: 85px
   padding-top: 0 !important
   font-size: 24px
-  font-family: "Open Sans", sans-serif
+  font-family: $fontFamily
   font-weight: 600
-  color: #e74c3c
+  color: $accent_color
 
   &:hover
     background: inherit !important
@@ -99,7 +99,7 @@
   h1,h5
     display: block
     font-size: 30px
-    font-family: "Open Sans", sans-serif
+    font-family: $fontFamily
     font-weight: 300
     color: #3d4854
     margin-bottom: 5px
@@ -114,7 +114,7 @@
     margin-right: 5px
     padding-left: 3px
     color: #a2aabb
-    font-family: "Open Sans", sans-serif
+    font-family: $fontFamily
     font-size: 14px
     font-weight: 300
 
@@ -155,7 +155,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
 //
 //.switch input[type="checkbox"]:checked + label,
 //.onoffswitch input[type="checkbox"]:checked + label
-//  background: #e74c3c
+//  background: $accent_color
 
 .message
   padding: 30px 30px 30px 60px
@@ -171,7 +171,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
 .button-group
   li.active > a,
   li.active > button
-    background: #e74c3c
+    background: $accent_color
     color: white
   a.btn,
   button
@@ -193,7 +193,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
       outline: none
 
     &:hover
-      background: #e74c3c
+      background: $accent_color
       color: white
 
     i
@@ -208,7 +208,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   background: inherit
   margin: 20px 0 0 0
   &:hover
-    color: #e74c3c
+    color: $accent_color
 
   i
     font-size: 24px

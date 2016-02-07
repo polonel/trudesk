@@ -14,8 +14,8 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'countup', 'waves', 'selectize', 'async', 'foundation', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'selectize'],
-function($, _, moment, CountUp, Waves, Selectize) {
+define(['jquery', 'underscore', 'moment', 'countup', 'waves', 'selectize','snackbar', 'async', 'foundation', 'nicescroll', 'easypiechart', 'chosen', 'velocity'],
+function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
 
     var helpers = {};
 
@@ -59,6 +59,72 @@ function($, _, moment, CountUp, Waves, Selectize) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.showDisconnectedOverlay = function() {
+        var $disconnected = $('.disconnected');
+
+        if ($disconnected.css("display") === 'block')
+            return true;
+
+        $disconnected.velocity("fadeIn", {
+            duration: 500,
+            easing: easing_swiftOut,
+            begin: function() {
+                $disconnected.css({
+                    'display': 'block',
+                    'opacity': 0
+                });
+            }
+        });
+    };
+
+    helpers.UI.hideDisconnectedOverlay = function() {
+        var $disconnected = $('.disconnected');
+
+        if ($disconnected.css('display') === 'none')
+            return true;
+
+        $disconnected.velocity("fadeOut", {
+            duration: 500,
+            easing: easing_swiftOut,
+            complete: function() {
+                $disconnected.css({
+                    'display': 'none',
+                    'opacity': 0
+                });
+            }
+        });
+    };
+
+    helpers.UI.showSnackbar = function() {
+        if (arguments.length == 2) {
+            return(helpers.UI.showSnackbar__.apply(this, arguments));
+        }  else {
+            return(helpers.UI.showSnackbar_.apply(this, arguments));
+        }
+    };
+
+    helpers.UI.showSnackbar_ = function(options) {
+        SnackBar.show(options);
+    };
+
+    helpers.UI.showSnackbar__ = function(text, error) {
+        if (_.isUndefined(error) || _.isNull(error))
+            error = false;
+
+        var actionText = '#4CAF50';
+        if (error)
+            actionText = '#FF4835';
+
+        SnackBar.show({
+            text: text,
+            actionTextColor: actionText
+        });
+    };
+
+    helpers.UI.closeSnackbar = function() {
+        SnackBar.close();
+    };
 
     helpers.UI.inputs = function(parent) {
         var $mdInput = (typeof parent === 'undefined') ? $('.md-input') : $(parent).find('.md-input');
@@ -824,6 +890,15 @@ function($, _, moment, CountUp, Waves, Selectize) {
         });
     };
 
+    helpers.hideLoader = function(time) {
+        if (_.isUndefined(time) || _.isNull(time))
+            time = 280;
+
+        $(document).ready(function() {
+            $('#loader-wrapper').fadeOut(time);
+        });
+    };
+
     helpers.ajaxFormSubmit = function() {
         // Bind to forms
         $('form.ajaxSubmit').each(function() {
@@ -923,13 +998,15 @@ function($, _, moment, CountUp, Waves, Selectize) {
             dataType: "json"
         })
             .success(function() {
-                helpers.showFlash('Message Sent');
+                //helpers.showFlash('Message Sent');
+                helpers.UI.showSnackbar({text: 'Message Sent'});
 
                 helpers.closeMessageWindow();
             })
             .error(function(err) {
                 helpers.closeMessageWindow();
-                helpers.showFlash(err.error, true);
+                //helpers.showFlash(err.error, true);
+                helpers.UI.showSnackbar({text: err.error, actionTextColor: '#B92929'});
                 console.log('[trudesk:helpers:newMessageSubmit] Error - ' + err);
             });
     }

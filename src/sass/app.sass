@@ -11,8 +11,8 @@
 html,
 body
   background: #d5dae6
-  overflow-x: hidden
-  font-family: "Open Sans", sans-serif
+  overflow: hidden
+  font-family: $fontFamily
   height: 100%
 
 a
@@ -124,7 +124,7 @@ a.hoverUnderline
 .page-title-right
   height: 70px
   background: #eef1f7
-  border-top: 2px solid #e74c3c
+  border-top: 2px solid $accent_color
   +boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
   padding: 0 15px 0 30px
   @media only screen and (min-width: 64.063em)
@@ -171,7 +171,7 @@ button:hover,
 button:focus,
 .button:hover,
 .button:focus
-  background-color: darken(#e74c3c, 5%)
+  background-color: darken($accent_color, 5%)
 
 button,
 a.button
@@ -182,7 +182,7 @@ a.button
   //margin: 18px 5px 0 0
   padding: 4px 16px
   +borderRadius(3px)
-  background: #e74c3c
+  background: $accent_color
   outline: none
 
   &.dropdown
@@ -199,7 +199,7 @@ a.button
       font-size: 12px
 
   &:hover
-    background: darken(#e74c3c, 5%)
+    background: darken($accent_color, 5%)
     color: white
 
   i
@@ -294,6 +294,31 @@ a.button
       background: rgba(0,0,0, 0.085) !important
       color: #212121 !important
 
+.disconnected
+  z-index: 10000
+  border: none
+  background: rgba(0,0,0,0.76)
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+  margin: 0
+  padding: 0
+
+.page-center
+  position: absolute
+  top: 50%
+  left: 50%
+  text-align: center
+  transform: translate(-50%, -50%)
+
+.overlay-message, .overlay-message > p
+  font-family: Roboto, sans-serif
+  font-weight: 300
+  font-size: 32px
+  color: #fff
+
 @import "partials/common"
 @import "partials/topnav"
 @import "partials/sidebar"
@@ -316,5 +341,7 @@ a.button
 @import "partials/fab"
 @import "partials/waves"
 @import "partials/modal"
+@import "partials/loader"
+@import "partials/tLoader"
 
 @import "partials/ui"

@@ -28,38 +28,59 @@
 
 </head>
 <body>
-<div class="wdt-loading-screen">
-    <div class="wdt-loading-phrases">
-        <div class="wdt-loading-phrase-category" data-category="default">
-            <div class="wdt-loading-phrase">Warming engines...</div>
-            <div class="wdt-loading-phrase">Writing project descriptions...</div>
-            <div class="wdt-loading-phrase">Looking for work...</div>
-            <div class="wdt-loading-phrase">Collecting Tickets...</div>
-            <div class="wdt-loading-phrase">Calculating Graphs...</div>
-            <div class="wdt-loading-phrase">Populating the cloud...</div>
-            <div class="wdt-loading-phrase">Fixing responsive issues...</div>
-            <div class="wdt-loading-phrase">Generating Colors...</div>
-            <div class="wdt-loading-phrase">Coffee break...</div>
-            <div class="wdt-loading-phrase">Engine Check...</div>
-            <div class="wdt-loading-phrase">Health check...</div>
-            <div class="wdt-loading-phrase">Storage check...</div>
-        </div>
-        <div class="wdt-loading-phrase-category" data-category="profile">
-            <div class="wdt-loading-phrase">Getting avatar...</div>
-            <div class="wdt-loading-phrase">Collecting project memberships...</div>
-            <div class="wdt-loading-phrase">Getting dom together...</div>
-            <div class="wdt-loading-phrase">Getting followers...</div>
-            <div class="wdt-loading-phrase">Calculating best skills...</div>
-            <div class="wdt-loading-phrase">Getting feed...</div>
-            <div class="wdt-loading-phrase">Writing title...</div>
-        </div>
+<div id="loader-wrapper" class="loader-wrapper">
+    <div class="shadow-wrapper">
+        <svg class="shadow">
+            <defs>
+                <radialGradient r="0.5" cy="0.5" cx="0.5" id="shadow">
+                    <stop stop-color="#323232" offset="0"/>
+                    <stop stop-opacity="0" stop-color="#323232" offset="1"/>
+                </radialGradient>
+            </defs>
+            <ellipse class="shadow" opacity="0.2" ry="6" rx="35" id="svg_1" cy="65" cx="90" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#323232" fill="url(#shadow)"/>
+        </svg>
+    </div>
+    <div class="test-wrapper">
+        <svg id="t" class="t" style="width: 140px; height: 75px;" viewBox="0 0 288.9 70.1" preserveAspectRatio="xMidYMid meet">
+            <g id="g" style="width: 100%; height: 100%;">
+                <path class="s1" d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z" />
+                <circle class="s1" cx="35.9" cy="82" r="4" />
+            </g>
+        </svg>
     </div>
 </div>
-<script type="text/javascript">
-    wdtLoading.start({
-        speed: 1000
-    });
-</script>
+<!--<div class="wdt-loading-screen">-->
+    <!--<div class="wdt-loading-phrases">-->
+        <!--<div class="wdt-loading-phrase-category" data-category="default">-->
+            <!--<div class="wdt-loading-phrase">Warming engines...</div>-->
+            <!--<div class="wdt-loading-phrase">Writing project descriptions...</div>-->
+            <!--<div class="wdt-loading-phrase">Looking for work...</div>-->
+            <!--<div class="wdt-loading-phrase">Collecting Tickets...</div>-->
+            <!--<div class="wdt-loading-phrase">Calculating Graphs...</div>-->
+            <!--<div class="wdt-loading-phrase">Populating the cloud...</div>-->
+            <!--<div class="wdt-loading-phrase">Fixing responsive issues...</div>-->
+            <!--<div class="wdt-loading-phrase">Generating Colors...</div>-->
+            <!--<div class="wdt-loading-phrase">Coffee break...</div>-->
+            <!--<div class="wdt-loading-phrase">Engine Check...</div>-->
+            <!--<div class="wdt-loading-phrase">Health check...</div>-->
+            <!--<div class="wdt-loading-phrase">Storage check...</div>-->
+        <!--</div>-->
+        <!--<div class="wdt-loading-phrase-category" data-category="profile">-->
+            <!--<div class="wdt-loading-phrase">Getting avatar...</div>-->
+            <!--<div class="wdt-loading-phrase">Collecting project memberships...</div>-->
+            <!--<div class="wdt-loading-phrase">Getting dom together...</div>-->
+            <!--<div class="wdt-loading-phrase">Getting followers...</div>-->
+            <!--<div class="wdt-loading-phrase">Calculating best skills...</div>-->
+            <!--<div class="wdt-loading-phrase">Getting feed...</div>-->
+            <!--<div class="wdt-loading-phrase">Writing title...</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<script type="text/javascript">-->
+    <!--wdtLoading.start({-->
+        <!--speed: 1000-->
+    <!--});-->
+<!--</script>-->
 <div id="nomobile" class="hide-for-medium-up" style="
     position: fixed;
     top: 0;
@@ -71,6 +92,48 @@
 ">
 <div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 32px; font-weight: 300;">Currently No Mobile Support.</div>
 </div>
+
+<div class="disconnected loader-wrapper" style="display: none; opacity: 0;">
+    <div class="shadow-wrapper">
+        <svg class="shadow">
+            <defs>
+                <radialGradient r="0.5" cy="0.5" cx="0.5" id="shadow">
+                    <stop stop-color="#323232" offset="0"/>
+                    <stop stop-opacity="0" stop-color="#323232" offset="1"/>
+                </radialGradient>
+            </defs>
+            <ellipse class="shadow" opacity="0.2" ry="6" rx="35" id="svg_1" cy="65" cx="90" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#323232" fill="url(#shadow)"/>
+        </svg>
+    </div>
+    <div class="test-wrapper">
+        <svg id="t" class="t" style="width: 140px; height: 75px;" viewBox="0 0 288.9 70.1" preserveAspectRatio="xMidYMid meet">
+            <g id="g" style="width: 100%; height: 100%;">
+                <path class="s1" style="fill: white !important;" d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z" />
+                <circle class="s1" cx="35.9" cy="82" r="4" />
+            </g>
+        </svg>
+    </div>
+    <div style="position:absolute;width: 400px;top:50%; left: 50%;transform: translate(-50%, -50%);">
+        <p style="padding-top: 75px;">Disconnected... Trying to reconnect</p>
+    </div>
+</div>
+
+<!--<div class="disconnected" style="display: none; opacity: 0;">-->
+    <!--<div class="page-center">-->
+        <!--<div class="overlay-message">-->
+            <!--<p>-->
+                <!--Disconnected... Trying to reconnect-->
+            <!--</p>-->
+            <!--<div class="showbox" style="padding: 15% !important;">-->
+                <!--<div class="loader">-->
+                    <!--<svg class="circular" viewBox="25 25 50 50">-->
+                        <!--<circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="2" stroke-miterlimit="10"/>-->
+                    <!--</svg>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
 
 <div id="__loggedInAccount__id" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount._id}}</div>
 <div id="__loggedInAccount_username" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.username}}</div>

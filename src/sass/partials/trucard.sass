@@ -2,6 +2,37 @@
   background: #eef1f7
   position: relative
   border: none
+  box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24)
+  &.tru-card-hover
+    transition: all 280ms cubic-bezier(.4,0,.2,1)
+    &:hover
+      box-shadow: 0 10px 20px rgba(0,0,0,.19), 0 6px 6px rgba(0,0,0,.23)
+  .tru-card-head
+    height: 165px
+    position: relative
+    border-bottom: 1px solid rgba(0,0,0,.12)
+  .tru-card-head-menu
+    position: absolute
+    right: 8px
+    top: 8px
+  .tru-card-head-avatar
+    width: 82px
+    height: 82px
+    +borderRadius(50%)
+    margin-top: 16px
+    border: 2px solid #fff
+    display: inline-block
+  .tru-card-head-text
+    padding: 8px 16px 16px
+    font: 500 16px/22px $fontFamily
+    color: #212121
+    margin: 0
+    span
+      display: block
+      font: 400 12px/18px $fontFamily
+      margin-top: -2px
+  .tru-card-content
+    padding: 16px
   &.tru-card-overlay
     overflow: hidden
     padding-bottom: 50px
@@ -25,25 +56,6 @@
       transition: all 280ms cubic-bezier(0.4,0,0.2,1)
       font: 300 14px/1.42857143 Roboto, sans-serif
       .tru-card-overlay-header
-        .tru-icon
-          text-align: center
-          font-size: 24px
-          line-height: 32px !important
-          height: 32px !important
-          width: 32px !important
-          -webkit-tap-highlight-color: transparent
-          color: #727272
-          +borderRadius(50%)
-          cursor: pointer
-          position: absolute
-          right: 12px
-          top: 8px
-          -webkit-transition: background 280ms ease-out, color 280ms ease-out
-          transition: background 280ms ease-out, color 280ms ease-out
-          &:hover, &:focus
-            background: rgba(0, 0, 0, .08)
-            color: #212121
-
         h3,h4
           margin: 0
           text-overflow: ellipsis
@@ -57,10 +69,58 @@
         h3
           font: 300 22px/48px Roboto,sans-serif
 
+.tru-icon
+  text-align: center
+  font-size: 24px
+  line-height: 32px !important
+  height: 32px !important
+  width: 32px !important
+  -webkit-tap-highlight-color: transparent
+  color: #727272
+  +borderRadius(50%)
+  cursor: pointer
+  //position: absolute
+  //right: 12px
+  //top: 8px
+  -webkit-transition: background 280ms ease-out, color 280ms ease-out
+  transition: background 280ms ease-out, color 280ms ease-out
+  &:hover, &:focus
+    background: rgba(0, 0, 0, .08)
+    color: #212121
+
 .tru-card.tru-card-overlay-active
   .tru-card-overlay-content
     top: -1px
     margin-top: 0
+
+.tru-list
+  margin: 0
+  font-size: 12px
+  &:after, &:before, *
+    box-sizing: border-box
+  > li
+    list-style: none
+    padding: 0
+  .uk-nestable-list > li, > li
+    min-height: 48px
+    padding: 8px 4px
+    box-sizing: border-box
+    border-bottom: 1px solid rgba(0,0,0,.12)
+    position: relative
+    &:last-child
+      border-bottom: none
+    .tru-list-content
+      overflow: hidden
+      .tru-list-heading
+        margin: 0
+        font: 500 14px/1.42857143 $fontFamily
+        display: block
+        overflow: hidden
+        padding-bottom: 1px
+  a,a:active,a:focus
+    color: $accent_color
+    &:hover
+      color: lighten($accent_color, 10%)
 
 .epc_chart
   display: block

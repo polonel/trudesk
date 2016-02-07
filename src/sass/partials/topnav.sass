@@ -3,6 +3,15 @@
   background: #2c3e50
   height: 75px
   line-height: 75px
+  .title-area
+    .logo
+      height: 75px
+      svg
+        height: 75px
+        path
+          fill: #fff
+        circle
+          fill: $accent_color
 
 .top-menu
   height: 75px
@@ -57,13 +66,13 @@
 
         span.label
           font-size: 9px
-          font-family: "Open Sans", arial, sans-serif
+          font-family: $fontFamily
           font-weight: 700
           padding: 5px 7px
           position: absolute
           right: 5px
           bottom: 15px
-          +background-opacity(#e74c3c, 0.9)
+          +background-opacity($accent_color, 0.9)
       &.top-bar-icon a
         padding: 15px 8px !important
 

@@ -44,13 +44,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                     headers: { 'Content-Type': 'application/json'}
                 })
                     .success(function() {
-                        helpers.showFlash('Group Created Successfully.');
+                        //helpers.showFlash('Group Created Successfully.');
+                        helpers.UI.showSnackbar('Group Created Successfully', false);
 
                         History.pushState(null, null, '/groups/');
                     })
                     .error(function(err) {
                         console.log('[trudesk:groups:submitCreateGroupForm] - ' + err);
-                        helpers.showFlash(err, true);
+                        //helpers.showFlash(err, true);
+                        helpers.UI.showSnackbar(err, true);
                     });
             };
 
@@ -70,13 +72,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                     headers: {'Content-Type': 'application/json' }
                 })
                     .success(function() {
-                        helpers.showFlash('Group Saved Successfully');
+                        //helpers.showFlash('Group Saved Successfully');
+                        helpers.UI.showSnackbar('Group Saved Successfully', false);
 
                         History.pushState(null, null, '/groups/');
                     })
                     .error(function(err) {
                         console.log('[trudesk:groups:submitSaveGroup] - ' + err);
-                        helpers.showFlash(err, true);
+                        //helpers.showFlash(err, true);
+                        helpers.UI.showSnackbar(err, true);
                     });
             };
 
@@ -87,14 +91,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                          '/api/v1/groups/' + id
                      ).success(function(data) {
                         if (!data.success) {
-                            helpers.showFlash(data.error, true);
+                            //helpers.showFlash(data.error, true);
+                            helpers.UI.showSnackbar(data.error, true);
                             return;
                         }
                             removeCheckedFromGrid(id);
-                            helpers.showFlash('Group Successfully Deleted');
+                            //helpers.showFlash('Group Successfully Deleted');
+                            helpers.UI.showSnackbar('Group Successfully Deleted', false);
                         }).error(function(err) {
                              console.log('[trudesk:groups:deleteGroups] - ' + err);
-                                helpers.showFlash(err, true);
+                            //helpers.showFlash(err, true);
+                            helpers.UI.showSnackbar(err, true);
                          });
                 });
 

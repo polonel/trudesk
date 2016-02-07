@@ -93,24 +93,28 @@ define('modules/ui', [
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');
         socket.on('reconnect', function() {
-            helpers.clearFlash();
+            //helpers.clearFlash();
+            helpers.UI.hideDisconnectedOverlay();
         });
     };
 
     socketUi.onDisconnect = function() {
         socket.removeAllListeners('disconnect');
         socket.on('disconnect', function(data) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('reconnect_attempt');
         socket.on('reconnect_attempt', function(err) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('connect_timeout');
         socket.on('connect_timeout', function(err) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
     };
 

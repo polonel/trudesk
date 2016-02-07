@@ -122,9 +122,8 @@ var notifications       = require('../notifications'); // Load Push Events
                     }
 
                  //Send Ticket..
-                 //io.sockets.emit('ticket:created', ticket);
-
-                 util.sendToAllExcept(io, socketId, 'ticket:created', ticket);
+                 //util.sendToAllExcept(io, socketId, 'ticket:created', ticket);
+                 util.sendToAllConnectedClients(io, 'ticket:created', ticket);
              });
          });
     });

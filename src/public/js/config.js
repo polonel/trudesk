@@ -61,7 +61,8 @@ requirejs.config({
         countup:        'vendor/countup/countUp.min',
         velocity:       'vendor/velocity/velocity.min',
         selectize:      'vendor/selectize/selectize',
-        waves:          'vendor/waves/waves'
+        waves:          'vendor/waves/waves',
+        snackbar:       'plugins/snackbar'
     },
     config: {
         "uikit": {
@@ -187,6 +188,10 @@ requirejs.config({
         },
 
         waves: {
+            deps: ['jquery']
+        },
+
+        snackbar: {
             deps: ['jquery']
         }
     },

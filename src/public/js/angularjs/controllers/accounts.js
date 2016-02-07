@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], function(angular, _, $, helpers) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http) {
+        .controller('accountsCtrl', function($scope, $http, $timeout) {
 
             $scope.editAccount = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
@@ -29,58 +29,34 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 History.pushState(null, null, '/accounts/' + username);
             };
 
-            $scope.deleteAccount = function() {
-                var usernames = getChecked();
-                _.each(usernames, function(username) {
-                    $http.delete(
-                            '/api/v1/users/' + username
-                    ).success(function(data) {
-                            if (!data.success) {
-                                helpers.showFlash(data.error, true);
-                                return;
-                            }
-                            removeCheckedFromGrid(username);
-                            helpers.showFlash('Account Successfully Deleted');
-                        }).error(function(err) {
-                            console.log('[trudesk:accounts:deleteAccount] - ' + err.error);
-                            helpers.showFlash(err.error, true);
-                        });
-                });
+            $scope.deleteAccount = function($event) {
+                $event.preventDefault();
+                var self = $($event.target);
+                var username = self.attr('data-username');
+                if (_.isUndefined(username))
+                    return true;
 
-                helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
+                $http.delete(
+                    '/api/v1/users/' + username
+                ).success(function(data) {
+                    if (!data.success) {
+                        helpers.UI.showSnackbar(data.error, true);
+                        return;
+                    }
+
+                    self.parents('[data-uk-filter]').remove();
+                    UIkit.$html.trigger('changed.uk.dom');
+                    helpers.UI.showSnackbar('Account ' + username + ' Successfully Deleted', false);
+                }).error(function(err) {
+                    console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
+                    helpers.UI.showSnackbar(err.error, true);
+                });
             };
 
             $scope.accountEditPic = function() {
-                $('#profileImageInput').trigger('click');
+                $timeout(function() {
+                    $('#profileImageInput').trigger('click');
+                }, 0);
             };
-
-            function getChecked() {
-                var checkedIds = [];
-                $('#accountsTable input[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
-                    var $accountTR = self.parents('tr');
-                    if (!_.isUndefined($accountTR)) {
-                        var accountUsername = $accountTR.attr('data-username');
-
-                        if (!_.isUndefined(accountUsername) && accountUsername.length > 0) {
-                            checkedIds.push(accountUsername);
-                        }
-                    }
-                });
-
-                return checkedIds;
-            }
-
-            function removeCheckedFromGrid(username) {
-                $('#accountsTable tr[data-username="' + username + '"] ' + 'input[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
-                    var $groupTR = self.parents('tr');
-                    if (!_.isUndefined($groupTR)) {
-                        $groupTR.remove();
-                    }
-                });
-            }
-
         });
 });

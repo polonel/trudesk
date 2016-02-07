@@ -112,7 +112,8 @@ module.exports = function(grunt) {
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
                         'public/css/plugins/datepicker/foundation-datepicker.css',
                         'public/js/vendor/uikit/css/uikit.almost-flat.css',
-                        'public/js/vendor/uikit/css/uikit_custom.css'
+                        'public/js/vendor/uikit/css/uikit_custom.css',
+                        'public/js/plugins/snackbar.css'
                     ]
                 }
             },
@@ -197,6 +198,7 @@ module.exports = function(grunt) {
                                 'countup',
                                 'selectize',
                                 'waves',
+                                'snackbar',
 
                                 '../../src/permissions/roles',
 

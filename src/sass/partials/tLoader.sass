@@ -1,0 +1,87 @@
+#loader-wrapper
+  background: #ddd
+  position: absolute
+  top: 0
+  bottom: 0
+  left: 0
+  right: 0
+  width: 100%
+  height: 100%
+  z-index: 999999
+
+@keyframes bounceC
+  0%
+    -webkit-transform: translateY(0%)
+  50%
+    -webkit-transform: translateY(-700%)
+  100%
+    -webkit-transform: translateY(0%)
+
+@keyframes bounce
+  0%
+    -webkit-transform: scaleY(0.6) translateY(50%)
+  50%
+    -webkit-transform: scaleY(1.02) translateY(-10%)
+  100%
+    -webkit-transform: scaleY(0.7) translateY(40%)
+
+.t path
+  animation: bounce .7s infinite alternate ease-in-out
+  -webkit-animation: bounce .7s infinite alternate ease-in-out
+
+.t circle
+  -webkit-animation: bounceC .7s infinite alternate ease-in-out
+
+p
+  font-family: $fontFamily
+  font-size: 22px
+  font-weight: 300
+  color: white
+
+.test-wrapper
+  width: 280px
+  height: 150px
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+.loader-wrapper
+  width: 100%
+  height: 100%
+  svg.t
+    position: absolute
+    top: 0
+    left: 30%
+    transform-origin: 0% 100%
+    -ms-transform-origin: 0% 100%
+    -webkit-transform-origin: 13px 100%
+    transform: scale(1.5)
+    // transform: translate(2200px, 6400px) scale(256)
+    circle
+      fill: #E74C3C
+    path
+      transform-origin: 50% 100%
+      -ms-transform-origin: 50% 100%
+      -webkit-transform-origin: 50% 100%
+  svg
+    path
+      fill: #323232
+
+.shadow
+  animation: expand .35s infinite alternate ease-in-out
+  -webkit-animation: expand .35s infinite alternate ease-in-out
+
+.shadow-wrapper
+  width: 280px
+  height: 150px
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+@keyframes expand
+  0%
+    opacity: 0.5
+  100%
+    opacity: 0.2

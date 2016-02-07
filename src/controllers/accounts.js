@@ -49,30 +49,30 @@ accountsController.get = function(req, res, next) {
             });
 
         }, function (users, callback) {
-            return callback(null, users);
+            //return callback(null, users);
 
             //disabled - not displaying groups on Account page.
-            //var result = [];
-            //async.eachSeries(users, function(u, c) {
-            //    var user = u.toObject();
-            //    groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
-            //        if (!g) { return c();}
-            //        var groups = [];
-            //        _.each(g, function(gg) {
-            //            groups.push(gg.name)
-            //        });
-            //        user.groups = _.sortBy(groups, 'name');
-            //        result.push(user);
-            //        c();
-            //    })
-            //}, function(err) {
-            //    if (err) return callback(err);
-            //    callback(null, result);
-            //});
+            var result = [];
+            async.eachSeries(users, function(u, c) {
+                var user = u.toObject();
+                groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
+                    if (!g) { return c();}
+                    var groups = [];
+                    _.each(g, function(gg) {
+                        groups.push(gg.name)
+                    });
+                    user.groups = _.sortBy(groups, 'name');
+                    result.push(user);
+                    c();
+                })
+            }, function(err) {
+                if (err) return callback(err);
+                callback(null, result);
+            });
         }
     ], function(err, rr) {
         if (err) return res.render('error', err);
-        self.content.data.accounts = rr;
+        self.content.data.accounts = _.sortBy(rr, 'fullname');
 
         res.render('accounts', self.content);
     });

@@ -62,8 +62,9 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         nav.init();
         //helpers.fadeOutLoader(100);
         setTimeout(function(){
-            wdtLoading.done();
+            //wdtLoading.done();
 
+            helpers.hideLoader(1000);
             helpers.countUpMe();
             helpers.UI.cardShow();
         }, 2000);

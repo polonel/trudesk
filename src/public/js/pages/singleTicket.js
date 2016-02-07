@@ -105,7 +105,8 @@ define('pages/singleTicket', [
                 error: function(err) {
                     var res = err.responseJSON;
                     console.log('[trudesk:singleTicket:onRemoveAttachmentClick] - ' + res.error);
-                    helpers.showFlash(res.error, true);
+                    //helpers.showFlash(res.error, true);
+                    helpers.UI.showSnackbar(res.err, true);
                 }
             })
         }

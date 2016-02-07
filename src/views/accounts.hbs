@@ -1,65 +1,190 @@
-<div class="small-12 large-10 columns nopadding ticketContent" ng-controller="accountsCtrl">
-    <div class="page-title noshadow">
-        <p class="left">Accounts</p>
-        <div class="right">
-            <ul class="button-group">
-
-                <li class="active" style="position:relative;">
-                    <a href="#" class="btn no-ajaxy" data-notifications="account-actions">Actions</a>
-                    <div id="account-actions" data-scroll="aAction-list" data-override="true" data-top-offset="60" data-left-offset="-65" class="notifications p-dropdown p-dropdown-xsmall pSmall">
-                        <div class="actions"><strong>Account Actions</strong></div>
-                        <div id="aAction-list" class="notifications-Messages">
-                            <ul>
-                                <li>
-                                    <a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteAccount()">
-                                        <div class="clearfix">
-                                            <div class="messageIcon left"><i class="fa fa-trash-o"></i></div>
-                                            <div class="messageAuthor"><strong>Delete</strong></div>
-                                        </div>
-                                    </a>
-                                </li>
+<div ng-controller="accountsCtrl">
+<div class="small-12 large-10 columns nopadding ticketContent" style="background: #f6f8fb;">
+    <div class="page-title noshadow dt-borderBottom" style="margin-bottom: 15px;">
+        <div class="small-2 columns">
+            <p class="left">Accounts</p>
+        </div>
+        <div class="small-10 columns right">
+            <div class="md-fab-wrapper">
+                <a class="md-fab md-fab-accent" href="/accounts/create">
+                    <i class="material-icons" style="color: white;">add</i>
+                </a>
+            </div>
+            <div class="uk-grid" data-uk-grid-margin>
+                <div class="uk-width-medium-1-2">
+                    <div class="uk-vertical-align">
+                        <div class="uk-vertical-align-midle">
+                            <ul id="account_list_filter" class="uk-subnav uk-subnav-pill" style="margin-top: 20px">
+                                <li class="uk-active uk-margin-remove" data-uk-filter=""><a href="#" class="no-ajaxy">All</a></li>
+                                <li class="uk-margin-remove" data-uk-filter="admin"><a href="#" class="no-ajaxy">Administrators</a></li>
+                                <li class="uk-margin-remove" data-uk-filter="mod"><a href="#" class="no-ajaxy">Moderators</a></li>
+                                <li class="uk-margin-remove" data-uk-filter="user"><a href="#" class="no-ajaxy">Users</a></li>
                             </ul>
                         </div>
                     </div>
-                </li>
+                </div>
+                <div class="uk-width-medium-1-2">
+                    <div class="md-input-wrapper" style="margin-top: 15px;">
+                        <label for="account_list_search">Find Account</label>
+                        <input type="text" class="md-input uk-margin-remove" id="account_list_search" />
+                        <div class="md-input-bar"></div>
+                    </div>
+                </div>
+            </div>
 
-                {{#canUser data.user "account:create"}}<li class="active"><a href="/accounts/create" role="button" class="btn md-btn-wave-light">Create User</a></li>{{/canUser}}
-            </ul>
+        </div>
+
+
+
+
+
+            <!--<div class="pagination">-->
+                <!--<ul class="button-group">-->
+
+                    <!--<li class="pagination" style="position:relative;">-->
+                        <!--<div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">-->
+                            <!--&lt;!&ndash;<a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>&ndash;&gt;-->
+                            <!--<a href="#" class="btn no-ajaxy" style="border-radius: 3px;"><i class="fa fa-tasks fa-large"></i></a>-->
+                            <!--<div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">-->
+                                <!--<ul class="uk-nav">-->
+                                    <!--{{#canUser data.user "account:create"}}-->
+                                        <!--<li>-->
+                                            <!--<a href="/accounts/create" role="button">Create</a>-->
+                                        <!--</li>-->
+                                        <!--<li>-->
+                                            <!--<hr style="margin: 5px 0;">-->
+                                        <!--</li>-->
+                                    <!--{{/canUser}}-->
+                                    <!--{{#canUser data.user "account:delete"}}-->
+                                        <!--<li>-->
+                                            <!--<a class="no-ajaxy" href="#" role="button" ng-click="deleteAccount()">Delete</a>-->
+                                        <!--</li>-->
+                                    <!--{{/canUser}}-->
+                                <!--</ul>-->
+                            <!--</div>-->
+                        <!--</div>-->
+
+                        <!--&lt;!&ndash;<div id="account-actions" data-scroll="aAction-list" data-override="true" data-top-offset="60" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div class="actions"><strong>Account Actions</strong></div>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<div id="aAction-list" class="notifications-Messages">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<ul>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;<li>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;<a class="messageNotification no-ajaxify" href="#" role="button" ng-click="deleteAccount()">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<div class="clearfix">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<div class="messageIcon left"><i class="fa fa-trash-o"></i></div>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<div class="messageAuthor"><strong>Delete</strong></div>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                                    <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                                <!--&lt;!&ndash;</ul>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                    <!--</li>-->
+
+                    <!--&lt;!&ndash;{{#canUser data.user "account:create"}}&ndash;&gt;-->
+                        <!--&lt;!&ndash;<li class="pagination">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<a href="/accounts/create" role="button" class="btn md-btn-wave-light">&ndash;&gt;-->
+                                <!--&lt;!&ndash;<i class="material-icons">person_add</i>&ndash;&gt;-->
+                            <!--&lt;!&ndash;</a>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</li>&ndash;&gt;-->
+                    <!--&lt;!&ndash;{{/canUser}}&ndash;&gt;-->
+                <!--</ul>-->
+            <!--</div>-->
         </div>
     </div>
 
-    <div class="full-height">
-        <div class="accountList full-height dt-borderTop" style="background: #f6f8fb;">
-            <table id="accountsTable" class="pDataTable stripe">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>Name</th>
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Title</th>
-                    <!--<th>Groups</th>-->
-                    <th>Role</th>
-                </tr>
-                </thead>
-                <tbody>
+    <div class="full-height1">
+        <div class="full-height scrollable" style="background: #f6f8fb; padding: 0 15px;">
+            <div id="account_list" class="uk-grid-width-small-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-4 uk-grid-width-xlarge-1-5">
+
                 {{#each data.accounts}}
-                    <tr ng-click="editAccount($event)" data-username="{{username}}">
-                        <td>
-                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                            <label for="c_{{_id}}"></label>
-                        </td>
-                        <td>{{fullname}}</td>
-                        <td>{{username}}</td>
-                        <td>{{email}}</td>
-                        <td>{{title}}</td>
-                        <!--<td>{{{split groups "<br />"}}} </td>-->
-                        <td>{{firstCap role}}</td>
-                    </tr>
+                    <div data-uk-filter="{{role}},{{fullname}}">
+                        <div class="tru-card tru-card-hover" data-card-username="{{username}}">
+                            <div class="tru-card-head">
+                                <div class="tru-card-head-menu" data-uk-dropdown="{pos: 'bottom-right'}">
+                                    <i class="material-icons tru-icon">&#xE5D4;</i>
+                                    <div class="uk-dropdown uk-dropdown-small">
+                                        <ul class="uk-nav">
+                                            <li><a href="/accounts/{{username}}">Edit</a></li>
+                                            <li><a href="#" data-username="{{username}}" ng-click="deleteAccount($event)">Remove</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="text-center">
+                                    {{#if image}}
+                                        <img src="/uploads/users/{{image}}" alt="Profile Pic" class="tru-card-head-avatar" />
+                                    {{else}}
+                                        <img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />
+                                    {{/if}}
+                                </div>
+                                <h3 class="tru-card-head-text text-center">
+                                    {{fullname}}
+                                    <span class="uk-text-truncate">{{firstCap title}}</span>
+                                </h3>
+                            </div>
+                            <div class="tru-card-content">
+                                <ul class="tru-list">
+                                    <li>
+                                        <div class="tru-list-content">
+                                            <span class="tru-list-heading">Role</span>
+                                            <span class="uk-text-small uk-text-muted">{{firstCap role}}</span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="tru-list-content">
+                                            <span class="tru-list-heading">Email</span>
+                                            <span class="uk-text-small uk-text-muted uk-text-truncate"><a href="mailto:{{email}}">{{email}}</a></span>
+                                        </div>
+                                    </li>
+                                    <li>
+                                        <div class="tru-list-content">
+                                            <span class="tru-list-heading">Groups</span>
+                                            <span class="uk-text-small uk-text-muted uk-text-truncate">
+                                                {{groups}}
+                                            </span>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 {{/each}}
-                </tbody>
-            </table>
+            </div>
+
         </div>
+
+
+        <!--<div class="accountList full-height dt-borderTop" style="background: #f6f8fb;">-->
+            <!--<table id="accountsTable" class="pDataTable stripe">-->
+                <!--<thead>-->
+                <!--<tr>-->
+                    <!--<th></th>-->
+                    <!--<th>Name</th>-->
+                    <!--<th>Username</th>-->
+                    <!--<th>Email</th>-->
+                    <!--<th>Title</th>-->
+                    <!--&lt;!&ndash;<th>Groups</th>&ndash;&gt;-->
+                    <!--<th>Role</th>-->
+                <!--</tr>-->
+                <!--</thead>-->
+                <!--<tbody>-->
+                <!--{{#each data.accounts}}-->
+                    <!--<tr ng-click="editAccount($event)" data-username="{{username}}">-->
+                        <!--<td>-->
+                            <!--<input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>-->
+                            <!--<label for="c_{{_id}}"></label>-->
+                        <!--</td>-->
+                        <!--<td>{{fullname}}</td>-->
+                        <!--<td>{{username}}</td>-->
+                        <!--<td>{{email}}</td>-->
+                        <!--<td>{{title}}</td>-->
+                        <!--&lt;!&ndash;<td>{{{split groups "<br />"}}} </td>&ndash;&gt;-->
+                        <!--<td>{{firstCap role}}</td>-->
+                    <!--</tr>-->
+                <!--{{/each}}-->
+                <!--</tbody>-->
+            <!--</table>-->
+        <!--</div>-->
     </div>
 </div>
 

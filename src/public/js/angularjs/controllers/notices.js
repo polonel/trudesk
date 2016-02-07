@@ -46,13 +46,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     headers: { 'Content-Type': 'application/json'}
                 })
                     .success(function() {
-                        helpers.showFlash('Notice Created Successfully.');
+                        helpers.UI.showSnackbar('Notice Created Successfully.', false);
 
                         History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
                         console.log('[trudesk:notices:submitCreateNoticeForm] - ' + err);
-                        helpers.showFlash(err, true);
+                        helpers.UI.showSnackbar(err, true);
                     });
             };
 
@@ -74,13 +74,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     headers: { 'Content-Type': 'application/json' }
                 })
                     .success(function() {
-                        helpers.showFlash('Notice Saved Successfully.');
+                        helpers.UI.showSnackbar('Notice Saved Successfully.', false);
 
                         History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
                         console.log('[trudesk:notices:submitEditNoticeForm] - ' + err);
-                        helpers.showFlash(err, true);
+                        helpers.UI.showSnackbar(err, true);
                     });
             };
 
@@ -101,14 +101,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                             .success(function() {
                                 ui.setShowNotice(id);
 
-                                helpers.showFlash('Notice has been activated');
+                                helpers.UI.showSnackbar('Notice has been activated', false);
 
                                 clearChecked();
                                 History.pushState(null, null, '/notices/');
                             })
                             .error(function(err) {
                                 console.log('[trudesk:notices:activateNotice] - ' + err);
-                                helpers.showFlash(err, true);
+                                helpers.UI.showSnackbar(err, true);
                             });
                     })
                     .error(function(err) {
@@ -124,7 +124,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     .success(function() {
                         ui.setClearNotice();
 
-                        helpers.showFlash('Notice has been deactivated');
+                        helpers.UI.showSnackbar('Notice has been deactivated', false);
                     })
                     .error(function(err) {
                         console.log('[trudesk:notices:clearNotice] - ' + err);
