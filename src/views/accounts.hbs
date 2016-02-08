@@ -99,8 +99,12 @@
 
                 {{#each data.accounts}}
                     <div data-uk-filter="{{role}},{{fullname}}">
-                        <div class="tru-card tru-card-hover" data-card-username="{{username}}">
+                        <div class="tru-card tru-card-hover" data-card-username="{{username}}" >
+                            {{#compare role '==' 'admin'}}
+                            <div class="tru-card-head tru-card-head-admin">
+                            {{else}}
                             <div class="tru-card-head">
+                            {{/compare}}
                                 <div class="tru-card-head-menu" data-uk-dropdown="{pos: 'bottom-right'}">
                                     <i class="material-icons tru-icon">&#xE5D4;</i>
                                     <div class="uk-dropdown uk-dropdown-small">
@@ -140,7 +144,9 @@
                                         <div class="tru-list-content">
                                             <span class="tru-list-heading">Groups</span>
                                             <span class="uk-text-small uk-text-muted uk-text-truncate">
-                                                {{groups}}
+                                                {{#each groups}}
+                                                    {{this}}{{#compare (size ../groups) '>' 1}}, {{/compare}}
+                                                {{/each}}
                                             </span>
                                         </div>
                                     </li>

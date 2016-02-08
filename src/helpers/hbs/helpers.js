@@ -539,6 +539,14 @@ var helpers = {
         });
 
         return !!result;
+    },
+
+    json: function(str) {
+        return JSON.stringify(str);
+    },
+
+    size: function(arr) {
+        return _.size(arr);
     }
 };
 

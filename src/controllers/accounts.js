@@ -53,25 +53,39 @@ accountsController.get = function(req, res, next) {
 
             //disabled - not displaying groups on Account page.
             var result = [];
-            async.eachSeries(users, function(u, c) {
-                var user = u.toObject();
-                groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
-                    if (!g) { return c();}
-                    var groups = [];
-                    _.each(g, function(gg) {
-                        groups.push(gg.name)
+            async.waterfall([
+                function(cc) {
+                    groupSchema.getAllGroups(function(err, grps) {
+                        if (err) return cc(err);
+                        cc(null, grps)
                     });
-                    user.groups = _.sortBy(groups, 'name');
-                    result.push(user);
-                    c();
-                })
-            }, function(err) {
+                },
+                function(grps, cc) {
+                    async.eachSeries(users, function(u, c) {
+                        var user = u.toObject();
+
+                        var groups = _.filter(grps, function(g) {
+                            return _.any(g.members, function(m) {
+                                return m._id.toString() == user._id.toString();
+                            });
+                        });
+
+                        user.groups = _.pluck(groups, 'name');
+
+                        result.push(user);
+                        c();
+                    }, function(err) {
+                        if (err) return callback(err);
+                        cc(null, result);
+                    });
+                }
+            ], function(err, results) {
                 if (err) return callback(err);
-                callback(null, result);
+                callback(null, results);
             });
         }
     ], function(err, rr) {
-        if (err) return res.render('error', err);
+        if (err) return res.render('error', {message: err.message, error: err, layout: false});
         self.content.data.accounts = _.sortBy(rr, 'fullname');
 
         res.render('accounts', self.content);
