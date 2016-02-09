@@ -27,6 +27,7 @@ define('pages/accounts', [
     'history'
 
 ], function(_, $, helpers, UIkit) {
+    "use strict";
     var accountsPage = {};
 
     String.prototype.capitalizeFirstLetter = function() {
@@ -35,8 +36,122 @@ define('pages/accounts', [
 
     accountsPage.init = function() {
         $(document).ready(function() {
-            accountsPage.setupGrid();
+            var $account_list   = $('#account_list'),
+                $scroller       = $account_list.parents('.scrollable'),
+                $scrollspy      = $('#scrollspy'),
+                $spinner        = $scrollspy.find('i'),
+                $filterAll      = $('.filter-all'),
+
+                $nextPage       = 2,
+                $enabled        = true,
+
+                $inview         = null;
+
+            UIkit.grid($account_list,{
+                controls: '#account_list_filter',
+                gutter: 20
+            });
+
+            //scrollspy.waypoint({
+            //    handler: _.throttle(function(direction) {
+            //        if (direction !== 'down') return;
+            //        getAccounts();
+            //    }, 50, { trailing: false}),
+            //    context: $scroller,
+            //    offset: '110%',
+            //    continuous: false
+            //});
+
+            if ($inview != null)
+                $inview.destroy();
+
+            console.log($scroller);
+            console.log($scrollspy);
+            if (!_.isUndefined($scroller) && !_.isUndefined($scrollspy)) {
+                $inview = new Waypoint.Inview({
+                    entered: getAccounts,
+                    context: $('#account_list').parents('.scrollable'),
+                    element: $('#scrollspy')
+                });
+            }
+
+            $('#account_list_filter li a').on('click', function() {
+                $('#account_list_search').val('');
+                $('.tru-card[data-search-result]').remove();
+                setTimeout(function() {
+                    helpers.resizeAll();
+                }, 280);
+            });
+
+            $("#account_list_search").keyup(function(e) {
+                e.preventDefault();
+                var key = event.keyCode || event.which;
+
+                var sValue = $(this).val().toLowerCase();
+
+                if (key === 13) {
+                    if (sValue.length < 3) {
+                        $('#account_list_filter li.uk-active a').trigger('click');
+                        return true;
+                    }
+
+                    $.ajax({
+                        url: '/api/v1/users?search=' + sValue,
+                        success: function(data) {
+                            $account_list.children().css('display', 'none');
+                            var users = data.users;
+                            _.each(users, function(u) {
+                                $account_list.append(buildUserHTML(u, true));
+                            });
+
+                            $('.s-ajaxify').on('click', function(e) {
+                                e.preventDefault();
+                                var href = $(e.target).attr('href');
+
+                                History.pushState(null, null, href);
+                            });
+
+                            UIkit.$html.trigger('changed.uk.dom');
+                            helpers.resizeAll();
+                        },
+                        error: function(error) {
+                            console.log('[trudesk:accountsPage:setupGrid] - Error: ' + error.error );
+                        }
+                    });
+                }
+
+                return false;
+            });
+
+            function getAccounts() {
+                if (!$enabled) return false;
+                if (!$filterAll.hasClass('uk-active')) return true;
+                $spinner.removeClass('uk-hidden');
+
+                $.ajax({
+                    url: '/api/v1/users?page=' + $nextPage
+                }).done(function (data) {
+                    $spinner.addClass('uk-hidden');
+                    var users = data.users;
+                    if (_.size(users) < 1) {
+                        $enabled = false;
+                        return false;
+                    }
+                    _.each(users, function (u) {
+                        var html = buildUserHTML(u, false);
+                        if (html.length > 0) $account_list.append(html);
+                    });
+
+                    UIkit.$html.trigger('changed.uk.dom');
+
+                    console.log($nextPage);
+                    $nextPage = $nextPage + 1;
+                }).fail(function (err) {
+                    console.log('[trudesk:accountsPage:setupGrid] - Error: ' + err.error);
+                });
+            }
         });
+
         UIkit.ready(function() {
             Waypoint.refreshAll();
             helpers.resizeAll();
@@ -48,164 +163,6 @@ define('pages/accounts', [
                 History.pushState(null, null, href);
             });
         });
-    };
-
-
-
-    accountsPage.setupGrid = function() {
-        // get all filters
-        //var userArray = [];
-        var $account_list = $('#account_list');
-        //$account_list.children().each(function() {
-        //    var thisfilter = $(this).attr('data-uk-filter');
-        //    if (!_.isUndefined(thisfilter)) {
-        //        if ( $.inArray( thisfilter, userArray ) == -1) {
-        //            userArray.push(thisfilter.split(',')[1]);
-        //        }
-        //    }
-        //});
-        //var userArray_length = userArray.length;
-
-        // initialize dynamic grid
-        var myGrid = UIkit.grid($account_list,{
-            controls: '#account_list_filter',
-            gutter: 20
-        });
-
-        var scrollspy = $('#scrollspy'),
-            $scroller = $account_list.parents('.scrollable'),
-            spinner = scrollspy.find('i'),
-            $filterAll = $('.filter-all'),
-            getAccounts = function() {
-                if (!$filterAll.hasClass('uk-active')) return true;
-                var page = $("#__accounts-page");
-                spinner.removeClass('uk-hidden');
-                if (_.isNaN(parseInt(page.text()))) {
-                    console.log('[trudesk:accountsPage:setupGrid] - Error: Invalid Page Number...');
-                    return false;
-                }
-                var pageNum = parseInt(page.text());
-
-                $.ajax({
-                    url: '/api/v1/users?page=' + pageNum
-                }).done(function (data) {
-                    spinner.addClass('uk-hidden');
-                    var users = data.users;
-                    if (_.size(users) < 1) return true;
-                    _.each(users, function (u) {
-                        var html = buildUserHTML(u, false);
-                        if (html.length > 0) $account_list.append(html);
-                    });
-
-                    UIkit.$html.trigger('changed.uk.dom');
-
-                    console.log(pageNum);
-                    page.text(pageNum + 1);
-                }).fail(function (err) {
-                    console.log('[trudesk:accountsPage:setupGrid] - Error: ' + err.error);
-                });
-            };
-
-        setTimeout(function() {
-            //scrollspy.waypoint({
-            //    handler: _.throttle(function(direction) {
-            //        if (direction !== 'down') return;
-            //        getAccounts();
-            //    }, 50, { trailing: false}),
-            //    context: $scroller,
-            //    offset: '110%',
-            //    continuous: false
-            //});
-
-            setInterval(function() {
-                if (UIkit.Utils.isInView(scrollspy, {topoffset: 100}))
-                    _.throttle(function() {
-                        getAccounts();
-                    }, 2000, {trailing: false});
-            }, 2000);
-
-            //new Waypoint.Inview({
-            //    entered: _.throttle(function(direction) {
-            //        getAccounts();
-            //    }, 100, {trailing: false}),
-            //    context: $scroller,
-            //    element: scrollspy
-            //});
-        }, 2500);
-
-        $('#account_list_filter li a').on('click', function() {
-            $('#account_list_search').val('');
-            $('.tru-card[data-search-result]').remove();
-            setTimeout(function() {
-                helpers.resizeAll();
-            }, 280);
-        });
-
-        $("#account_list_search").keyup(function(e) {
-            e.preventDefault();
-            var key = event.keyCode || event.which;
-
-            var sValue = $(this).val().toLowerCase();
-
-            if (key === 13) {
-                if (sValue.length < 3) {
-                    $('#account_list_filter li.uk-active a').trigger('click');
-                    return true;
-                }
-
-                $.ajax({
-                    url: '/api/v1/users?search=' + sValue,
-                    success: function(data) {
-                        $account_list.children().css('display', 'none');
-                        var users = data.users;
-                        _.each(users, function(u) {
-                            $account_list.append(buildUserHTML(u, true));
-                        });
-
-                        $('.s-ajaxify').on('click', function(e) {
-                            e.preventDefault();
-                            var href = $(e.target).attr('href');
-
-                            History.pushState(null, null, href);
-                        });
-
-                        UIkit.$html.trigger('changed.uk.dom');
-                        helpers.resizeAll();
-                    },
-                    error: function(error) {
-                        console.log('[trudesk:accountsPage:setupGrid] - Error: ' + error.error );
-                    }
-                });
-            }
-
-            return false;
-        });
-
-        //// find user
-        //$("#account_list_search").keyup(function(){
-        //    var sValue = $(this).val().toLowerCase();
-        //
-        //    if(sValue.length > 2) {
-        //        var filteredItems = '';
-        //        for($i=0;$i<userArray_length;$i++) {
-        //            if(userArray[$i].toLowerCase().indexOf(sValue) !== -1) {
-        //                filteredItems += (filteredItems.length > 1 ? ',' : '') + userArray[$i];
-        //            }
-        //        }
-        //        if(filteredItems){
-        //            // filter grid items
-        //            myGrid.filter(filteredItems);
-        //            filteredItems = '';
-        //        } else {
-        //            // show all
-        //            myGrid.filter('all');
-        //        }
-        //    } else {
-        //        // reset filter
-        //        myGrid.filter();
-        //    }
-        //
-        //});
     };
 
     function buildUserHTML(user, addRemove) {
