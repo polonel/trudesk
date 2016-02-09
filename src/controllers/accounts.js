@@ -41,10 +41,11 @@ accountsController.get = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.accounts = {};
+    self.content.data.page = 2;
 
     async.waterfall([
         function(callback) {
-            userSchema.findAll(function(err, results) {
+            userSchema.getUserWithObject({limit: 20}, function(err, results) {
                 callback(err, results);
             });
 

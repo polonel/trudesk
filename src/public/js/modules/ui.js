@@ -350,7 +350,7 @@ define('modules/ui', [
                     if (a.length > 0) {
                         a.attr('href', 'mailto:' + email).html(email);
                     } else {
-                        a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link');
+                        a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link uk-text-truncate');
                         details.append(a);
                     }
 

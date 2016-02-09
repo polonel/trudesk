@@ -25,6 +25,26 @@ var async       = require('async'),
 
 var api_users = {};
 
+api_users.getWithLimit = function(req, res) {
+    var limit = req.query.limit;
+    var page = req.query.page;
+    var search = req.query.search;
+
+    var obj = {
+        limit: limit,
+        page: page,
+        search: search
+    };
+
+    console.log('CALLED! = ' + page);
+
+    userSchema.getUserWithObject(obj, function(err, users) {
+        if (err) return res.status(400).json({error: 'Error: ' + err.message});
+
+        return res.json({success: true, count: _.size(users), users: users});
+    });
+};
+
 /**
  * Inserts a user object
  * @todo Revamp function for newly accesstoken format

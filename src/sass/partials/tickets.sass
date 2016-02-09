@@ -115,6 +115,11 @@ div#accountsTable_wrapper
   padding-left: 30px
   padding-top: 30px
   margin-bottom: 40px
+  &.tru-card
+    background: white
+    padding: 5px 15px 15px
+    +borderRadius(3px)
+    margin: 30px
   h4
     font-family: $fontFamily
     font-size: 14px
@@ -143,8 +148,7 @@ div#accountsTable_wrapper
 
     a, a:active, a:focus
       display: block
-      font-family: $fontFamily
-      font-size: 12px
+      font: 400 12px/15px $fontFamily
       color: #76797e
       margin: 0 0 2px
 
@@ -163,7 +167,7 @@ div#accountsTable_wrapper
   min-height: 150px
   background: #ffffff
   border: 1px solid #d3d9e4
-  margin: 0 30px !important
+  margin: 0 15px !important
   margin-bottom: 30px !important
   padding: 15px  !important
   font-family: $fontFamily

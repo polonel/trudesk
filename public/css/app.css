@@ -1,8 +1,6 @@
 @charset "UTF-8";
-@import url(http://fonts.googleapis.com/css?family=Lato:300,400);
 @import url(http://fonts.googleapis.com/css?family=Open+Sans:400,700,800,300,600);
 @import url(http://fonts.googleapis.com/css?family=Roboto:400,300,500,700);
-@import url(http://fonts.googleapis.com/css?family=Roboto+Condensed:400,300,700);
 @import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700);
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons);
 html,
@@ -619,7 +617,7 @@ div.ptooltip-box {
     padding: 15px 8px !important; }
 
 .top-bar-section ul li.profile-area {
-  font-family: "Lato", sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
   font-size: 18px;
   color: #ffffff;
   background: url("/img/midDots.png") no-repeat;
@@ -1425,6 +1423,13 @@ div#accountsTable_wrapper {
   padding-left: 30px;
   padding-top: 30px;
   margin-bottom: 40px; }
+  .ticket-assignee-wrap.tru-card {
+    background: white;
+    padding: 5px 15px 15px;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    margin: 30px; }
   .ticket-assignee-wrap h4 {
     font-family: "Roboto", "Open Sans", sans-serif;
     font-size: 14px;
@@ -1452,8 +1457,7 @@ div#accountsTable_wrapper {
       line-height: normal; }
     .ticket-assignee .ticket-assignee-details a, .ticket-assignee .ticket-assignee-details a:active, .ticket-assignee .ticket-assignee-details a:focus {
       display: block;
-      font-family: "Roboto", "Open Sans", sans-serif;
-      font-size: 12px;
+      font: 400 12px/15px "Roboto", "Open Sans", sans-serif;
       color: #76797e;
       margin: 0 0 2px; }
       .ticket-assignee .ticket-assignee-details a:hover, .ticket-assignee .ticket-assignee-details a:hover:focus, .ticket-assignee .ticket-assignee-details a:active:hover, .ticket-assignee .ticket-assignee-details a:active:hover:focus, .ticket-assignee .ticket-assignee-details a:focus:hover, .ticket-assignee .ticket-assignee-details a:focus:hover:focus {
@@ -1469,7 +1473,7 @@ div#accountsTable_wrapper {
   min-height: 150px;
   background: #ffffff;
   border: 1px solid #d3d9e4;
-  margin: 0 30px !important;
+  margin: 0 15px !important;
   margin-bottom: 30px !important;
   padding: 15px !important;
   font-family: "Roboto", "Open Sans", sans-serif;
@@ -1865,7 +1869,7 @@ input[type="text"][disabled] {
       content: "Status ";
       font-weight: 600; }
 .pDataTable .dataTables_empty {
-  font-family: "Roboto", sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
   font-size: 16px;
   font-weight: 300;
   padding-top: 17px; }
@@ -1874,7 +1878,7 @@ table.dataTable {
   margin-top: 0 !important; }
   table.dataTable thead {
     background: #f3f5f9;
-    font-family: "Roboto", sans-serif;
+    font-family: "Roboto", "Open Sans", sans-serif;
     text-transform: uppercase;
     border: 1px solid #dae0ec; }
     table.dataTable thead .sorting:last-child,
@@ -1886,7 +1890,7 @@ table.dataTable {
       color: #55616e;
       font-weight: 400; }
   table.dataTable tbody tr td {
-    font-family: "Roboto", sans-serif;
+    font-family: "Roboto", "Open Sans", sans-serif;
     color: #55616e;
     font-weight: normal;
     font-size: 14px; }
@@ -1897,7 +1901,7 @@ div.dataTables_wrapper {
   div.dataTables_wrapper .dataTables_filter {
     float: right; }
     div.dataTables_wrapper .dataTables_filter label, div.dataTables_wrapper .dataTables_filter input {
-      font-family: "open sans", sans-serif;
+      font-family: "Roboto", "Open Sans", sans-serif;
       font-weight: 300;
       font-size: 13px;
       margin-right: 5px; }
@@ -2216,7 +2220,7 @@ div.dataTables_wrapper {
   .circle-chart-caption span {
     display: inline-block;
     width: 100%;
-    font-family: "Roboto", sans-serif;
+    font-family: "Roboto", "Open Sans", sans-serif;
     font-size: 14px;
     font-weight: 500; }
     .circle-chart-caption span img {
@@ -2239,7 +2243,7 @@ div.dataTables_wrapper {
     font-size: 16px;
     text-align: center;
     color: #3e5871;
-    font-family: "open sans", sans-serif; }
+    font-family: "Roboto", "Open Sans", sans-serif; }
 
 /* DonutChart */
 .donutchart-wrapper {
@@ -2333,7 +2337,7 @@ div.dataTables_wrapper {
         bottom: -20px;
         left: 0;
         color: #2c3e50;
-        font-family: "Roboto Condensed", sans-serif;
+        font-family: "Roboto", "Open Sans", sans-serif;
         font-size: 14px;
         font-weight: bold;
         text-align: center;
@@ -2350,7 +2354,7 @@ div.dataTables_wrapper {
     .bar-chart-wrapper .bar-axis ul.x-axis li,
     .bar-chart-wrapper .bar-axis ul.y-axis li {
       color: #2c3e50;
-      font-family: "Roboto Condensed", sans-serif;
+      font-family: "Roboto", "Open Sans", sans-serif;
       font-size: 14px;
       font-weight: bold;
       margin-right: 6px;
@@ -2366,13 +2370,13 @@ div.dataTables_wrapper {
       text-align: right;
       width: auto;
       margin: 0;
-      font-family: "open sans", sans-serif;
+      font-family: "Roboto", "Open Sans", sans-serif;
       margin-bottom: 17px; }
 
 .bar-chart-caption span {
   display: inline-block;
   width: 100%;
-  font-family: "Roboto", sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
   font-size: 14px;
   font-weight: 500;
   text-align: center; }
@@ -5058,7 +5062,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
       z-index: 10;
       -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
       transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-      font: 300 14px/1.42857 Roboto, sans-serif; }
+      font: 300 14px/1.42857 "Roboto", "Open Sans", sans-serif; }
       .tru-card.tru-card-overlay .tru-card-overlay-content .tru-card-overlay-header h3, .tru-card.tru-card-overlay .tru-card-overlay-content .tru-card-overlay-header h4 {
         margin: 0;
         text-overflow: ellipsis;
@@ -5070,7 +5074,11 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
         padding-right: 40px;
         box-sizing: border-box; }
       .tru-card.tru-card-overlay .tru-card-overlay-content .tru-card-overlay-header h3 {
-        font: 300 22px/48px Roboto, sans-serif; }
+        font: 300 22px/48px "Roboto", "Open Sans", sans-serif; }
+      .tru-card.tru-card-overlay .tru-card-overlay-content .tru-card-overlay-header .tru-icon {
+        position: absolute;
+        top: 8px;
+        right: 8px; }
 
 .tru-icon {
   text-align: center;

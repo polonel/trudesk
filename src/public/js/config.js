@@ -62,6 +62,8 @@ requirejs.config({
         velocity:       'vendor/velocity/velocity.min',
         selectize:      'vendor/selectize/selectize',
         waves:          'vendor/waves/waves',
+        waypoints:      'vendor/waypoints/jquery.waypoints',
+        inview:         'vendor/waypoints/shortcuts/inview',
         snackbar:       'plugins/snackbar'
     },
     config: {
@@ -189,6 +191,14 @@ requirejs.config({
 
         waves: {
             deps: ['jquery']
+        },
+
+        waypoints: {
+            deps: ['jquery']
+        },
+
+        inview: {
+            deps: ['jquery', 'waypoints']
         },
 
         snackbar: {

@@ -63,6 +63,12 @@ var userSchema = mongoose.Schema({
         }
     });
 
+//Indexes
+userSchema.index({
+    username: 1,
+    fullname: 2
+});
+
 userSchema.pre('save', function(next) {
     var user = this;
     if (!user.isModified('password')) return next();
@@ -239,6 +245,28 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
     }
 
     return this.model(COLLECTION).findOne({accessToken: token}, callback);
+};
+
+userSchema.statics.getUserWithObject = function(object, callback) {
+    if (!_.isObject(object)) {
+        return callback("Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()", null);
+    }
+
+    var self = this;
+
+    var limit = (object.limit == null ? 10 : object.limit);
+    var page = (object.page == null ? 0 : object.page);
+    var search = (object.search == null ? '' : object.search);
+
+    var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
+        .sort({'fullname': 1})
+        .skip(page*limit)
+        .limit(limit);
+
+    if (!_.isEmpty(search))
+        q.where({fullname: new RegExp("^" + search.toLowerCase(), 'i') });
+
+    q.exec(callback);
 };
 
 /**

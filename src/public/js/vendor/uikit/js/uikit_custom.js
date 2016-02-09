@@ -4905,6 +4905,8 @@
                 left   = 0;
                 top    = 0;
 
+                if (item.hasClass('uk-grid-static')) return;
+
                 for (i=0,max=positions.length;i<max;i++) {
 
                     pos = positions[i];
@@ -9034,7 +9036,6 @@ if (typeof UIkit !== 'undefined') {
             UIkit.modal.dialog.template = '<div class="uk-modal uk-modal-dialog-replace"><div class="uk-modal-dialog" style="min-height:0;"></div></div>';
             $body
                 .on('show.uk.modal', '.uk-modal-dialog-replace', function () {
-                    console.log('HERE!');
                     // customize uikit dialog
                     setTimeout(function () {
                         var dialogReplace = $('.uk-modal-dialog-replace');

@@ -35,6 +35,8 @@ modules: [
             'countup',
             'selectize',
             'waves',
+            'waypoints',
+            'snackbar',
 
             '../../src/permissions/roles',
 

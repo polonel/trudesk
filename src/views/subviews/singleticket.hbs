@@ -56,7 +56,7 @@
 
             <div class="page-left full-height">
                 <div class="ticket-details-wrap clearfix">
-                    <div class="ticket-assignee-wrap clearfix" style="position: relative;">
+                    <div class="ticket-assignee-wrap clearfix" style="position: relative; padding-right: 30px;">
                         <h4>Assignee</h4>
                         {{#if data.ticket.assignee}}
                             <div class="ticket-assignee clearfix" data-ticketId="{{data.ticket._id}}">
@@ -69,7 +69,7 @@
                                 </a>
                                 <div class="ticket-assignee-details">
                                     <h3>{{data.ticket.assignee.fullname}}</h3>
-                                    <a class="comment-email-link" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
+                                    <a class="comment-email-link uk-text-truncate" href="mailto:{{{data.ticket.assignee.email}}}">{{{data.ticket.assignee.email}}}</a>
                                     <span>{{{data.ticket.assignee.title}}}</span>
                                 </div>
                             </div>
@@ -93,80 +93,84 @@
                             </div>
                         </div>
                     </div>
-                    <div class="ticket-details row">
-                        <div class="small-6 columns nopadding">
-                            <div class="marginright5">
-                                <span>Type</span>
-                                {{#canUser data.user "ticket:edit"}}
-                                    <select name="tType" id="tType" class="chosen-select1"
-                                            ng-model="selected_type"
-                                            ng-options="t.name for t in types track by t._id"
-                                            ng-change="updateTicketType()"
-                                            data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
-                                    </select>
-                                {{else}}
-                                    <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
-                                {{/canUser}}
+                    <div class="small-12 columns">
+                        <div class="tru-card ticket-details" style="background: #fff;">
+                            <div class="small-6 columns nopadding">
+                                <div class="marginright5">
+                                    <span>Type</span>
+                                    {{#canUser data.user "ticket:edit"}}
+                                        <select name="tType" id="tType" class="chosen-select1"
+                                                ng-model="selected_type"
+                                                ng-options="t.name for t in types track by t._id"
+                                                ng-change="updateTicketType()"
+                                                data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
+                                        </select>
+                                    {{else}}
+                                        <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
+                                    {{/canUser}}
+                                </div>
                             </div>
-                        </div>
-                        <div class="small-6 columns nopadding">
-                            <div class="marginleft5">
-                                <span>Priority</span>
-                                {{#canUser data.user "ticket:edit"}}
-                                    <select name="tPriority" id="tPriority"
-                                            ng-model="selected_priority"
-                                            ng-options="p.name for p in priorities track by p.value"
-                                            ng-change="updateTicketPriority()"
-                                            data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
+                            <div class="small-6 columns nopadding">
+                                <div class="marginleft5">
+                                    <span>Priority</span>
+                                    {{#canUser data.user "ticket:edit"}}
+                                        <select name="tPriority" id="tPriority"
+                                                ng-model="selected_priority"
+                                                ng-options="p.name for p in priorities track by p.value"
+                                                ng-change="updateTicketPriority()"
+                                                data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
 
-                                    </select>
-                                {{else}}
-                                    <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
-                                {{/canUser}}
+                                        </select>
+                                    {{else}}
+                                        <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
+                                    {{/canUser}}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="row nomargin nopadding">
-                            <div class="small-12 columns nopadding">
-                                <span>Group</span>
-                                {{#canUser data.user "ticket:edit"}}
-                                    <select name="tGroup" id="tGroup"
-                                            ng-model="selected_group"
-                                            ng-options="g.name for g in groups track by g._id"
-                                            ng-change="updateTicketGroup()"
-                                            data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
+                            <div class="row nomargin nopadding">
+                                <div class="small-12 columns nopadding">
+                                    <span>Group</span>
+                                    {{#canUser data.user "ticket:edit"}}
+                                        <select name="tGroup" id="tGroup"
+                                                ng-model="selected_group"
+                                                ng-options="g.name for g in groups track by g._id"
+                                                ng-change="updateTicketGroup()"
+                                                data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
 
-                                    </select>
-                                {{else}}
-                                    <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
-                                {{/canUser}}
+                                        </select>
+                                    {{else}}
+                                        <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
+                                    {{/canUser}}
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="row nomargin nopadding">
-                            <div class="small-12 columns nopadding">
-                                <span>Tags <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>- <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)">Edit Tags</a></div></span>
-                                <div class="tag-list clearfix">
-                                    {{#each data.ticket.tags}}
-                                        <div class="__TAG_SELECTED hide" style="display:none; opacity: 0; visibility: hidden;">{{_id}}</div>
-                                        <div class="item">{{name}}</div>
-                                    {{/each}}
+                            <div class="row nomargin nopadding">
+                                <div class="small-12 columns nopadding">
+                                    <span>Tags <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>- <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)">Edit Tags</a></div></span>
+                                    <div class="tag-list clearfix">
+                                        {{#each data.ticket.tags}}
+                                            <div class="__TAG_SELECTED hide" style="display:none; opacity: 0; visibility: hidden;">{{_id}}</div>
+                                            <div class="item">{{name}}</div>
+                                        {{/each}}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     {{#canUser data.user "ticket:viewHistory"}}
-                        <div class="ticket-details row" style="height: 250px;">
-                            Ticket History
-                            <hr style="padding: 0; margin: 0 0 12px 0;"/>
-                            <div class="history-items scrollable">
-                                {{#each data.ticket.history}}
-                                    <div class="history-item">
-                                        <time datetime="{{formatDate date "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                        <em>Action by: <span>{{owner.fullname}}</span></em>
-                                        <p>{{description}}</p>
-                                    </div>
-                                {{/each}}
+                        <div class="small-12 columns">
+                            <div class="tru-card ticket-details" style="background: #fff;height: 250px;">
+                                Ticket History
+                                <hr style="padding: 0; margin: 0 0 12px 0;"/>
+                                <div class="history-items scrollable">
+                                    {{#each data.ticket.history}}
+                                        <div class="history-item">
+                                            <time datetime="{{formatDate date "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                            <em>Action by: <span>{{owner.fullname}}</span></em>
+                                            <p>{{description}}</p>
+                                        </div>
+                                    {{/each}}
+                                </div>
                             </div>
                         </div>
                     {{/canUser}}

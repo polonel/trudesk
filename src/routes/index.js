@@ -117,6 +117,8 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
     router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup);
+
+    router.get('/api/v1/users', middleware.api, controllers.api.users.getWithLimit);
     router.post('/api/v1/users/create', middleware.api, controllers.api.users.create);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
@@ -125,6 +127,7 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
+
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
