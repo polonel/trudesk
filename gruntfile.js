@@ -148,7 +148,7 @@ module.exports = function(grunt) {
 
         jsdoc : {
             dist : {
-                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js'],
+                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js', '!src/public/js/plugins/*.js'],
                 options: {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',
