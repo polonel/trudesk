@@ -84,24 +84,85 @@ api_users.getWithLimit = function(req, res) {
 };
 
 /**
- * Inserts a user object
- * @todo Revamp function for newly accesstoken format
+ * @api {post} /api/v1/users/create Create Account
+ * @apiName createAccount
+ * @apiDescription Creates an account with the given post data.
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
  *
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {User|Error} Inserted User Object | Error
- * @deprecated
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "aUsername":    "user.name",
+ *      "aPass":        "password",
+ *      "aPassConfirm": "password",
+ *      "aFullname":    "fullname",
+ *      "aEmail":       "email@email.com",
+ *      "aRole":        {RoleId},
+ *      "aTitle":       "User Title",
+ *      "aGrps":        [{GroupId}]
+ * }
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} account Saved Account Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
  */
 api_users.create = function(req, res) {
-    var data = req.body;
+    var response = {};
+    response.success = true;
 
-    userSchema.insertUser(data, function(err, r) {
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps))
+        return res.status(400).json({success: false, error: 'Invalid Group Array'});
+
+    if (postData.aPass !== postData.aPassConfirm) return res.status(400).json({success: false, error: 'Invalid Password Match'});
+
+    var account = new userSchema({
+        username:   postData.aUsername,
+        password:   postData.aPass,
+        fullname:   postData.aFullname,
+        email:      postData.aEmail,
+        role:       postData.aRole,
+        title:      postData.aTitle
+    });
+
+    account.save(function(err, a) {
         if (err) {
-            winston.warn("Error: " + err.message);
-            return res.send(err);
+           response.success = false;
+           response.error = err;
+           winston.debug(response);
+           return res.status(400).json(response);
         }
 
-        return res.send(r);
+        response.account = a;
+
+        async.each(postData.aGrps, function(id, done) {
+            if (_.isUndefined(id)) return done(null);
+            groupSchema.getGroupById(id, function(err, grp) {
+                if (err) return done(err);
+                grp.addMember(a._id, function(err, success) {
+                    if (err) return done(err);
+
+                    grp.save(function(err) {
+                        if (err) return done(err);
+                        done(null, success);
+                    });
+                });
+            });
+
+        }, function(err) {
+            if (err) return res.status(400).json({success: false, error: err});
+            return res.json(response)
+        });
     });
 };
 
@@ -224,10 +285,11 @@ api_users.updatePreferences = function(req, res) {
  */
 api_users.deleteUser = function(req, res) {
     var username = req.params.username;
+
     if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
 
     userSchema.getUserByUsername(username, function(err, user) {
-        if (err) return res.status(400).json({error: err.message});
+        if (err) { winston.debug(err); return res.status(400).json({error: err.message}); }
 
         if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
 

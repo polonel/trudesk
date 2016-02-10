@@ -16,6 +16,41 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout) {
 
+            $scope.createAccount = function() {
+                var data = {};
+                var form = $('#createAccountForm');
+                form.serializeArray().map(function(x){data[x.name] = x.value;});
+                data.aGrps = form.find('#aGrps').val();
+                data.socketId = socketId;
+                $http({
+                    method: 'POST',
+                    url: '/api/v1/users/create',
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
+                })
+                    .success(function(data) {
+                        if (!data.success) {
+                            if (data.error) {
+                                helpers.UI.showSnackbar('Error: ' + data.error, true);
+                                return;
+                            }
+
+                            helpers.UI.showSnackbar('Error Submitting Ticket', true);
+                        }
+
+                        //helpers.showFlash('Ticket Created Successfully.');
+                        helpers.UI.showSnackbar({text:   'Account Created'});
+
+                        UIkit.modal("#accountCreateModal").hide();
+
+                        //History.pushState(null, null, '/tickets/');
+
+                    }).error(function(err) {
+                        console.log('[trudesk:accounts:createAccount] - ' + err.error.message);
+                        helpers.UI.showSnackbar('Error: ' + err.error.message, true);
+                });
+            };
+
             $scope.editAccount = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
                     $event.target.tagName.toLowerCase() === 'label' ||

@@ -15,6 +15,7 @@
 define('pages/accounts', [
     'underscore',
     'jquery',
+    'angular',
     'modules/helpers',
     'uikit',
     'isinview',
@@ -26,7 +27,7 @@ define('pages/accounts', [
     'dt_scroller',
     'history'
 
-], function(_, $, helpers, UIkit) {
+], function(_, $, angular, helpers, UIkit) {
     "use strict";
     var accountsPage = {};
 
@@ -85,9 +86,17 @@ define('pages/accounts', [
                         success: function(data) {
                             $account_list.children().css('display', 'none');
                             var users = data.users;
+                            var html = '';
                             _.each(users, function(u) {
-                                $account_list.append(buildUserHTML(u, true));
+                                html += buildUserHTML(u, true);
                             });
+
+                            var $injector = angular.injector(["ng", "trudesk"]);
+                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                var $scope = $account_list.append(html).scope();
+                                $compile($account_list)($scope || $rootScope);
+                                $rootScope.$digest();
+                            }]);
 
                             $('.s-ajaxify').on('click', function(e) {
                                 e.preventDefault();
@@ -125,10 +134,20 @@ define('pages/accounts', [
                         $loading = false;
                         return false;
                     }
+
+                    var html = '';
+
                     _.each(users, function (u) {
-                        var html = buildUserHTML(u, false);
-                        if (html.length > 0) $account_list.append(html);
+                        var h = buildUserHTML(u, false);
+                        if (h.length > 0) html += h;
                     });
+
+                    var $injector = angular.injector(["ng", "trudesk"]);
+                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $scope = $account_list.append(html).scope();
+                        $compile($account_list)($scope || $rootScope);
+                        $rootScope.$digest();
+                    }]);
 
                     UIkit.$html.trigger('changed.uk.dom');
                     helpers.resizeAll();

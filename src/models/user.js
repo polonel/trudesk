@@ -190,7 +190,7 @@ userSchema.statics.getUserByUsername = function(user, callback) {
         return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
     }
 
-    return this.model(COLLECTION).findOne({username: user}, callback);
+    return this.model(COLLECTION).findOne({username: new RegExp("^" + user.toLowerCase(), 'i') }, callback);
 };
 
 /**

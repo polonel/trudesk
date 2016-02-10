@@ -15,7 +15,8 @@
 var async   = require('async'),
     _       = require('underscore'),
     winston = require('winston'),
-    moment  = require('moment');
+    moment  = require('moment'),
+    permissions     = require('../../permissions');
 
 var viewController = {};
 var viewdata = {};
@@ -102,6 +103,10 @@ viewController.getData = function(request, cb) {
 
                   callback();
               });
+          },
+          function(callback) {
+              viewdata.roles = permissions.roles;
+              callback();
           }
       ], function(err) {
           if (err) {

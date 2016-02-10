@@ -1,4 +1,4 @@
-<div ng-controller="accountsCtrl">
+<div id="test" ng-controller="accountsCtrl">
     <div id="__accounts-page" class="hide">{{data.page}}</div>
     <div class="small-12 large-10 columns nopadding ticketContent" style="background: #f6f8fb;">
         <div class="page-title noshadow dt-borderBottom" style="margin-bottom: 15px;">
@@ -7,7 +7,7 @@
             </div>
             <div class="small-10 columns right">
                 <div class="md-fab-wrapper">
-                    <a class="md-fab md-fab-accent" href="/accounts/create">
+                    <a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
                         <i class="material-icons" style="color: white;">add</i>
                     </a>
                 </div>
@@ -114,6 +114,8 @@
 
         </div>
     </div>
+
+    {{> createAccountWindow}}
 </div>
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
