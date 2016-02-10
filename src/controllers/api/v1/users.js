@@ -20,6 +20,7 @@ var async       = require('async'),
     emitter     = require('../../../emitter'),
 
     userSchema  = require('../../../models/user'),
+    groupSchema = require('../../../models/group'),
     notificationSchema = require('../../../models/notification');
 
 
@@ -36,12 +37,49 @@ api_users.getWithLimit = function(req, res) {
         search: search
     };
 
-    console.log('CALLED! = ' + page);
+    async.waterfall([
+        function(callback) {
+            userSchema.getUserWithObject(obj, function(err, results) {
+                callback(err, results);
+            });
 
-    userSchema.getUserWithObject(obj, function(err, users) {
+        }, function (users, callback) {
+            var result = [];
+            async.waterfall([
+                function(cc) {
+                    groupSchema.getAllGroups(function(err, grps) {
+                        if (err) return cc(err);
+                        cc(null, grps)
+                    });
+                },
+                function(grps, cc) {
+                    async.eachSeries(users, function(u, c) {
+                        var user = u.toObject();
+
+                        var groups = _.filter(grps, function(g) {
+                            return _.any(g.members, function(m) {
+                                return m._id.toString() == user._id.toString();
+                            });
+                        });
+
+                        user.groups = _.pluck(groups, 'name');
+
+                        result.push(user);
+                        c();
+                    }, function(err) {
+                        if (err) return callback(err);
+                        cc(null, result);
+                    });
+                }
+            ], function(err, results) {
+                if (err) return callback(err);
+                callback(null, results);
+            });
+        }
+    ], function(err, rr) {
         if (err) return res.status(400).json({error: 'Error: ' + err.message});
 
-        return res.json({success: true, count: _.size(users), users: users});
+        return res.json({success: true, count: _.size(rr), users: rr});
     });
 };
 

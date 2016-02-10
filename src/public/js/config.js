@@ -62,8 +62,8 @@ requirejs.config({
         velocity:       'vendor/velocity/velocity.min',
         selectize:      'vendor/selectize/selectize',
         waves:          'vendor/waves/waves',
-        waypoints:      'vendor/waypoints/jquery.waypoints',
-        inview:         'vendor/waypoints/shortcuts/inview',
+        isinview:       'plugins/jquery.isinview',
+        jquery_docsize: 'plugins/jquery.documentsize',
         snackbar:       'plugins/snackbar'
     },
     config: {
@@ -74,6 +74,10 @@ requirejs.config({
     shim: {
         foundation: {
             deps: ['jquery', 'jquery_scrollTo', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace', 'velocity']
+        },
+
+        isinview: {
+            deps: ['jquery', 'jquery_docsize']
         },
 
         angular: {

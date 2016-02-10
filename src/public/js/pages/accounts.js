@@ -17,7 +17,7 @@ define('pages/accounts', [
     'jquery',
     'modules/helpers',
     'uikit',
-    'inview',
+    'isinview',
     'nicescroll',
     'datatables',
     'dt_responsive',
@@ -44,6 +44,7 @@ define('pages/accounts', [
 
                 $nextPage       = 2,
                 $enabled        = true,
+                $loading        = false,
 
                 $inview         = null;
 
@@ -52,28 +53,12 @@ define('pages/accounts', [
                 gutter: 20
             });
 
-            //scrollspy.waypoint({
-            //    handler: _.throttle(function(direction) {
-            //        if (direction !== 'down') return;
-            //        getAccounts();
-            //    }, 50, { trailing: false}),
-            //    context: $scroller,
-            //    offset: '110%',
-            //    continuous: false
-            //});
-
-            if ($inview != null)
-                $inview.destroy();
-
-            console.log($scroller);
-            console.log($scrollspy);
-            if (!_.isUndefined($scroller) && !_.isUndefined($scrollspy)) {
-                $inview = new Waypoint.Inview({
-                    entered: getAccounts,
-                    context: $('#account_list').parents('.scrollable'),
-                    element: $('#scrollspy')
-                });
-            }
+            $scroller.scroll(function() {
+                if ($scrollspy.isInView($scroller)) {
+                    var run = _.throttle(getAccounts, 100);
+                    run();
+                }
+            });
 
             $('#account_list_filter li a').on('click', function() {
                 $('#account_list_search').val('');
@@ -124,8 +109,10 @@ define('pages/accounts', [
             });
 
             function getAccounts() {
-                if (!$enabled) return false;
+                if (!$enabled || $loading) return false;
                 if (!$filterAll.hasClass('uk-active')) return true;
+
+                $loading = true;
                 $spinner.removeClass('uk-hidden');
 
                 $.ajax({
@@ -135,6 +122,7 @@ define('pages/accounts', [
                     var users = data.users;
                     if (_.size(users) < 1) {
                         $enabled = false;
+                        $loading = false;
                         return false;
                     }
                     _.each(users, function (u) {
@@ -143,25 +131,22 @@ define('pages/accounts', [
                     });
 
                     UIkit.$html.trigger('changed.uk.dom');
+                    helpers.resizeAll();
 
-                    console.log($nextPage);
+                    $('.s-ajaxify').on('click', function (e) {
+                        e.preventDefault();
+                        var href = $(e.target).attr('href');
+
+                        History.pushState(null, null, href);
+                    });
+
                     $nextPage = $nextPage + 1;
+                    $loading = false;
                 }).fail(function (err) {
                     console.log('[trudesk:accountsPage:setupGrid] - Error: ' + err.error);
+                    $loading = false;
                 });
             }
-        });
-
-        UIkit.ready(function() {
-            Waypoint.refreshAll();
-            helpers.resizeAll();
-
-            $('.s-ajaxify').on('click', function (e) {
-                e.preventDefault();
-                var href = $(e.target).attr('href');
-
-                History.pushState(null, null, href);
-            });
         });
     };
 
@@ -221,6 +206,12 @@ define('pages/accounts', [
             html    +=                      '<div class="tru-list-content">';
             html    +=                          '<span class="tru-list-heading">Groups</span>';
             html    +=                          '<span class="uk-text-small uk-text-muted uk-text-truncate">';
+        _.each(user.groups, function(g) {
+            html    +=  g;
+            if (_.size(user.groups) > 1)
+            if (_.last(user.groups) !== g)
+            html    += ', ';
+        });
             html    +=                          '</span>';
             html    +=                      '</div>';
             html    +=                  '</li>';
