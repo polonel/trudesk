@@ -55,7 +55,7 @@
 
                                         <div class="uk-dropdown uk-dropdown-small">
                                             <ul class="uk-nav">
-                                                <li><a href="/accounts/{{username}}">Edit</a></li>
+                                                <li><a href="#" class="no-ajaxy" data-username="{{username}}" ng-click="editAccount($event)">Edit</a></li>
                                                 <li><a href="#" data-username="{{username}}"
                                                        ng-click="deleteAccount($event)">Remove</a></li>
                                             </ul>
@@ -116,6 +116,7 @@
     </div>
 
     {{> createAccountWindow}}
+    {{> editAccountWindow}}
 </div>
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">

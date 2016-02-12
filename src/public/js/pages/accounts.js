@@ -190,7 +190,7 @@ define('pages/accounts', [
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';
-            html    +=                          '<li><a href="/accounts/' + user.username + '" class="s-ajaxify">Edit</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="editAccount($event)" class="no-ajaxy">Edit</a></li>';
             html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)">Remove</a></li>';
             html    +=                      '</ul>';
             html    +=                  '</div>';

@@ -35,6 +35,11 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                                 //$selectize.setValue(-1);
                                 $selectize.clear();
                             });
+                            var $mdInputFilled = modal.find('*.md-input-filled');
+                            $mdInputFilled.each(function() {
+                                var self = $(this);
+                                self.removeClass('md-input-filled');
+                            })
                         }
                     });
                     $scope.noticeAlertWindow = $('#noticeAlertWindow');

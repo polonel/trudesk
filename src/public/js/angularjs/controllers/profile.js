@@ -24,11 +24,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 $http.put(
                     '/api/v1/users/' + id,
                     {
-                        _id: id,
-                        fullname: data.fullname,
-                        password: data.password,
-                        cPassword: data.cPassword,
-                        email: data.email
+                        aId:            id,
+                        aFullname:      data.fullname,
+                        aPass:          data.password,
+                        aPassConfirm:   data.cPassword,
+                        aEmail:         data.email
                     }
                 ).success(function(d) {
                         resetForm();
@@ -38,9 +38,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                             textColor: '#f8f8f2'
                         });
                     }).error(function(e) {
-                        console.log('[trudesk:profile:updateUser] - ' + e);
+                        console.log('[trudesk:profile:updateUser] - ' + e.error.message);
                         //helpers.showFlash('Error: ' + e, true);
-                        helpers.UI.showSnackbar('Error ' + e, true);
+                        helpers.UI.showSnackbar('Error ' + e.error.message, true);
                     });
             };
 

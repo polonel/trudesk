@@ -167,41 +167,126 @@ api_users.create = function(req, res) {
 };
 
 /**
- * Updates existing User object based on Id and returns the updated object, once saved to MongoDB.
- * @todo currently being used for **angularjs/profile.js** on updating the user account.
+ * @api {put} /api/v1/users/:username Update User
+ * @apiName updateUser
+ * @apiDescription Updates a single user.
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiParamExample {json} Request:
+ * {
+        aId:            {{_id}},
+        aUsername:      {{username}},
+        aFullname:      {{fullname}},
+        aTitle:         {{title}},
+        aPass:          {{password}},
+        aPassconfirm:   {{password_confirm}},
+        aEmail:         {{email}},
+        aRole:          {{role.id}},
+        aGrps:          [{{group._id}}]
+ * }
  *
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {User|Error} Updated User object | Error
+ * @apiSuccess {object} user Saved User Object [Stripped]
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
  */
 api_users.update = function(req, res) {
     var data = req.body;
 
-    userSchema.getUser(data._id, function(err, user) {
+    var obj = {
+        _id:            data.aId,
+        username:       data.aUsername,
+        fullname:       data.aFullname,
+        title:          data.aTitle,
+        password:       data.aPass,
+        passconfirm:    data.aPassConfirm,
+        email:          data.aEmail,
+        role:           data.aRole,
+        groups:         data.aGrps
+    };
+
+    if (_.isNull(obj.groups) || _.isUndefined(obj.groups))
+        obj.groups = [];
+    else if (!_.isArray(obj.groups))
+        obj.groups = [obj.groups];
+
+    async.parallel({
+        user: function(done) {
+                userSchema.getUser(obj._id, function (err, user) {
+                    if (err) return done(err);
+
+                    if (!_.isUndefined(obj.password) && !_.isEmpty(obj.password) &&
+                        !_.isUndefined(obj.passconfirm) && !_.isEmpty(obj.passconfirm))
+                            if (obj.password === obj.passconfirm)
+                                user.password = obj.password;
+
+                    user.fullname = obj.fullname;
+                    if (!_.isUndefined(obj.title)) user.title = obj.title;
+                    user.email = obj.email;
+                    if (!_.isUndefined(obj.role)) user.role = obj.role;
+
+                    user.save(function (err, nUser) {
+                        if (err) return done(err);
+
+                        var resUser = StripUserFields(nUser);
+
+                        done(null, resUser);
+                    });
+                });
+        },
+        groups: function (done) {
+            groupSchema.getAllGroups(function(err, groups) {
+                if (err) return done(err);
+                async.each(groups, function(grp, callback) {
+                    if (_.contains(obj.groups, grp._id.toString())) {
+                        if (grp.isMember(obj._id)) return callback();
+                        grp.addMember(obj._id, function (err, result) {
+                            if (err) return callback(err);
+
+                            if (result) {
+                                grp.save(function(err, savedGroup) {
+                                    if (err) return callback(err);
+                                    callback();
+                                });
+                            } else {
+                                return callback();
+                            }
+                        });
+                    } else {
+                        //Remove Member from group
+                        grp.removeMember(obj._id, function(err, result) {
+                            if (err) return callback(err);
+                            if (result) {
+                                grp.save(function(err, savedGroup) {
+                                    if (err) return callback(err);
+
+                                    callback();
+                                });
+                            } else {
+                                return callback();
+
+                            }
+                        });
+                    }
+                }, function(err) {
+                    if (err) return done(err);
+
+                    done();
+                });
+            });
+        }
+    }, function(err, results) {
         if (err) {
-            winston.warn('Error: ' + err);
-            return res.status(500).send(err);
+            winston.debug(err);
+            return res.status(400).json({error: err});
         }
 
-        user.fullname = data.fullname;
-        user.email = data.email;
-
-        if (!_.isEmpty(data.password) && !_.isEmpty(data.cPassword)) {
-            if (data.password === data.cPassword) {
-                user.password = data.password;
-            }
-        }
-
-        user.save(function(err, nUser) {
-            if (err) {
-                winston.warn('Error: ' + err);
-                return res.status(500).send(err);
-            }
-
-            var resUser = StripUserFields(nUser);
-
-            return res.json(resUser);
-        });
+        return res.json({success: true, user: results.user});
     });
 };
 
@@ -335,14 +420,39 @@ api_users.single = function(req, res) {
     var username = req.params.username;
     if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request.'});
 
-    userSchema.getUserByUsername(username, function(err, user) {
-        if (err) return res.status(400).json({error: 'Invalid Request.'});
+    var response = {
+        success: true,
+        groups: []
+    };
 
-        if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request.'});
+    async.waterfall([
+        function(done) {
+            userSchema.getUserByUsername(username, function(err, user) {
+                if (err) return done(err);
 
-        user = StripUserFields(user);
+                if (_.isUndefined(user) || _.isNull(user)) return done('Invalid Request');
 
-        res.json(user);
+                user = StripUserFields(user);
+                response.user = user;
+
+                done(null, user);
+            })
+        },
+        function(user, done) {
+            groupSchema.getAllGroupsOfUserNoPopulate(user._id, function(err, grps) {
+                if (err) return done(err);
+
+                response.groups = _.map(grps, function(o) {
+                    return o._id;
+                });
+
+                done(null, response.groups);
+            });
+        }
+    ], function(err) {
+        if (err) return res.status(400).json({error: err});
+
+        res.json(response);
     });
 };
 
@@ -413,7 +523,7 @@ function StripUserFields(user) {
     user.password = undefined;
     user.accessToken = undefined;
     user.__v = undefined;
-    user.role = undefined;
+    //user.role = undefined;
     user.iOSDeviceTokens = undefined;
 
     return user;

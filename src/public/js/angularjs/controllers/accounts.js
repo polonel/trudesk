@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout) {
 
@@ -52,16 +52,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
             };
 
             $scope.editAccount = function($event) {
-                if (_.isNull($event.target) || _.isUndefined($event.target) ||
-                    $event.target.tagName.toLowerCase() === 'label' ||
-                    $event.target.tagName.toLowerCase() === 'input')
-                    return true;
+                //!!!Deprecated!!!
 
-                //currentTarget = ng-click() bound to. "<tr>"
-                var username = $event.currentTarget.dataset.username;
-                if (!username) return true;
-
-                History.pushState(null, null, '/accounts/' + username);
+                //if (_.isNull($event.target) || _.isUndefined($event.target) ||
+                //    $event.target.tagName.toLowerCase() === 'label' ||
+                //    $event.target.tagName.toLowerCase() === 'input')
+                //    return true;
+                //
+                ////currentTarget = ng-click() bound to. "<tr>"
+                //var username = $event.currentTarget.dataset.username;
+                //if (!username) return true;
+                //
+                //History.pushState(null, null, '/accounts/' + username);
             };
 
             $scope.deleteAccount = function($event) {
@@ -85,6 +87,82 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 }).error(function(err) {
                     console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
+                });
+            };
+
+            $scope.editAccount = function($event) {
+                $event.preventDefault();
+
+                var self = $($event.target);
+                var username = self.attr('data-username');
+                if (_.isUndefined(username)) return true;
+
+                $http.get(
+                    '/api/v1/users/' + username
+                ).success(function(data) {
+                    var editAccountModal = $('#editAccountModal');
+                    var form = editAccountModal.find('form#editAccountForm');
+                    var user = data.user;
+                    if (_.isUndefined(user) || _.isNull(user)) return true;
+
+                    form.find('#aId').val(user._id);
+                    form.find('#aUsername').val(user.username).prop('disabled', true).parent().addClass('md-input-filled');
+                    form.find('#aFullname').val(user.fullname).parent().addClass('md-input-filled');
+                    form.find('#aTitle').val(user.title).parent().addClass('md-input-filled');
+                    form.find('#aEmail').val(user.email).parent().addClass('md-input-filled');
+                    form.find('#aRole option[value="' + user.role + '"]').prop('selected', true);
+                    var $selectizeRole = form.find('#aRole')[0].selectize;
+                    $selectizeRole.setValue(user.role, true);
+                    $selectizeRole.refreshItems();
+
+                    var $selectizeGrps = form.find('#aGrps')[0].selectize;
+                    var groups = data.groups;
+
+                    _.each(groups, function(i) {
+                        $selectizeGrps.addItem(i, true);
+                    });
+
+                    $selectizeGrps.refreshItems();
+                    var modal = UIkit.modal('#editAccountModal');
+                    if (!modal.isActive()) modal.show();
+
+                }).error(function(err) {
+                    console.log('[trudesk:Accounts:editAccount] - Error: ' + err.error);
+                    helpers.UI.showSnackbar(err.error, true);
+                });
+            };
+
+            $scope.saveAccount = function() {
+                var data = {};
+                var form = $('#editAccountForm');
+                data = form.serializeObject();
+                data.aUsername = form.find('#aUsername').val();
+                data.aGrps = form.find('#aGrps').val();
+
+                $http({
+                    method: 'PUT',
+                    url: '/api/v1/users/' + data.aUsername,
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
+                })
+                    .success(function(data) {
+                        if (!data.success) {
+                            if (data.error) {
+                                helpers.UI.showSnackbar('Error: ' + data.error, true);
+                                return;
+                            }
+
+                            helpers.UI.showSnackbar('Error Saving Account', true);
+                        }
+
+                        helpers.UI.showSnackbar('Account Saved', false);
+
+                        UIkit.modal("#editAccountModal").hide();
+
+
+                    }).error(function(err) {
+                    console.log('[trudesk:accounts:saveAccount] - ' + err.error.message);
+                    helpers.UI.showSnackbar('Error: ' + err.error.message, true);
                 });
             };
 
