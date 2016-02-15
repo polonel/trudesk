@@ -54,6 +54,35 @@ api_groups.get = function(req, res) {
 };
 
 /**
+ * @api {get} /api/v1/groups/:id Get Single Group
+ * @apiName getSingleGroup
+ * @apiDescription Gets Single Group via ID param
+ * @apiVersion 0.1.7
+ * @apiGroup Group
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/group/:id
+ *
+ * @apiSuccess {boolean}    success             Successful?
+ * @apiSuccess {object}     group               Returned Group
+ * @apiSuccess {object}     groups._id          The MongoDB ID
+ * @apiSuccess {string}     groups.name         Group Name
+ * @apiSuccess {array}      groups.sendMailTo   Array of Users to send Mail to
+ * @apiSuccess {array}      groups.members      Array of Users that are members of this group
+ *
+ */
+api_groups.getSingleGroup = function(req, res) {
+    var id = req.params.id;
+    if (_.isUndefined(id)) return res.status(400).json({error: 'Invalid Request'});
+
+    groupSchema.getGroupById(id, function(err, group) {
+        if (err) return res.status(400).json({error: err.message});
+
+        return res.status(200).json({success: true, group: group});
+    });
+};
+
+/**
  * @api {post} /api/v1/groups/create Create Group
  * @apiName createGroup
  * @apiDescription Creates a group with the given post data.
@@ -101,39 +130,59 @@ api_groups.create = function(req, res) {
 };
 
 /**
- * Updates a group object. <br> <br>
- * Route: **[put] /api/groups/:id**
+ * @api {put} /api/v1/groups/:id Edit Group
+ * @apiName editGroup
+ * @apiDescription Updates giving group with PUT data
+ * @apiVersion 0.1.7
+ * @apiGroup Group
+ * @apiHeader {string} accesstoken The access token for the logged in user
  *
- * @todo revamp to support access token
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {Group} Updated Group Object
- * @example
- * group.name = data.name;
- * group.members = data.members;
- * group.sendMailTo = data.sendMailTo;
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "name": "Group Name",
+ *      "members": [members],
+ *      "sendMailTo": [sendMailTo]
+ * }
+ *
+ * @apiExample Example usage:
+ * curl -X PUT
+ *      -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"name\": \"Group Name\", \"members\": [members], \"sendMailTo\": [sendMailTo] }"
+ *      -l http://localhost/api/v1/groups/:id
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} group Saved Group Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
  */
 api_groups.updateGroup = function(req, res) {
+    var id = req.params.id;
     var data = req.body;
-    if (_.isUndefined(data) || !_.isObject(data)) return res.status(400).send('Error: Malformated Data.');
+    if (_.isUndefined(id) || _.isUndefined(data) || !_.isObject(data)) return res.status(400).json({error: 'Invalid Post Data'});
 
-    groupSchema.getGroupById(data.id, function(err, group) {
-        if (err) return res.status(400).send('Error: ' + err.message);
+    if (!_.isArray(data.members))
+        data.members = [data.members];
+    if (!_.isArray(data.sendMailTo))
+        data.sendMailTo = [data.sendMailTo];
 
-        if (_.isUndefined(group.members)) group.members = [];
-        if (_.isUndefined(group.sendMailTo)) group.sendMailTo = [];
+    groupSchema.getGroupById(id, function(err, group) {
+        if (err) return res.status(400).json({error: err.message});
 
-        if (!_.isArray(data.members) && data.members !== null && !_.isUndefined(data.members)) data.members = [data.members];
-        if (!_.isArray(data.sendMailTo) && data.sendMailTo !== null && !_.isUndefined(data.sendMailTo)) data.sendMailTo = [data.sendMailTo];
+        group.name          = data.name;
+        group.members       = data.members;
+        group.sendMailTo    = data.sendMailTo;
 
-        group.name = data.name;
-        group.members = data.members;
-        group.sendMailTo = data.sendMailTo;
+        group.save(function(err, savedGroup) {
+            if (err) return res.status(400).json({error: err.message});
 
-        group.save(function(err, g) {
-            if (err) return res.status(400).json({success: false, error: 'Error: ' + err.message});
-
-            res.json(g);
+            return res.json({success: true, group: savedGroup});
         });
     });
 };
@@ -176,7 +225,6 @@ api_groups.deleteGroup = function(req, res) {
                 group.remove(function(err, success) {
                     if (err) return next('Error: ' + err.message);
 
-                    winston.warn('Group Deleted: ' + group._id);
                     next(null, success);
                 });
             });
