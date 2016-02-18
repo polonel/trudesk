@@ -446,6 +446,20 @@ ticketSchema.statics.getAll = function(callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getAllByStatus = function(status, callback) {
+    var self = this;
+
+    if (!_.isArray(status))
+        status = [status];
+
+    var q = self.model(COLLECTION).find({status: {$in: status}, deleted: false})
+        .populate('owner assignee type')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
 /**
  * Gets Tickets with a given group id.
  *
@@ -472,6 +486,33 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('type')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
+/**
+ * Gets Tickets with a given date range
+ *
+ * @memberof Ticket
+ * @static
+ * @method getTicketsDateRange
+ * @param {Date} start Start Date
+ * @param {Date} end End Date
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsDateRange = function(start, end, callback) {
+    if (_.isUndefined(start) || _.isUndefined(end)) return callback("Invalid Date Range - TicketSchema.GetTicketsDateRange()", null);
+
+    var self = this;
+
+    var s = moment(start).hour(23).minute(59).second(59);
+    var e = moment(end).hour(23).minute(59).second(59);
+
+    var q = self.model(COLLECTION).find({date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };
@@ -834,14 +875,25 @@ ticketSchema.statics.getStatusCountByDate = function(status, date, callback) {
 
     var self = this;
 
-    var today = new Date(date);
-    var yesterday = new Date(date);
-    yesterday.setDate(yesterday.getDate()-1);
+    var today = moment(date).hour(23).minute(59).second(59);
+    var yesterday = today.clone().subtract(1, 'd');
 
-    var q = self.model(COLLECTION).count({status: status, date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
-    if (status === 3) {
-        q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
-    }
+    var q = self.model(COLLECTION).count({status: status, date: {$lte: today.toDate(), $gte: yesterday.toDate()}, deleted: false});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getStatusCountRange = function(status, start, end, callback) {
+    if (_.isUndefined(status)) return callback("Invalid Status - TicketSchema.GetStatusCountRange()", null);
+    if (_.isUndefined(start)) return callback("Invalid Start Date - TicketSchema.GetStatusCountRange()", null);
+    if (_.isUndefined(end)) return callback("Invalid End Date - TicketSchema.GetStatusCountRange()", null);
+
+    var self = this;
+
+    var s = moment(start).hour(23).minute(59).second(59);
+    var e = moment(end).hour(23).minute(59).second(59);
+
+    var q = self.model(COLLECTION).count({status: status, date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false});
 
     return q.exec(callback);
 };
@@ -867,11 +919,10 @@ ticketSchema.statics.getDateCount = function(date, callback) {
 
     var self = this;
 
-    var today = new Date(date);
-    var yesterday = new Date(date);
-    yesterday.setDate(yesterday.getDate()-1);
+    var today = moment(date).hour(23).minute(59).second(59);
+    var yesterday = today.clone().subtract(1, 'd');
 
-    var q = self.model(COLLECTION).count({date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+    var q = self.model(COLLECTION).count({date: {$lte: today.toDate(), $gte: yesterday.toDate()}, deleted: false});
 
     return q.exec(callback);
 };

@@ -168,7 +168,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     html += '<div class="tru-card-wrapper" data-uk-filter="' + group.name + '">';
                     html += '<div class="tru-card tru-card-hover">';
                     html += '<div class="tru-card-head">';
-                    html += '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\'}">';
+                    html += '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\',mode:\'click\'}">';
                     html += '<i class="material-icons tru-icon">&#xE5D4;</i>';
                     html += '<div class="uk-dropdown uk-dropdown-small">';
                     html += '<ul class="uk-nav">';

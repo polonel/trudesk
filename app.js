@@ -15,6 +15,7 @@ var async   = require('async'),
     winston = require('winston'),
     wConfig = require('winston/lib/winston/config'),
     nconf = require('nconf'),
+    NodeCache = require('node-cache'),
     pkg     = require('./package.json');
 
 nconf.argv().env();
@@ -188,6 +189,13 @@ function dbCallback(err, db) {
                 //Start Task Runners
                 var taskrunner = require('./src/taskrunner');
                 next();
+            },
+            function(next) {
+                winston.debug('Initializing Cache...');
+                var cache = require('./src/cache');
+                cache.init(function() {
+                    next();
+                });
             }
         ], function() {
             winston.info("TruDesk Ready");

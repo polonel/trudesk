@@ -24,7 +24,7 @@ define('pages/dashboard', [
 
     dashboardPage.init = function() {
         $(document).ready(function() {
-            getData();
+            //getData();
         });
     };
 
