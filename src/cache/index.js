@@ -40,7 +40,7 @@ winston.add(winston.transports.Console, {
 
 function loadConfig() {
     nconf.file({
-        file: 'config.json'
+        file: path.join(__dirname, '/../../config.json')
     });
 
     nconf.defaults({
