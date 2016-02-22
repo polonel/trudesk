@@ -24,6 +24,8 @@
 var _       = require('underscore');
 var moment  = require('moment');
 
+var conf = require('nconf');
+
 
 // The module to be exported
 var helpers = {
@@ -547,6 +549,22 @@ var helpers = {
 
     size: function(arr) {
         return _.size(arr);
+    },
+
+    overdue: function(updated, options) {
+        var showOverdue = conf.get('settings:showOverdue');
+        if (!showOverdue) return false;
+        var now = moment();
+        updated = moment(updated);
+        var timeout = updated.clone().add(2, 'd');
+
+        var result = now.isAfter(timeout);
+
+        if (result)
+            return options.fn(this);
+        else
+            return options.inverse(this);
+
     }
 };
 

@@ -103,10 +103,13 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
+    router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
     router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
-    router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getDaysCount);
-    router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getDaysCount);
+    router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
+    router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
+    router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
+    router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
@@ -133,8 +136,10 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
 
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
+
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
+
     router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
     router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
@@ -142,7 +147,29 @@ function mainRoutes(router, middleware, controllers) {
 
     //router.get('/debug/sendmail', controllers.debug.sendmail);
     //router.get('/api/v1/import', middleware.api, controllers.api.import);
+    router.get('/debug/cache/refresh', function(req, res) {
+        var _ = require('underscore');
+
+        var forkProcess = _.findWhere(global.forks, {name: 'cache'});
+        forkProcess.fork.send({name: 'cache:refresh'});
+
+        res.send('OK');
+    });
     router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
+    router.get('/debug/restart', function(req, res) {
+        var exec = require('child_process').exec;
+        var child = exec('ipconfig /all', {
+            cwd: __dirname
+        },function(err, stdout, stderr) {
+            console.log(stdout);
+            if (err) {
+                console.log(err);
+            }
+
+            res.send('OK');
+        });
+
+    });
 }
 
 module.exports = function(app, middleware) {

@@ -186,7 +186,7 @@ function buildAvgResponse(ticketArray, callback) {
     var cbObj = {};
     var $ticketAvg = [];
     async.eachSeries(ticketArray, function (ticket, callback) {
-        if (_.size(ticket.comments) < 1) return callback();
+        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return callback();
 
         var ticketDate = moment(ticket.date);
         var firstCommentDate = moment(ticket.comments[0].date);

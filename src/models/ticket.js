@@ -440,6 +440,7 @@ ticketSchema.statics.getAll = function(callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
@@ -453,7 +454,7 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
         status = [status];
 
     var q = self.model(COLLECTION).find({status: {$in: status}, deleted: false})
-        .populate('owner assignee type')
+        .populate('owner assignee type tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
@@ -484,6 +485,7 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
@@ -512,6 +514,7 @@ ticketSchema.statics.getTicketsDateRange = function(start, end, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
@@ -565,6 +568,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('owner', 'username fullname email role preferences image title')
         .populate('assignee', 'username fullname email role preferences image title')
         .populate('type')
+        .populate('tags')
         .populate('group')
         .populate('group.members', 'username fullname email role preferences image title')
         .populate('group.sendMailTo', 'username fullname email role preferences image title')
@@ -680,6 +684,7 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1})
         .sort({'status': 1})
@@ -714,6 +719,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1});
 
@@ -777,6 +783,7 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);

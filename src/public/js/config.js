@@ -56,7 +56,9 @@ requirejs.config({
         colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
         datepicker:     'vendor/datepicker/foundation-datepicker',
         d3:             'vendor/d3/d3.min',
+        c3:             'vendor/c3/c3',
         metricsgraphics:'vendor/metricsgraphics/metricsgraphics.min',
+        d3pie:          'vendor/d3pie/d3pie.min',
         peity:          'vendor/peity/jquery.peity.min',
         countup:        'vendor/countup/countUp.min',
         velocity:       'vendor/velocity/velocity.min',
@@ -177,7 +179,15 @@ requirejs.config({
             deps: []
         },
 
+        c3: {
+            deps: ['d3', 'jquery']
+        },
+
         metricsgraphics: {
+            deps: ['d3', 'jquery']
+        },
+
+        d3pie: {
             deps: ['d3', 'jquery']
         },
 

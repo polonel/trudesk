@@ -447,12 +447,15 @@ api_tickets.getTypes = function(req, res) {
     });
 };
 
-api_tickets.getDaysCount = function(req, res) {
+api_tickets.getTicketStats = function(req, res) {
     var timespan = 30;
     if (req.params.timespan)
         timespan = req.params.timespan;
 
     var cache = global.cache;
+
+    if (_.isUndefined(cache))
+        return res.status(400).send('Ticket stats are still loading...');
 
     var ticketSchema = require('../../../models/ticket');
     var data = [],
@@ -511,6 +514,17 @@ api_tickets.getDaysCount = function(req, res) {
 
         res.send(obj);
     });
+};
+
+api_tickets.getTagCount = function(req, res) {
+    var cache = global.cache;
+
+    if (_.isUndefined(cache))
+        return res.status(400).send('Tag stats are still loading...');
+
+    var tags = cache.get('tags:usage');
+
+    res.json({success: true, tags: tags});
 };
 
 api_tickets.getMonthData = function(req, res) {

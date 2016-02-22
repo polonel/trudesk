@@ -31,6 +31,7 @@ modules: [
             'history',
             'd3',
             'metricsgraphics',
+            'd3pie',
             'peity',
             'countup',
             'selectize',

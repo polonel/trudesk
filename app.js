@@ -18,6 +18,8 @@ var async   = require('async'),
     NodeCache = require('node-cache'),
     pkg     = require('./package.json');
 
+global.forks = [];
+
 nconf.argv().env();
 
 global.env = process.env.NODE_ENV || 'development';
@@ -43,7 +45,7 @@ winston.err = function (err) {
     winston.error(err.stack);
 };
 
-if (!process.send) {
+if (!process.env.FORK) {
     winston.info('    .                              .o8                     oooo');
     winston.info('  .o8                             "888                     `888');
     winston.info('.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo');
@@ -57,6 +59,29 @@ if (!process.send) {
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
 }
+
+//CLUSTER STUFF
+//var cluster = require('cluster');
+//if (cluster.isMaster) {
+//    var numWorkers = require('os').cpus().length;
+//    winston.info('Master cluster setting up ' + numWorkers + ' workers...');
+//
+//    for (var i = 0; i < numWorkers; i++) {
+//        cluster.fork({FORK: 1});
+//    }
+//
+//    cluster.on('online', function(worker) {
+//        winston.debug('Worker ' + worker.process.pid + ' is online');
+//    });
+//
+//    cluster.on('exit', function(worker, code, signal) {
+//        winston.warn('Worker ' + worker.process.pid + ' crashed with code: ' + code);
+//        winston.info('Starting a new worker');
+//        cluster.fork({FORK: 1});
+//    });
+//} else {
+//
+//}
 
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
@@ -191,11 +216,32 @@ function dbCallback(err, db) {
                 next();
             },
             function(next) {
-                winston.debug('Initializing Cache...');
-                var cache = require('./src/cache');
-                cache.init(function() {
-                    next();
+                var fork = require('child_process').fork;
+                var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env } } );
+
+                global.forks.push({name: 'cache', fork: n});
+
+                n.on('message', function(data) {
+                    if (data.cache) {
+                        var nodeCache = require('./src/cache/node-cache');
+                        global.cache = new nodeCache({
+                            data: data.cache.data,
+                            checkperiod: 0
+                        });
+                    }
                 });
+
+                //
+                //n.on('exit', function (code, signal) {
+                //    console.log('Child exited:', code, signal);
+                //});
+
+                next();
+                //winston.debug('Initializing Cache...');
+                //var cache = require('./src/cache');
+                //cache.init(function() {
+                //    next();
+                //});
             }
         ], function() {
             winston.info("TruDesk Ready");

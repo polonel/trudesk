@@ -113,7 +113,8 @@ module.exports = function(grunt) {
                         'public/css/plugins/datepicker/foundation-datepicker.css',
                         'public/js/vendor/uikit/css/uikit.almost-flat.css',
                         'public/js/vendor/uikit/css/uikit_custom.css',
-                        'public/js/plugins/snackbar.css'
+                        'public/js/plugins/snackbar.css',
+                        'public/js/vendor/c3/c3.css'
                     ]
                 }
             },
@@ -194,6 +195,7 @@ module.exports = function(grunt) {
                                 'history',
                                 'd3',
                                 'metricsgraphics',
+                                'd3pie',
                                 'peity',
                                 'countup',
                                 'selectize',
@@ -250,5 +252,6 @@ module.exports = function(grunt) {
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('build', ['requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('sbuild', ['shell:requirejs']);
+    grunt.registerTask('winbuild', ['shell:requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };

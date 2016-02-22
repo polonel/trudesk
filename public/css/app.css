@@ -338,10 +338,16 @@ a.button {
   transform: translate(-50%, -50%); }
 
 .overlay-message, .overlay-message > p {
-  font-family: Roboto, sans-serif;
+  font-family: "Roboto", "Open Sans", sans-serif;
   font-weight: 300;
   font-size: 32px;
   color: #fff; }
+
+.p0_arc path {
+  cursor: pointer; }
+
+.p0_labels-inner text {
+  cursor: pointer; }
 
 @media only screen and (min-width: 40.063em) and (max-width: 64em) {
   .page-right-content {
