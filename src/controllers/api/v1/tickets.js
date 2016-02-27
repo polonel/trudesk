@@ -457,63 +457,41 @@ api_tickets.getTicketStats = function(req, res) {
     if (_.isUndefined(cache))
         return res.status(400).send('Ticket stats are still loading...');
 
-    var ticketSchema = require('../../../models/ticket');
-    var data = [],
-        newData = [],
-        closedData = [],
-        dates = [],
-        timespanArray = [],
-        today = moment().hour(0).minute(0).second(0);
-        var endPeriod = today.clone().subtract(timespan, 'd');
-
-    for (var i=timespan;i--;) {
-        timespanArray.push(i);
+    var obj = {};
+    if (timespan == 30) {
+        obj.data = cache.get('tickets:overview:e30:graphData');
+        obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
+    } else if (timespan == 60) {
+        obj.data = cache.get('tickets:overview:e60:graphData');
+        obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
+    } else if (timespan == 90) {
+        obj.data = cache.get('tickets:overview:e90:graphData');
+        obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
+    } else if (timespan == 180) {
+        obj.data = cache.get('tickets:overview:e180:graphData');
+        obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
+    } else if (timespan == 365) {
+        obj.data = cache.get('tickets:overview:e365:graphData');
+        obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
+    } else if (timespan == 0) {
+        obj.data = cache.get('tickets:overview:lifetime:graphData');
+        obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
     }
 
-    var all = cache.get('tickets:overview:e365:tickets');
+    obj.mostRequester = cache.get('quickstats:mostRequester');
+    obj.mostCommenter = cache.get('quickstats:mostCommenter');
+    obj.mostAssignee = cache.get('quickstats:mostAssignee');
+    obj.mostActiveTicket = cache.get('quickstats:mostActiveTicket');
 
-    async.eachSeries(timespanArray, function(day, callback) {
-        var obj = {};
-        obj.date = today.clone().subtract(day, 'd').format('YYYY-MM-DD');
+    obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
 
-        var $dateCount = _.filter(all, function(v) {
-            return (v.date < obj.date.toDate() && v.date > obj.date.clone().subtract(day, 'd').toDate())
-        });
-
-        $dateCount = _.size($dateCount);
-        obj.value = $dateCount;
-        data.push(obj);
-
-        callback();
-
-    }, function() {
-        var obj = {};
-        if (timespan == 30) {
-            obj.data = cache.get('tickets:overview:e30:graphData');
-            obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
-        } else if (timespan == 60) {
-            obj.data = cache.get('tickets:overview:e60:graphData');
-            obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
-        } else if (timespan == 90) {
-            obj.data = cache.get('tickets:overview:e90:graphData');
-            obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
-        } else if (timespan == 180) {
-            obj.data = cache.get('tickets:overview:e180:graphData');
-            obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
-        } else if (timespan == 365) {
-            obj.data = cache.get('tickets:overview:e365:graphData');
-            obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
-        }
-
-        obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
-
-        res.send(obj);
-    });
+    res.send(obj);
 };
 
 api_tickets.getTagCount = function(req, res) {

@@ -22,50 +22,67 @@ var ticketSchema    = require('../models/ticket');
 var tagSchema       = require('../models/tag');
 
 
-var init = function(callback) {
+var init = function(tickets, callback) {
     var tags = [];
-    ticketSchema.getAll(function(err, tickets) {
+    var $tickets = [];
+
+    async.series([
+        function(done) {
+            if (tickets) {
+                $tickets = tickets;
+                done();
+            } else {
+                ticketSchema.getAll(function(err, tickets) {
+                    if (err) return done(err);
+
+                    $tickets = tickets;
+
+                    done();
+                });
+            }
+        },
+        function(done) {
+            var t = [];
+
+            async.each($tickets, function(ticket, cb) {
+                _.each(ticket.tags, function(tag) {
+                    t.push(tag.name);
+                });
+
+                cb();
+            }, function() {
+                _.mixin({
+                    'sortKeysBy': function (obj, comparator) {
+                        var keys = _.sortBy(_.keys(obj), function (key) {
+                            return comparator ? comparator(obj[key], key) : key;
+                        });
+
+                        return _.object(keys, _.map(keys, function (key) {
+                            return obj[key];
+                        }));
+                    }
+                });
+
+                tags = _.reduce(t, function(counts, key) {
+                    counts[key]++;
+                    return counts;
+                }, _.object(_.map(_.uniq(t), function(key) {
+                    return [key, 0];
+                })));
+
+                tags = _.sortKeysBy(tags, function(value, key) {
+                    return -value;
+                });
+
+                done();
+            });
+        }
+
+    ], function(err) {
         if (err) return callback(err);
 
-        var t = [];
-
-        async.each(tickets, function(ticket, done) {
-            _.each(ticket.tags, function(tag) {
-                t.push(tag.name);
-            });
-
-            done();
-
-        }, function(err, results) {
-            if (err) return callback(err);
-
-            _.mixin({
-                'sortKeysBy': function (obj, comparator) {
-                    var keys = _.sortBy(_.keys(obj), function (key) {
-                        return comparator ? comparator(obj[key], key) : key;
-                    });
-
-                    return _.object(keys, _.map(keys, function (key) {
-                        return obj[key];
-                    }));
-                }
-            });
-
-            tags = _.reduce(t, function(counts, key) {
-                counts[key]++;
-                return counts;
-            }, _.object(_.map(_.uniq(t), function(key) {
-                return [key, 0];
-            })));
-
-            tags = _.sortKeysBy(tags, function(value, key) {
-                return -value;
-            });
-
-            callback(null, tags);
-        });
-    })
-
+        callback(null, tags);
+    });
 };
 
 module.exports = init;

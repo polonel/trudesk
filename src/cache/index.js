@@ -79,48 +79,81 @@ function restartRefreshClock() {
 }
 
 truCache.refreshCache = function(callback) {
-    async.parallel([
+    async.waterfall([
         function(done) {
-            var ticketStats = require('./ticketStats');
-            ticketStats(function(err, stats) {
+            var ticketSchema = require('../models/ticket');
+            ticketSchema.getAll(function(err, tickets) {
                 if (err) return done(err);
-                cache.set('tickets:overview:lastUpdated', stats.lastUpdated, 3600);
 
-                cache.set('tickets:overview:e30:closedTickets', stats.e30.closedTickets, 3600);
-                cache.set('tickets:overview:e30:responseTime', stats.e30.avgResponse, 3600);
-                cache.set('tickets:overview:e30:graphData', stats.e30.graphData, 3600);
-
-                cache.set('tickets:overview:e60:closedTickets', stats.e60.closedTickets, 3600);
-                cache.set('tickets:overview:e60:responseTime', stats.e60.avgResponse, 3600);
-                cache.set('tickets:overview:e60:graphData', stats.e60.graphData, 3600);
-
-                cache.set('tickets:overview:e90:closedTickets', stats.e90.closedTickets, 3600);
-                cache.set('tickets:overview:e90:responseTime', stats.e90.avgResponse, 3600);
-                cache.set('tickets:overview:e90:graphData', stats.e90.graphData, 3600);
-
-                cache.set('tickets:overview:e180:closedTickets', stats.e180.closedTickets, 3600);
-                cache.set('tickets:overview:e180:responseTime', stats.e180.avgResponse, 3600);
-                cache.set('tickets:overview:e180:graphData', stats.e180.graphData, 3600);
-
-                cache.set('tickets:overview:e365:closedTickets', stats.e365.closedTickets, 3600);
-                cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, 3600);
-                cache.set('tickets:overview:e365:graphData', stats.e365.graphData, 3600);
-
-                done();
+                done(null, tickets);
             });
         },
-        function(done) {
-            var tagStats = require('./tagStats');
-            tagStats(function(err, stats) {
-                if (err) return  done(err);
 
-                cache.set('tags:usage', stats, 3600);
+        function(tickets, cb) {
+            async.parallel([
+                function(done) {
+                    var ticketStats = require('./ticketStats');
+                    ticketStats(tickets, function(err, stats) {
+                        if (err) return done(err);
+                        cache.set('tickets:overview:lastUpdated', stats.lastUpdated, 3600);
 
-                done();
+                        cache.set('tickets:overview:e30:closedTickets', stats.e30.closedTickets, 3600);
+                        cache.set('tickets:overview:e30:responseTime', stats.e30.avgResponse, 3600);
+                        cache.set('tickets:overview:e30:graphData', stats.e30.graphData, 3600);
+
+                        cache.set('tickets:overview:e60:closedTickets', stats.e60.closedTickets, 3600);
+                        cache.set('tickets:overview:e60:responseTime', stats.e60.avgResponse, 3600);
+                        cache.set('tickets:overview:e60:graphData', stats.e60.graphData, 3600);
+
+                        cache.set('tickets:overview:e90:closedTickets', stats.e90.closedTickets, 3600);
+                        cache.set('tickets:overview:e90:responseTime', stats.e90.avgResponse, 3600);
+                        cache.set('tickets:overview:e90:graphData', stats.e90.graphData, 3600);
+
+                        cache.set('tickets:overview:e180:closedTickets', stats.e180.closedTickets, 3600);
+                        cache.set('tickets:overview:e180:responseTime', stats.e180.avgResponse, 3600);
+                        cache.set('tickets:overview:e180:graphData', stats.e180.graphData, 3600);
+
+                        cache.set('tickets:overview:e365:closedTickets', stats.e365.closedTickets, 3600);
+                        cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, 3600);
+                        cache.set('tickets:overview:e365:graphData', stats.e365.graphData, 3600);
+
+                        cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, 3600);
+                        cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, 3600);
+                        cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, 3600);
+
+                        done();
+                    });
+                },
+                function(done) {
+                    var tagStats = require('./tagStats');
+                    tagStats(tickets, function(err, stats) {
+                        if (err) return  done(err);
+
+                        cache.set('tags:usage', stats, 3600);
+
+                        done();
+                    });
+                },
+                function(done) {
+                    var quickStats = require('./quickStats');
+                    quickStats(tickets, function(err, stats) {
+                        if (err) return done(err);
+
+                        cache.set('quickstats:mostRequester', stats.mostRequester, 3600);
+                        cache.set('quickstats:mostCommenter', stats.mostCommenter, 3600);
+                        cache.set('quickstats:mostAssignee', stats.mostAssignee, 3600);
+                        cache.set('quickstats:mostActiveTicket', stats.mostActiveTicket, 3600);
+
+                        done();
+                    });
+                }
+            ], function(err) {
+                cb(err);
             });
         }
+
     ], function(err) {
-        if (err) return console.log(err);
+        if (err) return winston.warn(err);
         //Send to parent
         process.send({cache: cache});
 

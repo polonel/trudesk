@@ -1,17 +1,25 @@
 <div class="small-12 large-10 columns nopadding reportsOverview" ng-controller="reportsCtrl">
-    <div class="page-title noshadow">
+    <div class="page-title page-title-border-bottom">
         <p class="left">{{title}}</p>
+
         <div class="right clearfix" style="min-width: 250px;">
-            <div class="md-fab-wrapper">
-                <div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">
-                    <i class="material-icons" style="color: white">&#xE8BE;</i>
-                    <div class="md-fab-toolbar-actions">
-                        <button type="submit" id="user_edit_save" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i class="material-icons md-color-white">&#xE161;</i></button>
-                        <button type="submit" id="user_edit_print" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i class="material-icons md-color-white">&#xE555;</i></button>
-                        <button type="submit" id="user_edit_delete" data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i class="material-icons md-color-white">&#xE872;</i></button>
-                    </div>
-                </div>
-            </div>
+            <!--<div class="md-fab-wrapper">-->
+                <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">-->
+                    <!--<i class="material-icons" style="color: white">&#xE8BE;</i>-->
+
+                    <!--<div class="md-fab-toolbar-actions">-->
+                        <!--<button type="submit" id="user_edit_save"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i-->
+                                <!--class="material-icons md-color-white">&#xE161;</i></button>-->
+                        <!--<button type="submit" id="user_edit_print"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i-->
+                                <!--class="material-icons md-color-white">&#xE555;</i></button>-->
+                        <!--<button type="submit" id="user_edit_delete"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i-->
+                                <!--class="material-icons md-color-white">&#xE872;</i></button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
             <div style="margin-top: 8px;">
                 <select id="select_timespan" name="select_timespan" data-md-selectize>
                     <option value="30" selected>Last 30 Days</option>
@@ -19,24 +27,13 @@
                     <option value="90">Last 90 Days</option>
                     <option value="180">Last 180 Days</option>
                     <option value="365">Last 365 Days</option>
+                    <option value="0">Lifetime</option>
                 </select>
             </div>
-            <ul class="button-group">
-                <!--<li style="position: relative;">-->
-                    <!--<div style="margin-top: 20px; margin-right: 5px;">-->
-                        <!--<select name="range" id="range" class="chosen-select">-->
-                            <!--<option value="30">Last 30 Days</option>-->
-                            <!--<option value="60">Last 60 Days</option>-->
-                            <!--<option value="90">Last 90 Days</option>-->
-                            <!--<option value="180">Last 180 Days</option>-->
-                            <!--<option value="365">Last 365 Days</option>-->
-                        <!--</select>-->
-                    <!--</div>-->
-                <!--</li>-->
-            </ul>
         </div>
 
-        <div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;"><strong>Last Updated:</strong> <span>2-17-2016 07:55:55pm</span></div>
+        <div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;"><strong>Last
+            Updated:</strong> <span>Cache Still Loading...</span></div>
     </div>
 
     <div class="full-height page-right-content scrollable">
@@ -50,8 +47,9 @@
                                 <span class="peity-bar">5,3,9,6,5,9,7</span>
                             </div>
                             <span class="uk-text-muted uk-text-small">Total Tickets (last 30d)</span>
+
                             <h2 class="uk-margin-remove">
-                                <span id="ticketCount" class="countUpMe">899</span>
+                                <span id="ticketCount">--</span>
                             </h2>
                         </div>
 
@@ -61,11 +59,12 @@
                     <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
                         <div class="tru-card-content">
                             <div class="right uk-margin-top ukmargin-small-right">
-                                <span id="pie_complete" class="peity-pie">64/100</span>
+                                <span id="pie_complete" class="peity-pie">0/100</span>
                             </div>
                             <span class="uk-text-muted uk-text-small">Tickets Completed</span>
+
                             <h2 class="uk-margin-remove">
-                                <span id="text_complete" class="countUpMe">64</span>%
+                                <span id="text_complete">--</span>%
                             </h2>
                         </div>
                     </div>
@@ -77,8 +76,9 @@
                                 <span id="responseTime_graph" class="peity-line">5,3,9,6,5,9,7,3,5,2</span>
                             </div>
                             <span class="uk-text-muted uk-text-small">Avg Response Time</span>
+
                             <h2 class="uk-margin-remove">
-                                <span id="responseTime_text" class="countUpMe">34</span> hours
+                                <span id="responseTime_text">--</span> hours
                             </h2>
                         </div>
                     </div>
@@ -94,7 +94,8 @@
                 </div>
                 <div class="right" style="position:relative;">
                     <button class="action-link"><i class="material-icons">refresh</i></button>
-                    <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
+                    <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"
+                         aria-expanded="false">
                         <button class="action-link"><i class="material-icons">more_vert</i></button>
                         <div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">
                             <ul class="uk-nav">
@@ -116,7 +117,7 @@
         </div>
         <div class="small-12 columns nopadding">
             <div class="small-6 columns">
-                <div class="panel trupanel nopadding" style="min-height: 295px;">
+                <div class="panel trupanel nopadding" style="min-height: 265px;">
                     <div class="left">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 5 Groups</h6>
                     </div>
@@ -125,7 +126,7 @@
                 </div>
             </div>
             <div class="small-6 columns">
-                <div class="panel trupanel nopadding" style="min-height: 295px;">
+                <div class="panel trupanel nopadding" style="min-height: 265px;">
                     <div class="left">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 10 Tags</h6>
                     </div>
@@ -135,26 +136,158 @@
                     </div>
                 </div>
             </div>
+
             <!--<div class="small-3 columns">-->
-                <!--<div class="panel trupanel nopadding">-->
-                    <!--<div class="tru-card tru-card-overlay">-->
-                        <!--<div class="tru-card-content">-->
-                            <!--<div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">-->
-                                <!--<span class="epc_chart_icon">-->
-                                    <!--<i class="fa fa-user"></i>-->
-                                <!--</span>-->
-                            <!--</div>-->
-                        <!--</div>-->
-                        <!--<div class="tru-card-overlay-content">-->
-                            <!--<div class="clearfix tru-card-overlay-header">-->
-                                <!--<i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>-->
-                                <!--<h3>User Messages</h3>-->
-                            <!--</div>-->
-                            <!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
+            <!--<div class="panel trupanel nopadding">-->
+            <!--<div class="tru-card tru-card-overlay">-->
+            <!--<div class="tru-card-content">-->
+            <!--<div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">-->
+            <!--<span class="epc_chart_icon">-->
+            <!--<i class="fa fa-user"></i>-->
+            <!--</span>-->
             <!--</div>-->
+            <!--</div>-->
+            <!--<div class="tru-card-overlay-content">-->
+            <!--<div class="clearfix tru-card-overlay-header">-->
+            <!--<i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>-->
+            <!--<h3>User Messages</h3>-->
+            <!--</div>-->
+            <!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+            <!--</div>-->
+        </div>
+
+        <div class="small-12 columns nopadding">
+            <div class="small-6 columns" style="margin-bottom: 20px;">
+                <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.tru-card-content'}">
+                    <div class="uk-width-medium-1-1">
+                        <div id="overdue_tickets" class="tru-card tru-card-hover">
+                            <div class="left">
+                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">Overdue Tickets</h6>
+                            </div>
+                            <hr class="nomargin">
+                            <div class="tru-card-content">
+                                <div class="uk-overflow-container">
+                                    <table class="uk-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="uk-text-nowrap">Ticket</th>
+                                            <th class="uk-text-nowrap">Status</th>
+                                            <th class="uk-text-nowrap">Subject</th>
+                                            <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1158</a></td>
+                                            <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                    class="uk-badge">Pending</span></td>
+                                            <td class="uk-width-6-10">
+                                                Dropped Phone Calls
+                                            </td>
+                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                24.11.2015
+                                            </td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                            <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                    class="uk-badge uk-badge-danger">Open</span></td>
+                                            <td class="uk-width-6-10">Email not working correctly</td>
+                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                24.11.2015
+                                            </td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                            <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                    class="uk-badge uk-badge-danger">Open</span></td>
+                                            <td class="uk-width-6-10">Email not working correctly</td>
+                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                24.11.2015
+                                            </td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                            <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                    class="uk-badge uk-badge-danger">Open</span></td>
+                                            <td class="uk-width-6-10">Email not working correctly</td>
+                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                24.11.2015
+                                            </td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                            <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                    class="uk-badge uk-badge-danger">Open</span></td>
+                                            <td class="uk-width-6-10">Email not working correctly</td>
+                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                24.11.2015
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="small-6 columns" style="margin-bottom: 20px;">
+                <div class="uk-grid" data-uk-grid-margin>
+                    <div class="uk-width-medium-1-1">
+                        <div class="tru-card tru-card-hover" data-match-height="#overdue_tickets">
+                            <div class="left">
+                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">Quick Stats (Lifetime)</h6>
+                            </div>
+                            <hr class="nomargin">
+                            <div class="tru-card-content">
+                                <div class="uk-overflow-container">
+                                    <table class="uk-table">
+                                        <thead>
+                                        <tr>
+                                            <th class="uk-text-nowrap">Stat</th>
+                                            <th class="uk-text-nowrap uk-text-right">Value</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most tickets by...</td>
+                                            <td id="mostRequester" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most comments by....</td>
+                                            <td id="mostCommenter" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most assigned support user....</td>
+                                            <td id="mostAssignee" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                        </tr>
+
+                                        <tr class="uk-table-middle">
+                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most active ticket...</td>
+                                            <td class="uk-width-4-10 uk-text-right  uk-text-small"><a id="mostActiveTicket" href="#">--</a></td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
@@ -164,139 +297,8 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['jquery', 'underscore', 'pages/reports', 'd3pie', 'c3'], function($, _, r, d3pie, c3) {
+        require(['jquery', 'underscore', 'pages/reports', 'd3pie', 'c3'], function ($, _, r, d3pie, c3) {
             r.init();
-
-
-            $.ajax({
-                url: '/api/v1/tickets/count/tags',
-                method: 'GET',
-                success: function(data) {
-                    var arr = _.map(data.tags, function(v, key) {
-                        return [key, v];
-                    });
-
-                    arr = _.first(arr, 10);
-
-                    var colors = [
-                        '#e53935',
-                        '#d81b60',
-                        '#8e24aa',
-                        '#1e88e5',
-                        '#00897b',
-                        '#43a047',
-                        '#00acc1',
-                        '#e65100',
-                        '#6d4c41',
-                        '#455a64'
-                    ];
-
-                    var c = _.object(_.map(arr, function(v,i) {
-                        return v[0];
-                    }), colors);
-
-                    c3.generate({
-                        bindto: d3.select('#topTenTags'),
-                        size: {
-                            height: 230
-                        },
-                        data: {
-                            columns: arr,
-                            type: 'donut',
-                            colors: c
-                        },
-                        donut: {
-                            label: {
-                                format: function (value, ratio, id) {
-                                    return '';
-                                }
-                            }
-                        }
-                    });
-                }
-            });
-
-
-
-            $.ajax({
-                url: '/api/v1/tickets/count/topgroups/5',
-                method: 'GET',
-                success: function(data) {
-
-                    var d = {
-                        content: []
-                    };
-
-                    var colors = [
-                            '#e53935',
-                            '#d81b60',
-                            '#8e24aa',
-                            '#1e88e5',
-                            '#00897b',
-                            '#43a047'
-                    ];
-
-                    _.each(data.items, function(item) {
-                        var obj = {};
-                        obj.label = item.name;
-                        obj.value = item.count;
-                        var color = _.sample(colors);
-                        colors = _.without(colors, color);
-
-                        obj.color = color;
-
-                        d.content.push(obj);
-                    });
-
-                    new d3pie("pieChart", {
-                        "size": {
-                            "canvasHeight": 250,
-                            "canvasWidth": 450,
-                            "pieInnerRadius": "60%",
-                            "pieOuterRadius": "68%"
-                        },
-                        "data": d,
-                        "labels": {
-                            "outer": {
-                                "pieDistance": 15
-                            },
-                            "inner": {
-                                "format": "value"
-                            },
-                            "mainLabel": {
-                                "font": "roboto"
-                            },
-                            "percentage": {
-                                "color": "#ffffff",
-                                "font": "roboto",
-                                "decimalPlaces": 0
-                            },
-                            "value": {
-                                "color": "#ffffff",
-                                "font": "roboto"
-                            },
-                            "lines": {
-                                "enabled": true,
-                                "color": "#78909c"
-                            },
-                            "truncation": {
-                                "enabled": true
-                            }
-                        },
-                        "effects": {
-                            "pullOutSegmentOnClick": {
-                                "effect": "linear",
-                                "speed": 400,
-                                "size": 3
-                            }
-                        }
-                    });
-                }
-            });
-
-
-
-
 
         });
     </script>

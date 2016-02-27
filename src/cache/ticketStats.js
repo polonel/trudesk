@@ -22,31 +22,39 @@ var ticketSchema    = require('../models/ticket');
 
 var ex = {};
 
-var init = function(callback) {
-    var ticketAvg = {};
-    var $tickets = [];
-    ex.e30 = {};
-    ex.e60 = {};
-    ex.e90 = {};
-    ex.e180 = {};
-    ex.e365 = {};
+var init = function(tickets, callback) {
+    var ticketAvg   = {};
+    var $tickets    = [];
+    ex.e30          = {};
+    ex.e60          = {};
+    ex.e90          = {};
+    ex.e180         = {};
+    ex.e365         = {};
+    ex.lifetime     = {};
     ex.lastUpdated = moment().format('MM-DD-YYYY hh:mm:ssa');
     var today = moment().hour(23).minute(59).second(59);
     var e30 = today.clone().subtract(30, 'd'),
         e60 = today.clone().subtract(60, 'd'),
         e90 = today.clone().subtract(90, 'd'),
         e180 = today.clone().subtract(180, 'd'),
-        e365 = today.clone().subtract(365, 'd');
+        e365 = today.clone().subtract(365, 'd'),
+        e36500 = today.clone().subtract(36500, 'd');
 
     async.series({
         allTickets: function(c) {
-            ticketSchema.getAll(function(err, tickets) {
-                if (err) return c(err);
-
+            if (tickets) {
                 $tickets = tickets;
 
                 c();
-            });
+            } else {
+                ticketSchema.getAll(function(err, tickets) {
+                    if (err) return c(err);
+
+                    $tickets = tickets;
+
+                    c();
+                });
+            }
         },
         e30: function(c) {
             ex.e30.tickets = _.filter($tickets, function(v) {
@@ -145,6 +153,29 @@ var init = function(callback) {
                     ex.e365.avgResponse = obj.avgResponse;
                     ex.e365.tickets = _.size(ex.e365.tickets);
                     ex.e365.closedTickets = _.size(ex.e365.closedTickets);
+
+                    c();
+                });
+            });
+        },
+        lifetime: function(c) {
+            ex.lifetime.tickets = _.sortBy($tickets, 'uid');
+
+            ex.lifetime.closedTickets = _.filter(ex.lifetime.tickets, function(v) {
+                return v.status === 3;
+            });
+
+            var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(30, 'd');
+            var diffDays = today.diff(firstDate, 'days');
+
+            buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
+                ex.lifetime.graphData = graphData;
+
+                //Get average Response
+                buildAvgResponse(ex.lifetime.tickets, function(obj) {
+                    ex.lifetime.avgResponse = obj.avgResponse;
+                    ex.lifetime.tickets = _.size(ex.lifetime.tickets);
+                    ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
 
                     c();
                 });

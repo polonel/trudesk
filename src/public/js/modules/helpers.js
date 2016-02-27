@@ -43,7 +43,8 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
         self.UI.cardOverlay();
         self.UI.setupPeity();
         self.UI.selectize();
-        helpers.UI.waves();
+        self.UI.waves();
+        self.UI.matchHeight();
 
         var layout = self.onWindowResize();
         $(window).resize(layout);
@@ -59,6 +60,18 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.matchHeight = function() {
+        var $d = $('div[data-match-height]');
+        $d.each(function() {
+            var self = $(this);
+            var target = self.attr('data-match-height');
+
+            var $target = $(target);
+            var $t_h = $target.height();
+            self.height($t_h);
+        });
+    };
 
     helpers.UI.showDisconnectedOverlay = function() {
         var $disconnected = $('.disconnected');
@@ -593,6 +606,7 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
         var self = this;
         var l = _.debounce(function() {
             self.resizeFullHeight();
+            self.UI.matchHeight();
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
 

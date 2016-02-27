@@ -148,6 +148,9 @@ a.hoverUnderline
   height: 100%
   border-right: 1px solid #dfe4ef
 
+.page-title-border-bottom
+  border-bottom: 1px solid #bac2d3
+
 .page-content
   background: white
   border-top: 1px solid #dfe4ef
@@ -317,12 +320,13 @@ a.button
   font-size: 32px
   color: #fff
 
-.p0_arc
-  path
-    cursor: pointer
-.p0_labels-inner
-  text
-    cursor: pointer
+#pieChart
+  g[class$='_arc']
+    path
+      cursor: pointer
+  g[class$='_labels-inner']
+    text
+      cursor: pointer
 
 @import "partials/common"
 @import "partials/topnav"
