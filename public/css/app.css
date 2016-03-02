@@ -757,7 +757,7 @@ div.hoverAction {
     .top-bar-section ul li.top-bar-icon svg, .top-bar-section ul li.top-bar-icon a svg {
       width: 32px !important;
       height: 32px !important;
-      margin-top: 25px !important; }
+      vertical-align: middle; }
     .top-bar-section ul li.top-bar-icon span.label, .top-bar-section ul li.top-bar-icon a span.label {
       display: block;
       color: white;
