@@ -1,11 +1,11 @@
-<div class="small-12 large-10 columns nopadding page-right-content">
+<div class="nopadding page-right-content">
     <div class="page-title">
         <p class="left" style="font-weight: 300;">Dashboard</p>
     </div>
     <!--Content Here-->
     <div class="page-wrapper full-height scrollable no-overflow-x">
-        <div class="row" style="padding-top: 65px; padding-left: 60px;">
-            <div class="eh-donutCharts small-12 large-6 columns padtop20">
+        <div class="uk-grid uk-margin-top-remove" style="padding-top: 65px; padding-left: 60px;">
+            <div class="eh-donutCharts uk-width-1-2 padtop20">
                 <div class="circle-chart-wrapper clearfix">
                     <div class="donutchart-wrapper">
                         <div class="donutchart" data-percent="{{data.summary.completedPercent}}" data-trackColor="#2fb150"><span class="chart-value percent"></span></div>
@@ -27,13 +27,13 @@
                         <div class="donutchart-caption">new</div>
                     </div>
                 </div>
-                <div class="small-12 columns circle-chart-caption">
+                <div class="uk-width-1-1 circle-chart-caption">
                     <span>Tickets Summary <img src="/img/small-midDots.png" alt="Divider"/> Total {{data.summary.totalCount}}</span>
                 </div>
             </div>
-            <div class="small-12 large-6 columns">
+            <div class="uk-width-1-2">
                 <div class="bar-chart-wrapper clearfix">
-                    <div id="ticketBarChart" class="bar-chart clearfix">
+                    <div id="ticketBarChart" class="bar-chart uk-clearfix">
                         <div class="bar-axis">
                             <ul class="y-axis">
                                 <li><span>{{data.dailyYAxis.maxValue}}</span></li>
@@ -63,13 +63,11 @@
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="small-12 columns" style="margin-top: 30px; padding: 0 75px 0 70px">
-                <div id="ticketLines" style="width: 100%; height: 240px; text-align: center; padding-top: 120px;">
-                    LOADING...
-                </div>
-                <div class="chart-caption"><h4>Ticket progress for past year</h4></div>
+        <div class="uk-width-1-1" style="margin-top: 30px; padding: 0 75px 0 70px">
+            <div id="ticketLines" style="width: 100%; height: 240px; text-align: center; padding-top: 120px;">
+                LOADING...
             </div>
+            <div class="chart-caption"><h4>Ticket progress for past year</h4></div>
         </div>
     </div>
 </div>

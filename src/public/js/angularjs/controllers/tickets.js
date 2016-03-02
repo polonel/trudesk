@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history', 'datepicker'], function(angular, _, $, helpers, socket, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history'], function(angular, _, $, helpers, socket, UIkit) {
     return angular.module('trudesk.controllers.tickets', [])
         .controller('ticketsCtrl', ['openFilterTicketWindow', '$scope', '$http', '$window', function(openFilterTicketWindow, $scope, $http, $window) {
 
@@ -62,7 +62,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
                     tagModal.find('#tags').trigger('chosen:updated');
-                    tagModal.foundation('reveal', 'open');
+                    UIkit.modal(tagModal).show();
                 }
             };
 
@@ -86,7 +86,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             var tagFormField = $('#tags');
                             tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
                             tagFormField.trigger('chosen:updated');
-                            if (tagModal.length > 0) tagModal.foundation('reveal', 'close');
+                            if (tagModal.length > 0) UIkit.modal(tagModal).hide();
 
                         })
                         .error(function(err) {
@@ -245,16 +245,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
         .factory('openFilterTicketWindow', function() {
             return {
                 openWindow: function openWindow() {
-                    $('.pDatePicker').fdatepicker({
-
-                    });
-
-                    $('#ticketFilterModal').foundation('reveal', 'open');
+                    UIkit.modal('#ticketFilterModal').show();
                 },
                 closeWindow: function closeWindow() {
-                    //Close reveal and refresh page.
-                    $('#ticketFilterModal').foundation('reveal', 'close');
-
+                    UIkit.modal('#ticketFilterModal').hide();
                 }
             }
         });

@@ -1,10 +1,10 @@
 <div ng-controller="groupsCtrl">
-    <div class="small-12 large-10 columns nopadding ticketContent" style="background: #f6f8fb;">
-        <div class="page-title noshadow dt-borderBottom">
-            <div class="small-2 columns">
-                <p class="left">Groups</p>
+    <div class="groupContent" style="background: #f6f8fb;">
+        <div class="uk-grid page-title noshadow dt-borderBottom">
+            <div class="uk-width-2-10 left" style="padding-left: 20px !important;">
+                <p>Groups</p>
             </div>
-            <div class="small-10 columns right">
+            <div class="uk-width-8-10 right">
                 <div class="md-fab-wrapper">
                     <a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#groupCreateModal',bgclose:false}">
                         <i class="material-icons" style="color: white;">add</i>
@@ -13,7 +13,7 @@
                 <div class="uk-grid" data-uk-grid-margin>
                     <div class="uk-width-medium-1-2"></div>
                     <div class="uk-width-medium-1-2">
-                        <div class="md-input-wrapper" style="margin-top: 15px;">
+                        <div class="md-input-wrapper" style="margin-top: 10px;">
                             <label for="group_list_search">Find Group</label>
                             <input type="text" class="md-input uk-margin-remove" id="group_list_search"/>
 
@@ -26,8 +26,8 @@
         </div>
     </div>
 
-    <div class="full-height page-right-content scrollable" style="background: #f6f8fb; padding: 0 15px;">
-        <div class="group-list-wrapper" style="padding-bottom: 50px; margin-top: 30px;">
+    <div class="full-height page-right-content scrollable" style="background: #f6f8fb; padding: 0 24px;">
+        <div class="group-list-wrapper" style="padding-top: 24px; padding-bottom: 100px;">
             <div id="group_list" class="uk-grid-width-small-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-4 uk-grid-width-xlarge-1-5">
                 {{#each data.groups}}
                     <div class="tru-card-wrapper" data-uk-filter="{{name}}">
@@ -43,7 +43,7 @@
                                         </ul>
                                     </div>
                                 </div>
-                                <h3 class="tru-card-head-text text-center" style="padding-top: 60px;">
+                                <h3 class="tru-card-head-text uk-text-center" style="padding-top: 60px;">
                                     {{name}}
                                     <span class="uk-text-truncate">{{size members}} member{{#compare (size members) '>' 1}}s {{/compare}}</span>
                                 </h3>

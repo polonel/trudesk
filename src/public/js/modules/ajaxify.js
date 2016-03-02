@@ -43,19 +43,19 @@ define('modules/ajaxify', [
             angular.bootstrap($ele, ['trudesk']);
         });
 
-        $(document).foundation({
-            abide: {
-                patterns: {
-                    is5Long: /.{5,}/
-                }
-            },
-            reveal: {
-                animation: 'fade',
-                animation_speed: 280,
-                close_on_background_click: true,
-                close_on_esc: true
-            }
-        });
+        //$(document).foundation({
+        //    abide: {
+        //        patterns: {
+        //            is5Long: /.{5,}/
+        //        }
+        //    },
+        //    reveal: {
+        //        animation: 'fade',
+        //        animation_speed: 280,
+        //        close_on_background_click: true,
+        //        close_on_esc: true
+        //    }
+        //});
 
         ui.init();
         helpers.init();
@@ -109,7 +109,7 @@ define('modules/ajaxify', [
         // Prepare Variables
         var
         /* Application Specific Variables */
-            contentSelector = '.wrapper > .row:not(.top-nav):first,article:first,.article:first,.post:first',
+            contentSelector = '.wrapper > .ajaxyContent:first',
             $content = $(contentSelector).filter(':first'),
             contentNode = $content.get(0),
             $menu = $('.sidebar > .side-nav').filter(':first'),

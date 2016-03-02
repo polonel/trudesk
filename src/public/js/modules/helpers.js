@@ -14,8 +14,8 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'countup', 'waves', 'selectize','snackbar', 'async', 'foundation', 'nicescroll', 'easypiechart', 'chosen', 'velocity'],
-function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
 
     var helpers = {};
 
@@ -273,7 +273,6 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
                         top: position_top,
                         left: position_left
                     });
-
                 });
             });
         }
@@ -284,7 +283,8 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
             var $this = $(this);
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
-                $this
+                var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
+                    $this
                     .after('<div class="selectize_fix"></div>')
                     .selectize({
                         plugins: [
@@ -292,6 +292,7 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
                         ],
                         hideSelected: true,
                         dropdownParent: 'body',
+                        closeAfterSelect: closeOnSelect,
                         onDropdownOpen: function($dropdown) {
                             $dropdown
                                 .hide()
@@ -313,6 +314,9 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
                                         if (typeof thisPosBottom !== 'undefined') {
                                             $dropdown.css({'margin-top': ''})
                                         }
+
+                                        if (closeOnSelect)
+                                            $($dropdown).prev().find('input').blur();
                                     },
                                     duration: 200,
                                     easing: easing_swiftOut
@@ -329,6 +333,7 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
             var $this = $(this);
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
                 $this
                     .after('<div class="selectize_fix"></div>')
                     .closest('div').addClass('uk-position-relative')
@@ -340,6 +345,7 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
                         ],
                         dropdownParent: $this.closest('div'),
                         hideSelected: true,
+                        closeAfterSelect: closeOnSelect,
                         onDropdownOpen: function($dropdown) {
                             $dropdown
                                 .hide()
@@ -361,6 +367,9 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
                                         if (typeof thisPosBottom !== 'undefined') {
                                             $dropdown.css({'margin-top': ''})
                                         }
+
+                                        if (closeOnSelect)
+                                            $($dropdown).prev().find('input').blur();
                                     },
                                     duration: 200,
                                     easing: easing_swiftOut
@@ -974,7 +983,7 @@ function($, _, moment, CountUp, Waves, Selectize, SnackBar) {
 
     helpers.closeMessageWindow = function() {
         //Close reveal and refresh page.
-        $('#newMessageModal').foundation('reveal', 'close');
+        UIkit.modal('#newMessageModal').hide();
         //Clear Fields
         var $newMessageTo = $("#newMessageTo");
         $newMessageTo.find("option").prop('selected', false);

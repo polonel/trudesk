@@ -1,87 +1,91 @@
-<div id="ticketFilterModal"
-     class="reveal-modal small"
-     data-reveal
-     aria-labelledby="ticketFilterModal"
-     aria-hidden="true" role="dialog"
-     data-options="animation:none;">
-
-    <h2 id="modalTitle">Filter</h2>
-    <div ng-controller="ticketsCtrl">
-        <form id="ticketFilterForm" class="nomargin" ng-submit="submitFilter()" >
-            <label for="filterSubject">Subject</label>
-            <input name="filterSubject" id="filterSubject" type="text" />
-            <!--<span>Date Range:</span>-->
-            <div class="row">
-                <div class="small-6 columns" style="padding: 0 15px 0 0;">
-                    <label for="filterDate_Start">Date Start</label>
-                    <input id="filterDate_Start" name="filterDate_Start" type="text" class="pDatePicker" />
+<div id="ticketFilterModal" class="uk-modal">
+    <div class="uk-modal-dialog uk-clearfix">
+        <a class="uk-modal-close uk-close no-ajaxy" aria-label="Close"></a>
+        <!--<h2 id="modalTitle">Filter</h2>-->
+        <div ng-controller="ticketsCtrl">
+            <form id="ticketFilterForm" class="uk-form-stacked" ng-submit="submitFilter()" >
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterSubject">Subject</label>
+                        <input class="md-input" name="filterSubject" id="filterSubject" type="text" />
+                    </div>
                 </div>
-                <div class="small-6 columns" style="padding: 0 0 0 15px;">
-                    <label for="filterDate_End">Date End</label>
-                    <input id="filterDate_End" name="filterDate_End" type="text" class="pDatePicker" />
+
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-2" style="padding: 0 15px 0 0;">
+                        <label for="filterDate_Start" class="uk-form-label">Date Start</label>
+                        <input id="filterDate_Start" class="md-input" name="filterDate_Start" type="text" data-uk-datepicker="{format:'MM/DD/YYYY'}" />
+                    </div>
+                    <div class="uk-width-1-2" style="padding: 0 0 0 15px;">
+                        <label for="filterDate_End" class="uk-form-label">Date End</label>
+                        <input id="filterDate_End" class="md-input" name="filterDate_End" type="text" data-uk-datepicker="{format:'MM/DD/YYYY'}" />
+                    </div>
                 </div>
-            </div>
 
-            <label for="filterStatus">Status:</label>
-            <select name="filterStatus" id="filterStatus" class="chosen-select" multiple data-placeholder=" ">
-                <option value="0">New</option>
-                <option value="1">Open</option>
-                <option value="2">Pending</option>
-                <option value="3">Closed</option>
-            </select>
-
-            <div class="row">
-                <div class="small-12 columns nopadding" style="margin: 5px 0;">
-                    <label for="filterTags">Tags:</label>
-                    <select name="filterTags" id="filterTags" class="chosen-select" multiple data-placeholder=" ">
-                        {{#each data.common.ticketTags}}
-                            <option value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterStatus" class="uk-form-label">Status:</label>
+                        <select name="filterStatus" id="filterStatus" class="selectize-white uk-margin-small-bottom" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            <option value="0">New</option>
+                            <option value="1">Open</option>
+                            <option value="2">Pending</option>
+                            <option value="3">Closed</option>
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="small-12 columns nopadding" style="margin: 5px 0;">
-                    <label for="filterType">Type:</label>
-                    <select name="filterType" id="filterType" multiple class="chosen-select" data-placeholder=" ">
-                        {{#each data.common.ticketTypes}}
-                            <option value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterTags" class="uk-form-label">Tags:</label>
+                        <select name="filterTags" id="filterTags" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            {{#each data.common.ticketTags}}
+                                <option value="{{_id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="small-12 columns nopadding" style="margin: 5px 0;">
-                    <label for="filterGroup">Group:</label>
-                    <select name="filterGroup" id="filterGroup" multiple class="chosen-select" data-placeholder=" ">
-                        {{#each data.common.groups}}
-                            <option value="{{_id}}">{{name}}</option>
-                        {{/each}}
-                    </select>
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterType" class="uk-form-label">Type:</label>
+                        <select name="filterType" id="filterType" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            {{#each data.common.ticketTypes}}
+                                <option value="{{_id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="row">
-                <div class="small-12 columns nopadding" style="margin: 5px 0;">
-                    <label for="filterAssignee">Assignee:</label>
-                    <select name="filterAssignee" id="filterAssignee" class="chosen-select" multiple data-placeholder=" ">
-                        {{#each data.common.messages.users}}
-                            {{#canUserRole role "ticket:assingee"}}
-                                <option value="{{_id}}">{{fullname}}</option>
-                            {{/canUserRole}}
-                        {{/each}}
-                    </select>
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterGroup" class="uk-form-label">Group:</label>
+                        <select name="filterGroup" id="filterGroup" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            {{#each data.common.groups}}
+                                <option value="{{_id}}">{{name}}</option>
+                            {{/each}}
+                        </select>
+                    </div>
                 </div>
-            </div>
 
-            <div class="right" style="margin-top: 15px;">
-                <button class="btn" style="margin-right: 5px; background: #777;" type="reset" ng-click="clearFilterForm($event)">Clear</button>
-                <button class="btn nomargin" type="submit">Apply Filter</button>
-            </div>
-        </form>
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterAssignee" class="uk-form-label">Assignee:</label>
+                        <select name="filterAssignee" id="filterAssignee" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            {{#each data.common.messages.users}}
+                                {{#canUserRole role "ticket:assingee"}}
+                                    <option value="{{_id}}">{{fullname}}</option>
+                                {{/canUserRole}}
+                            {{/each}}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="right" style="margin-top: 15px;">
+                    <button class="uk-button" style="margin-right: 5px; background: #777;" type="reset" ng-click="clearFilterForm($event)">Clear</button>
+                    <button class="uk-button uk-button-primary nomargin" type="submit">Apply Filter</button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>
 </div>

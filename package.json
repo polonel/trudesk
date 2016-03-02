@@ -68,6 +68,7 @@
     "blanket": "1.1.7",
     "chai": "*",
     "coveralls": "^2.11.3",
+    "grunt-contrib-uglify": "^0.11.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-cssc": "^0.2.6",
     "grunt-express-server": "^0.5.1",

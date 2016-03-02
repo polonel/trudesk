@@ -20,7 +20,7 @@ define('pages/tickets', [
     'datatables',
     'dt_responsive',
     'dt_grouping',
-    'dt_foundation',
+    //'dt_foundation',
     'dt_scroller',
     'history'
 
@@ -35,7 +35,7 @@ define('pages/tickets', [
                 //processing: true,
                 searching: false,
                 bLengthChange: false,
-                //paging: true,
+                paging: false,
                 //"sPaginationType": "full_numbers",
                 iDisplayLength: 99999,
                 bInfo: false,
@@ -131,7 +131,7 @@ define('pages/tickets', [
 //                bHideGroupingOrderByColumn: false
             });
 
-            helpers.resizeDataTables('.ticketList');
+            helpers.resizeAll();
 
             $('#ticketTable tbody').on('click', 'td', function(e) {
                 var i = $(this).parents('tr').attr('data-ticket');

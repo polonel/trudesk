@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, socket, nav, md, helpers) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, UIkit, socket, nav, md, helpers) {
     return angular.module('trudesk.controllers.singleTicket', [])
         .controller('singleTicket', function($scope, $http, $q) {
 
@@ -165,7 +165,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                     }).error(function(e) {
                         console.log('[trudesk:singleTicket:SubscriberChange] - ' + e);
-                        helpers.showFlash('Error: ' + e.message, true);
+                        helpers.UI.showSnackbar('Error: ' + e.message, true);
                     });
             };
 
@@ -174,7 +174,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
                     tagModal.find('#tags').trigger('chosen:updated');
-                    tagModal.foundation('reveal', 'open');
+                    UIkit.modal(tagModal).show();
                 }
             };
 
@@ -183,7 +183,6 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
                     tagModal.find('option').prop('selected', false);
-                    //tagModal.find('select').trigger('chosen:updated');
                     var selectedItems = [];
                     $('.__TAG_SELECTED').each(function() {
                         var i = $(this).text();
@@ -198,13 +197,13 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
 
                     tagModal.find('select').trigger('chosen:updated');
 
-                    tagModal.foundation('reveal', 'open');
+                    UIkit.modal('#addTagModal', {bgclose: false}).show();
                 }
             };
 
             $scope.submitAddNewTag = function(event) {
                 event.preventDefault();
-                var form = $('form#addTagForm');
+                var form = $('form#createTagForm');
                 if (form.length > 0) {
                     var tag = form.find('#tag').val();
                     var data = {
@@ -218,20 +217,20 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                         headers: { 'Content-Type': 'application/json'}
                     })
                         .success(function(data) {
-                            var tagModal = $('#addTagModal');
+                            var tagModal = $('#createTagModal');
                             var tagFormField = $('#tags');
                             tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
                             tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
                             tagFormField.trigger('chosen:updated');
                             tagFormField.find('#tag').val('');
-                            if (tagModal.length > 0) tagModal.foundation('reveal', 'close');
+                            if (tagModal.length > 0) UIkit.modal(tagModal).hide();
                             setTimeout(function() {
                                 $scope.showAddTags(event);
                             }, 250);
                         })
                         .error(function(err) {
                             console.log('[trudesk:tickets:addTag} - Error: ' + err.error);
-                            helpers.showFlash('Error: ' + err.error, true);
+                            helpers.UI.showSnackbar('Error: ' + err.error, true);
                         });
                 }
             };
@@ -249,15 +248,15 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                         "tags": tagField.val()
 
                     }).success(function(data) {
-                        helpers.showFlash('Tags have been added.');
+                        helpers.UI.showSnackbar('Tags have been added.', false);
                         socket.ui.refreshTicketTags(id);
 
-                        $('#addTagModal').foundation('reveal', 'close');
+                        UIkit.modal('#addTagModal').hide();
                 }).error(function(e) {
                     console.log('[trudesk:singleTicket:submitAddTags] - ' + e);
-                    helpers.showFlash('Error: ' + e.message, true);
+                    helpers.UI.showSnackbar('Error: ' + e.message, true);
 
-                    $('#addTagModal').foundation('reveal', 'close');
+                    UIkit.modal('#addTagModal').hide();
                 });
             };
 
@@ -272,16 +271,16 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'modules/navigation
                     socket.ui.refreshTicketTags(id);
                     $('#addTagModal').find('option').prop('selected', false);
                     $('#addTagModal').find('select').trigger('chosen:updated');
-                    $('#addTagModal').foundation('reveal', 'close');
+                    UIkit.modal('#addTagModal').close();
                 }).error(function(e) {
                     console.log('[trudesk:singleTicket:clearTags] - ' + e.message);
-                    helpers.showFlash('Error: ' + e.message, true);
-                    $('#addTagModal').foundation('reveal', 'close');
+                    helpers.UI.showSnackbar('Error: ' + e.message, true);
+                    UIkit.modal('#addTagModal').close();
                 });
             };
 
             $scope.closeAddTagModal = function() {
-                $('#addTagModal').foundation('reveal', 'close');
+                UIkit.modal('#addTagModal').close();
             };
         })
         .directive('closeMouseUp', ['$document', function($document) {

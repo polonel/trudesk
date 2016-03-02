@@ -1,6 +1,6 @@
-<div class="small-12 large-10 columns nopadding reportsOverview" ng-controller="reportsCtrl">
-    <div class="page-title page-title-border-bottom">
-        <p class="left">{{title}}</p>
+<div class="uk-grid uk-grid-collpase nopadding reportsOverview" ng-controller="reportsCtrl">
+    <div class="uk-width-1-1 page-title page-title-border-bottom">
+        <p class="left uk-margin-medium-left">{{title}}</p>
 
         <div class="right clearfix" style="min-width: 250px;">
             <!--<div class="md-fab-wrapper">-->
@@ -36,11 +36,10 @@
             Updated:</strong> <span>Cache Still Loading...</span></div>
     </div>
 
-    <div class="full-height page-right-content scrollable">
-
-        <div style="margin-top: 20px;">
-            <div class="small-12 columns nopadding">
-                <div class="small-4 columns">
+    <div class="uk-width-1-1 full-height page-right-content scrollable">
+        <div id="page-content-inner">
+            <div class="uk-grid uk-grid-medium uk-margin-medium-bottom">
+                <div class="uk-width-1-3">
                     <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
                         <div class="tru-card-content">
                             <div class="right uk-margin-top uk-margin-small-right">
@@ -55,7 +54,7 @@
 
                     </div>
                 </div>
-                <div class="small-4 columns">
+                <div class="uk-width-1-3">
                     <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
                         <div class="tru-card-content">
                             <div class="right uk-margin-top ukmargin-small-right">
@@ -69,7 +68,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="small-4 columns">
+                <div class="uk-width-1-3">
                     <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
                         <div class="tru-card-content">
                             <div class="right uk-margin-top ukmargin-small-right">
@@ -84,204 +83,195 @@
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="small-12 columns">
-
-            <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 300px;">
-                <div class="left">
-                    <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
-                </div>
-                <div class="right" style="position:relative;">
-                    <button class="action-link"><i class="material-icons">refresh</i></button>
-                    <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"
-                         aria-expanded="false">
-                        <button class="action-link"><i class="material-icons">more_vert</i></button>
-                        <div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">
-                            <ul class="uk-nav">
-                                <li><a href="/tickets">This is a Link</a></li>
-                                <li><a href="#">This is a Link</a></li>
-                                <li><a href="#">This is a Link</a></li>
-                            </ul>
-                        </div>
-
+            <div class="breakdown-wrap uk-margin-medium-bottom">
+                <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 300px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
                     </div>
-                </div>
-                <hr class="nomargin-top">
-                <div class="panel-body2">
-                    <div id="test" class="mGraph mGraph-panel graph-blue1">
+                    <div class="right" style="position:relative;">
+                        <button class="action-link"><i class="material-icons">refresh</i></button>
+                        <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"
+                             aria-expanded="false">
+                            <button class="action-link"><i class="material-icons">more_vert</i></button>
+                            <div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">
+                                <ul class="uk-nav">
+                                    <li><a href="/tickets">This is a Link</a></li>
+                                    <li><a href="#">This is a Link</a></li>
+                                    <li><a href="#">This is a Link</a></li>
+                                </ul>
+                            </div>
 
+                        </div>
+                    </div>
+                    <hr class="nomargin-top">
+                    <div class="panel-body2">
+                        <div id="test" class="mGraph mGraph-panel graph-blue1">
+
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="small-12 columns nopadding">
-            <div class="small-6 columns">
-                <div class="panel trupanel nopadding" style="min-height: 265px;">
-                    <div class="left">
+            <div class="uk-grid uk-margin-medium-bottom">
+                <div class="uk-width-1-2">
+                    <div class="panel trupanel nopadding" style="min-height: 265px;">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 5 Groups</h6>
+                        <hr class="nomargin">
+                        <div id="pieChart"></div>
                     </div>
-                    <hr class="nomargin-top">
-                    <div id="pieChart"></div>
                 </div>
-            </div>
-            <div class="small-6 columns">
-                <div class="panel trupanel nopadding" style="min-height: 265px;">
-                    <div class="left">
+                <div class="uk-width-1-2">
+                    <div class="panel trupanel nopadding" style="min-height: 265px;">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 10 Tags</h6>
-                    </div>
-                    <hr class="nomargin-top">
-                    <div class="" style="padding: 10px;">
-                        <div id="topTenTags" style="width: 100%;"></div>
+                        <hr class="nomargin">
+                        <div class="" style="padding: 10px;">
+                            <div id="topTenTags" style="width: 100%;"></div>
+                        </div>
                     </div>
                 </div>
+
+                <!--<div class="small-3 columns">-->
+                <!--<div class="panel trupanel nopadding">-->
+                <!--<div class="tru-card tru-card-overlay">-->
+                <!--<div class="tru-card-content">-->
+                <!--<div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">-->
+                <!--<span class="epc_chart_icon">-->
+                <!--<i class="fa fa-user"></i>-->
+                <!--</span>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--<div class="tru-card-overlay-content">-->
+                <!--<div class="clearfix tru-card-overlay-header">-->
+                <!--<i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>-->
+                <!--<h3>User Messages</h3>-->
+                <!--</div>-->
+                <!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
+                <!--</div>-->
             </div>
 
-            <!--<div class="small-3 columns">-->
-            <!--<div class="panel trupanel nopadding">-->
-            <!--<div class="tru-card tru-card-overlay">-->
-            <!--<div class="tru-card-content">-->
-            <!--<div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">-->
-            <!--<span class="epc_chart_icon">-->
-            <!--<i class="fa fa-user"></i>-->
-            <!--</span>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--<div class="tru-card-overlay-content">-->
-            <!--<div class="clearfix tru-card-overlay-header">-->
-            <!--<i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>-->
-            <!--<h3>User Messages</h3>-->
-            <!--</div>-->
-            <!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-            <!--</div>-->
-        </div>
-
-        <div class="small-12 columns nopadding">
-            <div class="small-6 columns" style="margin-bottom: 20px;">
-                <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.tru-card-content'}">
-                    <div class="uk-width-medium-1-1">
-                        <div id="overdue_tickets" class="tru-card tru-card-hover">
-                            <div class="left">
+            <div class="uk-grid uk-margin-medium-bottom">
+                <div class="uk-width-1-2">
+                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.tru-card-content'}">
+                        <div class="uk-width-medium-1-1">
+                            <div id="overdue_tickets" class="tru-card tru-card-hover">
                                 <h6 style="padding: 15px; margin: 0; font-size: 14px;">Overdue Tickets</h6>
-                            </div>
-                            <hr class="nomargin">
-                            <div class="tru-card-content">
-                                <div class="uk-overflow-container">
-                                    <table class="uk-table">
-                                        <thead>
-                                        <tr>
-                                            <th class="uk-text-nowrap">Ticket</th>
-                                            <th class="uk-text-nowrap">Status</th>
-                                            <th class="uk-text-nowrap">Subject</th>
-                                            <th class="uk-text-nowrap uk-text-right">Last Updated</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+                                <hr class="nomargin">
+                                <div class="tru-card-content">
+                                    <div class="uk-overflow-container">
+                                        <table class="uk-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="uk-text-nowrap">Ticket</th>
+                                                <th class="uk-text-nowrap">Status</th>
+                                                <th class="uk-text-nowrap">Subject</th>
+                                                <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1158</a></td>
-                                            <td class="uk-width-1-10 uk-text-nowrap"><span
-                                                    class="uk-badge">Pending</span></td>
-                                            <td class="uk-width-6-10">
-                                                Dropped Phone Calls
-                                            </td>
-                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                24.11.2015
-                                            </td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1158</a></td>
+                                                <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                        class="uk-badge">Pending</span></td>
+                                                <td class="uk-width-6-10">
+                                                    Dropped Phone Calls
+                                                </td>
+                                                <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                    24.11.2015
+                                                </td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
-                                            <td class="uk-width-1-10 uk-text-nowrap"><span
-                                                    class="uk-badge uk-badge-danger">Open</span></td>
-                                            <td class="uk-width-6-10">Email not working correctly</td>
-                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                24.11.2015
-                                            </td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                                <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                        class="uk-badge uk-badge-danger">Open</span></td>
+                                                <td class="uk-width-6-10">Email not working correctly</td>
+                                                <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                    24.11.2015
+                                                </td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
-                                            <td class="uk-width-1-10 uk-text-nowrap"><span
-                                                    class="uk-badge uk-badge-danger">Open</span></td>
-                                            <td class="uk-width-6-10">Email not working correctly</td>
-                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                24.11.2015
-                                            </td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                                <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                        class="uk-badge uk-badge-danger">Open</span></td>
+                                                <td class="uk-width-6-10">Email not working correctly</td>
+                                                <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                    24.11.2015
+                                                </td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
-                                            <td class="uk-width-1-10 uk-text-nowrap"><span
-                                                    class="uk-badge uk-badge-danger">Open</span></td>
-                                            <td class="uk-width-6-10">Email not working correctly</td>
-                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                24.11.2015
-                                            </td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                                <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                        class="uk-badge uk-badge-danger">Open</span></td>
+                                                <td class="uk-width-6-10">Email not working correctly</td>
+                                                <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                    24.11.2015
+                                                </td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
-                                            <td class="uk-width-1-10 uk-text-nowrap"><span
-                                                    class="uk-badge uk-badge-danger">Open</span></td>
-                                            <td class="uk-width-6-10">Email not working correctly</td>
-                                            <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                24.11.2015
-                                            </td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-1-10 uk-text-nowrap"><a href="#">T#1159</a></td>
+                                                <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                        class="uk-badge uk-badge-danger">Open</span></td>
+                                                <td class="uk-width-6-10">Email not working correctly</td>
+                                                <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                    24.11.2015
+                                                </td>
+                                            </tr>
 
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="small-6 columns" style="margin-bottom: 20px;">
-                <div class="uk-grid" data-uk-grid-margin>
-                    <div class="uk-width-medium-1-1">
-                        <div class="tru-card tru-card-hover" data-match-height="#overdue_tickets">
-                            <div class="left">
+                <div class="uk-width-1-2">
+                    <div class="uk-grid" data-uk-grid-margin>
+                        <div class="uk-width-1-1">
+                            <div class="tru-card tru-card-hover" data-match-height="#overdue_tickets">
                                 <h6 style="padding: 15px; margin: 0; font-size: 14px;">Quick Stats (Lifetime)</h6>
-                            </div>
-                            <hr class="nomargin">
-                            <div class="tru-card-content">
-                                <div class="uk-overflow-container">
-                                    <table class="uk-table">
-                                        <thead>
-                                        <tr>
-                                            <th class="uk-text-nowrap">Stat</th>
-                                            <th class="uk-text-nowrap uk-text-right">Value</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
+                                <hr class="nomargin">
+                                <div class="tru-card-content">
+                                    <div class="uk-overflow-container">
+                                        <table class="uk-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="uk-text-nowrap">Stat</th>
+                                                <th class="uk-text-nowrap uk-text-right">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most tickets by...</td>
-                                            <td id="mostRequester" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most tickets by...</td>
+                                                <td id="mostRequester" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most comments by....</td>
-                                            <td id="mostCommenter" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most comments by....</td>
+                                                <td id="mostCommenter" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most assigned support user....</td>
-                                            <td id="mostAssignee" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most assigned support user....</td>
+                                                <td id="mostAssignee" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
 
-                                        <tr class="uk-table-middle">
-                                            <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most active ticket...</td>
-                                            <td class="uk-width-4-10 uk-text-right  uk-text-small"><a id="mostActiveTicket" href="#">--</a></td>
-                                        </tr>
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most active ticket...</td>
+                                                <td class="uk-width-4-10 uk-text-right  uk-text-small"><a id="mostActiveTicket" href="#">--</a></td>
+                                            </tr>
 
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -289,7 +279,6 @@
                 </div>
             </div>
         </div>
-
     </div>
 </div>
 

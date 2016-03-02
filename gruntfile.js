@@ -110,8 +110,8 @@ module.exports = function(grunt) {
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
-                        'public/css/plugins/datepicker/foundation-datepicker.css',
-                        'public/js/vendor/uikit/css/uikit.almost-flat.css',
+                        //'public/css/plugins/datepicker/foundation-datepicker.css',
+                        'public/js/vendor/uikit/css/uikit.css',
                         'public/js/vendor/uikit/css/uikit_custom.css',
                         'public/js/plugins/snackbar.css',
                         'public/js/vendor/c3/c3.css'
@@ -160,6 +160,44 @@ module.exports = function(grunt) {
             }
         },
 
+        uglify: {
+            uikit: {
+                options: {
+                    beautify: false,
+                    mangle: false
+                },
+
+                src: [
+                    'src/public/js/vendor/uikit/js/uikit.js',
+                    'src/public/js/vendor/uikit/js/components/accordion.js',
+                    'src/public/js/vendor/uikit/js/components/autocomplete.js',
+                    'src/public/js/vendor/uikit/js/components/datepicker.js',
+                    'src/public/js/vendor/uikit/js/components/form-password.js',
+                    'src/public/js/vendor/uikit/js/components/form-select.js',
+                    'src/public/js/vendor/uikit/js/components/grid.js',
+                    'src/public/js/vendor/uikit/js/components/htmleditor.js',
+                    'src/public/js/vendor/uikit/js/components/lightbox.js',
+                    'src/public/js/vendor/uikit/js/components/nestable.js',
+                    'src/public/js/vendor/uikit/js/components/notify.js',
+                    'src/public/js/vendor/uikit/js/components/pagination.js',
+                    'src/public/js/vendor/uikit/js/components/parallax.js',
+                    'src/public/js/vendor/uikit/js/components/grid-parallax.js',
+                    'src/public/js/vendor/uikit/js/components/search.js',
+                    'src/public/js/vendor/uikit/js/components/slider.js',
+                    'src/public/js/vendor/uikit/js/components/slideshow.js',
+                    'src/public/js/vendor/uikit/js/components/slideshow-fx.js',
+                    'src/public/js/vendor/uikit/js/components/sortable.js',
+                    'src/public/js/vendor/uikit/js/components/sticky.js',
+                    'src/public/js/vendor/uikit/js/components/timepicker.js',
+                    'src/public/js/vendor/uikit/js/components/tooltip.js',
+                    'src/public/js/vendor/uikit/js/components/upload.js',
+
+                    'src/public/js/vendor/uikit/js/custom.js'
+                ],
+                dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js'
+            }
+        },
+
         requirejs: {
             compile: {
                 options: {
@@ -182,7 +220,7 @@ module.exports = function(grunt) {
                             include: [
                                 'jquery',
                                 'jquery_scrollTo',
-                                'foundation',
+                                'jquery_custom',
                                 'uikit',
                                 'angular',
                                 'angularRoute',
@@ -229,7 +267,7 @@ module.exports = function(grunt) {
                         }
                     ],
                     paths: {
-                        foundation: 'empty:',
+                        //foundation: 'empty:',
                         angular: 'empty:',
                         angularRoute: 'empty:',
                         angularCookies: 'empty:'
@@ -252,6 +290,6 @@ module.exports = function(grunt) {
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('build', ['requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('sbuild', ['shell:requirejs']);
-    grunt.registerTask('winbuild', ['shell:requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };

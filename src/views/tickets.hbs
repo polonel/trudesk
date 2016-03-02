@@ -1,16 +1,10 @@
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
-    <div class="small-12 large-10 columns nopadding ticketContent">
-        <div class="page-title noshadow">
-            <p class="left">Tickets</p>
-            <div class="right">
-                <div class="autorefresh left">
-                    <!--<span style="display: inline-block; margin-right: 5px;position:relative;top: 11px; font-size: 14px">Auto Refresh </span>-->
-                    <!--<div class="switch small radius" style="display: inline-block; margin-right: 10px; top: 20px;">-->
-                        <!--<input type="checkbox" id="autoRefreshSwitch"/>-->
-                        <!--<label for="autoRefreshSwitch"></label>-->
-                    <!--</div>-->
-                </div>
-                <div class="pagination left">
+    <div class="page-right-content nopadding ticketContent">
+        <div class="page-title noshadow uk-clearfix">
+            <p class="uk-display-inline-block">Tickets</p>
+            <div class="uk-float-right">
+                <div class="autorefresh uk-float-left uk-clearfix"></div>
+                <div class="pagination uk-float-left uk-clearfix">
                     <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
                     <ul class="button-group">
                         {{#is data.pagination.prevEnabled true}}
@@ -38,8 +32,8 @@
                         {{/is}}
                     </ul>
                 </div>
-                <div class="pagination left" style="margin-right: 5px;">
-                    <div class="onoffswitch left" style="margin-right: 5px; position: relative; top: 18px;">
+                <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
+                    <div class="onoffswitch uk-float-left" style="margin-right: 5px; position: relative; top: 18px;">
                         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="refreshSwitch" ng-model="preferences_autoRefreshTicketGrid" ng-change="GridRefreshChanged()"
                             {{#is data.user.preferences.autoRefreshTicketGrid true}} checked {{/is}}>
                         <label class="onoffswitch-label" for="refreshSwitch">
@@ -49,11 +43,15 @@
                     </div>
                     <ul class="button-group">
                         <li class="pagination"><a id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a></li>
-                        <li class="pagination"><a href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)"><i class="fa fa-large fa-filter"></i></a></li>
+                        <li class="pagination">
+                            <a href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)">
+                                <i class="fa fa-large fa-filter"></i>
+                            </a>
+                        </li>
                     </ul>
                 </div>
-                <div class="pagination left">
-                    <ul class="button-group left">
+                <div class="pagination uk-float-left">
+                    <ul class="button-group uk-float-left">
                         <li class="pagination" style="position:relative;">
                             <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
                                 <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
@@ -88,9 +86,8 @@
 
 
 
-        <div class="full-height" style="position:relative; background-color: rgb(246, 248, 251);">
-            <div class="ticketList dt-borderTop full-height">
-                <div class="table-options row" style="height: 45px;"></div>
+        <div id="page-content-inner1" class="full-height" style="position:relative; background-color: rgb(246, 248, 251);">
+            <div class="ticketList full-height">
                 <table id="ticketTable" class="pDataTable stripe">
                     <thead>
                     <tr>
@@ -250,7 +247,6 @@
                 setInterval(function() {
                     var bgColor = self.css('background-color');
                     bgColor = rgb2hex(bgColor);
-                    console.log(bgColor);
                     if (bgColor === '#ffcdd2') {
                         self.css('background-color', '#ffffff');
                     } else {

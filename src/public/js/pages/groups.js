@@ -19,7 +19,7 @@ define('pages/groups', [
     'datatables',
     'dt_responsive',
     'dt_grouping',
-    'dt_foundation',
+    //'dt_foundation',
     'dt_scroller',
     'history'
 

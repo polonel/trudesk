@@ -19,7 +19,7 @@
     +borderRadius(0)
 
   .chosen-container-multi .chosen-choices li.search-choice
-    padding: 0 25px 0px 7px
+    padding: 0 25px 0 7px
     background: darken(#eceff6, 20%)
     span
       color: white
@@ -30,14 +30,17 @@
 
   button
     padding: 5px 10px
-    height: 37px
+    height: 36px
     width: 50px
     margin-left: -50px
     background: darken(#eceff6, 8%)
-    border-top: 1px solid #9aa1ad
-    border-bottom: 1px solid #9aa1ad
-    border-right: 1px solid #9aa1ad
+    border: 1px solid #9aa1ad
+    border-left: none
     +borderRadius(0 3px 3px 0)
+    z-index: 999
+    cursor: pointer
+    position: relative
+
     i
       color: #55616e
 

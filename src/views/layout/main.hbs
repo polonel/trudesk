@@ -5,8 +5,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="/css/normalize.min.css"/>
-    <link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.min.css"/>
-    <!--<link rel="stylesheet" href="/js/vendor/uikit/css/uikit.almost-flat.css">-->
+    <!--<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.min.css"/>-->
 
     {{#block 'css'}}
 
@@ -42,7 +41,7 @@
         </svg>
     </div>
 </div>
-<div id="nomobile" class="hide-for-medium-up" style="
+<div id="nomobile" class="uk-visible-small uk-hidden-medium uk-hidden-large" style="
     position: fixed;
     top: 0;
     left: 0;
@@ -83,7 +82,7 @@
 <div id="__loggedInAccount_username" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.username}}</div>
 <div id="__loggedInAccount_role" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.role}}</div>
 
-<div class="wrapper show-for-medium-up" style="height: 100%;">
+<div class="wrapper uk-hidden-small" style="height: 100%;">
     <div id="notice-banner" style="
         width: 100%;
         height: 30px;
@@ -93,16 +92,16 @@
         font-weight: 500;
         font-family: 'Open Sans', sans-serif;
         text-align: center;
-        padding-top: 7px;" {{#if data.common.notice}} class="show" {{else}} class="hide" {{/if}}>
+        padding-top: 7px;" {{#if data.common.notice}} class="" {{else}} class="uk-hidden" {{/if}}>
 
         {{formatDate data.common.notice.activeDate "MM/DD/YYYY HH:mm"}} - Important: {{data.common.notice.message}}
     </div>
 
     {{> topbar }}
-    <div class="row" style="background: #223140;">
+    <div class="ajaxyContent" style="background: #223140;">
         {{> nav }}
 
-            <div id="page-content" class="clearfix" ng-controller="truCtrl">
+            <div id="page-content" style="margin-left: 215px;" ng-controller="truCtrl">
                 {{{body}}}
             </div>
 

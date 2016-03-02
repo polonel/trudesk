@@ -50,6 +50,7 @@ module.exports = function(ws) {
         setInterval(function() {
             updateMailNotifications();
             updateNotifications();
+            utils.sendToSelf(socket, 'updateUsers', usersOnline);
 
         }, 5000);
 

@@ -1,21 +1,19 @@
 <div id="test" ng-controller="accountsCtrl">
     <div id="__accounts-page" class="hide">{{data.page}}</div>
-    <div class="small-12 large-10 columns nopadding ticketContent" style="background: #f6f8fb;">
-        <div class="page-title noshadow dt-borderBottom" style="margin-bottom: 15px;">
-            <div class="small-2 columns">
-                <p class="left">Accounts</p>
-            </div>
-            <div class="small-10 columns right">
+    <div class="accountContent" style="background: #f6f8fb;">
+        <div class="uk-grid uk-grid-collapse page-title noshadow dt-borderBottom" style="padding-left: 24px;">
+            <p class="left uk-width-2-10">Accounts</p>
+            <div class="uk-width-8-10 right">
                 <div class="md-fab-wrapper">
                     <a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
                         <i class="material-icons" style="color: white;">add</i>
                     </a>
                 </div>
                 <div class="uk-grid" data-uk-grid-margin>
-                    <div class="uk-width-medium-1-2">
+                    <div class="uk-width-medium-1-2" style="margin-top: 30px;">
                         <div class="uk-vertical-align">
-                            <div class="uk-vertical-align-midle">
-                                <ul id="account_list_filter" class="uk-subnav uk-subnav-pill" style="margin-top: 20px">
+                            <div class="uk-vertical-align-middle">
+                                <ul id="account_list_filter" class="uk-subnav uk-subnav-pill">
                                     <li class="uk-active filter-all uk-margin-remove" data-uk-filter=""><a href="#" class="no-ajaxy">All</a>
                                     </li>
                                     <li class="uk-margin-remove" data-uk-filter="admin"><a href="#" class="no-ajaxy">Administrators</a>
@@ -29,7 +27,7 @@
                         </div>
                     </div>
                     <div class="uk-width-medium-1-2">
-                        <div class="md-input-wrapper" style="margin-top: 15px;">
+                        <div class="md-input-wrapper" style="margin-top: 10px;">
                             <label for="account_list_search">Find Account</label>
                             <input type="text" class="md-input uk-margin-remove" id="account_list_search"/>
 
@@ -42,9 +40,8 @@
         </div>
     </div>
 
-    <div class="full-height1">
-        <div class="full-height scrollable" style="background: #f6f8fb; padding: 0 15px;">
-            <div class="account-list-wrapper" style="padding-bottom: 50px;">
+    <div class="full-height scrollable" style="background: #f6f8fb; padding: 0 24px;">
+            <div class="account-list-wrapper" style="padding-top: 24px; padding-bottom: 100px;">
                 <div id="account_list" class="uk-grid-width-small-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-4 uk-grid-width-xlarge-1-5">
                     {{#each data.accounts}}
                         <div data-uk-filter="{{role}},{{fullname}}">
@@ -61,16 +58,20 @@
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="text-center">
-                                        {{#if image}}
-                                            <img src="/uploads/users/{{image}}" alt="Profile Pic"
-                                                 class="tru-card-head-avatar"/>
-                                        {{else}}
-                                            <img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic"
-                                                 class="tru-card-head-avatar"/>
-                                        {{/if}}
+                                    <div class="uk-text-center">
+                                        <div class="account-image relative uk-display-inline-block">
+                                            {{#if image}}
+                                                <img src="/uploads/users/{{image}}" alt="Profile Pic"
+                                                     class="tru-card-head-avatar"/>
+                                            {{else}}
+                                                <img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic"
+                                                     class="tru-card-head-avatar"/>
+                                            {{/if}}
+
+                                            <span class="user-status-large user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
+                                        </div>
                                     </div>
-                                    <h3 class="tru-card-head-text text-center">
+                                    <h3 class="tru-card-head-text uk-text-center">
                                         {{fullname}}
                                         <span class="uk-text-truncate">{{firstCap title}}</span>
                                     </h3>
@@ -112,8 +113,7 @@
                 </div>
             </div>
 
-        </div>
-    </div>
+</div>
 
     {{> createAccountWindow}}
     {{> editAccountWindow}}

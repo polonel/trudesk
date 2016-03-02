@@ -98,7 +98,7 @@ div#accountsTable_wrapper
     font-weight: 400
     font-size: 12px
     margin: 18px 5px 0 0
-    padding: 8px 16px
+    padding: 6px 16px
     +borderRadius(3px)
     height: 28px
     line-height: 14px
@@ -204,7 +204,7 @@ div#accountsTable_wrapper
       +boxShadow(none)
 
   select
-    padding: 2px 4px
+    padding: 0 4px
 
   .input-box
     padding-top: 3px
@@ -222,8 +222,8 @@ div#accountsTable_wrapper
       float: left
       font-size: 12px
       font-family: $fontFamily
-      padding: 1px 8px
-      margin: 2px 0px 0px 2px
+      padding: 0 8px
+      margin: 2px 0 0 2px
       max-height: 20px
       background: #3498db
       color: #ffffff
@@ -245,22 +245,27 @@ div#accountsTable_wrapper
     time
       font-size: 11px
       font-weight: 600
+      line-height: 13px
 
     em
+      color: #76797e
       display: block
       margin-bottom: 7px
       font-size: 11px
       font-style: normal
+      line-height: 13px
 
       span
         font-weight: 600
 
     p
       font-size: 11px
+      line-height: 13px
       font-weight: normal
       margin-top: 3px
       margin-bottom: 7px
       color: #76797e
+      display: inline-block
 
 
 
@@ -380,12 +385,14 @@ div#accountsTable_wrapper
       padding-left: 85px
       margin-bottom: 1rem
       textarea
+        width: 100%
         font-family: $fontFamily
         font-size: 14px
         color: #3d4854
         resize: none
         background: #f3f5f9
         border: 1px solid #dfe4ef
+        padding: 8px
         +borderRadius(3px)
         +boxShadow(none)
         -webkit-box-sizing: border-box
@@ -396,7 +403,7 @@ div#accountsTable_wrapper
       font-family: $fontFamily
       font-size: 14px
       color: #ffffff
-      padding: 8px 16px
+      padding: 3px 15px
       background: $accent_color
       +borderRadius(3px)
       font-weight: 400

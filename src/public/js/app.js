@@ -31,33 +31,33 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
     require([
         'modules/navigation',
         'modules/enjoyhint',
-        'foundation',
+        //'foundation',
         'uikit',
         'modules/socket',
         'modules/ajaxify',
         'modernizr',
         'fastclick',
         'placeholder',
-        'foundation',
+        //'foundation',
         'pace',
         'nicescroll',
         'easypiechart'
 
     ], function(nav, eh, UI) {
         //Start App
-        $(document).foundation({
-            abide: {
-                patterns: {
-                    is5Long: /.{5,}/
-                }
-            },
-            reveal: {
-                animation: 'fade',
-                animation_speed: 200,
-                close_on_background_click: true,
-                close_on_esc: true
-            }
-        });
+        //$(document).foundation({
+        //    abide: {
+        //        patterns: {
+        //            is5Long: /.{5,}/
+        //        }
+        //    },
+        //    reveal: {
+        //        animation: 'fade',
+        //        animation_speed: 200,
+        //        close_on_background_click: true,
+        //        close_on_esc: true
+        //    }
+        //});
 
         nav.init();
         setTimeout(function(){

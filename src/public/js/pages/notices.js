@@ -19,7 +19,7 @@ define('pages/notices', [
     'datatables',
     'dt_responsive',
     'dt_grouping',
-    'dt_foundation',
+    //'dt_foundation',
     'dt_scroller',
     'history'
 

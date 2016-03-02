@@ -10,13 +10,25 @@
 
   background: #223140
   color: #cfd3d6
+  width: 215px
+  position: fixed
+  top: 75px
+  left: 0
+  bottom: 0
   +boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
 
 ul.side-nav
+  list-style: none outside none
+  line-height: 1.6
+  display: block
+  margin: 0
+  padding: 0.875rem 0
+
   li
     font-size: 14px
     font-family: "Roboto", sans-serif
-    margin-bottom: 0
+    margin: 0
+    font-weight: normal
 
     &.active > a
       border-left: 2px solid $accent_color
@@ -35,6 +47,10 @@ ul.side-nav
     padding-left: 60px !important
     line-height: 48px
     height: 48px
+
+    &:not(.button)
+      display: block
+      margin: 0
 
     span
       padding-bottom: 5px

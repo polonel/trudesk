@@ -2,6 +2,9 @@
   @media only screen and (min-width: 40.063em) and (max-width: 64em)
     padding: 0 0 0 55px !important
 
+#page-content-inner
+  padding: 24px 24px 100px
+
 div.ptooltip-box-wrap
   display: none
   //visibility: hidden
@@ -99,24 +102,24 @@ div.ptooltip-box
 
 div.hoverAction
   position: absolute
-  bottom: -55px
+  bottom: -256px
   left: 0
   width: 100%
-  height: 55px
-  opacity: 0.7
+  height: 256px
+  opacity: 0.72
   background: black
   text-align: center
   color: #ffffff
   z-index: 300
   span
     display: inline-block
-    padding-top: 20px
+    padding-top: 0
     font-weight: 300
-    font-size: 14px
+    font-size: 20px
+    line-height: 256px
 
-//foundation modal
-.reveal-modal
-  h2
+.uk-modal
+  h2,h5
     font-family: $fontFamily
     font-weight: 300
 
@@ -136,6 +139,8 @@ div.hoverAction
     font-weight: normal
     line-height: 1.5
     margin-bottom: 0
+    &.uk-badge
+      color: white
 
   input,
   textarea
@@ -156,11 +161,10 @@ div.hoverAction
       outline: none
       +boxShadow(none)
 
-  button
+  button:not(.md-btn)
     font-family: $fontFamily
     font-size: 14px
     color: #ffffff
-    padding: 8px 16px
     font-weight: 300
     +borderRadius(3px)
 
@@ -175,7 +179,7 @@ div.hoverAction
         background: #c3cddf
     &.red
       background: #F95E56
-      color: white
+      color: white !important
       font-weight: 500
       &:hover,
       &:active
@@ -191,29 +195,42 @@ div.hoverAction
     float: left
     display: inline-block
     margin-right: 10px
-    padding-top: 25px
+    padding-top: 23px
 
   .button-group
+    list-style: none
     float: left
+    padding-left: 0
+    margin: 0
 
     li
       .btn
         max-height: 30px
         height: 30px
         margin-right: 0
-        padding: 2px 16px
+        padding: 0 16px
         background: lighten(#eef1f7, 5%)
+        overflow: hidden
         +borderRadius(3px 0 0 3px)
 
         i
           margin-right: 0
+          line-height: 30px
           &.material-icons
             font-size: 20px
-            line-height: 24px
+            line-height: 30px
+
+        span
+          display: inline-block
+          margin-top: 5px
 
       &:last-child
         .btn
           +borderRadius(0 3px 3px 0)
+
+      &.active
+        .btn
+          background: $accent_color
 
 .datepicker td span.active,
 .datepicker td.active.day,

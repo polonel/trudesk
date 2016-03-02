@@ -18,8 +18,8 @@
                     {{/each}}
                 </select>
             </div>
-            <div class="uk-margin-medium-bottom clearfix">
-                <div class="left" style="padding-right: 10px; width: 30%;">
+            <div class="uk-margin-medium-bottom uk-clearfix">
+                <div class="uk-float-left" style="padding-right: 11px; width: 30%;">
                     <label for="type" class="uk-form-label">Type</label>
                     <select class="selectize-white" name="type" id="type" data-md-selectize-inline>
                         {{#each data.common.ticketTypes}}
@@ -28,9 +28,9 @@
                     </select>
                 </div>
 
-                <div class="left" style="width: 70%;">
+                <div class="uk-float-left" style="width: 68%;">
                     <label for="tags" class="uk-form-label">Tags</label>
-                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-closeOnSelect="true">
                         {{#each data.common.ticketTags}}
                             <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                         {{/each}}

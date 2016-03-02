@@ -18,16 +18,17 @@ define('pages/accounts', [
     'angular',
     'modules/helpers',
     'uikit',
+    'modules/socket',
     'isinview',
     'nicescroll',
     'datatables',
     'dt_responsive',
     'dt_grouping',
-    'dt_foundation',
+    //'dt_foundation',
     'dt_scroller',
     'history'
 
-], function(_, $, angular, helpers, UIkit) {
+], function(_, $, angular, helpers, UIkit, socket) {
     "use strict";
     var accountsPage = {};
 
@@ -107,6 +108,8 @@ define('pages/accounts', [
 
                             UIkit.$html.trigger('changed.uk.dom');
                             helpers.resizeAll();
+
+                            socket.ui.updateUsers();
                         },
                         error: function(error) {
                             console.log('[trudesk:accountsPage:setupGrid] - Error: ' + error.error );
@@ -161,6 +164,8 @@ define('pages/accounts', [
 
                     $nextPage = $nextPage + 1;
                     $loading = false;
+
+                    socket.ui.updateUsers();
                 }).fail(function (err) {
                     console.log('[trudesk:accountsPage:setupGrid] - Error: ' + err.error);
                     $loading = false;
@@ -195,14 +200,17 @@ define('pages/accounts', [
             html    +=                      '</ul>';
             html    +=                  '</div>';
             html    +=              '</div>';
-            html    +=              '<div class="text-center">';
+            html    +=              '<div class="uk-text-center">';
+            html    +=                  '<div class="account-image relative uk-display-inline-block">';
             if (user.image)
-            html    +=                  '<img src="/uploads/users/' + user.image + '" alt="Profile Pic" class="tru-card-head-avatar" />';
+            html    +=                      '<img src="/uploads/users/' + user.image + '" alt="Profile Pic" class="tru-card-head-avatar" />';
             else
-            html    +=                  '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
+            html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
+            html    +=                      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' + user._id + '"></span>';
+            html    +=                  '</div>';
 
             html    +=              '</div>';
-            html    +=              '<h3 class="tru-card-head-text text-center">';
+            html    +=              '<h3 class="tru-card-head-text uk-text-center">';
             html    +=                  user.fullname;
             html    +=                  '<span class="uk-text-truncate">' + (_.isUndefined(user.title) ? '' : user.title.capitalizeFirstLetter()) + '</span>';
             html    +=              '</h3>';

@@ -6,6 +6,11 @@
 
 @import url(https://fonts.googleapis.com/icon?family=Material+Icons)
 
+*, *:before, *:after
+  -webkit-box-sizing: border-box
+  -moz-box-sizing: border-box
+  box-sizing: border-box
+
 html,
 body
   background: #d5dae6
@@ -13,8 +18,14 @@ body
   font-family: $fontFamily
   height: 100%
 
+div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td
+  margin: 0
+
 a
   text-decoration: none !important
+  color: #1e88e5
+  &:hover, &:active, &:focus
+    color: #1976d2
 
 pre
   word-wrap: normal
@@ -40,6 +51,84 @@ pre
     white-space: pre
     +borderRadius(3px)
 
+
+h1,h2,h3,h4,h5,h6
+  font-weight: normal
+  font-style: normal
+  text-rendering: optimizeLegibility
+  margin-top: 0.2rem
+  margin-bottom: 0.5rem
+
+h6
+  font-size: 1rem
+  line-height: 1.6
+
+p
+  font-family: $fontFamily
+  font-weight: normal
+  font-size: 1rem
+  line-height: 1.6
+  margin-bottom: 1.25rem
+  text-rendering: optimizeLegibility
+
+hr
+  border: none
+  height: 1px
+  background: #ddd
+  width: 100%
+
+img
+  display: inline-block
+  vertical-align: middle
+
+label
+  font-size: 0.875rem
+  color: #4d4d4d
+  cursor: pointer
+  display: block
+  font-weight: normal
+  line-height: 1.5
+  margin-bottom: 0
+
+table
+  background: white
+  border: solid 1px #ddd
+  table-layout: auto
+  border-collapse: collapse
+  border-spacing: 0
+
+table tr th, table tr td
+  padding: 0.5625rem 0.625rem
+  text-align: left
+
+table thead tr th,
+table tfoot tr th,
+table tfoot tr td,
+table tbody tr th,
+table tbody tr td,
+table tr td
+  display: table-cell
+  line-height: 1.125rem
+
+input[type="checkbox"]+label, input[type="radio"]+label
+  margin-left: 0.5rem
+  margin-right: 1rem
+  margin-bottom: 0
+  vertical-align: baseline
+
+input[type="file"], input[type="checkbox"], input[type="radio"], select
+  margin: 0 0 1rem 0
+
+.right
+  max-width: 100%
+  float: right
+.left
+  max-width: 100%
+  float: left
+
+.hide
+  display: none
+
 .nomargin
   margin: 0 !important
 .nomargin-top
@@ -52,6 +141,9 @@ pre
   margin-left: 5px !important
 .marginright5
   margin-right: 5px !important
+.padding-left-right-15
+  padding-left: 15px !important
+  padding-right: 15px !important
 .padtop20
   padding-top: 20px !important
 .padright20
@@ -86,6 +178,9 @@ pre
   margin: 0 !important
   padding: 0 !important
 
+.font-weight-300
+  font-weight: 300 !important
+
 .cursor-pointer
   cursor: default !important
   &:hover
@@ -115,24 +210,19 @@ a.hoverUnderline
     width: 50px
     +borderRadius(50%)
 
-.row
-  max-width: $rowWidth
-
 .page-title,
 .page-title-right
   height: 70px
   background: #eef1f7
   border-top: 2px solid $accent_color
   +boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
-  padding: 0 15px 0 30px
-  @media only screen and (min-width: 64.063em)
-    padding: 0 15px 0 30px
+  padding: 0 15px 0 35px
 
   font-family: "Roboto", sans-serif
   p
     font-size: 30px
     margin: 0
-    line-height: 70px
+    line-height: 68px
     color: #55616e
     font-weight: 300
     &.left
@@ -144,8 +234,6 @@ a.hoverUnderline
 
 
 .page-title-border-right
-  width: 100%
-  height: 100%
   border-right: 1px solid #dfe4ef
 
 .page-title-border-bottom
@@ -167,6 +255,26 @@ a.hoverUnderline
 .fa-large
   font-size: 24px
   line-height: 26px
+
+span
+  &.user-online,
+  &.user-offline
+    display: block
+    height: 17px
+    width: 17px
+    position: absolute
+    right: 2px
+    bottom: -4px
+    background: $accent_success
+    line-height: 1
+    +borderRadius(50%)
+    border: 2px solid #fff
+  &.user-offline
+    background: #9e9e9e
+  &.user-status-large
+    height: 25px
+    width: 25px
+    border-width: 3px
 
 button:hover,
 button:focus,
@@ -281,13 +389,13 @@ a.button
   li
     float: none !important
     width: 100% !important
-    background: #fff !important
+    background: #f5f5f5 !important
     line-height: 1.4em !important
     height: auto !important
   a
     display: block
     width: 100%
-    background: #fff !important
+    background: #f5f5f5 !important
     line-height: 1.4em !important
     padding: 5px 15px !important
     color: #212121 !important

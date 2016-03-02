@@ -18,7 +18,7 @@ modules: [
         include: [
             'jquery',
             'jquery_scrollTo',
-            'foundation',
+            'jquery_custom',
             'uikit',
             'angular',
             'angularRoute',
@@ -65,7 +65,7 @@ modules: [
     }
 ],
     paths: {
-    foundation: 'empty:',
+        //foundation: 'empty:',
         angular: 'empty:',
         angularRoute: 'empty:',
         angularCookies: 'empty:'

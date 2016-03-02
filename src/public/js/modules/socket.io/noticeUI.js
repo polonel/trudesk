@@ -71,14 +71,14 @@ define('modules/socket.io/noticeUI', [
         noticeTitle.html(notice.name);
         noticeText.html(notice.message);
 
-        noticeAlertWindow.foundation('reveal', 'open');
+        //noticeAlertWindow.foundation('reveal', 'open');
     }
 
     function hideNoticeAlertWindow() {
         var noticeAlertWindow = $('#noticeAlertWindow');
         if (noticeAlertWindow.length < 1) return true;
 
-        noticeAlertWindow.foundation('reveal', 'close');
+        //noticeAlertWindow.foundation('reveal', 'close');
     }
 
     return noticeUI;

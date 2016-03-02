@@ -13,6 +13,9 @@
         circle
           fill: $accent_color
 
+.top-bar
+  padding: 0 15px
+
 .top-menu
   height: 75px
 
@@ -35,18 +38,24 @@
           svg
             fill: lighten(#536679, 10%) !important
 
+      &.top-bar-icon
+        overflow: hidden
+
       &.top-bar-icon,
       &.top-bar-icon a
         font-size: 30px
-        font-family: "FontAwesome"
+        font-family: "FontAwesome", sans-serif
 
         button
+          border: none
+          outline: none
           background: none
           color: #536679
-          padding: 15px 5px
+          padding: 0 5px
           margin: 0
           height: auto
           top: auto
+          cursor: pointer
           &:hover
             color: lighten(#536679, 10%) !important
           i
@@ -58,35 +67,48 @@
           fill: #536679
           &.material-icons
             margin-top: 5px
-            line-height: 40px
+            line-height: 70px
         svg
           width: 32px !important
           height: 32px !important
-          margin-top: 10px !important
+          margin-top: 25px !important
 
         span.label
+          display: block
+          color: white
+          height: 20px
+          width: 20px
           font-size: 9px
           font-family: $fontFamily
           font-weight: 700
-          padding: 5px 7px
+          padding: 5px 0
           position: absolute
-          right: 5px
+          right: 0
           bottom: 15px
           +background-opacity($accent_color, 0.9)
+          text-align: center
+          text-decoration: none
+          line-height: 1
+          white-space: nowrap
+          margin-bottom: auto
+          vertical-align: middle
       &.top-bar-icon a
-        padding: 15px 8px !important
+        padding: 0 !important
 
 .top-bar-section ul li.profile-area
   font-family: $fontFamily
   font-size: 18px
-  color: #ffffff
+  color: #ffffff !important
   background: url("/img/midDots.png") no-repeat
   background-position: 0 50%
   margin-left: 10px
 
   span
     display: inline-block
-    margin: 0 20px 0 25px
+    margin: 0 20px 0 15px
+    color: #ffffff !important
+    &:hover
+      color: inherit
 
   a.profile-pic
     display: inline-block

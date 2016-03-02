@@ -50,7 +50,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                         var shouldShowNotice = ($cookies.get(cookieName) == 'true' || $cookies.get(cookieName) == undefined);
 
                         if (shouldShowNotice) {
-                            $scope.noticeAlertWindow.foundation('reveal', 'open');
+                            //$scope.noticeAlertWindow.foundation('reveal', 'open');
                         }
                     }
                 }, 0, false);
@@ -63,7 +63,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 expiresDate.setDate(expiresDate.getDate() + 1);
                 $cookies.put(cookieName, 'false', {expires: expiresDate});
 
-                $scope.noticeAlertWindow.foundation('reveal', 'close');
+                //$scope.noticeAlertWindow.foundation('reveal', 'close');
             };
 
             $scope.clearNotifications = function($event) {
@@ -87,7 +87,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
 
             $scope.closeNoticeAlert = function($event) {
                 $event.preventDefault();
-                $('#noticeAlertWindow').foundation('reveal', 'close');
+                //$('#noticeAlertWindow').foundation('reveal', 'close');
             };
 
         }])

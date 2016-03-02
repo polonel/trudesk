@@ -6,6 +6,12 @@
 select, textarea
   outline: none
 
+select[disabled]
+  -moz-appearance: none
+  -webkit-appearance: none
+  &::-ms-expand
+    display: none
+
 input
   &:not([type]), &[type="text"], &[type="password"], &[type="datetime"], &[type="datetime-local"], &[type="date"], &[type="month"], &[type="time"], &[type="week"], &[type="number"], &[type="email"], &[type="url"], &[type="search"], &[type="tel"], &[type="color"]
     outline: none
@@ -191,6 +197,14 @@ label.md-label
   font-size: 11px
 
 .uk-subnav-pill
+  li
+    a
+      transition: background-color .5s ease
+      +borderRadius(3px)
+
+  li:not(.uk-active) > a:hover
+    background: white
+
   >.uk-active > *
     background: $accent_color
 
@@ -211,6 +225,38 @@ label.md-label
 .uk-progress
   background: white
 
+.uk-margin-medium-bottom
+  margin-bottom: 24px !important
+.uk-margin-medium-top
+  margin-top: 24px !important
+.uk-margin-medium-left
+  margin-left: 24px !important
+.uk-margin-medium-right
+  margin-right: 24px !important
+
+.uk-dropdown
+  background: #f5f5f5
+
+.uk-dropdown.uk-datepicker
+  opacity: 1
+  z-index: 99999
+  transform: scale(1,1)
+  -webkit-transform: scale(1,1)
+
+.uk-button
+  text-shadow: none
+
+.uk-button.uk-button-accent
+  background: $accent_color
+  color: white
+  transition: all .4s ease
+  border: none
+  font: 400 14px/16px "Source Sans Pro", sans-serif
+  text-shadow: none
+  &:hover,&:active,&:focus
+    color: white
+    background: lighten($accent_color, 5%)
+
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
 
@@ -222,3 +268,54 @@ table
 
 table tr.even, table tr.alt, table tr:nth-of-type(even)
   background: inherit
+
+//User Profile Picture Upload
+.img-caption
+  position: absolute
+  left: 0
+  padding: 14px
+  background: #2C3F52
+  color: #e0e0e0
+
+  height: 100px
+  width: 100%
+  top: auto
+  bottom: 0
+  opacity: 0
+  transform: translateY(100%)
+  transition: transform .4s, opacity .1s .3s
+  h3
+    margin: 0
+    padding: 0
+    color: #fff
+    font-size: 14px
+    margin-bottom: 14px
+  span
+    font-style: italic
+    font-size: 13px
+    line-height: 16px
+    &:before
+      content: "Note: "
+  a
+    text-align: center
+    padding: 5px 10px
+    +borderRadius(2px)
+    display: inline-block
+    background: #ed4e6e
+    color: #fff
+    position: absolute
+    bottom: 20px
+    right: 20px
+
+.largeProfilePic.hoverEffect
+  overflow: hidden
+  img
+    transition: transform 0.4s
+
+.no-touch .hoverEffect:hover img
+  transform: translateY(-55px)
+
+.no-touch .hoverEffect:hover .img-caption
+  opacity: 1
+  transform: translateY(0px)
+  transition: transform .4s, opacity .1s
