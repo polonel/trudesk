@@ -89,6 +89,7 @@ var init = function(tickets, callback) {
 
 function buildMostRequester(ticketArray, callback) {
     var requesters = _.map(ticketArray, function(m,k) {
+        if (_.isNull(m.owner)) return '';
         return m.owner.fullname;
     });
 

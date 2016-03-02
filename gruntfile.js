@@ -279,6 +279,9 @@ module.exports = function(grunt) {
 
         shell: {
             requirejs: {
+                command: 'r.js -o rBuild.js'
+            },
+            requirejswin: {
                 command: 'r.js.cmd -o rBuild.js'
             }
         }
@@ -288,8 +291,8 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('build', ['uglify:uikit', 'requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('sbuild', ['shell:requirejs']);
-    grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejswin', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };
