@@ -291,8 +291,9 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['uglify:uikit', 'requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('build', ['uglify:uikit', 'shell:requirejs', 'buildcss', 'builddocs']);
     grunt.registerTask('sbuild', ['shell:requirejs']);
+    grunt.registerTask('swinbuild', ['shell:requirejswin']);
     grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejswin', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };

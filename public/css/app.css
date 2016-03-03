@@ -729,7 +729,8 @@ div.hoverAction {
       .top-bar-section ul li a:hover svg {
         fill: #688097 !important; }
   .top-bar-section ul li.top-bar-icon {
-    overflow: hidden; }
+    overflow: hidden;
+    padding-right: 8px; }
   .top-bar-section ul li.top-bar-icon, .top-bar-section ul li.top-bar-icon a {
     font-size: 30px;
     font-family: "FontAwesome", sans-serif; }
