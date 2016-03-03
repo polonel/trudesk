@@ -182,7 +182,9 @@ viewController.getUsers = function(request, callback) {
             winston.warn(err);
             return callback();
         }
-        var u = _.sortBy(users, 'fullname');
+
+        var u = _.reject(users, function(u) { return u.deleted == true; });
+        u = _.sortBy(u, 'fullname');
 
         callback(u);
     });

@@ -189,14 +189,15 @@ define('pages/accounts', [
             if (user.role == 'admin')
             html    +=          '<div class="tru-card-head tru-card-head-admin">';
             else
-            html    +=          '<div class="tru-card-head">';
+            html    +=          '<div class="tru-card-head ' + (user.deleted ? "tru-card-head-deleted" : "") +'">';
 
             html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\'}">';
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';
             html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="editAccount($event)" class="no-ajaxy">Edit</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)">Remove</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="disableAccount($event)" class="disable-account-action ' + (user.deleted ? "hide" : "") + '">Disable</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="enable-account-action ' + (!user.deleted ? "hide" : "") + '">Enable</a></li>';
             html    +=                      '</ul>';
             html    +=                  '</div>';
             html    +=              '</div>';

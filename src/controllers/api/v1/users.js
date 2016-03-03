@@ -207,7 +207,7 @@ api_users.update = function(req, res) {
         passconfirm:    data.aPassConfirm,
         email:          data.aEmail,
         role:           data.aRole,
-        groups:         data.aGrps
+        groups:         data.aGrps,
     };
 
     if (_.isNull(obj.groups) || _.isUndefined(obj.groups))
@@ -349,16 +349,16 @@ api_users.updatePreferences = function(req, res) {
 };
 
 /**
- * @api {delete} /api/v1/users/:username Delete User
+ * @api {delete} /api/v1/users/:username Disable User
  * @apiName deleteUser
- * @apiDescription Deletes the giving user via username
- * @apiVersion 0.1.0
+ * @apiDescription Disables the giving user via username
+ * @apiVersion 0.1.7
  * @apiGroup User
  * @apiHeader {string} accesstoken The access token for the logged in user
  * @apiExample Example usage:
  * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:username
  *
- * @apiSuccess {boolean}     success    Was the user successfully deleted.
+ * @apiSuccess {boolean}     success    Was the user successfully disabled.
  *
  *
  * @apiError InvalidRequest The request was invalid
@@ -368,7 +368,7 @@ api_users.updatePreferences = function(req, res) {
      "error": "Invalid Request"
  }
  */
-api_users.deleteUser = function(req, res) {
+api_users.disableUser = function(req, res) {
     var username = req.params.username;
 
     if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
@@ -380,11 +380,54 @@ api_users.deleteUser = function(req, res) {
 
         if (!permissions.canThis(req.user.role, 'users:delete')) return res.status(401).json({error: 'Invalid Permissions'});
 
-        user.remove(function(err) {
+        user.softDelete(function(err) {
             if (err) return res.status(400).json({error: err.message});
+
+            //Force Logout if Logged in
 
             res.json({success: true});
         });
+    });
+};
+
+/**
+ * @api {get} /api/v1/users/:username/enable Enable User
+ * @apiName enableUser
+ * @apiDescription Enable the giving user via username
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:username/enable
+ *
+ * @apiSuccess {boolean}     success    Was the user successfully enabled.
+ *
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.enableUser = function(req, res) {
+    var username = req.params.username;
+    if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
+
+    userSchema.getUserByUsername(username, function(err, user) {
+        if (err) { winston.debug(err); return res.status(400).json({error: err.message}); }
+
+        if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
+
+        if (!permissions.canThis(req.user.role, 'users:delete')) return res.status(401).json({error: 'Invalid Permissions'});
+
+        user.deleted = false;
+
+        user.save(function(err, user) {
+            if (err) return res.status(400).json({error: err.message});
+
+            res.json({success: true});
+        })
     });
 };
 

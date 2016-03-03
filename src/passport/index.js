@@ -37,7 +37,7 @@ module.exports = function(app) {
                 return done(err);
             }
 
-            if (!user) {
+            if (!user || user.deleted) {
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 

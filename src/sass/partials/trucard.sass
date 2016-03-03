@@ -11,12 +11,15 @@
     height: 165px
     position: relative
     border-bottom: 1px solid rgba(0,0,0,.12)
-    &.tru-card-head-admin
+    &.tru-card-head-admin,
+    &.tru-card-head-deleted
       background: #3498db
       .tru-card-head-text
         color: white
       .tru-icon
         color: white !important
+    &.tru-card-head-deleted
+      background: $accent_danger !important
   .tru-card-head-menu
     position: absolute
     right: 8px

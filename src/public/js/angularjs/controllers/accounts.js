@@ -66,7 +66,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 //History.pushState(null, null, '/accounts/' + username);
             };
 
-            $scope.deleteAccount = function($event) {
+            $scope.disableAccount = function($event) {
                 $event.preventDefault();
                 var self = $($event.target);
                 var username = self.attr('data-username');
@@ -81,11 +81,42 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         return;
                     }
 
-                    self.parents('[data-uk-filter]').remove();
-                    UIkit.$html.trigger('changed.uk.dom');
-                    helpers.UI.showSnackbar('Account ' + username + ' Successfully Deleted', false);
+                    //self.parents('[data-uk-filter]').remove();
+                    //UIkit.$html.trigger('changed.uk.dom');
+
+                    self.parents('.tru-card-head').addClass('tru-card-head-deleted');
+                    self.addClass('hide');
+                    self.parents('.uk-nav').find('.enable-account-action').removeClass('hide');
+
+                    helpers.UI.showSnackbar('Account ' + username + ' Successfully Disabled', false);
                 }).error(function(err) {
-                    console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
+                    console.log('[trudesk:accounts:disableAccount] - Error: ' + err.error);
+                    helpers.UI.showSnackbar(err.error, true);
+                });
+            };
+
+            $scope.enableAccount = function($event) {
+                $event.preventDefault();
+                var self = $($event.target);
+                var username = self.attr('data-username');
+                if (_.isUndefined(username))
+                    return true;
+
+                $http.get(
+                    '/api/v1/users/' + username + '/enable'
+                ).success(function(data) {
+                    if (!data.success) {
+                        helpers.UI.showSnackbar(data.error, true);
+                        return;
+                    }
+
+                    self.parents('.tru-card-head').removeClass('tru-card-head-deleted');
+                    self.addClass('hide');
+                    self.parents('.uk-nav').find('.disable-account-action').removeClass('hide');
+
+                    helpers.UI.showSnackbar('Account successfully enabled', false);
+                }).error(function(err) {
+                    console.log('[trudesk:accounts:enableAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
                 });
             };

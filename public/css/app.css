@@ -5210,12 +5210,14 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     height: 165px;
     position: relative;
     border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
-    .tru-card .tru-card-head.tru-card-head-admin {
+    .tru-card .tru-card-head.tru-card-head-admin, .tru-card .tru-card-head.tru-card-head-deleted {
       background: #3498db; }
-      .tru-card .tru-card-head.tru-card-head-admin .tru-card-head-text {
+      .tru-card .tru-card-head.tru-card-head-admin .tru-card-head-text, .tru-card .tru-card-head.tru-card-head-deleted .tru-card-head-text {
         color: white; }
-      .tru-card .tru-card-head.tru-card-head-admin .tru-icon {
+      .tru-card .tru-card-head.tru-card-head-admin .tru-icon, .tru-card .tru-card-head.tru-card-head-deleted .tru-icon {
         color: white !important; }
+    .tru-card .tru-card-head.tru-card-head-deleted {
+      background: #d32f2f !important; }
   .tru-card .tru-card-head-menu {
     position: absolute;
     right: 8px;

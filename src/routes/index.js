@@ -131,7 +131,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
-    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
+    router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
+    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.disableUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
 
@@ -174,8 +175,8 @@ function mainRoutes(router, middleware, controllers) {
 
 module.exports = function(app, middleware) {
     //Docs
-    app.use('/docs', middleware.redirectToLogin, express.static(path.join(__dirname, '../../', 'docs')));
-    app.use('/apidocs', middleware.redirectToLogin, express.static(path.join(__dirname, '../../', 'apidocs')));
+    app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
+    app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
 
     mainRoutes(router, middleware, controllers);
     app.use('/', router);

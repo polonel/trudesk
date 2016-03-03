@@ -46,7 +46,7 @@
                     {{#each data.accounts}}
                         <div data-uk-filter="{{role}},{{fullname}}">
                             <div class="tru-card tru-card-hover" data-card-username="{{username}}">
-                                <div class="tru-card-head {{#compare role '==' 'admin'}} tru-card-head-admin {{/compare}}">
+                                <div class="tru-card-head {{#compare role '==' 'admin'}} tru-card-head-admin {{/compare}} {{#compare deleted '==' true}} tru-card-head-deleted {{/compare}}">
                                     <div class="tru-card-head-menu" data-uk-dropdown="{pos: 'bottom-right'}">
                                         <i class="material-icons tru-icon">&#xE5D4;</i>
 
@@ -54,7 +54,10 @@
                                             <ul class="uk-nav">
                                                 <li><a href="#" class="no-ajaxy" data-username="{{username}}" ng-click="editAccount($event)">Edit</a></li>
                                                 <li><a href="#" data-username="{{username}}"
-                                                       ng-click="deleteAccount($event)">Remove</a></li>
+                                                       ng-click="disableAccount($event)" class="no-ajaxy disable-account-action {{#compare deleted '==' true}}hide{{/compare}}">Disable</a></li>
+                                                <li><a href="#" data-username="{{username}}"
+                                                       ng-click="enableAccount($event)" class="no-ajaxy enable-account-action {{#compare deleted '==' false}}hide{{/compare}}">Enable</a></li>
+
                                             </ul>
                                         </div>
                                     </div>

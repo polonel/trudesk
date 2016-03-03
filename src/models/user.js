@@ -41,6 +41,7 @@ var COLLECTION = "accounts";
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  * @property {Object} preferences Object to hold user preferences
  * @property {Boolean} preferences.autoRefreshTicketGrid Enable the auto refresh of the ticket grid.
+ * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
@@ -60,7 +61,9 @@ var userSchema = mongoose.Schema({
 
         preferences: {
             autoRefreshTicketGrid: { type: Boolean, default: true }
-        }
+        },
+
+        deleted:    { type: Boolean, default: false }
     });
 
 //Indexes
@@ -138,6 +141,18 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
             callback(null, u.iOSDeviceTokens);
         });
     }
+};
+
+userSchema.methods.softDelete = function(callback) {
+    var user = this;
+
+    user.deleted = true;
+
+    user.save(function(err, user) {
+        if (err) return callback(err, false);
+
+        callback(null, true);
+    });
 };
 
 userSchema.statics.validate = function (password, dbPass) {
@@ -226,7 +241,7 @@ userSchema.statics.getUserByResetHash = function(hash, callback) {
         return callback("Invalid Hash - UserSchema.GetUserByResetHash()", null);
     }
 
-    return this.model(COLLECTION).findOne({resetPassHash: hash}, callback);
+    return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, callback);
 };
 
 /**
@@ -244,7 +259,7 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
         return callback("Invalid Token - UserSchema.GetUserByAccessToken()", null);
     }
 
-    return this.model(COLLECTION).findOne({accessToken: token}, callback);
+    return this.model(COLLECTION).findOne({accessToken: token, deleted: false}, callback);
 };
 
 userSchema.statics.getUserWithObject = function(object, callback) {
@@ -288,7 +303,7 @@ userSchema.statics.getAssigneeUsers = function(callback) {
     });
 
     assigneeRoles = _.uniq(assigneeRoles);
-    this.model(COLLECTION).find({role: {$in: assigneeRoles}}, function(err, users) {
+    this.model(COLLECTION).find({role: {$in: assigneeRoles}, deleted: false}, function(err, users) {
         if (err) {
             winston.warn(err);
             return callback(err);
