@@ -70,6 +70,7 @@ p
   line-height: 1.6
   margin-bottom: 1.25rem
   text-rendering: optimizeLegibility
+  color: $p_color
 
 hr
   border: none
@@ -119,6 +120,9 @@ input[type="checkbox"]+label, input[type="radio"]+label
 input[type="file"], input[type="checkbox"], input[type="radio"], select
   margin: 0 0 1rem 0
 
+.accent-text
+  color: $accent_color !important
+
 .right
   max-width: 100%
   float: right
@@ -129,8 +133,16 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
 .hide
   display: none
 
+.noborder
+  border: none !important
+.no-border-top
+  border-top: 0 !important
+
 .nomargin
   margin: 0 !important
+.nomargin-left-right
+  margin-left: 0 !important
+  margin-right: 0 !important
 .nomargin-top
   margin-top: 0 !important
 .marginright20
@@ -186,25 +198,27 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
   &:hover
     cursor: pointer !important
 
+.btn-success
+  background: $accent_success !important
+  color: #fff !important
+  &:hover
+    background: lighten($accent_success, 10%) !important
+
 .button-group>li
   float: left
   margin: 0
-
-.profilePic
-  width: 50px
-  height: 50px
-  border: none
-  +borderRadius(50%)
 
 a.blackLink
   color: #000000 !important
 
 a.hoverUnderline
   &:hover
-    text-decoration: underline
+    text-decoration: underline !important
 
 .profilePic
-  +borderRadius(50%)
+  width: 50px
+  height: 50px
+  border: none
   img
     height: 50px
     width: 50px
@@ -213,9 +227,10 @@ a.hoverUnderline
 .page-title,
 .page-title-right
   height: 70px
-  background: #eef1f7
-  border-top: 2px solid $accent_color
-  +boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
+  background: $page_content_title_bg
+  border-top: $page_content_border_accent
+  //+boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
+  box-shadow: $page_content_title_shadow
   padding: 0 15px 0 35px
 
   font-family: "Roboto", sans-serif
@@ -223,7 +238,7 @@ a.hoverUnderline
     font-size: 30px
     margin: 0
     line-height: 68px
-    color: #55616e
+    color: $p_color
     font-weight: 300
     &.left
       line-height: 68px
@@ -232,25 +247,29 @@ a.hoverUnderline
     p
       font-size: 28px
 
+.page-title-shadow
+  box-shadow: 0 3px 6px rgba(0,0,0,.1),0 3px 6px rgba(0,0,0,.15) !important
 
 .page-title-border-right
-  border-right: 1px solid #dfe4ef
+  border-right: 1px solid $page_content_title_border_color
 
 .page-title-border-bottom
-  border-bottom: 1px solid #bac2d3
+  border-bottom: 1px solid $page_content_title_border_color
 
 .page-content
-  background: white
-  border-top: 1px solid #dfe4ef
-  overflow: auto
+  background: $page_content_bg
+  border-top: $page_content_border_top
+  //overflow: auto
 
-.page-right-content
-  background: #d5dae6
+.page-content-right
+  background: $page_content_right_bg
+  border-top: $page_content_border_top
+  //overflow: auto
 
-.page-left
-  background: #eef1f7
-  border-top: 1px solid #dfe4ef
-  border-right: 1px solid #dfe4ef
+.page-content-left
+  background: $page_content_left_bg
+  border-top: $page_content_border_top
+  border-right: $page_content_border_top
 
 .fa-large
   font-size: 24px
@@ -338,8 +357,8 @@ a.button
   hr
     margin: 0
   &.trupanel
-    background: #eef1f7
-    border: darken(#eef1f7, 15%)
+    background: $trupanel_bg
+    border: darken($trupanel_bg, 15%)
     box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)
     transition: all 280ms ease-in-out
     -webkit-transition: all 280ms ease-in-out

@@ -117,12 +117,12 @@
   display: inline-block
 
 .selectize-control.single .selectize-input.input-active
-  background: #eef1f7
+  background: $selectize_bg
   cursor: text
   display: inline-block
 
 .selectize-input
-  border: 1px solid #d0d0d0
+  border: 1px solid darken($selectize_bg, 10%)
   padding: 8px 8px
   display: inline-block
   width: 100%
@@ -138,7 +138,7 @@
 
 .selectize-input
   &.full
-    background-color: #eef1f7
+    background-color: $selectize_bg
   &.disabled
     cursor: default !important
     *
@@ -210,8 +210,8 @@
 .selectize-dropdown
   position: absolute
   z-index: 10
-  border: 1px solid #d0d0d0
-  background: #eef1f7
+  border: 1px solid darken($selectize_bg, 10%)
+  background: $selectize_bg
   margin: -1px 0 0 0
   border-top: 0 none
   box-sizing: border-box
@@ -230,7 +230,7 @@
     border-top: 0 none
   .optgroup-header
     color: #303030
-    background: #eef1f7
+    background: $selectize_bg
     cursor: default
   .active
     background-color: #f5fafd
@@ -247,7 +247,7 @@
     border-width: 0
     border-bottom-width: 1px
   .selectize-input.input-active
-    border-color: #1976d2
+    border-color: $accent_color
 
 .selectize-dropdown
   &.selectize-white

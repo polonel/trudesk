@@ -20,15 +20,25 @@ div#accountsTable_wrapper
   font-weight: 300
   font-family: "Roboto", sans-serif
   color: white
-  background: #ababab
+  background: $ticket_status_closed
   +borderRadius(3px)
 
-.ticket-status.ticket-open span
-  background: #b92929
-.ticket-status.ticket-new span
-  background: #29b955
-.ticket-status.ticket-pending span
-  background: #2980b9
+.ticket-status.ticket-open span,
+.ticket-status-open
+  background: $ticket_status_open !important
+.ticket-status.ticket-new span,
+.ticket-status-new
+  background: $ticket_status_new !important
+.ticket-status.ticket-pending span,
+.ticket-status-pending
+  background: $ticket_status_pending !important
+
+.ticket-priority
+  border-left: 10px solid transparent
+  &.ticket-priority-2
+    border-color: #8e24aa
+  &.ticket-priority-3
+    border-color: #e65100
 
 .floating-ticket-status
   position: absolute
@@ -91,9 +101,9 @@ div#accountsTable_wrapper
   a.btn,
   button.btn,
   button
-    background: #cdd5e4
+    background: darken($page_content_title_bg, 15%)
     display: block
-    color: #707989
+    color: lighten($page_content_title_text, 15%)
     font-family: $fontFamily
     font-weight: 400
     font-size: 12px
@@ -104,7 +114,7 @@ div#accountsTable_wrapper
     line-height: 14px
 
     &:hover
-      background: darken(#cdd5e4, 3%)
+      background: darken($page_content_title_bg, 20%)
 
     i
       font-weight: normal
@@ -204,7 +214,11 @@ div#accountsTable_wrapper
       +boxShadow(none)
 
   select
-    padding: 0 4px
+    background: inherit
+    border: none
+    border-bottom: 1px solid #CCC
+    +borderRadius(0)
+    padding: 0 4px 0 0
 
   .input-box
     padding-top: 3px
@@ -217,6 +231,12 @@ div#accountsTable_wrapper
     min-height: 25px
     max-height: none
     margin-bottom: 5px
+
+    background: inherit
+    border: none
+    border-bottom: 1px solid #CCC
+    +borderRadius(0)
+
     .item
       display: inline-block
       float: left
@@ -390,14 +410,20 @@ div#accountsTable_wrapper
         font-size: 14px
         color: #3d4854
         resize: none
-        background: #f3f5f9
-        border: 1px solid #dfe4ef
+        //background: #f3f5f9
+        //border: 1px solid #dfe4ef
+        border-color: #dfe4ef
+        border-width: 0 0 1px
+        background: inherit
         padding: 8px
-        +borderRadius(3px)
+        +borderRadius(0)
         +boxShadow(none)
         -webkit-box-sizing: border-box
         -moz-box-sizing: border-box
         box-sizing: border-box
+        &.uk-form-danger
+          border-color: $accent_danger !important
+          background: none !important
     button[type=submit],
     button[type=reset]
       font-family: $fontFamily
@@ -417,6 +443,12 @@ div#accountsTable_wrapper
 
       &:hover
         background: darken(#cdd5e4, 10%)
+
+span.uk-form-danger
+  font-size: 11px
+  background: none !important
+  border: none !important
+  font-weight: 600
 
 .ticket-comment,
 .initial-issue

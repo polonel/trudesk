@@ -82,7 +82,7 @@
 <div id="__loggedInAccount_username" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.username}}</div>
 <div id="__loggedInAccount_role" class="hide" style="display:none; visibility: hidden; opacity: 0;">{{data.common.loggedInAccount.role}}</div>
 
-<div class="wrapper uk-hidden-small" style="height: 100%;">
+<div class="wrapper uk-hidden-small" style="overflow: hidden; height: 100%;">
     <div id="notice-banner" style="
         width: 100%;
         height: 30px;
@@ -90,7 +90,6 @@
         color: {{data.common.notice.fontColor}};
         font-size: 13px;
         font-weight: 500;
-        font-family: 'Open Sans', sans-serif;
         text-align: center;
         padding-top: 7px;" {{#if data.common.notice}} class="" {{else}} class="uk-hidden" {{/if}}>
 
@@ -98,7 +97,7 @@
     </div>
 
     {{> topbar }}
-    <div class="ajaxyContent" style="background: #223140;">
+    <div class="ajaxyContent">
         {{> nav }}
 
             <div id="page-content" style="margin-left: 215px;" ng-controller="truCtrl">

@@ -59,6 +59,7 @@ define('pages/singleTicket', [
                 form.unbind('submit');
                 form.submit(function($event) {
                     $event.preventDefault();
+                    if (!form.isValid(null, null, false)) return true;
                     var id = $('#__ticketId').html();
                     if (id.length > 0) {
                         var comment = $($event.currentTarget).find('textarea#commentText').val();

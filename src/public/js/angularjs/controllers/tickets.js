@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history'], function(angular, _, $, helpers, socket, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history', 'formvalidator'], function(angular, _, $, helpers, socket, UIkit) {
     return angular.module('trudesk.controllers.tickets', [])
         .controller('ticketsCtrl', ['openFilterTicketWindow', '$scope', '$http', '$window', function(openFilterTicketWindow, $scope, $http, $window) {
 
@@ -24,6 +24,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
                 var form = $('#createTicketForm');
+                if (!form.isValid(null, null, false)) {
+                    return true;
+                }
+
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.tags = form.find('#tags').val();
                 data.socketId = socketId;
@@ -175,6 +179,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var filterStatus = $('#ticketFilterForm select#filterStatus').val();
                 _.each(filterStatus, function(item) {
                     querystring += '&st=' + item;
+                });
+
+                var filterPriority = $('#ticketFilterForm select#filterPriority').val();
+                _.each(filterPriority, function(item) {
+                    querystring += '&pr=' + item;
                 });
 
                 var filterGroup = $('#ticketFilterForm select#filterGroup').val();

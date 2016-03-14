@@ -1,28 +1,31 @@
 <div id="__noticeId" class="hide">{{data.notice._id}}</div>
-<div class="small-12 large-10 columns nopadding page-right-content"  ng-controller="noticesCtrl">
-    <div class="page-title">
+<div class="page-content"  ng-controller="noticesCtrl">
+    <div class="page-title noshadow page-title-border-bottom uk-padding-medium-sides">
         <p class="left">{{title}}</p>
-        <div class="right">
+        <div class="pagination right">
             <ul class="button-group">
-                <li><a href="/notices" role="button" class="btn">Cancel</a></li>
-                <li class="active"><button class="btn" ng-click="submitEditNoticeForm()">Save</button>
+                <li class="pagination">
+                    <a href="/notices" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;">Cancel</a>
+                </li>
+                <li class="pagination">
+                    <a href="#" class="no-ajaxy btn btn-success md-btn-wave-light" style="border-radius: 3px;" ng-click="submitEditNoticeForm()">Save</a>
                 </li>
             </ul>
         </div>
     </div>
     <!--Content Here-->
-    <div class="page-wrapper scrollable no-overflow-x full-height">
-        <div class="row padtop20 padleft30 padright20">
-            <div class="small-12 columns">
-                <form id="editNoticeForm" class="form nomargin" action="/" method="POST">
+    <div id="page-content-inner" class="page-wrapper scrollable no-overflow-x full-height">
+        <div class="uk-grid">
+            <div class="uk-width-1-1">
+                <form id="editNoticeForm" class="uk-form-stacked" action="/" method="POST">
                     <div>
-                        <label for="nName">Notice Name</label>
-                        <input id="nName" name="nName" type="text" value="{{data.notice.name}}"/>
+                        <label for="nName" class="uk-form-label">Notice Name</label>
+                        <input id="nName" class="md-input" name="nName" type="text" value="{{data.notice.name}}"/>
 
-                        <label for="nMessage">Notice Message</label>
-                        <input id="nMessage" name="nMessage" type="text" value="{{data.notice.message}}"/>
+                        <label for="nMessage" class="uk-form-label">Notice Message</label>
+                        <input id="nMessage" class="md-input" name="nMessage" type="text" value="{{data.notice.message}}"/>
 
-                        <div class="clearfix" style="">
+                        <div class="uk-clearfix" style="">
                             <p class="left" style="
                                 padding-top: 3px;
                                 margin-right: 15px;
@@ -39,16 +42,16 @@
                             </div>
                         </div>
 
-                        <div style="">
-                            <label for="nFontColor" style="margin-right: 33px;">Font Color:</label>
+                        <div>
+                            <label for="nFontColor" class="uk-form-label">Font Color:</label>
                             <select id="nFontColor" name="nFontColor">
                                 <option value="#f6f6f6">White</option>
                                 <option value="#000000">Black</option>
                             </select>
                         </div>
 
-                        <div style="margin-bottom: 85px;">
-                            <label for="nColor" style="margin-right: 23px;">Notice Color:</label>
+                        <div>
+                            <label for="nColor" style="margin-right: 23px;" class="uk-form-label">Notice Color:</label>
                             <select id="nColor" name="nColor">
                                 <option value="#7bd148" {{#compare data.notice.color '==' '#7bd148'}} selected {{/compare}}>Green</option>
                                 <option value="#5484ed" {{#compare data.notice.color '==' '#5484ed'}} selected {{/compare}}>Bold blue</option>

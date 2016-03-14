@@ -12,13 +12,15 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout) {
 
-            $scope.createAccount = function() {
+            $scope.createAccount = function(event) {
                 var data = {};
                 var form = $('#createAccountForm');
+                if (!form.isValid(null, null, false)) return true;
+                event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.aGrps = form.find('#aGrps').val();
                 data.socketId = socketId;

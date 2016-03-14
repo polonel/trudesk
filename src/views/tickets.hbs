@@ -1,5 +1,5 @@
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
-    <div class="page-right-content nopadding ticketContent">
+    <div class="nopadding ticketContent">
         <div class="page-title noshadow uk-clearfix">
             <p class="uk-display-inline-block">Tickets</p>
             <div class="uk-float-right">
@@ -52,7 +52,7 @@
                 </div>
                 <div class="pagination uk-float-left">
                     <ul class="button-group uk-float-left">
-                        <li class="pagination" style="position:relative;">
+                        <li class="pagination relative">
                             <div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true" aria-expanded="false">
                                 <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
@@ -86,7 +86,7 @@
 
 
 
-        <div id="page-content-inner1" class="full-height" style="position:relative; background-color: rgb(246, 248, 251);">
+        <div class="full-height page-content no-border-top" style="position:relative;">
             <div class="ticketList full-height">
                 <table id="ticketTable" class="pDataTable stripe">
                     <thead>
@@ -106,7 +106,7 @@
                     {{#each data.tickets}}
                         {{#if_eq status compare=0}}
                             <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
-                                <td>
+                                <td class="ticket-priority ticket-priority-{{priority}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
                                     <label for="c_{{_id}}"></label>
                                 </td>
@@ -134,7 +134,7 @@
                         {{/if_eq}}
                         {{#is status 1}}
                             <tr class="ticket-open {{#overdue updated}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
-                                <td>
+                                <td class="ticket-priority ticket-priority-{{priority}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
@@ -162,7 +162,7 @@
                         {{/is}}
                         {{#is status 2}}
                             <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
-                                <td>
+                                <td class="ticket-priority ticket-priority-{{priority}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
@@ -190,7 +190,7 @@
                         {{/is}}
                         {{#is status 3}}
                             <tr class="ticket-closed" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
-                                <td>
+                                <td class="ticket-priority ticket-priority-{{priority}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
@@ -243,14 +243,17 @@
 
             $('tr.overdue').each(function() {
                 var self = $(this);
-                self.css('background-color', '#ffcdd2');
+                self.css('background-color', '#b71c1c');
+                self.find('td').css('color', '#fff');
                 setInterval(function() {
                     var bgColor = self.css('background-color');
                     bgColor = rgb2hex(bgColor);
-                    if (bgColor === '#ffcdd2') {
+                    if (bgColor === '#b71c1c') {
                         self.css('background-color', '#ffffff');
+                        self.find('td').css('color', '#55616e');
                     } else {
-                        self.css('background-color', '#ffcdd2');
+                        self.css('background-color', '#b71c1c');
+                        self.find('td').css('color', '#fff');
                     }
                 }, 800);
             });

@@ -13,18 +13,18 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-2" style="padding: 0 15px 0 0;">
-                        <label for="filterDate_Start" class="uk-form-label">Date Start</label>
+                        <label for="filterDate_Start" class="uk-form-label nopadding nomargin">Date Start</label>
                         <input id="filterDate_Start" class="md-input" name="filterDate_Start" type="text" data-uk-datepicker="{format:'MM/DD/YYYY'}" />
                     </div>
                     <div class="uk-width-1-2" style="padding: 0 0 0 15px;">
-                        <label for="filterDate_End" class="uk-form-label">Date End</label>
+                        <label for="filterDate_End" class="uk-form-label nopadding nomargin">Date End</label>
                         <input id="filterDate_End" class="md-input" name="filterDate_End" type="text" data-uk-datepicker="{format:'MM/DD/YYYY'}" />
                     </div>
                 </div>
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterStatus" class="uk-form-label">Status:</label>
+                        <label for="filterStatus" class="uk-form-label nopadding nomargin">Status:</label>
                         <select name="filterStatus" id="filterStatus" class="selectize-white uk-margin-small-bottom" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                             <option value="0">New</option>
                             <option value="1">Open</option>
@@ -36,7 +36,18 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterTags" class="uk-form-label">Tags:</label>
+                        <label for="filterPriority" class="uk-form-label nopadding nomargin">Priority:</label>
+                        <select name="filterPriority" id="filterPriority" class="selectize-white uk-margin-small-bottom" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                            <option value="1">Normal</option>
+                            <option value="2">Urgent</option>
+                            <option value="3">Critical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
+                    <div class="uk-width-1-1">
+                        <label for="filterTags" class="uk-form-label nopadding nomargin">Tags:</label>
                         <select name="filterTags" id="filterTags" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.ticketTags}}
                                 <option value="{{_id}}">{{name}}</option>
@@ -47,7 +58,7 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterType" class="uk-form-label">Type:</label>
+                        <label for="filterType" class="uk-form-label nopadding nomargin">Type:</label>
                         <select name="filterType" id="filterType" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.ticketTypes}}
                                 <option value="{{_id}}">{{name}}</option>
@@ -58,7 +69,7 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterGroup" class="uk-form-label">Group:</label>
+                        <label for="filterGroup" class="uk-form-label nopadding nomargin">Group:</label>
                         <select name="filterGroup" id="filterGroup" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.groups}}
                                 <option value="{{_id}}">{{name}}</option>
@@ -69,7 +80,7 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterAssignee" class="uk-form-label">Assignee:</label>
+                        <label for="filterAssignee" class="uk-form-label nopadding nomargin">Assignee:</label>
                         <select name="filterAssignee" id="filterAssignee" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.messages.users}}
                                 {{#canUserRole role "ticket:assingee"}}

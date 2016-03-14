@@ -114,7 +114,8 @@ module.exports = function(grunt) {
                         'public/js/vendor/uikit/css/uikit.css',
                         'public/js/vendor/uikit/css/uikit_custom.css',
                         'public/js/plugins/snackbar.css',
-                        'public/js/vendor/c3/c3.css'
+                        'public/js/vendor/c3/c3.css',
+                        'public/js/vendor/formvalidator/theme-default.css'
                     ]
                 }
             },
@@ -238,6 +239,7 @@ module.exports = function(grunt) {
                                 'countup',
                                 'selectize',
                                 'waves',
+                                'formvalidator',
                                 'snackbar',
 
                                 '../../src/permissions/roles',

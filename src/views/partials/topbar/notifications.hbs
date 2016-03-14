@@ -1,4 +1,4 @@
-<div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown" data-top-offset="-12" data-left-offset="-3">
+<div id="notifications" data-scroll="notifications-Messages" class="notifications p-dropdown" data-top-offset="-10" data-left-offset="4">
     <div class="actions"><span style="padding-lefT: 5px;">Notifications</span><div class="right"><a class="hoverUnderline no-ajaxy" ng-click="clearNotifications($event)">Clear Notifications</a></div></div>
     <div id="notifications-Messages" class="notifications-Messages close-on-click">
         <ul>
@@ -30,5 +30,14 @@
                 </li>
             {{/each}}
         </ul>
+    </div>
+    <div class="bottom-actions actions uk-float-left {{#compare (size data.common.notifications.items) '<' 1}} hide {{/compare}}" style="border-bottom: none; border-top: 1px solid rgba(100,100,100,0.4)">
+        <div class="uk-text-center">
+            <a class="hoverUnderline">View All Notifications</a>
+        </div>
+        <!--<span style="padding-left: 5px;">Notifications</span>-->
+        <!--<div class="right">-->
+            <!--<a class="hoverUnderline no-ajaxy" ng-click="clearNotifications($event)">Clear Notifications</a>-->
+        <!--</div>-->
     </div>
 </div>

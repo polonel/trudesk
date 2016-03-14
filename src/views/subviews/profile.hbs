@@ -1,14 +1,14 @@
 <div data-user_id="{{data.account._id}}" class="hide"></div>
-<div class="grid grid-collapse page-right-content" ng-controller="profileCtrl" style="background: #E4E7ED">
-    <div class="page-title uk-width-1-1">
+<div class="grid grid-collapse page-content" ng-controller="profileCtrl">
+    <div class="page-title uk-width-1-1 noshadow page-title-border-bottom">
         <p class="left">{{data.account.fullname}}</p>
         <div class="right">
             <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
                 <ul class="button-group">
-                    <li><a href="#" class="btn md-btn-wave-light no-ajaxy" style="border-radius: 3px; margin-right: 5px;" ng-click="back($event)"><span>Cancel</span></a></li>
+                    <li><a href="#" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="back($event)"><span class="uk-margin-top-remove">Cancel</span></a></li>
                     <li class="active">
-                        <a href="#" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="updateUser()">
-                            <span>Save</span>
+                        <a href="#" class="btn no-ajaxy md-btn-wave-light" style="color: white; border-radius: 3px;" ng-click="updateUser()">
+                            <span class="uk-margin-top-remove">Save</span>
                         </a>
                     </li>
                 </ul>

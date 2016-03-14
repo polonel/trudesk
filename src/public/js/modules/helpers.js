@@ -14,7 +14,7 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity'],
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator'],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
 
     var helpers = {};
@@ -29,6 +29,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
+        self.formvalidator();
         self.pToolTip();
         self.setupDonutchart();
         self.setupBarChart();
@@ -505,6 +506,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
             $('.flash-message').hide();
         });
     }
+
+    helpers.formvalidator = function() {
+        $.validate({
+            modules: 'html5',
+            errorElementClass: 'uk-form-danger',
+            errorMessageClass: 'uk-form-danger'
+        });
+    };
 
     helpers.bindKeys = function() {
         var self = this;

@@ -4,11 +4,19 @@
             <input type="hidden" name="socketId" id="socketId" value="{{data.user.socket.id}}" />
             <div class="uk-margin-medium-bottom">
                 <label for="subject">Subject</label>
-                <input type="text" class="md-input" id="subject" name="subject"/>
+                <input type="text" class="md-input" id="subject" name="subject"
+                       data-validation="length"
+                       data-validation-length="min10"
+                       data-validation-error-msg="Please enter a valid Subject. Subject must contain at least 10 characters."
+                />
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="issue">Description</label>
-                <textarea class="md-input" id="issue" name="issue"></textarea>
+                <textarea class="md-input" id="issue" name="issue"
+                          data-validation="length"
+                          data-validation-length="min10"
+                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
+                ></textarea>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="group" class="uk-form-label">Group</label>
@@ -30,7 +38,7 @@
 
                 <div class="uk-float-left" style="width: 68%;">
                     <label for="tags" class="uk-form-label">Tags</label>
-                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-closeOnSelect="true">
+                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                         {{#each data.common.ticketTags}}
                             <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                         {{/each}}
@@ -59,7 +67,7 @@
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewTicket" ng-click="submitTicketForm()">Create Ticket</button>
+                <button type="submit" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewTicket" ng-click="submitTicketForm()">Create Ticket</button>
             </div>
         </form>
     </div>

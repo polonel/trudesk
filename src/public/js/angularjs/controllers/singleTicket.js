@@ -119,7 +119,9 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             $scope.updateTicketIssue = function() {
                 var id = $('#__ticketId').html();
                 if (id.length > 0) {
-                    var issue = $('form#edit-issue-form').find('textarea#issueText').val();
+                    var form = $('form#edit-issue-form');
+                    if (!form.isValid(null, null, false)) return true;
+                    var issue = form.find('textarea#issueText').val();
                     issue = '<p>' + issue + '</p>';
                     socket.ui.setTicketIssue(id, issue);
                 }

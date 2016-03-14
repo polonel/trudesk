@@ -1,4 +1,4 @@
-<div class="sidebar nopadding scrollable-dark">
+<div class="sidebar nopadding scrollable-dark" style="{{#if data.common.notice}}top: 105px;{{/if}}">
     <ul class="side-nav">
         <li {{#is nav 'dashboard'}} class='active' {{/is}}><a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a></li>
         <li {{#is nav 'tickets'}} class='active' {{/is}}><a class="navTickets" href="/tickets"><i class="material-icons">assignment</i>Tickets</a>
@@ -22,9 +22,9 @@
         <li {{#is nav 'messages'}} class='active' {{/is}}>
             <a href="/messages/inbox" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">email</i>Messages</a>
             <ul id="side-nav-sub-messages" class="side-nav-sub {{#is nav 'messages'}} subMenuOpen {{/is}}">
-                <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="icon-inbox"></i>Inbox</a></li>
-                <li {{#is subnav 'messages-sentitems'}} class='active' {{/is}}><a href="/messages/sentitems"><i class="icon-sent"></i>Sent Items</a></li>
-                <li {{#is subnav 'messages-trash'}} class='active' {{/is}}><a href="/messages/trash"><i class="icon-trash"></i>Trash</a></li>
+                <li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="material-icons fa-sub-icon">inbox</i>Inbox</a></li>
+                <li {{#is subnav 'messages-sentitems'}} class='active' {{/is}}><a href="/messages/sentitems"><i class="material-icons fa-sub-icon">move_to_inbox</i>Sent</a></li>
+                <li {{#is subnav 'messages-trash'}} class='active' {{/is}}><a href="/messages/trash"><i class="material-icons fa-sub-icon">delete</i>Trash</a></li>
             </ul>
         </li>
         <!--<li {{#is nav 'calendar'}} class='active' {{/is}}><a href="/calendar"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>-->
@@ -50,7 +50,7 @@
                 </a>
                 <ul id="side-nav-sub-reports" class="side-nav-sub {{#is nav 'reports'}} subMenuOpen {{/is}}">
                     <li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i>Overview</a></li>
-                    <!--<hr/>-->
+                    <hr/>
                     <li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>
                     <li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>
                     <li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>

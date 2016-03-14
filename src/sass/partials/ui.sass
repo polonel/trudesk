@@ -122,7 +122,7 @@ textarea.md-input
       bottom: 0
       width: 0
       height: 2px
-      background: #1976d2
+      background: $accent_color
       -webkit-transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
       transition: width 400ms cubic-bezier(0.4, 0, 0.2, 1)
     &:before
@@ -142,6 +142,11 @@ textarea.md-input
     margin-top: 10px
   &.md-input-wrapper-disabled > label
     color: rgba(0, 0, 0, 0.26)
+  &.has-error
+    > label
+      color: $accent_danger
+    .md-input-bar
+      bottom: 20px
 
 .md-input-wrapper-count
   padding-bottom: 24px
@@ -196,6 +201,9 @@ label.md-label
   padding: 0 6px
   font-size: 11px
 
+.uk-grid-small
+  margin-top: 15px !important
+
 .uk-subnav-pill
   li
     a
@@ -209,7 +217,7 @@ label.md-label
     background: $accent_color
 
 .uk-badge
-  background: #0097a7
+  background: $accent_color
   padding: 2px 6px
   border: none
   +borderRadius(2px)
@@ -217,6 +225,10 @@ label.md-label
   font-size: 11px
   line-height: 15px
   font-weight: 400
+  &.uk-badge-blue
+    background: $accent_blue
+  &.uk-badge-success
+    background: $accent_success
   &.uk-badge-warning
     background: #ffa000
   &.uk-badge-danger
@@ -233,6 +245,12 @@ label.md-label
   margin-left: 24px !important
 .uk-margin-medium-right
   margin-right: 24px !important
+.uk-padding-medium-sides
+  padding-left: 24px !important
+  padding-right: 24px !important
+.uk-padding-small-sides
+  padding-left: 12px !important
+  padding-right: 12px !important
 
 .uk-dropdown
   background: #f5f5f5
@@ -285,15 +303,17 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
   transform: translateY(100%)
   transition: transform .4s, opacity .1s .3s
   h3
-    margin: 0
+    margin: 0 0 14px 0
     padding: 0
     color: #fff
     font-size: 14px
-    margin-bottom: 14px
+    font-weight: 300
   span
     font-style: italic
-    font-size: 13px
-    line-height: 16px
+    font-size: 12px
+    line-height: 14px
+    font-weight: 300
+    color: rgba(255,255,255,0.5)
     &:before
       content: "Note: "
   a
@@ -319,3 +339,22 @@ table tr.even, table tr.alt, table tr:nth-of-type(even)
   opacity: 1
   transform: translateY(0px)
   transition: transform .4s, opacity .1s
+
+.uk-dropdown.uk-datepicker
+  background: $datepicker_background_color
+
+.uk-datepicker-nav
+  background: $datepicker_header_bg
+  a, a:hover
+    color: $datepicker_header_text_color
+  .uk-form-select
+    color: $datepicker_header_text_color
+    option
+      color: #222
+
+.uk-form-danger
+  background: none !important
+
+.uk-datepicker-table a.uk-active
+  background: $datepicker_header_bg
+  color: $datepicker_header_text_color

@@ -42,15 +42,20 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                             })
                         }
                     });
-                    $scope.noticeAlertWindow = $('#noticeAlertWindow');
 
+
+                    $scope.noticeAlertWindow = $('#noticeAlertWindow');
                     if ($scope.noticeAlertWindow.length > 0) {
                         var cookieName = $('#__noticeCookieName').text();
                         if (cookieName == 'undefined' || _.isEmpty(cookieName)) return true;
                         var shouldShowNotice = ($cookies.get(cookieName) == 'true' || $cookies.get(cookieName) == undefined);
 
                         if (shouldShowNotice) {
-                            //$scope.noticeAlertWindow.foundation('reveal', 'open');
+                            var modal = UI.modal($scope.noticeAlertWindow, {
+                                bgclose: false
+                            });
+
+                            modal.show();
                         }
                     }
                 }, 0, false);
@@ -63,7 +68,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 expiresDate.setDate(expiresDate.getDate() + 1);
                 $cookies.put(cookieName, 'false', {expires: expiresDate});
 
-                //$scope.noticeAlertWindow.foundation('reveal', 'close');
+                UI.modal($scope.noticeAlertWindow).hide();
             };
 
             $scope.clearNotifications = function($event) {
@@ -87,7 +92,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
 
             $scope.closeNoticeAlert = function($event) {
                 $event.preventDefault();
-                //$('#noticeAlertWindow').foundation('reveal', 'close');
+                UI.modal('#noticeAlertWindow').hide();
             };
 
         }])

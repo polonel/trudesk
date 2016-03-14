@@ -52,7 +52,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="page-left full-height">
+                <div class="page-content-left full-height">
                     <div class="ticket-details-wrap uk-clearfix">
                         <div class="ticket-assignee-wrap uk-clearfix" style="position: relative; padding-right: 30px;">
                             <h4>Assignee</h4>
@@ -178,7 +178,7 @@
             <div class="uk-width-7-10 page-message nopadding">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content" data-preventDefault="true">
+                        <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
                             {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
                         </a>
                     </div>
@@ -201,7 +201,7 @@
                     </div>
                 </div>
 
-                <div class="page-content full-height scrollable">
+                <div class="page-content-right full-height scrollable">
                     <div class="comments-wrapper">
                         <div class="initial-issue" data-ticketid="{{data.ticket._id}}">
                             <div class="ticket-owner-picture relative uk-clearfix uk-display-inline-block uk-float-left">
@@ -236,8 +236,11 @@
                                 <div class="edit-issue-form uk-clearfix hide" style="margin-bottom: 15px;">
                                     <form id="edit-issue-form" ng-submit="updateTicketIssue()" data-abide>
                                         <div class="edit-issue-box">
-                                            <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                                            <small class="error">Please enter a valid issue. Issue must contain at least 5 characters.</small>
+                                            <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                      data-validation="length"
+                                                      data-validation-length="min10"
+                                                      data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
+                                            ></textarea>
                                         </div>
                                         <div class="right">
                                             <button class="uk-button" type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
@@ -249,10 +252,13 @@
                             {{else}}
                                 {{#canEditSelf data.user data.ticket.owner 'ticket'}}
                                     <div class="edit-issue-form uk-clearfix hide" style="margin-bottom: 15px;">
-                                        <form id="edit-issue-form" ng-submit="updateTicketIssue()" data-abide>
+                                        <form id="edit-issue-form" ng-submit="updateTicketIssue()">
                                             <div class="edit-issue-box">
-                                                <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                                                <small class="error">Please enter a valid issue. Issue must contain at least 5 characters.</small>
+                                                <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                          data-validation="length"
+                                                          data-validation-length="min10"
+                                                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
+                                                ></textarea>
                                             </div>
                                             <div class="right">
                                                 <button type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
@@ -294,8 +300,11 @@
                                         <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
                                             <form data-commentid="{{_id}}" data-abide>
                                                 <div class="edit-comment-box">
-                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                                                    <small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>
+                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                              data-validation="length"
+                                                              data-validation-length="min5"
+                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                    ></textarea>
                                                 </div>
                                                 <div class="right">
                                                     <button class="uk-button resetForm" type="reset">Cancel</button>
@@ -308,8 +317,11 @@
                                             <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
                                                 <form data-commentid="{{_id}}" data-abide>
                                                     <div class="edit-comment-box">
-                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>
-                                                        <small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>
+                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                                  data-validation="length"
+                                                                  data-validation-length="min5"
+                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                        ></textarea>
                                                     </div>
                                                     <div class="right">
                                                         <button class="uk-button resetForm" type="reset">Cancel</button>
@@ -347,11 +359,15 @@
                             <!--<ul class="reply-type">-->
 
                             <!--</ul>-->
-                            <form id="comment-reply" action="/tickets/postcomment" method="post">
+                            <form id="comment-reply" action="/tickets/postcomment" method="post" class="uk-form-stacked">
                                 <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
                                 <div class="comment-box">
-                                    <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true"></textarea>
-                                    <!--<small class="error">Please enter a valid comment. Comments must contain at least 5 characters.</small>-->
+                                    <label for="commentReply" class="uk-form-label">Comment</label>
+                                    <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="md-input"
+                                              data-validation="length"
+                                              data-validation-length="min5"
+                                              data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
+                                              style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                 </div>
                                 <div class="uk-float-right">
                                     <button type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"

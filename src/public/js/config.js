@@ -61,6 +61,7 @@ requirejs.config({
         waves:          'vendor/waves/waves',
         isinview:       'plugins/jquery.isinview',
         jquery_docsize: 'plugins/jquery.documentsize',
+        formvalidator:  'vendor/formvalidator/jquery.form-validator',
         snackbar:       'plugins/snackbar'
     },
     config: {
@@ -90,6 +91,10 @@ requirejs.config({
         },
 
         jquery_custom: {
+            deps: ['jquery']
+        },
+
+        formvalidator: {
             deps: ['jquery']
         },
 

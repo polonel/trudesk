@@ -36,6 +36,7 @@ modules: [
             'countup',
             'selectize',
             'waves',
+            'formvalidator',
             'snackbar',
 
             '../../src/permissions/roles',

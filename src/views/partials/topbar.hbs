@@ -43,11 +43,11 @@
                     <ul class="uk-subnav uk-margin-bottom-remove">
                         <!--<li class="top-bar-icon"><a href="/tickets/create/"><i class="material-icons">&#xE145;</i></a></li>-->
                         {{#canUser data.user "ticket:create"}}
-                            <li class="top-bar-icon"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
+                            <li class="top-bar-icon nopadding"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
+                            <li class="top-bar-icon nopadding">
+                                <i class="material-icons">more_vert</i>
+                            </li>
                         {{/canUser}}
-                        <li class="top-bar-icon">
-                            <img src="/img/midDots.png" alt="" style="margin-top: -5px; margin-right: 10px;"/>
-                        </li>
                         <li class="top-bar-icon">
                             <a id="btn_mail-notifications" href="#" class="no-ajaxy uk-vertical-align" data-notifications="mail-notifications"><i class="material-icons">email</i>
                                 <span class="alert uk-border-circle label {{#compare data.common.messages.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.messages.unreadCount}}</span>
@@ -84,35 +84,10 @@
                                         </ul>
                                     </div>
                                 </div>
-
-
-                                <!--<div id="profile-actions" data-scroll="profileAction-list" data-override="true" data-top-offset="78" data-left-offset="-95" class="notifications p-dropdown p-dropdown-xsmall pSmall" ng-controller="profileCtrl">-->
-                                    <!--<div class="actions"><strong>{{data.user.fullname}}</strong></div>-->
-                                    <!--<div id="profileAction-list" class="notifications-Messages close-on-click">-->
-                                        <!--<ul>-->
-                                            <!--<li>-->
-                                                <!--<a class="messageNotification" href="/profile" role="button">-->
-                                                    <!--<div class="clearfix">-->
-                                                        <!--<div class="messageIcon left"><i class="fa fa-user"></i></div>-->
-                                                        <!--<div class="messageAuthor"><strong>Profile</strong></div>-->
-                                                    <!--</div>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
-                                            <!--<li>-->
-                                                <!--<a class="messageNotification no-ajaxify" href="/logout" role="button">-->
-                                                    <!--<div class="clearfix">-->
-                                                        <!--<div class="messageIcon left"><i class="fa fa-sign-out"></i></div>-->
-                                                        <!--<div class="messageAuthor"><strong>Logout</strong></div>-->
-                                                    <!--</div>-->
-                                                <!--</a>-->
-                                            <!--</li>-->
-                                        <!--</ul>-->
-                                    <!--</div>-->
-                                <!--</div>-->
                             </div>
                         </li>
                     </ul>
-                    <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown" data-top-offset="-12" data-left-offset="-3">
+                    <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown" data-top-offset="-5" data-left-offset="4">
                         <div class="actions"><span style="padding-left: 5px;">Online Users</span>
                             <!--<div class="right"><a class="hoverUnderline" href="#">Settings</a></div>-->
                         </div>
@@ -123,7 +98,7 @@
                         </div>
                     </div>
                     <div ng-controller="commonCtrl">
-                        {{noticeAlertWindow}}
+                        {{> noticeAlertWindow}}
 
                         {{> topbar/notifications }}
                         {{> topbar/messages }}

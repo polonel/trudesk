@@ -1,7 +1,7 @@
 .dt-borderTop
-  border-top: 1px solid #dae0ec
+  border-top: $datatables_head_border_top
 .dt-borderBottom
-  border-bottom: 1px solid #dae0ec
+  border-bottom: $datatables_head_border_bottom
 
 .dataTables_scrollHeadInner
   width: 100% !important
@@ -14,13 +14,13 @@
       border: none
 
 .pDataTable
-  border-bottom: 1px solid #ddd
+  border-bottom: $datatables_head_border_bottom
   &.stripe
     tr:nth-of-type(even)
       background: darken(white, 3%)
       &:hover
         cursor: pointer
-        background: #f5f5f6
+        background: $page_content_bg
 
   tr
     height: 52px
@@ -65,10 +65,13 @@ table.dataTable
   margin-top: 0 !important
 
   thead
-    background: #f3f5f9
+    background: $datatables_head_bg
     font-family: $fontFamily
     text-transform: uppercase
-    border: 1px solid #dae0ec
+    border-top: $datatables_head_border_top
+    border-bottom: $datatables_head_border_bottom
+    border-right: $datatables_head_border_right
+    border-left: $datatables_head_border_left
     .sorting:last-child,
     .sorting_desc:last-child,
     .sorting_asc:last-child
@@ -87,7 +90,7 @@ table.dataTable
         font-size: 14px
 
 div.dataTables_wrapper
-  background: lighten(#f3f5f9, 1)
+  background: $page_content_bg
   margin-bottom: 0
 
   .dataTables_filter

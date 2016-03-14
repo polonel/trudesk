@@ -137,6 +137,8 @@ viewController.getUserNotifications = function(request, callback) {
             return callback(err);
         }
 
+        data = _.first(data, 5);
+
         callback(null, data);
     })
 };

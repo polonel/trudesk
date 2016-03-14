@@ -7,7 +7,7 @@
             </div>
         </div>
 
-        <div class="full-height">
+        <div class="page-content-left noborder full-height">
             <form id="messagesForm" action="#" style="margin: 0">
                 <ul class="message-items full-height scrollable" data-folder="{{lowercase folder}}">
                     <li class="message-folder font-weight-300">{{{folder}}}</li>
@@ -43,7 +43,7 @@
             </ul>
         </div>
 
-        <div id="message-content" class="page-content full-height scrollable">
+        <div id="message-content" class="page-content page-content-right full-height scrollable">
             {{#if data.messages.message}}
                 <div class="message-header">
                     <div class="message-from-id hide">{{data.messages.message.from._id}}</div>

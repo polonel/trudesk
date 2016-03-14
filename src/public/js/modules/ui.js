@@ -157,7 +157,7 @@ define('modules/ui', [
             _.each(items, function(item) {
                 html    += '<li>';
                 html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
-                html    += '<div class="clearfix">';
+                html    += '<div class="uk-clearfix">';
                 if (item.from.image)
                     html    += '<div class="profilePic left"><img src="/uploads/users/' + item.from.image + '" alt="profile"/></div>';
                 else
@@ -288,7 +288,7 @@ define('modules/ui', [
             _.each(users, function(user) {
                 var html = '<li data-setAssignee="' + user._id + '">';
                 html    += '<a class="messageNotification" href="#" role="button">';
-                html    += '<div class="clearfix">';
+                html    += '<div class="uk-clearfix">';
                 if (_.isUndefined(user.image)) {
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
                 } else {
@@ -630,7 +630,7 @@ define('modules/ui', [
                     var self = $(this);
                     e.stopPropagation();
                     e.preventDefault();
-                    //if (e.type === "valid") {
+                    if ($commentForm.isValid(null, null, false)) {
                         $.ajax({
                             type: self.attr('method'),
                             url: self.attr('action'),
@@ -649,7 +649,7 @@ define('modules/ui', [
                                 helpers.scrollToBottom(obj);
                             }
                         });
-                    //}
+                    }
                 });
             }
 
@@ -684,15 +684,14 @@ define('modules/ui', [
                     '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
                     '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
-                    '<div class="edit-comment-form clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
+                    '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
                         '<form data-commentid="' + comment._id + '" data-abide>' +
                             '<div class="edit-comment-box">' +
-                                '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>' +
-                                '<small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>' +
+                                '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required data-validation="length" data-validation-length="min5" data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."></textarea>' +
                             '</div>' +
                             '<div class="right">' +
-                                '<button class="resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
-                                '<button type="submit" data-preventDefault="false">Save</button>' +
+                                '<button class="uk-button resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                                '<button class="uk-button" type="submit" data-preventDefault="false">Save</button>' +
                             '</div>' +
                         '</form>' +
                     '</div>' +
@@ -743,7 +742,7 @@ define('modules/ui', [
                 var html = '';
                 html += '<li>' +
                     '<a class="messageNotification" href="/tickets/' + item.data.ticket.uid + '" role="button" data-notificationId="' + item._id + '" >' +
-                        '<div class="clearfix">';
+                        '<div class="uk-clearfix">';
                 if (item.unread === true) {
                     html += '<div class="messageUnread"></div>';
                 }
@@ -791,13 +790,16 @@ define('modules/ui', [
             });
 
             var $notificationsCount = $('#btn_notifications').find('span');
+            var $bottomActions = $('#notifications').find('.bottom-actions');
             if ($notificationsCount.length > 0) {
                 if (data.count == 0) {
                     $notificationsCount.html('0');
                     $notificationsCount.addClass('hide');
+                    $bottomActions.addClass('hide');
                 } else {
                     $notificationsCount.removeClass('hide');
                     $notificationsCount.html(data.count);
+                    $bottomActions.removeClass('hide');
                 }
             }
         });

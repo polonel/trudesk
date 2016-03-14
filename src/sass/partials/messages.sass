@@ -5,19 +5,19 @@
 
 .message-items
   list-style: none
-  background: #f3f5f9
+  background: $page_content_left_bg
   min-height: 100%
   padding: 0
   margin: 0
-  border-top: 1px solid #dfe4ef
-  border-right: 1px solid #dfe4ef
+  border-top: 1px solid $page_content_title_border_color
+  border-right: 1px solid $page_content_title_border_color
   overflow: auto
 
   li
     height: 85px
     padding-top: 17px
     padding-left: 32px
-    border-bottom: 1px solid #dfe4ef
+    border-bottom: 1px solid $page_content_title_border_color
     position: relative
 
     &:hover
@@ -25,7 +25,7 @@
       cursor: pointer
 
     &.message-folder:hover
-      background: #f3f5f9
+      background: $page_content_left_bg
       cursor: default
 
     //&:last-child
@@ -77,7 +77,7 @@
 .message-from
   display: inline-block
   font-family: "Source Sans Pro", sans-serif
-  color: #223140
+  color: $text_color
   font-size: 14px
   padding-left: 8px
 
@@ -86,13 +86,13 @@
   padding-left: 25px
   font-family: "Source Sans Pro", sans-serif
   font-size: 14px
-  color: #8891a3
+  color: darken($page_content_left_bg, 50%)
 
 .message-content
   background: white
 
 .message-header
-  border-bottom: 1px solid #dfe4ef
+  border-bottom: 1px solid $page_content_title_border_color
   padding: 20px 30px 30px 30px
   position: relative
 
@@ -113,7 +113,7 @@
     width: 40px
     margin-right: 5px
     padding-left: 3px
-    color: #a2aabb
+    color: lighten($text_color, 30%)
     font-family: $fontFamily
     font-size: 14px
     font-weight: 300
@@ -139,7 +139,7 @@ input[type="checkbox"].poloCheckbox + label
   cursor: pointer
   position: absolute
   top: 19px
-  left: 10px
+  left: 5px
 
 input[type="checkbox"]:checked.poloCheckbox + label
   background-position: 0 -14px
