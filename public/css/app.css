@@ -1410,7 +1410,8 @@ ul.side-nav-sub {
   .message-folder:hover {
     background: inherit !important; }
 
-.message-date {
+.message-date,
+.invoice-date {
   position: absolute;
   top: 20px;
   right: 20px;
@@ -1418,19 +1419,48 @@ ul.side-nav-sub {
   font-size: 12px;
   font-family: "Source Sans Pro", sans-serif; }
 
-.message-from {
+.invoice-date {
+  font-family: "Roboto", sans-serif;
+  top: 17px; }
+
+.invoice-overdue {
+  position: absolute;
+  top: 40px;
+  right: 20px;
+  color: white;
+  background: #d32f2f;
+  padding: 0 10px;
+  font-size: 11px;
+  font-weight: 300;
+  font-family: "Roboto", sans-serif;
+  border-radius: 2px;
+  -webkit-border-radius: 2px;
+  -moz-border-radius: 2px; }
+
+.message-from,
+.invoice-name {
   display: inline-block;
   font-family: "Source Sans Pro", sans-serif;
   color: #3c3c3c;
   font-size: 14px;
   padding-left: 8px; }
 
-.message-subject {
+.invoice-name {
+  font-family: "Roboto", sans-serif;
+  font-weight: 500;
+  padding-left: 0; }
+
+.message-subject,
+.invoice-payee {
   display: block;
   padding-left: 25px;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Roboto", sans-serif;
   font-size: 14px;
-  color: #5d7095; }
+  color: #3c3c3c; }
+
+.invoice-payee {
+  padding-left: 0;
+  padding-top: 5px; }
 
 .message-content {
   background: white; }
@@ -1503,7 +1533,7 @@ input[type="checkbox"]:checked.poloCheckbox + label {
 .button-group a.btn,
 .button-group button {
   display: block;
-  color: #707e9b;
+  color: #5a5f68;
   font-family: "Source Sans Pro", sans-serif;
   font-weight: 600;
   font-size: 14px;
@@ -1532,7 +1562,7 @@ input[type="checkbox"]:checked.poloCheckbox + label {
 
 .icon-button {
   display: block;
-  color: #707e9b;
+  color: #5a5f68;
   padding: 0;
   background: inherit;
   margin: 20px 0 0 0; }
@@ -6292,7 +6322,7 @@ table tr.even, table tr.alt, table tr:nth-of-type(even) {
   position: absolute;
   left: 0;
   padding: 14px;
-  background: #2C3F52;
+  background: #42464d;
   color: #e0e0e0;
   height: 100px;
   width: 100%;

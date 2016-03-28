@@ -7,20 +7,34 @@
             <form id="newMessageForm" action="#" method="POST" class="uk-form-stacked">
                 <input type="hidden" name="from" value="{{data.user._id}}"/>
                 <label for="newMessageTo" class="uk-form-label">To:</label>
-                <select name="newMessageTo" id="newMessageTo" multiple class="selectize-white uk-margin-medium-bottom" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-closeOnSelect="true">
+                <select name="newMessageTo" id="newMessageTo" multiple class="selectize-white uk-margin-medium-bottom"
+                        data-md-selectize-inline
+                        data-md-selectize-bottom="true"
+                        data-md-selectize-closeOnSelect="true">
                     {{#each data.common.messages.users}}
                         <option value="{{_id}}">{{fullname}}</option>
                     {{/each}}
                 </select>
 
-                <label for="newMessageSubject" class="uk-form-label">Subject:</label>
-                <input class="md-input uk-margin-medium-bottom" id="newMessageSubject" name="newMessageSubject" type="text" />
+                <div class="uk-margin-medium-bottom">
+                    <label for="newMessageSubject" class="uk-form-label">Subject:</label>
+                    <input class="md-input" id="newMessageSubject" name="newMessageSubject" type="text"
+                           data-validation="length"
+                           data-validation-length="min10"
+                           data-validation-error-msg="Please enter a valid subject. Subject must contain at least 10 characters."/>
+                </div>
 
-                <label for="newMessageText" class="uk-form-label">Message:</label>
-                <textarea class="md-input uk-margin-medium-bottom" name="newMessageText" id="newMessageText" cols="30" rows="10"></textarea>
+                <div class="uk-margin-medium-bottom">
+                    <label for="newMessageText" class="uk-form-label">Message:</label>
+                    <textarea class="md-input" name="newMessageText" id="newMessageText" cols="30" rows="10"
+                        data-validation="length"
+                              data-validation-length="min10"
+                              data-validation-error-msg="Please enter a valid message. Message must contain at least 10 characters."
+                    ></textarea>
 
-                <div class="right">
-                    <button class="eh-sendNewMessageButton md-btn md-btn-flat md-btn-flat-primary md-btn-wave nomargin" type="submit">Send Message</button>
+                    <div class="right">
+                        <button class="eh-sendNewMessageButton md-btn md-btn-flat md-btn-flat-primary md-btn-wave nomargin" type="submit">Send Message</button>
+                    </div>
                 </div>
             </form>
         </div>

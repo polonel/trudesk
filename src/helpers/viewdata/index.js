@@ -237,6 +237,8 @@ viewController.getTags = function(request, callback) {
             callback(err);
         }
 
+        data = _.sortBy(data, 'name');
+
         callback(null, data);
     });
 };

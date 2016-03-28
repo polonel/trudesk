@@ -20,6 +20,7 @@ var Controllers = {
     accounts: require('./accounts'),
     groups: require('./groups'),
     reports: require('./reports'),
+    invoices: require('./invoices'),
     notices: require('./notices'),
     api: require('./api'),
 

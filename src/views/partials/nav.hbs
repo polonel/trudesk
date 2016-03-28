@@ -39,7 +39,7 @@
         {{#canUser data.user "accounts:view"}}<li {{#is nav 'accounts'}} class='active' {{/is}}><a href="/accounts"><i class="material-icons">&#xE7FD;</i>Accounts</a></li>{{/canUser}}
         {{#canUser data.user "groups:view"}}<li {{#is nav 'groups'}} class='active' {{/is}}><a href="/groups"><i class="material-icons">supervisor_account</i>Groups</a></li>{{/canUser}}
         <!--<li {{#is nav 'chat'}} class='active' {{/is}}><a href="/chat"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>-->
-        <!--<li {{#is nav 'invoices'}} class='active' {{/is}}><a href="/invoices"><i class="icon-invoices"></i>Invoices</a></li>-->
+        <li {{#is nav 'invoices'}} class='active' {{/is}}><a href="/invoices"><i class="material-icons">payment</i>Invoices</a></li>
         {{#canUser data.user "reports:view"}}
             <li {{#is nav 'reports'}} class='active' {{/is}}>
                 <a href="/reports">

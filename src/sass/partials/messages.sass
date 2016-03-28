@@ -66,27 +66,53 @@
   &:hover
     background: inherit !important
 
-.message-date
+.message-date,
+.invoice-date
   position: absolute
   top: 20px
   right: 20px
   color: #8891a3
   font-size: 12px
   font-family: "Source Sans Pro", sans-serif
+.invoice-date
+  font-family: "Roboto", sans-serif
+  top: 17px
 
-.message-from
+.invoice-overdue
+  position: absolute
+  top: 40px
+  right: 20px
+  color: white
+  background: $accent_danger
+  padding: 0 10px
+  font-size: 11px
+  font-weight: 300
+  font-family: "Roboto", sans-serif
+  +borderRadius(2px)
+
+.message-from,
+.invoice-name
   display: inline-block
   font-family: "Source Sans Pro", sans-serif
   color: $text_color
   font-size: 14px
   padding-left: 8px
 
-.message-subject
+.invoice-name
+  font-family: "Roboto", sans-serif
+  font-weight: 500
+  padding-left: 0
+
+.message-subject,
+.invoice-payee
   display: block
   padding-left: 25px
-  font-family: "Source Sans Pro", sans-serif
+  font-family: "Roboto", sans-serif
   font-size: 14px
-  color: darken($page_content_left_bg, 50%)
+  color: $text_color
+.invoice-payee
+  padding-left: 0
+  padding-top: 5px
 
 .message-content
   background: white
@@ -177,7 +203,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   a.btn,
   button
     display: block
-    color: #707e9b
+    color: lighten(#42464d, 10%)
     font-family: "Source Sans Pro", sans-serif
     font-weight: 600
     font-size: 14px
@@ -204,7 +230,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
 
 .icon-button
   display: block
-  color: #707e9b
+  color: lighten(#42464d, 10%)
   padding: 0
   background: inherit
   margin: 20px 0 0 0

@@ -17,6 +17,7 @@ var _               = require('underscore');
 var _s              = require('underscore.string');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
+var ticketSchema    = require('../models/ticket');
 var reports         = require('../models/report');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
@@ -50,6 +51,20 @@ reportsController.overview = function(req, res, next) {
                     self.content.data.reports.items = objs;
                     self.content.data.reports.count = _.size(objs);
                     callback(err, objs);
+                });
+            },
+            function(callback) {
+                var groupSchema = require('../models/group');
+                groupSchema.getAllGroupsOfUser(user._id, function(err, grps) {
+                    if (err) return callback(err);
+                    ticketSchema.getOverdue(grps, function(err, objs) {
+                        if (err) return callback(err);
+
+                        var sorted = _.sortBy(objs, 'updated').reverse();
+
+                        self.content.data.reports.overdue = _.first(sorted, 5);
+                        callback(null, objs);
+                    });
                 });
             }
         ],

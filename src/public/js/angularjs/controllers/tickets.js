@@ -20,45 +20,46 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 openFilterTicketWindow.openWindow();
             };
 
-            $scope.submitTicketForm = function() {
+            $scope.submitTicketForm = function(event) {
+                event.preventDefault();
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
                 var form = $('#createTicketForm');
                 if (!form.isValid(null, null, false)) {
                     return true;
-                }
+                } else {
+                    form.serializeArray().map(function(x){data[x.name] = x.value;});
+                    data.tags = form.find('#tags').val();
+                    data.socketId = socketId;
+                    $http({
+                        method: 'POST',
+                        url: '/api/v1/tickets/create',
+                        data: data,
+                        headers: { 'Content-Type': 'application/json'}
+                    })
+                        .success(function(data) {
+                            if (!data.success) {
+                                if (data.error) {
+                                    helpers.showFlash('Error: ' + data.error, true);
+                                    return;
+                                }
 
-                form.serializeArray().map(function(x){data[x.name] = x.value;});
-                data.tags = form.find('#tags').val();
-                data.socketId = socketId;
-                $http({
-                    method: 'POST',
-                    url: '/api/v1/tickets/create',
-                    data: data,
-                    headers: { 'Content-Type': 'application/json'}
-                })
-                    .success(function(data) {
-                        if (!data.success) {
-                            if (data.error) {
-                                helpers.showFlash('Error: ' + data.error, true);
-                                return;
+                                helpers.showFlash('Error Submitting Ticket', true);
                             }
 
-                            helpers.showFlash('Error Submitting Ticket', true);
-                        }
+                            //helpers.showFlash('Ticket Created Successfully.');
+                            helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
-                        //helpers.showFlash('Ticket Created Successfully.');
-                        helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
+                            UIkit.modal("#ticketCreateModal").hide();
 
-                        UIkit.modal("#ticketCreateModal").hide();
+                            //History.pushState(null, null, '/tickets/');
 
-                        //History.pushState(null, null, '/tickets/');
-
-                    }).error(function(err) {
+                        }).error(function(err) {
                         console.log('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
                         //helpers.showFlash('Error: ' + err.error.message, true);
                         helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
                     });
+                }
             };
 
             $scope.showTags = function(event) {
@@ -161,6 +162,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.RefreshTicketGrid = function(event) {
                 var path = $window.location.pathname;
+                console.log(path);
                 History.pushState(null, null, path + '?r=' + Math.random());
                 event.preventDefault();
             };

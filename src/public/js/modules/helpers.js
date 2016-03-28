@@ -511,7 +511,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
         $.validate({
             modules: 'html5',
             errorElementClass: 'uk-form-danger',
-            errorMessageClass: 'uk-form-danger'
+            errorMessageClass: 'uk-form-danger',
+            ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input'
         });
     };
 
@@ -1011,7 +1012,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
 
     function newMessageSubmit(e) {
         e.preventDefault();
-        var formData = $('#newMessageForm').serializeObject();
+        var form = $('#newMessageForm');
+        var formData = form.serializeObject();
+
+        if (!form.isValid(null,null, false))
+            return true;
 
         var data = {
             to: formData.newMessageTo,

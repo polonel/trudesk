@@ -778,6 +778,40 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     return q.exec(callback);
 };
 
+/**
+ * Gets tickets that are overdue
+ * @memberof Ticket
+ * @static
+ * @method getOverdue
+ *
+ * @param {Array} grpId Group Array of User
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getOverdue = function(grpId, callback) {
+    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetOverdue()", null);
+
+    var self = this;
+
+    var now = moment();
+    var timeout = now.clone().add(2, 'd').toDate();
+
+    var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
+        .$where(function() {
+            var now = new Date();
+            var updated = new Date(this.updated);
+            timeout = new Date(updated);
+            timeout.setDate(timeout.getDate() + 2);
+            return now > timeout;
+        });
+        //.populate('owner')
+        //.populate('assignee')
+        //.populate('type')
+        //.populate('tags')
+        //.deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getAssigned = function(user_id, callback) {
     if (_.isUndefined(user_id)) return callback("Invalid Id - TicketSchema.GetAssigned()", null);
 

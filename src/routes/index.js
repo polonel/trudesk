@@ -86,7 +86,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
 
     //Invoices
-    router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, function(req, res) { res.redirect('/dashboard');});
+    router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
 
     //Notices
     router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
