@@ -596,6 +596,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
             opacityMax = 0;
         }
 
+        if (!_.isUndefined($(selector).attr('data-scroll-size')))
+            size = $(selector).attr('data-scroll-size');
+
+        if (!_.isUndefined($(selector).attr('data-scroll-opacitymax')))
+            opacityMax = $(selector).attr('data-scroll-opacitymax');
+
         $(document).ready(function() {
             $(selector).each(function() {
                 var ns = $(this).getNiceScroll(0);
@@ -805,7 +811,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
                     numCount = false;
                 var $size = $(this).attr('data-size');
                 if ($size == null || $size.length <= 0)
-                    $size = 150
+                    $size = 150;
 
                 $(this).css({height: $size, width: $size});
 
@@ -815,7 +821,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
                     lineWidth: 8,
                     scaleColor: false,
                     barColor: trackColor,
-                    trackColor: '#b5bbc9',
+                    trackColor: '#e3e5e8',
                     onStart: function(value, to) {
                         $(this.el).find('.chart-value').text(value);
                     },

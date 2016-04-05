@@ -10,7 +10,7 @@
 
 html,
 body {
-  background: #d5dae6;
+  background: #f7f8fa;
   overflow: hidden;
   font-family: "Roboto", "Open Sans", sans-serif;
   height: 100%; }
@@ -1179,6 +1179,9 @@ ul.side-nav, ul.side-nav-sub {
   display: block;
   margin: 0;
   padding: 0.875rem 0; }
+  ul.side-nav hr, ul.side-nav-sub hr {
+    margin: 5px 0;
+    background: #ccc; }
   ul.side-nav li, ul.side-nav-sub li {
     font-size: 14px;
     font-family: "Roboto", sans-serif;
@@ -2594,7 +2597,7 @@ div.dataTables_wrapper {
     font-family: "Roboto Condensed", sans-serif;
     text-align: center;
     font-weight: bold;
-    color: #2c3e50; }
+    color: #444; }
     .donutchart .chart-value.percent {
       padding-right: 22px; }
       .donutchart .chart-value.percent:after {
@@ -2616,7 +2619,7 @@ div.dataTables_wrapper {
   text-align: center !important;
   font-weight: 700;
   font-variant: small-caps;
-  color: #2c3e50; }
+  color: #444; }
 
 .bar-chart-wrapper {
   position: relative;
@@ -2637,7 +2640,7 @@ div.dataTables_wrapper {
       border-radius: 2px;
       -webkit-border-radius: 2px;
       -moz-border-radius: 2px;
-      background: #b5bbc9;
+      background: #e3e5e8;
       margin-right: 10px; }
       .bar-chart-wrapper .bar-chart .bar .bar-track {
         position: absolute;
@@ -2657,7 +2660,7 @@ div.dataTables_wrapper {
         position: absolute;
         bottom: -20px;
         left: 0;
-        color: #2c3e50;
+        color: #444;
         font-family: "Roboto", "Open Sans", sans-serif;
         font-size: 14px;
         font-weight: bold;
@@ -2674,7 +2677,7 @@ div.dataTables_wrapper {
     list-style: none; }
     .bar-chart-wrapper .bar-axis ul.x-axis li,
     .bar-chart-wrapper .bar-axis ul.y-axis li {
-      color: #2c3e50;
+      color: #444;
       font-family: "Roboto", "Open Sans", sans-serif;
       font-size: 14px;
       font-weight: bold;
