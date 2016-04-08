@@ -8,40 +8,77 @@
     z-index: 9999
     overflow: hidden
 
-  background: #223140
-  color: #cfd3d6
-  +boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
+  background: $sidebar_bg
+  color: $sidebar_text
+  width: 215px
+  position: fixed
+  top: 75px
+  left: 0
+  bottom: 0
+  +boxShadow($sidebar_box_shadow)
+  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
+  //border-right: $sidebar_border_right
 
 ul.side-nav
+  list-style: none outside none
+  line-height: 1.6
+  display: block
+  margin: 0
+  padding: 0.875rem 0
+
+  hr
+    margin: 5px 0
+    background: #ccc
+
   li
     font-size: 14px
     font-family: "Roboto", sans-serif
-    margin-bottom: 0
+    margin: 0
+    font-weight: normal
 
     &.active > a
-      border-left: 2px solid #e74c3c
+      border-left: 2px solid $accent_color
       font-family: "Roboto", sans-serif !important
-      background: #192633 !important
-      i
-        color: white
+      background: $sidebar_item_active !important
+      color: $sidebar_item_active_text !important
+
+      i,svg
+        color: $sidebar_item_active_text
+        fill: $sidebar_item_active_text
+      &:after
+        width: 0
+        height: 0
+        border-style: solid
+        border-width: 9px 9px 9px 0
+        border-color: transparent #f7f8fa transparent transparent
+        content: ""
+        position: absolute
+        top: 50%
+        margin-top: -9px
+        right: 0
 
   a
     padding: 0 0.875rem !important
-    color: white !important
-    border-left: 2px solid #223140
+    color: $sidebar_text !important
+    border-left: 2px solid $sidebar_bg
     position: relative
     padding-left: 60px !important
     line-height: 48px
     height: 48px
 
+    &:not(.button)
+      display: block
+      margin: 0
+
     span
       padding-bottom: 5px
 
     &:hover
-      border-left: 2px solid #e74c3c
-      background: #192633 !important
-      i
-        color: white
+      border-left: 2px solid $accent_color
+      background: $sidebar_item_hover !important
+      i,svg
+        color: $sidebar_text_hover
+        fill: $sidebar_text_hover
         &.icon-accounts
           background-position: 0 -24px
         &.icon-groups
@@ -49,19 +86,23 @@ ul.side-nav
         &.icon-invoices
           background-position: 0 -20px
 
-    i
+    i,svg
+      line-height: 26px
       margin-right: 15px
-      color: #536679
+      color: $sidebar_text
       margin-top: 5px
       position: absolute
       top: 5px
       left: 15px
+      fill: $sidebar_text
 
 ul.side-nav-sub
   @extend .side-nav
   list-style: none
-  background: #131e29
-  +boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
+  background: $sidebar_subnav_bg
+  //+boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
+  box-shadow: $sidebar_subnav_box_shadow
+  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
   margin: 0
   padding: 10px 0
   overflow: hidden
@@ -72,20 +113,31 @@ ul.side-nav-sub
     margin: 15px 20px
     border: none
     height: 1px
-    background: lighten(#131e29, 25%)
+    background: $sidebar_subnav_hr
   li
     margin: 5px 0
     &.active
       a
-        background: #131e29 !important
-        color: #e74c3c !important
+        background: $sidebar_subnav_bg !important
+        color: $sidebar_subnav_active !important
+        font-weight: bold
         border: none
-        i
-          color: #e74c3c !important
+        border-right: 1px solid rgba(0,0,0,0.1)
+        &:after
+          content: none
+
+        &:hover
+          background: $sidebar_subnav_item_hover !important
+        i,svg
+          color: $sidebar_subnav_active !important
+          fill: $sidebar_subnav_active !important
         .fa-sub-icon
+          line-height: 20px
           font-size: 20px
           left: 20px
           top: 0
+          &.material-icons
+            font-size: 24px
 
         .icon-inbox
           background-position: 0 -18px
@@ -101,12 +153,18 @@ ul.side-nav-sub
     padding-left: 62px !important
     line-height: 30px
     height: 30px !important
+    color: $sidebar_subnav_text
+    i,svg
+      color: $sidebar_subnav_text !important
+      fill: $sidebar_subnav_text !important
     &:hover
       border: none
-      color: #e74c3c !important
-      background: inherit !important
-      i
-        color: #e74c3c !important
+      color: $sidebar_subnav_hover !important
+      //background: inherit !important
+      background: $sidebar_subnav_item_hover !important
+      i,svg
+        color: $sidebar_subnav_hover !important
+        fill: $sidebar_subnav_hover !important
       .icon-inbox
         background-position: 0 -18px
       .icon-sent
@@ -115,10 +173,13 @@ ul.side-nav-sub
         background-position: -32px -16px
       .icon-check
         background-position: 0 -16px
-    .fa-sub-icon
+    .fa-sub-icon,svg
+      line-height: 20px
       font-size: 20px
       left: 20px
       top: 0
+      &.material-icons
+        font-size: 24px
 
 .icon-inbox,
 .icon-sent,

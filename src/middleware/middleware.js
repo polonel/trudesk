@@ -54,7 +54,13 @@ middleware.redirectToLogin = function(req, res, next) {
 
         res.redirect('/');
     } else {
-        next();
+        if (req.user.deleted) {
+            req.logout();
+            req.session.destroy();
+            res.redirect('/');
+        } else {
+            next();
+        }
     }
 };
 

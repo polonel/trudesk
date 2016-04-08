@@ -20,15 +20,25 @@ div#accountsTable_wrapper
   font-weight: 300
   font-family: "Roboto", sans-serif
   color: white
-  background: #ababab
+  background: $ticket_status_closed
   +borderRadius(3px)
 
-.ticket-status.ticket-open span
-  background: #b92929
-.ticket-status.ticket-new span
-  background: #29b955
-.ticket-status.ticket-pending span
-  background: #2980b9
+.ticket-status.ticket-open span,
+.ticket-status-open
+  background: $ticket_status_open !important
+.ticket-status.ticket-new span,
+.ticket-status-new
+  background: $ticket_status_new !important
+.ticket-status.ticket-pending span,
+.ticket-status-pending
+  background: $ticket_status_pending !important
+
+.ticket-priority
+  border-left: 10px solid transparent
+  &.ticket-priority-2
+    border-color: #8e24aa
+  &.ticket-priority-3
+    border-color: #e65100
 
 .floating-ticket-status
   position: absolute
@@ -37,6 +47,19 @@ div#accountsTable_wrapper
 
   .ticket-status span
     font-weight: 500
+
+  #statusSelect
+    transition: all 400ms cubic-bezier(0.4, 0, 0.2, 1)
+    height: 0
+    overflow: hidden
+    opacity: 0
+    &.hide
+      display: block !important
+      height: 0 !important
+      opacity: 0 !important
+    &.shown
+      height: 124px !important
+      opacity: 1 !important
 
 #statusSelect
   position: absolute
@@ -78,20 +101,20 @@ div#accountsTable_wrapper
   a.btn,
   button.btn,
   button
-    background: #cdd5e4
+    background: darken($page_content_title_bg, 15%)
     display: block
-    color: #707989
-    font-family: "Open Sans", sans-serif
+    color: lighten($page_content_title_text, 15%)
+    font-family: $fontFamily
     font-weight: 400
     font-size: 12px
     margin: 18px 5px 0 0
-    padding: 8px 16px
+    padding: 6px 16px
     +borderRadius(3px)
     height: 28px
     line-height: 14px
 
     &:hover
-      background: darken(#cdd5e4, 3%)
+      background: darken($page_content_title_bg, 20%)
 
     i
       font-weight: normal
@@ -102,8 +125,13 @@ div#accountsTable_wrapper
   padding-left: 30px
   padding-top: 30px
   margin-bottom: 40px
+  &.tru-card
+    background: white
+    padding: 5px 15px 15px
+    +borderRadius(3px)
+    margin: 30px
   h4
-    font-family: "open sans", sans-serif
+    font-family: $fontFamily
     font-size: 14px
     color: #8e98a2
     margin-bottom: 10px
@@ -122,7 +150,7 @@ div#accountsTable_wrapper
     padding-left: 75px
 
     h3
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 14px
       color: #3d4854
       margin: 0 0 7px
@@ -130,8 +158,7 @@ div#accountsTable_wrapper
 
     a, a:active, a:focus
       display: block
-      font-family: "open sans", sans-serif
-      font-size: 12px
+      font: 400 12px/15px $fontFamily
       color: #76797e
       margin: 0 0 2px
 
@@ -140,7 +167,7 @@ div#accountsTable_wrapper
         text-decoration: underline
 
     span
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 12px
       color: #76797e
       margin: 0 0 3px
@@ -150,16 +177,16 @@ div#accountsTable_wrapper
   min-height: 150px
   background: #ffffff
   border: 1px solid #d3d9e4
-  margin: 0 30px !important
+  margin: 0 15px !important
   margin-bottom: 30px !important
   padding: 15px  !important
-  font-family: "open sans", sans-serif
+  font-family: $fontFamily
   font-size: 12px
   color: #76797e
   +borderRadius(3px)
 
   label
-    font-family: "open sans", sans-serif
+    font-family: $fontFamily
     font-size: 12px
     color: #76797e
     margin-bottom: 3px
@@ -168,7 +195,7 @@ div#accountsTable_wrapper
   select,
   .input-box,
   .tag-list
-    font-family: "open sans", sans-serif
+    font-family: $fontFamily
     font-size: 12px
     height: 25px
     width: 97%
@@ -187,7 +214,11 @@ div#accountsTable_wrapper
       +boxShadow(none)
 
   select
-    padding: 2px 4px
+    background: inherit
+    border: none
+    border-bottom: 1px solid #CCC
+    +borderRadius(0)
+    padding: 0 4px 0 0
 
   .input-box
     padding-top: 3px
@@ -200,13 +231,19 @@ div#accountsTable_wrapper
     min-height: 25px
     max-height: none
     margin-bottom: 5px
+
+    background: inherit
+    border: none
+    border-bottom: 1px solid #CCC
+    +borderRadius(0)
+
     .item
       display: inline-block
       float: left
       font-size: 12px
-      font-family: "open sans", sans-serif
-      padding: 1px 8px
-      margin: 2px 0px 0px 2px
+      font-family: $fontFamily
+      padding: 0 8px
+      margin: 2px 0 0 2px
       max-height: 20px
       background: #3498db
       color: #ffffff
@@ -228,21 +265,27 @@ div#accountsTable_wrapper
     time
       font-size: 11px
       font-weight: 600
+      line-height: 13px
 
     em
+      color: #76797e
       display: block
       margin-bottom: 7px
       font-size: 11px
       font-style: normal
+      line-height: 13px
 
       span
         font-weight: 600
 
     p
       font-size: 11px
+      line-height: 13px
       font-weight: normal
       margin-top: 3px
       margin-bottom: 7px
+      color: #76797e
+      display: inline-block
 
 
 
@@ -264,7 +307,7 @@ div#accountsTable_wrapper
       padding-left: 85px
     h3
       margin: 0 0 5px
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 18px
       font-weight: 600
       color: #3d4854
@@ -272,8 +315,8 @@ div#accountsTable_wrapper
     a,a.comment-email-link
       display: inline-block
       font-size: 12px
-      font-family: "open sans", sans-serif
-      color: #e74c3c
+      font-family: $fontFamily
+      color: $accent_color
       margin-left: 2px
       //margin-bottom: 7px
 
@@ -282,7 +325,7 @@ div#accountsTable_wrapper
     a
       font-size: 14px
     time
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 12px
       color: #76797e
       display: block
@@ -293,7 +336,7 @@ div#accountsTable_wrapper
       margin: 0
       margin-bottom: 25px
       font-size: 12px
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       color: #76797e
       list-style: none
       display: inline-block
@@ -317,7 +360,7 @@ div#accountsTable_wrapper
         color: darken(#76797e, 5)
 
     p
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 14px
       color: #3d4854
       line-height: 20px
@@ -362,29 +405,37 @@ div#accountsTable_wrapper
       padding-left: 85px
       margin-bottom: 1rem
       textarea
-        font-family: "open sans", sans-serif
+        width: 100%
+        font-family: $fontFamily
         font-size: 14px
         color: #3d4854
         resize: none
-        background: #f3f5f9
-        border: 1px solid #dfe4ef
-        +borderRadius(3px)
+        //background: #f3f5f9
+        //border: 1px solid #dfe4ef
+        border-color: #dfe4ef
+        border-width: 0 0 1px
+        background: inherit
+        padding: 8px
+        +borderRadius(0)
         +boxShadow(none)
         -webkit-box-sizing: border-box
         -moz-box-sizing: border-box
         box-sizing: border-box
+        &.uk-form-danger
+          border-color: $accent_danger !important
+          background: none !important
     button[type=submit],
     button[type=reset]
-      font-family: "open sans", sans-serif
+      font-family: $fontFamily
       font-size: 14px
       color: #ffffff
-      padding: 8px 16px
-      background: #e74c3c
+      padding: 3px 15px
+      background: $accent_color
       +borderRadius(3px)
       font-weight: 400
 
       &:hover
-        background: darken(#e74c3c, 5%)
+        background: darken($accent_color, 5%)
       &:active, &:focus
         outline: none
     button[type=reset]
@@ -392,6 +443,12 @@ div#accountsTable_wrapper
 
       &:hover
         background: darken(#cdd5e4, 10%)
+
+span.uk-form-danger
+  font-size: 11px
+  background: none !important
+  border: none !important
+  font-weight: 600
 
 .ticket-comment,
 .initial-issue
@@ -401,14 +458,14 @@ div#accountsTable_wrapper
 form.ticket-form,
 form.form
   label
-    font-family: "Roboto", sans-serif
+    font-family: $fontFamily
     font-size: 14px
     font-weight: normal
     color: #2c3e50
     margin-bottom: 3px
     display: inline-block
   input,textarea,select
-    font-family: "Roboto", sans-serif
+    font-family: $fontFamily
     font-size: 14px
     color: #223140
     background: #eceff6

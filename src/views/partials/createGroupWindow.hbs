@@ -1,0 +1,30 @@
+<div class="uk-modal" id="groupCreateModal">
+    <div class="uk-modal-dialog">
+        <form class="uk-form-stacked" id="createGroupForm" action="#" method="POST">
+            <div class="uk-margin-medium-bottom">
+                <label for="gName">Group Name</label>
+                <input type="text" class="md-input" id="gName" name="gName"/>
+            </div>
+            <div class="uk-margin-small-bottom">
+                <label for="gMembers" class="uk-form-label nopadding">Members</label>
+                <select class="selectize-white" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                    {{#each data.users}}
+                        <option value="{{id}}">{{fullname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="uk-margin-small-bottom">
+                <label for="gSendMailTo" class="uk-form-label nopadding">Send Mail To</label>
+                <select name="gSendMailTo" id="gSendMailTo" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                    {{#each data.users}}
+                        <option value="{{_id}}">{{fullname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewGroup" ng-click="createGroup()">Create Group</button>
+            </div>
+        </form>
+    </div>
+</div>

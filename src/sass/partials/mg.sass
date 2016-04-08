@@ -1,0 +1,21 @@
+.mGraph .mg-histogram .axis text,
+.mGraph .mg-x-axis text,
+.mGraph .mg-y-axis text
+  font-size: 11px
+
+.mGraph .mg-active-datapoint
+  font-size: 13px
+
+.mGraph-panel
+  padding-bottom: 20px
+
+.mGraph
+  .mg-line1-color
+    stroke: $graph_path_color
+  .mg-area1-color
+    fill: lighten($graph_path_color, 5%)
+  &.graph-blue
+    .mg-line1-color
+      stroke: #1976d2
+    .mg-area1-color
+      fill: lighten(#1976d2, 10%)

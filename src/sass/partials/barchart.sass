@@ -18,7 +18,7 @@
       width: 15px
       height: 170px
       +borderRadius(2px)
-      background: #b5bbc9
+      background: #e3e5e8
       margin-right: 10px
       .bar-track
         position: absolute
@@ -28,7 +28,7 @@
         display: block
         height: 100px
         width: 100%
-        background: #e74c3c
+        background: $accent_color
         +borderRadius(2px)
         &:hover
           background: #c43627
@@ -37,8 +37,8 @@
         position: absolute
         bottom: -20px
         left: 0
-        color: #2c3e50
-        font-family: "Roboto Condensed", sans-serif
+        color: #444
+        font-family: $fontFamily
         font-size: 14px
         font-weight: bold
         text-align: center
@@ -56,8 +56,8 @@
       left: 40px
       list-style: none
       li
-        color: #2c3e50
-        font-family: "Roboto Condensed", sans-serif
+        color: #444
+        font-family: $fontFamily
         font-size: 14px
         font-weight: bold
         margin-right: 6px
@@ -74,14 +74,14 @@
         text-align: right
         width: auto
         margin: 0
-        font-family: "open sans", sans-serif
+        font-family: $fontFamily
         margin-bottom: 17px
 
 .bar-chart-caption
   span
     display: inline-block
     width: 100%
-    font-family: "Roboto", sans-serif
+    font-family: $fontFamily
     font-size: 14px
     font-weight: 500
     text-align: center

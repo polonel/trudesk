@@ -32,6 +32,7 @@ define('modules/ui', [
     socketUi.init = function() {
         this.onReconnect();
         this.onDisconnect();
+        this.updateUsers();
         this.updateNotifications();
         this.updateMailNotifications();
         this.updateComments();
@@ -93,24 +94,28 @@ define('modules/ui', [
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');
         socket.on('reconnect', function() {
-            helpers.clearFlash();
+            //helpers.clearFlash();
+            helpers.UI.hideDisconnectedOverlay();
         });
     };
 
     socketUi.onDisconnect = function() {
         socket.removeAllListeners('disconnect');
         socket.on('disconnect', function(data) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('reconnect_attempt');
         socket.on('reconnect_attempt', function(err) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('connect_timeout');
         socket.on('connect_timeout', function(err) {
-            helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
+            helpers.UI.showDisconnectedOverlay();
         });
     };
 
@@ -138,6 +143,7 @@ define('modules/ui', [
                 label.hide();
             } else {
                 label.html(count);
+                label.removeClass('hide');
                 label.show();
             }
 
@@ -151,7 +157,7 @@ define('modules/ui', [
             _.each(items, function(item) {
                 html    += '<li>';
                 html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
-                html    += '<div class="clearfix">';
+                html    += '<div class="uk-clearfix">';
                 if (item.from.image)
                     html    += '<div class="profilePic left"><img src="/uploads/users/' + item.from.image + '" alt="profile"/></div>';
                 else
@@ -282,7 +288,7 @@ define('modules/ui', [
             _.each(users, function(user) {
                 var html = '<li data-setAssignee="' + user._id + '">';
                 html    += '<a class="messageNotification" href="#" role="button">';
-                html    += '<div class="clearfix">';
+                html    += '<div class="uk-clearfix">';
                 if (_.isUndefined(user.image)) {
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
                 } else {
@@ -337,6 +343,20 @@ define('modules/ui', [
                 var image = _.isUndefined(ticket.assignee) ? 'defaultProfile.jpg' : ticket.assignee.image;
                 if (_.isUndefined(image)) image = 'defaultProfile.jpg';
                 assigneeContainer.find('a > img').attr('src', '/uploads/users/' + image);
+                var $bubble = assigneeContainer.find('a > span[data-user-status-id]');
+                if ($bubble.length < 1 && ticket.assignee) {
+                    $bubble = $('<span class="user-offline uk-border-circle" data-user-status-id></span>');
+                    assigneeContainer.find('a').append($bubble);
+                    $bubble = assigneeContainer.find('a > span[data-user-status-id]');
+                }
+
+                if (ticket.assignee) {
+                    $bubble.attr('data-user-status-id', ticket.assignee._id);
+                    socket.emit('updateUsers');
+                } else {
+                    if ($bubble.length > 0)
+                        $bubble.remove();
+                }
                 var details = assigneeContainer.find('.ticket-assignee-details');
                 if (details.length > 0) {
                     var name = _.isUndefined(ticket.assignee) ? 'No User Assigned' : ticket.assignee.fullname;
@@ -346,7 +366,7 @@ define('modules/ui', [
                     if (a.length > 0) {
                         a.attr('href', 'mailto:' + email).html(email);
                     } else {
-                        a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link');
+                        a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link uk-text-truncate');
                         details.append(a);
                     }
 
@@ -540,14 +560,14 @@ define('modules/ui', [
         socket.on('updateTicketTags', function(data) {
             //Rebuild Ticket Tags
             var ticket = data.ticket;
-            var tagsDiv = $('.tag-list');
+            var tagsDiv = $('.tag-list[data-ticketId="' + ticket._id + '"]');
             if (tagsDiv.length < 1) return true;
 
             tagsDiv.html('');
             var html = '';
             if (_.isUndefined(ticket.tags) && _.size(ticket.tags) < 1) return true;
             _.each(ticket.tags, function(item) {
-                 html += '<div class="__TAG_SELECTED hide" style="display:none; opacity: 0; visibility: hidden;">' + item._id + '</div>' +
+                 html += '<div class="__TAG_SELECTED hide" style="display: none; opacity: 0; visibility: hidden;">' + item._id + '</div>' +
                          '<div class="item">' + item.name + '</div>';
             });
 
@@ -588,6 +608,10 @@ define('modules/ui', [
         e.preventDefault();
     }
 
+    socketUi.updateUsers = function() {
+        socket.emit('updateUsers');
+    }
+
     function updateAssigneeList(e) {
         socket.emit('updateAssigneeList');
         e.preventDefault();
@@ -602,11 +626,11 @@ define('modules/ui', [
         $(document).ready(function() {
             var $commentForm = $('form#comment-reply');
             if ($commentForm.length > 0) {
-                $commentForm.on("valid invalid submit", function (e) {
+                $commentForm.on("submit", function (e) {
                     var self = $(this);
                     e.stopPropagation();
                     e.preventDefault();
-                    if (e.type === "valid") {
+                    if ($commentForm.isValid(null, null, false)) {
                         $.ajax({
                             type: self.attr('method'),
                             url: self.attr('action'),
@@ -618,8 +642,6 @@ define('modules/ui', [
                                 });
 
                                 var tId = $('input[name="ticketId"]').val();
-
-                                //socket.emit('updateComments', {ticketId: tId});
 
                                 var obj = $('.comments').parents('.page-content');
                                 helpers.resizeFullHeight();
@@ -652,22 +674,24 @@ define('modules/ui', [
                 if (_.isUndefined(image)) image = 'defaultProfile.jpg';
 
                 html +=  '<div class="ticket-comment" data-commentid="' + comment._id + '">' +
-                    '<img src="/uploads/users/' + image + '" alt=""/>' +
+                    '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
+                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<span class="uk-border-circle user-offline" data-user-status-id="' + comment.owner._id + '"></span>' +
+                    '</div>' +
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a class="comment-email-link" href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
                     '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
                     '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
-                    '<div class="edit-comment-form clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
+                    '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
                         '<form data-commentid="' + comment._id + '" data-abide>' +
                             '<div class="edit-comment-box">' +
-                                '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" required pattern="is5Long"></textarea>' +
-                                '<small class="error">Please enter a valid comment. Issue must contain at least 5 characters.</small>' +
+                                '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required data-validation="length" data-validation-length="min5" data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."></textarea>' +
                             '</div>' +
                             '<div class="right">' +
-                                '<button class="resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
-                                '<button type="submit" data-preventDefault="false">Save</button>' +
+                                '<button class="uk-button resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                                '<button class="uk-button" type="submit" data-preventDefault="false">Save</button>' +
                             '</div>' +
                         '</form>' +
                     '</div>' +
@@ -684,6 +708,9 @@ define('modules/ui', [
             });
 
             commentContainer.html(html);
+            helpers.resizeAll();
+            socketUi.updateUsers();
+
             require(['pages/singleTicket'], function(st) {
                 st.init();
             });
@@ -715,7 +742,7 @@ define('modules/ui', [
                 var html = '';
                 html += '<li>' +
                     '<a class="messageNotification" href="/tickets/' + item.data.ticket.uid + '" role="button" data-notificationId="' + item._id + '" >' +
-                        '<div class="clearfix">';
+                        '<div class="uk-clearfix">';
                 if (item.unread === true) {
                     html += '<div class="messageUnread"></div>';
                 }
@@ -763,13 +790,16 @@ define('modules/ui', [
             });
 
             var $notificationsCount = $('#btn_notifications').find('span');
+            var $bottomActions = $('#notifications').find('.bottom-actions');
             if ($notificationsCount.length > 0) {
                 if (data.count == 0) {
                     $notificationsCount.html('0');
                     $notificationsCount.addClass('hide');
+                    $bottomActions.addClass('hide');
                 } else {
                     $notificationsCount.removeClass('hide');
                     $notificationsCount.html(data.count);
+                    $bottomActions.removeClass('hide');
                 }
             }
         });

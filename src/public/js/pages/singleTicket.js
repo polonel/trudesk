@@ -59,6 +59,7 @@ define('pages/singleTicket', [
                 form.unbind('submit');
                 form.submit(function($event) {
                     $event.preventDefault();
+                    if (!form.isValid(null, null, false)) return true;
                     var id = $('#__ticketId').html();
                     if (id.length > 0) {
                         var comment = $($event.currentTarget).find('textarea#commentText').val();
@@ -105,7 +106,8 @@ define('pages/singleTicket', [
                 error: function(err) {
                     var res = err.responseJSON;
                     console.log('[trudesk:singleTicket:onRemoveAttachmentClick] - ' + res.error);
-                    helpers.showFlash(res.error, true);
+                    //helpers.showFlash(res.error, true);
+                    helpers.UI.showSnackbar(res.err, true);
                 }
             })
         }

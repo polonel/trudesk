@@ -24,18 +24,23 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                 $http.put(
                     '/api/v1/users/' + id,
                     {
-                        _id: id,
-                        fullname: data.fullname,
-                        password: data.password,
-                        cPassword: data.cPassword,
-                        email: data.email
+                        aId:            id,
+                        aFullname:      data.fullname,
+                        aPass:          data.password,
+                        aPassConfirm:   data.cPassword,
+                        aEmail:         data.email
                     }
                 ).success(function(d) {
                         resetForm();
-                        helpers.showFlash('Profile Successfully Saved!');
+                        //helpers.showFlash('Profile Successfully Saved!');
+                        helpers.UI.showSnackbar({
+                            text: 'Profile Successfully Saved',
+                            textColor: '#f8f8f2'
+                        });
                     }).error(function(e) {
-                        console.log('[trudesk:profile:updateUser] - ' + e);
-                        helpers.showFlash('Error: ' + e, true);
+                        console.log('[trudesk:profile:updateUser] - ' + e.error.message);
+                        //helpers.showFlash('Error: ' + e, true);
+                        helpers.UI.showSnackbar('Error ' + e.error.message, true);
                     });
             };
 
@@ -56,10 +61,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         $('#aApiKey').val(tokenJson.token);
                         $('.removeApiButton').removeClass('hide');
                         $('.generateApiButton').addClass('hide');
-                        helpers.showFlash('API Key Successfully Generated');
+                        //helpers.showFlash('API Key Successfully Generated');
+                        helpers.UI.showSnackbar('API Key Successfully Generated', false);
                     }).error(function(e) {
                         console.log('[trudesk:profile:generateApiKey] - ' + e);
-                        helpers.showFlash('Error: ' + e, true);
+                        //helpers.showFlash('Error: ' + e, true);
+                        helpersUI.showSnackbar('Error: ' + e, true);
                     });
 
             };
@@ -76,10 +83,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         $('#aApiKey').val('');
                         $('.generateApiButton').removeClass('hide');
                         $('.removeApiButton').addClass('hide');
-                        helpers.showFlash('API Key Successfully Revoked');
+                        //helpers.showFlash('API Key Successfully Revoked');
+                        helpers.UI.showSnackbar('API Key Successfully Revoked', false);
                     }).error(function(e) {
                         console.log('[trudesk:profile:removeApiKey] - ' + e);
-                        helpers.showFlash('Error: ' + e, true);
+                        //helpers.showFlash('Error: ' + e, true);
+                        helpers.UI.showSnackbar('Error: ' + e, true);
                     });
             };
 

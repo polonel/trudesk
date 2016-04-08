@@ -41,13 +41,20 @@ groupsController.get = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.groups = {};
+    self.content.data.users = [];
 
     groupSchema.getAllGroups(function(err, groups) {
         if (err) handleError(res, err);
 
         self.content.data.groups = _.sortBy(groups, 'name');
 
-        res.render('groups', self.content);
+        userSchema.findAll(function(err, users) {
+            if (err) handleError(res, err);
+
+            self.content.data.users = _.sortBy(users, 'fullname');
+
+            res.render('groups', self.content);
+        });
     });
 };
 

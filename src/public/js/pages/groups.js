@@ -15,40 +15,88 @@
 define('pages/groups', [
     'jquery',
     'modules/helpers',
+    'uikit',
     'datatables',
     'dt_responsive',
     'dt_grouping',
-    'dt_foundation',
+    //'dt_foundation',
     'dt_scroller',
     'history'
 
-], function($, helpers) {
+], function($, helpers, UIkit) {
     var groupsPage = {};
 
     groupsPage.init = function() {
         $(document).ready(function() {
-            var table = $('#groupsTable');
-            table.dataTable({
-                searching: true,
-                bLengthChange: false,
-                bPaginate: false,
-                iDisplayLength: 99999,
-                bInfo: false,
-                scrollY: '100%',
-                order: [[1, 'asc']],
-                columnDefs: [
-                    {"width": "50px", "targets": 0}
-                ]
+            // get all filters
+            var filterArray = [];
+            $('#group_list').children().each(function() {
+                var thisfilter = $(this).attr('data-uk-filter');
+                if ( $.inArray( thisfilter, filterArray ) == -1) {
+                    filterArray.push(thisfilter);
+                }
             });
-//                .rowGrouping({
-//                iGroupingColumnIndex: 5,
-//                sGroupingColumnSortDirection: "asc",
-//                iGroupingOrderByColumnIndex: 1,
-//                bHideGroupingColumn: false,
-//                bHideGroupingOrderByColumn: false
-//            });
 
-            helpers.resizeDataTables('.groupsList');
+            var filterArray_length = filterArray.length;
+
+            var grid = UIkit.grid($('#group_list'),{
+                            controls: '',
+                            gutter: 20
+                        });
+
+
+            // find user
+            $("#group_list_search").keyup(function(){
+                var sValue = $(this).val().toLowerCase();
+
+                if(sValue.length > 2) {
+                    var filteredItems = '';
+                    for($i=0;$i<filterArray_length;$i++) {
+                        if(filterArray[$i].toLowerCase().indexOf(sValue) !== -1) {
+                            filteredItems += (filteredItems.length > 1 ? ',' : '') + filterArray[$i];
+                        }
+                    }
+
+                    if(filteredItems){
+                        // filter grid items
+                        grid.filter(filteredItems);
+                        filteredItems = '';
+                    } else {
+                        // show all
+                        grid.filter('all');
+                    }
+                } else {
+                    // reset filter
+                    grid.filter();
+                }
+
+            }).on('blur',function() {
+                // clear search input
+                //$(this).val('');
+            });
+
+//            var table = $('#groupsTable');
+//            table.dataTable({
+//                searching: true,
+//                bLengthChange: false,
+//                bPaginate: false,
+//                iDisplayLength: 99999,
+//                bInfo: false,
+//                scrollY: '100%',
+//                order: [[1, 'asc']],
+//                columnDefs: [
+//                    {"width": "50px", "targets": 0}
+//                ]
+//            });
+////                .rowGrouping({
+////                iGroupingColumnIndex: 5,
+////                sGroupingColumnSortDirection: "asc",
+////                iGroupingOrderByColumnIndex: 1,
+////                bHideGroupingColumn: false,
+////                bHideGroupingOrderByColumn: false
+////            });
+//
+//            helpers.resizeDataTables('.groupsList');
         });
     };
 

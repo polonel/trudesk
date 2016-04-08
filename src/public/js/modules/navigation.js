@@ -14,7 +14,7 @@
 
 "use strict";
 
-define(['jquery', 'modules/helpers', 'underscore', 'modules/socket', 'foundation'], function($, helpers, _, socket) {
+define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($, helpers, _, socket) {
     var navigation = {};
 
     navigation.init = function() {

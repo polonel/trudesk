@@ -1,26 +1,42 @@
-<div id="newMessageModal" class="reveal-modal small" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog" data-options="animation:none;">
-    <h2 id="modalTitle">New Message</h2>
-    <div>
-        <form id="newMessageForm" action="#" method="POST" class="nomargin">
-            <input type="hidden" name="from" value="{{data.user._id}}"/>
-            <label for="newMessageTo">To:</label>
-            <select name="newMessageTo" id="newMessageTo" multiple class="chosen-select" data-placeholder=" ">
-                {{#each data.common.messages.users}}
-                    <option value="{{_id}}">{{fullname}}</option>
-                {{/each}}
-            </select>
+<div id="newMessageModal" class="uk-modal" data-reveal aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
+    <div class="uk-modal-dialog">
+        <a class="uk-close uk-modal-close no-ajaxy" aria-label="Close"></a>
 
-            <label for="newMessageSubject" style="margin-top: 10px;">Subject:</label>
-            <input id="newMessageSubject" name="newMessageSubject" type="text" />
+        <h2 id="modalTitle" class="uk-margin-medium-bottom">New Message</h2>
+        <div class="uk-clearfix">
+            <form id="newMessageForm" action="#" method="POST" class="uk-form-stacked">
+                <input type="hidden" name="from" value="{{data.user._id}}"/>
+                <label for="newMessageTo" class="uk-form-label">To:</label>
+                <select name="newMessageTo" id="newMessageTo" multiple class="selectize-white uk-margin-medium-bottom"
+                        data-md-selectize-inline
+                        data-md-selectize-bottom="true"
+                        data-md-selectize-closeOnSelect="true">
+                    {{#each data.common.messages.users}}
+                        <option value="{{_id}}">{{fullname}}</option>
+                    {{/each}}
+                </select>
 
-            <label for="newMessageText">Message:</label>
-            <textarea name="newMessageText" id="newMessageText" cols="30" rows="10"></textarea>
+                <div class="uk-margin-medium-bottom">
+                    <label for="newMessageSubject" class="uk-form-label">Subject:</label>
+                    <input class="md-input" id="newMessageSubject" name="newMessageSubject" type="text"
+                           data-validation="length"
+                           data-validation-length="min10"
+                           data-validation-error-msg="Please enter a valid subject. Subject must contain at least 10 characters."/>
+                </div>
 
-            <div class="right">
-                <button class="eh-sendNewMessageButton btn nomargin" type="submit">Send Message</button>
-            </div>
-        </form>
+                <div class="uk-margin-medium-bottom">
+                    <label for="newMessageText" class="uk-form-label">Message:</label>
+                    <textarea class="md-input" name="newMessageText" id="newMessageText" cols="30" rows="10"
+                        data-validation="length"
+                              data-validation-length="min10"
+                              data-validation-error-msg="Please enter a valid message. Message must contain at least 10 characters."
+                    ></textarea>
+
+                    <div class="right">
+                        <button class="eh-sendNewMessageButton md-btn md-btn-flat md-btn-flat-primary md-btn-wave nomargin" type="submit">Send Message</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <a class="close-reveal-modal no-ajaxy" aria-label="Close">&#215;</a>
 </div>

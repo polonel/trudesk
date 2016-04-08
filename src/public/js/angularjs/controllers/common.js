@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], function(angular, _, $, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history'], function(angular, _, $, socket, UI) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
         .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
 
@@ -20,15 +20,42 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
             $scope.loadNoticeAlertWindow = function() {
                 //Load the function In the next Tick...
                 $timeout(function() {
-                    $scope.noticeAlertWindow = $('#noticeAlertWindow');
+                    //Bind to Events
+                    UI.$html.on('hide.uk.modal', function(event) {
+                        var modal = $(event.target);
+                        if (modal.length > 0) {
+                            modal.find('form')[0].reset();
+                            modal.find('option').prop('selected', false);
+                            var $select = modal.find('form').find('select');
+                            $select.each(function() {
+                                var self = $(this);
+                                var $selectize = self[0].selectize;
+                                //$selectize.addOption({value: -1, text: "Select Group..."});
+                                //$selectize.refreshOptions();
+                                //$selectize.setValue(-1);
+                                $selectize.clear();
+                            });
+                            var $mdInputFilled = modal.find('*.md-input-filled');
+                            $mdInputFilled.each(function() {
+                                var self = $(this);
+                                self.removeClass('md-input-filled');
+                            })
+                        }
+                    });
 
+
+                    $scope.noticeAlertWindow = $('#noticeAlertWindow');
                     if ($scope.noticeAlertWindow.length > 0) {
                         var cookieName = $('#__noticeCookieName').text();
                         if (cookieName == 'undefined' || _.isEmpty(cookieName)) return true;
                         var shouldShowNotice = ($cookies.get(cookieName) == 'true' || $cookies.get(cookieName) == undefined);
 
                         if (shouldShowNotice) {
-                            $scope.noticeAlertWindow.foundation('reveal', 'open');
+                            var modal = UI.modal($scope.noticeAlertWindow, {
+                                bgclose: false
+                            });
+
+                            modal.show();
                         }
                     }
                 }, 0, false);
@@ -41,7 +68,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
                 expiresDate.setDate(expiresDate.getDate() + 1);
                 $cookies.put(cookieName, 'false', {expires: expiresDate});
 
-                $scope.noticeAlertWindow.foundation('reveal', 'close');
+                UI.modal($scope.noticeAlertWindow).hide();
             };
 
             $scope.clearNotifications = function($event) {
@@ -65,8 +92,32 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'history'], functio
 
             $scope.closeNoticeAlert = function($event) {
                 $event.preventDefault();
-                $('#noticeAlertWindow').foundation('reveal', 'close');
+                UI.modal('#noticeAlertWindow').hide();
             };
 
+        }])
+        .directive('closeUkDropdown', ['$document', '$timeout', function($document, $timeout) {
+            return {
+                restrict: 'A',
+                link: function(scope, element, attr) {
+                    //$document.off('mouseup', mouseup);
+                    //$document.on('mouseup', mouseup);
+
+                    element.off('mouseup', mouseup);
+                    element.on('mouseup', mouseup);
+
+                    function mouseup($event) {
+                        var this_dropdown = element.parents('.uk-dropdown');
+
+                        this_dropdown.removeClass('uk-dropdown-shown');
+
+                        $timeout(function() {
+                            this_dropdown.removeClass('uk-dropdown-active');
+                            this_dropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
+
+                        },280);
+                    }
+                }
+            }
         }]);
 });

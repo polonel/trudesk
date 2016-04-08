@@ -2,38 +2,41 @@
 <html>
 <head>
     <title>Trudesk</title>
-    <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Roboto:200,400,300,600,700' rel='stylesheet' type='text/css'>
     <style type="text/css">
         html {
             overflow-x: hidden;
         }
         body {
-            background: #223140;
+            background: #eee;
             text-align: center;
-            font-family: "Open Sans", Arial, sans-serif;
+            font-family: "Roboto", Arial, sans-serif;
         }
 
         .wrapper {
             width: 400px;
-            height: 370px;
+            height: 400px;
             position: absolute;
             left: 50%;
             top: 50%;
-            margin: -185px 0 0 -200px;
+            transform: translate(-50%, -50%);
         }
 
         img {
             margin-bottom: 55px;
         }
 
-        input {
-            font-family: "Open Sans", Arial, sans-serif;
+        label {
+            text-align: left
+        }
+
+        button {
+            font-family: "Roboto", Arial, sans-serif;
             width: 340px;
             height: 20px;
             text-align: left;
             padding: 15px 20px;
             background: #384b5f;
-            border: none;
             border: 1px solid #1c2937;
             font-size: 20px;
             color: #fff;
@@ -44,7 +47,7 @@
             font-weight: 300;
         }
 
-        input.button {
+        button.button {
             width: 380px;
             height: auto;
             text-align: center;
@@ -56,7 +59,7 @@
             -webkit-border-radius: 3px;
         }
 
-        input.button:hover {
+        button.button:hover {
             background: #f15849;
             cursor: pointer;
         }
@@ -68,7 +71,7 @@
         a {
             display: inline-block;
             padding-right: 10px;
-            color: #879eb7;
+            color: #727272;
             font-size: 14px;
             float: right;
             text-decoration: none;
@@ -76,47 +79,41 @@
         }
 
         a:hover {
-            color: white;
+            color: #A5A5A5;
         }
 
         ::-webkit-input-placeholder { /* WebKit browsers */
-            color:    #6a7b8c;
+            color:    #222;
         }
         :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
-            color:    #6a7b8c;
+            color:    #222;
             opacity:  1;
         }
         ::-moz-placeholder { /* Mozilla Firefox 19+ */
-            color:    #6a7b8c;
+            color:    #222;
             opacity:  1;
         }
         :-ms-input-placeholder { /* Internet Explorer 10+ */
-            color:    #6a7b8c;
+            color:    #222;
         }
-        h4,h2 {
-            font-size: 36px;
+        h2,h4 {
+            text-align: center;
+            font-family: "Roboto", Arial, sans-serif;
+            font-size: 150px;
             font-weight: 300;
-            color: white;
             margin: 0;
+            color: #343434;
         }
-
-        h2 {
-            font-size: 72px;
-            color: #e74c3c;
+        h4 {
+            font-size: 32px;
+            color: #222;
         }
     </style>
 </head>
 <body>
 <div class="wrapper">
-    <!--<img src="logo_login.png" alt="Trudesk Logo" /> <br />-->
     <h2>503</h2>
-    <h4>Service Unavailable</h4>
-    <!-- <form>
-        <input type="text" placeholder="Username" />
-        <input type="password" placeholder="Password" />
-        <input class="button" type="submit" value="Login" />
-    </form>
-    <a href="#">Forgot your password?</a> -->
+    <h4>Service unavailable</h4>
 </div>
 </body>
 </html>

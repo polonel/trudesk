@@ -15,7 +15,10 @@ var async   = require('async'),
     winston = require('winston'),
     wConfig = require('winston/lib/winston/config'),
     nconf = require('nconf'),
+    NodeCache = require('node-cache'),
     pkg     = require('./package.json');
+
+global.forks = [];
 
 nconf.argv().env();
 
@@ -42,7 +45,7 @@ winston.err = function (err) {
     winston.error(err.stack);
 };
 
-if (!process.send) {
+if (!process.env.FORK) {
     winston.info('    .                              .o8                     oooo');
     winston.info('  .o8                             "888                     `888');
     winston.info('.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo');
@@ -51,11 +54,34 @@ if (!process.send) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2015 Chris Brame');
+    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2016 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
 }
+
+//CLUSTER STUFF
+//var cluster = require('cluster');
+//if (cluster.isMaster) {
+//    var numWorkers = require('os').cpus().length;
+//    winston.info('Master cluster setting up ' + numWorkers + ' workers...');
+//
+//    for (var i = 0; i < numWorkers; i++) {
+//        cluster.fork({FORK: 1});
+//    }
+//
+//    cluster.on('online', function(worker) {
+//        winston.debug('Worker ' + worker.process.pid + ' is online');
+//    });
+//
+//    cluster.on('exit', function(worker, code, signal) {
+//        winston.warn('Worker ' + worker.process.pid + ' crashed with code: ' + code);
+//        winston.info('Starting a new worker');
+//        cluster.fork({FORK: 1});
+//    });
+//} else {
+//
+//}
 
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
@@ -188,6 +214,34 @@ function dbCallback(err, db) {
                 //Start Task Runners
                 var taskrunner = require('./src/taskrunner');
                 next();
+            },
+            function(next) {
+                var fork = require('child_process').fork;
+                var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env } } );
+
+                global.forks.push({name: 'cache', fork: n});
+
+                n.on('message', function(data) {
+                    if (data.cache) {
+                        var nodeCache = require('./src/cache/node-cache');
+                        global.cache = new nodeCache({
+                            data: data.cache.data,
+                            checkperiod: 0
+                        });
+                    }
+                });
+
+                //
+                //n.on('exit', function (code, signal) {
+                //    console.log('Child exited:', code, signal);
+                //});
+
+                next();
+                //winston.debug('Initializing Cache...');
+                //var cache = require('./src/cache');
+                //cache.init(function() {
+                //    next();
+                //});
             }
         ], function() {
             winston.info("TruDesk Ready");

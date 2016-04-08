@@ -1,16 +1,16 @@
 <div id="__folder" class="hide">{{folderNum}}</div>
-<div ng-controller="messagesCtrl">
-    <div class="small-5 medium-5 large-3 columns message-list">
+<div class="uk-grid uk-grid-collapse" ng-controller="messagesCtrl">
+    <div class="uk-width-3-10 message-list">
         <div class="page-title noshadow nopadding-right">
             <div class="page-title-border-right">
                 <p>Messages</p>
             </div>
         </div>
 
-        <div class="full-height">
+        <div class="page-content-left noborder full-height">
             <form id="messagesForm" action="#" style="margin: 0">
                 <ul class="message-items full-height scrollable" data-folder="{{lowercase folder}}">
-                    <li class="message-folder">{{{folder}}}</li>
+                    <li class="message-folder font-weight-300">{{{folder}}}</li>
 
                     {{#foreach data.messages.items}}
                         <li class="{{#if unread}}unread message-tag{{/if}}" data-messageId="{{_id}}">
@@ -27,30 +27,23 @@
                 </ul>
             </form>
         </div>
-
     </div>
-    <div class="small-7 columns nopadding page-message">
-        <div class="page-title-right noshadow">
-            <ul class="button-group">
-                <li class=""><a href="#" class="btn no-ajaxy" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
-                <li class="hide-for-medium-down"><a href="#" class="btn"><i class="fa fa-print"></i>Print</a></li>
+    <div class="uk-width-7-10 nopadding page-message">
+        <div class="page-title-right nopadding noshadow">
+            <ul class="button-group uk-clearfix">
+                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
+                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
+                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
+                <li class=""><a href="#" class="btn md-btn-wave-light"><i class="fa fa-print"></i>Print</a></li>
                 {{#is folder 'Trash'}}
-                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
+                    <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
                 {{else}}
-                    <li class="hide-for-medium-down"><a href="#" class="btn no-ajaxy" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
+                    <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
                 {{/is}}
-                <li class="show-for-medium-down right"><a href="#" data-dropdown="drop1" data-options="right_align:true" class="icon-button dropdown"><i class="fa fa-gear"></i></a></li>
-                <li>
-                    <ul id="drop1" class="f-dropdown" data-dropdown-content>
-                        <li><a href="#">Here</a></li>
-                    </ul>
-                </li>
             </ul>
         </div>
 
-        <div id="message-content" class="page-content full-height scrollable">
+        <div id="message-content" class="page-content page-content-right full-height scrollable">
             {{#if data.messages.message}}
                 <div class="message-header">
                     <div class="message-from-id hide">{{data.messages.message.from._id}}</div>

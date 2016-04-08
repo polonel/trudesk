@@ -211,8 +211,6 @@ mainController.dashboard = function(req, res, next) {
             self.content.data.dailyYAxis.v3 = 5;
         }
 
-
-
         res.render('dashboard', self.content);
     });
 };

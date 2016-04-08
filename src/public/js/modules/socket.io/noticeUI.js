@@ -17,10 +17,11 @@ define('modules/socket.io/noticeUI', [
     'underscore',
     'moment',
     'modules/helpers',
+    'uikit',
     'modules/navigation',
     'history'
 
-], function($, _, moment, helpers, nav) {
+], function($, _, moment, helpers, UIkit, nav) {
     var noticeUI = {};
 
     noticeUI.setShowNotice = function(socket, notice) {
@@ -34,9 +35,14 @@ define('modules/socket.io/noticeUI', [
             var $dateFormated = moment(notice.activeDate).format('MM/DD/YYYY HH:mm');
             var $message = ' - Important: ' + notice.message;
             var $bgColor = notice.color;
+            var $fontColor = notice.fontColor;
             $noticeDiv.css('background', $bgColor);
+            $noticeDiv.css('color', $fontColor);
             $noticeDiv.html($dateFormated + $message);
-            $noticeDiv.removeClass('hide');
+            $noticeDiv.removeClass('uk-hidden');
+            $('.sidebar').css('top', '105px');
+
+            helpers.resizeAll();
 
             if (notice.alertWindow)
                 showNoticeAlertWindow(notice);
@@ -50,7 +56,11 @@ define('modules/socket.io/noticeUI', [
     noticeUI.updateClearNotice = function(socket) {
         socket.removeAllListeners('updateClearNotice');
         socket.on('updateClearNotice', function() {
-            $('div#notice-banner').addClass('hide');
+            $('div#notice-banner').addClass('uk-hidden');
+            $('.sidebar').css('top', '75px');
+
+            helpers.resizeAll();
+
             hideNoticeAlertWindow();
         });
     };
@@ -71,14 +81,18 @@ define('modules/socket.io/noticeUI', [
         noticeTitle.html(notice.name);
         noticeText.html(notice.message);
 
-        noticeAlertWindow.foundation('reveal', 'open');
+        var modal = UIkit.modal(noticeAlertWindow, {
+            bgclose: false
+        });
+
+        modal.show();
     }
 
     function hideNoticeAlertWindow() {
         var noticeAlertWindow = $('#noticeAlertWindow');
         if (noticeAlertWindow.length < 1) return true;
 
-        noticeAlertWindow.foundation('reveal', 'close');
+        UIkit.modal(noticeAlertWindow).hide();
     }
 
     return noticeUI;

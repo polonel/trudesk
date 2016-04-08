@@ -15,7 +15,6 @@
 define('pages/editaccount', [
     'jquery',
     'modules/helpers',
-    'chosen',
     'history'
 
 ], function($, helpers) {
@@ -28,11 +27,11 @@ define('pages/editaccount', [
             $hoverAction.parent().hover(function() {
                 var self = $(this);
                 var hoverAction = self.find('.hoverAction');
-                hoverAction.stop().animate({bottom: 0}, 150);
+                hoverAction.stop().animate({bottom: 0}, 300);
             }, function() {
                 var self = $(this);
                 var hoverAction = self.find('.hoverAction');
-                hoverAction.stop().animate({bottom: '-55px'}, 150);
+                hoverAction.stop().animate({bottom: '-256px'}, 300);
             });
         });
     };

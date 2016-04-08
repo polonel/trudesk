@@ -49,10 +49,9 @@ define('modules/chat',[
             html += '<div class="profilePic left"><img src="/uploads/users/' + imageUrl + '" alt="profile"/></div>';
             html += '<div class="messageAuthor"><strong>' + onlineUser.fullname + '</strong></div>';
             html += '<div class="messageSnippet">';
-            html += '<span>' + onlineUser.title + '</span>';
+            if (onlineUser.title)
+                html += '<span>' + onlineUser.title + '</span>';
             html += '</div>';
-//            html += '<div class="messageDate">';
-//            html += '<time datetime="2014-08-25T12:00" class="timestamp">Aug 25</time>';
             html += '</div>';
             html += '</div>';
             html += '</a>';
@@ -61,7 +60,27 @@ define('modules/chat',[
 
         onlineList.append(html);
         chatClient.bindActions();
+
+        var $u = _.throttle(function() {
+            UpdateOnlineBubbles(data);
+        }, 1500, {trailing: false});
+
+        $u();
     });
+
+    function UpdateOnlineBubbles(usersOnline) {
+        $('span[data-user-status-id]').each(function() {
+            $(this).removeClass('user-online').addClass('user-offline');
+        });
+        _.each(usersOnline, function(v, k) {
+            var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
+            $bubble.each(function() {
+                var self = $(this);
+
+                self.removeClass('user-offline').addClass('user-online');
+            });
+        });
+    }
 
     socket.removeAllListeners('spawnChatWindow');
     socket.on('spawnChatWindow', function(data) {

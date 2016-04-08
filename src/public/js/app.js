@@ -22,6 +22,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         //Static Bootstraps
         angular.bootstrap($('.top-bar'), ['trudesk']);
         angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
+        angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
 
         //Dynamic Bootstrap
         angular.bootstrap($('#page-content'), ['trudesk']);
@@ -30,36 +31,40 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
     require([
         'modules/navigation',
         'modules/enjoyhint',
+        //'foundation',
+        'uikit',
         'modules/socket',
         'modules/ajaxify',
         'modernizr',
         'fastclick',
         'placeholder',
-        'foundation',
+        //'foundation',
         'pace',
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, eh) {
+    ], function(nav, eh, UI) {
         //Start App
-        $(document).foundation({
-            abide: {
-                patterns: {
-                    is5Long: /.{5,}/
-                }
-            },
-            reveal: {
-                animation: 'fade',
-                animation_speed: 200,
-                close_on_background_click: true,
-                close_on_esc: true
-            }
-        });
+        //$(document).foundation({
+        //    abide: {
+        //        patterns: {
+        //            is5Long: /.{5,}/
+        //        }
+        //    },
+        //    reveal: {
+        //        animation: 'fade',
+        //        animation_speed: 200,
+        //        close_on_background_click: true,
+        //        close_on_esc: true
+        //    }
+        //});
 
         nav.init();
-        //helpers.fadeOutLoader(100);
         setTimeout(function(){
-            wdtLoading.done();
+
+            helpers.hideLoader(1000);
+            helpers.countUpMe();
+            helpers.UI.cardShow();
         }, 2000);
         //eh.init();
     });

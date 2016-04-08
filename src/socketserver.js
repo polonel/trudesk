@@ -50,6 +50,7 @@ module.exports = function(ws) {
         setInterval(function() {
             updateMailNotifications();
             updateNotifications();
+            utils.sendToSelf(socket, 'updateUsers', usersOnline);
 
         }, 5000);
 
@@ -123,7 +124,7 @@ module.exports = function(ws) {
                     return true;
                 }
 
-                notifications.items = items;
+                notifications.items = __.first(items, 5);
                 var p = __.where(items, {unread: true});
                 notifications.count = _.size(p);
 

@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'history'], function(angular, _, $, helpers, socket, md) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history'], function(angular, _, $, helpers, socket, md, UIkit) {
     return angular.module('trudesk.controllers.messages', [])
         .controller('messagesCtrl', ['openNewMessageWindow', '$scope', '$http', '$window', function(openNewMessageWindow, $scope, $http, $window) {
             $scope.showNewMessage = function() {
@@ -108,15 +108,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
         .factory('openNewMessageWindow', function() {
             return {
                 openWindow: function openWindow() {
+                    helpers.hideAllpDropDowns();
+                    var $newMessageModal = $('#newMessageModal');
                     var $newMessageTo = $('#newMessageTo');
                     $newMessageTo.find("option").prop('selected', false);
                     $newMessageTo.trigger('chosen:updated');
                     $('#newMessageSubject').val('');
                     $('#newMessageText').val('');
 
-                    $('#newMessageModal').foundation('reveal', 'open');
+                    UIkit.modal($newMessageModal).show();
                 },
                 openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
+                    helpers.hideAllpDropDowns();
+                    var $newMessageModal = $('#newMessageModal');
                     var $newMessageTo = $('#newMessageTo');
                     $newMessageTo.find("option").prop('selected', false);
                     $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
@@ -126,14 +130,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $mText = $mText.trim();
                     $('#newMessageText').val($mText);
 
-                    $('#newMessageModal').foundation('reveal', 'open');
+                    UIkit.modal($newMessageModal).show();
                 },
                 closeWindow: function closeWindow() {
                     //Close reveal and refresh page.
-                    $('#newMessageModal').foundation('reveal', 'close');
+                    var $newMessageModal = $('#newMessageModal');
+                    UIkit.modal($newMessageModal).hide();
+
                     //Clear Fields
-                    $("#newMessageTo").find("option").prop('selected', false);
-                    $('#newMessageTo').trigger('chosen:updated');
+                    var $newMessageTo = $('#newMessageTo');
+                    $newMessageTo.find("option").prop('selected', false);
+                    $newMessageTo.trigger('chosen:updated');
                     $('#newMessageSubject').val('');
                     $('#newMessageText').val('');
                 }

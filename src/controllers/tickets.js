@@ -174,6 +174,7 @@ ticketsController.filter = function(req, res, next) {
     var dateStart = queryString.ds;
     var dateEnd = queryString.de;
     var status = queryString.st;
+    var priority = queryString.pr;
     var groups = queryString.gp;
     var types = queryString.tt;
     var tags = queryString.tag;
@@ -183,6 +184,7 @@ ticketsController.filter = function(req, res, next) {
                                     .replace(new RegExp('([?&])page=[^&]*&'), '$1');
 
     if (!_.isUndefined(status) && !_.isArray(status)) status = [status];
+    if (!_.isUndefined(priority) && !_.isArray(priority)) priority = [priority];
     if (!_.isUndefined(groups) && !_.isArray(groups)) groups = [groups];
     if (!_.isUndefined(types) && !_.isArray(types)) types = [types];
     if (!_.isUndefined(tags) && !_.isArray(tags)) tags = [tags];
@@ -195,6 +197,7 @@ ticketsController.filter = function(req, res, next) {
             end: dateEnd
         },
         status: status,
+        priority: priority,
         groups: groups,
         tags: tags,
         types: types,

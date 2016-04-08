@@ -1,0 +1,88 @@
+/* dialog modals
+
+.uk-modal
+  z-index: 1304
+  background: rgba(0, 0, 0, 0.5)
+  -webkit-transition: opacity 250ms ease-out
+  transition: opacity 250ms ease-out
+  overflow: auto !important
+  &.uk-modal-no-backdrop
+    background: transparent
+
+.uk-modal-dialog
+  border-radius: 2px
+  box-shadow: 0 19px 38px rgba(0, 0, 0, 0.3), 0 15px 12px rgba(0, 0, 0, 0.22)
+  padding: 24px
+  display: block !important
+  -webkit-animation: none !important
+  animation: none !important
+  -webkit-transition: -webkit-transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms ease-in
+  transition: transform 280ms cubic-bezier(0.4, 0, 0.2, 1), opacity 280ms ease-in
+  -webkit-transform: scale(0)
+  transform: scale(0)
+
+.uk-open .uk-modal-dialog
+  -webkit-transform: scale(1)
+  transform: scale(1)
+
+.uk-modal-dialog
+  .uk-modal-header
+    background: none
+    border-bottom: none
+    margin: 0 -24px 24px
+    padding: 0 32px 0 24px
+    overflow: hidden
+    .uk-modal-title
+      margin: 0
+      font: 500 18px / 28px "Roboto", sans-serif
+      span
+        font-size: 16px
+        display: block
+        color: #727272
+  .uk-modal-footer
+    margin: 16px -16px -16px
+    padding: 16px
+    background: #fff
+    border-top: none
+    &:before
+      content: " "
+      display: table
+    &:after
+      content: " "
+      display: table
+      clear: both
+    &:before
+      content: " "
+      display: table
+    &:after
+      content: " "
+      display: table
+      clear: both
+    .md-icon-btn
+      margin-top: 2px
+  .uk-modal-caption
+    bottom: 16px
+    margin: 0 32px
+  > .uk-close:first-child
+    top: 8px
+    right: 8px
+    position: absolute
+    float: none
+    margin: 0
+
+.uk-modal-dialog-lightbox
+  padding: 0
+  > .uk-close:first-child
+    top: -11px
+    right: -11px
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)
+    border: none
+
+.uk-modal-dialog .uk-overflow-container
+  margin: 16px 0
+
+.uk-modal
+  .uk-margin.uk-modal-content
+    margin-bottom: 0
+  &.uk-modal-dialog-replace .uk-modal-content
+    font-size: 18px

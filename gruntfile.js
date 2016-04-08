@@ -105,13 +105,17 @@ module.exports = function(grunt) {
                         'public/js/vendor/chosen/chosen.css',
                         'public/js/vendor/pace/pace.theme.css',
                         'public/js/vendor/enjoyhint/enjoyhint.css',
+                        'public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
                         //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
-                        'public/css/plugins/datepicker/foundation-datepicker.css'
-
-
+                        //'public/css/plugins/datepicker/foundation-datepicker.css',
+                        'public/js/vendor/uikit/css/uikit.css',
+                        'public/js/vendor/uikit/css/uikit_custom.css',
+                        'public/js/plugins/snackbar.css',
+                        'public/js/vendor/c3/c3.css',
+                        'public/js/vendor/formvalidator/theme-default.css'
                     ]
                 }
             },
@@ -146,7 +150,7 @@ module.exports = function(grunt) {
 
         jsdoc : {
             dist : {
-                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js'],
+                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js', '!src/public/js/plugins/*.js'],
                 options: {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',
@@ -154,6 +158,44 @@ module.exports = function(grunt) {
                     //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
                     //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
                 }
+            }
+        },
+
+        uglify: {
+            uikit: {
+                options: {
+                    beautify: false,
+                    mangle: false
+                },
+
+                src: [
+                    'src/public/js/vendor/uikit/js/uikit.js',
+                    'src/public/js/vendor/uikit/js/components/accordion.js',
+                    'src/public/js/vendor/uikit/js/components/autocomplete.js',
+                    'src/public/js/vendor/uikit/js/components/datepicker.js',
+                    'src/public/js/vendor/uikit/js/components/form-password.js',
+                    'src/public/js/vendor/uikit/js/components/form-select.js',
+                    'src/public/js/vendor/uikit/js/components/grid.js',
+                    'src/public/js/vendor/uikit/js/components/htmleditor.js',
+                    'src/public/js/vendor/uikit/js/components/lightbox.js',
+                    'src/public/js/vendor/uikit/js/components/nestable.js',
+                    'src/public/js/vendor/uikit/js/components/notify.js',
+                    'src/public/js/vendor/uikit/js/components/pagination.js',
+                    'src/public/js/vendor/uikit/js/components/parallax.js',
+                    'src/public/js/vendor/uikit/js/components/grid-parallax.js',
+                    'src/public/js/vendor/uikit/js/components/search.js',
+                    'src/public/js/vendor/uikit/js/components/slider.js',
+                    'src/public/js/vendor/uikit/js/components/slideshow.js',
+                    'src/public/js/vendor/uikit/js/components/slideshow-fx.js',
+                    'src/public/js/vendor/uikit/js/components/sortable.js',
+                    'src/public/js/vendor/uikit/js/components/sticky.js',
+                    'src/public/js/vendor/uikit/js/components/timepicker.js',
+                    'src/public/js/vendor/uikit/js/components/tooltip.js',
+                    'src/public/js/vendor/uikit/js/components/upload.js',
+
+                    'src/public/js/vendor/uikit/js/custom.js'
+                ],
+                dest: 'src/public/js/vendor/uikit/js/uikit_combined.min.js'
             }
         },
 
@@ -168,6 +210,7 @@ module.exports = function(grunt) {
                     preserveLicenseComments: false,
                     kipDirOptimize: false,
                     optimize: 'uglify2',
+                    //optimize: 'none',
                     uglify2: {
                         mangle: false
                     },
@@ -178,7 +221,8 @@ module.exports = function(grunt) {
                             include: [
                                 'jquery',
                                 'jquery_scrollTo',
-                                'foundation',
+                                'jquery_custom',
+                                'uikit',
                                 'angular',
                                 'angularRoute',
                                 'angularCookies',
@@ -188,6 +232,15 @@ module.exports = function(grunt) {
                                 'nicescroll',
                                 'underscore',
                                 'history',
+                                'd3',
+                                'metricsgraphics',
+                                'd3pie',
+                                'peity',
+                                'countup',
+                                'selectize',
+                                'waves',
+                                'formvalidator',
+                                'snackbar',
 
                                 '../../src/permissions/roles',
 
@@ -214,21 +267,24 @@ module.exports = function(grunt) {
                                 }
                             }
                         }
-                        //{
-                        //    name: 'page-accounts',
-                        //    create: true,
-                        //    include: [ 'pages/accounts' ],
-                        //    exclude: [ 'trudesk.min' ]
-                        //}
                     ],
                     paths: {
-                        foundation: 'empty:',
+                        //foundation: 'empty:',
                         angular: 'empty:',
                         angularRoute: 'empty:',
                         angularCookies: 'empty:'
                     },
                     keepBuildDir: true
                 }
+            }
+        },
+
+        shell: {
+            requirejs: {
+                command: 'r.js -o rBuild.js'
+            },
+            requirejswin: {
+                command: 'r.js.cmd -o rBuild.js'
             }
         }
     });
@@ -237,6 +293,9 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['buildcss', 'builddocs', 'requirejs']);
+    grunt.registerTask('build', ['uglify:uikit', 'shell:requirejs', 'buildcss', 'builddocs']);
+    grunt.registerTask('sbuild', ['shell:requirejs']);
+    grunt.registerTask('swinbuild', ['shell:requirejswin']);
+    grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejswin', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };

@@ -15,7 +15,8 @@
 var async   = require('async'),
     _       = require('underscore'),
     winston = require('winston'),
-    moment  = require('moment');
+    moment  = require('moment'),
+    permissions     = require('../../permissions');
 
 var viewController = {};
 var viewdata = {};
@@ -102,6 +103,10 @@ viewController.getData = function(request, cb) {
 
                   callback();
               });
+          },
+          function(callback) {
+              viewdata.roles = permissions.roles;
+              callback();
           }
       ], function(err) {
           if (err) {
@@ -131,6 +136,8 @@ viewController.getUserNotifications = function(request, callback) {
             winston.warn(err.message);
             return callback(err);
         }
+
+        data = _.first(data, 5);
 
         callback(null, data);
     })
@@ -177,7 +184,9 @@ viewController.getUsers = function(request, callback) {
             winston.warn(err);
             return callback();
         }
-        var u = _.sortBy(users, 'fullname');
+
+        var u = _.reject(users, function(u) { return u.deleted == true; });
+        u = _.sortBy(u, 'fullname');
 
         callback(u);
     });
@@ -227,6 +236,8 @@ viewController.getTags = function(request, callback) {
             winston.debug(err);
             callback(err);
         }
+
+        data = _.sortBy(data, 'name');
 
         callback(null, data);
     });

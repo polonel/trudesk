@@ -14,8 +14,12 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', 'easypiechart', 'chosen'], function($, _, moment) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
+
     var helpers = {};
+
+    var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
     helpers.init = function() {
         var self = this;
@@ -25,6 +29,7 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
+        self.formvalidator();
         self.pToolTip();
         self.setupDonutchart();
         self.setupBarChart();
@@ -34,8 +39,414 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
         self.setupChosen();
         self.bindNewMessageSubmit();
 
+        self.UI.fabToolbar();
+        self.UI.inputs();
+        self.UI.cardOverlay();
+        self.UI.setupPeity();
+        self.UI.selectize();
+        self.UI.waves();
+        self.UI.matchHeight();
+
         var layout = self.onWindowResize();
         $(window).resize(layout);
+    };
+
+    helpers.countUpMe = function() {
+        $('.countUpMe').each(function() {
+            var self = this;
+            var countTo = $(self).text();
+            var theAnimation = new CountUp(self, 0, countTo, 0, 2);
+            theAnimation.start();
+        });
+    };
+
+    helpers.UI = {};
+
+    helpers.UI.matchHeight = function() {
+        var $d = $('div[data-match-height]');
+        $d.each(function() {
+            var self = $(this);
+            var target = self.attr('data-match-height');
+
+            var $target = $(target);
+            var $t_h = $target.height();
+            self.height($t_h);
+        });
+    };
+
+    helpers.UI.showDisconnectedOverlay = function() {
+        var $disconnected = $('.disconnected');
+
+        if ($disconnected.css("display") === 'block')
+            return true;
+
+        $disconnected.velocity("fadeIn", {
+            duration: 500,
+            easing: easing_swiftOut,
+            begin: function() {
+                $disconnected.css({
+                    'display': 'block',
+                    'opacity': 0
+                });
+            }
+        });
+    };
+
+    helpers.UI.hideDisconnectedOverlay = function() {
+        var $disconnected = $('.disconnected');
+
+        if ($disconnected.css('display') === 'none')
+            return true;
+
+        $disconnected.velocity("fadeOut", {
+            duration: 500,
+            easing: easing_swiftOut,
+            complete: function() {
+                $disconnected.css({
+                    'display': 'none',
+                    'opacity': 0
+                });
+            }
+        });
+    };
+
+    helpers.UI.showSnackbar = function() {
+        if (arguments.length == 2) {
+            return(helpers.UI.showSnackbar__.apply(this, arguments));
+        }  else {
+            return(helpers.UI.showSnackbar_.apply(this, arguments));
+        }
+    };
+
+    helpers.UI.showSnackbar_ = function(options) {
+        SnackBar.show(options);
+    };
+
+    helpers.UI.showSnackbar__ = function(text, error) {
+        if (_.isUndefined(error) || _.isNull(error))
+            error = false;
+
+        var actionText = '#4CAF50';
+        if (error)
+            actionText = '#FF4835';
+
+        SnackBar.show({
+            text: text,
+            actionTextColor: actionText
+        });
+    };
+
+    helpers.UI.closeSnackbar = function() {
+        SnackBar.close();
+    };
+
+    helpers.UI.inputs = function(parent) {
+        var $mdInput = (typeof parent === 'undefined') ? $('.md-input') : $(parent).find('.md-input');
+        $mdInput.each(function() {
+            if(!$(this).closest('.md-input-wrapper').length) {
+                var $this = $(this);
+
+                if( $this.prev('label').length ) {
+                    $this.prev('label').andSelf().wrapAll('<div class="md-input-wrapper"/>');
+                } else if($this.siblings('[data-uk-form-password]').length) {
+                    $this.siblings('[data-uk-form-password]').andSelf().wrapAll('<div class="md-input-wrapper"/>');
+                } else {
+                    $this.wrap('<div class="md-input-wrapper"/>');
+                }
+                $this.closest('.md-input-wrapper').append('<span class="md-input-bar"/>');
+
+                updateInput($this);
+            }
+            $('body')
+                .on('focus', '.md-input', function() {
+                    $(this).closest('.md-input-wrapper').addClass('md-input-focus')
+                })
+                .on('blur', '.md-input', function() {
+                    $(this).closest('.md-input-wrapper').removeClass('md-input-focus');
+                    if(!$(this).hasClass('label-fixed')) {
+                        if($(this).val() != '') {
+                            $(this).closest('.md-input-wrapper').addClass('md-input-filled')
+                        } else {
+                            $(this).closest('.md-input-wrapper').removeClass('md-input-filled')
+                        }
+                    }
+                })
+                .on('change', '.md-input', function() {
+                    updateInput($(this));
+                });
+        });
+    };
+
+    function updateInput(object) {
+        // clear wrapper classes
+        object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success');
+        object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success md-input-wrapper-disabled');
+
+        if(object.hasClass('md-input-danger')) {
+            if(object.closest('.uk-input-group').length) {
+                object.closest('.uk-input-group').addClass('uk-input-group-danger')
+            }
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-danger')
+        }
+        if(object.hasClass('md-input-success')) {
+            if(object.closest('.uk-input-group').length) {
+                object.closest('.uk-input-group').addClass('uk-input-group-success')
+            }
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-success')
+        }
+        if(object.prop('disabled')) {
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled')
+        }
+        if(object.hasClass('label-fixed')) {
+            object.closest('.md-input-wrapper').addClass('md-input-filled')
+        }
+        if(object.val() != '') {
+            object.closest('.md-input-wrapper').addClass('md-input-filled')
+        }
+    }
+
+    helpers.UI.fabToolbar = function() {
+        var $fab_toolbar = $('.md-fab-toolbar');
+
+        if($fab_toolbar) {
+            $fab_toolbar
+                .children('i')
+                .on('click', function(e) {
+                    e.preventDefault();
+
+                    var toolbarItems = $fab_toolbar.children('.md-fab-toolbar-actions').children().length;
+
+                    $fab_toolbar.addClass('md-fab-animated');
+
+                    var FAB_padding = !$fab_toolbar.hasClass('md-fab-small') ? 16 : 24,
+                        FAB_size = !$fab_toolbar.hasClass('md-fab-small') ? 64 : 44;
+
+                    setTimeout(function() {
+                        $fab_toolbar
+                            .width((toolbarItems*FAB_size + FAB_padding))
+                    },140);
+
+                    setTimeout(function() {
+                        $fab_toolbar.addClass('md-fab-active');
+                    },420);
+
+                });
+
+            $(document).on('click scroll', function(e) {
+                if( $fab_toolbar.hasClass('md-fab-active') ) {
+                    if (!$(e.target).closest($fab_toolbar).length) {
+
+                        $fab_toolbar
+                            .css('width','')
+                            .removeClass('md-fab-active');
+
+                        setTimeout(function() {
+                            $fab_toolbar.removeClass('md-fab-animated');
+                        },140);
+
+                    }
+                }
+            });
+        }
+    };
+
+    helpers.UI.waves = function() {
+        Waves.attach('.md-btn-wave,.md-fab-wave', ['waves-button']);
+        Waves.attach('.md-btn-wave-light,.md-fab-wave-light', ['waves-button', 'waves-light']);
+        Waves.attach('.wave-box', ['waves-float']);
+        Waves.init({
+            delay: 300
+        });
+    };
+
+    helpers.UI.selectize = function(parent) {
+        // selectize plugins
+        if(typeof $.fn.selectize != 'undefined') {
+            Selectize.define('dropdown_after', function (options) {
+                this.positionDropdown = (function () {
+                    var $control = this.$control,
+                        position = $control.position(),
+                        position_left = position.left,
+                        position_top = position.top + $control.outerHeight(true) + 32;
+
+                    this.$dropdown.css({
+                        width: $control.outerWidth(),
+                        top: position_top,
+                        left: position_left
+                    });
+                });
+            });
+        }
+
+        var $selectize = parent ? $(parent).find('select') : $("[data-md-selectize],.data-md-selectize");
+
+        $selectize.each(function(){
+            var $this = $(this);
+            if(!$this.hasClass('selectized')) {
+                var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
+                    $this
+                    .after('<div class="selectize_fix"></div>')
+                    .selectize({
+                        plugins: [
+                            'remove_button'
+                        ],
+                        hideSelected: true,
+                        dropdownParent: 'body',
+                        closeAfterSelect: closeOnSelect,
+                        onDropdownOpen: function($dropdown) {
+                            $dropdown
+                                .hide()
+                                .velocity('slideDown', {
+                                    begin: function() {
+                                        if (typeof thisPosBottom !== 'undefined') {
+                                            $dropdown.css({'margin-top':'0'})
+                                        }
+                                    },
+                                    duration: 200,
+                                    easing: easing_swiftOut
+                                })
+                        },
+                        onDropdownClose: function($dropdown) {
+                            $dropdown
+                                .show()
+                                .velocity('slideUp', {
+                                    complete: function() {
+                                        if (typeof thisPosBottom !== 'undefined') {
+                                            $dropdown.css({'margin-top': ''})
+                                        }
+
+                                        if (closeOnSelect)
+                                            $($dropdown).prev().find('input').blur();
+                                    },
+                                    duration: 200,
+                                    easing: easing_swiftOut
+                                });
+                        }
+                    });
+            }
+        });
+
+        // dropdowns
+        var $selectize_inline = $("[data-md-selectize-inline]");
+
+        $selectize_inline.each(function(){
+            var $this = $(this);
+            if(!$this.hasClass('selectized')) {
+                var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
+                $this
+                    .after('<div class="selectize_fix"></div>')
+                    .closest('div').addClass('uk-position-relative')
+                    .end()
+                    .selectize({
+                        plugins: [
+                            'dropdown_after',
+                            'remove_button'
+                        ],
+                        dropdownParent: $this.closest('div'),
+                        hideSelected: true,
+                        closeAfterSelect: closeOnSelect,
+                        onDropdownOpen: function($dropdown) {
+                            $dropdown
+                                .hide()
+                                .velocity('slideDown', {
+                                    begin: function() {
+                                        if (typeof thisPosBottom !== 'undefined') {
+                                            $dropdown.css({'margin-top':'0'})
+                                        }
+                                    },
+                                    duration: 200,
+                                    easing: easing_swiftOut
+                                });
+                        },
+                        onDropdownClose: function($dropdown) {
+                            $dropdown
+                                .show()
+                                .velocity('slideUp', {
+                                    complete: function() {
+                                        if (typeof thisPosBottom !== 'undefined') {
+                                            $dropdown.css({'margin-top': ''})
+                                        }
+
+                                        if (closeOnSelect)
+                                            $($dropdown).prev().find('input').blur();
+                                    },
+                                    duration: 200,
+                                    easing: easing_swiftOut
+                                });
+                        }
+                    });
+            }
+        });
+    };
+
+    helpers.UI.cardShow = function() {
+        $('.tru-card-intro').each(function() {
+            var self = $(this);
+            self.velocity({
+                scale: 0.99999999,
+                opacity: 1
+            }, {
+                duration: 400,
+                easing: easing_swiftOut
+            });
+        });
+    };
+
+    helpers.UI.cardOverlay = function() {
+        var $tru_card = $('.tru-card');
+
+        // replace toggler icon (x) when overlay is active
+        $tru_card.each(function() {
+            var $this = $(this);
+            if($this.hasClass('tru-card-overlay-active')) {
+                $this.find('.tru-card-overlay-toggler').html('close');
+            }
+        });
+
+        // toggle card overlay
+        $tru_card.on('click','.tru-card-overlay-toggler', function(e) {
+            e.preventDefault();
+            if(!$(this).closest('.tru-card').hasClass('tru-card-overlay-active')) {
+                $(this)
+                    .html('close')
+                    .closest('.tru-card').addClass('tru-card-overlay-active');
+
+            } else {
+                $(this)
+                    .html('more_vert')
+                    .closest('.tru-card').removeClass('tru-card-overlay-active');
+            }
+        })
+    };
+
+    helpers.UI.setupPeity = function() {
+        $('.peity-bar').each(function() {
+            $(this).peity("bar", {
+                height: 28,
+                width: 48,
+                fill: ["#e74c3c"],
+                padding: 0.2
+            });
+        });
+
+        $(".peity-pie").each(function() {
+            $(this).peity("donut", {
+                height: 24,
+                width: 24,
+                fill: ["#29b955", "#ccc"]
+            });
+        });
+
+        $(".peity-line").each(function() {
+            $(this).peity("line", {
+                height: 28,
+                width: 64,
+                fill: "#d1e4f6",
+                stroke: "#0288d1"
+            });
+        });
     };
 
     helpers.showFlash = function(message, error, sticky) {
@@ -95,6 +506,15 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
             $('.flash-message').hide();
         });
     }
+
+    helpers.formvalidator = function() {
+        $.validate({
+            modules: 'html5',
+            errorElementClass: 'uk-form-danger',
+            errorMessageClass: 'uk-form-danger',
+            ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input'
+        });
+    };
 
     helpers.bindKeys = function() {
         var self = this;
@@ -176,6 +596,12 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
             opacityMax = 0;
         }
 
+        if (!_.isUndefined($(selector).attr('data-scroll-size')))
+            size = $(selector).attr('data-scroll-size');
+
+        if (!_.isUndefined($(selector).attr('data-scroll-opacitymax')))
+            opacityMax = $(selector).attr('data-scroll-opacitymax');
+
         $(document).ready(function() {
             $(selector).each(function() {
                 var ns = $(this).getNiceScroll(0);
@@ -205,6 +631,7 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
         var self = this;
         var l = _.debounce(function() {
             self.resizeFullHeight();
+            self.UI.matchHeight();
             self.hideAllpDropDowns();
             self.hideDropDownScrolls();
 
@@ -317,6 +744,20 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
         });
     };
 
+    helpers.hideAllUiKitDropdowns = function() {
+        var dropdowns = $('.uk-dropdown');
+        dropdowns.each(function() {
+            var this_dropdown = $(this);
+            this_dropdown.removeClass('uk-dropdown-shown');
+
+            setTimeout(function() {
+                this_dropdown.removeClass('uk-dropdown-active');
+                this_dropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
+
+            },280);
+        });
+    };
+
     helpers.pToolTip = function() {
         $(document).ready(function() {
             var pToolTip = $('span[data-ptooltip]');
@@ -368,14 +809,19 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
                 var numCount = $(this).attr('data-numcount');
                 if (numCount == null || numCount.length <= 0)
                     numCount = false;
+                var $size = $(this).attr('data-size');
+                if ($size == null || $size.length <= 0)
+                    $size = 150;
+
+                $(this).css({height: $size, width: $size});
 
                 $(this).easyPieChart({
-                    size: 150,
+                    size: $size,
                     lineCap: 'round',
                     lineWidth: 8,
                     scaleColor: false,
                     barColor: trackColor,
-                    trackColor: '#b5bbc9',
+                    trackColor: '#e3e5e8',
                     onStart: function(value, to) {
                         $(this.el).find('.chart-value').text(value);
                     },
@@ -483,6 +929,15 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
         });
     };
 
+    helpers.hideLoader = function(time) {
+        if (_.isUndefined(time) || _.isNull(time))
+            time = 280;
+
+        $(document).ready(function() {
+            $('#loader-wrapper').fadeOut(time);
+        });
+    };
+
     helpers.ajaxFormSubmit = function() {
         // Bind to forms
         $('form.ajaxSubmit').each(function() {
@@ -544,7 +999,7 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
 
     helpers.closeMessageWindow = function() {
         //Close reveal and refresh page.
-        $('#newMessageModal').foundation('reveal', 'close');
+        UIkit.modal('#newMessageModal').hide();
         //Clear Fields
         var $newMessageTo = $("#newMessageTo");
         $newMessageTo.find("option").prop('selected', false);
@@ -563,7 +1018,11 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
 
     function newMessageSubmit(e) {
         e.preventDefault();
-        var formData = $('#newMessageForm').serializeObject();
+        var form = $('#newMessageForm');
+        var formData = form.serializeObject();
+
+        if (!form.isValid(null,null, false))
+            return true;
 
         var data = {
             to: formData.newMessageTo,
@@ -582,13 +1041,15 @@ define(['jquery', 'underscore', 'moment', 'async', 'foundation', 'nicescroll', '
             dataType: "json"
         })
             .success(function() {
-                helpers.showFlash('Message Sent');
+                //helpers.showFlash('Message Sent');
+                helpers.UI.showSnackbar({text: 'Message Sent'});
 
                 helpers.closeMessageWindow();
             })
             .error(function(err) {
                 helpers.closeMessageWindow();
-                helpers.showFlash(err.error, true);
+                //helpers.showFlash(err.error, true);
+                helpers.UI.showSnackbar({text: err.error, actionTextColor: '#B92929'});
                 console.log('[trudesk:helpers:newMessageSubmit] Error - ' + err);
             });
     }

@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history', 'datepicker'], function(angular, _, $, helpers, socket) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history', 'formvalidator'], function(angular, _, $, helpers, socket, UIkit) {
     return angular.module('trudesk.controllers.tickets', [])
         .controller('ticketsCtrl', ['openFilterTicketWindow', '$scope', '$http', '$window', function(openFilterTicketWindow, $scope, $http, $window) {
 
@@ -20,37 +20,46 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 openFilterTicketWindow.openWindow();
             };
 
-            $scope.submitTicketForm = function() {
+            $scope.submitTicketForm = function(event) {
+                event.preventDefault();
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
                 var form = $('#createTicketForm');
-                form.serializeArray().map(function(x){data[x.name] = x.value;});
-                data.tags = form.find('#tags').val();
-                data.socketId = socketId;
-                $http({
-                    method: 'POST',
-                    url: '/api/v1/tickets/create',
-                    data: data,
-                    headers: { 'Content-Type': 'application/json'}
-                })
-                    .success(function(data) {
-                        if (!data.success) {
-                            if (data.error) {
-                                helpers.showFlash('Error: ' + data.error, true);
-                                return;
+                if (!form.isValid(null, null, false)) {
+                    return true;
+                } else {
+                    form.serializeArray().map(function(x){data[x.name] = x.value;});
+                    data.tags = form.find('#tags').val();
+                    data.socketId = socketId;
+                    $http({
+                        method: 'POST',
+                        url: '/api/v1/tickets/create',
+                        data: data,
+                        headers: { 'Content-Type': 'application/json'}
+                    })
+                        .success(function(data) {
+                            if (!data.success) {
+                                if (data.error) {
+                                    helpers.showFlash('Error: ' + data.error, true);
+                                    return;
+                                }
+
+                                helpers.showFlash('Error Submitting Ticket', true);
                             }
 
-                            helpers.showFlash('Error Submitting Ticket', true);
-                        }
+                            //helpers.showFlash('Ticket Created Successfully.');
+                            helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
-                        helpers.showFlash('Ticket Created Successfully.');
+                            UIkit.modal("#ticketCreateModal").hide();
 
-                        History.pushState(null, null, '/tickets/');
+                            //History.pushState(null, null, '/tickets/');
 
-                    }).error(function(err) {
-                        console.log('[trudesk:tickets:submitTicketForm] - ' + err.error);
-                        helpers.showFlash('Error: ' + err.error.message, true);
+                        }).error(function(err) {
+                        console.log('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
+                        //helpers.showFlash('Error: ' + err.error.message, true);
+                        helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
                     });
+                }
             };
 
             $scope.showTags = function(event) {
@@ -58,7 +67,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var tagModal = $('#addTagModal');
                 if (tagModal.length > 0) {
                     tagModal.find('#tags').trigger('chosen:updated');
-                    tagModal.foundation('reveal', 'open');
+                    UIkit.modal(tagModal).show();
                 }
             };
 
@@ -82,7 +91,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             var tagFormField = $('#tags');
                             tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
                             tagFormField.trigger('chosen:updated');
-                            if (tagModal.length > 0) tagModal.foundation('reveal', 'close');
+                            if (tagModal.length > 0) UIkit.modal(tagModal).hide();
 
                         })
                         .error(function(err) {
@@ -100,11 +109,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ).success(function() {
                             clearChecked();
                             removeCheckedFromGrid();
-                            helpers.showFlash('Ticket Deleted Successfully.')
+                            //helpers.showFlash('Ticket Deleted Successfully.');
+                            helpers.UI.showSnackbar({text: 'Ticket Deleted Successfully'});
                         }).error(function(e) {
                             console.log('[trudesk:tickets:deleteTickets] - ' + e);
-                            helpers.showFlash('Error: ' + e, true);
-                        });
+                            helpers.UI.showSnackbar({text: 'Error: ' + e.error.message, actionTextColor: '#B92929'});
+                    });
                 });
 
                 //hide Dropdown
@@ -152,6 +162,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.RefreshTicketGrid = function(event) {
                 var path = $window.location.pathname;
+                console.log(path);
                 History.pushState(null, null, path + '?r=' + Math.random());
                 event.preventDefault();
             };
@@ -170,6 +181,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var filterStatus = $('#ticketFilterForm select#filterStatus').val();
                 _.each(filterStatus, function(item) {
                     querystring += '&st=' + item;
+                });
+
+                var filterPriority = $('#ticketFilterForm select#filterPriority').val();
+                _.each(filterPriority, function(item) {
+                    querystring += '&pr=' + item;
                 });
 
                 var filterGroup = $('#ticketFilterForm select#filterGroup').val();
@@ -240,76 +256,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
         .factory('openFilterTicketWindow', function() {
             return {
                 openWindow: function openWindow() {
-                    $('.pDatePicker').fdatepicker({
-
-                    });
-
-                    //$('#filterTags').find('option').remove().end();
-                    //$('#filterTags').trigger("chosen:updated");
-                    ////Chosen Tag Filters
-                    //var dropDown = $('#filterTags_chosen').find('.chosen-drop');
-                    //// Make the chosen drop-down dynamic. If a given option is not in the list, the user can still add it
-                    //dropDown.parent().find('.search-field input[type=text]').keydown(
-                    //    function (evt) {
-                    //        var stroke, _ref, target, list;
-                    //        // get keycode
-                    //        stroke = (_ref = evt.which) != null ? _ref : evt.keyCode;
-                    //        // If enter or tab key
-                    //        var chosenList;
-                    //        var matchList;
-                    //        var highlightedList;
-                    //        if (stroke === 13) {
-                    //            evt.preventDefault();
-                    //            target = $(evt.target);
-                    //            // get the list of current options
-                    //            chosenList = target.parents('.chosen-container').find('.chosen-choices li.search-choice > span').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // get the list of matches from the existing drop-down
-                    //            matchList = target.parents('.chosen-container').find('.chosen-results li').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // highlighted option
-                    //            highlightedList = target.parents('.chosen-container').find('.chosen-results li.highlighted').map(function () {
-                    //                return $(this).text();
-                    //            }).get();
-                    //            // Get the value which the user has typed in
-                    //            var newString = $.trim(target.val());
-                    //            // if the option does not exists, and the text doesn't exactly match an existing option, and there is not an option highlighted in the list
-                    //            if ($.inArray(newString, matchList) < 0 && $.inArray(newString, chosenList) < 0 && highlightedList.length == 0) {
-                    //                // Create a new option and add it to the list (but don't make it selected)
-                    //                var newOption = '<option value="' + newString + '">' + newString + '</option>';
-                    //                $("#filterTags").prepend(newOption);
-                    //                // trigger the update event
-                    //                $("#filterTags").trigger("chosen:updated");
-                    //                // tell chosen to close the list box
-                    //                $("#filterTags").trigger("chosen:close");
-                    //                return true;
-                    //            }
-                    //            // otherwise, just let the event bubble up
-                    //            return true;
-                    //        }
-                    //    }
-                    //);
-
-                    $('#ticketFilterModal').foundation('reveal', 'open');
-                },
-                openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
-                    var $newMessageTo = $('#newMessageTo');
-                    $newMessageTo.find("option").prop('selected', false);
-                    $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
-                    $newMessageTo.trigger('chosen:updated');
-                    $('#newMessageSubject').val(subject);
-                    var $mText = md(text);
-                    $mText = $mText.trim();
-                    $('#newMessageText').val($mText);
-
-                    $('#ticketFilterModal').foundation('reveal', 'open');
+                    UIkit.modal('#ticketFilterModal').show();
                 },
                 closeWindow: function closeWindow() {
-                    //Close reveal and refresh page.
-                    $('#ticketFilterModal').foundation('reveal', 'close');
-
+                    UIkit.modal('#ticketFilterModal').hide();
                 }
             }
         });

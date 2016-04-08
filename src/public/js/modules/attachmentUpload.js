@@ -43,7 +43,9 @@ define('modules/attachmentUpload', [
                         contentType: false,
                         processData: false,
                         success: function (data) {
-                            helpers.showFlash('Attachment Successfully Uploaded.');
+                            //helpers.showFlash('Attachment Successfully Uploaded.');
+                            helpers.UI.showSnackbar('Attachment Successfully Uploaded', false);
+
                             //Refresh Attachments - Socket.IO
                             if (_.isUndefined(data.ticket)) return;
 
@@ -51,7 +53,8 @@ define('modules/attachmentUpload', [
                         },
                         error: function (err) {
                             console.log('[trudesk:attachmentUpload:onChange] Error - ' + err);
-                            helpers.showFlash(err.responseText, true);
+                            //helpers.showFlash(err.responseText, true);
+                            helpers.UI.showSnackbar(err.responseText, true);
                         }
                     });
 

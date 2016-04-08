@@ -12,14 +12,15 @@
 
  **/
 
-var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
-    winston = require('winston'),
-    permissions = require('../../../permissions'),
-    emitter = require('../../../emitter'),
+var async           = require('async'),
+    _               = require('underscore'),
+    _s              = require('underscore.string'),
+    moment          = require('moment'),
+    winston         = require('winston'),
+    permissions     = require('../../../permissions'),
+    emitter         = require('../../../emitter'),
 
-    userSchema = require('../../../models/user');
+    userSchema      = require('../../../models/user');
 
 var api_tickets = {};
 
@@ -446,11 +447,69 @@ api_tickets.getTypes = function(req, res) {
     });
 };
 
+api_tickets.getTicketStats = function(req, res) {
+    var timespan = 30;
+    if (req.params.timespan)
+        timespan = req.params.timespan;
+
+    var cache = global.cache;
+
+    if (_.isUndefined(cache))
+        return res.status(400).send('Ticket stats are still loading...');
+
+    var obj = {};
+    if (timespan == 30) {
+        obj.data = cache.get('tickets:overview:e30:graphData');
+        obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
+    } else if (timespan == 60) {
+        obj.data = cache.get('tickets:overview:e60:graphData');
+        obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
+    } else if (timespan == 90) {
+        obj.data = cache.get('tickets:overview:e90:graphData');
+        obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
+    } else if (timespan == 180) {
+        obj.data = cache.get('tickets:overview:e180:graphData');
+        obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
+    } else if (timespan == 365) {
+        obj.data = cache.get('tickets:overview:e365:graphData');
+        obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
+    } else if (timespan == 0) {
+        obj.data = cache.get('tickets:overview:lifetime:graphData');
+        obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
+        obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
+    }
+
+    obj.mostRequester = cache.get('quickstats:mostRequester');
+    obj.mostCommenter = cache.get('quickstats:mostCommenter');
+    obj.mostAssignee = cache.get('quickstats:mostAssignee');
+    obj.mostActiveTicket = cache.get('quickstats:mostActiveTicket');
+
+    obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
+
+    res.send(obj);
+};
+
+api_tickets.getTagCount = function(req, res) {
+    var cache = global.cache;
+
+    if (_.isUndefined(cache))
+        return res.status(400).send('Tag stats are still loading...');
+
+    var tags = cache.get('tags:usage');
+
+    res.json({success: true, tags: tags});
+};
+
 api_tickets.getMonthData = function(req, res) {
     var ticketModel = require('../../../models/ticket');
     var data = [];
-    var newData = {data: [], label: 'New'};
-    var closedData = {data: [], label: 'Closed'};
+    var newData = [];
+    var closedData = [];
 
     //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
     var dates = [];
@@ -458,20 +517,21 @@ api_tickets.getMonthData = function(req, res) {
         var _d = new Date();
         _d.setMonth(_d.getMonth() - i);
         _d.setDate(1);
-        dates.push(_d.getTime());
+        dates.push(_d);
     }
 
     async.series({
         total: function(cb) {
             async.forEachSeries(dates, function(value, next) {
                 var d = [];
-                var date = new Date(value).getTime();
+                var date = new Date(value);
                 d.push(date);
                 ticketModel.getMonthCount(date, -1, function(err, count) {
                     if (err) return next(err);
 
                     d.push(Math.round(count));
-                    newData.data.push(d);
+                    var moment = require('moment');
+                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
                     next();
                 });
             }, function(err) {
@@ -483,13 +543,14 @@ api_tickets.getMonthData = function(req, res) {
         closed: function(cb) {
             async.forEachSeries(dates, function(value, next) {
                 var d = [];
-                var date = new Date(value).getTime();
+                var date = new Date(value);
                 d.push(date);
                 ticketModel.getMonthCount(value, 3, function(err, count) {
                     if (err) return next(err);
 
                     d.push(Math.round(count));
-                    closedData.data.push(d);
+                    var moment = require('moment');
+                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
                     next();
                 });
             }, function(err) {

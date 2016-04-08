@@ -440,6 +440,21 @@ ticketSchema.statics.getAll = function(callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getAllByStatus = function(status, callback) {
+    var self = this;
+
+    if (!_.isArray(status))
+        status = [status];
+
+    var q = self.model(COLLECTION).find({status: {$in: status}, deleted: false})
+        .populate('owner assignee type tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
@@ -470,8 +485,37 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
+/**
+ * Gets Tickets with a given date range
+ *
+ * @memberof Ticket
+ * @static
+ * @method getTicketsDateRange
+ * @param {Date} start Start Date
+ * @param {Date} end End Date
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsDateRange = function(start, end, callback) {
+    if (_.isUndefined(start) || _.isUndefined(end)) return callback("Invalid Date Range - TicketSchema.GetTicketsDateRange()", null);
+
+    var self = this;
+
+    var s = moment(start).hour(23).minute(59).second(59);
+    var e = moment(end).hour(23).minute(59).second(59);
+
+    var q = self.model(COLLECTION).find({date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };
@@ -524,6 +568,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('owner', 'username fullname email role preferences image title')
         .populate('assignee', 'username fullname email role preferences image title')
         .populate('type')
+        .populate('tags')
         .populate('group')
         .populate('group.members', 'username fullname email role preferences image title')
         .populate('group.sendMailTo', 'username fullname email role preferences image title')
@@ -537,6 +582,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
         q.where({status: {$in: _status}});
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.priority)) {
+        q.where({priority: {$in: object.filter.priority}});
     }
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
@@ -639,6 +688,7 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1})
         .sort({'status': 1})
@@ -673,6 +723,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1});
 
@@ -727,6 +778,40 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     return q.exec(callback);
 };
 
+/**
+ * Gets tickets that are overdue
+ * @memberof Ticket
+ * @static
+ * @method getOverdue
+ *
+ * @param {Array} grpId Group Array of User
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getOverdue = function(grpId, callback) {
+    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetOverdue()", null);
+
+    var self = this;
+
+    var now = moment();
+    var timeout = now.clone().add(2, 'd').toDate();
+
+    var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
+        .$where(function() {
+            var now = new Date();
+            var updated = new Date(this.updated);
+            timeout = new Date(updated);
+            timeout.setDate(timeout.getDate() + 2);
+            return now > timeout;
+        });
+        //.populate('owner')
+        //.populate('assignee')
+        //.populate('type')
+        //.populate('tags')
+        //.deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getAssigned = function(user_id, callback) {
     if (_.isUndefined(user_id)) return callback("Invalid Id - TicketSchema.GetAssigned()", null);
 
@@ -736,6 +821,7 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
         .populate('owner')
         .populate('assignee')
         .populate('type')
+        .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
@@ -834,14 +920,25 @@ ticketSchema.statics.getStatusCountByDate = function(status, date, callback) {
 
     var self = this;
 
-    var today = new Date(date);
-    var yesterday = new Date(date);
-    yesterday.setDate(yesterday.getDate()-1);
+    var today = moment(date).hour(23).minute(59).second(59);
+    var yesterday = today.clone().subtract(1, 'd');
 
-    var q = self.model(COLLECTION).count({status: status, date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
-    if (status === 3) {
-        q = self.model(COLLECTION).count({status: status, closedDate: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
-    }
+    var q = self.model(COLLECTION).count({status: status, date: {$lte: today.toDate(), $gte: yesterday.toDate()}, deleted: false});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getStatusCountRange = function(status, start, end, callback) {
+    if (_.isUndefined(status)) return callback("Invalid Status - TicketSchema.GetStatusCountRange()", null);
+    if (_.isUndefined(start)) return callback("Invalid Start Date - TicketSchema.GetStatusCountRange()", null);
+    if (_.isUndefined(end)) return callback("Invalid End Date - TicketSchema.GetStatusCountRange()", null);
+
+    var self = this;
+
+    var s = moment(start).hour(23).minute(59).second(59);
+    var e = moment(end).hour(23).minute(59).second(59);
+
+    var q = self.model(COLLECTION).count({status: status, date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false});
 
     return q.exec(callback);
 };
@@ -867,11 +964,10 @@ ticketSchema.statics.getDateCount = function(date, callback) {
 
     var self = this;
 
-    var today = new Date(date);
-    var yesterday = new Date(date);
-    yesterday.setDate(yesterday.getDate()-1);
+    var today = moment(date).hour(23).minute(59).second(59);
+    var yesterday = today.clone().subtract(1, 'd');
 
-    var q = self.model(COLLECTION).count({date: {$lte: new Date(today), $gte: new Date(yesterday)}, deleted: false});
+    var q = self.model(COLLECTION).count({date: {$lte: today.toDate(), $gte: yesterday.toDate()}, deleted: false});
 
     return q.exec(callback);
 };
@@ -938,11 +1034,19 @@ ticketSchema.statics.getMonthCount = function($date, status, callback) {
 
     //Make sure Date is set to 1st Day of the Month
     date.setDate(1);
+    date.setHours(0);
+    date.setMinutes(0);
+    date.setSeconds(0);
 
     var self = this;
     //var month = date.getMonth();
 
-    var endDate = new Date(date).setMonth(date.getMonth() + 1);
+    var endDate = new Date(date);
+    endDate.setMonth(date.getMonth() + 1);
+    endDate.setDate(0);
+    endDate.setHours(23);
+    endDate.setMinutes(59);
+    endDate.setSeconds(59);
 
     var q = self.model(COLLECTION).count({date: {$lte: new Date(endDate), $gte: new Date(date)}, deleted: false});
 

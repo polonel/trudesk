@@ -18,18 +18,15 @@ requirejs.config({
         //Always Load
         jquery:         'vendor/jquery/jquery',
         jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
-        //foundation:     'vendor/foundation/foundation.min',
-        foundation:     'https://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/js/foundation.min',
         angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min',
         angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route',
         angularCookies: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies',
+        uikit:          'vendor/uikit/js/uikit_combined.min',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
         placeholder:    'vendor/placeholder/placeholder',
         nicescroll:     'vendor/nicescroll/nicescroll.min',
         underscore:     'vendor/underscore/underscore',
-        //socketio:       '/socket.io/socket.io',
-        //socketio:       'https://cdn.socket.io/socket.io-1.2.1',
         history:        'vendor/history/jquery.history',
         app:            'app',
 
@@ -37,15 +34,14 @@ requirejs.config({
         jquery_custom:  'plugins/jquery.custom',
         datatables:     'vendor/datatables/jquery.dataTables',
         dt_responsive:  'vendor/datatables/dataTables.responsive',
-        dt_foundation:  'vendor/datatables/dataTables.foundation',
         dt_grouping:    'vendor/datatables/dataTables.grouping',
         dt_scroller:    'vendor/datatables/dataTables.scroller',
         flot:           'vendor/flot/jquery.flot',
         flot_symbol:    'vendor/flot/jquery.flot.symbol',
         flot_time:      'vendor/flot/jquery.flot.time',
         flot_tooltip:   'vendor/flot/jquery.flot.tooltip',
-        fullcalendar:   'vendor/fullcalendar/fullcalendar.min',
-        moment:         'vendor/fullcalendar/moment.min',
+        //fullcalendar:   'vendor/fullcalendar/fullcalendar.min',
+        moment:         'vendor/moment/moment',
         easypiechart:   'vendor/easypiechart/easypiechart',
         chosen:         'vendor/chosen/chosen.jquery.min',
         autogrow:       'plugins/autogrow',
@@ -53,35 +49,57 @@ requirejs.config({
         tomarkdown:     'vendor/tomarkdown/tomarkdown',
         enjoyhint:      'vendor/enjoyhint/enjoyhint.min',
         colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
-        datepicker:     'vendor/datepicker/foundation-datepicker'
+        datepicker:     'vendor/datepicker/foundation-datepicker',
+        d3:             'vendor/d3/d3.min',
+        c3:             'vendor/c3/c3',
+        metricsgraphics:'vendor/metricsgraphics/metricsgraphics.min',
+        d3pie:          'vendor/d3pie/d3pie.min',
+        peity:          'vendor/peity/jquery.peity.min',
+        countup:        'vendor/countup/countUp.min',
+        velocity:       'vendor/velocity/velocity.min',
+        selectize:      'vendor/selectize/selectize',
+        waves:          'vendor/waves/waves',
+        isinview:       'plugins/jquery.isinview',
+        jquery_docsize: 'plugins/jquery.documentsize',
+        formvalidator:  'vendor/formvalidator/jquery.form-validator',
+        snackbar:       'plugins/snackbar'
+    },
+    config: {
+        "uikit": {
+            base: "js/vendor/uikit/js"
+        }
     },
     shim: {
-        foundation: {
-            deps: ['jquery', 'jquery_scrollTo', 'jquery_custom', 'modernizr', 'fastclick', 'placeholder', 'history', 'pace']
+        isinview: {
+            deps: ['jquery', 'jquery_docsize']
         },
 
         angular: {
-            deps: ['foundation'],
             exports: 'angular'
         },
 
         angularRoute:  {
             deps: ['angular']
         },
+
         angularCookies: {
             deps: ['angular']
+        },
+
+        uikit: {
+            deps: ['jquery', 'moment']
         },
 
         jquery_custom: {
             deps: ['jquery']
         },
 
-        datatables: {
+        formvalidator: {
             deps: ['jquery']
         },
 
-        dt_foundation: {
-            deps: ['jquery', 'datatables', 'foundation']
+        datatables: {
+            deps: ['jquery']
         },
 
         dt_responsive: {
@@ -110,10 +128,6 @@ requirejs.config({
 
         flot_tooltip: {
             deps: ['jquery', 'flot']
-        },
-
-        fullcalendar: {
-            deps: ['jquery', 'moment']
         },
 
         easypiechart: {
@@ -145,7 +159,51 @@ requirejs.config({
         },
 
         datepicker: {
-            deps: ['jquery', 'foundation']
+            deps: ['jquery']
+        },
+
+        d3: {
+            deps: []
+        },
+
+        c3: {
+            deps: ['d3', 'jquery']
+        },
+
+        metricsgraphics: {
+            deps: ['d3', 'jquery']
+        },
+
+        d3pie: {
+            deps: ['d3', 'jquery']
+        },
+
+        peity: {
+            deps: ['jquery']
+        },
+
+        countup: {
+            deps: ['jquery']
+        },
+
+        selectize: {
+            deps: ['jquery']
+        },
+
+        waves: {
+            deps: ['jquery']
+        },
+
+        waypoints: {
+            deps: ['jquery']
+        },
+
+        inview: {
+            deps: ['jquery', 'waypoints']
+        },
+
+        snackbar: {
+            deps: ['jquery']
         }
     },
     priority: [

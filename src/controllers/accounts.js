@@ -41,38 +41,52 @@ accountsController.get = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.accounts = {};
+    self.content.data.page = 2;
 
     async.waterfall([
         function(callback) {
-            userSchema.findAll(function(err, results) {
+            userSchema.getUserWithObject({limit: 20}, function(err, results) {
                 callback(err, results);
             });
 
         }, function (users, callback) {
-            return callback(null, users);
+            //return callback(null, users);
 
-            //disabled - not displaying groups on Account page.
-            //var result = [];
-            //async.eachSeries(users, function(u, c) {
-            //    var user = u.toObject();
-            //    groupSchema.getAllGroupsOfUser(user._id, function(err, g) {
-            //        if (!g) { return c();}
-            //        var groups = [];
-            //        _.each(g, function(gg) {
-            //            groups.push(gg.name)
-            //        });
-            //        user.groups = _.sortBy(groups, 'name');
-            //        result.push(user);
-            //        c();
-            //    })
-            //}, function(err) {
-            //    if (err) return callback(err);
-            //    callback(null, result);
-            //});
+            var result = [];
+            async.waterfall([
+                function(cc) {
+                    groupSchema.getAllGroups(function(err, grps) {
+                        if (err) return cc(err);
+                        cc(null, grps)
+                    });
+                },
+                function(grps, cc) {
+                    async.eachSeries(users, function(u, c) {
+                        var user = u.toObject();
+
+                        var groups = _.filter(grps, function(g) {
+                            return _.any(g.members, function(m) {
+                                return m._id.toString() == user._id.toString();
+                            });
+                        });
+
+                        user.groups = _.pluck(groups, 'name');
+
+                        result.push(user);
+                        c();
+                    }, function(err) {
+                        if (err) return callback(err);
+                        cc(null, result);
+                    });
+                }
+            ], function(err, results) {
+                if (err) return callback(err);
+                callback(null, results);
+            });
         }
     ], function(err, rr) {
-        if (err) return res.render('error', err);
-        self.content.data.accounts = rr;
+        if (err) return res.render('error', {message: err.message, error: err, layout: false});
+        self.content.data.accounts = _.sortBy(rr, 'fullname');
 
         res.render('accounts', self.content);
     });

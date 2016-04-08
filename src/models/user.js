@@ -41,6 +41,7 @@ var COLLECTION = "accounts";
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  * @property {Object} preferences Object to hold user preferences
  * @property {Boolean} preferences.autoRefreshTicketGrid Enable the auto refresh of the ticket grid.
+ * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
@@ -60,8 +61,16 @@ var userSchema = mongoose.Schema({
 
         preferences: {
             autoRefreshTicketGrid: { type: Boolean, default: true }
-        }
+        },
+
+        deleted:    { type: Boolean, default: false }
     });
+
+//Indexes
+userSchema.index({
+    username: 1,
+    fullname: 2
+});
 
 userSchema.pre('save', function(next) {
     var user = this;
@@ -134,6 +143,18 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
     }
 };
 
+userSchema.methods.softDelete = function(callback) {
+    var user = this;
+
+    user.deleted = true;
+
+    user.save(function(err, user) {
+        if (err) return callback(err, false);
+
+        callback(null, true);
+    });
+};
+
 userSchema.statics.validate = function (password, dbPass) {
     return bcrypt.compareSync(password, dbPass);
 };
@@ -184,7 +205,7 @@ userSchema.statics.getUserByUsername = function(user, callback) {
         return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
     }
 
-    return this.model(COLLECTION).findOne({username: user}, callback);
+    return this.model(COLLECTION).findOne({username: new RegExp("^" + user.toLowerCase(), 'i') }, callback);
 };
 
 /**
@@ -220,7 +241,7 @@ userSchema.statics.getUserByResetHash = function(hash, callback) {
         return callback("Invalid Hash - UserSchema.GetUserByResetHash()", null);
     }
 
-    return this.model(COLLECTION).findOne({resetPassHash: hash}, callback);
+    return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, callback);
 };
 
 /**
@@ -238,7 +259,29 @@ userSchema.statics.getUserByAccessToken = function(token, callback) {
         return callback("Invalid Token - UserSchema.GetUserByAccessToken()", null);
     }
 
-    return this.model(COLLECTION).findOne({accessToken: token}, callback);
+    return this.model(COLLECTION).findOne({accessToken: token, deleted: false}, callback);
+};
+
+userSchema.statics.getUserWithObject = function(object, callback) {
+    if (!_.isObject(object)) {
+        return callback("Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()", null);
+    }
+
+    var self = this;
+
+    var limit = (object.limit == null ? 10 : object.limit);
+    var page = (object.page == null ? 0 : object.page);
+    var search = (object.search == null ? '' : object.search);
+
+    var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
+        .sort({'fullname': 1})
+        .skip(page*limit)
+        .limit(limit);
+
+    if (!_.isEmpty(search))
+        q.where({fullname: new RegExp("^" + search.toLowerCase(), 'i') });
+
+    q.exec(callback);
 };
 
 /**
@@ -260,7 +303,7 @@ userSchema.statics.getAssigneeUsers = function(callback) {
     });
 
     assigneeRoles = _.uniq(assigneeRoles);
-    this.model(COLLECTION).find({role: {$in: assigneeRoles}}, function(err, users) {
+    this.model(COLLECTION).find({role: {$in: assigneeRoles}, deleted: false}, function(err, users) {
         if (err) {
             winston.warn(err);
             return callback(err);

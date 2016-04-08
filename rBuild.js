@@ -6,61 +6,70 @@
     removeCombined: true,
     preserveLicenseComments: false,
     kipDirOptimize: false,
-    optimize: 'uglify2',
+    //optimize: 'uglify2',
+    optimize: 'none',
     uglify2: {
-        mangle: false
-    },
-    modules: [
-        {
-            name: 'trudesk.min',
-            create: true,
-            include: [
-                'jquery',
-                'jquery_scrollTo',
-                'foundation',
-                'angular',
-                'angularRoute',
-                'modernizr',
-                'fastclick',
-                'placeholder',
-                'nicescroll',
-                'underscore',
-                'history',
+    mangle: false
+},
+modules: [
+    {
+        name: 'trudesk.min',
+        create: true,
+        include: [
+            'jquery',
+            'jquery_scrollTo',
+            'jquery_custom',
+            'uikit',
+            'angular',
+            'angularRoute',
+            'angularCookies',
+            'modernizr',
+            'fastclick',
+            'placeholder',
+            'nicescroll',
+            'underscore',
+            'history',
+            'd3',
+            'metricsgraphics',
+            'd3pie',
+            'peity',
+            'countup',
+            'selectize',
+            'waves',
+            'formvalidator',
+            'snackbar',
 
-                'angularjs/main',
-                'angularjs/controllers',
-                'app',
+            '../../src/permissions/roles',
 
-                'modules/ajaxify',
-                'modules/ajaximgupload',
-                'modules/attachmentUpload',
+            'angularjs/main',
+            'angularjs/controllers',
+            'app',
 
-                'pages/accounts',
-                'pages/dashboard',
-                'pages/editaccount',
-                'pages/groups',
-                'pages/messages',
-                'pages/reports',
-                'pages/singleTicket',
-                'pages/tickets'
-            ],
-            shim: {
-                angular: {
-                    exports: 'angular'
-                }
+            'modules/ajaxify',
+            'modules/ajaximgupload',
+            'modules/attachmentUpload',
+
+            'pages/accounts',
+            'pages/dashboard',
+            'pages/editaccount',
+            'pages/groups',
+            'pages/messages',
+            'pages/reports',
+            'pages/singleTicket',
+            'pages/tickets'
+        ],
+        shim: {
+            angular: {
+                exports: 'angular'
             }
         }
-        //{
-        //    name: 'page-accounts',
-        //    create: true,
-        //    include: [ 'pages/accounts' ],
-        //    exclude: [ 'trudesk.min' ]
-        //}
-    ],
+    }
+],
     paths: {
-        foundation: 'empty:',
+        //foundation: 'empty:',
         angular: 'empty:',
-        angularRoute: 'empty:'
-    },
-    keepBuildDir: true
+        angularRoute: 'empty:',
+        angularCookies: 'empty:'
+},
+keepBuildDir: true
 })

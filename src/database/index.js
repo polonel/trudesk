@@ -33,7 +33,8 @@ mongoose.connection.on('error', function(e) {
 });
 
 mongoose.connection.on('connected', function() {
-    winston.info('Connected to MongoDB');
+    if (!process.env.FORK)
+        winston.info('Connected to MongoDB');
 });
 
 var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }};

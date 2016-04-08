@@ -1,74 +1,87 @@
 <div data-user_id="{{data.account._id}}" class="hide"></div>
-<div class="small-12 large-10 columns nopadding page-right-content" ng-controller="profileCtrl">
-    <div class="page-title">
+<div class="grid grid-collapse page-content" ng-controller="profileCtrl">
+    <div class="page-title uk-width-1-1 noshadow page-title-border-bottom">
         <p class="left">{{data.account.fullname}}</p>
         <div class="right">
-            <ul class="button-group">
-                <li><a href="#" role="button" class="btn no-ajaxy" ng-click="back($event)">Cancel</a></li>
-                <li class="active"><button class="btn" ng-click="updateUser()">Save</button>
-                    <!--<a href="#" role="button" class="btn" data-action="submit" data-form="createAccountForm">Save</a>-->
-                </li>
-            </ul>
+            <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
+                <ul class="button-group">
+                    <li><a href="#" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="back($event)"><span class="uk-margin-top-remove">Cancel</span></a></li>
+                    <li class="active">
+                        <a href="#" class="btn no-ajaxy md-btn-wave-light" style="color: white; border-radius: 3px;" ng-click="updateUser()">
+                            <span class="uk-margin-top-remove">Save</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
     <!--Content Here-->
-    <div class="page-wrapper scrollable no-overflow-x full-height" style="" ng-controller="accountsCtrl">
-        <div class="row padtop20 padleft30 padright20">
-            <div class="small-12 columns">
-                <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin" enctype="multipart/form-data">
+    <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
+        <div id="page-content-inner" class="uk-grid">
+            <div class="uk-width-1-1 relative">
+                <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin uk-clearfix" enctype="multipart/form-data">
                     <input type="hidden" name="_id" value="{{data.account._id}}" />
                     <input type="hidden" name="username" value="{{data.account.username}}" />
-                    <div class="largeProfilePic cursor-pointer" style="position: absolute; left: 15px; top: 0;" ng-click="accountEditPic()">
+                    <div class="largeProfilePic cursor-pointer hoverEffect" style="position: absolute; left: 35px; top: 0;" ng-click="accountEditPic()">
                         <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
                         {{#if data.account.image}}
                             <img src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
                         {{else}}
                             <img src="/uploads/users/defaultProfile.jpg" alt="{{data.account.username}}"/>
                         {{/if}}
-                        <div class="hoverAction">
-                            <span>Upload Photo</span>
+                        <div class="img-caption">
+                            <h3>Upload Profile Image</h3>
+                            <span>Image must be square and at least 256x256</span>
+                            <!--<a href="#">Upload</a>-->
                         </div>
                     </div>
                 </form>
-                <form id="createAccountForm" class="form nomargin" action="/accounts/edit" method="POST">
+                <form id="createAccountForm" class="uk-form-stacked" action="/accounts/edit" method="POST">
                     <input name="aId" type="hidden" value="{{data.account._id}}" />
-                    <div style="margin-left: 286px;">
-                        <label for="aUsername">Username</label>
-                        <input id="aUsername" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
-
-                        <label for="aFullname">Name</label>
-                        <input id="aFullname" name="aFullname" type="text" value="{{data.account.fullname}}"/>
-
-                        <label for="aPass">Password</label>
-                        <input id="aPass" name="aPass" type="password" />
-
-                        <label for="aPassConfirm">Confirm Password</label>
-                        <input id="aPassConfirm" name="aPassConfirm" type="password" />
-
-                        <label for="aEmail">Email</label>
-                        <input id="aEmail" name="aEmail" type="text" value="{{data.account.email}}"/>
-
-                        <div class="small-10 columns" style="padding-left: 0; padding-right: 0;">
-                            <label for="aApiKey">API Key</label>
-                            <input id="aApiKey" name="aApiKey" type="text" value="{{data.account.accessToken}}" disabled/>
-                        </div>
-                        <div class="small-2 columns" style="margin-top: 25px; padding-right: 0; padding-left: 0;">
-                                <button class="btn right {{#unless data.account.accessToken}} hide {{/unless}} removeApiButton" style="height: 37px;" type="button" ng-click="removeApiKey($event)">Remove Key</button>
-
-                                <button class="btn right {{#if data.account.accessToken}} hide {{/if}} generateApiButton" style="height: 37px;" type="button" ng-click="generateApiKey($event)">Generate Key</button>
+                    <div style="margin-left: 285px;">
+                        <div class="uk-margin-medium-bottom">
+                            <label for="aUsername">Username</label>
+                            <input id="aUsername" class="md-input" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
                         </div>
 
-                        <!--<div class="small-12 columns" style="padding-left: 0; padding-right: 0;">-->
-                            <!--<p style="float: left; font-size: 14px; font-weight: 400; color: #2c3e50;padding-top: 3px;">Receive Emails:</p>-->
-                            <!--<div class="onoffswitch onSwitch right">-->
-                                <!--<input type="checkbox" name="aPrefReceiveEmails" class="onoffswitch-checkbox" id="aPrefReceiveEmails">-->
-                                <!--<label class="onoffswitch-label" for="aPrefReceiveEmails">-->
-                                    <!--<span class="onoffswitch-inner onSwitch-inner"></span>-->
-                                    <!--<span class="onoffswitch-switch onSwitch-switch"></span>-->
-                                <!--</label>-->
-                            <!--</div>-->
-                        <!--</div>-->
+                        <div class="uk-margin-medium-bottom">
+                            <label for="aFullname">Name</label>
+                            <input id="aFullname" class="md-input" name="aFullname" type="text" value="{{data.account.fullname}}"/>
+                        </div>
 
+                        <div class="uk-margin-medium-bottom">
+                            <label for="aPass">Password</label>
+                            <input id="aPass" class="md-input" name="aPass" type="password" />
+                        </div>
+
+                        <div class="uk-margin-medium-bottom">
+                            <label for="aPassConfirm">Confirm Password</label>
+                            <input id="aPassConfirm" class="md-input" name="aPassConfirm" type="password" />
+                        </div>
+
+                        <div class="uk-margin-medium-bottom">
+                            <label for="aEmail">Email</label>
+                            <input id="aEmail" class="md-input" name="aEmail" type="text" value="{{data.account.email}}"/>
+                        </div>
+
+                        <div class="uk-grid uk-grid-collapse">
+                            <div class="uk-width-8-10">
+                                <label for="aApiKey">API Key</label>
+                                <input id="aApiKey" class="md-input" name="aApiKey" type="text" value="{{data.account.accessToken}}" disabled/>
+                            </div>
+                            <div class="uk-width-2-10" style="padding-top: 16px;">
+                                <button
+                                        class="uk-button uk-button-accent md-btn-wave-light right {{#unless data.account.accessToken}} hide {{/unless}} removeApiButton"
+                                        type="button" ng-click="removeApiKey($event)">
+                                    Remove Key
+                                </button>
+
+                                <button class="uk-button uk-button-accent md-btn-wave-light right {{#if data.account.accessToken}} hide {{/if}} generateApiButton"
+                                        type="button" ng-click="generateApiKey($event)">
+                                    Generate Key
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
