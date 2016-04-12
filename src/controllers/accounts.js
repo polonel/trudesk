@@ -27,8 +27,7 @@ accountsController.content = {};
 
 accountsController.get = function(req, res, next) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:view')) {
-        req.flash('message', 'Permission Denied.');
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
         return res.redirect('/');
     }
 
@@ -132,7 +131,7 @@ accountsController.profile = function(req, res, next) {
 
 accountsController.editAccount = function(req, res, next) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:edit')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
         req.flash('message', 'Permission Denied.');
         return res.redirect('/accounts');
     }
@@ -186,7 +185,7 @@ accountsController.editAccount = function(req, res, next) {
 
 accountsController.postEdit = function(req, res, next) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:edit')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
         req.flash('message', 'Permission Denied.');
         return res.redirect('/accounts');
     }
@@ -283,7 +282,7 @@ accountsController.postEdit = function(req, res, next) {
 
 accountsController.createAccount = function(req, res, next) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:create')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
         req.flash('message', 'Permission Denied.');
         return res.redirect('/accounts');
     }
@@ -321,7 +320,7 @@ accountsController.createAccount = function(req, res, next) {
 
 accountsController.postCreate = function(req, res) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'account:create')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
         req.flash('message', 'Permission Denied.');
         return res.redirect('/accounts');
     }

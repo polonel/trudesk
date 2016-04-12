@@ -494,6 +494,147 @@ api_tickets.getTicketStats = function(req, res) {
     res.send(obj);
 };
 
+api_tickets.getTicketStatsForGroup = function(req, res) {
+    var groupId = req.params.group;
+    if (groupId == 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
+    if (_.isUndefined(groupId)) return res.status(400).json({success: false, error: 'Invalid Group Id.'});
+
+    var ticketModel = require('../../../models/ticket');
+    var data = {};
+    var tags = {};
+    async.waterfall([
+        function(callback) {
+            ticketModel.getTickets([groupId], function(err, tickets) {
+                if (err) return callback(err);
+
+                var t = [];
+
+                async.each(tickets, function(ticket, cb) {
+                    _.each(ticket.tags, function(tag) {
+                        t.push(tag.name);
+                    });
+
+                    cb();
+                }, function() {
+                    _.mixin({
+                        'sortKeysBy': function (obj, comparator) {
+                            var keys = _.sortBy(_.keys(obj), function (key) {
+                                return comparator ? comparator(obj[key], key) : key;
+                            });
+
+                            return _.object(keys, _.map(keys, function (key) {
+                                return obj[key];
+                            }));
+                        }
+                    });
+
+                    tags = _.reduce(t, function(counts, key) {
+                        counts[key]++;
+                        return counts;
+                    }, _.object(_.map(_.uniq(t), function(key) {
+                        return [key, 0];
+                    })));
+
+                    tags = _.sortKeysBy(tags, function(value, key) {
+                        return -value;
+                    });
+
+                    callback(null, tickets);
+                });
+            });
+        },
+        function(tickets, callback) {
+            var today = moment().hour(23).minute(59).second(59);
+            var r = {};
+            tickets = _.sortBy(tickets, 'date');
+            r.recentTickets = _.last(tickets, 5);
+            r.closedTickets = _.filter(tickets, function(v) {
+                return v.status === 3;
+            });
+
+            var firstDate = moment(_.first(tickets).date).subtract(30, 'd');
+            var diffDays = today.diff(firstDate, 'days');
+
+            buildGraphData(tickets, diffDays, function(graphData) {
+                r.graphData = graphData;
+
+                //Get average Response
+                buildAvgResponse(tickets, function(obj) {
+                    r.avgResponse = obj.avgResponse;
+
+                    callback(null, r);
+                });
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        //data.closedTickets = results.closedTickets;
+        data.recentTickets = results.recentTickets;
+        data.closedCount = _.size(results.closedTickets);
+        data.graphData = results.graphData;
+        data.avgResponse = results.avgResponse;
+        data.tags = tags;
+
+        return res.json({success: true, data: data});
+    });
+
+};
+
+function buildGraphData(arr, days, callback) {
+    var graphData = [];
+    var today = moment().hour(23).minute(59).second(59);
+    var timespanArray = [];
+    for (var i=days;i--;) {
+        timespanArray.push(i);
+    }
+    async.eachSeries(timespanArray, function(day, next) {
+        var obj = {};
+        var d = today.clone().subtract(day, 'd');
+        obj.date = d.format('YYYY-MM-DD');
+
+        var $dateCount = _.filter(arr, function(v) {
+            return (v.date <= d.toDate() && v.date >= d.clone().subtract(1, 'd').toDate())
+        });
+
+        $dateCount = _.size($dateCount);
+        obj.value = $dateCount;
+        graphData.push(obj);
+
+        next();
+
+    }, function() {
+        callback(graphData);
+    });
+}
+
+function buildAvgResponse(ticketArray, callback) {
+    var cbObj = {};
+    var $ticketAvg = [];
+    async.eachSeries(ticketArray, function (ticket, callback) {
+        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return callback();
+
+        var ticketDate = moment(ticket.date);
+        var firstCommentDate = moment(ticket.comments[0].date);
+
+        var diff = firstCommentDate.diff(ticketDate, 'seconds');
+        $ticketAvg.push(diff);
+
+        callback();
+
+    }, function (err) {
+        if (err) return c(err);
+
+        var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+            return m + x;
+        }, 0);
+        var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
+        cbObj.avgResponse = Math.floor(tvt);
+
+        callback(cbObj);
+    });
+}
+
 api_tickets.getTagCount = function(req, res) {
     var cache = global.cache;
 
@@ -504,6 +645,8 @@ api_tickets.getTagCount = function(req, res) {
 
     res.json({success: true, tags: tags});
 };
+
+
 
 api_tickets.getMonthData = function(req, res) {
     var ticketModel = require('../../../models/ticket');

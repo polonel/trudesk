@@ -171,12 +171,12 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     });
             };
 
-            $scope.showAddTags = function(event) {
+            $scope.showCreateTags = function(event) {
                 event.preventDefault();
-                var tagModal = $('#addTagModal');
+                var tagModal = $('#createTagModal');
                 if (tagModal.length > 0) {
-                    tagModal.find('#tags').trigger('chosen:updated');
-                    UIkit.modal(tagModal).show();
+                    console.log('here');
+                    UIkit.modal(tagModal, {bgclose: false}).show();
                 }
             };
 
@@ -220,14 +220,14 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     })
                         .success(function(data) {
                             var tagModal = $('#createTagModal');
-                            var tagFormField = $('#tags');
-                            tagFormField.append('<option id="TAG__"' + data.tag._id + '" value="' + data.tag._id + '" selected>' + data.tag.name + '</option>');
+                            var tagFormField = $('select#tags');
+                            tagFormField.append('<option id="TAG__' + data.tag._id + '" value="' + data.tag._id + '">' + data.tag.name + '</option>');
                             tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
                             tagFormField.trigger('chosen:updated');
-                            tagFormField.find('#tag').val('');
+                            form.find('#tag').val('');
                             if (tagModal.length > 0) UIkit.modal(tagModal).hide();
                             setTimeout(function() {
-                                $scope.showAddTags(event);
+                                $scope.showTags(event);
                             }, 250);
                         })
                         .error(function(err) {

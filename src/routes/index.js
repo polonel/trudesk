@@ -81,9 +81,10 @@ function mainRoutes(router, middleware, controllers) {
     //Reports
     router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
     router.get('/reports/overview', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    router.get('/reports/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    router.get('/reports/inactive', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    router.get('/reports/breakdown', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.breakdown);
+    //router.get('/reports/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    //router.get('/reports/inactive', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
+    //router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
 
     //Invoices
     router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
@@ -108,10 +109,11 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
-    router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
-    router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
+    router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
+    router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup);
+    router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
@@ -132,6 +134,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
+    router.delete('/api/v1/users/:username/disable', middleware.api, controllers.api.users.disableUser);
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.disableUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);

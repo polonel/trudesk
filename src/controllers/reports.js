@@ -75,6 +75,55 @@ reportsController.overview = function(req, res, next) {
         });
 };
 
+reportsController.breakdown = function(req, res, next) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
+        req.flash('message', 'Permission Denied.');
+        return res.redirect('/');
+    }
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Breakdown";
+    self.content.nav = 'reports';
+    self.content.subnav = 'reports-breakdown';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+    self.content.data.groups = {};
+
+    self.content.data.reports = {};
+    async.parallel([
+            function(callback) {
+                reports.getReportByStatus(2, function(err, objs) {
+                    self.content.data.reports.items = objs;
+                    self.content.data.reports.count = _.size(objs);
+                    callback(err, objs);
+                });
+            },
+            function(callback) {
+                var groupSchema = require('../models/group');
+                groupSchema.getAllGroupsOfUser(user._id, function(err, grps) {
+                    if (err) return callback(err);
+                    ticketSchema.getOverdue(grps, function(err, objs) {
+                        if (err) return callback(err);
+
+                        var sorted = _.sortBy(objs, 'updated').reverse();
+
+                        self.content.data.reports.overdue = _.first(sorted, 5);
+                        callback(null, objs);
+                    });
+                });
+            }
+        ],
+        function(err) {
+            if (err) return handleError(res, err);
+
+            return res.render('subviews/reports/breakdown', self.content);
+        });
+};
+
 function handleError(res, err) {
     if (err) {
         return res.render('error', {layout: false, error: err, message: err.message});

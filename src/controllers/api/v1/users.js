@@ -378,7 +378,7 @@ api_users.disableUser = function(req, res) {
 
         if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
 
-        if (!permissions.canThis(req.user.role, 'users:delete')) return res.status(401).json({error: 'Invalid Permissions'});
+        if (!permissions.canThis(req.user.role, 'accounts:delete')) return res.status(401).json({error: 'Invalid Permissions'});
 
         user.softDelete(function(err) {
             if (err) return res.status(400).json({error: err.message});
@@ -419,7 +419,7 @@ api_users.enableUser = function(req, res) {
 
         if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
 
-        if (!permissions.canThis(req.user.role, 'users:delete')) return res.status(401).json({error: 'Invalid Permissions'});
+        if (!permissions.canThis(req.user.role, 'accounts:delete')) return res.status(401).json({error: 'Invalid Permissions'});
 
         user.deleted = false;
 

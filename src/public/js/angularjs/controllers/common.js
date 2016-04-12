@@ -33,7 +33,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                                 //$selectize.addOption({value: -1, text: "Select Group..."});
                                 //$selectize.refreshOptions();
                                 //$selectize.setValue(-1);
-                                $selectize.clear();
+                                if (!_.isUndefined($selectize))
+                                    $selectize.clear();
                             });
                             var $mdInputFilled = modal.find('*.md-input-filled');
                             $mdInputFilled.each(function() {

@@ -1613,6 +1613,10 @@ div#accountsTable_wrapper {
 .ticket-status-pending {
   background: #2196F3 !important; }
 
+.ticket-status.ticket-closed span,
+.ticket-status-closed {
+  background: #CCCCCC !important; }
+
 .ticket-priority {
   border-left: 10px solid transparent; }
   .ticket-priority.ticket-priority-2 {
