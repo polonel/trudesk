@@ -447,6 +447,20 @@ api_tickets.getTypes = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /api/v1/tickets/stats Get Ticket Stats
+ * @apiName getTicketStats
+ * @apiDescription Gets cached ticket stats
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/stats
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTicketStats = function(req, res) {
     var timespan = 30;
     if (req.params.timespan)
@@ -494,6 +508,20 @@ api_tickets.getTicketStats = function(req, res) {
     res.send(obj);
 };
 
+/**
+ * @api {get} /api/v1/tickets/stats/group/:group Get Ticket Stats For Group
+ * @apiName getTicketStatsForGroup
+ * @apiDescription Gets live ticket stats for given groupId
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/stats/group/{groupid}
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTicketStatsForGroup = function(req, res) {
     var groupId = req.params.group;
     if (groupId == 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
@@ -635,6 +663,20 @@ function buildAvgResponse(ticketArray, callback) {
     });
 }
 
+/**
+ * @api {get} /api/v1/tickets/count/tags Get Tags Count
+ * @apiName getTagCount
+ * @apiDescription Gets cached count of all tags
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/tags
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTagCount = function(req, res) {
     var cache = global.cache;
 
@@ -647,99 +689,100 @@ api_tickets.getTagCount = function(req, res) {
 };
 
 
+// Removed 4/12/2016 -- v0.1.7
+//
+//api_tickets.getMonthData = function(req, res) {
+//    var ticketModel = require('../../../models/ticket');
+//    var data = [];
+//    var newData = [];
+//    var closedData = [];
+//
+//    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+//    var dates = [];
+//    for (var i = 0; i < 12; i++) {
+//        var _d = new Date();
+//        _d.setMonth(_d.getMonth() - i);
+//        _d.setDate(1);
+//        dates.push(_d);
+//    }
+//
+//    async.series({
+//        total: function(cb) {
+//            async.forEachSeries(dates, function(value, next) {
+//                var d = [];
+//                var date = new Date(value);
+//                d.push(date);
+//                ticketModel.getMonthCount(date, -1, function(err, count) {
+//                    if (err) return next(err);
+//
+//                    d.push(Math.round(count));
+//                    var moment = require('moment');
+//                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
+//                    next();
+//                });
+//            }, function(err) {
+//                if (err) return cb(err);
+//
+//                cb();
+//            });
+//        },
+//        closed: function(cb) {
+//            async.forEachSeries(dates, function(value, next) {
+//                var d = [];
+//                var date = new Date(value);
+//                d.push(date);
+//                ticketModel.getMonthCount(value, 3, function(err, count) {
+//                    if (err) return next(err);
+//
+//                    d.push(Math.round(count));
+//                    var moment = require('moment');
+//                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
+//                    next();
+//                });
+//            }, function(err) {
+//                if (err) return cb(err);
+//
+//                cb();
+//            });
+//        }
+//    }, function(err, done) {
+//        if (err) return res.status(400).send(err);
+//
+//        data.push(newData);
+//        data.push(closedData);
+//        res.json(data);
+//    });
+//};
 
-api_tickets.getMonthData = function(req, res) {
-    var ticketModel = require('../../../models/ticket');
-    var data = [];
-    var newData = [];
-    var closedData = [];
-
-    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    var dates = [];
-    for (var i = 0; i < 12; i++) {
-        var _d = new Date();
-        _d.setMonth(_d.getMonth() - i);
-        _d.setDate(1);
-        dates.push(_d);
-    }
-
-    async.series({
-        total: function(cb) {
-            async.forEachSeries(dates, function(value, next) {
-                var d = [];
-                var date = new Date(value);
-                d.push(date);
-                ticketModel.getMonthCount(date, -1, function(err, count) {
-                    if (err) return next(err);
-
-                    d.push(Math.round(count));
-                    var moment = require('moment');
-                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-                    next();
-                });
-            }, function(err) {
-                if (err) return cb(err);
-
-                cb();
-            });
-        },
-        closed: function(cb) {
-            async.forEachSeries(dates, function(value, next) {
-                var d = [];
-                var date = new Date(value);
-                d.push(date);
-                ticketModel.getMonthCount(value, 3, function(err, count) {
-                    if (err) return next(err);
-
-                    d.push(Math.round(count));
-                    var moment = require('moment');
-                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-                    next();
-                });
-            }, function(err) {
-                if (err) return cb(err);
-
-                cb();
-            });
-        }
-    }, function(err, done) {
-        if (err) return res.status(400).send(err);
-
-        data.push(newData);
-        data.push(closedData);
-        res.json(data);
-    });
-};
-
-api_tickets.getYearData = function(req, res) {
-    var ticketModel = require('../../../models/ticket');
-    var year = req.params.year;
-
-    var returnData = {};
-
-    async.parallel({
-        totalCount: function(next) {
-            ticketModel.getYearCount(year, -1, function(err, count) {
-                if (err) return next(err);
-
-                next(null, count);
-            });
-        },
-
-        closedCount: function(next) {
-            ticketModel.getYearCount(year, 3, function(err, count) {
-                if (err) return next(err);
-
-                next(null, count);
-            });
-        }
-    }, function(err, done) {
-        returnData.totalCount = done.totalCount;
-        returnData.closedCount = done.closedCount;
-
-        res.json(returnData);
-    });
-};
+//api_tickets.getYearData = function(req, res) {
+//    var ticketModel = require('../../../models/ticket');
+//    var year = req.params.year;
+//
+//    var returnData = {};
+//
+//    async.parallel({
+//        totalCount: function(next) {
+//            ticketModel.getYearCount(year, -1, function(err, count) {
+//                if (err) return next(err);
+//
+//                next(null, count);
+//            });
+//        },
+//
+//        closedCount: function(next) {
+//            ticketModel.getYearCount(year, 3, function(err, count) {
+//                if (err) return next(err);
+//
+//                next(null, count);
+//            });
+//        }
+//    }, function(err, done) {
+//        returnData.totalCount = done.totalCount;
+//        returnData.closedCount = done.closedCount;
+//
+//        res.json(returnData);
+//    });
+//};
 
 /**
  * @api {get} /api/v1/tickets/count/topgroups/:topNum Top Groups Count

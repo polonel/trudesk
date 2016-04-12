@@ -531,7 +531,25 @@ api_users.notificationCount = function(req, res) {
     });
 };
 
-
+/**
+ * @api {post} /api/v1/users/:id/generateapikey Generate API Key
+ * @apiName generateApiKey
+ * @apiDescription Generates an API key for the given user id
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generateapikey
+ *
+ * @apiSuccess {string}     token   Generated API Key
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
 api_users.generateApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
@@ -547,6 +565,25 @@ api_users.generateApiKey = function(req, res) {
     });
 };
 
+/**
+ * @api {post} /api/v1/users/:id/removeapikey Removes API Key
+ * @apiName removeApiKey
+ * @apiDescription Removes API key for the given user id
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generateapikey
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
 api_users.removeApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});

@@ -105,8 +105,9 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
-    router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
+    //Removed 4.12.2016 -- v0.1.7
+    //router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
+    //router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
