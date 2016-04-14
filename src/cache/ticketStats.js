@@ -57,6 +57,7 @@ var init = function(tickets, callback) {
             }
         },
         e30: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.e30.tickets = _.filter($tickets, function(v) {
                 return (v.date < today.toDate() && v.date > e30.toDate());
             });
@@ -77,6 +78,7 @@ var init = function(tickets, callback) {
             });
         },
         e60: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.e60.tickets = _.filter($tickets, function(v) {
                 return (v.date < today.toDate() && v.date > e60.toDate());
             });
@@ -97,6 +99,7 @@ var init = function(tickets, callback) {
             });
         },
         e90: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.e90.tickets = _.filter($tickets, function(v) {
                 return (v.date < today.toDate() && v.date > e90.toDate());
             });
@@ -117,6 +120,7 @@ var init = function(tickets, callback) {
             });
         },
         e180: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.e180.tickets = _.filter($tickets, function(v) {
                 return (v.date < today.toDate() && v.date > e180.toDate());
             });
@@ -137,6 +141,7 @@ var init = function(tickets, callback) {
             });
         },
         e365: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.e365.tickets = _.filter($tickets, function(v) {
                 return (v.date < today.toDate() && v.date > e365.toDate());
             });
@@ -159,6 +164,7 @@ var init = function(tickets, callback) {
             });
         },
         lifetime: function(c) {
+            if (_.size($tickets) < 1) return c();
             ex.lifetime.tickets = _.sortBy($tickets, 'uid');
 
             ex.lifetime.closedTickets = _.filter(ex.lifetime.tickets, function(v) {
