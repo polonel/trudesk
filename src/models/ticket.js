@@ -134,7 +134,7 @@ ticketSchema.methods.setStatus = function(ownerId, status, callback) {
 
     self.status = status;
     var historyItem = {
-        action: 'ticket:set:status',
+        action: 'ticket:set:status:' + status,
         description: 'Ticket Status set to: ' + statusToString(status),
         owner: ownerId
     };
@@ -1212,6 +1212,14 @@ ticketSchema.statics.softDelete = function(oId, callback) {
     var self = this;
 
     return self.model(COLLECTION).findOneAndUpdate({_id: oId}, {deleted: true}, callback);
+};
+
+ticketSchema.statics.getClosedTicketsByUser = function(usrId, callback) {
+    if (_.isUndefined(usrId)) return callback("Invalid UserId - TicketSchema.GetClosedTicketsByUser()", null);
+
+    var self = this;
+
+    return self.model(COLLECTION).find({})
 };
 
 function statusToString(status) {

@@ -57,20 +57,4 @@ tagSchema.statics.tagExist = function(tagName, callback) {
     return q.exec(callback);
 };
 
-///**
-// * Return Single Ticket Type based on given type name
-// *
-// * @memberof TicketType
-// * @static
-// * @method getTypeByName
-// *
-// * @param {String} name Name of Ticket Type to search for
-// * @param {QueryCallback} callback MongoDB Query Callback
-// */
-//tagSchema.statics.getTypeByName = function(name, callback) {
-//    var q = this.model(COLLECTION).findOne({name: name});
-//
-//    return q.exec(callback);
-//};
-
 module.exports = mongoose.model(COLLECTION, tagSchema);
