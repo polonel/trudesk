@@ -126,12 +126,63 @@ truCache.refreshCache = function(callback) {
                 },
                 function(done) {
                     var tagStats = require('./tagStats');
-                    tagStats(tickets, function(err, stats) {
-                        if (err) return  done(err);
+                    async.parallel([
+                        function(c) {
+                            tagStats(tickets, 30, function(err, stats) {
+                                if (err) return c(err);
 
-                        cache.set('tags:usage', stats, 3600);
+                                cache.set('tags:30:usage', stats, 3600);
 
-                        done();
+                                c();
+                            });
+                        },
+                        function(c) {
+                            tagStats(tickets, 60, function(err, stats) {
+                                if (err) return c(err);
+
+                                cache.set('tags:60:usage', stats, 3600);
+
+                                c();
+                            });
+                        },
+                        function(c) {
+                            tagStats(tickets, 90, function(err, stats) {
+                                if (err) return c(err);
+
+                                cache.set('tags:90:usage', stats, 3600);
+
+                                c();
+                            });
+                        },
+                        function(c) {
+                            tagStats(tickets, 180, function(err, stats) {
+                                if (err) return c(err);
+
+                                cache.set('tags:180:usage', stats, 3600);
+
+                                c();
+                            });
+                        },
+                        function(c) {
+                            tagStats(tickets, 365, function(err, stats) {
+                                if (err) return c(err);
+
+                                cache.set('tags:365:usage', stats, 3600);
+
+                                c();
+                            });
+                        },
+                        function(c) {
+                            tagStats(tickets, 0, function(err, stats) {
+                                if (err) return c(err);
+
+                                cache.set('tags:0:usage', stats, 3600);
+
+                                c();
+                            });
+                        }
+                    ], function(err) {
+                       done(err);
                     });
                 },
                 function(done) {

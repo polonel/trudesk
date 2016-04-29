@@ -22,9 +22,13 @@ var ticketSchema    = require('../models/ticket');
 var tagSchema       = require('../models/tag');
 
 
-var init = function(tickets, callback) {
+var init = function(tickets, timespan, callback) {
     var tags = [];
     var $tickets = [];
+    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan == 0) timespan = 9999;
+
+    var today = moment().hour(23).minute(59).second(59);
+    var tsDate = today.clone().subtract(timespan, 'd');
 
     async.series([
         function(done) {
@@ -43,6 +47,10 @@ var init = function(tickets, callback) {
         },
         function(done) {
             var t = [];
+
+            $tickets = _.filter($tickets, function(v) {
+                return (v.date < today.toDate() && v.date > tsDate.toDate());
+            });
 
             async.each($tickets, function(ticket, cb) {
                 _.each(ticket.tags, function(tag) {

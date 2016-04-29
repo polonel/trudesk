@@ -1112,6 +1112,7 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
  * @static
  * @method getTopTicketGroups
  *
+ * @param {Number} timespan Timespan to get the top groups (default: 9999)
  * @param {Number} top Top number of Groups to return (default: 5)
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
@@ -1123,12 +1124,16 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
  *    results[x].count
  * });
  */
-ticketSchema.statics.getTopTicketGroups = function(top, callback) {
+ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
+    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan == 0) timespan = 9999;
     if (_.isUndefined(top) || _.isNaN(top)) top = 5;
 
     var self = this;
 
-    var q = self.model(COLLECTION).find({deleted: false})
+    var today = moment().hour(23).minute(59).second(59);
+    var tsDate = today.clone().subtract(timespan, 'd');
+
+    var q = self.model(COLLECTION).find({date: {$gte: tsDate.toDate(), $lte: today.toDate()}, deleted: false})
         .deepPopulate('group')
         .select('group')
         .sort('group');
@@ -1158,7 +1163,7 @@ ticketSchema.statics.getTopTicketGroups = function(top, callback) {
         },
         function(grps, next) {
             async.each(grps, function(grp, cb) {
-                var cq = self.model(COLLECTION).count({'group': grp._id, deleted: false});
+                var cq = self.model(COLLECTION).count({date: {$gte: tsDate.toDate(), $lte: today.toDate()}, 'group': grp._id, deleted: false});
 
                 cq.exec(function(err, count) {
                     if (err) return cb(err);

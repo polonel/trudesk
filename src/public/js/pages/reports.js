@@ -118,7 +118,7 @@ define('pages/reports', [
 
 
                 $.ajax({
-                    url: '/api/v1/tickets/count/tags',
+                    url: '/api/v1/tickets/count/tags/' + timespan,
                     method: 'GET',
                     success: function(data) {
                         var arr = _.map(data.tags, function(v, key) {
@@ -168,13 +168,13 @@ define('pages/reports', [
 
 
                 $.ajax({
-                    url: '/api/v1/tickets/count/topgroups/5',
+                    url: '/api/v1/tickets/count/topgroups/' + timespan + '/5',
                     method: 'GET',
                     success: function(data) {
 
-                        var d = {
-                            content: []
-                        };
+                        var arr = _.map(data.items, function(v, key) {
+                            return [v.name, v.count];
+                        });
 
                         var colors = [
                             '#e53935',
@@ -182,66 +182,93 @@ define('pages/reports', [
                             '#8e24aa',
                             '#1e88e5',
                             '#00897b',
-                            '#43a047'
+                            '#43a047',
+                            '#00acc1',
+                            '#e65100',
+                            '#6d4c41',
+                            '#455a64'
                         ];
 
-                        _.each(data.items, function(item) {
-                            var obj = {};
-                            obj.label = item.name;
-                            obj.value = item.count;
-                            var color = _.sample(colors);
-                            colors = _.without(colors, color);
+                        var c = _.object(_.map(data.items, function(v,i) {
+                            return v[0];
+                        }), colors);
 
-                            obj.color = color;
-
-                            d.content.push(obj);
-                        });
-
-                        $('#pieChart').find('svg').remove();
-                        
-                        new d3pie("pieChart", {
-                            "size": {
-                                "canvasHeight": 215,
-                                "canvasWidth": 450,
-                                "pieInnerRadius": "60%",
-                                "pieOuterRadius": "68%"
+                        c3.generate({
+                            bindto: d3.select('#pieChart'),
+                            size: {
+                                height: 200
                             },
-                            "data": d,
-                            "labels": {
-                                "outer": {
-                                    "pieDistance": 15
-                                },
-                                "inner": {
-                                    "format": "value"
-                                },
-                                "mainLabel": {
-                                    "font": "roboto"
-                                },
-                                "percentage": {
-                                    "color": "#ffffff",
-                                    "font": "roboto",
-                                    "decimalPlaces": 0
-                                },
-                                "value": {
-                                    "color": "#ffffff",
-                                    "font": "roboto"
-                                },
-                                "lines": {
-                                    "enabled": true,
-                                    "color": "#78909c"
-                                },
-                                "truncation": {
-                                    "enabled": true
-                                }
+                            data: {
+                                columns: arr,
+                                type: 'pie',
+                                colors: c
                             },
-                            "effects": {
-                                "pullOutSegmentOnClick": {
-                                    "effect": "linear",
-                                    "speed": 400,
-                                    "size": 3
+                            donut: {
+                                label: {
+                                    format: function (value, ratio, id) {
+                                        return '';
+                                    }
                                 }
                             }
                         });
+
+                        //_.each(data.items, function(item) {
+                        //    var obj = {};
+                        //    obj.label = item.name;
+                        //    obj.value = item.count;
+                        //    var color = _.sample(colors);
+                        //    colors = _.without(colors, color);
+                        //
+                        //    obj.color = color;
+                        //
+                        //    d.content.push(obj);
+                        //});
+                        //
+                        //$('#pieChart').find('svg').remove();
+                        //
+                        //new d3pie("pieChart", {
+                        //    "size": {
+                        //        "canvasHeight": 215,
+                        //        "canvasWidth": 450,
+                        //        "pieInnerRadius": "60%",
+                        //        "pieOuterRadius": "68%"
+                        //    },
+                        //    "data": d,
+                        //    "labels": {
+                        //        "outer": {
+                        //            "pieDistance": 15
+                        //        },
+                        //        "inner": {
+                        //            "format": "value"
+                        //        },
+                        //        "mainLabel": {
+                        //            "font": "roboto"
+                        //        },
+                        //        "percentage": {
+                        //            "color": "#ffffff",
+                        //            "font": "roboto",
+                        //            "decimalPlaces": 0
+                        //        },
+                        //        "value": {
+                        //            "color": "#ffffff",
+                        //            "font": "roboto"
+                        //        },
+                        //        "lines": {
+                        //            "enabled": true,
+                        //            "color": "#78909c"
+                        //        },
+                        //        "truncation": {
+                        //            "enabled": true
+                        //        }
+                        //    },
+                        //    "effects": {
+                        //        "pullOutSegmentOnClick": {
+                        //            "effect": "linear",
+                        //            "speed": 400,
+                        //            "size": 3
+                        //        }
+                        //    }
+                        //});
                     }
                 });
             }

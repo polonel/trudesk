@@ -4958,7 +4958,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 /* selectize */
 /**
  * selectize.css (v0.12.1)
- * Copyright (c) 2013├óΓé¼ΓÇ£2015 Brian Reavis & contributors
+ * Copyright (c) 2013â€“2015 Brian Reavis & contributors
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this
  * file except in compliance with the License. You may obtain a copy of the License at:
@@ -6046,6 +6046,9 @@ p {
     opacity: 0.5; }
   100% {
     opacity: 0.2; } }
+.c3-chart-arc text {
+  font-size: 10px !important; }
+
 .tru-card-intro {
   transform: scale(0);
   opacity: 0.02; }

@@ -679,11 +679,13 @@ function buildAvgResponse(ticketArray, callback) {
  */
 api_tickets.getTagCount = function(req, res) {
     var cache = global.cache;
+    var timespan = req.params.timespan;
+    if (_.isUndefined(timespan) || _.isNaN(timespan)) timespan = 0;
 
     if (_.isUndefined(cache))
         return res.status(400).send('Tag stats are still loading...');
 
-    var tags = cache.get('tags:usage');
+    var tags = cache.get('tags:' + timespan + ':usage');
 
     res.json({success: true, tags: tags});
 };
@@ -786,15 +788,15 @@ api_tickets.getTagCount = function(req, res) {
 //};
 
 /**
- * @api {get} /api/v1/tickets/count/topgroups/:topNum Top Groups Count
+ * @api {get} /api/v1/tickets/count/topgroups/:timespan/:topNum Top Groups Count
  * @apiName getTopTicketGroups
- * @apiDescription Gets the group with the top ticket count
- * @apiVersion 0.1.5
+ * @apiDescription Gets the group with the top ticket count and timespan
+ * @apiVersion 0.1.7
  * @apiGroup Ticket
  * @apiHeader {string} accesstoken The access token for the logged in user
  *
  * @apiExample Example usage:
- * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/topgroups/10
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/topgroups/30/10
  *
  * @apiSuccess {array} items Array with Group name and Count
  *
@@ -808,7 +810,9 @@ api_tickets.getTagCount = function(req, res) {
 api_tickets.getTopTicketGroups = function(req, res) {
     var ticketModel = require('../../../models/ticket');
     var top = req.params.top;
-    ticketModel.getTopTicketGroups(top, function(err, items) {
+    var timespan = req.params.timespan;
+
+    ticketModel.getTopTicketGroups(timespan, top, function(err, items) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
         return res.json({items: items});

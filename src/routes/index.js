@@ -107,6 +107,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
+    router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
     //Removed 4.12.2016 -- v0.1.7
     //router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
     //router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
@@ -114,6 +115,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
+    router.get('/api/v1/tickets/count/topgroups/:timespan/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup);
     router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
@@ -152,31 +154,38 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
-    //router.get('/debug/sendmail', controllers.debug.sendmail);
-    //router.get('/api/v1/import', middleware.api, controllers.api.import);
-    router.get('/debug/cache/refresh', function(req, res) {
-        var _ = require('underscore');
+    if (global.env === 'development') {
+        //router.get('/debug/sendmail', controllers.debug.sendmail);
+        //router.get('/api/v1/import', middleware.api, controllers.api.import);
+        router.get('/debug/cache/refresh', function (req, res) {
+            var _ = require('underscore');
 
-        var forkProcess = _.findWhere(global.forks, {name: 'cache'});
-        forkProcess.fork.send({name: 'cache:refresh'});
-
-        res.send('OK');
-    });
-    router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
-    router.get('/debug/restart', function(req, res) {
-        var exec = require('child_process').exec;
-        var child = exec('ipconfig /all', {
-            cwd: __dirname
-        },function(err, stdout, stderr) {
-            console.log(stdout);
-            if (err) {
-                console.log(err);
-            }
+            var forkProcess = _.findWhere(global.forks, {name: 'cache'});
+            forkProcess.fork.send({name: 'cache:refresh'});
 
             res.send('OK');
         });
 
-    });
+        router.get('/debug/plugin', function (req, res) {
+            return res.render('pluginTest');
+        });
+        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+        router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
+        router.get('/debug/restart', function (req, res) {
+            var exec = require('child_process').exec;
+            var child = exec('ipconfig /all', {
+                cwd: __dirname
+            }, function (err, stdout, stderr) {
+                console.log(stdout);
+                if (err) {
+                    console.log(err);
+                }
+
+                res.send('OK');
+            });
+
+        });
+    }
 }
 
 module.exports = function(app, middleware) {
@@ -189,6 +198,17 @@ module.exports = function(app, middleware) {
 
     app.use(handle404);
     app.use(handleErrors);
+
+    //Load Plugin routes
+    var dive = require('dive');
+    var fs = require('fs');
+    var addinDir = path.join(__dirname, '../../addins');
+    if (!fs.existsSync(addinDir)) fs.mkdirSync(addinDir);
+    dive(addinDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+        if (err) throw err;
+        var pluginRoutes = require(path.join(dir, '/routes'));
+        pluginRoutes(router, middleware);
+    });
 };
 
 function handleErrors(err, req, res, next) {
