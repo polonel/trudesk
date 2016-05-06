@@ -53,19 +53,6 @@ describe('api/api.js', function() {
     //    });
     //});
 
-    it('should return 200 (\'/api/v1/tickets/count/year/2015\')', function(done) {
-        agent.get('http://localhost:3111/api/v1/tickets/count/year/2015')
-            .set('Accept', 'application/json')
-            .end(function(err, res) {
-                expect(err).to.not.exist;
-                expect(res.status).to.equal(200);
-                expect(res.body).to.have.property('totalCount');
-                //expect(res.body.totalCount).to.not.equal(null);
-
-                done();
-            });
-    });
-
     it ('should return a 404 error (\'/api/404\')', function(done) {
         request(server).get('/api/404').expect(404, done);
     });

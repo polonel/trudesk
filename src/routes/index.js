@@ -139,8 +139,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
-    router.delete('/api/v1/users/:username/disable', middleware.api, controllers.api.users.disableUser);
-    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.disableUser);
+    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
 

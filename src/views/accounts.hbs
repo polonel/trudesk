@@ -54,7 +54,7 @@
                                             <ul class="uk-nav">
                                                 <li><a href="#" class="no-ajaxy" data-username="{{username}}" ng-click="editAccount($event)">Edit</a></li>
                                                 <li><a href="#" data-username="{{username}}"
-                                                       ng-click="disableAccount($event)" class="no-ajaxy disable-account-action {{#compare deleted '==' true}}hide{{/compare}}">Disable</a></li>
+                                                       ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action {{#compare deleted '==' true}}hide{{/compare}}">Delete</a></li>
                                                 <li><a href="#" data-username="{{username}}"
                                                        ng-click="enableAccount($event)" class="no-ajaxy enable-account-action {{#compare deleted '==' false}}hide{{/compare}}">Enable</a></li>
 

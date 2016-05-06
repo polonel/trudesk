@@ -779,6 +779,30 @@ ticketSchema.statics.getTicketById = function(id, callback) {
 };
 
 /**
+ * Gets tickets by given Requester User Id
+ * @memberof Ticket
+ * @static
+ * @method getTicketsByRequester
+ *
+ * @param {Object} userId MongoDb _id of user.
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback("Invalid Requester Id - TicketSchema.GetTicketsByRequester()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({owner: userId, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
+/**
  * Gets tickets that are overdue
  * @memberof Ticket
  * @static

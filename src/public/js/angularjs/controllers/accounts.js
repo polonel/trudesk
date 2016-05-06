@@ -68,7 +68,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 //History.pushState(null, null, '/accounts/' + username);
             };
 
-            $scope.disableAccount = function($event) {
+            $scope.deleteAccount = function($event) {
                 $event.preventDefault();
                 var self = $($event.target);
                 var username = self.attr('data-username');
@@ -86,13 +86,21 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     //self.parents('[data-uk-filter]').remove();
                     //UIkit.$html.trigger('changed.uk.dom');
 
-                    self.parents('.tru-card-head').addClass('tru-card-head-deleted');
-                    self.addClass('hide');
-                    self.parents('.uk-nav').find('.enable-account-action').removeClass('hide');
+                    if (data.disabled) {
+                        self.parents('.tru-card-head').addClass('tru-card-head-deleted');
+                        self.addClass('hide');
+                        self.parents('.uk-nav').find('.enable-account-action').removeClass('hide');
 
-                    helpers.UI.showSnackbar('Account ' + username + ' Successfully Disabled', false);
+                        helpers.UI.showSnackbar('Account ' + username + ' Successfully Disabled', false);
+                    } else {
+                        self.parents('.tru-card[data-card-username]').parent().remove();
+                        UIkit.$html.trigger('changed.uk.dom');
+
+                        helpers.UI.showSnackbar('Account ' + username + ' Successfully Deleted', false);
+                    }
+
                 }).error(function(err) {
-                    console.log('[trudesk:accounts:disableAccount] - Error: ' + err.error);
+                    console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
                 });
             };
@@ -114,7 +122,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
                     self.parents('.tru-card-head').removeClass('tru-card-head-deleted');
                     self.addClass('hide');
-                    self.parents('.uk-nav').find('.disable-account-action').removeClass('hide');
+                    self.parents('.uk-nav').find('.delete-account-action').removeClass('hide');
 
                     helpers.UI.showSnackbar('Account successfully enabled', false);
                 }).error(function(err) {

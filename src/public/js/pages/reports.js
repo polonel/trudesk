@@ -128,21 +128,27 @@ define('pages/reports', [
                         arr = _.first(arr, 10);
 
                         var colors = [
-                            '#e53935',
-                            '#d81b60',
-                            '#8e24aa',
-                            '#1e88e5',
-                            '#00897b',
-                            '#43a047',
-                            '#00acc1',
-                            '#e65100',
-                            '#6d4c41',
-                            '#455a64'
+                            '#e74c3c',
+                            '#3498db',
+                            '#9b59b6',
+                            '#34495e',
+                            '#1abc9c',
+                            '#2ecc71',
+                            '#03A9F4',
+                            '#00BCD4',
+                            '#009688',
+                            '#4CAF50',
+                            '#FF5722',
+                            '#CDDC39',
+                            '#FFC107',
+                            '#00E5FF',
+                            '#E040FB',
+                            '#607D8B'
                         ];
 
                         var c = _.object(_.map(arr, function(v,i) {
                             return v[0];
-                        }), colors);
+                        }), _.shuffle(colors));
 
                         c3.generate({
                             bindto: d3.select('#topTenTags'),
@@ -177,19 +183,27 @@ define('pages/reports', [
                         });
 
                         var colors = [
-                            '#e53935',
-                            '#d81b60',
-                            '#8e24aa',
-                            '#1e88e5',
-                            '#00897b',
-                            '#43a047',
-                            '#00acc1',
-                            '#e65100',
-                            '#6d4c41',
-                            '#455a64'
+                            '#e74c3c',
+                            '#3498db',
+                            '#9b59b6',
+                            '#34495e',
+                            '#1abc9c',
+                            '#2ecc71',
+                            '#03A9F4',
+                            '#00BCD4',
+                            '#009688',
+                            '#4CAF50',
+                            '#FF5722',
+                            '#CDDC39',
+                            '#FFC107',
+                            '#00E5FF',
+                            '#E040FB',
+                            '#607D8B'
                         ];
 
-                        var c = _.object(_.map(data.items, function(v,i) {
+                        colors = _.shuffle(colors);
+
+                        var c = _.object(_.map(arr, function(v,i) {
                             return v[0];
                         }), colors);
 
@@ -200,7 +214,7 @@ define('pages/reports', [
                             },
                             data: {
                                 columns: arr,
-                                type: 'pie',
+                                type: 'donut',
                                 colors: c
                             },
                             donut: {
