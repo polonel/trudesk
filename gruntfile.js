@@ -130,7 +130,7 @@ module.exports = function(grunt) {
         },
 
         sass: {
-            build: {
+            dist: {
                 files: {
                     'public/css/app.css': 'src/sass/app.sass'
                 }
