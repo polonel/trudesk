@@ -97,26 +97,32 @@ truCache.refreshCache = function(callback) {
                         if (err) return done(err);
                         cache.set('tickets:overview:lastUpdated', stats.lastUpdated, 3600);
 
+                        cache.set('tickets:overview:e30:ticketCount', stats.e30.tickets, 3600);
                         cache.set('tickets:overview:e30:closedTickets', stats.e30.closedTickets, 3600);
                         cache.set('tickets:overview:e30:responseTime', stats.e30.avgResponse, 3600);
                         cache.set('tickets:overview:e30:graphData', stats.e30.graphData, 3600);
 
+                        cache.set('tickets:overview:e60:ticketCount', stats.e60.tickets, 3600);
                         cache.set('tickets:overview:e60:closedTickets', stats.e60.closedTickets, 3600);
                         cache.set('tickets:overview:e60:responseTime', stats.e60.avgResponse, 3600);
                         cache.set('tickets:overview:e60:graphData', stats.e60.graphData, 3600);
 
+                        cache.set('tickets:overview:e90:ticketCount', stats.e90.tickets, 3600);
                         cache.set('tickets:overview:e90:closedTickets', stats.e90.closedTickets, 3600);
                         cache.set('tickets:overview:e90:responseTime', stats.e90.avgResponse, 3600);
                         cache.set('tickets:overview:e90:graphData', stats.e90.graphData, 3600);
 
+                        cache.set('tickets:overview:e180:ticketCount', stats.e180.tickets, 3600);
                         cache.set('tickets:overview:e180:closedTickets', stats.e180.closedTickets, 3600);
                         cache.set('tickets:overview:e180:responseTime', stats.e180.avgResponse, 3600);
                         cache.set('tickets:overview:e180:graphData', stats.e180.graphData, 3600);
 
+                        cache.set('tickets:overview:e365:ticketCount', stats.e365.tickets, 3600);
                         cache.set('tickets:overview:e365:closedTickets', stats.e365.closedTickets, 3600);
                         cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, 3600);
                         cache.set('tickets:overview:e365:graphData', stats.e365.graphData, 3600);
 
+                        cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, 3600);
                         cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, 3600);
                         cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, 3600);
                         cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, 3600);

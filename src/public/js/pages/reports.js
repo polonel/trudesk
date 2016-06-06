@@ -214,7 +214,7 @@ define('pages/reports', [
                             },
                             data: {
                                 columns: arr,
-                                type: 'donut',
+                                type: 'pie',
                                 colors: c
                             },
                             donut: {

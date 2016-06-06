@@ -83,6 +83,13 @@ var ticketSchema = mongoose.Schema({
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
 
+ticketSchema.index({
+    uid: 1,
+    date: 2,
+    status: 3,
+    owner: 4
+});
+
 ticketSchema.plugin(deepPopulate);
 
 ticketSchema.pre('save', function(next) {

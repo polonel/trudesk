@@ -474,26 +474,32 @@ api_tickets.getTicketStats = function(req, res) {
     var obj = {};
     if (timespan == 30) {
         obj.data = cache.get('tickets:overview:e30:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e30:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
     } else if (timespan == 60) {
         obj.data = cache.get('tickets:overview:e60:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e60:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
     } else if (timespan == 90) {
         obj.data = cache.get('tickets:overview:e90:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e90:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
     } else if (timespan == 180) {
         obj.data = cache.get('tickets:overview:e180:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e180:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
     } else if (timespan == 365) {
         obj.data = cache.get('tickets:overview:e365:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e365:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
     } else if (timespan == 0) {
         obj.data = cache.get('tickets:overview:lifetime:graphData');
+        obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
         obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
     }

@@ -24,6 +24,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
+    router.get('/l2auth', middleware.checkUserHasL2Auth, middleware.cache(5*60), controllers.main.l2authget);
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
@@ -188,6 +189,8 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
+    //CORS
+    app.use(allowCrossDomain);
     //Docs
     app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
     app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
@@ -241,4 +244,17 @@ function handle404(req, res, next) {
     err.status = 404;
 
     next(err);
+}
+
+function allowCrossDomain(req, res, next) {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    if (req.method === 'OPTIONS') {
+        res.send(200);
+    } else {
+        next();
+    }
 }
