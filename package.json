@@ -16,6 +16,7 @@
     "body-parser": "^1.12.3",
     "busboy": "^0.2.9",
     "chance": "^0.8.0",
+    "clone": "^1.0.2",
     "coffee-script": "^1.10.0",
     "connect-flash": "^0.1.1",
     "connect-mongo": "^0.8.1",
