@@ -1,0 +1,29 @@
+{
+    "url": "http://localhost:8118",
+    "port": "8118",
+    "mongo": {
+        "host": "mongo",
+        "port": "27017",
+        "username": "trudesk",
+        "password": "#TruDesk$",
+        "database": "trudesk"
+    },
+    "mailer": {
+        "enable": false,
+        "host": "mail.granvillecounty.org",
+        "port": "25",
+        "username": "trudesk",
+        "password": "Granville789",
+        "from": "trudesk@granvillecounty.org",
+        "check": {
+            "enable": false
+        }
+    },
+    "settings": {
+        "showOverdue": true
+    },
+    "tps":  {
+      "username": "granville.county",
+      "apikey": "1e3d5ff3ce1013f0dfcab69c91e5165ebeaeafaa"
+    }
+}
