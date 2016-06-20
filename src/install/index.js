@@ -333,116 +333,52 @@ function createAdmin(next) {
 
                 next();
             } else {
-                var questions = [{
-                    name: 'fullname',
-                    description: 'Administrator Fullname',
-                    required: true,
-                    type: 'string'
-                }, {
-                    name: 'email',
-                    description: 'Administrator email address',
-                    pattern: /.+@.+/,
-                    required: true
-                }],
-                passwordQuestions = [{
-                    name: 'password',
-                    description: 'Password',
-                    required: true,
-                    hidden: true,
-                    type: 'string'
-                }, {
-                    name: 'password:confirm',
-                    description: 'Confirm passowrd',
-                    required: true,
-                    hidden: true,
-                    type: 'string'
-                }],
-                success = function(err, results) {
-                    if (!results) {
-                        return new Error('aborted');
+                //Create User and Add to group.
+                var user = new User({
+                    username:   'Administrator',
+                    password:   'Passw0rd',
+                    fullname:   'Administrator',
+                    email:      'admin@trudesk.io',
+                    role:       'admin',
+                    title:      'Administrator'
+                });
+
+                user.save(function(err, aUser) {
+                    if (err) {
+                        winston.error('Database Error: ' + err.message);
+                        process.exit();
                     }
 
-                    if (results['password:confirm'] !== results.password) {
-                        winston.warn('Passwords did not match, please try again');
-                        return retryPassword(results);
-                    }
-
-                    //Create User and Add to group.
-
-                    var user = new User({
-                        username:   'Administrator',
-                        password:   results.password,
-                        fullname:   results.fullname,
-                        email:      results.email,
-                        role:       'admin',
-                        title:      'Administrator'
-                    });
-
-                    user.save(function(err, aUser) {
+                    Group.getGroupByName('Administrators', function(err, adminGroup) {
                         if (err) {
                             winston.error('Database Error: ' + err.message);
                             process.exit();
                         }
 
-                        Group.getGroupByName('Administrators', function(err, adminGroup) {
-                            if (err) {
-                                winston.error('Database Error: ' + err.message);
-                                process.exit();
-                            }
+                        if (!_.isNull(adminGroup) && !_.isUndefined(adminGroup) && !_.isEmpty(adminGroup)) {
+                            adminGroup.addMember(aUser._id, function(err, success) {
+                                if (err) {
+                                    winston.error('Database Error: ' + err.message);
+                                    process.exit();
+                                }
 
-                            if (!_.isNull(adminGroup) && !_.isUndefined(adminGroup) && !_.isEmpty(adminGroup)) {
-                                adminGroup.addMember(aUser._id, function(err, success) {
+                                if (!success) {
+                                    winston.error('Unable to add Administrator to group Administrators. Aborting...');
+                                    process.exit();
+                                }
+
+                                adminGroup.save(function(err) {
                                     if (err) {
                                         winston.error('Database Error: ' + err.message);
                                         process.exit();
                                     }
 
-                                    if (!success) {
-                                        winston.error('Unable to add Administrator to group Administrators. Aborting...');
-                                        process.exit();
-                                    }
-
-                                    adminGroup.save(function(err) {
-                                        if (err) {
-                                            winston.error('Database Error: ' + err.message);
-                                            process.exit();
-                                        }
-
-                                        next();
-                                    });
+                                    next();
                                 });
-                            }
-                        });
-                    });
-
-                },
-                retryPassword = function(oResults) {
-                    prompt.get(passwordQuestions, function(err, results) {
-                        if (!results) {
-                            return new Error('aborted');
+                            });
                         }
-
-                        oResults.password = results.password;
-                        oResults['password:confirm'] = results['password:confirm'];
-
-                        success(err, oResults);
                     });
-                };
-
-                questions = questions.concat(passwordQuestions);
-
-                if (!install.values) {
-                    prompt.get(questions, success);
-                } else {
-                    var results = {
-                        username: install.values['admin:username'],
-                        email: install.values['admin:email'],
-                        password: install.values['admin:password'],
-                        'password:confirm': install.values['admin:password:confirm']
-                    };
-
-                    success(null, results);
-                }
+                });
             }
         });
     });
@@ -555,6 +491,8 @@ install.setup = function(callback) {
 };
 
 install.save = function(conf, callback) {
+    return callback();
+    //NO NEED FOR THIS ON DOCKER
     var configPath = path.join(__dirname, '../../config.json');
 
     if (nconf.get('config')) {
