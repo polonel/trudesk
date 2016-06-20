@@ -171,7 +171,7 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/plugin', function (req, res) {
             return res.render('pluginTest');
         });
-        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+        //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
             var exec = require('child_process').exec;
