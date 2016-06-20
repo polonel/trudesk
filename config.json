@@ -1,13 +1,6 @@
 {
     "url": "http://localhost:8118",
     "port": "8118",
-    "mongo": {
-        "host": "mongo",
-        "port": "27017",
-        "username": "trudesk",
-        "password": "#TruDesk$",
-        "database": "trudesk"
-    },
     "mailer": {
         "enable": false,
         "host": "mail.granvillecounty.org",
