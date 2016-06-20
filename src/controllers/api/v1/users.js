@@ -625,6 +625,34 @@ api_users.removeApiKey = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /api/v1/getassignees Get Assignees
+ * @apiName getassignees
+ * @apiDescription Returns a list of assignable users
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/getassignees
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ * @apiSuccess {array}       users     Array of Assignees
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.getAssingees = function(req, res) {
+    userSchema.getAssigneeUsers(function(err, users) {
+        if (err) return res.status(400).json({error: 'Invalid Request'});
+
+        return res.json({success: true, users: users});
+    });
+};
+
 function StripUserFields(user) {
     user.password = undefined;
     user.accessToken = undefined;

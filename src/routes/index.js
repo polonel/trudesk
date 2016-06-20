@@ -103,6 +103,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
+    router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
@@ -136,6 +137,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users', middleware.api, controllers.api.users.getWithLimit);
     router.post('/api/v1/users/create', middleware.api, controllers.api.users.create);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
+    router.get('/api/v1/users/getassignees', middleware.api, controllers.api.users.getAssingees);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
@@ -253,7 +255,7 @@ function allowCrossDomain(req, res, next) {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
     if (req.method === 'OPTIONS') {
-        res.send(200);
+        res.sendStatus(200);
     } else {
         next();
     }

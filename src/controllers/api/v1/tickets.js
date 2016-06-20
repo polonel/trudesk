@@ -110,6 +110,51 @@ api_tickets.get = function(req, res) {
 };
 
 /**
+ * @api {get} /api/v1/tickets/search/?search={searchString} Get Tickets by Search String
+ * @apiName search
+ * @apiDescription Gets tickets via search string
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/search/?search=searchString
+ *
+ * @apiSuccess {number} count Count of Tickets Array
+ * @apiSuccess {array} tickets Tickets Array
+ *
+ * @apiError InvalidRequest The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Ticket"
+ }
+ */
+api_tickets.search = function(req, res) {
+    var searchString = req.query.search;
+
+    var ticketModel = require('../../../models/ticket');
+    var groupModel = require('../../../models/group');
+
+    async.waterfall([
+        function(callback) {
+            groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
+                callback(err, grps);
+            });
+        },
+        function(grps, callback) {
+            ticketModel.getTicketsWithSearchString(grps, searchString, function(err, results) {
+                callback(err, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.status(400).json({error: 'Error - ' + err.message});
+
+        return res.json({count: _.size(results), tickets: _.sortBy(results, 'uid').reverse()});
+    });
+};
+
+/**
  * @api {post} /api/v1/tickets/create Create Ticket
  * @apiName createTicket
  * @apiDescription Creates a ticket with the given post data.
@@ -292,6 +337,9 @@ api_tickets.update = function(req, res) {
 
             if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                 ticket.tags = reqTicket.tags;
+
+            if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee))
+                ticket.assignee = reqTicket.assignee;
 
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);

@@ -809,6 +809,56 @@ ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callback) {
+    if (_.isUndefined(grps) || _.isUndefined(search)) return callback("Invalid Post Data - TicketSchema.GetTicketsWithSearchString()", null);
+
+    var self = this;
+
+    var tickets = [];
+
+    async.parallel([
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, $where: '/^' + search + '.*/.test(this.uid)'})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        },
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, subject: { $regex: search, $options: 'i'}})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        },
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, issue: { $regex: search, $options: 'i'}})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        }
+    ], function(err) {
+        if (err) return callback(err, null);
+
+        var t = _.uniq(_.flatten(tickets), function(i){ return i.uid; });
+
+        return callback(null, t);
+    });
+};
+
 /**
  * Gets tickets that are overdue
  * @memberof Ticket
