@@ -413,7 +413,7 @@ function createCounter(next) {
                });
             },
             function(cb) {
-                countersSchema.findByCounter('reports', function(err, r) {
+                countersSchema.findByCounter('_reports', function(err, r) {
                     if (err) return cb(err);
                     if (!r) {
                         var Counter = countersSchema({
