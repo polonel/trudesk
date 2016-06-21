@@ -445,7 +445,7 @@ function createDefaultTicketTypes(next) {
 
         async.parallel([
             function(cb) {
-                ticketTypeSchema.find({name: 'Issue'}, function(err, t) {
+                ticketTypeSchema.getTypeByName('Issue', function(err, t) {
                     if (err) return cb(err);
                     if (!t) {
                         var type = new ticketTypeSchema({
@@ -461,7 +461,7 @@ function createDefaultTicketTypes(next) {
                 });
             },
             function(cb) {
-                ticketTypeSchema.find({name: 'Task'}, function(err, t) {
+                ticketTypeSchema.getTypeByName('Task', function(err, t) {
                     if (err) return cb(err);
                     if (!t) {
                         var type = new ticketTypeSchema({
