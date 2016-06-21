@@ -404,6 +404,7 @@ function createCounter(next) {
                        });
 
                        Counter.save(function(err) {
+                           winston.info('Created Counter: tickets');
                            return cb(err);
                        });
                    } else {

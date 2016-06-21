@@ -27,7 +27,7 @@ countersSchema.statics.increment = function (counter, callback) {
 };
 
 countersSchema.statics.findByCounter = function(counter, callback) {
-    return this.collection.find({_id: counter}, callback);
+    return this.model(COLLECTION).findOne({_id: counter}).exec(callback);
 };
 
 module.exports = mongoose.model(COLLECTION, countersSchema);
