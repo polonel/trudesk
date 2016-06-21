@@ -393,37 +393,43 @@ function createCounter(next) {
             return next(err);
         }
 
-        async.series([
+        async.parallel([
             function(cb) {
-                var Counter = new countersSchema({
-                    _id: "tickets",
-                    next: 1001
-                });
+               countersSchema.find({_id: 'tickets'}, function(err, c) {
+                   if (err) return cb(err);
+                   if (!c) {
+                       var Counter = new countersSchema({
+                           _id: "tickets",
+                           next: 1001
+                       });
 
-                Counter.save(function(err) {
-                    if (err) {
-                        cb(err);
-                    }
-
-                    cb();
-                });
+                       Counter.save(function(err) {
+                           return cb(err);
+                       });
+                   } else {
+                       return cb();
+                   }
+               });
             },
             function(cb) {
-                var Counter = new countersSchema({
-                    _id: 'reports',
-                    next: 1001
-                });
+                countersSchema.find({_id: 'reports'}, function(err, r) {
+                    if (err) return cb(err);
+                    if (!r) {
+                        var Counter = countersSchema({
+                            _id: '_reports',
+                            next: 1001
+                        });
 
-                Counter.save(function(err) {
-                    if (err) cb(err);
-
-                    cb();
+                        Counter.save(function(err) {
+                            return cb(err);
+                        });
+                    } else {
+                        return cb();
+                    }
                 });
             }
         ], function(err) {
-            if (err) return next(err);
-
-            next();
+            next(err);
         });
     });
 }
@@ -437,48 +443,52 @@ function createDefaultTicketTypes(next) {
             return next(err);
         }
 
-        async.series([
+        async.parallel([
             function(cb) {
-                var type = new ticketTypeSchema({
-                    name: 'Issue'
-                });
+                ticketTypeSchema.find({name: 'Issue'}, function(err, t) {
+                    if (err) return cb(err);
+                    if (!t) {
+                        var type = new ticketTypeSchema({
+                            name: 'Issue'
+                        });
 
-                type.save(function(err) {
-                    if (err) {
-                        return cb(err)
+                        type.save(function(err) {
+                            return cb(err);
+                        });
+                    } else {
+                        return cb();
                     }
-
-                    cb();
                 });
             },
             function(cb) {
-                var type = new ticketTypeSchema({
-                    name: 'Task'
-                });
+                ticketTypeSchema.find({name: 'Task'}, function(err, t) {
+                    if (err) return cb(err);
+                    if (!t) {
+                        var type = new ticketTypeSchema({
+                            name: 'Task'
+                        });
 
-                type.save(function(err) {
-                    if (err) {
-                        return cb(err);
+                        type.save(function(err) {
+                            return cb(err);
+                        });
+                    } else {
+                        return cb();
                     }
-
-                    cb();
                 });
             }
         ], function(err) {
-            if (err) return next(err);
-
-            next();
+            return next(err);
         });
     });
 }
 
 install.setup = function(callback) {
     async.series([
-        checkSetupFlag,
-        setupConfig,
+        //checkSetupFlag,
+        //setupConfig,
         createAdministrator,
         createCounter,
-        createDefaultTicketTypes
+        //createDefaultTicketTypes
 
     ], function(err) {
         if (err) {

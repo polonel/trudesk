@@ -150,7 +150,14 @@ function start() {
             }, 10000);
 
         } else {
-            dbCallback(err, db);
+            var install = require('./src/install');
+            install.setup(function(err) {
+                if (err) {
+                    winston.error('There was a problem completing trudesk setup: ', err.message);
+                }
+
+                dbCallback(err, db);
+            });
         }
     });
 }
@@ -185,7 +192,7 @@ function dbCallback(err, db) {
 
     ws.init(db, function(err) {
         if (err) {
-            winston.error(err);
+            winston.err(err);
             return;
         }
 
