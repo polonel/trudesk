@@ -395,7 +395,7 @@ function createCounter(next) {
 
         async.parallel([
             function(cb) {
-               countersSchema.find({_id: 'tickets'}, function(err, c) {
+               countersSchema.findByCounter({_id: 'tickets'}, function(err, c) {
                    if (err) return cb(err);
                    if (!c) {
                        var Counter = new countersSchema({
@@ -412,7 +412,7 @@ function createCounter(next) {
                });
             },
             function(cb) {
-                countersSchema.find({_id: 'reports'}, function(err, r) {
+                countersSchema.findByCounter({_id: 'reports'}, function(err, r) {
                     if (err) return cb(err);
                     if (!r) {
                         var Counter = countersSchema({
@@ -469,6 +469,7 @@ function createDefaultTicketTypes(next) {
                         });
 
                         type.save(function(err) {
+                            winston.info('Created Type: Task');
                             return cb(err);
                         });
                     } else {
@@ -488,7 +489,7 @@ install.setup = function(callback) {
         //setupConfig,
         createAdministrator,
         createCounter,
-        //createDefaultTicketTypes
+        createDefaultTicketTypes
 
     ], function(err) {
         if (err) {
