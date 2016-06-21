@@ -38,16 +38,6 @@ winston.add(winston.transports.Console, {
     level: global.env === 'production' ? 'info' : 'verbose'
 });
 
-function loadConfig() {
-    nconf.file({
-        file: path.join(__dirname, '/../../config.json')
-    });
-
-    nconf.defaults({
-        base_dir: __dirname
-    });
-}
-
 var refreshTimer;
 var now = moment();
 var lastUpdated = moment();
@@ -239,10 +229,14 @@ truCache.refreshCache = function(callback) {
         }
     });
 
-    loadConfig();
+    //loadConfig();
     var db = require('../database');
     db.init(function(err, db) {
-        if (err) return winston.error(err);
+        if (err) {
+            winston.warn(err);
+            return winston.error(err);
+        }
+        console.log(db);
         truCache.init(function(err) {
             if (err) {
                 winston.error(err);
