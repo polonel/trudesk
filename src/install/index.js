@@ -395,11 +395,11 @@ function createCounter(next) {
 
         async.parallel([
             function(cb) {
-               countersSchema.findByCounter({_id: 'tickets'}, function(err, c) {
+               countersSchema.findByCounter('tickets', function(err, c) {
                    if (err) return cb(err);
                    if (!c) {
                        var Counter = new countersSchema({
-                           _id: "tickets",
+                           _id: 'tickets',
                            next: 1001
                        });
 
@@ -412,7 +412,7 @@ function createCounter(next) {
                });
             },
             function(cb) {
-                countersSchema.findByCounter({_id: 'reports'}, function(err, r) {
+                countersSchema.findByCounter('reports', function(err, r) {
                     if (err) return cb(err);
                     if (!r) {
                         var Counter = countersSchema({
