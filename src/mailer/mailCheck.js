@@ -55,11 +55,16 @@ mailCheck.init = function() {
 
 mailCheck.fetchMail = function() {
     mailCheck.Imap.connect();
+    mailCheck.Imap.once('error', function(err) {
+        winston.warn(err);
+    });
+
     mailCheck.Imap.once('ready', function() {
         openInbox(function(err, box) {
             if (err) {
                 mailCheck.Imap.end();
-                throw err;
+                winston.warn(err);
+                //throw err;
             }
 
             async.waterfall([

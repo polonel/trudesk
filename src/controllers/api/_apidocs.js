@@ -22,3 +22,25 @@
      "error": "Invalid Request"
  }
  */
+
+//Updated in 0.1.7 to show for timespan
+/**
+ * @api {get} /api/v1/tickets/count/topgroups/:topNum Top Groups Count
+ * @apiName getTopTicketGroups
+ * @apiDescription Gets the group with the top ticket count
+ * @apiVersion 0.1.5
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/topgroups/10
+ *
+ * @apiSuccess {array} items Array with Group name and Count
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */

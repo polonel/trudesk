@@ -349,16 +349,16 @@ api_users.updatePreferences = function(req, res) {
 };
 
 /**
- * @api {delete} /api/v1/users/:username Disable User
+ * @api {delete} /api/v1/users/:username Delete / Disable User
  * @apiName deleteUser
- * @apiDescription Disables the giving user via username
+ * @apiDescription Disables or Deletes the giving user via username
  * @apiVersion 0.1.7
  * @apiGroup User
  * @apiHeader {string} accesstoken The access token for the logged in user
  * @apiExample Example usage:
  * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:username
  *
- * @apiSuccess {boolean}     success    Was the user successfully disabled.
+ * @apiSuccess {boolean}     success    Was the user successfully Deleted or disabled.
  *
  *
  * @apiError InvalidRequest The request was invalid
@@ -368,25 +368,51 @@ api_users.updatePreferences = function(req, res) {
      "error": "Invalid Request"
  }
  */
-api_users.disableUser = function(req, res) {
+api_users.deleteUser = function(req, res) {
     var username = req.params.username;
 
     if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
 
-    userSchema.getUserByUsername(username, function(err, user) {
-        if (err) { winston.debug(err); return res.status(400).json({error: err.message}); }
+    async.waterfall([
+        function(cb) {
+            userSchema.getUserByUsername(username, function(err, user) {
+                if (err) return cb(err);
 
-        if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
+                cb(null, user);
+            })
+        },
+        function(user, cb) {
+            var ticketSchema  = require('../../../models/ticket');
+            ticketSchema.getTicketsByRequester(user._id, function(err, tickets) {
+                if (err) return cb(err);
 
-        if (!permissions.canThis(req.user.role, 'accounts:delete')) return res.status(401).json({error: 'Invalid Permissions'});
+                var hasTickets = tickets.length > 0;
+                return cb(null, hasTickets, user);
+            });
+        },
+        function(hasTickets, user, cb) {
+            if (hasTickets) {
+                //Disable if the user has tickets
 
-        user.softDelete(function(err) {
-            if (err) return res.status(400).json({error: err.message});
+                user.softDelete(function(err) {
+                    if (err) return cb(err);
 
-            //Force Logout if Logged in
+                    //Force logout if Logged in
+                    return cb(null, true);
+                });
 
-            res.json({success: true});
-        });
+            } else {
+                user.remove(function(err) {
+                    if (err) return cb(err);
+
+                    return cb(null, false);
+                });
+            }
+        }
+    ], function(err, disabled) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true, disabled: disabled});
     });
 };
 
@@ -531,7 +557,25 @@ api_users.notificationCount = function(req, res) {
     });
 };
 
-
+/**
+ * @api {post} /api/v1/users/:id/generateapikey Generate API Key
+ * @apiName generateApiKey
+ * @apiDescription Generates an API key for the given user id
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generateapikey
+ *
+ * @apiSuccess {string}     token   Generated API Key
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
 api_users.generateApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
@@ -547,6 +591,25 @@ api_users.generateApiKey = function(req, res) {
     });
 };
 
+/**
+ * @api {post} /api/v1/users/:id/removeapikey Removes API Key
+ * @apiName removeApiKey
+ * @apiDescription Removes API key for the given user id
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generateapikey
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
 api_users.removeApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
@@ -559,6 +622,34 @@ api_users.removeApiKey = function(req, res) {
 
             return res.json({success: true});
         });
+    });
+};
+
+/**
+ * @api {get} /api/v1/getassignees Get Assignees
+ * @apiName getassignees
+ * @apiDescription Returns a list of assignable users
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/getassignees
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ * @apiSuccess {array}       users     Array of Assignees
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.getAssingees = function(req, res) {
+    userSchema.getAssigneeUsers(function(err, users) {
+        if (err) return res.status(400).json({error: 'Invalid Request'});
+
+        return res.json({success: true, users: users});
     });
 };
 

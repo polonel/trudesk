@@ -24,8 +24,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterStatus" class="uk-form-label nopadding nomargin">Status:</label>
-                        <select name="filterStatus" id="filterStatus" class="selectize-white uk-margin-small-bottom" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterStatus" class="uk-form-label">Status:</label>
+                        <select name="filterStatus" id="filterStatus" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             <option value="0">New</option>
                             <option value="1">Open</option>
                             <option value="2">Pending</option>
@@ -36,8 +36,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterPriority" class="uk-form-label nopadding nomargin">Priority:</label>
-                        <select name="filterPriority" id="filterPriority" class="selectize-white uk-margin-small-bottom" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterPriority" class="uk-form-label">Priority:</label>
+                        <select name="filterPriority" id="filterPriority" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             <option value="1">Normal</option>
                             <option value="2">Urgent</option>
                             <option value="3">Critical</option>
@@ -47,8 +47,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterTags" class="uk-form-label nopadding nomargin">Tags:</label>
-                        <select name="filterTags" id="filterTags" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterTags" class="uk-form-label">Tags:</label>
+                        <select name="filterTags" id="filterTags" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.ticketTags}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -58,8 +58,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterType" class="uk-form-label nopadding nomargin">Type:</label>
-                        <select name="filterType" id="filterType" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterType" class="uk-form-label">Type:</label>
+                        <select name="filterType" id="filterType" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.ticketTypes}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -69,8 +69,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterGroup" class="uk-form-label nopadding nomargin">Group:</label>
-                        <select name="filterGroup" id="filterGroup" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterGroup" class="uk-form-label">Group:</label>
+                        <select name="filterGroup" id="filterGroup" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.groups}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -80,8 +80,8 @@
 
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
-                        <label for="filterAssignee" class="uk-form-label nopadding nomargin">Assignee:</label>
-                        <select name="filterAssignee" id="filterAssignee" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                        <label for="filterAssignee" class="uk-form-label">Assignee:</label>
+                        <select name="filterAssignee" id="filterAssignee" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true">
                             {{#each data.common.messages.users}}
                                 {{#canUserRole role "ticket:assingee"}}
                                     <option value="{{_id}}">{{fullname}}</option>
@@ -92,7 +92,7 @@
                 </div>
 
                 <div class="right" style="margin-top: 15px;">
-                    <button class="uk-button" style="margin-right: 5px; background: #777;" type="reset" ng-click="clearFilterForm($event)">Clear</button>
+                    <!--<button class="uk-button" style="margin-right: 5px; background: #777;" type="reset" ng-click="clearFilterForm($event)">Clear</button>-->
                     <button class="uk-button uk-button-primary nomargin" type="submit">Apply Filter</button>
                 </div>
             </form>

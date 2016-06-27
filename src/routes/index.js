@@ -15,6 +15,7 @@ var express     = require('express'),
     path        = require('path'),
     winston     = require('winston'),
     mongoose    = require('mongoose'),
+    packagejson = require('../../package.json'),
     passport = require('passport');
 
 function mainRoutes(router, middleware, controllers) {
@@ -23,6 +24,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
+    //router.get('/l2auth', middleware.checkUserHasL2Auth, middleware.cache(5*60), controllers.main.l2authget);
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
@@ -96,21 +98,26 @@ function mainRoutes(router, middleware, controllers) {
 
     //API
     router.get('/api', controllers.api.index);
+    router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
+    router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
-    router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
+    router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
+    //Removed 4.12.2016 -- v0.1.7
+    //router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
+    //router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
+    router.get('/api/v1/tickets/count/topgroups/:timespan/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup);
     router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
@@ -130,12 +137,12 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users', middleware.api, controllers.api.users.getWithLimit);
     router.post('/api/v1/users/create', middleware.api, controllers.api.users.create);
     router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount);
+    router.get('/api/v1/users/getassignees', middleware.api, controllers.api.users.getAssingees);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
-    router.delete('/api/v1/users/:username/disable', middleware.api, controllers.api.users.disableUser);
-    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.disableUser);
+    router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
 
@@ -149,34 +156,43 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
-    //router.get('/debug/sendmail', controllers.debug.sendmail);
-    //router.get('/api/v1/import', middleware.api, controllers.api.import);
-    router.get('/debug/cache/refresh', function(req, res) {
-        var _ = require('underscore');
+    if (global.env === 'development') {
+        //router.get('/debug/sendmail', controllers.debug.sendmail);
+        //router.get('/api/v1/import', middleware.api, controllers.api.import);
+        router.get('/debug/cache/refresh', function (req, res) {
+            var _ = require('underscore');
 
-        var forkProcess = _.findWhere(global.forks, {name: 'cache'});
-        forkProcess.fork.send({name: 'cache:refresh'});
-
-        res.send('OK');
-    });
-    router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
-    router.get('/debug/restart', function(req, res) {
-        var exec = require('child_process').exec;
-        var child = exec('ipconfig /all', {
-            cwd: __dirname
-        },function(err, stdout, stderr) {
-            console.log(stdout);
-            if (err) {
-                console.log(err);
-            }
+            var forkProcess = _.findWhere(global.forks, {name: 'cache'});
+            forkProcess.fork.send({name: 'cache:refresh'});
 
             res.send('OK');
         });
 
-    });
+        router.get('/debug/plugin', function (req, res) {
+            return res.render('pluginTest');
+        });
+        //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+        router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
+        router.get('/debug/restart', function (req, res) {
+            var exec = require('child_process').exec;
+            var child = exec('ipconfig /all', {
+                cwd: __dirname
+            }, function (err, stdout, stderr) {
+                console.log(stdout);
+                if (err) {
+                    console.log(err);
+                }
+
+                res.send('OK');
+            });
+
+        });
+    }
 }
 
 module.exports = function(app, middleware) {
+    //CORS
+    app.use(allowCrossDomain);
     //Docs
     app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
     app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
@@ -186,6 +202,17 @@ module.exports = function(app, middleware) {
 
     app.use(handle404);
     app.use(handleErrors);
+
+    //Load Plugin routes
+    var dive = require('dive');
+    var fs = require('fs');
+    var addinDir = path.join(__dirname, '../../addins');
+    if (!fs.existsSync(addinDir)) fs.mkdirSync(addinDir);
+    dive(addinDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+        if (err) throw err;
+        var pluginRoutes = require(path.join(dir, '/routes'));
+        pluginRoutes(router, middleware);
+    });
 };
 
 function handleErrors(err, req, res, next) {
@@ -219,4 +246,17 @@ function handle404(req, res, next) {
     err.status = 404;
 
     next(err);
+}
+
+function allowCrossDomain(req, res, next) {
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
+
+    res.setHeader('Access-Control-Allow-Origin', '*');
+
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
 }

@@ -27,6 +27,7 @@
  ticket:attachment       = can add attachment
  ticket:removeAttachment = can remove attachment
  ticket:viewHistory      = can view ticket history on single page
+ ticket:setAssignee      = can set ticket Assignee
  */
 var roles = {
     admin: {

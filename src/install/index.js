@@ -121,6 +121,14 @@ questions.mailerCheck = [
     }
 ];
 
+questions.settings = [
+    {
+        name: 'settings:showOverdue',
+        description: 'Show ticket flash when overdue',
+        default: nconf.get('settings:showOverdue') || true
+    }
+];
+
 questions.optional = [
     {
         name: 'port',
@@ -169,34 +177,32 @@ function setupConfig(next) {
 
     if (!install.values) {
         var allQuestions = questions.main.concat(questions.optional);
-        prompt.get(allQuestions, function(err, config) {
-            if (err) {
-                process.stdout.write('\n\n');
-                winston.warn('trudesk setup ' + err.message);
-                process.exit();
-            }
+        async.waterfall([
+            function(done) {
+                prompt.get(allQuestions, function(err, config) {
+                    if (err) return done(err);
 
-            prompt.get(questions.mongo, function(err, dbConfig) {
-                if (err) {
-                    process.stdout.write('\n\n');
-                    winston.warn('trudesk setup ' + err.message);
-                    process.exit();
-                }
+                    done(null, config);
+                });
+            },
+            function(config, done) {
+                prompt.get(questions.mongo, function(err, dbConfig) {
+                    if (err) return done(err);
 
-                config.mongo = {
-                    host: dbConfig['mongo:host'],
-                    port: dbConfig['mongo:port'],
-                    username: dbConfig['mongo:username'],
-                    password: dbConfig['mongo:password'],
-                    database: dbConfig['mongo:database']
-                };
+                    config.mongo = {
+                        host: dbConfig['mongo:host'],
+                        port: dbConfig['mongo:port'],
+                        username: dbConfig['mongo:username'],
+                        password: dbConfig['mongo:password'],
+                        database: dbConfig['mongo:database']
+                    };
 
+                    done(null, config);
+                });
+            },
+            function(config, done) {
                 prompt.get(questions.mailer, function(err, mailerConfig) {
-                    if (err) {
-                        process.stdout.write('\n\n');
-                        winston.warn('trudesk setup ' + err.message);
-                        process.exit();
-                    }
+                    if (err) return done(err);
 
                     config.mailer = {
                         enable: mailerConfig['mailer:enable'],
@@ -212,11 +218,7 @@ function setupConfig(next) {
 
                     if (config.mailer.check.enable == true) {
                         prompt.get(questions.mailerCheck, function(err, mailerCheckConfig) {
-                            if (err) {
-                                process.stdout.write('\n\n');
-                                winston.warn('trudesk setup ' + err.message);
-                                process.exit();
-                            }
+                            if (err) return done(err);
 
                             config.mailer.check = {
                                 enable: true,
@@ -225,19 +227,34 @@ function setupConfig(next) {
                                 password: mailerCheckConfig['mailer:check:password']
                             };
 
-                            completeConfigSetup(err, config, next);
+                            return done(null, config);
                         });
 
                     } else {
-                        completeConfigSetup(err, config, next);
+                        return done(null, config);
                     }
                 });
-            });
+            },
+            function(config, done) {
+                prompt.get(questions.settings, function(err, settingsConfig) {
+                    if (err) return done(err);
+
+                    config.settings = {
+                        showOverdue: settingsConfig['settings:showOverdue']
+                    };
+
+                    done(null, config);
+                });
+            }
+        ], function(err, config) {
+            if (err) {
+                process.stdout.write('\n\n');
+                winston.warn('trudesk setup ' + err.message);
+                process.exit();
+            }
+
+            completeConfigSetup(err, config, next);
         });
-
-
-    } else {
-
     }
 }
 

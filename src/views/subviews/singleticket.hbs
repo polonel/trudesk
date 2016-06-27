@@ -58,7 +58,13 @@
                             <h4>Assignee</h4>
                             {{#if data.ticket.assignee}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
-                                    <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="relative no-ajaxy">
+                                    <a href="#"
+                                       {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
+                                           data-notifications="assigneeDropdown"
+                                           data-updateui="assigneeList"
+                                       {{/canUser}}
+
+                                       style="float: left;" class="relative no-ajaxy">
                                         {{#if data.ticket.assignee.image}}
                                             <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
                                         {{else}}
@@ -74,7 +80,13 @@
                                 </div>
                             {{else}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
-                                    <a href="#" data-notifications="assigneeDropdown" data-updateui="assigneeList" style="float: left;" class="relative no-ajaxy">
+                                    <a href="#"
+                                        {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
+                                           data-notifications="assigneeDropdown"
+                                           data-updateui="assigneeList"
+                                        {{/canUser}}
+
+                                       style="float: left;" class="relative no-ajaxy">
                                         <img src="/uploads/users/defaultProfile.jpg" alt="" />
                                     </a>
                                     <div class="ticket-assignee-details">

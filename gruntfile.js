@@ -43,7 +43,8 @@ module.exports = function(grunt) {
                 files: [
                     '*.js',
                     'src/**/*.js',
-                    'routes/**/*.js'
+                    'routes/**/*.js',
+                    'plugins/**/*.js'
                 ],
                 tasks: ['express:web'],
                 options: {
@@ -129,7 +130,7 @@ module.exports = function(grunt) {
         },
 
         sass: {
-            build: {
+            dist: {
                 files: {
                     'public/css/app.css': 'src/sass/app.sass'
                 }

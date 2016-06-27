@@ -83,6 +83,13 @@ var ticketSchema = mongoose.Schema({
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
 
+ticketSchema.index({
+    uid: 1,
+    date: 2,
+    status: 3,
+    owner: 4
+});
+
 ticketSchema.plugin(deepPopulate);
 
 ticketSchema.pre('save', function(next) {
@@ -134,7 +141,7 @@ ticketSchema.methods.setStatus = function(ownerId, status, callback) {
 
     self.status = status;
     var historyItem = {
-        action: 'ticket:set:status',
+        action: 'ticket:set:status:' + status,
         description: 'Ticket Status set to: ' + statusToString(status),
         owner: ownerId
     };
@@ -779,6 +786,80 @@ ticketSchema.statics.getTicketById = function(id, callback) {
 };
 
 /**
+ * Gets tickets by given Requester User Id
+ * @memberof Ticket
+ * @static
+ * @method getTicketsByRequester
+ *
+ * @param {Object} userId MongoDb _id of user.
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback("Invalid Requester Id - TicketSchema.GetTicketsByRequester()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({owner: userId, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callback) {
+    if (_.isUndefined(grps) || _.isUndefined(search)) return callback("Invalid Post Data - TicketSchema.GetTicketsWithSearchString()", null);
+
+    var self = this;
+
+    var tickets = [];
+
+    async.parallel([
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, $where: '/^' + search + '.*/.test(this.uid)'})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        },
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, subject: { $regex: search, $options: 'i'}})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        },
+        function(callback) {
+            var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, issue: { $regex: search, $options: 'i'}})
+                .populate('owner assignee type tags')
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+            q.exec(function(err, results) {
+                if (err) return callback(err);
+                tickets.push(results);
+
+                return callback(null);
+            });
+        }
+    ], function(err) {
+        if (err) return callback(err, null);
+
+        var t = _.uniq(_.flatten(tickets), function(i){ return i.uid; });
+
+        return callback(null, t);
+    });
+};
+
+/**
  * Gets tickets that are overdue
  * @memberof Ticket
  * @static
@@ -1112,6 +1193,7 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
  * @static
  * @method getTopTicketGroups
  *
+ * @param {Number} timespan Timespan to get the top groups (default: 9999)
  * @param {Number} top Top number of Groups to return (default: 5)
  * @param {QueryCallback} callback MongoDB Query Callback
  * @example
@@ -1123,12 +1205,16 @@ ticketSchema.statics.getYearCount = function(year, status, callback) {
  *    results[x].count
  * });
  */
-ticketSchema.statics.getTopTicketGroups = function(top, callback) {
+ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
+    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan == 0) timespan = 9999;
     if (_.isUndefined(top) || _.isNaN(top)) top = 5;
 
     var self = this;
 
-    var q = self.model(COLLECTION).find({deleted: false})
+    var today = moment().hour(23).minute(59).second(59);
+    var tsDate = today.clone().subtract(timespan, 'd');
+
+    var q = self.model(COLLECTION).find({date: {$gte: tsDate.toDate(), $lte: today.toDate()}, deleted: false})
         .deepPopulate('group')
         .select('group')
         .sort('group');
@@ -1158,7 +1244,7 @@ ticketSchema.statics.getTopTicketGroups = function(top, callback) {
         },
         function(grps, next) {
             async.each(grps, function(grp, cb) {
-                var cq = self.model(COLLECTION).count({'group': grp._id, deleted: false});
+                var cq = self.model(COLLECTION).count({date: {$gte: tsDate.toDate(), $lte: today.toDate()}, 'group': grp._id, deleted: false});
 
                 cq.exec(function(err, count) {
                     if (err) return cb(err);
@@ -1212,6 +1298,14 @@ ticketSchema.statics.softDelete = function(oId, callback) {
     var self = this;
 
     return self.model(COLLECTION).findOneAndUpdate({_id: oId}, {deleted: true}, callback);
+};
+
+ticketSchema.statics.getClosedTicketsByUser = function(usrId, callback) {
+    if (_.isUndefined(usrId)) return callback("Invalid UserId - TicketSchema.GetClosedTicketsByUser()", null);
+
+    var self = this;
+
+    return self.model(COLLECTION).find({})
 };
 
 function statusToString(status) {

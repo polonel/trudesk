@@ -110,6 +110,51 @@ api_tickets.get = function(req, res) {
 };
 
 /**
+ * @api {get} /api/v1/tickets/search/?search={searchString} Get Tickets by Search String
+ * @apiName search
+ * @apiDescription Gets tickets via search string
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/search/?search=searchString
+ *
+ * @apiSuccess {number} count Count of Tickets Array
+ * @apiSuccess {array} tickets Tickets Array
+ *
+ * @apiError InvalidRequest The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Ticket"
+ }
+ */
+api_tickets.search = function(req, res) {
+    var searchString = req.query.search;
+
+    var ticketModel = require('../../../models/ticket');
+    var groupModel = require('../../../models/group');
+
+    async.waterfall([
+        function(callback) {
+            groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
+                callback(err, grps);
+            });
+        },
+        function(grps, callback) {
+            ticketModel.getTicketsWithSearchString(grps, searchString, function(err, results) {
+                callback(err, results);
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.status(400).json({error: 'Error - ' + err.message});
+
+        return res.json({count: _.size(results), tickets: _.sortBy(results, 'uid').reverse()});
+    });
+};
+
+/**
  * @api {post} /api/v1/tickets/create Create Ticket
  * @apiName createTicket
  * @apiDescription Creates a ticket with the given post data.
@@ -293,6 +338,9 @@ api_tickets.update = function(req, res) {
             if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                 ticket.tags = reqTicket.tags;
 
+            if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee))
+                ticket.assignee = reqTicket.assignee;
+
             ticket.save(function(err, t) {
                 if (err) return res.send(err.message);
 
@@ -447,6 +495,20 @@ api_tickets.getTypes = function(req, res) {
     });
 };
 
+/**
+ * @api {get} /api/v1/tickets/stats Get Ticket Stats
+ * @apiName getTicketStats
+ * @apiDescription Gets cached ticket stats
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/stats
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTicketStats = function(req, res) {
     var timespan = 30;
     if (req.params.timespan)
@@ -460,26 +522,32 @@ api_tickets.getTicketStats = function(req, res) {
     var obj = {};
     if (timespan == 30) {
         obj.data = cache.get('tickets:overview:e30:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e30:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
     } else if (timespan == 60) {
         obj.data = cache.get('tickets:overview:e60:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e60:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
     } else if (timespan == 90) {
         obj.data = cache.get('tickets:overview:e90:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e90:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
     } else if (timespan == 180) {
         obj.data = cache.get('tickets:overview:e180:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e180:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
     } else if (timespan == 365) {
         obj.data = cache.get('tickets:overview:e365:graphData');
+        obj.ticketCount = cache.get('tickets:overview:e365:ticketCount');
         obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
     } else if (timespan == 0) {
         obj.data = cache.get('tickets:overview:lifetime:graphData');
+        obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
         obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
         obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
     }
@@ -494,6 +562,20 @@ api_tickets.getTicketStats = function(req, res) {
     res.send(obj);
 };
 
+/**
+ * @api {get} /api/v1/tickets/stats/group/:group Get Ticket Stats For Group
+ * @apiName getTicketStatsForGroup
+ * @apiDescription Gets live ticket stats for given groupId
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/stats/group/{groupid}
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTicketStatsForGroup = function(req, res) {
     var groupId = req.params.group;
     if (groupId == 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
@@ -635,122 +717,140 @@ function buildAvgResponse(ticketArray, callback) {
     });
 }
 
+/**
+ * @api {get} /api/v1/tickets/count/tags Get Tags Count
+ * @apiName getTagCount
+ * @apiDescription Gets cached count of all tags
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/tags
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
 api_tickets.getTagCount = function(req, res) {
     var cache = global.cache;
+    var timespan = req.params.timespan;
+    if (_.isUndefined(timespan) || _.isNaN(timespan)) timespan = 0;
 
     if (_.isUndefined(cache))
         return res.status(400).send('Tag stats are still loading...');
 
-    var tags = cache.get('tags:usage');
+    var tags = cache.get('tags:' + timespan + ':usage');
 
     res.json({success: true, tags: tags});
 };
 
 
 
-api_tickets.getMonthData = function(req, res) {
-    var ticketModel = require('../../../models/ticket');
-    var data = [];
-    var newData = [];
-    var closedData = [];
+// Removed 4/12/2016 -- v0.1.7
+//
+//api_tickets.getMonthData = function(req, res) {
+//    var ticketModel = require('../../../models/ticket');
+//    var data = [];
+//    var newData = [];
+//    var closedData = [];
+//
+//    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
+//    var dates = [];
+//    for (var i = 0; i < 12; i++) {
+//        var _d = new Date();
+//        _d.setMonth(_d.getMonth() - i);
+//        _d.setDate(1);
+//        dates.push(_d);
+//    }
+//
+//    async.series({
+//        total: function(cb) {
+//            async.forEachSeries(dates, function(value, next) {
+//                var d = [];
+//                var date = new Date(value);
+//                d.push(date);
+//                ticketModel.getMonthCount(date, -1, function(err, count) {
+//                    if (err) return next(err);
+//
+//                    d.push(Math.round(count));
+//                    var moment = require('moment');
+//                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
+//                    next();
+//                });
+//            }, function(err) {
+//                if (err) return cb(err);
+//
+//                cb();
+//            });
+//        },
+//        closed: function(cb) {
+//            async.forEachSeries(dates, function(value, next) {
+//                var d = [];
+//                var date = new Date(value);
+//                d.push(date);
+//                ticketModel.getMonthCount(value, 3, function(err, count) {
+//                    if (err) return next(err);
+//
+//                    d.push(Math.round(count));
+//                    var moment = require('moment');
+//                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
+//                    next();
+//                });
+//            }, function(err) {
+//                if (err) return cb(err);
+//
+//                cb();
+//            });
+//        }
+//    }, function(err, done) {
+//        if (err) return res.status(400).send(err);
+//
+//        data.push(newData);
+//        data.push(closedData);
+//        res.json(data);
+//    });
+//};
 
-    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-    var dates = [];
-    for (var i = 0; i < 12; i++) {
-        var _d = new Date();
-        _d.setMonth(_d.getMonth() - i);
-        _d.setDate(1);
-        dates.push(_d);
-    }
-
-    async.series({
-        total: function(cb) {
-            async.forEachSeries(dates, function(value, next) {
-                var d = [];
-                var date = new Date(value);
-                d.push(date);
-                ticketModel.getMonthCount(date, -1, function(err, count) {
-                    if (err) return next(err);
-
-                    d.push(Math.round(count));
-                    var moment = require('moment');
-                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-                    next();
-                });
-            }, function(err) {
-                if (err) return cb(err);
-
-                cb();
-            });
-        },
-        closed: function(cb) {
-            async.forEachSeries(dates, function(value, next) {
-                var d = [];
-                var date = new Date(value);
-                d.push(date);
-                ticketModel.getMonthCount(value, 3, function(err, count) {
-                    if (err) return next(err);
-
-                    d.push(Math.round(count));
-                    var moment = require('moment');
-                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-                    next();
-                });
-            }, function(err) {
-                if (err) return cb(err);
-
-                cb();
-            });
-        }
-    }, function(err, done) {
-        if (err) return res.status(400).send(err);
-
-        data.push(newData);
-        data.push(closedData);
-        res.json(data);
-    });
-};
-
-api_tickets.getYearData = function(req, res) {
-    var ticketModel = require('../../../models/ticket');
-    var year = req.params.year;
-
-    var returnData = {};
-
-    async.parallel({
-        totalCount: function(next) {
-            ticketModel.getYearCount(year, -1, function(err, count) {
-                if (err) return next(err);
-
-                next(null, count);
-            });
-        },
-
-        closedCount: function(next) {
-            ticketModel.getYearCount(year, 3, function(err, count) {
-                if (err) return next(err);
-
-                next(null, count);
-            });
-        }
-    }, function(err, done) {
-        returnData.totalCount = done.totalCount;
-        returnData.closedCount = done.closedCount;
-
-        res.json(returnData);
-    });
-};
+//api_tickets.getYearData = function(req, res) {
+//    var ticketModel = require('../../../models/ticket');
+//    var year = req.params.year;
+//
+//    var returnData = {};
+//
+//    async.parallel({
+//        totalCount: function(next) {
+//            ticketModel.getYearCount(year, -1, function(err, count) {
+//                if (err) return next(err);
+//
+//                next(null, count);
+//            });
+//        },
+//
+//        closedCount: function(next) {
+//            ticketModel.getYearCount(year, 3, function(err, count) {
+//                if (err) return next(err);
+//
+//                next(null, count);
+//            });
+//        }
+//    }, function(err, done) {
+//        returnData.totalCount = done.totalCount;
+//        returnData.closedCount = done.closedCount;
+//
+//        res.json(returnData);
+//    });
+//};
 
 /**
- * @api {get} /api/v1/tickets/count/topgroups/:topNum Top Groups Count
+ * @api {get} /api/v1/tickets/count/topgroups/:timespan/:topNum Top Groups Count
  * @apiName getTopTicketGroups
- * @apiDescription Gets the group with the top ticket count
- * @apiVersion 0.1.5
+ * @apiDescription Gets the group with the top ticket count and timespan
+ * @apiVersion 0.1.7
  * @apiGroup Ticket
  * @apiHeader {string} accesstoken The access token for the logged in user
  *
  * @apiExample Example usage:
- * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/topgroups/10
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/count/topgroups/30/10
  *
  * @apiSuccess {array} items Array with Group name and Count
  *
@@ -764,7 +864,9 @@ api_tickets.getYearData = function(req, res) {
 api_tickets.getTopTicketGroups = function(req, res) {
     var ticketModel = require('../../../models/ticket');
     var top = req.params.top;
-    ticketModel.getTopTicketGroups(top, function(err, items) {
+    var timespan = req.params.timespan;
+
+    ticketModel.getTopTicketGroups(timespan, top, function(err, items) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
         return res.json({items: items});
