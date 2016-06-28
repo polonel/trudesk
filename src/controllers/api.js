@@ -27,7 +27,8 @@ var async = require('async'),
     api_notices_v1      = require('./api/v1/notices'),
     api_users_v1        = require('./api/v1/users'),
     api_messages_v1     = require('./api/v1/messages'),
-    api_groups_v1       = require('./api/v1/groups');
+    api_groups_v1       = require('./api/v1/groups'),
+    api_settings_v1     = require('./api/v1/settings');
 
 /**
  * @since 1.0
@@ -43,6 +44,7 @@ var async = require('async'),
  * @requires {@link Group}
  * @requires {@link TicketType}
  * @requires {@link Emitter}
+ * @requires {@link Setting}
  *
  */
 var apiController = {};
@@ -51,6 +53,7 @@ apiController.notices = api_notices_v1;
 apiController.users = api_users_v1;
 apiController.messages = api_messages_v1;
 apiController.groups = api_groups_v1;
+apiController.settings = api_settings_v1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');

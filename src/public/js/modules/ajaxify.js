@@ -30,12 +30,13 @@ define('modules/ajaxify', [
     'pages/reportsBreakdown',
     'pages/notices',
     'pages/createNotice',
+    'pages/settings',
     'modules/ui',
     'modules/chat',
     'history'
 
 ], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
-            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage, noticesPage, createNoticePage, ui) {
+            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage, noticesPage, createNoticePage, settingsPage, ui) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -91,6 +92,8 @@ define('modules/ajaxify', [
         noticesPage.init();
         createNoticePage.init();
 
+        //Settings
+        settingsPage.init();
 
         //Load UI Animations Load
         helpers.UI.cardShow();

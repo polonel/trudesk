@@ -1,0 +1,165 @@
+<div ng-controller="settingsCtrl" ng-init="
+    mailerEnabled={{data.settings.mailerEnabled.value}};
+    mailerHost='{{data.settings.mailerHost.value}}';
+    mailerPort={{data.settings.mailerPort.value}};
+    mailerUsername='{{data.settings.mailerUsername.value}}';
+    mailerPassword='{{data.settings.mailerPassword.value}}';
+    mailerFrom='{{data.settings.mailerFrom.value}}';
+
+    init();
+">
+    <div class="nopadding settings">
+        <div class="uk-width-1-1 page-title noshadow" style="padding-left: 25px !important; border-bottom: 1px solid #dadada;">
+            <p class="left">{{title}}</p>
+        </div>
+        <!--Content Here-->
+        <div class="page-wrapper full-height scrollable no-overflow-x">
+            <div id="page-content-inner">
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Preferences for trudesk to send email notifications to users.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input id="mailerEnabled" name="mailerEnabled" type="checkbox" ng-model="mailerEnabled" ng-change="mailerEnabledChange()">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                            <div class="">
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerHost">Mail Server</label>
+                                    <input id="mailerHost" class="md-input md-input-width-medium" name="mailerHost" type="text" ng-model="mailerHost" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerPort">Port</label>
+                                    <input id="mailerPort" class="md-input md-input-width-medium" name="mailerPort" type="text" value="25" ng-model="mailerPort" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerUsername">Auth Username</label>
+                                    <input id="mailerUsername" class="md-input md-input-width-medium" name="mailerUsername" type="text" ng-model="mailerUsername" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerPassword">Auth Password</label>
+                                    <input id="mailerPassword" class="md-input md-input-width-medium" name="mailerPassword" type="password" ng-model="mailerPassword" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerFrom">From Address</label>
+                                    <input id="mailerFrom" class="md-input md-input-width-medium" name="mailerFrom" type="email" ng-model="mailerFrom" />
+                                </div>
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerSubmit" ng-click="mailerFormSubmit($event);">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer Check</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Trudesk will periodically check a mailbox for emails to convert to tickets. (Over IMAP)
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                            <div class="">
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="aEmail">Mail Server</label>
+                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="aEmail">Port</label>
+                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" value="143" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="aEmail">Username</label>
+                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="aEmail">Password</label>
+                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="password" />
+                                </div>
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="submitNewTicket">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Flash tickets that have been idle for a length of time.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <!--<hr class="nomargin-top">-->
+                        <!--<div class="panel-body2" style="padding: 20px 15px 15px 15px;">-->
+                        <!--<div class="">-->
+                        <!--<div class="uk-margin-medium-bottom">-->
+                        <!--<label for="aEmail">Mail Server</label>-->
+                        <!--<input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />-->
+                        <!--</div>-->
+                        <!--<div class="uk-margin-medium-bottom">-->
+                        <!--<label for="aEmail">Port</label>-->
+                        <!--<input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" value="143" />-->
+                        <!--</div>-->
+                        <!--<div class="uk-margin-medium-bottom">-->
+                        <!--<label for="aEmail">Username</label>-->
+                        <!--<input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />-->
+                        <!--</div>-->
+                        <!--<div class="uk-margin-medium-bottom">-->
+                        <!--<label for="aEmail">Password</label>-->
+                        <!--<input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="password" />-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['jquery', 'pages/settings'], function($, s) {
+            s.init();
+        });
+    </script>
+{{/contentFor}}

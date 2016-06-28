@@ -96,6 +96,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
+    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
@@ -155,6 +157,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive);
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
+
+    router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
 
     if (global.env === 'development') {
         //router.get('/debug/sendmail', controllers.debug.sendmail);

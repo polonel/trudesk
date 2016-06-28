@@ -4712,6 +4712,12 @@ div.dataTables_wrapper {
 .md-switch.md-blue label input[type=checkbox]:checked + .lever:after {
   background-color: #2196f3; }
 
+.md-switch.md-green label input[type=checkbox]:checked + .lever {
+  background-color: #55d97e; }
+
+.md-switch.md-green label input[type=checkbox]:checked + .lever:after {
+  background-color: #29b955; }
+
 .md-switch label .lever {
   content: "";
   display: inline-block;
@@ -5568,15 +5574,15 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   .md-fab.md-fab-accent {
     background: #E74C3C; }
   .md-fab.md-fab-success {
-    background: #7cb342; }
+    background: #29b955; }
     .md-fab.md-fab-success > i {
       color: #fff; }
   .md-fab.md-fab-danger {
-    background: #e53935; }
+    background: #d32f2f; }
     .md-fab.md-fab-danger > i {
       color: #fff; }
   .md-fab.md-fab-primary {
-    background: #2196f3; }
+    background: #2196F3; }
     .md-fab.md-fab-primary > i {
       color: #fff; }
   .md-fab.md-fab-warning {

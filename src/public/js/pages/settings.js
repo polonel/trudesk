@@ -1,4 +1,4 @@
-/*
+/**
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -7,25 +7,25 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
+ Created:    04/07/2016
  Author:     Chris Brame
 
  **/
 
-var Controllers = {
-    main: require('./main'),
-    tickets: require('./tickets'),
-    messages: require('./messages'),
-    servers: require('./servers'),
-    accounts: require('./accounts'),
-    groups: require('./groups'),
-    reports: require('./reports'),
-    invoices: require('./invoices'),
-    notices: require('./notices'),
-    settings: require('./settings'),
-    api: require('./api'),
+define('pages/settings', [
+    'jquery',
+    'underscore',
+    'modules/helpers',
+    'history'
 
-    debug: require('./debug')
-};
+], function($, _, helpers) {
+    var settingsPage = {};
 
-module.exports = Controllers;
+    settingsPage.init = function() {
+        $(document).ready(function() {
+
+        });
+    };
+
+    return settingsPage;
+});

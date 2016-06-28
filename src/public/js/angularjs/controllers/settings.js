@@ -1,0 +1,77 @@
+/**
+      .                              .o8                     oooo
+   .o8                             "888                     `888
+ .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ ========================================================================
+ Created:    02/10/2015
+ Author:     Chris Brame
+
+ **/
+
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'history'], function(angular, _, $, helpers, ui) {
+    return angular.module('trudesk.controllers.settings', [])
+        .controller('settingsCtrl', function($scope, $http) {
+            $scope.init = function() {
+                //Fix Inputs if input is preloaded with a value
+                setTimeout(function() {
+                    $('input.md-input').each(function() {
+                        var self = $(this);
+                        if (!_.isEmpty(self.val())) {
+                            var s = self.parent('.md-input-wrapper');
+                            if (s.length > 0)
+                                s.addClass('md-input-filled');
+                        }
+                    });
+                }, 0);
+            };
+
+            $scope.$watch('mailerEnabled', function(newVal) {
+                $('input#mailerHost').attr('disabled', !newVal);
+                $('input#mailerPort').attr('disabled', !newVal);
+                $('input#mailerUsername').attr('disabled', !newVal);
+                $('input#mailerPassword').attr('disabled', !newVal);
+                $('input#mailerFrom').attr('disabled', !newVal);
+                $('button#mailerSubmit').attr('disabled', !newVal);
+            });
+
+            $scope.mailerEnabledChange = function() {
+                $scope.mailerEnabled = this.mailerEnabled;
+
+                $http.put('/api/v1/settings', {
+                    name: 'mailer:enable',
+                    value: $scope.mailerEnabled
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.mailerFormSubmit = function($event) {
+                $event.preventDefault();
+                $http.put('/api/v1/settings', [
+                    {name: 'mailer:host', value: $scope.mailerHost},
+                    {name: 'mailer:port', value: $scope.mailerPort},
+                    {name: 'mailer:username', value: $scope.mailerUsername},
+                    {name: 'mailer:password', value: $scope.mailerPassword},
+                    {name: 'mailer:from', value: $scope.mailerFrom}
+                ], {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Mailer Settings Saved', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+        });
+});

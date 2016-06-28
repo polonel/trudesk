@@ -57,20 +57,25 @@
                                 <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
-                                        {{#canUser data.user "ticket:delete"}}
-                                            <li>
-                                                <a class="no-ajaxify" href="#" role="button" ng-click="deleteTickets()">Delete</a>
-                                            </li>
-                                            <li>
-                                                <hr style="margin: 5px 0;">
-                                            </li>
-                                        {{/canUser}}
                                         {{#canUser data.user "ticket:Edit"}}
-                                            <li><a href="#" class="no-ajaxify" ng-click="closeTickets()">Close</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button">Set Open</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button">Set Pending</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="closeTickets()">Set Closed</a></li>
+
+                                            <li><hr style="margin: 5px 0;"></li>
                                         {{else}}
                                             {{#canUser data.user "ticket:editSelf"}}
-                                                <li><a href="#" class="no-ajaxify" ng-click="closeTickets()">Close</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button">Set Open</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button">Set Pending</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="closeTickets()">Set Closed</a></li>
+
+                                                <li><hr style="margin: 5px 0;"></li>
                                             {{/canUser}}
+                                        {{/canUser}}
+                                        {{#canUser data.user "ticket:delete"}}
+                                            <li>
+                                                <a class="no-ajaxify" href="#" role="button" style="color: red;" ng-click="deleteTickets()">Delete</a>
+                                            </li>
                                         {{/canUser}}
                                     </ul>
                                 </div>
