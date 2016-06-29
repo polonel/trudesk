@@ -63,7 +63,11 @@ api_settings.updateSetting = function(req, res) {
     async.each(postData, function(item, callback) {
         settingSchema.getSettingByName(item.name, function(err, s) {
             if (err) return callback(err.message);
-            if (_.isNull(s) || _.isUndefined(s)) return callback('Invalid Setting');
+            if (_.isNull(s) || _.isUndefined(s)) {
+                s = new settingSchema({
+                    name: item.name
+                });
+            }
 
             s.value = item.value;
 

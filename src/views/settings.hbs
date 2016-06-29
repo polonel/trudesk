@@ -6,6 +6,14 @@
     mailerPassword='{{data.settings.mailerPassword.value}}';
     mailerFrom='{{data.settings.mailerFrom.value}}';
 
+    mailerCheckEnabled={{data.settings.mailerCheckEnabled.value}};
+    mailerCheckHost='{{data.settings.mailerCheckHost.value}}';
+    mailerCheckPort={{data.settings.mailerCheckPort.value}};
+    mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
+    mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
+
+    showOverdueTickets={{data.settings.showOverdueTickets.value}};
+
     init();
 ">
     <div class="nopadding settings">
@@ -77,7 +85,7 @@
                             <div class="md-switch md-green" style="margin: 20px 0 0 0;">
                                 <label>
                                     Enable
-                                    <input type="checkbox">
+                                    <input id="mailerCheckEnabled" name="mailerCheckEnabled" type="checkbox" ng-model="mailerCheckEnabled" ng-change="mailerCheckEnabledChange()" />
                                     <span class="lever"></span>
                                 </label>
                             </div>
@@ -86,23 +94,23 @@
                         <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
                             <div class="">
                                 <div class="uk-margin-medium-bottom">
-                                    <label for="aEmail">Mail Server</label>
-                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />
+                                    <label for="mailerCheckHost">Mail Server</label>
+                                    <input id="mailerCheckHost" class="md-input md-input-width-medium" name="mailerCheckHost" type="text" ng-model="mailerCheckHost"/>
                                 </div>
                                 <div class="uk-margin-medium-bottom">
-                                    <label for="aEmail">Port</label>
-                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" value="143" />
+                                    <label for="mailerCheckPort">Port</label>
+                                    <input id="mailerCheckPort" class="md-input md-input-width-medium" name="mailerCheckPort" type="text" value="143" ng-model="mailerCheckPort"/>
                                 </div>
                                 <div class="uk-margin-medium-bottom">
-                                    <label for="aEmail">Username</label>
-                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="text" />
+                                    <label for="mailerCheckUsername">Username</label>
+                                    <input id="mailerCheckUsername" class="md-input md-input-width-medium" name="mailerCheckUsername" type="text" ng-model="mailerCheckUsername"/>
                                 </div>
                                 <div class="uk-margin-medium-bottom">
-                                    <label for="aEmail">Password</label>
-                                    <input id="aEmail" class="md-input md-input-width-medium" name="aEmail" type="password" />
+                                    <label for="mailerCheckPassword">Password</label>
+                                    <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
                                 </div>
                                 <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="submitNewTicket">Apply</button>
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
                                 </div>
                             </div>
                         </div>
@@ -122,7 +130,7 @@
                             <div class="md-switch md-green" style="margin: 20px 0 0 0;">
                                 <label>
                                     Enable
-                                    <input type="checkbox">
+                                    <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
                                     <span class="lever"></span>
                                 </label>
                             </div>

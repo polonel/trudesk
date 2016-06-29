@@ -52,12 +52,28 @@ settingsController.get = function(req, res) {
         s.mailerPassword = _.find(settings, function(x) { return x.name === 'mailer:password'});
         s.mailerFrom = _.find(settings, function(x) { return x.name === 'mailer:from'});
 
-        s.mailerEnabled = (s.mailerEnabled === undefined) ? {value: true} : s.mailerEnabled;
+        s.mailerEnabled = (s.mailerEnabled === undefined) ? {value: false} : s.mailerEnabled;
         s.mailerHost = (s.mailerHost === undefined) ? {value: ''} : s.mailerHost;
         s.mailerPort = (s.mailerPort === undefined) ? {value: 25} : s.mailerPort;
         s.mailerUsername = (s.mailerUsername === undefined) ? {value: ''} : s.mailerUsername;
         s.mailerPassword = (s.mailerPassword === undefined) ? {value: ''} : s.mailerPassword;
         s.mailerFrom = (s.mailerFrom === undefined) ? {value: ''} : s.mailerFrom;
+
+        s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
+        s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
+        s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
+        s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
+        s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
+
+        s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
+        s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
+        s.mailerCheckPort = (s.mailerCheckPort === undefined) ? {value: 143} : s.mailerCheckPort;
+        s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
+        s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
+
+        s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable' });
+
+        s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
 
         self.content.data.settings = s;
 

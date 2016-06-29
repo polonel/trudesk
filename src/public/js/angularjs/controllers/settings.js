@@ -73,5 +73,67 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     helpers.UI.showSnackbar(err, true);
                 });
             };
+
+            $scope.$watch('mailerCheckEnabled', function(newVal) {
+                $('input#mailerCheckHost').attr('disabled', !newVal);
+                $('input#mailerCheckPort').attr('disabled', !newVal);
+                $('input#mailerCheckUsername').attr('disabled', !newVal);
+                $('input#mailerCheckPassword').attr('disabled', !newVal);
+                $('button#mailerCheckSubmit').attr('disabled', !newVal);
+            });
+
+            $scope.mailerCheckEnabledChange = function() {
+                $scope.mailerCheckEnabled = this.mailerCheckEnabled;
+
+                $http.put('/api/v1/settings', {
+                    name: 'mailer:check:enable',
+                    value: $scope.mailerCheckEnabled
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.mailerCheckFormSubmit = function($event) {
+                $event.preventDefault();
+
+                $http.put('/api/v1/settings', [
+                    {name: 'mailer:check:host', value: $scope.mailerCheckHost},
+                    {name: 'mailer:check:port', value: $scope.mailerCheckPort},
+                    {name: 'mailer:check:username', value: $scope.mailerCheckUsername},
+                    {name: 'mailer:check:password', value: $scope.mailerCheckPassword},
+
+                ], {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Mail Check Settings Saved', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.showOverdueTicketsChanged = function() {
+                $scope.showOverdueTickets = this.showOverdueTickets;
+
+                $http.put('/api/v1/settings', {
+                    name: 'showOverdueTickets:enable',
+                    value: $scope.showOverdueTickets
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
         });
 });
