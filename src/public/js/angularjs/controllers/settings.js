@@ -31,6 +31,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
             $scope.$watch('mailerEnabled', function(newVal) {
                 $('input#mailerHost').attr('disabled', !newVal);
+                $('input#mailerSSL').attr('disabled', !newVal);
                 $('input#mailerPort').attr('disabled', !newVal);
                 $('input#mailerUsername').attr('disabled', !newVal);
                 $('input#mailerPassword').attr('disabled', !newVal);
@@ -51,7 +52,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                 }).then(function successCallback(data) {
 
                 }, function errorCallback(err) {
-                    helpers.UI.showSnackbar(err, true);
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                });
+            };
+
+            $scope.mailerSSLChange = function() {
+                $scope.mailerSSL = this.mailerSSL;
+
+                $http.put('/api/v1/settings', {
+                    name: 'mailer:ssl',
+                    value: $scope.mailerSSL
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                });
+            };
+
+            $scope.submitTestMailer = function($event) {
+                $event.preventDefault();
+                $http.post('/api/v1/settings/testmailer', {
+                    //Empty
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Successfully Sent Mail', false);
+                }, function errorCallback(response) {
+                    console.log(response);
+                    helpers.UI.showSnackbar('Error: ' + response.data.error, true);
                 });
             };
 
@@ -59,6 +93,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                 $event.preventDefault();
                 $http.put('/api/v1/settings', [
                     {name: 'mailer:host', value: $scope.mailerHost},
+                    {name: 'mailer:ssl', value: $scope.mailerSSL},
                     {name: 'mailer:port', value: $scope.mailerPort},
                     {name: 'mailer:username', value: $scope.mailerUsername},
                     {name: 'mailer:password', value: $scope.mailerPassword},

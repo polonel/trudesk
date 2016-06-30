@@ -47,12 +47,14 @@ settingsController.get = function(req, res) {
         var s = {};
         s.mailerEnabled = _.find(settings, function(x){return x.name === 'mailer:enable'});
         s.mailerHost = _.find(settings, function(x) { return x.name === 'mailer:host'});
+        s.mailerSSL = _.find(settings, function(x) { return x.name === 'mailer:ssl'});
         s.mailerPort = _.find(settings, function(x) { return x.name === 'mailer:port'});
         s.mailerUsername = _.find(settings, function(x) { return x.name === 'mailer:username'});
         s.mailerPassword = _.find(settings, function(x) { return x.name === 'mailer:password'});
         s.mailerFrom = _.find(settings, function(x) { return x.name === 'mailer:from'});
 
         s.mailerEnabled = (s.mailerEnabled === undefined) ? {value: false} : s.mailerEnabled;
+        s.mailerSSL = (s.mailerSSL === undefined) ? {value: false} : s.mailerSSL;
         s.mailerHost = (s.mailerHost === undefined) ? {value: ''} : s.mailerHost;
         s.mailerPort = (s.mailerPort === undefined) ? {value: 25} : s.mailerPort;
         s.mailerUsername = (s.mailerUsername === undefined) ? {value: ''} : s.mailerUsername;
@@ -74,6 +76,10 @@ settingsController.get = function(req, res) {
         s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable' });
 
         s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
+
+        s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable' });
+
+        s.tpsEnabled = (s.tpsEnabled === undefined) ? {value: false} : s.tpsEnabled;
 
         self.content.data.settings = s;
 

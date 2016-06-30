@@ -159,6 +159,7 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
+    router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
     if (global.env === 'development') {
         //router.get('/debug/sendmail', controllers.debug.sendmail);

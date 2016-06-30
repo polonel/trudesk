@@ -18,8 +18,10 @@ var nodeMailer  = require('nodemailer');
 var winston     = require('winston');
 var nconf       = require('nconf');
 
-var MAILER_ENABLED = nconf.get('mailer:enable');
-var POOL_INTERVAL = nconf.get('mailer:polling') ? nconf.get('mailer:polling') : 3600000; //1hour
+var settings    = require('../models/setting');
+
+//var MAILER_ENABLED = nconf.get('mailer:enable');
+//var POLLING_INTERVAL = nconf.get('mailer:polling') ? nconf.get('mailer:polling') : 3600000; //1hour
 //var transporter = nodeMailer.createTransport({
 //    host:   'smtp.zoho.com',
 //    port:   465,
@@ -30,43 +32,73 @@ var POOL_INTERVAL = nconf.get('mailer:polling') ? nconf.get('mailer:polling') : 
 //    }
 //});
 
-var transporter = nodeMailer.createTransport({
-    host:   nconf.get('mailer:host') ? nconf.get('mailer:host') : '127.0.0.1',
-    port:   nconf.get('mailer:port') ? nconf.get('mailer:port') : 25,
-    secure: nconf.get('mailer:secure') ? nconf.get('mailer:secure') : false,
-    auth: {
-        user: nconf.get('mailer:username') ? nconf.get('mailer:username') : '',
-        pass: nconf.get('mailer:password') ? nconf.get('mailer:password') : ''
-    },
-    tls: {
-        rejectUnauthorized: false,
-        ciphers: 'SSLv3'
-    }
-});
-
 var mailer = {};
 
 mailer.queue = function() {
-    checkQueue(handleQueue);
-
-    setInterval(function() {
-        if (!MAILER_ENABLED) return;
-
-        checkQueue(handleQueue);
-    }, POOL_INTERVAL); //1hour
+    //checkQueue(handleQueue);
+    //
+    //setInterval(function() {
+    //    checkQueue(handleQueue);
+    //}, POLLING_INTERVAL); //1hour
 };
 
 mailer.sendMail = function(data, callback) {
-    if (!MAILER_ENABLED) {
-        return callback(null, 'Mail Disabled');
-    }
+    createTransporter(function(err, mailSettings) {
+        if (err) return callback(err);
+        if (!mailSettings.enabled) // Mail Disabled
+            return callback(null, 'Mail Disabled');
 
-    data.from = nconf.get('mailer:from') ? nconf.get('mailer:from') : '';
-    if (_.isUndefined(data.from) || _.isEmpty(data.from) || _.isNull(data.from))
-        return callback('No From Address Set.');
+        data.from = mailSettings.from;
+        if (!data.from) return callback('No From Address Set.');
 
-    transporter.sendMail(data, callback);
+        mailSettings.transporter.sendMail(data, callback);
+    });
 };
+
+mailer.verify = function(callback) {
+    createTransporter(function(err, mailSettings) {
+        if (err) return callback(err);
+
+        if (!mailSettings.enabled.value) return callback({code: 'Mail Disabled'});
+
+        mailSettings.transporter.verify(function(err, success) {
+            if (err) return callback(err);
+
+            return callback();
+        });
+    });
+};
+
+function createTransporter(callback) {
+  settings.getSettings(function(err, s) {
+      if (err) return callback(err);
+
+      var mailSettings = {};
+      mailSettings.enabled = _.find(s, function(x) { return x.name === 'mailer:enable'; });
+      mailSettings.host = _.find(s, function(x) { return x.name === 'mailer:host'; });
+      mailSettings.ssl = _.find(s, function(x) { return x.name === 'mailer:ssl'; });
+      mailSettings.port = _.find(s, function(x) { return x.name === 'mailer:port'; });
+      mailSettings.username = _.find(s, function(x) { return x.name === 'mailer:username'; });
+      mailSettings.password = _.find(s, function(x) { return x.name === 'mailer:password'; });
+      mailSettings.from = _.find(s, function(x) { return x.name === 'mailer:from'; });
+
+      mailSettings.transporter = nodeMailer.createTransport({
+          host: mailSettings.host.value ? mailSettings.host.value : '127.0.0.1',
+          port: mailSettings.port.value ? mailSettings.port.value : 25,
+          secure: mailSettings.ssl.value ? mailSettings.ssl.value : false,
+          auth: {
+              user: mailSettings.username.value ? mailSettings.username.value : '',
+              pass: mailSettings.password.value ? mailSettings.password.value : ''
+          },
+          tls: {
+              rejectUnauthorized: false,
+              ciphers: 'SSLv3'
+          }
+      });
+
+      callback(null, mailSettings);
+  });
+}
 
 function handleQueue(err, size) {
     if (err) {

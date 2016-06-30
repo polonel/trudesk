@@ -551,8 +551,7 @@ var helpers = {
         return _.size(arr);
     },
 
-    overdue: function(updated, options) {
-        var showOverdue = conf.get('settings:showOverdue');
+    overdue: function(showOverdue, updated, options) {
         if (!showOverdue) return false;
         var now = moment();
         updated = moment(updated);

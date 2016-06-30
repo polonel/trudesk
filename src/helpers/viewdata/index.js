@@ -107,6 +107,13 @@ viewController.getData = function(request, cb) {
           function(callback) {
               viewdata.roles = permissions.roles;
               callback();
+          },
+          function(callback) {
+              viewController.getOverdueSetting(request, function(err, data) {
+                  viewdata.showOverdue = data;
+
+                  callback();
+              });
           }
       ], function(err) {
           if (err) {
@@ -240,6 +247,18 @@ viewController.getTags = function(request, callback) {
         data = _.sortBy(data, 'name');
 
         callback(null, data);
+    });
+};
+
+viewController.getOverdueSetting = function(request, callback) {
+    var settingSchema = require('../../models/setting');
+    settingSchema.getSettingByName('showOverdueTickets:enable', function(err, data) {
+        if (err) {
+            winston.debug(err);
+            return callback(null, true);
+        }
+        if (_.isNull(data)) return callback(null, true);
+        return callback(null, data.value);
     });
 };
 

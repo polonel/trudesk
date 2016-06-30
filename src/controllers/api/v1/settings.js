@@ -85,5 +85,17 @@ api_settings.updateSetting = function(req, res) {
     });
 };
 
+api_settings.testMailer = function(req, res) {
+    var mailer = require('../../../mailer');
+    mailer.verify(function(err) {
+        if (err) {
+            winston.debug(err);
+            return res.status(400).json({success: false, error: err.code ? err.code : 'See Console'});
+        }
+
+        return res.json({success: true});
+    });
+};
+
 
 module.exports = api_settings;
