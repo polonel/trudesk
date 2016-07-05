@@ -162,7 +162,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
     if (global.env === 'development') {
-        //router.get('/debug/sendmail', controllers.debug.sendmail);
+        router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('underscore');

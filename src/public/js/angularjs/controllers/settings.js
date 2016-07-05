@@ -75,6 +75,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
             $scope.submitTestMailer = function($event) {
                 $event.preventDefault();
+                helpers.UI.showSnackbar('Testing...', false);
                 $http.post('/api/v1/settings/testmailer', {
                     //Empty
                 }, {
@@ -82,7 +83,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                         'Content-Type': 'application/json'
                     }
                 }).then(function successCallback() {
-                    helpers.UI.showSnackbar('Successfully Sent Mail', false);
+                    helpers.UI.showSnackbar('Successfully Connected', false);
                 }, function errorCallback(response) {
                     console.log(response);
                     helpers.UI.showSnackbar('Error: ' + response.data.error, true);
@@ -141,7 +142,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                     {name: 'mailer:check:host', value: $scope.mailerCheckHost},
                     {name: 'mailer:check:port', value: $scope.mailerCheckPort},
                     {name: 'mailer:check:username', value: $scope.mailerCheckUsername},
-                    {name: 'mailer:check:password', value: $scope.mailerCheckPassword},
+                    {name: 'mailer:check:password', value: $scope.mailerCheckPassword}
 
                 ], {
                     headers: {

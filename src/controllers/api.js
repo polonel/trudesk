@@ -231,8 +231,6 @@ apiController.login = function(req, res) {
  * Preforms logout
  * {@link User} object.
  *
- * @todo Fix so it doesn't error out of the user doesn't have a device token stored.
- *
  * @param {object} req Express Request
  * @param {object} res Express Response
  * @return {JSON} Success/Error object
@@ -248,6 +246,7 @@ apiController.logout = function(req, res) {
 
     async.series([
         function(callback) {
+            if (!deviceToken) return callback();
             user.removeDeviceToken(deviceToken, 1, function(err) {
                 if (err) return callback(err);
 

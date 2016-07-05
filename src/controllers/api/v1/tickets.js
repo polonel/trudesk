@@ -326,30 +326,66 @@ api_tickets.update = function(req, res) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
             //Check the user has permission to update ticket.
-            if (!_.isUndefined(reqTicket.status))
-                ticket.status = reqTicket.status;
 
-            if (!_.isUndefined(reqTicket.group))
-                ticket.group = reqTicket.group;
+            async.parallel([
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.status)) {
+                        ticket.setStatus(req.user, reqTicket.status, function (e, t) {
+                            ticket = t;
 
-            if (!_.isUndefined(reqTicket.closedDate))
-                ticket.closedDate = reqTicket.closedDate;
+                            cb();
+                        });
+                    } else {
+                        cb();
+                    }
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.group))
+                        ticket.group = reqTicket.group;
 
-            if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
-                ticket.tags = reqTicket.tags;
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.closedDate))
+                        ticket.closedDate = reqTicket.closedDate;
 
-            if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee))
-                ticket.assignee = reqTicket.assignee;
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
+                        ticket.tags = reqTicket.tags;
 
-            ticket.save(function(err, t) {
-                if (err) return res.send(err.message);
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
+                        ticket.assignee = reqTicket.assignee;
+                        ticket.populate('assignee', function(err, t) {
+                            var HistoryItem = {
+                                action: 'ticket:set:assignee',
+                                description: t.assignee.fullname + ' was set as assignee',
+                                owner: req.user._id
+                            };
 
-                emitter.emit('ticket:updated', t);
+                            ticket.history.push(HistoryItem);
 
-                return res.json({
-                    success: true,
-                    error: null,
-                    ticket: t
+                            cb();
+                        });
+                    } else {
+                        cb();
+                    }
+                }
+            ], function(err) {
+                ticket.save(function(err, t) {
+                    if (err) return res.send(err.message);
+
+                    emitter.emit('ticket:updated', t);
+
+                    return res.json({
+                        success: true,
+                        error: null,
+                        ticket: t
+                    });
                 });
             });
         });

@@ -649,7 +649,16 @@ api_users.getAssingees = function(req, res) {
     userSchema.getAssigneeUsers(function(err, users) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
-        return res.json({success: true, users: users});
+        var strippedUsers = [];
+
+        async.each(users, function(user, cb) {
+            user = StripUserFields(user);
+            strippedUsers.push(user);
+
+            cb();
+        }, function() {
+            return res.json({success: true, users: strippedUsers});
+        });
     });
 };
 
