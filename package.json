@@ -49,7 +49,7 @@
     "mongoose": "4.2.7",
     "mongoose-deep-populate": "2.0.3",
     "morgan": "^1.5.2",
-    "nconf": "^0.8.2",
+    "nconf": "^0.8.4",
     "node-cache": "^3.1.0",
     "nodemailer": "^2.4.2",
     "passport": "^0.3.0",
