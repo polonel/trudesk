@@ -91,6 +91,8 @@ module.exports = function(app, db, callback) {
                 next();
             });
 
+            //CORS
+            app.use(allowCrossDomain);
             app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
             app.use(express.static(path.join(__dirname, '../../', 'public')));
@@ -106,3 +108,15 @@ module.exports = function(app, db, callback) {
         callback(middleware, s);
     });
 };
+
+function allowCrossDomain(req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
+
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(200);
+    } else {
+        next();
+    }
+}

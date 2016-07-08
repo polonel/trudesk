@@ -395,7 +395,7 @@ accountsController.uploadImage = function(req, res, next) {
         headers: req.headers,
         limits: {
             files: 1,
-            fileSize: 1024*1024 // 1mb limit
+            fileSize: (1024*1024) * 3 // 1mb limit
         }
     });
 

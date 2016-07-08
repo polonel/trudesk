@@ -217,7 +217,7 @@ function dbCallback(err, db) {
             },
             function(next) {
                 var fork = require('child_process').fork;
-                var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env, MONGOHQ_URL: process.env.MONGOHQ_URL } } );
+                var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env } } );
 
                 global.forks.push({name: 'cache', fork: n});
 

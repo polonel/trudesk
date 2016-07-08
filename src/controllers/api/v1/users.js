@@ -662,6 +662,81 @@ api_users.getAssingees = function(req, res) {
     });
 };
 
+api_users.uploadProfilePic = function(req, res) {
+    var fs = require('fs');
+    var path = require('path');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: (1024*1024)*3
+        }
+    });
+
+    var object = {}, error;
+
+    if (_.isUndefined(req.params.username)) return res.status(400).json({error: 'Invalid Username'});
+    object.username = req.params.username;
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') == -1) {
+            error = {
+                status: 400,
+                message: 'Invalid file type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../../../public/uploads/users');
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        console.log(filename);
+        object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg');
+        object.filename = 'aProfile_' + object.username + '.jpg';
+        object.mimetype = mimetype;
+
+        file.on('limit', function() {
+            error = {
+                status: 400,
+                message: 'File too large'
+            };
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).send(error.message);
+
+        if (_.isUndefined(object.username) ||
+            _.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename)) {
+
+            return res.status(400).send('Invalid Form Data');
+        }
+
+        if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk');
+
+        userSchema.getUserByUsername(object.username, function(err, user) {
+            if (err) return res.status(400).send(err.message);
+
+            user.image = object.filename;
+
+            user.save(function(err) {
+                if (err) return res.status(500).send(err.message);
+
+                return res.json({success: true, user: StripUserFields(user)});
+            });
+        });
+    });
+
+    req.pipe(busboy);
+};
+
 function StripUserFields(user) {
     user.password = undefined;
     user.accessToken = undefined;

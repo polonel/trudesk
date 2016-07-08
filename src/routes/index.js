@@ -142,6 +142,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users/getassignees', middleware.api, controllers.api.users.getAssingees);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
+    router.post('/api/v1/users/:username/uploadprofilepic', controllers.api.users.uploadProfilePic);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
@@ -196,8 +197,6 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
-    //CORS
-    app.use(allowCrossDomain);
     //Docs
     app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
     app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
@@ -251,17 +250,4 @@ function handle404(req, res, next) {
     err.status = 404;
 
     next(err);
-}
-
-function allowCrossDomain(req, res, next) {
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
 }
