@@ -82,6 +82,8 @@ function createTransporter(callback) {
       mailSettings.password = _.find(s, function(x) { return x.name === 'mailer:password'; });
       mailSettings.from = _.find(s, function(x) { return x.name === 'mailer:from'; });
 
+      mailSettings.enabled = mailSettings.enabled.value ? mailSettings.enabled.value : false;
+
       mailSettings.transporter = nodeMailer.createTransport({
           host: mailSettings.host.value ? mailSettings.host.value : '127.0.0.1',
           port: mailSettings.port.value ? mailSettings.port.value : 25,
