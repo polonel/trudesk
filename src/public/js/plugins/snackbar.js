@@ -7,28 +7,29 @@
  * https://github.com/polonel/SnackBar/blob/master/LICENSE
  */
 
-(function (window, factory) {
+(function () {
     'use strict';
 
-    if (typeof define === 'function' && define.amd) {
-        define([], function () {
-            return factory.apply(window);
-        });
+    var root = typeof self == 'object' && self.self === self && self ||
+        typeof global == 'object' && global.global === global && global ||
+        this;
+
+    var SnackBar = function(obj) {
+        if (obj instanceof SnackBar) return SnackBar;
+        if (!(this instanceof SnackBar)) return new SnackBar(obj);
+        this._wrapped = obj;
+    };
+
+    if (typeof exports != 'undefined' && !exports.nodeType) {
+        if (typeof module != 'undefined' && !module.nodeType && module.exports) {
+            exports = module.exports = SnackBar;
+        }
+        exports.SnackBar = SnackBar;
+    } else {
+        root.SnackBar = SnackBar;
     }
 
-    // Node.JS
-    else if (typeof exports === 'object') {
-        module.exports = factory.call(window);
-    }
 
-    // Browser
-    else {
-        window.SnackBar = factory.call(window);
-    }
-})(typeof global === 'object' ? global : this, function () {
-    'use strict';
-
-    var SnackBar = SnackBar || {};
     SnackBar.current = null;
     var $defaults = {
 
@@ -170,4 +171,4 @@
     };
 
     return SnackBar;
-});
+})();

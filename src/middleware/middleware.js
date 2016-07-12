@@ -39,6 +39,26 @@ middleware.db = function(req, res, next) {
     next();
 };
 
+middleware.redirectToInstall = function(req, res, next) {
+    var fs = require('fs');
+    var path = require('path');
+    var config = path.join(__dirname, '../../config.json');
+    if (!fs.existsSync(config))
+        res.redirect('/install');
+    else
+        next();
+};
+
+middleware.hasConfig = function(req, res, next) {
+    var fs = require('fs');
+    var path = require('path');
+    var config = path.join(__dirname, '../../config.json');
+    if (fs.existsSync(config))
+        res.redirect('/install');
+    else
+        next();
+};
+
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
         res.redirect('/dashboard');

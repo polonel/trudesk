@@ -19,7 +19,6 @@ var NodeCache   = require('node-cache'),
     _           = require('underscore'),
     winston     = require('winston');
     moment      = require('moment');
-var mongoose    = require('mongoose');
 var emitter     = require('../emitter');
 
 var truCache = {};

@@ -13,6 +13,7 @@
  **/
 
 var Controllers = {
+    install: require('./install'),
     main: require('./main'),
     tickets: require('./tickets'),
     messages: require('./messages'),
