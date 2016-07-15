@@ -94,7 +94,6 @@ define('modules/ui', [
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');
         socket.on('reconnect', function() {
-            //helpers.clearFlash();
             helpers.UI.hideDisconnectedOverlay();
         });
     };

@@ -212,7 +212,9 @@ function buildGraphData(arr, days, callback) {
         obj.value = $dateCount;
         graphData.push(obj);
 
-        next();
+        async.setImmediate(function() {
+            next();
+        });
 
     }, function() {
          callback(graphData);
@@ -231,7 +233,10 @@ function buildAvgResponse(ticketArray, callback) {
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
 
-        callback();
+        //Next Event Loop - async@2.0
+        async.setImmediate(function() {
+            callback();
+        });
 
     }, function (err) {
         if (err) return c(err);

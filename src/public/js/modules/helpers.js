@@ -15,7 +15,7 @@
 "use strict";
 
 define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
     var helpers = {};
 
@@ -119,7 +119,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
     };
 
     helpers.UI.showSnackbar_ = function(options) {
-        SnackBar.show(options);
+        Snackbar.show(options);
     };
 
     helpers.UI.showSnackbar__ = function(text, error) {
@@ -130,14 +130,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
         if (error)
             actionText = '#FF4835';
 
-        SnackBar.show({
+        Snackbar.show({
             text: text,
             actionTextColor: actionText
         });
     };
 
     helpers.UI.closeSnackbar = function() {
-        SnackBar.close();
+        Snackbar.close();
     };
 
     helpers.UI.inputs = function(parent) {

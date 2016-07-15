@@ -182,18 +182,23 @@ function mainRoutes(router, middleware, controllers) {
         //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
-            var exec = require('child_process').exec;
-            var child = exec('ipconfig /all', {
-                cwd: __dirname
-            }, function (err, stdout, stderr) {
-                console.log(stdout);
+            var pm2 = require('pm2');
+            pm2.connect(function(err) {
                 if (err) {
-                    console.log(err);
+                    winston.error(err);
+                    res.status(400).send(err);
+                    return;
                 }
+                pm2.gracefulReload('all', function(err) {
+                    if (err) {
+                        res.status(400).send(err);
+                        return winston.error(err);
+                    }
 
-                res.send('OK');
+                    pm2.disconnect();
+                    res.send('OK');
+                });
             });
-
         });
     }
 }

@@ -9,7 +9,7 @@ winston.add(winston.transports.Console, {
     colorize: true,
     timestamp: function() {
         var date = new Date();
-        return (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.toTimeString().substr(0,8) + ' [Child:Cache:' + global.process.pid + ']';
+        return (date.getMonth() + 1) + '/' + date.getDate() + ' ' + date.toTimeString().substr(0,8) + ' [Child:MongoTest:' + global.process.pid + ']';
     },
     level: global.env === 'production' ? 'info' : 'verbose'
 });

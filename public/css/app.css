@@ -1836,9 +1836,7 @@ div#accountsTable_wrapper {
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
     padding: 0 4px 0 0; }
-  .ticket-details .input-box {
-    padding-top: 3px;
-    padding-bottom: 3px; }
+  .ticket-details .input-box,
   .ticket-details .tag-list {
     display: block;
     padding: 0;
@@ -1852,6 +1850,7 @@ div#accountsTable_wrapper {
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0; }
+    .ticket-details .input-box .item,
     .ticket-details .tag-list .item {
       display: inline-block;
       float: left;
@@ -1865,10 +1864,14 @@ div#accountsTable_wrapper {
       border-radius: 3px;
       -webkit-border-radius: 3px;
       -moz-border-radius: 3px; }
+      .ticket-details .input-box .item.orange,
       .ticket-details .tag-list .item.orange {
         background: #db5334; }
+      .ticket-details .input-box .item:last-of-type,
       .ticket-details .tag-list .item:last-of-type {
         margin-bottom: 2px; }
+  .ticket-details .input-box {
+    margin-bottom: 15px; }
 
 .history-items {
   height: 185px;

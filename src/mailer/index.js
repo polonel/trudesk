@@ -59,7 +59,7 @@ mailer.verify = function(callback) {
     createTransporter(function(err, mailSettings) {
         if (err) return callback(err);
 
-        if (!mailSettings.enabled.value) return callback({code: 'Mail Disabled'});
+        if (!mailSettings.enabled) return callback({code: 'Mail Disabled'});
 
         mailSettings.transporter.verify(function(err, success) {
             if (err) return callback(err);

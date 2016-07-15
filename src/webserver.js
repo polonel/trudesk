@@ -16,21 +16,17 @@ var nconf = require('nconf'),
     async = require('async'),
     express = require('express'),
     WebServer = express(),
-    server,
     winston = require('winston'),
     middleware = require('./middleware'),
     routes = require('./routes'),
+    server = require('http').createServer(WebServer),
 
     //Load Events
-    events = require('./emitter/events');
-
-
-server = require('http').createServer(WebServer);
+    events = require('./emitter/events'),
+    port = process.env.PORT || 8118;
 
 (function (app) {
     "use strict";
-
-    var port = process.env.PORT || 8118;
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {
@@ -43,7 +39,7 @@ server = require('http').createServer(WebServer);
             server.on('error', function(err) {
                 if (err.code === 'EADDRINUSE') {
                     winston.error('Address in use, exiting...');
-                    process.exit();
+                    server.close();
                 } else {
                     winston.error(err.message);
                     throw err;

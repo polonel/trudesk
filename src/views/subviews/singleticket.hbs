@@ -138,7 +138,7 @@
                                     </div>
                                 </div>
 
-                                <div class="uk-width-1-1 nopadding">
+                                <div class="uk-width-1-1 nopadding uk-clearfix">
                                         <span>Group</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tGroup" id="tGroup"
@@ -154,9 +154,18 @@
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
                                     <span>Tags
-                                        <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
-                                            <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
-                                        </div>
+                                        {{#canUser data.user "ticket:edit"}}
+                                            <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
+                                                <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
+                                            </div>
+                                        {{else}}
+                                            {{#canEditSelf data.user data.ticket.owner 'ticket'}}
+                                                <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
+                                                    <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
+                                                </div>
+                                            {{/canEditSelf}}
+                                        {{/canUser}}
+
                                     </span>
                                     <div class="tag-list uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                         {{#each data.ticket.tags}}
@@ -325,7 +334,7 @@
                                             </form>
                                         </div>
                                     {{else}}
-                                        {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
                                             <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
                                                 <form data-commentid="{{_id}}" data-abide>
                                                     <div class="edit-comment-box">
@@ -347,14 +356,14 @@
                                         {{#canUser ../data.common.loggedInAccount "comment:delete"}}
                                             <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                         {{else}}
-                                            {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                            {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
                                                 <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                             {{/canEditSelf}}
                                         {{/canUser}}
                                         {{#canUser ../data.common.loggedInAccount "comment:edit"}}
                                             <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
                                         {{else}}
-                                            {{#canEditSelf ../../data.common.loggedInAccount owner 'comment'}}
+                                            {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
                                                 <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
                                             {{/canEditSelf}}
                                         {{/canUser}}

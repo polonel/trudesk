@@ -35,12 +35,12 @@ installController.index = function(req, res) {
 };
 
 installController.mongotest = function(req, res) {
-    var database = require('../database');
     var data = req.body;
 
     var CONNECTION_URI = 'mongodb://' + data.username + ':' + data.password + '@' + data.host + ':' + data.port + '/' + data.database;
 
     var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), { env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI } });
+    global.forks.push({name: 'mongotest', fork: child});
     child.on('message', function(data) {
         if (data.error) return res.status(400).json({success: false, error: data.error});
 

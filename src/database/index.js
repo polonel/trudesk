@@ -45,14 +45,14 @@ module.exports.init = function(callback, connectionString, opts) {
     if (process.env.MONGOHQ_URL) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
     if (db.connection) {
-        callback(null, db);
+        return callback(null, db);
     } else {
-        console.log('trying to connect');
+        mongoose.Promise = global.Promise;
         mongoose.connect(CONNECTION_URI, options, function(e) {
             if (e) return callback(e, null);
             db.connection = mongoose.connection;
 
-            callback(e, db);
+            return callback(e, db);
         });
     }
 };

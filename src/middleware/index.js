@@ -72,7 +72,7 @@ module.exports = function(app, db, callback) {
                 cookie: cookie,
                 store: sessionStore,
                 saveUninitialized: true,
-                resave: true
+                resave: false
             }));
 
             next(null, sessionStore);

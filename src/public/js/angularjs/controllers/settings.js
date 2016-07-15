@@ -85,7 +85,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                 }).then(function successCallback() {
                     helpers.UI.showSnackbar('Successfully Connected', false);
                 }, function errorCallback(response) {
-                    console.log(response);
                     helpers.UI.showSnackbar('Error: ' + response.data.error, true);
                 });
             };
