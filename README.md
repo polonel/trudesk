@@ -1,4 +1,4 @@
-[![Trudesk](http://trudesk.io/TD_Black.png)](http://trudesk.io/)
+[![Trudesk](http://trudesk.io/TD_Black.png =375x)](http://trudesk.io/)
 
 <br/><br/>
 
@@ -12,10 +12,8 @@ TruDesk is an open source help desk solution stil in active development.
 Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
 ###Requirements
-+ Node.JS v4.2.2 or later
-+ MongoDB 2.6 or later
-+ Ruby 2.0.0 or later
-+ __Sass__ Gem Installed
++ Node.JS v6.3.0 or later
++ MongoDB 3.2 or later
 
 ###Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
