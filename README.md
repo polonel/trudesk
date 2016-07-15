@@ -1,4 +1,4 @@
-[![Trudesk](http://trudesk.io/TD_Black.png =375x)](http://trudesk.io/)
+[![Trudesk](http://trudesk.io/TD_Black.png | width=375)](http://trudesk.io/)
 
 <br/><br/>
 
