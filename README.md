@@ -1,4 +1,4 @@
-[![Trudesk](http://trudesk.io/TD_Black.png | width=375)](http://trudesk.io/)
+<a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="375" /></a>
 
 <br/><br/>
 
