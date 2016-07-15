@@ -3,15 +3,14 @@ language: node_js
 env:
   - CXX=g++-4.8
 node_js:
-  - 0.10
   - 4
-  - 5
+  - 6
 services:
   - mongodb
 addons:
   apt:
     sources:
-      - mongodb-3.0-precise
+      - mongodb-3.2-precise
       - ubuntu-toolchain-r-test
     packages:
       - mongodb-org-server
@@ -21,7 +20,6 @@ addons:
 before_install:
   - npm install -g grunt
   - npm install -g grunt-cli
-  - gem install sass
 
 script:
   - npm test

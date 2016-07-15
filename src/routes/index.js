@@ -19,9 +19,9 @@ var express     = require('express'),
     passport = require('passport');
 
 function mainRoutes(router, middleware, controllers) {
-    router.get('/', middleware.redirectToInstall, middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
-    router.get('/install', controllers.install.index);
-    router.post('/install/mongotest', controllers.install.mongotest);
+    router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
+    //router.get('/install', controllers.install.index);
+    //router.post('/install/mongotest', controllers.install.mongotest);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
