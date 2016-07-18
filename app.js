@@ -103,6 +103,15 @@ if (process.env.HEROKU) {
     start();
 }
 
+if (nconf.get('install') || !configExists && !process.env.HEROKU) {
+    var ws = require('./src/webserver');
+    ws.installServer(function() {
+        return winston.info('Trudesk Install Server Running...');
+    });
+
+    return;
+}
+
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
     start();
 } else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
@@ -198,7 +207,7 @@ function dbCallback(err, db) {
             },
             function(next) {
                 //Start Task Runners
-                var taskrunner = require('./src/taskrunner');
+                require('./src/taskrunner');
                 next();
             },
             function(next) {

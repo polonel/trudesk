@@ -29,6 +29,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
+        self.setupScrollers('.uk-modal');
         self.formvalidator();
         self.pToolTip();
         self.setupDonutchart();
@@ -584,7 +585,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
         var color = "#a9b1bf";
         var colorBrd = "1px solid #fff";
-        if (selector == '.scrollable-dark') {
+        if (selector == '.scrollable-dark' || selector == '.uk-modal') {
             color = '#353e47';
             colorBrd = "1px solid #000";
         }

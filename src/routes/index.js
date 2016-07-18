@@ -20,7 +20,7 @@ var express     = require('express'),
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
-    //router.get('/install', controllers.install.index);
+    router.get('/install', function(req, res){ return res.redirect('/'); });
     //router.post('/install/mongotest', controllers.install.mongotest);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
@@ -133,6 +133,7 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
 
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
+    router.get('/api/v1/groups/all', middleware.api, controllers.api.groups.getAll);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.get('/api/v1/groups/:id', middleware.api, controllers.api.groups.getSingleGroup);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);

@@ -32,7 +32,7 @@ var MAILERCHECK_USER = nconf.get('mailer:check:user') ? nconf.get('mailer:check:
 var MAILERCHECK_PASS = nconf.get('mailer:check:pass') ? nconf.get('mailer:check:pass') : MAILERCHECK_ENABLED = false;
 var MAILERCHECK_HOST = nconf.get('mailer:check:host') ? nconf.get('mailer:check:host') : MAILERCHECK_ENABLED = false;
 var POLLING_INTERVAL = nconf.get('mailer:check:polling') ? nconf.get('mailer:check:polling') : 600000; //10 min
-var DEFAULT_TICKET_TYPE = nconf.get('mailer:check:defaultTicketType') ? nconf.get('mailer:check:defaultTicketType') : 'Problem';
+var DEFAULT_TICKET_TYPE = nconf.get('mailer:check:defaultTicketType') ? nconf.get('mailer:check:defaultTicketType') : 'Issue';
 
 var mailCheck = {};
 mailCheck.Imap = new Imap({

@@ -624,7 +624,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
         function(callback) {
             ticketModel.getTickets([groupId], function(err, tickets) {
                 if (err) return callback(err);
-
+                if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
 
                 async.each(tickets, function(ticket, cb) {
@@ -632,7 +632,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         t.push(tag.name);
                     });
 
-                    cb();
+                    return cb();
                 }, function() {
                     _.mixin({
                         'sortKeysBy': function (obj, comparator) {
@@ -657,11 +657,12 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         return -value;
                     });
 
-                    callback(null, tickets);
+                    return callback(null, tickets);
                 });
             });
         },
         function(tickets, callback) {
+            if (_.isEmpty(tickets)) return callback('Group has no tickets to report.');
             var today = moment().hour(23).minute(59).second(59);
             var r = {};
             tickets = _.sortBy(tickets, 'date');
@@ -680,7 +681,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                 buildAvgResponse(tickets, function(obj) {
                     r.avgResponse = obj.avgResponse;
 
-                    callback(null, r);
+                    return callback(null, r);
                 });
             });
         }
@@ -719,7 +720,9 @@ function buildGraphData(arr, days, callback) {
         obj.value = $dateCount;
         graphData.push(obj);
 
-        next();
+        async.setImmediate(function() {
+            next();
+        });
 
     }, function() {
         callback(graphData);
@@ -738,8 +741,9 @@ function buildAvgResponse(ticketArray, callback) {
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
 
-        callback();
-
+        async.setImmediate(function() {
+           return callback();
+        });
     }, function (err) {
         if (err) return c(err);
 
@@ -749,7 +753,9 @@ function buildAvgResponse(ticketArray, callback) {
         var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
         cbObj.avgResponse = Math.floor(tvt);
 
-        callback(cbObj);
+        async.setImmediate(function() {
+            return callback(cbObj);
+        });
     });
 }
 

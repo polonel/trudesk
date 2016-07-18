@@ -31,12 +31,11 @@ define('modules/ajaxify', [
     'pages/notices',
     'pages/createNotice',
     'pages/settings',
-    'modules/ui',
-    'modules/chat',
+    'modules/socket',
     'history'
 
 ], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
-            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage, noticesPage, createNoticePage, settingsPage, ui) {
+            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage, noticesPage, createNoticePage, settingsPage, socketClient) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -59,7 +58,7 @@ define('modules/ajaxify', [
         //    }
         //});
 
-        ui.init();
+        socketClient.ui.init(socketClient.socket);
         helpers.init();
         helpers.hideAllUiKitDropdowns();
         ajaxImgUpload.init();

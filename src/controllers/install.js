@@ -46,8 +46,181 @@ installController.mongotest = function(req, res) {
 
         return res.json({success: true});
     });
+};
 
+installController.install = function(req, res) {
+    var db                  = require('../database');
+    var userSchema          = require('../models/user');
+    var groupSchema         = require('../models/group');
+    var counters            = require('../models/counters');
+    var ticketTypeSchema    = require('../models/ticketType');
 
+    var data = req.body;
+
+    //Mongo
+    var host = data['mongo[host]'];
+    var port =  data['mongo[port]'];
+    var database = data['mongo[database]'];
+    var username = data['mongo[username]'];
+    var password = data['mongo[password]'];
+
+    //Account
+    var user = {
+        username: data['account[username]'],
+        password: data['account[password]'],
+        passconfirm: data['account[cpassword]'],
+        email: data['account[email]'],
+        fullname: data['account[fullname]']
+    };
+
+    var conuri = 'mongodb://' + username + ':' + password + '@' + host + '/' + database;
+
+    async.waterfall([
+        function(next) {
+            db.init(function(err, db) {
+                return next(err);
+            }, conuri);
+        },
+        function(next) {
+            var Counter = new counters({
+                _id: "tickets",
+                next: 1001
+            });
+
+            Counter.save(function(err){return next(err);});
+        },
+        function(next) {
+            var Counter = new counters({
+                _id: "reports",
+                next: 1001
+            });
+
+            Counter.save(function(err) {
+                return next(err);
+            });
+        },
+        function(next) {
+            var type = new ticketTypeSchema({
+                name: 'Issue'
+            });
+
+            type.save(function(err){return next(err); });
+        },
+        function(next) {
+            var type = new ticketTypeSchema({
+                name: 'Task'
+            });
+
+            type.save(function(err){return next(err); });
+        },
+        function(next) {
+            groupSchema.getGroupByName('Administrators', function(err, group) {
+                if (err) {
+                    winston.error('Database Error: ' + err.message);
+                    return next('Database Error:' + err.message);
+                }
+
+                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
+                    // Already Exists Create Admin
+                    return next(null, group);
+                } else {
+                    //Create Admin Group
+                    var adminGroup = new groupSchema({
+                        name: 'Administrators',
+                        members: []
+                    });
+
+                    adminGroup.save(function(err) {
+                        if (err) {
+                            winston.error('Database Error:' + err.message);
+                            return next('Database Error:' + err.message);
+                        }
+
+                        return next(null, adminGroup);
+                    });
+                }
+            });
+        },
+        function (adminGroup, next) {
+            userSchema.getUserByUsername(user.username, function(err, admin) {
+                if (err) {
+                    winston.error('Database Error: ' + err.message);
+                    return next('Database Error: ' + err.message);
+                }
+
+                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+                    return next('Username: ' + user.username + ' already exists.');
+                } else {
+                    if (user.password !== user.passconfirm)
+                        return next('Passwords do not match!');
+
+                    var adminUser = new userSchema({
+                        username:   user.username,
+                        password:   user.password,
+                        fullname:   user.fullname,
+                        email:      user.email,
+                        role:       'admin',
+                        title:      'Administrator'
+                    });
+
+                    adminUser.save(function(err, savedUser) {
+                        if (err) {
+                            winston.error('Database Error: ' + err.message);
+                            return next('Database Error: ' + err.message);
+                        }
+
+                        adminGroup.addMember(savedUser._id, function(err, success) {
+                            if (err) {
+                                winston.error('Database Error: ' + err.message);
+                                return next('Database Error: ' + err.message);
+                            }
+
+                            if (!success)
+                                return next('Unable to add user to Administrator group!');
+
+                            adminGroup.save(function(err) {
+                                if (err) {
+                                    winston.error('Database Error: ' + err.message);
+                                    return next('Database Error: ' + err.message);
+                                }
+
+                                return next(null);
+                            });
+                        });
+                    });
+                }
+            });
+        },
+        function(next) {
+            //Write Configfile
+            var fs = require('fs');
+            var configFile = path.join(__dirname, '../../config.json');
+
+            var conf = {
+                mongo: {
+                    host: host,
+                    port: port,
+                    username: username,
+                    password: password,
+                    database: database
+                }
+            };
+
+            fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
+                if (err) {
+                    winston.error('FS Error: ' + err.message);
+                    return next('FS Error: ' + err.message);
+                }
+
+                return next(null);
+            });
+        }
+    ], function(err) {
+        if (err)
+            return res.status(400).json({success: false, error: err});
+
+        res.json({success: true});
+    });
 };
 
 module.exports = installController;

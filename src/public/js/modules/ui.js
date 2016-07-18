@@ -25,11 +25,11 @@ define('modules/ui', [
 
 ], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI) {
     var socketUi = {},
-        socket = io.connect();
+        socket;
 
-    socketUi.socket = socket;
+    socketUi.init = function(sock) {
+        socketUi.socket = (socket = sock);
 
-    socketUi.init = function() {
         this.onReconnect();
         this.onDisconnect();
         this.updateUsers();

@@ -58,6 +58,11 @@ define('pages/dashboard', [
                         url: '/api/v1/tickets/stats/' + timespan,
                         method: 'GET',
                         success: function (_data) {
+                            var lastUpdated = $('#lastUpdated').find('span');
+                            lastUpdated.text(_data.lastUpdated);
+                            if (!_data.data)
+                                return true;
+
                             parms.data = MG.convert.date(_data.data, 'date');
                             MG.data_graphic(parms);
 
@@ -95,10 +100,6 @@ define('pages/dashboard', [
                             var responseTime = _data.ticketAvg;
                             var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
                             responseTime_animation.start();
-
-
-                            var lastUpdated = $('#lastUpdated').find('span');
-                            lastUpdated.text(_data.lastUpdated);
                         },
                         error: function(err) {
                             console.log('[trudesk:dashboard:getData] Error - ' + err.responseText);

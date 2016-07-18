@@ -54,4 +54,43 @@ var nconf = require('nconf'),
         });
     };
 
+    module.exports.installServer = function(callback) {
+        var middleware      = require('./middleware/middleware')(app),
+            router          = express.Router(),
+            controllers     = require('./controllers/index.js'),
+            path            = require('path'),
+            hbs             = require('express-hbs'),
+            hbsHelpers      = require('./helpers/hbs/helpers'),
+            bodyParser      = require('body-parser'),
+            favicon         = require('serve-favicon');
+
+        app.set('views', path.join(__dirname, './views/'));
+        app.engine('hbs', hbs.express3({
+            defaultLayout: path.join(__dirname, './views/layout/main.hbs'),
+            partialsDir: [path.join(__dirname + '/views/partials/')]
+        }));
+        app.set('view engine', 'hbs');
+        hbsHelpers.register(hbs.handlebars);
+
+        app.use(express.static(path.join(__dirname, '../', 'public')));
+        app.use(favicon(path.join(__dirname, '../', 'public/img/favicon.ico')));
+        app.use(bodyParser.urlencoded({ extended: false }));
+        app.use(bodyParser.json());
+
+        router.get('/install', controllers.install.index);
+        router.post('/install', controllers.install.install);
+        router.post('/install/mongotest', controllers.install.mongotest);
+
+        app.use('/', router);
+
+        app.use(function(req, res) {
+            return res.redirect('/install');
+        });
+        var io = require('socket.io')(server);
+
+        server.listen(port, '0.0.0.0', function() {
+            callback();
+        });
+    };
+
 })(WebServer);

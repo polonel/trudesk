@@ -53,21 +53,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 });
             };
 
-            $scope.editAccount = function($event) {
-                //!!!Deprecated!!!
-
-                //if (_.isNull($event.target) || _.isUndefined($event.target) ||
-                //    $event.target.tagName.toLowerCase() === 'label' ||
-                //    $event.target.tagName.toLowerCase() === 'input')
-                //    return true;
-                //
-                ////currentTarget = ng-click() bound to. "<tr>"
-                //var username = $event.currentTarget.dataset.username;
-                //if (!username) return true;
-                //
-                //History.pushState(null, null, '/accounts/' + username);
-            };
-
             $scope.deleteAccount = function($event) {
                 $event.preventDefault();
                 var self = $($event.target);
@@ -174,9 +159,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
             };
 
             $scope.saveAccount = function() {
-                var data = {};
                 var form = $('#editAccountForm');
-                data = form.serializeObject();
+                var data = form.serializeObject();
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
 
