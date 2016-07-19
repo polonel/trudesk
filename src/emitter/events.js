@@ -130,6 +130,7 @@ var notifications       = require('../notifications'); // Load Push Events
 
     emitter.on('ticket:updated', function(ticket) {
         io.sockets.emit('updateTicketStatus', {tid: ticket._id, status: ticket.status});
+        io.sockets.emit('updateAssignee', ticket);
 
         io.sockets.emit('ticket:updategrid');
     });

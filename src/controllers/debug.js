@@ -42,7 +42,6 @@ debugController.sendmail = function(req, res, next) {
                     winston.error(err);
                 } else {
                     var mailOptions = {
-                        from: 'no-reply@trudesk.io',
                         to: 'chris.brame@granvillecounty.org',
                         subject: 'Trudesk Launch',
                         html: html,

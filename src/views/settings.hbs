@@ -1,0 +1,204 @@
+<div ng-controller="settingsCtrl" ng-init="
+    mailerEnabled={{data.settings.mailerEnabled.value}};
+    mailerHost='{{data.settings.mailerHost.value}}';
+    mailerSSL={{data.settings.mailerSSL.value}};
+    mailerPort={{data.settings.mailerPort.value}};
+    mailerUsername='{{data.settings.mailerUsername.value}}';
+    mailerPassword='{{data.settings.mailerPassword.value}}';
+    mailerFrom='{{data.settings.mailerFrom.value}}';
+
+    mailerCheckEnabled={{data.settings.mailerCheckEnabled.value}};
+    mailerCheckHost='{{data.settings.mailerCheckHost.value}}';
+    mailerCheckPort={{data.settings.mailerCheckPort.value}};
+    mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
+    mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
+
+    showOverdueTickets={{data.settings.showOverdueTickets.value}};
+
+    tpsEnabled={{data.settings.tpsEnabled.value}};
+
+    init();
+">
+    <div class="nopadding settings">
+        <div class="uk-width-1-1 page-title noshadow" style="padding-left: 25px !important; border-bottom: 1px solid #dadada;">
+            <p class="left">{{title}}</p>
+        </div>
+        <!--Content Here-->
+        <div class="page-wrapper full-height scrollable no-overflow-x">
+            <div id="page-content-inner">
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Preferences for trudesk to send email notifications to users.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input id="mailerEnabled" name="mailerEnabled" type="checkbox" ng-model="mailerEnabled" ng-change="mailerEnabledChange()">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                            <div class="uk-position-relative">
+                                <div class="uk-margin-medium-bottom">
+                                    <div class="right">
+                                        <div class="md-switch md-green" style="position: absolute; top: 5px; right: -15px; z-index: 99;">
+                                            <label>
+                                                Use SSLv3
+                                                <input id="mailerSSL" name="mailerSSL" type="checkbox" ng-model="mailerSSL" ng-change="mailerSSLChange()">
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <label for="mailerHost">Mail Server</label>
+                                    <input id="mailerHost" class="md-input md-input-width-medium" name="mailerHost" type="text" ng-model="mailerHost" />
+
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerPort">Port</label>
+                                    <input id="mailerPort" class="md-input md-input-width-medium" name="mailerPort" type="text" value="25" ng-model="mailerPort" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerUsername">Auth Username</label>
+                                    <input id="mailerUsername" class="md-input md-input-width-medium" name="mailerUsername" type="text" ng-model="mailerUsername" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerPassword">Auth Password</label>
+                                    <input id="mailerPassword" class="md-input md-input-width-medium" name="mailerPassword" type="password" ng-model="mailerPassword" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerFrom">From Address</label>
+                                    <input id="mailerFrom" class="md-input md-input-width-medium" name="mailerFrom" type="email" ng-model="mailerFrom" />
+                                </div>
+
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-float-left md-btn md-btn-flat md-btn-flat-primary md-btn-wave-light" id="mailerTest" ng-click="submitTestMailer($event)">Test Settings</button>
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerSubmit" ng-click="mailerFormSubmit($event);">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer Check</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Trudesk will periodically check a mailbox for emails to convert to tickets. (Over IMAP)
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input id="mailerCheckEnabled" name="mailerCheckEnabled" type="checkbox" ng-model="mailerCheckEnabled" ng-change="mailerCheckEnabledChange()" />
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                            <div class="">
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerCheckHost">Mail Server</label>
+                                    <input id="mailerCheckHost" class="md-input md-input-width-medium" name="mailerCheckHost" type="text" ng-model="mailerCheckHost"/>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerCheckPort">Port</label>
+                                    <input id="mailerCheckPort" class="md-input md-input-width-medium" name="mailerCheckPort" type="text" value="143" ng-model="mailerCheckPort"/>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerCheckUsername">Username</label>
+                                    <input id="mailerCheckUsername" class="md-input md-input-width-medium" name="mailerCheckUsername" type="text" ng-model="mailerCheckUsername"/>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerCheckPassword">Password</label>
+                                    <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
+                                </div>
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Flash tickets that have been idle for a length of time.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">TPS</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Trudesk Push Server authentication for push notifications.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="tpsEnabled" ng-change="tpsEnabledChanged()">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                            <div class="">
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="tpsUsername">Username</label>
+                                    <input id="tpsUsername" class="md-input md-input-width-medium" name="tpsUsername" type="text" ng-model="tpsUsername" />
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="tspAPIKey">API Key</label>
+                                    <input id="tspAPIKey" class="md-input md-input-width-medium" name="tspAPIKey" type="text" ng-model="tspAPIKey" />
+                                </div>
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="tpsSubmit" ng-click="tpsSubmit($event);">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['jquery', 'pages/settings'], function($, s) {
+            s.init();
+        });
+    </script>
+{{/contentFor}}

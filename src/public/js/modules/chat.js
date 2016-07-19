@@ -19,108 +19,98 @@ define('modules/chat',[
     'autogrow'
 
 ], function($, _, helpers) {
-    var chatClient = {};
-    var socket = io.connect();
+    var chatClient = {},
+        socket;
 
-    socket.removeAllListeners('connect');
-    socket.on('connect', function(data) {
-        socket.emit('joinChatServer');
-    });
+    chatClient.init = function(sock) {
+        socket = sock;
 
-    socket.removeAllListeners('connectingToSocketServer');
-    socket.on('connectingToSocketServer', function(data) {
-
-    });
-
-    socket.removeAllListeners('updateUsers');
-    socket.on('updateUsers', function(data) {
-        var html = '';
-        var onlineList = $('#online-Users-List').find('> ul');
-        onlineList.html('');
-        var username = $('.profile-name[data-username]').attr('data-username');
-        _.each(data, function(v, k) {
-            var onlineUser = v.user;
-            if (onlineUser.username === username) return true;
-            var imageUrl = onlineUser.image;
-            if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
-            html += '<li>';
-            html += '<a class="messageNotification no-ajaxify" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
-            html += '<div class="clearfix">';
-            html += '<div class="profilePic left"><img src="/uploads/users/' + imageUrl + '" alt="profile"/></div>';
-            html += '<div class="messageAuthor"><strong>' + onlineUser.fullname + '</strong></div>';
-            html += '<div class="messageSnippet">';
-            if (onlineUser.title)
-                html += '<span>' + onlineUser.title + '</span>';
-            html += '</div>';
-            html += '</div>';
-            html += '</div>';
-            html += '</a>';
-            html += '</li>';
+        socket.removeAllListeners('connect');
+        socket.on('connect', function(data) {
+            socket.emit('joinChatServer');
         });
 
-        onlineList.append(html);
-        chatClient.bindActions();
+        socket.removeAllListeners('connectingToSocketServer');
+        socket.on('connectingToSocketServer', function(data) {
 
-        var $u = _.throttle(function() {
-            UpdateOnlineBubbles(data);
-        }, 1500, {trailing: false});
-
-        $u();
-    });
-
-    function UpdateOnlineBubbles(usersOnline) {
-        $('span[data-user-status-id]').each(function() {
-            $(this).removeClass('user-online').addClass('user-offline');
         });
-        _.each(usersOnline, function(v, k) {
-            var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
-            $bubble.each(function() {
-                var self = $(this);
 
-                self.removeClass('user-offline').addClass('user-online');
+        socket.removeAllListeners('updateUsers');
+        socket.on('updateUsers', function(data) {
+            var html = '';
+            var onlineList = $('#online-Users-List').find('> ul');
+            onlineList.html('');
+            var username = $('.profile-name[data-username]').attr('data-username');
+            _.each(data, function(v, k) {
+                var onlineUser = v.user;
+                if (onlineUser.username === username) return true;
+                var imageUrl = onlineUser.image;
+                if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
+                html += '<li>';
+                html += '<a class="messageNotification no-ajaxify" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
+                html += '<div class="clearfix">';
+                html += '<div class="profilePic left"><img src="/uploads/users/' + imageUrl + '" alt="profile"/></div>';
+                html += '<div class="messageAuthor"><strong>' + onlineUser.fullname + '</strong></div>';
+                html += '<div class="messageSnippet">';
+                if (onlineUser.title)
+                    html += '<span>' + onlineUser.title + '</span>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+                html += '</a>';
+                html += '</li>';
             });
+
+            onlineList.append(html);
+            chatClient.bindActions();
+
+            var $u = _.throttle(function() {
+                UpdateOnlineBubbles(data);
+            }, 1500, {trailing: false});
+
+            $u();
         });
-    }
 
-    socket.removeAllListeners('spawnChatWindow');
-    socket.on('spawnChatWindow', function(data) {
-        chatClient.openChatWindow(data);
-    });
+        socket.removeAllListeners('spawnChatWindow');
+        socket.on('spawnChatWindow', function(data) {
+            chatClient.openChatWindow(data);
+        });
 
-    socket.removeAllListeners('chatMessage');
-    socket.on('chatMessage', function(data) {
-        var type = data.type;
-        var to = data.to;
-        var from = data.from;
-        var chatBox = '',
-            chatMessage = '',
-            chatMessageList = '',
-            scroller = '',
-            selector = '';
+        socket.removeAllListeners('chatMessage');
+        socket.on('chatMessage', function(data) {
+            var type = data.type;
+            var to = data.to;
+            var from = data.from;
+            var chatBox = '',
+                chatMessage = '',
+                chatMessageList = '',
+                scroller = '',
+                selector = '';
 
-        if (type === 's') {
-            chatBox = $('.chat-box[data-chat-userId="' + to + '"]');
-            chatMessage = createChatMessageDiv(data.message);
-            chatMessageList = chatBox.find('.chat-message-list:first');
-            scroller = chatBox.find('.chat-box-messages');
-            chatMessageList.append(chatMessage);
-            helpers.scrollToBottom(scroller);
-        } else if (type === 'r') {
-            selector = '.chat-box[data-chat-userId="' + from + '"]';
-            chatBox = $(selector);
-            if (chatBox.length < 1) {
-                chatClient.openChatWindow(data.fromUser);
+            if (type === 's') {
+                chatBox = $('.chat-box[data-chat-userId="' + to + '"]');
+                chatMessage = createChatMessageDiv(data.message);
+                chatMessageList = chatBox.find('.chat-message-list:first');
+                scroller = chatBox.find('.chat-box-messages');
+                chatMessageList.append(chatMessage);
+                helpers.scrollToBottom(scroller);
+            } else if (type === 'r') {
+                selector = '.chat-box[data-chat-userId="' + from + '"]';
                 chatBox = $(selector);
+                if (chatBox.length < 1) {
+                    chatClient.openChatWindow(data.fromUser);
+                    chatBox = $(selector);
+                }
+
+                chatMessage = createChatMessageFromUser(data.fromUser, data.message);
+                chatMessageList = chatBox.find('.chat-message-list:first');
+                chatMessageList.append(chatMessage);
+
+                scroller = chatBox.find('.chat-box-messages');
+                helpers.scrollToBottom(scroller);
             }
-
-            chatMessage = createChatMessageFromUser(data.fromUser, data.message);
-            chatMessageList = chatBox.find('.chat-message-list:first');
-            chatMessageList.append(chatMessage);
-
-            scroller = chatBox.find('.chat-box-messages');
-            helpers.scrollToBottom(scroller);
-        }
-    });
+        });
+    };
 
     chatClient.bindActions = function() {
         $(document).ready(function() {
@@ -186,7 +176,7 @@ define('modules/chat',[
                 }
             });
         });
-    }
+    };
 
     chatClient.openChatWindow = function(user) {
         var username = $('.profile-name[data-username]').attr('data-username');
@@ -224,6 +214,20 @@ define('modules/chat',[
         helpers.setupScrollers('.chat-box[data-chat-userId="' + user._id + '"] > div.scrollable');
         this.bindActions();
     };
+
+    function UpdateOnlineBubbles(usersOnline) {
+        $('span[data-user-status-id]').each(function() {
+            $(this).removeClass('user-online').addClass('user-offline');
+        });
+        _.each(usersOnline, function(v, k) {
+            var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
+            $bubble.each(function() {
+                var self = $(this);
+
+                self.removeClass('user-offline').addClass('user-online');
+            });
+        });
+    }
 
     function createChatMessageDiv(message) {
         var html  = '<div class="chat-message chat-message-user clearfix" data-chat-messageId="12">';

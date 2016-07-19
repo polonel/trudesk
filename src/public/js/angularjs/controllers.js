@@ -26,7 +26,8 @@ define([
     'angularjs/controllers/singleTicket',
     'angularjs/controllers/messages',
     'angularjs/controllers/notices',
-    'angularjs/controllers/reports'
+    'angularjs/controllers/reports',
+    'angularjs/controllers/settings'
 
     ], function($, angular, _) {
 
@@ -41,7 +42,8 @@ define([
             'trudesk.controllers.singleTicket',
             'trudesk.controllers.messages',
             'trudesk.controllers.notices',
-            'trudesk.controllers.reports'
+            'trudesk.controllers.reports',
+            'trudesk.controllers.settings'
         ])
         .controller('truCtrl', ['openNewMessageWindow', '$scope', function(openNewMessageWindow, $scope) {
             $scope.submitForm = function(formName, $event) {

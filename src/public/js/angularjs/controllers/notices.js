@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'history'], function(angular, _, $, helpers, ui) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socketClient) {
     return angular.module('trudesk.controllers.notices', [])
         .controller('noticesCtrl', function($scope, $http) {
 
@@ -31,6 +31,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
             $scope.submitCreateNoticeForm = function() {
                 var formData = $('#createNoticeForm').serializeObject();
+                if (!formData.nName || !formData.nMessage) return false;
                 var apiData = {
                     name: formData.nName,
                     message: formData.nMessage,
@@ -99,7 +100,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
                             headers: {'Content-Type': 'application/json'}
                         })
                             .success(function() {
-                                ui.setShowNotice(id);
+                                socketClient.ui.setShowNotice(id);
 
                                 helpers.UI.showSnackbar('Notice has been activated', false);
 
@@ -122,7 +123,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
             $scope.clearNotice = function() {
                 $http.get('/api/v1/notices/clearactive')
                     .success(function() {
-                        ui.setClearNotice();
+                        socketClient.ui.setClearNotice();
 
                         helpers.UI.showSnackbar('Notice has been deactivated', false);
                     })

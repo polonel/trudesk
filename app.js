@@ -13,10 +13,10 @@ var async   = require('async'),
     path    = require('path'),
     fs      = require('fs'),
     winston = require('winston'),
-    wConfig = require('winston/lib/winston/config'),
     nconf = require('nconf'),
-    NodeCache = require('node-cache'),
-    pkg     = require('./package.json');
+    pkg     = require('./package.json'),
+    ws = require('./src/webserver');
+
 
 global.forks = [];
 
@@ -45,6 +45,16 @@ winston.err = function (err) {
     winston.error(err.stack);
 };
 
+process.on('message', function(msg) {
+    if (msg == 'shutdown') {
+        console.log('Closing all connections...');
+
+        if (ws.server)
+            ws.server.close();
+        process.exit(0);
+    }
+});
+
 if (!process.env.FORK) {
     winston.info('    .                              .o8                     oooo');
     winston.info('  .o8                             "888                     `888');
@@ -59,29 +69,6 @@ if (!process.env.FORK) {
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
 }
-
-//CLUSTER STUFF
-//var cluster = require('cluster');
-//if (cluster.isMaster) {
-//    var numWorkers = require('os').cpus().length;
-//    winston.info('Master cluster setting up ' + numWorkers + ' workers...');
-//
-//    for (var i = 0; i < numWorkers; i++) {
-//        cluster.fork({FORK: 1});
-//    }
-//
-//    cluster.on('online', function(worker) {
-//        winston.debug('Worker ' + worker.process.pid + ' is online');
-//    });
-//
-//    cluster.on('exit', function(worker, code, signal) {
-//        winston.warn('Worker ' + worker.process.pid + ' crashed with code: ' + code);
-//        winston.info('Starting a new worker');
-//        cluster.fork({FORK: 1});
-//    });
-//} else {
-//
-//}
 
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
@@ -114,6 +101,15 @@ if (process.env.HEROKU) {
     fs.writeFileSync(configFile, config);
 
     start();
+}
+
+if (nconf.get('install') || !configExists && !process.env.HEROKU) {
+    var ws = require('./src/webserver');
+    ws.installServer(function() {
+        return winston.info('Trudesk Install Server Running...');
+    });
+
+    return;
 }
 
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
@@ -188,7 +184,6 @@ function dbCallback(err, db) {
     if (err) {
         return start();
     }
-    var ws = require('./src/webserver');
 
     ws.init(db, function(err) {
         if (err) {
@@ -219,10 +214,40 @@ function dbCallback(err, db) {
             },
             function(next) {
                 //Start Task Runners
-                var taskrunner = require('./src/taskrunner');
+                require('./src/taskrunner');
                 next();
             },
             function(next) {
+                //var pm2 = require('pm2');
+                //pm2.connect(true, function(err) {
+                //    if (err) throw err;
+                //    pm2.start({
+                //        script: path.join(__dirname, '/src/cache/index.js'),
+                //        name: 'trudesk:cache',
+                //        output: path.join(__dirname, '/logs/cache.log'),
+                //        error: path.join(__dirname, '/logs/cache.log'),
+                //        env: {
+                //            FORK: 1,
+                //            NODE_ENV: global.env
+                //        }
+                //    }, function(err) {
+                //        pm2.disconnect();
+                //        if (err) throw err;
+                //
+                //        process.on('message', function(message) {
+                //            if (message.data.cache) {
+                //                var nodeCache = require('./src/cache/node-cache');
+                //                global.cache = new nodeCache({
+                //                    data:  message.data.cache.data,
+                //                    checkperiod: 0
+                //                });
+                //            }
+                //        });
+                //
+                //        next();
+                //    });
+                //});
+
                 var fork = require('child_process').fork;
                 var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env, MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME } } );
 
@@ -238,17 +263,7 @@ function dbCallback(err, db) {
                     }
                 });
 
-                //
-                //n.on('exit', function (code, signal) {
-                //    console.log('Child exited:', code, signal);
-                //});
-
                 next();
-                //winston.debug('Initializing Cache...');
-                //var cache = require('./src/cache');
-                //cache.init(function() {
-                //    next();
-                //});
             }
         ], function() {
             winston.info("TruDesk Ready");

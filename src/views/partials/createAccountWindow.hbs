@@ -53,7 +53,7 @@
             <div class="uk-margin-medium-bottom">
                 <label for="aGrps" class="uk-form-label">Groups</label>
                 <select name="aGrps" id="aGrps" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
-                    {{#each data.common.groups}}
+                    {{#each data.allGroups}}
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
                 </select>

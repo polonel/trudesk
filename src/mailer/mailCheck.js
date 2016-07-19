@@ -27,12 +27,12 @@ var groupSchema = require('../models/group');
 var ticketTypeSchema = require('../models/tickettype');
 var Ticket      = require('../models/ticket');
 
-var MAILER_ENABLED = nconf.get('mailer:check:enable');
-var MAILERCHECK_USER = nconf.get('mailer:check:user') ? nconf.get('mailer:check:user') : MAILER_ENABLED = false;
-var MAILERCHECK_PASS = nconf.get('mailer:check:pass') ? nconf.get('mailer:check:pass') : MAILER_ENABLED = false;
-var MAILERCHECK_HOST = nconf.get('mailer:check:host') ? nconf.get('mailer:check:host') : MAILER_ENABLED = false;
-var POOL_INTERVAL = nconf.get('mailer:check:polling') ? nconf.get('mailer:check:polling') : 600000; //10 min
-var DEFAULT_TICKET_TYPE = nconf.get('mailer:check:defaultTicketType') ? nconf.get('mailer:check:defaultTicketType') : 'Problem';
+var MAILERCHECK_ENABLED = nconf.get('mailer:check:enable');
+var MAILERCHECK_USER = nconf.get('mailer:check:user') ? nconf.get('mailer:check:user') : MAILERCHECK_ENABLED = false;
+var MAILERCHECK_PASS = nconf.get('mailer:check:pass') ? nconf.get('mailer:check:pass') : MAILERCHECK_ENABLED = false;
+var MAILERCHECK_HOST = nconf.get('mailer:check:host') ? nconf.get('mailer:check:host') : MAILERCHECK_ENABLED = false;
+var POLLING_INTERVAL = nconf.get('mailer:check:polling') ? nconf.get('mailer:check:polling') : 600000; //10 min
+var DEFAULT_TICKET_TYPE = nconf.get('mailer:check:defaultTicketType') ? nconf.get('mailer:check:defaultTicketType') : 'Issue';
 
 var mailCheck = {};
 mailCheck.Imap = new Imap({
@@ -45,12 +45,12 @@ mailCheck.Imap = new Imap({
 mailCheck.inbox = [];
 
 mailCheck.init = function() {
-    if (!MAILER_ENABLED) return true;
+    if (!MAILERCHECK_ENABLED) return true;
 
     mailCheck.fetchMail();
     setInterval(function() {
         mailCheck.fetchMail();
-    }, POOL_INTERVAL);
+    }, POLLING_INTERVAL);
 };
 
 mailCheck.fetchMail = function() {

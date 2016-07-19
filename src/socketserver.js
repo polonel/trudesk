@@ -54,33 +54,6 @@ module.exports = function(ws) {
 
         }, 5000);
 
-        //Update Ticket Grid Every Min
-//        setInterval(function() {
-//            var userId = socket.request.user._id;
-//            var ticketSchema = require('./models/ticket');
-//            var groupSchema = require('./models/group');
-//
-//            async.waterfall([
-//                function(callback) {
-//                    groupSchema.getAllGroupsOfUser(socket.request.user._id, function(err, grps) {
-//                        callback(err, grps);
-//                    })
-//                },
-//                function(grps, callback) {
-//                    ticketSchema.getTickets(grps, function(err, results) {
-//
-//                        callback(err, results);
-//                    });
-//                }
-//            ], function(err, results) {
-//                if (err) return handleError(res, err);
-//
-//                //winston.verbose('Updating Ticket Grid For: ' + socket.request.user.fullname);
-//                //utils.sendToSelf(socket, 'updateTicketGrid', results);
-//            });
-//
-//        }, 60000);
-
         function updateMailNotifications() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
@@ -685,6 +658,8 @@ module.exports = function(ws) {
 
     global.io = io;
     winston.info('SocketServer Running');
+
+
 };
 
 function onAuthorizeSuccess(data, accept) {

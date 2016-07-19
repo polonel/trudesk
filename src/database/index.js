@@ -37,17 +37,20 @@ mongoose.connection.on('connected', function() {
 
 var options = { server: { auto_reconnect: true, socketOptions: { keepAlive: 1, connectTimeoutMS: 30000 } }};
 
-module.exports.init = function(callback, connectionString) {
+module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
+    if (opts) options = opts;
     if (process.env.MONGOHQ_URL) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
     if (db.connection) {
-        callback(null, db);
+        return callback(null, db);
     } else {
+        mongoose.Promise = global.Promise;
         mongoose.connect(CONNECTION_URI, options, function(e) {
+            if (e) return callback(e, null);
             db.connection = mongoose.connection;
 
-            callback(e, db);
+            return callback(e, db);
         });
     }
 };

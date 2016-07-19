@@ -15,7 +15,7 @@
 "use strict";
 
 define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
     var helpers = {};
 
@@ -29,6 +29,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
+        self.setupScrollers('.uk-modal');
         self.formvalidator();
         self.pToolTip();
         self.setupDonutchart();
@@ -119,7 +120,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
     };
 
     helpers.UI.showSnackbar_ = function(options) {
-        SnackBar.show(options);
+        Snackbar.show(options);
     };
 
     helpers.UI.showSnackbar__ = function(text, error) {
@@ -130,14 +131,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
         if (error)
             actionText = '#FF4835';
 
-        SnackBar.show({
+        Snackbar.show({
             text: text,
             actionTextColor: actionText
         });
     };
 
     helpers.UI.closeSnackbar = function() {
-        SnackBar.close();
+        Snackbar.close();
     };
 
     helpers.UI.inputs = function(parent) {
@@ -584,7 +585,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, SnackBar) {
 
         var color = "#a9b1bf";
         var colorBrd = "1px solid #fff";
-        if (selector == '.scrollable-dark') {
+        if (selector == '.scrollable-dark' || selector == '.uk-modal') {
             color = '#353e47';
             colorBrd = "1px solid #000";
         }

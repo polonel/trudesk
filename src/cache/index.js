@@ -19,7 +19,6 @@ var NodeCache   = require('node-cache'),
     _           = require('underscore'),
     winston     = require('winston');
     moment      = require('moment');
-var mongoose    = require('mongoose');
 var emitter     = require('../emitter');
 
 var truCache = {};
@@ -203,6 +202,30 @@ truCache.refreshCache = function(callback) {
         if (err) return winston.warn(err);
         //Send to parent
         process.send({cache: cache});
+
+        //var pm2 = require('pm2');
+        //pm2.connect(function(err) {
+        //    if (err) throw err;
+        //
+        //    pm2.list(function(err, list) {
+        //        list.forEach(function(item) {
+        //            if (item.name === 'trudesk') {
+        //                pm2.sendDataToProcessId(item.pm_id, {
+        //                     type: 'process:msg',
+        //                     data: {
+        //                         cache: cache
+        //                     },
+        //                     topic: 'trudesk'
+        //                 }, function(err, res) {
+        //                     console.log(err);
+        //                 });
+        //
+        //                 pm2.disconnect();
+        //             }
+        //        });
+        //
+        //    });
+        //});
 
         if (!_.isUndefined(callback) && _.isFunction(callback))
             callback(err);

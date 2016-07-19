@@ -175,7 +175,6 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 event.preventDefault();
                 var tagModal = $('#createTagModal');
                 if (tagModal.length > 0) {
-                    console.log('here');
                     UIkit.modal(tagModal, {bgclose: false}).show();
                 }
             };
@@ -273,16 +272,16 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     socket.ui.refreshTicketTags(id);
                     $('#addTagModal').find('option').prop('selected', false);
                     $('#addTagModal').find('select').trigger('chosen:updated');
-                    UIkit.modal('#addTagModal').close();
+                    UIkit.modal('#addTagModal').hide();
                 }).error(function(e) {
                     console.log('[trudesk:singleTicket:clearTags] - ' + e.message);
                     helpers.UI.showSnackbar('Error: ' + e.message, true);
-                    UIkit.modal('#addTagModal').close();
+                    UIkit.modal('#addTagModal').hide();
                 });
             };
 
             $scope.closeAddTagModal = function() {
-                UIkit.modal('#addTagModal').close();
+                UIkit.modal('#addTagModal').hide();
             };
         })
         .directive('closeMouseUp', ['$document', function($document) {

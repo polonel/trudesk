@@ -4,6 +4,7 @@ var should = require('chai').should();
 var winston = require('winston');
 var async = require('async');
 var mongoose = require('mongoose');
+var path      = require('path');
 
 winston.setLevels(winston.config.cli.levels);
 winston.remove(winston.transports.Console);
@@ -92,8 +93,7 @@ after(function(done) {
 describe('Database', function() {
     beforeEach(function(done) {
         //Need to invalid Database Module before each test runs.
-        var modulePath = require.resolve('../src/database');
-        delete require.cache[modulePath];
+        delete require.cache[path.join(__dirname, '../src/database')];
         database = require('../src/database');
 
         done();

@@ -51,7 +51,7 @@
                 <ul id="side-nav-sub-reports" class="side-nav-sub {{#is nav 'reports'}} subMenuOpen {{/is}}">
                     <li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i>Overview</a></li>
                     <hr/>
-                    <li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown"><i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>
+                    <!--<li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown"><i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>-->
                     <li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown"><i class="material-icons fa-sub-icon fa-sub-icon">poll</i>Breakdown</a></li>
                     <!--<li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>-->
                     <!--<li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>-->
@@ -64,7 +64,7 @@
         {{/canUser}}
         <hr>
         <!--{{#canUser data.user "settings:edit"}}-->
-            <!--<li {{#is nav 'settings'}} class="active" {{/is}}><a href="/settings"><i class="material-icons">settings</i>Settings</a></li>-->
+            <li {{#is nav 'settings'}} class="active" {{/is}}><a href="/settings"><i class="material-icons">settings</i>Settings</a></li>
         <!--{{/canUser}}-->
             <li {{#is nav 'about'}} class="active" {{/is}}><a href="/about"><i class="material-icons">help</i>About</a></li>
     </ul>

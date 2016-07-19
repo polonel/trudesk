@@ -1,4 +1,4 @@
-[![Trudesk](http://trudesk.io/TD_Black.png)](http://trudesk.io/)
+<a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="375" /></a>
 
 <br/><br/>
 
@@ -12,8 +12,8 @@ TruDesk is an open source help desk solution stil in active development.
 Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
 ###Requirements
-+ Node.JS v4.2.2 or later
-+ MongoDB 2.6 or later
++ Node.JS v6.3.0 or later
++ MongoDB 3.2 or later
 
 ###Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
@@ -39,16 +39,17 @@ if you like what you see here, and want to help support the work being done, you
 
 
 ###License
-Copyright 2015 Chris Brame
 
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+    Copyright 2014-2016 Chris Brame
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+    http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.

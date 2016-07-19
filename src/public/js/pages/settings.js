@@ -7,26 +7,25 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
+ Created:    04/07/2016
  Author:     Chris Brame
 
  **/
 
-define('modules/socket', [
-    'modules/chat',
-    'modules/ui'
+define('pages/settings', [
+    'jquery',
+    'underscore',
+    'modules/helpers',
+    'history'
 
-], function(chat, ui) {
-    var socket = io.connect();
-    var sClient = {
-        socket: socket
+], function($, _, helpers) {
+    var settingsPage = {};
+
+    settingsPage.init = function() {
+        $(document).ready(function() {
+
+        });
     };
 
-    ui.init(socket);
-    sClient.ui = ui;
-
-    chat.init(socket);
-    sClient.chat = chat;
-
-    return sClient;
+    return settingsPage;
 });

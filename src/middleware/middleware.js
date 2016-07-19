@@ -39,6 +39,26 @@ middleware.db = function(req, res, next) {
     next();
 };
 
+middleware.redirectToInstall = function(req, res, next) {
+    var fs = require('fs');
+    var path = require('path');
+    var config = path.join(__dirname, '../../config.json');
+    if (!fs.existsSync(config))
+        res.redirect('/install');
+    else
+        next();
+};
+
+middleware.hasConfig = function(req, res, next) {
+    var fs = require('fs');
+    var path = require('path');
+    var config = path.join(__dirname, '../../config.json');
+    if (fs.existsSync(config))
+        res.redirect('/install');
+    else
+        next();
+};
+
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
         res.redirect('/dashboard');
@@ -85,7 +105,6 @@ middleware.cache = function(seconds) {
 //API
 middleware.api = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
-
     if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
         var user = req.user;
         if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});

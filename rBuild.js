@@ -56,7 +56,9 @@ modules: [
             'pages/messages',
             'pages/reports',
             'pages/singleTicket',
-            'pages/tickets'
+            'pages/tickets',
+            'pages/notices',
+            'pages/settings'
         ],
         shim: {
             angular: {
