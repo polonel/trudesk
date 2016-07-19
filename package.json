@@ -3,7 +3,7 @@
   "version": "0.1.7",
   "private": true,
   "scripts": {
-    "start": "node ./app",
+    "start": "node ./runner",
     "postinstall": "npm install -g requirejs@2.1.15 grunt-cli && grunt build",
     "build": "grunt build",
     "coverage": "mocha --recursive --require blanket -R html-cov > coverage.html"
