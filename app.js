@@ -240,6 +240,7 @@ function dbCallback(err, db) {
                 //        next();
                 //    });
                 //});
+
                 var fork = require('child_process').fork;
                 var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: { FORK: 1, NODE_ENV: global.env } } );
 

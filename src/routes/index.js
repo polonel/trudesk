@@ -106,6 +106,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
+
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
@@ -190,7 +191,7 @@ function mainRoutes(router, middleware, controllers) {
                     res.status(400).send(err);
                     return;
                 }
-                pm2.gracefulReload('all', function(err) {
+                pm2.restart('trudesk', function(err) {
                     if (err) {
                         res.status(400).send(err);
                         return winston.error(err);

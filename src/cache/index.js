@@ -220,7 +220,6 @@ truCache.refreshCache = function(callback) {
         //    pm2.list(function(err, list) {
         //        list.forEach(function(item) {
         //            if (item.name === 'trudesk') {
-        //                console.log(item);
         //                pm2.sendDataToProcessId(item.pm_id, {
         //                     type: 'process:msg',
         //                     data: {

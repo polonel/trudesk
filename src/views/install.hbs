@@ -335,9 +335,10 @@
                 </svg>
             </div>
         </div>
-        <div class="slide hide">
+        <div id="restartSlide" class="slide hide">
             <h2 style="margin-bottom: 25px;">Time to Restart</h2>
             <p style="text-align: left;"><i>So here we are, together sharpening a knife.</i> Trudesk needs to restart to come out of install mode. Just restart it and you should get a login screen. (hopefully)!</p>
+            <button class="btn md-btn md-btn-wave" type="button" id="restartTrudesk">restart me!</button>
         </div>
         <div id="errorSlide" class="slide hide">
             <h2 style="margin-bottom: 25px;">Crap! Something funky happened.</h2>
@@ -357,7 +358,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 <script type="text/javascript">
@@ -484,6 +484,22 @@
             setTimeout(function() {
                 sendInstall();
             }, 3000);
+        });
+
+        $('button#restartTrudesk').click(function() {
+            var $restartSlide = $('#restartSlide');
+            $restartSlide.find('h2').html('Restarting...');
+            $restartSlide.find('p').css('text-align', 'center').html('I\'m restarting now... Give me about 10seconds!');
+            $restartSlide.find('button').hide();
+
+            setTimeout(function() {
+                window.location.reload();
+            }, 10000);
+
+            $.ajax({
+                method: 'GET',
+                url: '/install/restart'
+            });
         });
 
         function sendInstall() {

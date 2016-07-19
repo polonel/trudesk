@@ -39,7 +39,7 @@ var nconf = require('nconf'),
             server.on('error', function(err) {
                 if (err.code === 'EADDRINUSE') {
                     winston.error('Address in use, exiting...');
-                    server.close();
+                    //server.close();
                 } else {
                     winston.error(err.message);
                     throw err;
@@ -80,6 +80,7 @@ var nconf = require('nconf'),
         router.get('/install', controllers.install.index);
         router.post('/install', controllers.install.install);
         router.post('/install/mongotest', controllers.install.mongotest);
+        router.get('/install/restart', controllers.install.restart);
 
         app.use('/', router);
 

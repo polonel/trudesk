@@ -223,4 +223,24 @@ installController.install = function(req, res) {
     });
 };
 
+installController.restart = function(req, res) {
+    var pm2 = require('pm2');
+    pm2.connect(function(err) {
+        if (err) {
+            winston.error(err);
+            res.status(400).send(err);
+            return;
+        }
+        pm2.restart('trudesk', function(err) {
+            if (err) {
+                res.status(400).send(err);
+                return winston.error(err);
+            }
+
+            pm2.disconnect();
+            res.send();
+        });
+    });
+};
+
 module.exports = installController;

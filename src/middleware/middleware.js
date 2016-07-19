@@ -105,7 +105,6 @@ middleware.cache = function(seconds) {
 //API
 middleware.api = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
-
     if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
         var user = req.user;
         if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
