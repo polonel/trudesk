@@ -1,4 +1,4 @@
-FROM node:argon
+FROM node:6.3.0-wheezy
 
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
