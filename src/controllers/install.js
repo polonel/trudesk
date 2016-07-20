@@ -198,7 +198,7 @@ installController.install = function(req, res) {
                 value: true
             });
 
-            s.save(function(err) {
+            installed.save(function(err) {
                 if (err) {
                     winston.error('DB Error: ' + err.message);
                     return next('DB Error: ' + err.message);
