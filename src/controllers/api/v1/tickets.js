@@ -73,8 +73,8 @@ var api_tickets = {};
  *
  */
 api_tickets.get = function(req, res) {
-    var limit = req.query.limit;
-    var page = req.query.page;
+    var limit = parseInt(req.query.limit);
+    var page = parseInt(req.query.page);
     var assignedSelf = req.query.assignedself;
     var status = req.query.status;
     var user = req.user;
