@@ -28,7 +28,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         aFullname:      data.fullname,
                         aPass:          data.password,
                         aPassConfirm:   data.cPassword,
-                        aEmail:         data.email
+                        aEmail:         data.email,
+
+                        saveGroups:    false
                     }
                 ).success(function(d) {
                         resetForm();

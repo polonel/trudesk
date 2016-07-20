@@ -197,7 +197,8 @@ api_users.create = function(req, res) {
  */
 api_users.update = function(req, res) {
     var data = req.body;
-
+    // saveGroups - Profile saving where groups are not sent
+    var saveGroups = data.saveGroups;
     var obj = {
         _id:            data.aId,
         username:       data.aUsername,
@@ -207,7 +208,7 @@ api_users.update = function(req, res) {
         passconfirm:    data.aPassConfirm,
         email:          data.aEmail,
         role:           data.aRole,
-        groups:         data.aGrps,
+        groups:         data.aGrps
     };
 
     if (_.isNull(obj.groups) || _.isUndefined(obj.groups))
@@ -240,6 +241,7 @@ api_users.update = function(req, res) {
                 });
         },
         groups: function (done) {
+            if (!saveGroups) return done();
             groupSchema.getAllGroups(function(err, groups) {
                 if (err) return done(err);
                 async.each(groups, function(grp, callback) {

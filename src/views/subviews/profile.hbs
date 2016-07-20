@@ -38,6 +38,7 @@
                 </form>
                 <form id="createAccountForm" class="uk-form-stacked" action="/accounts/edit" method="POST">
                     <input name="aId" type="hidden" value="{{data.account._id}}" />
+                    <input type="hidden" name="aRole" value="{{data.account.role}}" />
                     <div style="margin-left: 285px;">
                         <div class="uk-margin-medium-bottom">
                             <label for="aUsername">Username</label>
