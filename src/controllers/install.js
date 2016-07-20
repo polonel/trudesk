@@ -53,7 +53,7 @@ installController.install = function(req, res) {
     var userSchema          = require('../models/user');
     var groupSchema         = require('../models/group');
     var counters            = require('../models/counters');
-    var ticketTypeSchema    = require('../models/ticketType');
+    var ticketTypeSchema    = require('../models/tickettype');
 
     var data = req.body;
 
