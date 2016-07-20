@@ -57,12 +57,12 @@ installController.install = function(req, res) {
 
     var data = req.body;
 
-    //Mongo
-    var host = data['mongo[host]'];
-    var port =  data['mongo[port]'];
-    var database = data['mongo[database]'];
-    var username = data['mongo[username]'];
-    var password = data['mongo[password]'];
+    ////Mongo
+    //var host = data['mongo[host]'];
+    //var port =  data['mongo[port]'];
+    //var database = data['mongo[database]'];
+    //var username = data['mongo[username]'];
+    //var password = data['mongo[password]'];
 
     //Account
     var user = {
@@ -73,13 +73,13 @@ installController.install = function(req, res) {
         fullname: data['account[fullname]']
     };
 
-    var conuri = 'mongodb://' + username + ':' + password + '@' + host + '/' + database;
+    //var conuri = 'mongodb://' + username + ':' + password + '@' + host + '/' + database;
 
     async.waterfall([
         function(next) {
             db.init(function(err, db) {
                 return next(err);
-            }, conuri);
+            });
         },
         function(next) {
             var Counter = new counters({
