@@ -124,18 +124,7 @@ if (process.env.HEROKU) {
 
 start();
 
-function loadConfig() {
-    nconf.file({
-        file: configFile
-    });
-
-    nconf.defaults({
-        base_dir: __dirname
-    });
-}
-
 function start() {
-    loadConfig();
 
     var _db = require('./src/database');
 
@@ -148,38 +137,9 @@ function start() {
             }, 10000);
 
         } else {
-            var install = require('./src/install');
-            install.setup(function(err) {
-                if (err) {
-                    winston.error('There was a problem completing trudesk setup: ', err.message);
-                }
-
-                dbCallback(err, db);
-            });
+            dbCallback(null, db);
         }
     });
-}
-
-function setup() {
-    loadConfig();
-
-    if (nconf.get('setup')) {
-        winston.info('Starting trudesk setup....');
-    } else {
-        winston.warn('Configuration not found!!! Starting trudesk setup....');
-    }
-
-    var install = require('./src/install');
-
-    install.setup(function(err) {
-        if (err) {
-            winston.error('There was a problem completing trudesk setup: ', err.message);
-        } else {
-            winston.info('trudesk Setup Completed. Run \'./trudesk start\' to manually start your trudesk server.');
-        }
-
-        process.exit();
-    })
 }
 
 function dbCallback(err, db) {
