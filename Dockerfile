@@ -4,7 +4,6 @@ RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
 
 COPY package.json /usr/src/trudesk
-COPY config.json /usr/src/trudesk
 RUN npm install -g requirejs grunt grunt-cli
 RUN npm install
 
@@ -14,4 +13,4 @@ RUN grunt build
 
 EXPOSE 8118
 
-CMD [ "npm", "start" ]
+CMD [ "/bin/bash", "/usr/src/trudesk/startup.sh" ]

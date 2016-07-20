@@ -197,13 +197,14 @@ installController.install = function(req, res) {
             var configFile = path.join(__dirname, '../../config.json');
 
             var conf = {
-                mongo: {
-                    host: host,
-                    port: port,
-                    username: username,
-                    password: password,
-                    database: database
-                }
+                installed: true
+                //mongo: {
+                //    host: host,
+                //    port: port,
+                //    username: username,
+                //    password: password,
+                //    database: database
+                //}
             };
 
             fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
