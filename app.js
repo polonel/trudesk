@@ -103,24 +103,26 @@ if (process.env.HEROKU) {
     start();
 }
 
-if (nconf.get('install') || !configExists && !process.env.HEROKU) {
-    var ws = require('./src/webserver');
-    ws.installServer(function() {
-        return winston.info('Trudesk Install Server Running...');
-    });
+//if (nconf.get('install') || !configExists && !process.env.HEROKU) {
+//    var ws = require('./src/webserver');
+//    ws.installServer(function() {
+//        return winston.info('Trudesk Install Server Running...');
+//    });
+//
+//    return;
+//}
 
-    return;
-}
+//if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
+//    start();
+//} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
+//    setup();
+//} else if (nconf.get('upgrade')) {
+//    //upgrade();
+//} else if (nconf.get('reset')) {
+//    reset();
+//}
 
-if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
-    start();
-} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
-    setup();
-} else if (nconf.get('upgrade')) {
-    //upgrade();
-} else if (nconf.get('reset')) {
-    reset();
-}
+start();
 
 function loadConfig() {
     nconf.file({
@@ -185,92 +187,103 @@ function dbCallback(err, db) {
         return start();
     }
 
-    ws.init(db, function(err) {
-        if (err) {
-            winston.err(err);
-            return;
-        }
+    var s = require('./src/models/setting');
+    s.getSettingByName('installed', function(err, installed) {
+        if (err) return start();
 
-        async.series([
-            function(next) {
-                require('./src/socketserver')(ws);
-                next();
-            },
-            function(next) {
-                //Start Mailer
-                var mailQueue = require('./src/mailer');
-                mailQueue.queue();
-                next();
-            },
-            function(next) {
-                //Start Check Mail
-                var mailerEnabled = nconf.get('mailer:enable');
-                if (mailerEnabled) {
-                    var mailCheck = require('./src/mailer/mailCheck');
-                    mailCheck.init();
+        if (!installed) {
+            ws.installServer(function() {
+                return winston.info('Trudesk Install Server Running...');
+            });
+        } else {
+            ws.init(db, function(err) {
+                if (err) {
+                    winston.err(err);
+                    return;
                 }
 
-                next();
-            },
-            function(next) {
-                //Start Task Runners
-                require('./src/taskrunner');
-                next();
-            },
-            function(next) {
-                //var pm2 = require('pm2');
-                //pm2.connect(true, function(err) {
-                //    if (err) throw err;
-                //    pm2.start({
-                //        script: path.join(__dirname, '/src/cache/index.js'),
-                //        name: 'trudesk:cache',
-                //        output: path.join(__dirname, '/logs/cache.log'),
-                //        error: path.join(__dirname, '/logs/cache.log'),
-                //        env: {
-                //            FORK: 1,
-                //            NODE_ENV: global.env
-                //        }
-                //    }, function(err) {
-                //        pm2.disconnect();
-                //        if (err) throw err;
-                //
-                //        process.on('message', function(message) {
-                //            if (message.data.cache) {
-                //                var nodeCache = require('./src/cache/node-cache');
-                //                global.cache = new nodeCache({
-                //                    data:  message.data.cache.data,
-                //                    checkperiod: 0
-                //                });
-                //            }
-                //        });
-                //
-                //        next();
-                //    });
-                //});
+                async.series([
+                    function(next) {
+                        require('./src/socketserver')(ws);
+                        next();
+                    },
+                    function(next) {
+                        //Start Mailer
+                        var mailQueue = require('./src/mailer');
+                        mailQueue.queue();
+                        next();
+                    },
+                    function(next) {
+                        //Start Check Mail
+                        var mailerEnabled = nconf.get('mailer:enable');
+                        if (mailerEnabled) {
+                            var mailCheck = require('./src/mailer/mailCheck');
+                            mailCheck.init();
+                        }
 
-                var fork = require('child_process').fork;
-                var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: {
-                    FORK: 1, NODE_ENV: global.env,
-                    MONGODB_HOSTNAME: process.env.MONGODB_HOSTNAME,
-                    MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME
-                } } );
+                        next();
+                    },
+                    function(next) {
+                        //Start Task Runners
+                        require('./src/taskrunner');
+                        next();
+                    },
+                    function(next) {
+                        //var pm2 = require('pm2');
+                        //pm2.connect(true, function(err) {
+                        //    if (err) throw err;
+                        //    pm2.start({
+                        //        script: path.join(__dirname, '/src/cache/index.js'),
+                        //        name: 'trudesk:cache',
+                        //        output: path.join(__dirname, '/logs/cache.log'),
+                        //        error: path.join(__dirname, '/logs/cache.log'),
+                        //        env: {
+                        //            FORK: 1,
+                        //            NODE_ENV: global.env
+                        //        }
+                        //    }, function(err) {
+                        //        pm2.disconnect();
+                        //        if (err) throw err;
+                        //
+                        //        process.on('message', function(message) {
+                        //            if (message.data.cache) {
+                        //                var nodeCache = require('./src/cache/node-cache');
+                        //                global.cache = new nodeCache({
+                        //                    data:  message.data.cache.data,
+                        //                    checkperiod: 0
+                        //                });
+                        //            }
+                        //        });
+                        //
+                        //        next();
+                        //    });
+                        //});
 
-                global.forks.push({name: 'cache', fork: n});
+                        var fork = require('child_process').fork;
+                        var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: {
+                            FORK: 1, NODE_ENV: global.env,
+                            MONGODB_HOSTNAME: process.env.MONGODB_HOSTNAME,
+                            MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME
+                        } } );
 
-                n.on('message', function(data) {
-                    if (data.cache) {
-                        var nodeCache = require('./src/cache/node-cache');
-                        global.cache = new nodeCache({
-                            data: data.cache.data,
-                            checkperiod: 0
+                        global.forks.push({name: 'cache', fork: n});
+
+                        n.on('message', function(data) {
+                            if (data.cache) {
+                                var nodeCache = require('./src/cache/node-cache');
+                                global.cache = new nodeCache({
+                                    data: data.cache.data,
+                                    checkperiod: 0
+                                });
+                            }
                         });
-                    }
-                });
 
-                next();
-            }
-        ], function() {
-            winston.info("TruDesk Ready");
-        });
+                        next();
+                    }
+                ], function() {
+                    winston.info("TruDesk Ready");
+                });
+            });
+        }
     });
 }

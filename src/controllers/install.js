@@ -192,29 +192,43 @@ installController.install = function(req, res) {
             });
         },
         function(next) {
-            //Write Configfile
-            var fs = require('fs');
-            var configFile = path.join(__dirname, '../../config.json');
+            var s = require('../models/setting');
+            var installed = new s({
+                name: 'installed',
+                value: true
+            });
 
-            var conf = {
-                installed: true
-                //mongo: {
-                //    host: host,
-                //    port: port,
-                //    username: username,
-                //    password: password,
-                //    database: database
-                //}
-            };
-
-            fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
+            s.save(function(err) {
                 if (err) {
-                    winston.error('FS Error: ' + err.message);
-                    return next('FS Error: ' + err.message);
+                    winston.error('DB Error: ' + err.message);
+                    return next('DB Error: ' + err.message);
                 }
 
                 return next(null);
             });
+            //Write Configfile
+            //var fs = require('fs');
+            //var configFile = path.join(__dirname, '../../config.json');
+            //
+            //var conf = {
+            //    installed: true
+            //    //mongo: {
+            //    //    host: host,
+            //    //    port: port,
+            //    //    username: username,
+            //    //    password: password,
+            //    //    database: database
+            //    //}
+            //};
+            //
+            //fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
+            //    if (err) {
+            //        winston.error('FS Error: ' + err.message);
+            //        return next('FS Error: ' + err.message);
+            //    }
+            //
+            //    return next(null);
+            //});
         }
     ], function(err) {
         if (err)
