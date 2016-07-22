@@ -20,7 +20,7 @@ var mongoose = require('mongoose'),
 var db = {};
 
 //var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + nconf.get('mongo:password') + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
-var CONNECTION_URI = 'mongodb://' + process.env.MONGODB_PORT_27017_TCP_ADDR + ':27017/trudesk_' + process.env.MONGODB_PORT_27017_TCP_ADDR;
+var CONNECTION_URI = 'mongodb://' + process.env.MONGODB_PORT_27017_TCP_ADDR + ':27017/trudesk_' + process.env.MONGODB_DATABASE_NAME;
 
 d.on('error', function(er) {
     winston.error('Oh no, something went wrong with DB! - ' + er.message);
