@@ -223,7 +223,7 @@ function dbCallback(err, db) {
                         var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: {
                             FORK: 1, NODE_ENV: global.env,
                             MONGODB_HOSTNAME: process.env.MONGODB_HOSTNAME,
-                            MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME
+                            MONGODB_PORT_27017_TCP_ADDR: process.env.MONGODB_PORT_27017_TCP_ADDR
                         } } );
 
                         global.forks.push({name: 'cache', fork: n});
