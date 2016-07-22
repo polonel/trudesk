@@ -1,0 +1,17 @@
+trudesk-___**CHANGE**___:
+  image: polonel/trudesk
+  links:
+    - mongo-___**CHANGE**___:mongodb
+  ports:
+    - "8118"
+  environment:
+    MONGODB_DATABASE_NAME: ___**CHANGE**___
+    VIRTUAL_HOST: ___**CHANGE**___
+  volumes:
+    - /data/___**CHANGE**___.trudesk:/usr/src/trudesk/public/uploads
+mongo-___**CHANGE**___:
+  image: mongo
+  command: mongod --storageEngine mmapv1
+  volumes:
+    - /data/mongo-___**CHANGE**___/db:/data/db
+    - /data/mongo-___**CHANGE**___/configdb:/data/configdb
