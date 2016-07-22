@@ -36,6 +36,7 @@ settingsController.get = function(req, res) {
     self.content = {};
     self.content.title = "Settings";
     self.content.nav = 'settings';
+    self.content.subnav = 'settings-general';
 
     self.content.data = {};
     self.content.data.user = req.user;
