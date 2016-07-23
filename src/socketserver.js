@@ -545,10 +545,16 @@ module.exports = function(ws) {
             var path = require('path');
             var ansi_up = require('ansi_up');
             var fileTailer = require('file-tail');
-            var ft = fileTailer.startTailing(path.join(__dirname, '../logs/output.log'));
-            ft.on('line', function(line) {
-                utils.sendToSelf(socket, 'logs:data', ansi_up.ansi_to_html(line));
-            })
+            var fs = require('fs');
+            var logFile = path.join(__dirname, '../logs/output.log');
+            if (fs.existsSync(logFile))
+                utils.sendToSelf(socket, 'logs:data', 'Invalid Log File...');
+            else {
+                var ft = fileTailer.startTailing(logFile);
+                ft.on('line', function(line) {
+                    utils.sendToSelf(socket, 'logs:data', ansi_up.ansi_to_html(line));
+                });
+            }
         });
 
         socket.on('setShowNotice', function(noticeId) {

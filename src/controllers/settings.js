@@ -111,7 +111,10 @@ settingsController.logs = function(req, res) {
         file = path.join(__dirname, '../../logs/output.log');
 
     fs.readFile(file, 'utf-8', function(err, data) {
-        if (err) return res.status(400).json({error: err});
+        if (err)  {
+            self.content.data.logFileContent = err;
+            return res.render('logs', self.content);
+        }
 
         self.content.data.logFileContent = data.toString().trim().replace(/\n/g, "<br />");
         self.content.data.logFileContent = ansi_up.ansi_to_html(self.content.data.logFileContent);
