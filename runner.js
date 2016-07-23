@@ -14,7 +14,8 @@
            name: 'trudesk',
            script: 'app.js',
            output: path.join(__dirname, '/logs/output.log'),
-           error: path.join(__dirname, '/logs/output.log')
+           error: path.join(__dirname, '/logs/output.log'),
+           mergeLogs: true
        }, function(err) {
            pm2.disconnect();
            if (err) throw err;

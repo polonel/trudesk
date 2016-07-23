@@ -30,7 +30,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         aPassConfirm:   data.cPassword,
                         aEmail:         data.email,
 
-                        saveGroups:    false
+                        saveGroups:     false
                     }
                 ).success(function(d) {
                         resetForm();
