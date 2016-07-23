@@ -541,6 +541,16 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('logs:fetch', function() {
+            var path = require('path');
+            var ansi_up = require('ansi_up');
+            var fileTailer = require('file-tail');
+            var ft = fileTailer.startTailing(path.join(__dirname, '../logs/output.log'));
+            ft.on('line', function(line) {
+                utils.sendToSelf(socket, 'logs:data', ansi_up.ansi_to_html(line));
+            })
+        });
+
         socket.on('setShowNotice', function(noticeId) {
             var noticeSchema = require('./models/notice');
             noticeSchema.getNotice(noticeId, function(err, notice) {

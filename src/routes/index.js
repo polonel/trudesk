@@ -99,6 +99,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+    router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
 
     //API
     router.get('/api', controllers.api.index);

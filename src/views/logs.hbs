@@ -1,0 +1,46 @@
+<div>
+    <div class="nopadding settings">
+        <div class="uk-width-1-1 page-title noshadow" style="padding-left: 25px !important; border-bottom: 1px solid #dadada;">
+            <p class="left">{{title}}</p>
+        </div>
+        <!--Content Here-->
+        <div class="page-wrapper full-height scrollable no-overflow-x">
+            <div id="page-content-inner">
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden1" style="min-height: 60px; height: auto;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Output Log</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Main output log. All Errors are logged.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <!--<div class="md-switch md-green" style="margin: 20px 0 0 0;">-->
+                                <!--<label>-->
+                                    <!--Enable-->
+                                    <!--<input id="mailerEnabled" name="mailerEnabled" type="checkbox" ng-model="mailerEnabled" ng-change="mailerEnabledChange()">-->
+                                    <!--<span class="lever"></span>-->
+                                <!--</label>-->
+                            <!--</div>-->
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="padding: 8px 5px">
+                            <pre id="serverlogs" style="font-family: monospace; background:#fff; height: 400px; color: #000; line-height: 8.25px;">
+                                {{{data.logFileContent}}}
+                            </pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['jquery', 'pages/logs'], function($, l) {
+            l.init();
+        });
+    </script>
+{{/contentFor}}

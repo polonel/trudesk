@@ -88,45 +88,35 @@ settingsController.get = function(req, res) {
     });
 };
 
-settingsController.create = function(req, res) {
+settingsController.logs = function(req, res) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'settings:logs')) {
         req.flash('message', 'Permission Denied.');
         return res.redirect('/');
     }
 
     var self = this;
     self.content = {};
-    self.content.title = "Notices - Create";
-    self.content.nav = 'notices';
+    self.content.title = "Server Logs";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-logs';
 
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
-    res.render('subviews/createNotice', self.content);
-};
+    var fs = require('fs'),
+        path = require('path'),
+        ansi_up = require('ansi_up'),
+        file = path.join(__dirname, '../../logs/output.log');
 
-settingsController.edit = function(req, res) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:edit')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/');
-    }
+    fs.readFile(file, 'utf-8', function(err, data) {
+        if (err) return res.status(400).json({error: err});
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Notices - Edit";
-    self.content.nav = 'notices';
+        self.content.data.logFileContent = data.toString().trim().replace(/\n/g, "<br />");
+        self.content.data.logFileContent = ansi_up.ansi_to_html(self.content.data.logFileContent);
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    noticeSchema.getNotice(req.params.id, function(err, notice) {
-        if (err) return handleError(res, err);
-        self.content.data.notice = notice;
-
-        res.render('subviews/editNotice', self.content);
+        return res.render('logs', self.content);
     });
 };
 
