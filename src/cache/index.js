@@ -259,7 +259,7 @@ truCache.refreshCache = function(callback) {
             winston.warn(err);
             return winston.error(err);
         }
-        console.log(db);
+
         truCache.init(function(err) {
             if (err) {
                 winston.error(err);
