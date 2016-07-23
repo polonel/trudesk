@@ -45,3 +45,4 @@ public/css/app.css.map
 *.diff
 private/
 .sass-cache/
+config.json
