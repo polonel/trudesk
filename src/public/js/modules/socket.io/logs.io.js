@@ -26,7 +26,7 @@ define('modules/socket.io/logs.io', [
         socket.on('logs:data', function(data) {
             var $sLogs = $('#serverlogs');
             if ($sLogs.length > 0) {
-                $sLogs.append('<br />' + data + '<br />');
+                $sLogs.append(data);
                 $sLogs.scrollTop(99999999999999 * 999999999999999);
                 helpers.scrollToBottom($sLogs);
             }

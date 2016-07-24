@@ -481,6 +481,10 @@ var helpers = {
         return str;
     },
 
+    trim: function(string) {
+        return string.trim();
+    },
+
     isNull: function(obj, options) {
         if((_.isUndefined(obj) || _.isNull(obj))) {
             return options.fn(this);

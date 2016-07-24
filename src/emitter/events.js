@@ -256,4 +256,8 @@ var notifications       = require('../notifications'); // Load Push Events
             //Blank
         });
     });
+
+    emitter.on('trudesk:profileImageUpdate', function(data) {
+        io.sockets.emit('trudesk:profileImageUpdate', data);
+    });
 })();

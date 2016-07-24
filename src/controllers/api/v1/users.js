@@ -731,6 +731,8 @@ api_users.uploadProfilePic = function(req, res) {
             user.save(function(err) {
                 if (err) return res.status(500).send(err.message);
 
+                emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
+
                 return res.json({success: true, user: StripUserFields(user)});
             });
         });

@@ -116,7 +116,7 @@ settingsController.logs = function(req, res) {
             return res.render('logs', self.content);
         }
 
-        self.content.data.logFileContent = data.toString().trim().replace(/\n/g, "<br />");
+        self.content.data.logFileContent = data.toString().trim();
         self.content.data.logFileContent = ansi_up.ansi_to_html(self.content.data.logFileContent);
 
         return res.render('logs', self.content);

@@ -20,6 +20,7 @@ var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
+var emitter         = require('../emitter');
 
 var accountsController = {};
 
@@ -466,6 +467,8 @@ accountsController.uploadImage = function(req, res, next) {
 
             user.save(function(err) {
                 if (err) return handleError(res, err);
+
+                emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
 
                 return res.status(200).send('/uploads/users/' + object.filename);
             });

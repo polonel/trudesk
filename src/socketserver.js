@@ -547,7 +547,7 @@ module.exports = function(ws) {
             var fileTailer = require('file-tail');
             var fs = require('fs');
             var logFile = path.join(__dirname, '../logs/output.log');
-            if (fs.existsSync(logFile))
+            if (!fs.existsSync(logFile))
                 utils.sendToSelf(socket, 'logs:data', 'Invalid Log File...');
             else {
                 var ft = fileTailer.startTailing(logFile);

@@ -34,6 +34,8 @@ pre {
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px; }
+  pre br {
+    display: none !important; }
   pre code {
     display: inline;
     font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
