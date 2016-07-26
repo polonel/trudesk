@@ -568,6 +568,28 @@ var helpers = {
         else
             return options.inverse(this);
 
+    },
+
+    statusName: function(status) {
+        var str = '';
+        switch (status) {
+            case 0:
+                str = 'New';
+                break;
+            case 1:
+                str = 'Open';
+                break;
+            case 2:
+                str = 'Pending';
+                break;
+            case 3:
+                str = 'Closed';
+                break;
+            default:
+                str = 'New';
+        }
+
+        return str;
     }
 };
 

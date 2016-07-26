@@ -63,17 +63,19 @@
             <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
         {{/canUser}}
         <hr>
-        <!--{{#canUser data.user "settings:edit"}}-->
+        {{#canUser data.user "settings:edit"}}
             <li {{#is nav 'settings'}} class="active" {{/is}}>
                 <a href="/settings"><i class="material-icons">settings</i>Settings</a>
                 <ul id="side-nav-sub-settings" class="side-nav-sub {{#is nav 'settings'}} subMenuOpen {{/is}}">
                     <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings"><i class="material-icons fa-sub-icon">tune</i>General</a></li>
                     <hr>
                     <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i>Tags</a></li>
-                    <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i>Logs</a></li>
+                    {{#canUser data.user "settings:logs"}}
+                        <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i>Logs</a></li>
+                    {{/canUser}}
                 </ul>
             </li>
-        <!--{{/canUser}}-->
+        {{/canUser}}
             <li {{#is nav 'about'}} class="active" {{/is}}><a href="/about"><i class="material-icons">help</i>About</a></li>
     </ul>
 </div>

@@ -1085,4 +1085,90 @@ api_tickets.getTags = function(req, res) {
     });
 };
 
+/**
+ * @api {put} /api/v1/tickets/tags/:id Update Tag
+ * @apiName updateTag
+ * @apiDescription Updates given ticket tag
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {boolean} tag Updated Tag
+ *
+ */
+api_tickets.updateTag = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
+        return res.status(400).json({success: false, error: 'Invalid Put Data'});
+
+    var tagSchema = require('../../../models/tag');
+    tagSchema.getTag(id, function(err, tag) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        tag.name = data.name;
+
+        tag.save(function(err, t) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            return res.json({success: true, tag: t});
+        });
+    });
+};
+
+/**
+ * @api {delete} /api/v1/tickets/tags/:id Delete Tag
+ * @apiName deleteTag
+ * @apiDescription Deletes the given ticket tag
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ *
+ */
+api_tickets.deleteTag = function(req, res) {
+    var id = req.params.id;
+    console.log(id);
+    if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({success: false, error: 'Invalid Tag Id'});
+
+    async.series([
+        function(next) {
+            var ticketModel = require('../../../models/ticket');
+            ticketModel.getAllTicketsByTag(id, function(err, tickets) {
+                if (err) return next(err);
+                async.each(tickets, function(ticket, cb) {
+                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id == id; });
+
+                    ticket.save(function(err) {
+                        return cb(err);
+                    });
+
+                }, function(err) {
+                    if (err) return next(err);
+
+                    return next(null);
+                });
+            });
+        },
+        function(next) {
+            var tagSchema = require('../../../models/tag');
+            tagSchema.findByIdAndRemove(id, function(err) {
+                return next(err);
+            });
+        }
+    ], function(err) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true});
+    });
+};
+
 module.exports = api_tickets;

@@ -694,7 +694,6 @@ api_users.uploadProfilePic = function(req, res) {
         var savePath = path.join(__dirname, '../../../../public/uploads/users');
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
-        console.log(filename);
         object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg');
         object.filename = 'aProfile_' + object.username + '.jpg';
         object.mimetype = mimetype;

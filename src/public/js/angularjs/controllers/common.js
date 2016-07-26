@@ -24,7 +24,9 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                     UI.$html.on('hide.uk.modal', function(event) {
                         var modal = $(event.target);
                         if (modal.length > 0) {
-                            modal.find('form')[0].reset();
+                            var form = modal.find('form')[0];
+                            if (!_.isUndefined(form))
+                                form.reset();
                             modal.find('option').prop('selected', false);
                             var $select = modal.find('form').find('select');
                             $select.each(function() {

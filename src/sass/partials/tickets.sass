@@ -124,7 +124,8 @@ div#accountsTable_wrapper
       margin-right: 10px
       font-size: 14px
 
-.ticket-assignee-wrap
+.ticket-assignee-wrap,
+.tag-info-wrap
   padding-left: 30px
   padding-top: 30px
   margin-bottom: 40px
@@ -216,12 +217,15 @@ div#accountsTable_wrapper
       background: lighten(#f3f5f9, 5%)
       +boxShadow(none)
 
-  select
-    background: inherit
+  select, select:focus
+    -webkit-appearance: none
+    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='#444' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>")
+    background-position: 100% 50%
+    background-repeat: no-repeat
     border: none
     border-bottom: 1px solid #CCC
     +borderRadius(0)
-    padding: 0 4px 0 0
+    padding: 0
 
   .input-box,
   .tag-list

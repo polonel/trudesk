@@ -57,7 +57,9 @@ var init = function(tickets, timespan, callback) {
                     t.push(tag.name);
                 });
 
-                cb();
+                async.setImmediate(function() {
+                    return cb();
+                });
             }, function() {
                 _.mixin({
                     'sortKeysBy': function (obj, comparator) {
@@ -82,14 +84,16 @@ var init = function(tickets, timespan, callback) {
                     return -value;
                 });
 
-                done();
+                async.setImmediate(function() {
+                    return done();
+                });
             });
         }
 
     ], function(err) {
         if (err) return callback(err);
 
-        callback(null, tags);
+        return callback(null, tags);
     });
 };
 
