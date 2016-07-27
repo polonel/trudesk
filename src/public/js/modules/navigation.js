@@ -110,6 +110,12 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         left += Number(leftExtraOffset);
         left = left + 'px';
 
+        var hasNotice = false;
+        var $noticeFrame = $('.wrapper').find('#notice-banner');
+        if ($noticeFrame.length > 0) {
+            hasNotice = $noticeFrame.hasClass('uk-hidden') == false;
+        }
+
         var topOffset = $(this).offset().top - $(window).scrollTop() - pageOffsetTop;
         var top = $(this).outerHeight() + topOffset;
         var topExtraOffset = $(drop).attr('data-top-offset');
@@ -117,6 +123,10 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
             topExtraOffset = 0;
         }
         top += Number(topExtraOffset);
+
+        if (hasNotice)
+            top += 30;
+
         top = top + 'px';
 
         var override = $(drop).attr('data-override');
