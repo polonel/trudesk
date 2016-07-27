@@ -454,6 +454,13 @@ ticketSchema.statics.getAll = function(callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getAllNoPopulate = function(callback) {
+    var self = this;
+    var q = self.model(COLLECTION).find({deleted: false}).sort({'status': 1});
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getAllByStatus = function(status, callback) {
     var self = this;
 

@@ -40,14 +40,14 @@ var init = function(tickets, callback) {
         function(done) {
             if (tickets) {
                 $tickets = tickets;
-                done();
+                return done();
             } else {
                 ticketSchema.getAll(function(err, tickets) {
                     if (err) return done(err);
 
                     $tickets = tickets;
 
-                    done();
+                    return done();
                 });
             }
         },
@@ -55,35 +55,35 @@ var init = function(tickets, callback) {
             buildMostRequester($tickets, function(result) {
                 obj.mostRequester = _.first(result);
 
-                done();
+                return done();
             });
         },
         function(done) {
             buildMostComments($tickets, function(result) {
                 obj.mostCommenter = _.first(result);
 
-                done();
+                return done();
             });
         },
         function(done) {
             buildMostAssignee($tickets, function(result) {
                 obj.mostAssignee = _.first(result);
 
-                done();
+                return done();
             });
         },
         function(done) {
             buildMostActiveTicket($tickets, function(result) {
                 obj.mostActiveTicket = _.first(result);
 
-                done();
+                return done();
             });
         }
 
     ], function(err) {
         if (err) return callback(err);
 
-        callback(null, obj);
+        return callback(null, obj);
     });
 };
 
@@ -107,7 +107,7 @@ function buildMostRequester(ticketArray, callback) {
         return { name: k, value: v};
     });
 
-    callback(r);
+    return callback(r);
 }
 
 function buildMostComments(ticketArray, callback) {
@@ -132,7 +132,7 @@ function buildMostComments(ticketArray, callback) {
         return { name: k, value: v};
     });
 
-    callback(c);
+    return callback(c);
 }
 
 function buildMostAssignee(ticketArray, callback) {
@@ -159,7 +159,7 @@ function buildMostAssignee(ticketArray, callback) {
         return { name: k, value: v};
     });
 
-    callback(a);
+    return callback(a);
 }
 
 function buildMostActiveTicket(ticketArray, callback) {
@@ -169,7 +169,7 @@ function buildMostActiveTicket(ticketArray, callback) {
 
     tickets = _.sortBy(tickets, 'cSize').reverse();
 
-    callback(tickets);
+    return callback(tickets);
 }
 
 module.exports = init;

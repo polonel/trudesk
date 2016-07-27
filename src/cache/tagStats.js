@@ -33,15 +33,22 @@ var init = function(tickets, timespan, callback) {
     async.series([
         function(done) {
             if (tickets) {
-                $tickets = tickets;
-                done();
-            } else {
-                ticketSchema.getAll(function(err, tickets) {
+                ticketSchema.populate(tickets, {path: 'tags'}, function(err, _tickets) {
                     if (err) return done(err);
 
-                    $tickets = tickets;
+                    $tickets = _tickets;
+                    return done();
+                });
+            } else {
+                ticketSchema.getAllNoPopulate(function(err, tickets) {
+                    if (err) return done(err);
+                    ticketSchema.populate(tickets, {path: 'tags'}, function(err, _tickets) {
+                        if (err) return done(err);
 
-                    done();
+                        $tickets = _tickets;
+
+                        return done();
+                    });
                 });
             }
         },
