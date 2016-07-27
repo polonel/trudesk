@@ -97,7 +97,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div ng-controller="commonCtrl">
+                    <div ng-controller="commonCtrl" ng-init="setDefaultCreateTicketValues();">
                         {{> noticeAlertWindow}}
 
                         {{> topbar/notifications }}

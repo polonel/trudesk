@@ -17,6 +17,38 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
         .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
 
             //NG Init function
+            $scope.setDefaultCreateTicketValues = function() {
+              $timeout(function() {
+                  UI.$html.on('show.uk.modal', function(event) {
+                      var modal = $(event.target);
+                      if (modal.length > 0) {
+                          var $group = modal.find('select#group');
+                          var $group_selectize = $group[0].selectize;
+                          var options = $group_selectize.options;
+                          var first = _.chain(options).map(function(v, k) {
+                              if (v.$order != undefined && v.$order === 1) return k;
+                          }).first().value();
+                          if (first)
+                            $group_selectize.addItem(first, true);
+
+                          $group_selectize.refreshItems();
+
+                          var $type = modal.find('select#type');
+                          var $type_selectize = $type[0].selectize;
+                          options = $type_selectize.options;
+                          first = _.chain(options).map(function(v, k) {
+                              if (v.$order != undefined && v.$order === 1) return k;
+                          }).first().value();
+
+                          if (first)
+                            $type_selectize.addItem(first, true);
+
+                          $type_selectize.refreshItems();
+                      }
+                  });
+              }, 0, false);
+            };
+
             $scope.loadNoticeAlertWindow = function() {
                 //Load the function In the next Tick...
                 $timeout(function() {
