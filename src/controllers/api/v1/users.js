@@ -373,14 +373,19 @@ api_users.updatePreferences = function(req, res) {
 api_users.deleteUser = function(req, res) {
     var username = req.params.username;
 
-    if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
+    if(_.isUndefined(username) || _.isNull(username)) return res.status(400).json({error: 'Invalid Request'});
 
     async.waterfall([
         function(cb) {
             userSchema.getUserByUsername(username, function(err, user) {
                 if (err) return cb(err);
 
-                cb(null, user);
+                if (_.isNull(user)) {
+                    console.log(username + ' was null');
+                    return cb({message: 'Invalid User'});
+                }
+
+                return cb(null, user);
             })
         },
         function(user, cb) {
@@ -388,7 +393,7 @@ api_users.deleteUser = function(req, res) {
             ticketSchema.getTicketsByRequester(user._id, function(err, tickets) {
                 if (err) return cb(err);
 
-                var hasTickets = tickets.length > 0;
+                var hasTickets = _.size(tickets) > 0;
                 return cb(null, hasTickets, user);
             });
         },
@@ -694,7 +699,6 @@ api_users.uploadProfilePic = function(req, res) {
         var savePath = path.join(__dirname, '../../../../public/uploads/users');
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
-        console.log(filename);
         object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg');
         object.filename = 'aProfile_' + object.username + '.jpg';
         object.mimetype = mimetype;
@@ -730,6 +734,8 @@ api_users.uploadProfilePic = function(req, res) {
 
             user.save(function(err) {
                 if (err) return res.status(500).send(err.message);
+
+                emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
 
                 return res.json({success: true, user: StripUserFields(user)});
             });

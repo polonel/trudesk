@@ -15,9 +15,11 @@
 var async           = require('async');
 var _               = require('underscore');
 var _s              = require('underscore.string');
+var winston         = require('winston');
 var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
-var settingSchema    = require('../models/setting');
+var settingSchema   = require('../models/setting');
+var tagSchema       = require('../models/tag');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
 
@@ -26,11 +28,7 @@ var settingsController = {};
 settingsController.content = {};
 
 settingsController.get = function(req, res) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'settings:view')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/');
-    }
+    if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
     var self = this;
     self.content = {};
@@ -89,11 +87,7 @@ settingsController.get = function(req, res) {
 };
 
 settingsController.logs = function(req, res) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'settings:logs')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/');
-    }
+    if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
 
     var self = this;
     self.content = {};
@@ -111,14 +105,123 @@ settingsController.logs = function(req, res) {
         file = path.join(__dirname, '../../logs/output.log');
 
     fs.readFile(file, 'utf-8', function(err, data) {
-        if (err) return res.status(400).json({error: err});
+        if (err)  {
+            self.content.data.logFileContent = err;
+            return res.render('logs', self.content);
+        }
 
-        self.content.data.logFileContent = data.toString().trim().replace(/\n/g, "<br />");
+        self.content.data.logFileContent = data.toString().trim();
         self.content.data.logFileContent = ansi_up.ansi_to_html(self.content.data.logFileContent);
 
         return res.render('logs', self.content);
     });
 };
+
+settingsController.tags = function(req, res) {
+    if (!checkPerms(req, 'settings:tags'))  return res.redirect('/settings');
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Ticket Tags";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-tags';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    var resultTags = [];
+    async.waterfall([
+        function(next) {
+            tagSchema.getTags(function(err, tags) {
+                if (err) return handleError(res, err);
+
+                return next(null, tags);
+            });
+        },
+        function(tags, next) {
+            var ts = require('../models/ticket');
+            async.each(tags, function(tag, cb) {
+                ts.getTagCount(tag._id, function(err, count) {
+                    if (err) return cb(err);
+                    //tag count for id
+
+                    resultTags.push({tag: tag, count: count});
+
+                    cb();
+                });
+            }, function(err) {
+               return next(err);
+            });
+        }
+    ], function(err) {
+        self.content.data.tags = _.sortBy(resultTags, function(o){ return o.tag.name; });
+        return res.render('tags', self.content)
+    });
+};
+
+settingsController.editTag = function(req, res) {
+    if (!checkPerms(req, 'settings:tags'))  return res.redirect('/settings');
+
+    var tagId = req.params.id;
+    if (_.isUndefined(tagId)) return res.redirect('/settings/tags');
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Edit Tag";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-tags';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    async.parallel([
+        function(cb) {
+            tagSchema.getTag(tagId, function(err, tag) {
+                if (err) return cb(err);
+
+                if (!tag) {
+                    winston.debug('Invalid Tag - ' + tag);
+                    return res.redirect('/settings/tags');
+                }
+
+                self.content.data.tag = tag;
+
+                return cb();
+            });
+        },
+        function(cb) {
+            var ticketSchema = require('../models/ticket');
+            var groupSchema = require('../models/group');
+            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
+                if (err) return cb(err);
+
+                ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
+                    if (err) return cb(err);
+
+                    self.content.data.tickets = tickets;
+
+                    return cb();
+                });
+            });
+        }
+    ], function(err) {
+        if (err) return handleError(res, err);
+        return res.render('subviews/editTag', self.content);
+    });
+};
+
+function checkPerms(req, role) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, role)) {
+        req.flash('message', 'Permission Denied.');
+
+        return false;
+    }
+
+    return true;
+}
 
 function handleError(res, err) {
     if (err) {

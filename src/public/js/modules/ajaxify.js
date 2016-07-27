@@ -32,12 +32,13 @@ define('modules/ajaxify', [
     'pages/createNotice',
     'pages/settings',
     'pages/logs',
+    'pages/tags',
     'modules/socket',
     'history'
 
 ], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
             ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage,
-            noticesPage, createNoticePage, settingsPage, logsPage, socketClient) {
+            noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -45,20 +46,6 @@ define('modules/ajaxify', [
         $ele.ready(function() {
             angular.bootstrap($ele, ['trudesk']);
         });
-
-        //$(document).foundation({
-        //    abide: {
-        //        patterns: {
-        //            is5Long: /.{5,}/
-        //        }
-        //    },
-        //    reveal: {
-        //        animation: 'fade',
-        //        animation_speed: 280,
-        //        close_on_background_click: true,
-        //        close_on_esc: true
-        //    }
-        //});
 
         socketClient.ui.init(socketClient.socket);
         helpers.init();
@@ -95,6 +82,7 @@ define('modules/ajaxify', [
 
         //Settings
         settingsPage.init();
+        tagsPage.init();
         logsPage.init();
 
         //Load UI Animations Load

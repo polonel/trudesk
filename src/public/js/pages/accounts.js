@@ -196,8 +196,8 @@ define('pages/accounts', [
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';
             html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="editAccount($event)" class="no-ajaxy">Edit</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="delete-account-action ' + (user.deleted ? "hide" : "") + '">Delete</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="enable-account-action ' + (!user.deleted ? "hide" : "") + '">Enable</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action ' + (user.deleted ? "hide" : "") + '">Delete</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="no-ajaxy enable-account-action ' + (!user.deleted ? "hide" : "") + '">Enable</a></li>';
             html    +=                      '</ul>';
             html    +=                  '</div>';
             html    +=              '</div>';

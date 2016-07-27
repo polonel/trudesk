@@ -306,44 +306,6 @@ ticketsController.processor = function(req, res) {
 };
 
 /**
- * Get Create Ticket View
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {View} Tickets View
- */
-ticketsController.create = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Tickets - Create";
-    self.content.nav = 'tickets';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    async.parallel({
-        groups: function (callback) {
-            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, objs) {
-                callback(err, objs);
-            });
-        },
-        types: function(callback) {
-            typeSchema.getTypes(function(err, objs) {
-                callback(err, objs);
-            });
-        }
-    }, function(err, results) {
-        if (err) {
-            res.render('error', {error: err, message: err.message});
-        } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = _.sortBy(results.groups, 'name');
-            if (!_.isUndefined(results.types)) self.content.data.ticketTypes = results.types;
-
-            res.render('subviews/createTicket', self.content);
-        }
-    });
-};
-
-/**
  * Print Ticket View
  * @param {object} req Express Request
  * @param {object} res Express Response

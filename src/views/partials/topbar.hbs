@@ -70,9 +70,9 @@
                                 <div data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
                                     <a href="#" class="profile-pic no-ajaxy uk-vertical-align-middle">
                                         {{#isNull data.user.image}}
-                                            <img src="/uploads/users/defaultProfile.jpg" alt="Profile"/>
+                                            <img id="profileImage" data-userid="{{data.user._id}}" src="/uploads/users/defaultProfile.jpg" alt="Profile"/>
                                         {{else}}
-                                            <img src="/uploads/users/{{data.user.image}}" alt="Profile"/>
+                                            <img id="profileImage" data-userid="{{data.user._id}}" src="/uploads/users/{{data.user.image}}" alt="Profile"/>
                                         {{/isNull}}
                                     </a>
                                     <div class="nopadding-left nopadding-right uk-dropdown uk-dropdown-small uk-margin-top-remove">
@@ -97,7 +97,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div ng-controller="commonCtrl">
+                    <div ng-controller="commonCtrl" ng-init="setDefaultCreateTicketValues();">
                         {{> noticeAlertWindow}}
 
                         {{> topbar/notifications }}

@@ -454,6 +454,13 @@ ticketSchema.statics.getAll = function(callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getAllNoPopulate = function(callback) {
+    var self = this;
+    var q = self.model(COLLECTION).find({deleted: false}).sort({'status': 1});
+
+    return q.exec(callback);
+};
+
 ticketSchema.statics.getAllByStatus = function(status, callback) {
     var self = this;
 
@@ -889,6 +896,46 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
         //.populate('type')
         //.populate('tags')
         //.deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
+/**
+ * Gets tickets via tag id
+ * @memberof Ticket
+ * @static
+ * @method getTicketsByTag
+ *
+ * @param {Array} grpId Group Array of User
+ * @param {string} tagId Tag Id
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsByTag = function(grpId, tagId, callback) {
+    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetTicketByTag()", null);
+    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTicketByTag()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({group: {$in: grpId}, tags: tagId, deleted: false});
+
+    return q.exec(callback);
+};
+
+/**
+ * Gets all tickets via tag id
+ * @memberof Ticket
+ * @static
+ * @method getAllTicketsByTag
+ *
+ * @param {string} tagId Tag Id
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getAllTicketsByTag = function(tagId, callback) {
+    if (_.isUndefined(tagId)) return callback("Invalid Group Ids - TicketSchema.GetAllTicketsByTag()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({tags: tagId, deleted: false});
 
     return q.exec(callback);
 };

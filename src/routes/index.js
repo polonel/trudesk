@@ -38,7 +38,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
-    router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
@@ -100,6 +99,8 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
+    router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
+    router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
 
     //API
     router.get('/api', controllers.api.index);
@@ -114,6 +115,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
+    router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
+    router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
     //Removed 4.12.2016 -- v0.1.7

@@ -51,7 +51,7 @@ truCache.init = function(callback) {
         winston.debug('Cache Loaded');
         restartRefreshClock();
 
-        callback();
+        return callback();
     });
 };
 
@@ -71,10 +71,10 @@ truCache.refreshCache = function(callback) {
     async.waterfall([
         function(done) {
             var ticketSchema = require('../models/ticket');
-            ticketSchema.getAll(function(err, tickets) {
+            ticketSchema.getAllNoPopulate(function(err, tickets) {
                 if (err) return done(err);
 
-                done(null, tickets);
+                return done(null, tickets);
             });
         },
 
@@ -116,7 +116,7 @@ truCache.refreshCache = function(callback) {
                         cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, 3600);
                         cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, 3600);
 
-                        done();
+                        return done();
                     });
                 },
                 function(done) {
@@ -128,7 +128,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:30:usage', stats, 3600);
 
-                                c();
+                                return  c();
                             });
                         },
                         function(c) {
@@ -137,7 +137,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:60:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -146,7 +146,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:90:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -155,7 +155,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:180:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -164,7 +164,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:365:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -173,11 +173,11 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:0:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         }
                     ], function(err) {
-                       done(err);
+                        return done(err);
                     });
                 },
                 function(done) {
@@ -190,11 +190,11 @@ truCache.refreshCache = function(callback) {
                         cache.set('quickstats:mostAssignee', stats.mostAssignee, 3600);
                         cache.set('quickstats:mostActiveTicket', stats.mostActiveTicket, 3600);
 
-                        done();
+                        return done();
                     });
                 }
             ], function(err) {
-                cb(err);
+                return cb(err);
             });
         }
 

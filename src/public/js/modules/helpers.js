@@ -264,7 +264,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         // selectize plugins
         if(typeof $.fn.selectize != 'undefined') {
             Selectize.define('dropdown_after', function (options) {
-                this.positionDropdown = (function () {
+                var self = this;
+                self.positionDropdown = (function () {
                     var $control = this.$control,
                         position = $control.position(),
                         position_left = position.left,
@@ -571,8 +572,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
             self.hideDropDownScrolls();
 
             self.resizeDataTables('.ticketList');
-            self.resizeDataTables('.groupsList');
-            self.resizeDataTables('.accountList');
+            self.resizeDataTables('.tagsList');
 
             self.resizeScroller();
         }, 100);
@@ -637,8 +637,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
             self.hideDropDownScrolls();
 
             self.resizeDataTables('.ticketList');
-            self.resizeDataTables('.groupsList');
-            self.resizeDataTables('.accountList');
+            self.resizeDataTables('.tagsList');
 
             self.resizeScroller();
         }, 100);

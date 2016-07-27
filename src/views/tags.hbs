@@ -1,0 +1,57 @@
+<div class="small-12 large-10 columns nopadding tagsContent" ng-controller="settingsCtrl">
+    <div class="page-title noshadow" style="padding-left: 25px;">
+        <p class="left">{{title}}</p>
+        <div class="uk-float-right">
+            <div class="pagination uk-float-left">
+                <ul class="button-group uk-float-left">
+                    <li class="pagination relative">
+                        <div class="right" data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
+                            <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
+                            <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
+                                <ul class="uk-nav">
+                                    <li>
+                                        <a href="#" role="button" ng-click="createTag($event)">Create</a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="full-height page-content no-border-top" style="position: relative;">
+        <div class="tagsList full-height">
+            <table id="tagsTable" class="pDataTable stripe">
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Name</th>
+                    <th>Ticket Count</th>
+                </tr>
+                </thead>
+                <tbody>
+                {{#each data.tags}}
+                    <tr ng-click="editTag($event)" data-tagOId="{{tag._id}}">
+                        <td>
+                            <input id="c_{{tag._id}}" type="checkbox" class="poloCheckbox"/>
+                            <label for="c_{{tag._id}}"></label>
+                        </td>
+                        <td>{{tag.name}}</td>
+                        <td style="text-align: center;">{{count}}</td>
+                    </tr>
+                {{/each}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+    <script type="text/javascript">
+        require(['pages/tags'], function(t) {
+            t.init();
+        });
+    </script>
+{{/contentFor}}

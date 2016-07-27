@@ -37,8 +37,7 @@ var init = function(tickets, callback) {
         e60 = today.clone().subtract(60, 'd'),
         e90 = today.clone().subtract(90, 'd'),
         e180 = today.clone().subtract(180, 'd'),
-        e365 = today.clone().subtract(365, 'd'),
-        e36500 = today.clone().subtract(36500, 'd');
+        e365 = today.clone().subtract(365, 'd');
 
     async.series({
         allTickets: function(c) {
@@ -47,7 +46,7 @@ var init = function(tickets, callback) {
 
                 c();
             } else {
-                ticketSchema.getAll(function(err, tickets) {
+                ticketSchema.getAllNoPopulate(function(err, tickets) {
                     if (err) return c(err);
 
                     $tickets = tickets;
@@ -235,7 +234,7 @@ function buildAvgResponse(ticketArray, callback) {
 
         //Next Event Loop - async@2.0
         async.setImmediate(function() {
-            callback();
+            return callback();
         });
 
     }, function (err) {
@@ -247,7 +246,7 @@ function buildAvgResponse(ticketArray, callback) {
         var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
         cbObj.avgResponse = Math.floor(tvt);
 
-        callback(cbObj);
+        return callback(cbObj);
     });
 }
 

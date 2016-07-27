@@ -53,23 +53,26 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 });
             };
 
+            var running = false;
             $scope.deleteAccount = function($event) {
+                if (running)
+                    return true;
+
                 $event.preventDefault();
                 var self = $($event.target);
                 var username = self.attr('data-username');
                 if (_.isUndefined(username))
                     return true;
 
+                running = true;
                 $http.delete(
                     '/api/v1/users/' + username
                 ).success(function(data) {
                     if (!data.success) {
                         helpers.UI.showSnackbar(data.error, true);
-                        return;
+                        running = false;
+                        return true;
                     }
-
-                    //self.parents('[data-uk-filter]').remove();
-                    //UIkit.$html.trigger('changed.uk.dom');
 
                     if (data.disabled) {
                         self.parents('.tru-card-head').addClass('tru-card-head-deleted');
@@ -84,9 +87,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         helpers.UI.showSnackbar('Account ' + username + ' Successfully Deleted', false);
                     }
 
+                    running = false;
                 }).error(function(err) {
                     console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
+
+                    running = false;
                 });
             };
 

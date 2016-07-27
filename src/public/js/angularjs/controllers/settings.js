@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'history'], function(angular, _, $, helpers, ui) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
     return angular.module('trudesk.controllers.settings', [])
         .controller('settingsCtrl', function($scope, $http) {
             $scope.init = function() {
@@ -168,6 +168,79 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'his
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.editTag = function($event) {
+                if (_.isNull($event.target) || _.isUndefined($event.target) ||
+                    $event.target.tagName.toLowerCase() === 'label' ||
+                    $event.target.tagName.toLowerCase() === 'input')
+                    return true;
+
+                //currentTarget = ng-click() bound to. "<tr>"
+                var id = $event.currentTarget.dataset.tagoid;
+                if (!id) return true;
+
+                History.pushState(null, null, '/settings/tags/' + id);
+            };
+
+            $scope.updateTag = function() {
+                var $tagId = $('#__editTag_TagId');
+                if ($tagId.length < 1) {
+                    //Show invalid Tag Snackbar
+                    helpers.UI.showSnackbar('Unable to get tag ID', true);
+                    return true;
+                }
+
+                var id = $tagId.text();
+                var tagName = $('#editTag_Name').val();
+
+                $http.put('/api/v1/tickets/tags/' + id, {
+                    name: tagName
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+                    helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.showDeleteConfirm = function() {
+                var tagName = $('#__editTag_TagName').text();
+                UIkit.modal.confirm("Really delete tag " + tagName + '<br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
+                    return $scope.deleteTag();
+                }, {
+                    labels: {'Ok': 'Yes', 'Cancel': 'No'}
+                });
+            };
+
+            $scope.deleteTag = function() {
+                var $tagId = $('#__editTag_TagId');
+                if ($tagId.length < 1) {
+                    helpers.UI.showSnackbar('Unable to get tag ID', true);
+                    return true;
+                }
+
+                var id = $tagId.text();
+                var tagName = $('#__editTag_TagName').text();
+
+                $http({
+                    method: 'DELETE',
+                    url: '/api/v1/tickets/tags/' + id
+                }).then(function successCallback(response) {
+                    if (response.data.success) {
+                        helpers.UI.showSnackbar('Successfully removed tag: ' + tagName, false);
+
+                        return History.pushState(null, null, '/settings/tags/');
+                    }
+                }, function errorCallback(response) {
+                    console.log('[trudesk:settings:deleteTag] Error - ' + response.data.error);
+                    helpers.UI.showSnackbar('Unable to remove Tag. Check console.', true);
+
                 });
             };
         });

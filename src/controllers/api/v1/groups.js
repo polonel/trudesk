@@ -245,7 +245,7 @@ api_groups.deleteGroup = function(req, res) {
                     return next('Error: Cannot delete a group with tickets.');
                 }
 
-                next();
+                return next();
             });
         },
         function(next) {
@@ -255,7 +255,7 @@ api_groups.deleteGroup = function(req, res) {
                 group.remove(function(err, success) {
                     if (err) return next('Error: ' + err.message);
 
-                    next(null, success);
+                    return next(null, success);
                 });
             });
         }
