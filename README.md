@@ -7,29 +7,29 @@
 
 [http://trudesk.io](http://trudesk.io/)
 
-TruDesk is an open source help desk solution stil in active development. 
+TruDesk is an open source help desk solution still in active development. 
 
 Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
-###Requirements
+### Requirements
 + Node.JS v6.3.0 or later
 + MongoDB 3.2 or later
 
-###Install & Run
+### Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
 2. Install dependencies: ```npm install```
 3. Run the install script: ```./trudesk setup```
 4. Start the server: ```npm start```
 5. Navigate to: ```http://localhost:8118```
 
-###Documentation
+### Documentation
 To build the documentation run ```grunt builddocs```.
 
 The documentation after build is located in:
 - ```{repo folder}/docs``` 
 - ```{repo folder}/apidocs```
 
-###Help
+### Help
 if you like what you see here, and want to help support the work being done, you could:
 
 + Contribute code, issues and pull requests
@@ -38,7 +38,7 @@ if you like what you see here, and want to help support the work being done, you
 
 
 
-###License
+### License
 
     Copyright 2014-2016 Chris Brame
     
