@@ -4,6 +4,9 @@ trudesk-___**CHANGE**___:
     - mongo-___**CHANGE**___:mongodb
   ports:
     - "8118"
+  dns:
+    - 8.8.8.8
+    - 8.8.4.4
   environment:
     MONGODB_DATABASE_NAME: ___**CHANGE**___
     VIRTUAL_HOST: ___**CHANGE**___
