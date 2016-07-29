@@ -1,4 +1,3 @@
-require('blanket');
 var expect = require('chai').expect;
 var should = require('chai').should();
 var winston = require('winston');
