@@ -34,6 +34,8 @@ pre {
   border-radius: 3px;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px; }
+  pre br {
+    display: none !important; }
   pre code {
     display: inline;
     font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace;
@@ -163,6 +165,9 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select {
 
 .padding-left-right-15 {
   padding-left: 15px !important;
+  padding-right: 15px !important; }
+
+.padding-right-15 {
   padding-right: 15px !important; }
 
 .padtop20 {
@@ -1731,18 +1736,21 @@ div#accountsTable_wrapper {
     margin-right: 10px;
     font-size: 14px; }
 
-.ticket-assignee-wrap {
+.ticket-assignee-wrap,
+.tag-info-wrap {
   padding-left: 30px;
   padding-top: 30px;
   margin-bottom: 40px; }
-  .ticket-assignee-wrap.tru-card {
+  .ticket-assignee-wrap.tru-card,
+  .tag-info-wrap.tru-card {
     background: white;
     padding: 5px 15px 15px;
     border-radius: 3px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
     margin: 30px; }
-  .ticket-assignee-wrap h4 {
+  .ticket-assignee-wrap h4,
+  .tag-info-wrap h4 {
     font-family: "Roboto", "Open Sans", sans-serif;
     font-size: 14px;
     color: #8e98a2;
@@ -1828,17 +1836,18 @@ div#accountsTable_wrapper {
       box-shadow: none;
       -webkit-box-shadow: none;
       -moz-box-shadow: none; }
-  .ticket-details select {
-    background: inherit;
+  .ticket-details select, .ticket-details select:focus {
+    -webkit-appearance: none;
+    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='#444' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>");
+    background-position: 100% 50%;
+    background-repeat: no-repeat;
     border: none;
     border-bottom: 1px solid #CCC;
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0;
-    padding: 0 4px 0 0; }
-  .ticket-details .input-box {
-    padding-top: 3px;
-    padding-bottom: 3px; }
+    padding: 0; }
+  .ticket-details .input-box,
   .ticket-details .tag-list {
     display: block;
     padding: 0;
@@ -1852,6 +1861,7 @@ div#accountsTable_wrapper {
     border-radius: 0;
     -webkit-border-radius: 0;
     -moz-border-radius: 0; }
+    .ticket-details .input-box .item,
     .ticket-details .tag-list .item {
       display: inline-block;
       float: left;
@@ -1865,10 +1875,14 @@ div#accountsTable_wrapper {
       border-radius: 3px;
       -webkit-border-radius: 3px;
       -moz-border-radius: 3px; }
+      .ticket-details .input-box .item.orange,
       .ticket-details .tag-list .item.orange {
         background: #db5334; }
+      .ticket-details .input-box .item:last-of-type,
       .ticket-details .tag-list .item:last-of-type {
         margin-bottom: 2px; }
+  .ticket-details .input-box {
+    margin-bottom: 15px; }
 
 .history-items {
   height: 185px;
@@ -4712,6 +4726,12 @@ div.dataTables_wrapper {
 .md-switch.md-blue label input[type=checkbox]:checked + .lever:after {
   background-color: #2196f3; }
 
+.md-switch.md-green label input[type=checkbox]:checked + .lever {
+  background-color: #55d97e; }
+
+.md-switch.md-green label input[type=checkbox]:checked + .lever:after {
+  background-color: #29b955; }
+
 .md-switch label .lever {
   content: "";
   display: inline-block;
@@ -5568,15 +5588,15 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   .md-fab.md-fab-accent {
     background: #E74C3C; }
   .md-fab.md-fab-success {
-    background: #7cb342; }
+    background: #29b955; }
     .md-fab.md-fab-success > i {
       color: #fff; }
   .md-fab.md-fab-danger {
-    background: #e53935; }
+    background: #d32f2f; }
     .md-fab.md-fab-danger > i {
       color: #fff; }
   .md-fab.md-fab-primary {
-    background: #2196f3; }
+    background: #2196F3; }
     .md-fab.md-fab-primary > i {
       color: #fff; }
   .md-fab.md-fab-warning {
@@ -5887,7 +5907,7 @@ a.waves-effect .waves-ripple {
   background: rgba(0, 0, 0, 0.5);
   -webkit-transition: opacity 250ms ease-out;
   transition: opacity 250ms ease-out;
-  overflow: auto !important; }
+  overflow: hidden !important; }
   .uk-modal.uk-modal-no-backdrop {
     background: transparent; }
 

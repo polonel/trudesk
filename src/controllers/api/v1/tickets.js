@@ -73,8 +73,8 @@ var api_tickets = {};
  *
  */
 api_tickets.get = function(req, res) {
-    var limit = req.query.limit;
-    var page = req.query.page;
+    var limit = parseInt(req.query.limit);
+    var page = parseInt(req.query.page);
     var assignedSelf = req.query.assignedself;
     var status = req.query.status;
     var user = req.user;
@@ -326,30 +326,66 @@ api_tickets.update = function(req, res) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
             //Check the user has permission to update ticket.
-            if (!_.isUndefined(reqTicket.status))
-                ticket.status = reqTicket.status;
 
-            if (!_.isUndefined(reqTicket.group))
-                ticket.group = reqTicket.group;
+            async.parallel([
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.status)) {
+                        ticket.setStatus(req.user, reqTicket.status, function (e, t) {
+                            ticket = t;
 
-            if (!_.isUndefined(reqTicket.closedDate))
-                ticket.closedDate = reqTicket.closedDate;
+                            cb();
+                        });
+                    } else {
+                        cb();
+                    }
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.group))
+                        ticket.group = reqTicket.group;
 
-            if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
-                ticket.tags = reqTicket.tags;
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.closedDate))
+                        ticket.closedDate = reqTicket.closedDate;
 
-            if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee))
-                ticket.assignee = reqTicket.assignee;
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
+                        ticket.tags = reqTicket.tags;
 
-            ticket.save(function(err, t) {
-                if (err) return res.send(err.message);
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
+                        ticket.assignee = reqTicket.assignee;
+                        ticket.populate('assignee', function(err, t) {
+                            var HistoryItem = {
+                                action: 'ticket:set:assignee',
+                                description: t.assignee.fullname + ' was set as assignee',
+                                owner: req.user._id
+                            };
 
-                emitter.emit('ticket:updated', t);
+                            ticket.history.push(HistoryItem);
 
-                return res.json({
-                    success: true,
-                    error: null,
-                    ticket: t
+                            cb();
+                        });
+                    } else {
+                        cb();
+                    }
+                }
+            ], function(err) {
+                ticket.save(function(err, t) {
+                    if (err) return res.send(err.message);
+
+                    emitter.emit('ticket:updated', t);
+
+                    return res.json({
+                        success: true,
+                        error: null,
+                        ticket: t
+                    });
                 });
             });
         });
@@ -588,7 +624,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
         function(callback) {
             ticketModel.getTickets([groupId], function(err, tickets) {
                 if (err) return callback(err);
-
+                if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
 
                 async.each(tickets, function(ticket, cb) {
@@ -596,7 +632,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         t.push(tag.name);
                     });
 
-                    cb();
+                    return cb();
                 }, function() {
                     _.mixin({
                         'sortKeysBy': function (obj, comparator) {
@@ -621,11 +657,12 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         return -value;
                     });
 
-                    callback(null, tickets);
+                    return callback(null, tickets);
                 });
             });
         },
         function(tickets, callback) {
+            if (_.isEmpty(tickets)) return callback('Group has no tickets to report.');
             var today = moment().hour(23).minute(59).second(59);
             var r = {};
             tickets = _.sortBy(tickets, 'date');
@@ -644,7 +681,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                 buildAvgResponse(tickets, function(obj) {
                     r.avgResponse = obj.avgResponse;
 
-                    callback(null, r);
+                    return callback(null, r);
                 });
             });
         }
@@ -683,7 +720,9 @@ function buildGraphData(arr, days, callback) {
         obj.value = $dateCount;
         graphData.push(obj);
 
-        next();
+        async.setImmediate(function() {
+            next();
+        });
 
     }, function() {
         callback(graphData);
@@ -702,8 +741,9 @@ function buildAvgResponse(ticketArray, callback) {
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
 
-        callback();
-
+        async.setImmediate(function() {
+           return callback();
+        });
     }, function (err) {
         if (err) return c(err);
 
@@ -713,7 +753,9 @@ function buildAvgResponse(ticketArray, callback) {
         var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
         cbObj.avgResponse = Math.floor(tvt);
 
-        callback(cbObj);
+        async.setImmediate(function() {
+            return callback(cbObj);
+        });
     });
 }
 
@@ -1040,6 +1082,92 @@ api_tickets.getTags = function(req, res) {
         });
 
         res.json({success: true, tags: tags});
+    });
+};
+
+/**
+ * @api {put} /api/v1/tickets/tags/:id Update Tag
+ * @apiName updateTag
+ * @apiDescription Updates given ticket tag
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {boolean} tag Updated Tag
+ *
+ */
+api_tickets.updateTag = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
+        return res.status(400).json({success: false, error: 'Invalid Put Data'});
+
+    var tagSchema = require('../../../models/tag');
+    tagSchema.getTag(id, function(err, tag) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        tag.name = data.name;
+
+        tag.save(function(err, t) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            return res.json({success: true, tag: t});
+        });
+    });
+};
+
+/**
+ * @api {delete} /api/v1/tickets/tags/:id Delete Tag
+ * @apiName deleteTag
+ * @apiDescription Deletes the given ticket tag
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ *
+ */
+api_tickets.deleteTag = function(req, res) {
+    var id = req.params.id;
+    console.log(id);
+    if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({success: false, error: 'Invalid Tag Id'});
+
+    async.series([
+        function(next) {
+            var ticketModel = require('../../../models/ticket');
+            ticketModel.getAllTicketsByTag(id, function(err, tickets) {
+                if (err) return next(err);
+                async.each(tickets, function(ticket, cb) {
+                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id == id; });
+
+                    ticket.save(function(err) {
+                        return cb(err);
+                    });
+
+                }, function(err) {
+                    if (err) return next(err);
+
+                    return next(null);
+                });
+            });
+        },
+        function(next) {
+            var tagSchema = require('../../../models/tag');
+            tagSchema.findByIdAndRemove(id, function(err) {
+                return next(err);
+            });
+        }
+    ], function(err) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true});
     });
 };
 

@@ -30,6 +30,12 @@ var tagSchema = mongoose.Schema({
     name:       { type: String, required: true, unique: true }
 });
 
+tagSchema.statics.getTag = function(id, callback) {
+    var q = this.model(COLLECTION).findOne({_id: id});
+
+    return q.exec(callback);
+};
+
 /**
  * Return all Tags
  *

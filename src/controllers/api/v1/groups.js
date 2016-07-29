@@ -54,6 +54,33 @@ api_groups.get = function(req, res) {
 };
 
 /**
+ * @api {get} /api/v1/groups/all Get Groups
+ * @apiName getALlGroups
+ * @apiDescription Gets all groups
+ * @apiVersion 0.1.7
+ * @apiGroup Group
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/groups/all
+ *
+ * @apiSuccess {boolean}    success             Successful?
+ * @apiSuccess {array}      groups              Array of returned Groups
+ * @apiSuccess {object}     groups._id          The MongoDB ID
+ * @apiSuccess {string}     groups.name         Group Name
+ * @apiSuccess {array}      groups.sendMailTo   Array of Users to send Mail to
+ * @apiSuccess {array}      groups.members      Array of Users that are members of this group
+ *
+ */
+
+api_groups.getAll = function(req, res) {
+    groupSchema.getAllGroups(function(err, groups) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true, groups: groups});
+    });
+};
+
+/**
  * @api {get} /api/v1/groups/:id Get Single Group
  * @apiName getSingleGroup
  * @apiDescription Gets Single Group via ID param
@@ -175,9 +202,12 @@ api_groups.updateGroup = function(req, res) {
     groupSchema.getGroupById(id, function(err, group) {
         if (err) return res.status(400).json({error: err.message});
 
+        var members = _.compact(data.members);
+        var sendMailTo = _.compact(data.sendMailTo);
+
         group.name          = data.name;
-        group.members       = data.members;
-        group.sendMailTo    = data.sendMailTo;
+        group.members       = members;
+        group.sendMailTo    = sendMailTo;
 
         group.save(function(err, savedGroup) {
             if (err) return res.status(400).json({error: err.message});
@@ -215,7 +245,7 @@ api_groups.deleteGroup = function(req, res) {
                     return next('Error: Cannot delete a group with tickets.');
                 }
 
-                next();
+                return next();
             });
         },
         function(next) {
@@ -225,7 +255,7 @@ api_groups.deleteGroup = function(req, res) {
                 group.remove(function(err, success) {
                     if (err) return next('Error: ' + err.message);
 
-                    next(null, success);
+                    return next(null, success);
                 });
             });
         }

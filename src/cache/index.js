@@ -19,7 +19,6 @@ var NodeCache   = require('node-cache'),
     _           = require('underscore'),
     winston     = require('winston');
     moment      = require('moment');
-var mongoose    = require('mongoose');
 var emitter     = require('../emitter');
 
 var truCache = {};
@@ -62,7 +61,7 @@ truCache.init = function(callback) {
         winston.debug('Cache Loaded');
         restartRefreshClock();
 
-        callback();
+        return callback();
     });
 };
 
@@ -82,10 +81,10 @@ truCache.refreshCache = function(callback) {
     async.waterfall([
         function(done) {
             var ticketSchema = require('../models/ticket');
-            ticketSchema.getAll(function(err, tickets) {
+            ticketSchema.getAllNoPopulate(function(err, tickets) {
                 if (err) return done(err);
 
-                done(null, tickets);
+                return done(null, tickets);
             });
         },
 
@@ -127,7 +126,7 @@ truCache.refreshCache = function(callback) {
                         cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, 3600);
                         cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, 3600);
 
-                        done();
+                        return done();
                     });
                 },
                 function(done) {
@@ -139,7 +138,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:30:usage', stats, 3600);
 
-                                c();
+                                return  c();
                             });
                         },
                         function(c) {
@@ -148,7 +147,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:60:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -157,7 +156,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:90:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -166,7 +165,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:180:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -175,7 +174,7 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:365:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         },
                         function(c) {
@@ -184,11 +183,11 @@ truCache.refreshCache = function(callback) {
 
                                 cache.set('tags:0:usage', stats, 3600);
 
-                                c();
+                                return c();
                             });
                         }
                     ], function(err) {
-                       done(err);
+                        return done(err);
                     });
                 },
                 function(done) {
@@ -201,11 +200,11 @@ truCache.refreshCache = function(callback) {
                         cache.set('quickstats:mostAssignee', stats.mostAssignee, 3600);
                         cache.set('quickstats:mostActiveTicket', stats.mostActiveTicket, 3600);
 
-                        done();
+                        return done();
                     });
                 }
             ], function(err) {
-                cb(err);
+                return cb(err);
             });
         }
 
@@ -213,6 +212,30 @@ truCache.refreshCache = function(callback) {
         if (err) return winston.warn(err);
         //Send to parent
         process.send({cache: cache});
+
+        //var pm2 = require('pm2');
+        //pm2.connect(function(err) {
+        //    if (err) throw err;
+        //
+        //    pm2.list(function(err, list) {
+        //        list.forEach(function(item) {
+        //            if (item.name === 'trudesk') {
+        //                pm2.sendDataToProcessId(item.pm_id, {
+        //                     type: 'process:msg',
+        //                     data: {
+        //                         cache: cache
+        //                     },
+        //                     topic: 'trudesk'
+        //                 }, function(err, res) {
+        //                     console.log(err);
+        //                 });
+        //
+        //                 pm2.disconnect();
+        //             }
+        //        });
+        //
+        //    });
+        //});
 
         if (!_.isUndefined(callback) && _.isFunction(callback))
             callback(err);

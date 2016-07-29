@@ -17,9 +17,16 @@ define('modules/socket', [
     'modules/ui'
 
 ], function(chat, ui) {
-    var sClient = {};
+    var socket = io.connect();
+    var sClient = {
+        socket: socket
+    };
+
+    ui.init(socket);
     sClient.ui = ui;
-    ui.init();
+
+    chat.init(socket);
+    sClient.chat = chat;
 
     return sClient;
 });

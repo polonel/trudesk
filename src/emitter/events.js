@@ -45,6 +45,7 @@ var notifications       = require('../notifications'); // Load Push Events
                      async.each(ticket.group.sendMailTo, function(member, cb) {
                          //winston.debug('Sending Mail To: ' + member.email);
                          if (_.isUndefined(member.email)) return cb();
+                         if (member.deleted) return cb();
 
                          emails.push(member.email);
 
@@ -130,6 +131,7 @@ var notifications       = require('../notifications'); // Load Push Events
 
     emitter.on('ticket:updated', function(ticket) {
         io.sockets.emit('updateTicketStatus', {tid: ticket._id, status: ticket.status});
+        io.sockets.emit('updateAssignee', ticket);
 
         io.sockets.emit('ticket:updategrid');
     });
@@ -197,6 +199,7 @@ var notifications       = require('../notifications'); // Load Push Events
                 async.each(ticket.subscribers, function(member, cb) {
                     if (_.isUndefined(member) || _.isUndefined(member.email)) return cb();
                     if (member._id.toString() == comment.owner.toString()) return cb();
+                    if (member.deleted) return cb();
 
                     emails.push(member.email);
 
@@ -254,5 +257,9 @@ var notifications       = require('../notifications'); // Load Push Events
         ], function(err, result) {
             //Blank
         });
+    });
+
+    emitter.on('trudesk:profileImageUpdate', function(data) {
+        io.sockets.emit('trudesk:profileImageUpdate', data);
     });
 })();

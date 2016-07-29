@@ -20,6 +20,7 @@ var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
 var mongoose        = require('mongoose');
+var emitter         = require('../emitter');
 
 var accountsController = {};
 
@@ -56,6 +57,10 @@ accountsController.get = function(req, res, next) {
                 function(cc) {
                     groupSchema.getAllGroups(function(err, grps) {
                         if (err) return cc(err);
+                        var g = grps.slice(0);
+                        g.members = undefined;
+                        g.sendMailTo = undefined;
+                        self.content.data.allGroups = g;
                         cc(null, grps)
                     });
                 },
@@ -65,7 +70,8 @@ accountsController.get = function(req, res, next) {
 
                         var groups = _.filter(grps, function(g) {
                             return _.any(g.members, function(m) {
-                                return m._id.toString() == user._id.toString();
+                                if (m)
+                                    return m._id.toString() == user._id.toString();
                             });
                         });
 
@@ -177,6 +183,8 @@ accountsController.editAccount = function(req, res, next) {
 
         self.content.data.account = result.account;
         self.content.data.roles = result.roles;
+        result.groups.members = undefined;
+        result.groups.sendMailTo = undefined;
         self.content.data.groups = _.sortBy(result.groups, 'name');
 
         res.render('subviews/editAccount', self.content);
@@ -395,7 +403,7 @@ accountsController.uploadImage = function(req, res, next) {
         headers: req.headers,
         limits: {
             files: 1,
-            fileSize: 1024*1024 // 1mb limit
+            fileSize: (1024*1024) * 3 // 1mb limit
         }
     });
 
@@ -459,6 +467,8 @@ accountsController.uploadImage = function(req, res, next) {
 
             user.save(function(err) {
                 if (err) return handleError(res, err);
+
+                emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
 
                 return res.status(200).send('/uploads/users/' + object.filename);
             });

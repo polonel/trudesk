@@ -30,12 +30,15 @@ define('modules/ajaxify', [
     'pages/reportsBreakdown',
     'pages/notices',
     'pages/createNotice',
-    'modules/ui',
-    'modules/chat',
+    'pages/settings',
+    'pages/logs',
+    'pages/tags',
+    'modules/socket',
     'history'
 
 ], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
-            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage, noticesPage, createNoticePage, ui) {
+            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage,
+            noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -44,21 +47,7 @@ define('modules/ajaxify', [
             angular.bootstrap($ele, ['trudesk']);
         });
 
-        //$(document).foundation({
-        //    abide: {
-        //        patterns: {
-        //            is5Long: /.{5,}/
-        //        }
-        //    },
-        //    reveal: {
-        //        animation: 'fade',
-        //        animation_speed: 280,
-        //        close_on_background_click: true,
-        //        close_on_esc: true
-        //    }
-        //});
-
-        ui.init();
+        socketClient.ui.init(socketClient.socket);
         helpers.init();
         helpers.hideAllUiKitDropdowns();
         ajaxImgUpload.init();
@@ -91,6 +80,10 @@ define('modules/ajaxify', [
         noticesPage.init();
         createNoticePage.init();
 
+        //Settings
+        settingsPage.init();
+        tagsPage.init();
+        logsPage.init();
 
         //Load UI Animations Load
         helpers.UI.cardShow();

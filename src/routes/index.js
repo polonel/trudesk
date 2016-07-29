@@ -20,6 +20,8 @@ var express     = require('express'),
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
+    router.get('/install', function(req, res){ return res.redirect('/'); });
+    //router.post('/install/mongotest', controllers.install.mongotest);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
@@ -36,7 +38,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
     router.get('/tickets/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/active/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
-    router.get('/tickets/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.create);
     router.get('/tickets/new', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/new/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/open', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
@@ -96,18 +97,26 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
+    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+    router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
+    router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
+    router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
+
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
+    router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
+    router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
     //Removed 4.12.2016 -- v0.1.7
@@ -129,6 +138,7 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
 
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
+    router.get('/api/v1/groups/all', middleware.api, controllers.api.groups.getAll);
     router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create);
     router.get('/api/v1/groups/:id', middleware.api, controllers.api.groups.getSingleGroup);
     router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup);
@@ -140,6 +150,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/users/getassignees', middleware.api, controllers.api.users.getAssingees);
     router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single);
     router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update);
+    router.post('/api/v1/users/:username/uploadprofilepic', controllers.api.users.uploadProfilePic);
     router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences);
     router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser);
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
@@ -156,8 +167,11 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
+    router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
+    router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
+
     if (global.env === 'development') {
-        //router.get('/debug/sendmail', controllers.debug.sendmail);
+        router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('underscore');
@@ -174,25 +188,28 @@ function mainRoutes(router, middleware, controllers) {
         //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
-            var exec = require('child_process').exec;
-            var child = exec('ipconfig /all', {
-                cwd: __dirname
-            }, function (err, stdout, stderr) {
-                console.log(stdout);
+            var pm2 = require('pm2');
+            pm2.connect(function(err) {
                 if (err) {
-                    console.log(err);
+                    winston.error(err);
+                    res.status(400).send(err);
+                    return;
                 }
+                pm2.restart('trudesk', function(err) {
+                    if (err) {
+                        res.status(400).send(err);
+                        return winston.error(err);
+                    }
 
-                res.send('OK');
+                    pm2.disconnect();
+                    res.send('OK');
+                });
             });
-
         });
     }
 }
 
 module.exports = function(app, middleware) {
-    //CORS
-    app.use(allowCrossDomain);
     //Docs
     app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
     app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
@@ -246,17 +263,4 @@ function handle404(req, res, next) {
     err.status = 404;
 
     next(err);
-}
-
-function allowCrossDomain(req, res, next) {
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
-
-    res.setHeader('Access-Control-Allow-Origin', '*');
-
-    if (req.method === 'OPTIONS') {
-        res.sendStatus(200);
-    } else {
-        next();
-    }
 }

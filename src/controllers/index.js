@@ -13,6 +13,7 @@
  **/
 
 var Controllers = {
+    install: require('./install'),
     main: require('./main'),
     tickets: require('./tickets'),
     messages: require('./messages'),
@@ -22,6 +23,7 @@ var Controllers = {
     reports: require('./reports'),
     invoices: require('./invoices'),
     notices: require('./notices'),
+    settings: require('./settings'),
     api: require('./api'),
 
     debug: require('./debug')

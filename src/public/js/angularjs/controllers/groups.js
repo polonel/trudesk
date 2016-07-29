@@ -34,11 +34,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         var $sendMailTo = form.find('#gSendMailTo')[0].selectize;
 
                         _.each(group.members, function(i) {
-                            $members.addItem(i._id, true);
+                            if (i)
+                                $members.addItem(i._id, true);
                         });
 
                         _.each(group.sendMailTo, function(i) {
-                            $sendMailTo.addItem(i._id, true);
+                            if (i)
+                                $sendMailTo.addItem(i._id, true);
                         });
 
                         $members.refreshItems();
@@ -101,7 +103,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         helpers.UI.showSnackbar('Group Created Successfully', false);
                         UIkit.modal("#groupCreateModal").hide();
                         //Refresh Grid
-                        refreshGrid();
+                        setTimeout(function() {
+                            refreshGrid();
+                        }, 0);
                     })
                     .error(function(err) {
                         console.log('[trudesk:groups:createGroup] - Error: ' + err);
@@ -138,7 +142,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     self.remove();
                 });
 
-                $http.get('/api/v1/groups')
+                $http.get('/api/v1/groups/all')
                     .success(function(data) {
                         var $groupList = $('#group_list');
 
@@ -177,7 +181,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     html += '</ul>';
                     html += '</div>';
                     html += '</div>';
-                    html += '<h3 class="tru-card-head-text text-center" style="padding-top:60px;">';
+                    html += '<h3 class="tru-card-head-text uk-text-center" style="padding-top:60px;">';
                     html += group.name;
                     html += '<span class="uk-text-truncate">';
                     html += _.size(group.members).toString() + ' ' + (_.size(group.members) === 1 ? 'member' : 'members');

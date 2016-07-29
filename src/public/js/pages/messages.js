@@ -15,10 +15,11 @@
 define('pages/messages', [
     'jquery',
     'modules/helpers',
-    'modules/ui',
+    'modules/socket',
     'history'
 
-], function($, helpers, ui) {
+], function($, helpers, socketClient) {
+    var ui = socketClient.ui;
     var messagesPage = {};
     var refreshInterval = null;
 

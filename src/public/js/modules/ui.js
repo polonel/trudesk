@@ -20,16 +20,17 @@ define('modules/ui', [
     'modules/socket.io/messagesUI',
     'modules/socket.io/noticeUI',
     'modules/socket.io/ticketsUI',
+    'modules/socket.io/logs.io',
     'nicescroll',
     'history'
 
-], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI) {
+], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
-        socket = io.connect();
+        socket;
 
-    socketUi.socket = socket;
+    socketUi.init = function(sock) {
+        socketUi.socket = (socket = sock);
 
-    socketUi.init = function() {
         this.onReconnect();
         this.onDisconnect();
         this.updateUsers();
@@ -51,12 +52,16 @@ define('modules/ui', [
         this.onTicketCreated();
         this.onTicketDelete();
         this.onUpdateTicketGrid();
+        this.onProfileImageUpdate();
 
         this.updateMessagesFolder(socket);
         this.updateSingleMessageItem(socket);
         this.updateShowNotice(socket);
         this.updateClearNotice(socket);
         this.updateSubscribe(socket);
+
+        //Logs
+        this.updateServerLogs(socket);
     };
 
     socketUi.setMessageRead = function(messageId) {
@@ -91,10 +96,14 @@ define('modules/ui', [
 
     socketUi.updateSubscribe = ticketsUI.updateSubscribe;
 
+    socketUi.updateServerLogs = logsIO.getLogData;
+    socketUi.fetchServerLogs = function() {
+        socket.emit('logs:fetch');
+    };
+
     socketUi.onReconnect = function() {
         socket.removeAllListeners('reconnect');
         socket.on('reconnect', function() {
-            //helpers.clearFlash();
             helpers.UI.hideDisconnectedOverlay();
         });
     };
@@ -830,6 +839,16 @@ define('modules/ui', [
             var refreshEnabled = $('input#refreshSwitch:checked');
             if (refreshEnabled.length > 0)
                 $('a#refreshTicketGrid').trigger('click');
+        });
+    };
+
+    socketUi.onProfileImageUpdate = function() {
+        socket.removeAllListeners('trudesk:profileImageUpdate');
+        socket.on('trudesk:profileImageUpdate', function(data) {
+            var profileImage = $('#profileImage[data-userid="' + data.userid + '"]');
+            if (profileImage.length > 0) {
+                profileImage.attr('src', '/uploads/users/' + data.img + '?r=' + new Date().getTime());
+            }
         });
     };
 

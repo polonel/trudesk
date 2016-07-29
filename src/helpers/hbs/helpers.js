@@ -481,6 +481,10 @@ var helpers = {
         return str;
     },
 
+    trim: function(string) {
+        return string.trim();
+    },
+
     isNull: function(obj, options) {
         if((_.isUndefined(obj) || _.isNull(obj))) {
             return options.fn(this);
@@ -551,8 +555,7 @@ var helpers = {
         return _.size(arr);
     },
 
-    overdue: function(updated, options) {
-        var showOverdue = conf.get('settings:showOverdue');
+    overdue: function(showOverdue, updated, options) {
         if (!showOverdue) return false;
         var now = moment();
         updated = moment(updated);
@@ -565,6 +568,28 @@ var helpers = {
         else
             return options.inverse(this);
 
+    },
+
+    statusName: function(status) {
+        var str = '';
+        switch (status) {
+            case 0:
+                str = 'New';
+                break;
+            case 1:
+                str = 'Open';
+                break;
+            case 2:
+                str = 'Pending';
+                break;
+            case 3:
+                str = 'Closed';
+                break;
+            default:
+                str = 'New';
+        }
+
+        return str;
     }
 };
 

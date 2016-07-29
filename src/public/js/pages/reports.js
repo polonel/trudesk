@@ -58,6 +58,11 @@ define('pages/reports', [
                         url: '/api/v1/tickets/stats/' + timespan,
                         method: 'GET',
                         success: function(_data) {
+                            var lastUpdated = $('#lastUpdated').find('span');
+                            lastUpdated.text(_data.lastUpdated);
+                            if (!_data.data)
+                                return true;
+
                             parms.data = MG.convert.date(_data.data, 'date');
                             MG.data_graphic(parms);
 
@@ -94,10 +99,6 @@ define('pages/reports', [
                             var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
                             responseTime_animation.start();
 
-
-                            var lastUpdated = $('#lastUpdated').find('span');
-                            lastUpdated.text(_data.lastUpdated);
-
                             //QuickStats
                             var mostRequester = $('#mostRequester');
                             mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
@@ -107,7 +108,6 @@ define('pages/reports', [
                             mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
                             var mostActiveTicket = $('#mostActiveTicket');
                             mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
-
                         }
                     })
                     .error(function(err) {

@@ -54,33 +54,6 @@ module.exports = function(ws) {
 
         }, 5000);
 
-        //Update Ticket Grid Every Min
-//        setInterval(function() {
-//            var userId = socket.request.user._id;
-//            var ticketSchema = require('./models/ticket');
-//            var groupSchema = require('./models/group');
-//
-//            async.waterfall([
-//                function(callback) {
-//                    groupSchema.getAllGroupsOfUser(socket.request.user._id, function(err, grps) {
-//                        callback(err, grps);
-//                    })
-//                },
-//                function(grps, callback) {
-//                    ticketSchema.getTickets(grps, function(err, results) {
-//
-//                        callback(err, results);
-//                    });
-//                }
-//            ], function(err, results) {
-//                if (err) return handleError(res, err);
-//
-//                //winston.verbose('Updating Ticket Grid For: ' + socket.request.user.fullname);
-//                //utils.sendToSelf(socket, 'updateTicketGrid', results);
-//            });
-//
-//        }, 60000);
-
         function updateMailNotifications() {
             var userId = socket.request.user._id;
             var messageSchema = require('./models/message');
@@ -568,6 +541,22 @@ module.exports = function(ws) {
             });
         });
 
+        socket.on('logs:fetch', function() {
+            var path = require('path');
+            var ansi_up = require('ansi_up');
+            var fileTailer = require('file-tail');
+            var fs = require('fs');
+            var logFile = path.join(__dirname, '../logs/output.log');
+            if (!fs.existsSync(logFile))
+                utils.sendToSelf(socket, 'logs:data', 'Invalid Log File...');
+            else {
+                var ft = fileTailer.startTailing(logFile);
+                ft.on('line', function(line) {
+                    utils.sendToSelf(socket, 'logs:data', ansi_up.ansi_to_html(line));
+                });
+            }
+        });
+
         socket.on('setShowNotice', function(noticeId) {
             var noticeSchema = require('./models/notice');
             noticeSchema.getNotice(noticeId, function(err, notice) {
@@ -685,6 +674,8 @@ module.exports = function(ws) {
 
     global.io = io;
     winston.info('SocketServer Running');
+
+
 };
 
 function onAuthorizeSuccess(data, accept) {

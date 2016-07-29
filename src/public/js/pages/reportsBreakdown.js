@@ -57,6 +57,9 @@ define('pages/reportsBreakdown', [
                         url: '/api/v1/tickets/stats/group/' + group,
                         method: 'GET',
                         success: function(_data) {
+                            if (!_data.data.graphData)
+                                return;
+
                             parms.data = MG.convert.date(_data.data.graphData, 'date');
                             MG.data_graphic(parms);
 
@@ -171,137 +174,8 @@ define('pages/reportsBreakdown', [
                     .error(function(err) {
                         //console.log(err);
                         console.log('[trudesk:dashboard:getData] Error - ' + err.responseText);
-                        helpers.UI.showSnackbar(err.responseText, true);
+                        helpers.UI.showSnackbar(JSON.parse(err.responseText).error, true);
                     });
-
-
-                //$.ajax({
-                //    url: '/api/v1/tickets/count/tags',
-                //    method: 'GET',
-                //    success: function(data) {
-                //        var arr = _.map(data.tags, function(v, key) {
-                //            return [key, v];
-                //        });
-                //
-                //        arr = _.first(arr, 10);
-                //
-                //        var colors = [
-                //            '#e53935',
-                //            '#d81b60',
-                //            '#8e24aa',
-                //            '#1e88e5',
-                //            '#00897b',
-                //            '#43a047',
-                //            '#00acc1',
-                //            '#e65100',
-                //            '#6d4c41',
-                //            '#455a64'
-                //        ];
-                //
-                //        var c = _.object(_.map(arr, function(v,i) {
-                //            return v[0];
-                //        }), colors);
-                //
-                //        c3.generate({
-                //            bindto: d3.select('#topTenTags'),
-                //            size: {
-                //                height: 200
-                //            },
-                //            data: {
-                //                columns: arr,
-                //                type: 'donut',
-                //                colors: c
-                //            },
-                //            donut: {
-                //                label: {
-                //                    format: function (value, ratio, id) {
-                //                        return '';
-                //                    }
-                //                }
-                //            }
-                //        });
-                //    }
-                //});
-                //
-                //
-                //
-                //$.ajax({
-                //    url: '/api/v1/tickets/count/topgroups/5',
-                //    method: 'GET',
-                //    success: function(data) {
-                //
-                //        var d = {
-                //            content: []
-                //        };
-                //
-                //        var colors = [
-                //            '#e53935',
-                //            '#d81b60',
-                //            '#8e24aa',
-                //            '#1e88e5',
-                //            '#00897b',
-                //            '#43a047'
-                //        ];
-                //
-                //        _.each(data.items, function(item) {
-                //            var obj = {};
-                //            obj.label = item.name;
-                //            obj.value = item.count;
-                //            var color = _.sample(colors);
-                //            colors = _.without(colors, color);
-                //
-                //            obj.color = color;
-                //
-                //            d.content.push(obj);
-                //        });
-                //
-                //        $('#pieChart').find('svg').remove();
-                //
-                //        new d3pie("pieChart", {
-                //            "size": {
-                //                "canvasHeight": 215,
-                //                "canvasWidth": 450,
-                //                "pieInnerRadius": "60%",
-                //                "pieOuterRadius": "68%"
-                //            },
-                //            "data": d,
-                //            "labels": {
-                //                "outer": {
-                //                    "pieDistance": 15
-                //                },
-                //                "inner": {
-                //                    "format": "value"
-                //                },
-                //                "mainLabel": {
-                //                    "font": "roboto"
-                //                },
-                //                "percentage": {
-                //                    "color": "#ffffff",
-                //                    "font": "roboto",
-                //                    "decimalPlaces": 0
-                //                },
-                //                "value": {
-                //                    "color": "#ffffff",
-                //                    "font": "roboto"
-                //                },
-                //                "lines": {
-                //                    "enabled": true,
-                //                    "color": "#78909c"
-                //                },
-                //                "truncation": {
-                //                    "enabled": true
-                //                }
-                //            },
-                //            "effects": {
-                //                "pullOutSegmentOnClick": {
-                //                    "effect": "linear",
-                //                    "speed": 400,
-                //                    "size": 3
-                //                }
-                //            }
-                //        });
-                //    }
-                //});
             }
         });
     };

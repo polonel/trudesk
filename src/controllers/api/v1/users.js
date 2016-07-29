@@ -197,7 +197,8 @@ api_users.create = function(req, res) {
  */
 api_users.update = function(req, res) {
     var data = req.body;
-
+    // saveGroups - Profile saving where groups are not sent
+    var saveGroups = data.saveGroups;
     var obj = {
         _id:            data.aId,
         username:       data.aUsername,
@@ -240,6 +241,7 @@ api_users.update = function(req, res) {
                 });
         },
         groups: function (done) {
+            if (!saveGroups) return done();
             groupSchema.getAllGroups(function(err, groups) {
                 if (err) return done(err);
                 async.each(groups, function(grp, callback) {
@@ -371,14 +373,19 @@ api_users.updatePreferences = function(req, res) {
 api_users.deleteUser = function(req, res) {
     var username = req.params.username;
 
-    if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
+    if(_.isUndefined(username) || _.isNull(username)) return res.status(400).json({error: 'Invalid Request'});
 
     async.waterfall([
         function(cb) {
             userSchema.getUserByUsername(username, function(err, user) {
                 if (err) return cb(err);
 
-                cb(null, user);
+                if (_.isNull(user)) {
+                    console.log(username + ' was null');
+                    return cb({message: 'Invalid User'});
+                }
+
+                return cb(null, user);
             })
         },
         function(user, cb) {
@@ -386,7 +393,7 @@ api_users.deleteUser = function(req, res) {
             ticketSchema.getTicketsByRequester(user._id, function(err, tickets) {
                 if (err) return cb(err);
 
-                var hasTickets = tickets.length > 0;
+                var hasTickets = _.size(tickets) > 0;
                 return cb(null, hasTickets, user);
             });
         },
@@ -649,8 +656,93 @@ api_users.getAssingees = function(req, res) {
     userSchema.getAssigneeUsers(function(err, users) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
-        return res.json({success: true, users: users});
+        var strippedUsers = [];
+
+        async.each(users, function(user, cb) {
+            user = StripUserFields(user);
+            strippedUsers.push(user);
+
+            cb();
+        }, function() {
+            return res.json({success: true, users: strippedUsers});
+        });
     });
+};
+
+api_users.uploadProfilePic = function(req, res) {
+    var fs = require('fs');
+    var path = require('path');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: (1024*1024)*3
+        }
+    });
+
+    var object = {}, error;
+
+    if (_.isUndefined(req.params.username)) return res.status(400).json({error: 'Invalid Username'});
+    object.username = req.params.username;
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') == -1) {
+            error = {
+                status: 400,
+                message: 'Invalid file type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../../../public/uploads/users');
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg');
+        object.filename = 'aProfile_' + object.username + '.jpg';
+        object.mimetype = mimetype;
+
+        file.on('limit', function() {
+            error = {
+                status: 400,
+                message: 'File too large'
+            };
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).send(error.message);
+
+        if (_.isUndefined(object.username) ||
+            _.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename)) {
+
+            return res.status(400).send('Invalid Form Data');
+        }
+
+        if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk');
+
+        userSchema.getUserByUsername(object.username, function(err, user) {
+            if (err) return res.status(400).send(err.message);
+
+            user.image = object.filename;
+
+            user.save(function(err) {
+                if (err) return res.status(500).send(err.message);
+
+                emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
+
+                return res.json({success: true, user: StripUserFields(user)});
+            });
+        });
+    });
+
+    req.pipe(busboy);
 };
 
 function StripUserFields(user) {

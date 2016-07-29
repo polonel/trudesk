@@ -73,6 +73,14 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   background-color: #2196f3;
 }
 
+.md-switch.md-green label input[type=checkbox]:checked + .lever {
+  background-color: lighten($accent_success, 15%);
+}
+
+.md-switch.md-green label input[type=checkbox]:checked + .lever:after {
+  background-color: $accent_success;
+}
+
 
 
 .md-switch label .lever {

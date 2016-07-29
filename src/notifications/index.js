@@ -25,7 +25,7 @@ var _                   = require('underscore'),
     ticketSchema        = require('../models/ticket');
 
 module.exports.pushNotification = function(notification) {
-    var enabled = nconf.get('tps:enable') ? nconf.get('tps:enable') : true;
+    var enabled = nconf.get('tps:enable') ? nconf.get('tps:enable') : false;
     if (!enabled) return true;
     var apiKey = nconf.get("tps:apikey");
     var tps_username = nconf.get("tps:username");

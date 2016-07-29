@@ -15,10 +15,10 @@
 define('pages/singleTicket', [
     'jquery',
     'underscore',
-    'modules/ui',
+    'modules/socket',
     'tomarkdown',
     'modules/helpers'
-], function($, _, ui, md, helpers) {
+], function($, _, socketClient, md, helpers) {
     var st = {};
     st.init = function() {
         $(document).ready(function() {
@@ -66,7 +66,7 @@ define('pages/singleTicket', [
                         var commentId = $($event.currentTarget).attr('data-commentId');
                         comment = '<p>' + comment + '</p>';
 
-                        ui.setCommentText(id, commentId, comment);
+                        socketClient.ui.setCommentText(id, commentId, comment);
                     }
                 });
             });
@@ -101,7 +101,7 @@ define('pages/singleTicket', [
                 url: '/api/v1/tickets/' + ticketId + '/attachments/remove/' + attachmentId,
                 type: 'DELETE',
                 success: function(res) {
-                    ui.refreshTicketAttachments(ticketId);
+                    socketClient.ui.refreshTicketAttachments(ticketId);
                 },
                 error: function(err) {
                     var res = err.responseJSON;
@@ -121,7 +121,7 @@ define('pages/singleTicket', [
         var ticketId = $('#__ticketId').html();
         var commentId = self.attr('data-commentId');
         if (commentId.length > 0 && ticketId.length > 0) {
-            ui.removeComment(ticketId, commentId);
+            socketClient.ui.removeComment(ticketId, commentId);
         }
     }
 
