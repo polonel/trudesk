@@ -16,6 +16,7 @@ describe('api/users.js', function() {
           .set('accesstoken', tdapikey)
           .set('Accept', 'application/json')
           .expect(function(res) {
+            console.log(res.body);
             if (res.body.count !== 1) throw new Error('Could not get users');
           })
           .expect(200, done);
