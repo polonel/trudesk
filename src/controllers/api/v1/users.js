@@ -47,8 +47,8 @@ var api_users = {};
  }
  */
 api_users.getWithLimit = function(req, res) {
-    var limit = req.query.limit;
-    var page = req.query.page;
+    var limit = parseInt(req.query.limit);
+    var page = parseInt(req.query.page);
     var search = req.query.search;
 
     var obj = {
