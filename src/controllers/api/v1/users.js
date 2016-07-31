@@ -26,6 +26,26 @@ var async       = require('async'),
 
 var api_users = {};
 
+/**
+ * @api {get} /api/v1/users Gets users with query string
+ * @apiName getUsers
+ * @apiDescription Gets users with query string
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {number} count Count of users in array
+ * @apiSuccess {array} users Users returned (populated)
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
 api_users.getWithLimit = function(req, res) {
     var limit = req.query.limit;
     var page = req.query.page;
@@ -119,7 +139,7 @@ api_users.create = function(req, res) {
     response.success = true;
 
     var postData = req.body;
-    if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+    if (_.isUndefined(postData) || !_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps))
         return res.status(400).json({success: false, error: 'Invalid Group Array'});
@@ -320,7 +340,7 @@ api_users.update = function(req, res) {
 api_users.updatePreferences = function(req, res) {
     var username = req.params.username;
     if(username == undefined || username == 'undefined')
-        return res.status(400).json({error: 'Invalid Request'});
+        return res.status(400).json({success: false, error: 'Invalid Request'});
 
     var data = req.body;
     var preference = data.preference;
@@ -329,7 +349,7 @@ api_users.updatePreferences = function(req, res) {
     userSchema.getUserByUsername(username, function(err, user) {
         if (err) {
             winston.warn('[API:USERS:UpdatePreferences] Error= ' + err);
-            return res.status(400).send(err);
+            return res.status(400).json({success: false, error: err});
         }
 
         if (_.isNull(user.preferences))
@@ -337,15 +357,15 @@ api_users.updatePreferences = function(req, res) {
 
         user.preferences[preference] = value;
 
-        user.save(function(err, user) {
+        user.save(function(err, u) {
             if (err) {
                 winston.warn('[API:USERS:UpdatePreferences] Error= ' + err);
-                return res.status(400).send(err);
+                return res.status(400).json({success: false, error: err});
             }
 
-            var resUser = StripUserFields(user);
+            var resUser = StripUserFields(u);
 
-            return res.json(resUser);
+            return res.json({success: true, user: resUser});
         });
     })
 };

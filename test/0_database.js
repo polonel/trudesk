@@ -61,6 +61,50 @@ before(function(done) {
                 });
             },
             function(cb) {
+                var userSchema = require('../src/models/user');
+                userSchema.create({
+                    username: 'fake.user',
+                    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
+                    fullname: 'Fake user',
+                    email: 'fake.user@trudesk.io',
+                    role: 'mod',
+                    accessToken: '456'
+                }, function(err, user) {
+                    expect(err).to.not.exist;
+                    expect(user).to.be.a('object');
+
+                    cb();
+                });
+            },
+            function(cb) {
+                var userSchema = require('../src/models/user');
+                userSchema.create({
+                    username: 'deleted.user',
+                    password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
+                    fullname: 'Deleted User',
+                    email: 'deleted.user@trudesk.io',
+                    role: 'user',
+                    accessToken: '123',
+                    deleted: true
+                }, function(err, user) {
+                    expect(err).to.not.exist;
+                    expect(user).to.be.a('object');
+
+                    cb();
+                });
+            },
+            function(cb) {
+                var groupSchema = require('../src/models/group');
+                groupSchema.create({
+                    name: 'TEST'
+                }, function(err, group) {
+                    expect(err).to.not.exist;
+                    expect(group).to.be.a('object');
+
+                    cb();
+                });
+            },
+            function(cb) {
                 var ws = require('../src/webserver');
                 ws.init(db, function(err) {
                     expect(err).to.not.exist;
