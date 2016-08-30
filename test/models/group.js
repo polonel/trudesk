@@ -34,7 +34,7 @@ describe('group.js', function() {
     it('should get all groups', function(done) {
         groupSchema.getAllGroups(function(err, group) {
             expect(err).to.not.exist;
-            expect(group).to.have.length(1);
+            expect(group).to.have.length(2);
 
             done();
         });

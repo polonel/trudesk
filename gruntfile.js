@@ -82,25 +82,24 @@ module.exports = function(grunt) {
                     }, {
                         grunt: true,
                         args: ['watch:web']
-                    }]
+                    }
+                ]
             },
             docs: {
                 options: {
                     stream: true
                 },
-                tasks: [
-                    {
-                        grunt: true,
-                        args: ['watch:docs']
-                    }
-                ]
+                tasks: [{
+                    grunt: true,
+                    args: ['watch:docs']
+                }]
             }
         },
 
         cssmin: {
             target: {
-                files:  {
-                    'public/css/plugins.css' : [
+                files: {
+                    'public/css/plugins.css': [
                         'public/css/plugins/datatables/dataTables.scroller.css',
                         'public/css/plugins/datatables/dataTables.foundation.css',
                         'public/js/vendor/chosen/chosen.css',
@@ -149,15 +148,15 @@ module.exports = function(grunt) {
             }
         },
 
-        jsdoc : {
-            dist : {
+        jsdoc: {
+            dist: {
                 src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js', '!src/public/js/plugins/*.js'],
                 options: {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',
                     configure: 'docs/jaguarjs-jsdoc/conf.json'
-                    //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
-                    //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
+                        //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
+                        //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
                 }
             }
         },
@@ -215,60 +214,58 @@ module.exports = function(grunt) {
                     uglify2: {
                         mangle: false
                     },
-                    modules: [
-                        {
-                            name: 'trudesk.min',
-                            create: true,
-                            include: [
-                                'jquery',
-                                'jquery_scrollTo',
-                                'jquery_custom',
-                                'uikit',
-                                'angular',
-                                'angularRoute',
-                                'angularCookies',
-                                'modernizr',
-                                'fastclick',
-                                'placeholder',
-                                'nicescroll',
-                                'underscore',
-                                'history',
-                                'd3',
-                                'metricsgraphics',
-                                'd3pie',
-                                'peity',
-                                'countup',
-                                'selectize',
-                                'waves',
-                                'formvalidator',
-                                'snackbar',
+                    modules: [{
+                        name: 'trudesk.min',
+                        create: true,
+                        include: [
+                            'jquery',
+                            'jquery_scrollTo',
+                            'jquery_custom',
+                            'uikit',
+                            'angular',
+                            'angularRoute',
+                            'angularCookies',
+                            'modernizr',
+                            'fastclick',
+                            'placeholder',
+                            'nicescroll',
+                            'underscore',
+                            'history',
+                            'd3',
+                            'metricsgraphics',
+                            'd3pie',
+                            'peity',
+                            'countup',
+                            'selectize',
+                            'waves',
+                            'formvalidator',
+                            'snackbar',
 
-                                '../../src/permissions/roles',
+                            '../../src/permissions/roles',
 
-                                'angularjs/main',
-                                'angularjs/controllers',
-                                'app',
+                            'angularjs/main',
+                            'angularjs/controllers',
+                            'app',
 
-                                'modules/ajaxify',
-                                'modules/ajaximgupload',
-                                'modules/attachmentUpload',
+                            'modules/ajaxify',
+                            'modules/ajaximgupload',
+                            'modules/attachmentUpload',
 
-                                'pages/accounts',
-                                'pages/dashboard',
-                                'pages/editaccount',
-                                'pages/groups',
-                                'pages/messages',
-                                'pages/reports',
-                                'pages/singleTicket',
-                                'pages/tickets'
-                            ],
-                            shim: {
-                                angular: {
-                                    exports: 'angular'
-                                }
+                            'pages/accounts',
+                            'pages/dashboard',
+                            'pages/editaccount',
+                            'pages/groups',
+                            'pages/messages',
+                            'pages/reports',
+                            'pages/singleTicket',
+                            'pages/tickets'
+                        ],
+                        shim: {
+                            angular: {
+                                exports: 'angular'
                             }
                         }
-                    ],
+                    }],
                     paths: {
                         //foundation: 'empty:',
                         angular: 'empty:',

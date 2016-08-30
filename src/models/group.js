@@ -60,8 +60,8 @@ groupSchema.methods.removeMember = function(memberId, callback) {
     return callback(null, true);
 };
 
-groupSchema.methods.isMember = function(arr, id) {
-    return isMember(this.members, id);
+groupSchema.methods.isMember = function(memberId) {
+    return isMember(this.members, memberId);
 };
 
 groupSchema.methods.addSendMailTo = function(memberId, callback) {
@@ -144,7 +144,7 @@ groupSchema.statics.getGroupById = function(gId, callback) {
 
 function isMember(arr, id) {
     var matches = _.filter(arr, function (value) {
-        if (value._id == id) {
+        if (value._id.toString() == id.toString()) {
             return value;
         }
     });

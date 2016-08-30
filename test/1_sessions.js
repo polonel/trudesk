@@ -34,8 +34,30 @@ describe('sessions', function() {
             });
     });
 
+    it('should redirect if logged in', function(done) {
+        agent.get('http://localhost:3111/')
+            .end(function(err, res) {
+                expect(err).to.not.exist;
+                expect(res.status).to.equal(200);
+                expect(res.text).to.include('<title>Trudesk &middot; Dashboard</title>');
+
+                done();
+            });
+    });
+
     it('should redirect on un-auth', function(done) {
         unauthAgent.get('http://localhost:3111/tickets')
+            .end(function(err, res) {
+                expect(err).to.not.exist;
+                expect(res.status).to.equal(200);
+                expect(res.text).to.include('<title>Trudesk &middot; Login</title>');
+
+                done();
+            });
+    });
+
+    it('should redirect to login on /install', function(done) {
+        unauthAgent.get('http://localhost:3111/install')
             .end(function(err, res) {
                 expect(err).to.not.exist;
                 expect(res.status).to.equal(200);
@@ -51,6 +73,17 @@ describe('sessions', function() {
                 expect(err).to.not.exist;
                 expect(res.status).to.equal(200);
                 res.redirects.should.eql(['http://localhost:3111/']);
+
+                done();
+            });
+    });
+
+    it('should return Trudesk Version', function(done) {
+        agent.get('http://localhost:3111/api/v1/version')
+            .end(function(err, res) {
+                expect(err).to.not.exist;
+                expect(res.status).to.equal(200);
+                expect(res.text).to.include('version');
 
                 done();
             });

@@ -25,4 +25,4 @@ script:
   - npm test
 
 after_success:
-  - ./node_modules/.bin/mocha --recursive --require blanket -R mocha-lcov-reporter | ./node_modules/coveralls/bin/coveralls.js
+  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive && ./node_modules/.bin/istanbul-coveralls
