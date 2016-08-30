@@ -71,7 +71,7 @@ module.exports = function(app, db, callback) {
                 secret: sessionSecret,
                 cookie: cookie,
                 store: sessionStore,
-                saveUninitialized: true,
+                saveUninitialized: false,
                 resave: false
             }));
 
