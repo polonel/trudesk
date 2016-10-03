@@ -191,7 +191,7 @@ define('pages/accounts', [
             else
             html    +=          '<div class="tru-card-head ' + (user.deleted ? "tru-card-head-deleted" : "") +'">';
 
-            html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\'}">';
+            html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">';
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';

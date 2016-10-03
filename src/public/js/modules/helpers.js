@@ -25,7 +25,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         var self = this;
 
         self.resizeFullHeight();
-        self.removeAllScrollers();
+        //self.removeAllScrollers();
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
@@ -606,7 +606,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         $(document).ready(function() {
             $(selector).each(function() {
                 var ns = $(this).getNiceScroll(0);
-                if (ns !== false) return true;
+                //if (ns !== false) return true;
+                //if (ns !== false) ns.remove();
                 $(this).niceScroll({
                     cursorcolor: color,
                     cursorwidth: size,
