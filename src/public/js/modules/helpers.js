@@ -579,6 +579,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.setupScrollers = function(selector) {
+        var self = this;
         if (_.isUndefined(selector)) {
             selector = '.scrollable';
         }
@@ -605,9 +606,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
         $(document).ready(function() {
             $(selector).each(function() {
-                var ns = $(this).getNiceScroll(0);
-                //if (ns !== false) return true;
-                //if (ns !== false) ns.remove();
+                // var ns = $(this).getNiceScroll(0);
+                // if (ns !== false)
+                //     $(selector).niceScroll().remove();
+
                 $(this).niceScroll({
                     cursorcolor: color,
                     cursorwidth: size,
