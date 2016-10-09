@@ -134,6 +134,20 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 UI.modal('#noticeAlertWindow').hide();
             };
 
+            $scope.showPrivacyPolicyModal = function($event) {
+                $event.preventDefault();
+
+                $scope.privacyPolicyWindow = $('#privacyPolicyWindow');
+                if ($scope.privacyPolicyWindow.length > 0) {
+
+                    var modal = UI.modal($scope.privacyPolicyWindow, {
+                        bgclose: true
+                    });
+
+                    modal.show();
+                }
+            };
+
         }])
         .directive('closeUkDropdown', ['$document', '$timeout', function($document, $timeout) {
             return {

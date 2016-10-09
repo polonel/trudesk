@@ -17,6 +17,7 @@ var _               = require('underscore');
 var _s              = require('underscore.string');
 var winston         = require('winston');
 var flash           = require('connect-flash');
+var jsStringEscape  = require('js-string-escape');
 var userSchema      = require('../models/user');
 var settingSchema   = require('../models/setting');
 var tagSchema       = require('../models/tag');
@@ -73,16 +74,42 @@ settingsController.get = function(req, res) {
         s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
 
         s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable' });
-
         s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
 
         s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable' });
-
         s.tpsEnabled = (s.tpsEnabled === undefined) ? {value: false} : s.tpsEnabled;
+
+        s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable' });
+        s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
 
         self.content.data.settings = s;
 
-        res.render('settings', self.content);
+        return res.render('settings', self.content);
+    });
+};
+
+settingsController.legal = function(req, res) {
+    var self = this;
+    self.content = {};
+    self.content.title = "Legal Settings";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-legal';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    settingSchema.getSettings(function(err, settings) {
+        if (err) return handleError(res, 'Invalid Settings');
+
+        var s = {};
+        s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
+        s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
+        s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
+
+        self.content.data.settings = s;
+
+        return res.render('subviews/settings/settings-legal', self.content);
     });
 };
 
@@ -197,12 +224,30 @@ settingsController.editTag = function(req, res) {
             groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 if (err) return cb(err);
 
-                ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
+                async.series([
+                    function(next) {
+                        var permissions = require('../permissions');
+                        if (permissions.canThis(req.user.role, 'ticket:public')) {
+                            groupSchema.getAllPublicGroups(function(err, publicGroups) {
+                                if (err) return next(err);
+
+                                grps = grps.concat(publicGroups);
+
+                                return next();
+                            });
+                        } else
+                            return next();
+                    }
+                ], function(err) {
                     if (err) return cb(err);
 
-                    self.content.data.tickets = tickets;
+                    ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
+                        if (err) return cb(err);
 
-                    return cb();
+                        self.content.data.tickets = tickets;
+
+                        return cb();
+                    });
                 });
             });
         }

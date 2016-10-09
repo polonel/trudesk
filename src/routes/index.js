@@ -98,6 +98,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+    router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
