@@ -35,46 +35,46 @@ viewController.getData = function(request, cb) {
                   if (!_.isUndefined(data) && !_.isNull(data))
                     viewdata.noticeCookieName = data.name + "_" + moment(data.activeDate).format("MMMDDYYYY_HHmmss");
 
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewController.getUserNotifications(request, function(err, data) {
                   if (err) return callback(err);
                   viewdata.notifications.items = data;
-                  callback();
+                  return callback();
               })
           },
           function(callback) {
               viewController.getUnreadNotificationsCount(request, function(err, count) {
                   if (err) return callback(err);
                   viewdata.notifications.unreadCount = count;
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewController.unreadMessageCount(request, function(data) {
                   viewdata.messages.unreadCount = data;
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewController.getUserUnreadMessages(request, function(data) {
                   viewdata.messages.unreadItems = data;
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewController.getUsers(request, function(users) {
                   viewdata.messages.users = users;
 
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewController.loggedInAccount(request, function(data) {
                   viewdata.loggedInAccount = data;
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
@@ -83,7 +83,7 @@ viewController.getData = function(request, cb) {
 
                   viewdata.groups = data;
 
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
@@ -92,7 +92,7 @@ viewController.getData = function(request, cb) {
 
                   viewdata.ticketTypes = data;
 
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
@@ -101,18 +101,18 @@ viewController.getData = function(request, cb) {
 
                   viewdata.ticketTags = data;
 
-                  callback();
+                  return callback();
               });
           },
           function(callback) {
               viewdata.roles = permissions.roles;
-              callback();
+              return callback();
           },
           function(callback) {
               viewController.getOverdueSetting(request, function(err, data) {
                   viewdata.showOverdue = data;
 
-                  callback();
+                  return callback();
               });
           }
       ], function(err) {
@@ -120,7 +120,7 @@ viewController.getData = function(request, cb) {
               winston.warn('Error: ' + err);
           }
 
-          cb(viewdata);
+          return cb(viewdata);
       });
 };
 
@@ -132,7 +132,7 @@ viewController.getActiveNotice = function(callback) {
             return callback(err);
         }
 
-        callback(null, notice);
+        return callback(null, notice);
     });
 };
 
@@ -146,7 +146,7 @@ viewController.getUserNotifications = function(request, callback) {
 
         data = _.first(data, 5);
 
-        callback(null, data);
+        return callback(null, data);
     })
 };
 
@@ -154,11 +154,11 @@ viewController.getUnreadNotificationsCount = function(request, callback) {
     var notificationsSchema = require('../../models/notification');
     notificationsSchema.getUnreadCount(request.user._id, function(err, count) {
         if (err) {
-            winston.war(err.message);
+            winston.warn(err.message);
             return callback(err);
         }
 
-        callback(null, count);
+        return callback(null, count);
     });
 };
 
@@ -166,10 +166,10 @@ viewController.unreadMessageCount = function(request, callback) {
     var messageObj = require('../../models/message');
     messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
         if (err) {
-            callback(0);
+            return callback(0);
         }
 
-        callback(data);
+        return callback(data);
     });
 };
 
@@ -180,7 +180,7 @@ viewController.getUserUnreadMessages = function(request, callback) {
             return callback();
         }
 
-        callback(data);
+        return callback(data);
     });
 };
 
@@ -195,7 +195,7 @@ viewController.getUsers = function(request, callback) {
         var u = _.reject(users, function(u) { return u.deleted == true; });
         u = _.sortBy(u, 'fullname');
 
-        callback(u);
+        return callback(u);
     });
 };
 
@@ -203,10 +203,10 @@ viewController.loggedInAccount = function(request, callback) {
     var userSchema = require('../../models/user');
     userSchema.getUser(request.user._id, function(err, data) {
         if (err) {
-            callback(err);
+            return callback(err);
         }
 
-        callback(data);
+        return callback(data);
     });
 };
 
@@ -215,10 +215,22 @@ viewController.getGroups = function(request, callback) {
     groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function(err, data) {
         if (err) {
             winston.debug(err);
-            callback(err);
+            return callback(err);
         }
 
-        callback(null, data);
+        var p = require('../../permissions');
+        if (p.canThis(request.user.role, 'ticket:public')) {
+            groupSchema.getAllPublicGroups(function(err, groups) {
+                if (err) {
+                    winston.debug(err);
+                    return callback(err);
+                }
+
+                data = data.concat(groups);
+                return callback(null, data);
+            });
+        } else
+            return callback(null, data);
     });
 };
 
@@ -228,10 +240,10 @@ viewController.getTypes = function(request, callback) {
     typeSchema.getTypes(function(err, data) {
         if (err) {
             winston.debug(err);
-            callback(err);
+            return callback(err);
         }
 
-        callback(null, data);
+        return callback(null, data);
     });
 };
 
@@ -241,12 +253,12 @@ viewController.getTags = function(request, callback) {
     tagSchema.getTags(function(err, data) {
         if (err){
             winston.debug(err);
-            callback(err);
+            return callback(err);
         }
 
         data = _.sortBy(data, 'name');
 
-        callback(null, data);
+        return callback(null, data);
     });
 };
 

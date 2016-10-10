@@ -612,6 +612,7 @@ helpers.inArray    = helpers.hasGroup;
 
 
 // Export helpers
+module.exports.helpers = helpers;
 module.exports.register = function (Handlebars, options) {
     options = options || {};
 
@@ -621,4 +622,3 @@ module.exports.register = function (Handlebars, options) {
         }
     }
 };
-

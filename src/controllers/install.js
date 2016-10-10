@@ -73,7 +73,7 @@ installController.install = function(req, res) {
         fullname: data['account[fullname]']
     };
 
-    var conuri = 'mongodb://' + username + ':' + password + '@' + host + '/' + database;
+    var conuri = 'mongodb://' + username + ':' + password + '@' + host + ':' + port + '/' + database;
 
     async.waterfall([
         function(next) {

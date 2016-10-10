@@ -5444,7 +5444,9 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     padding: 8px 16px 16px;
     font: 500 16px/22px "Roboto", "Open Sans", sans-serif;
     color: #212121;
-    margin: 0; }
+    margin: 0;
+    -ms-word-break: break-all;
+    word-break: break-all; }
     .tru-card .tru-card-head-text span {
       display: block;
       font: 400 12px/18px "Roboto", "Open Sans", sans-serif;
@@ -6085,12 +6087,6 @@ a.waves-effect .waves-ripple {
 .t circle {
   -webkit-animation: bounceC .7s infinite alternate ease-in-out; }
 
-p {
-  font-family: "Roboto", "Open Sans", sans-serif;
-  font-size: 22px;
-  font-weight: 300;
-  color: white; }
-
 .test-wrapper {
   width: 280px;
   height: 150px;
@@ -6280,6 +6276,10 @@ textarea.md-input {
     color: #d32f2f; }
   .md-input-wrapper.has-error .md-input-bar {
     bottom: 20px; }
+  .md-input-wrapper.has-error .md-input-bar.bottom-fix {
+    bottom: 0; }
+  .md-input-wrapper.has-error .md-input-bar.error-color:before, .md-input-wrapper.has-error .md-input-bar.error-color:after {
+    background: #d32f2f !important; }
 
 .md-input-wrapper-count {
   padding-bottom: 24px; }

@@ -12,15 +12,16 @@
 
  **/
 
-var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
-    winston = require('winston'),
-    permissions = require('../../../permissions'),
-    emitter = require('../../../emitter'),
+var async           = require('async'),
+    _               = require('underscore'),
+    _s              = require('underscore.string'),
+    winston         = require('winston'),
+    permissions     = require('../../../permissions'),
+    emitter         = require('../../../emitter'),
+    sanitizeHtml    = require('sanitize-html'),
 
-    userSchema = require('../../../models/user'),
-    settingSchema = require('../../../models/setting');
+    userSchema      = require('../../../models/user'),
+    settingSchema   = require('../../../models/setting');
 
 var api_settings = {};
 
@@ -68,6 +69,11 @@ api_settings.updateSetting = function(req, res) {
                     name: item.name
                 });
             }
+
+            if (s.name === 'legal:privacypolicy')
+                item.value = sanitizeHtml(item.value, {
+                    allowedTags: false
+                });
 
             s.value = item.value;
 

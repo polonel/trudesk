@@ -66,9 +66,9 @@ var ticketSchema = mongoose.Schema({
     owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
     group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups' },
     assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
-    date:       { type: Date, default: Date.now, required: true },
+    date:       { type: Date, default: Date.now, required: true},
     updated:    { type: Date},
-    deleted:    { type: Boolean, default: false, required: true },
+    deleted:    { type: Boolean, default: false, required: true, index: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true },
     priority:   { type: Number, required: true },
@@ -83,12 +83,7 @@ var ticketSchema = mongoose.Schema({
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
 
-ticketSchema.index({
-    uid: 1,
-    date: 2,
-    status: 3,
-    owner: 4
-});
+ticketSchema.index({date: -1}, {deleted: -1}, {status: 1});
 
 ticketSchema.plugin(deepPopulate);
 

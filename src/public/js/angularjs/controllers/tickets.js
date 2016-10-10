@@ -40,14 +40,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         .success(function(data) {
                             if (!data.success) {
                                 if (data.error) {
-                                    helpers.showFlash('Error: ' + data.error, true);
+                                    helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
                                     return;
                                 }
 
-                                helpers.showFlash('Error Submitting Ticket', true);
+                                helpers.UI.showSnackbar({text: 'Error submitting ticket.', actionTextColor: '#B92929'});
                             }
 
-                            //helpers.showFlash('Ticket Created Successfully.');
                             helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
                             UIkit.modal("#ticketCreateModal").hide();
@@ -56,7 +55,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                         }).error(function(err) {
                         console.log('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
-                        //helpers.showFlash('Error: ' + err.error.message, true);
                         helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
                     });
                 }
@@ -96,7 +94,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         })
                         .error(function(err) {
                             console.log('[trudesk:tickets:addTag} - Error: ' + err.error);
-                            helpers.showFlash('Error: ' + err.error, true);
+                            helpers.UI.showSnackbar({text: 'Error: ' + err.error, actionTextColor: '#B92929'});
                         });
                 }
             };
@@ -109,7 +107,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ).success(function() {
                             clearChecked();
                             removeCheckedFromGrid();
-                            //helpers.showFlash('Ticket Deleted Successfully.');
                             helpers.UI.showSnackbar({text: 'Ticket Deleted Successfully'});
                         }).error(function(e) {
                             console.log('[trudesk:tickets:deleteTickets] - ' + e);
@@ -120,6 +117,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 //hide Dropdown
                 helpers.hideAllpDropDowns();
                 helpers.hideDropDownScrolls();
+            };
+
+            $scope.openTickets = function() {
+                var $ids = getChecked();
+
+                _.each($ids, function(id) {
+                    $http.put(
+                        '/api/v1/tickets/' + id,
+                        {
+                            "status": 1
+                        }
+                    ).success(function() {
+                        helpers.UI.showSnackbar({text: 'Ticket status set to open'});
+                    }).error(function(e) {
+                        console.log('[trudesk:tickets:openTickets] - Error: ' + e);
+                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                    });
+                });
             };
 
             $scope.closeTickets = function() {
@@ -133,10 +148,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         }
                     ).success(function() {
 
-                        }).error(function(e) {
-                            console.log('[trudesk:tickets:closeTickets] - ' + e);
-                            helpers.showFlash('Error: ' + e, true);
-                        });
+                    }).error(function(e) {
+                        console.log('[trudesk:tickets:closeTickets] - ' + e);
+                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                    });
                 });
 
                 //hide Dropdown
@@ -156,7 +171,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                     }).error(function(e) {
                         console.log('[trudesk:tickets:GridRefreshChanged] - ' + e);
-                        helpers.showFlash('Error: ' + e.message, true);
+                        helpers.UI.showSnackbar({text: 'Error: ' + e.message, actionTextColor: '#B92929'});
                     });
             };
 

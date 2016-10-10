@@ -14,7 +14,7 @@
     mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
 
     showOverdueTickets={{data.settings.showOverdueTickets.value}};
-
+    allowPublicTickets={{data.settings.allowPublicTickets.value}};
     tpsEnabled={{data.settings.tpsEnabled.value}};
 
     init();
@@ -26,6 +26,48 @@
         <!--Content Here-->
         <div class="page-wrapper full-height scrollable no-overflow-x">
             <div id="page-content-inner">
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Flash tickets that have been idle for a length of time.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow Public Tickets</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Allow the creation of tickets by users that are unregistered
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="setting-item-wrap uk-margin-medium-bottom">
                     <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
@@ -127,27 +169,6 @@
                                 <div class="uk-clearfix">
                                     <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Flash tickets that have been idle for a length of time.
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
-                                    <span class="lever"></span>
-                                </label>
                             </div>
                         </div>
                     </div>

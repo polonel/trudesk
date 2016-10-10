@@ -63,4 +63,10 @@ describe('api/api.js', function() {
             .expect(200, done);
     });
 
+    it('should error Invalid Access Token', function(done) {
+        request(server).get('/api/v1/tickets/1000')
+            .set('accesstoken', '1')
+            .expect(401, done);
+    });
+
 });

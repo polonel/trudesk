@@ -1,5 +1,4 @@
 # Logs
-logs
 *.log
 
 # Runtime data
@@ -45,3 +44,4 @@ public/css/app.css.map
 *.diff
 private/
 .sass-cache/
+coverage/

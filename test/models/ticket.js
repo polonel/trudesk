@@ -334,6 +334,29 @@ describe('ticket.js', function() {
         });
     });
 
+    it('should get all tickets by status', function(done) {
+        ticketSchema.getAllByStatus(0, function(err, tickets) {
+            expect(err).to.not.exist;
+
+            expect(tickets).to.have.length(1);
+
+            done();
+        });
+    });
+
+    it('should get tickets by date range', function(done) {
+        ticketSchema.getTicketsDateRange(new Date('7/31/2016'), new Date('8/1/2016'), function(err, tickets) {
+            expect(err).to.not.exist;
+            expect(tickets).to.have.length(0);
+
+            ticketSchema.getTicketsDateRange(undefined, undefined, function(err, tickets) {
+                expect(err).to.exist;
+
+                done();
+            });
+        });
+    });
+
     it('should get ticket by _id', function(done) {
         async.parallel([
             function(cb) {

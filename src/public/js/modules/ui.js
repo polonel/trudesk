@@ -233,6 +233,10 @@ define('modules/ui', [
                 var ticketGroup = $('select#tGroup');
                 var ticketTags = $('div#editTags');
 
+                var addAttachments = $('form#attachmentForm > div.add-attachment');
+                var editIssue = $('div.initial-issue > div.edit-issue');
+                var commentActions = $('div.comment-actions');
+
                 if (status === 3) {
                     //Remove Comment Box
                     if (ticketReply.length > 0) {
@@ -258,6 +262,15 @@ define('modules/ui', [
                     if (ticketTags.length > 0) {
                         ticketTags.addClass('hide');
                     }
+                    if (addAttachments.length > 0) {
+                        addAttachments.addClass('hide');
+                    }
+                    if (editIssue.length > 0) {
+                        editIssue.addClass('hide');
+                    }
+                    if (commentActions.length > 0) {
+                        commentActions.addClass('hide');
+                    }
 
                 } else {
                     if (ticketReply.length > 0) {
@@ -276,6 +289,15 @@ define('modules/ui', [
                     }
                     if (ticketTags.length > 0) {
                         ticketTags.removeClass('hide');
+                    }
+                    if (addAttachments.length > 0) {
+                        addAttachments.removeClass('hide');
+                    }
+                    if (editIssue.length > 0) {
+                        editIssue.removeClass('hide');
+                    }
+                    if (commentActions.length > 0) {
+                        commentActions.removeClass('hide');
                     }
 
                     //Setup assignee list

@@ -68,6 +68,7 @@
                 <a href="/settings"><i class="material-icons">settings</i>Settings</a>
                 <ul id="side-nav-sub-settings" class="side-nav-sub {{#is nav 'settings'}} subMenuOpen {{/is}}">
                     <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings"><i class="material-icons fa-sub-icon">tune</i>General</a></li>
+                    <li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i>Legal</a></li>
                     <hr>
                     <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i>Tags</a></li>
                     {{#canUser data.user "settings:logs"}}

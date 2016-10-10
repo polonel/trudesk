@@ -78,7 +78,7 @@ var notifications       = require('../notifications'); // Load Push Events
 
                                          mailer.sendMail(mailOptions, function(err, info) {
                                              if (err) {
-                                                 winston.warn('[trudesk:events:ticket:created] - Error: ' + err)
+                                                 winston.warn('[trudesk:events:ticket:created] - Error: ' + err);
                                                  return c();
                                              }
 

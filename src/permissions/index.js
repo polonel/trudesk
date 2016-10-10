@@ -31,8 +31,6 @@ var canThis = function(role, a) {
     var rolePerm = _.find(roles, {'id': role});
     if (_.isUndefined(rolePerm)) return false;
 
-    if (rolePerm.allowedAction === '*') return true;
-
     if (_.indexOf(rolePerm.allowedAction, '*') !== -1) return true;
 
     var actionType = a.split(':')[0];

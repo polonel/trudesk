@@ -32,7 +32,8 @@ var COLLECTION = 'groups';
 var groupSchema = mongoose.Schema({
     name:       { type: String, required: true, unique: true },
     members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}],
-    sendMailTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
+    sendMailTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}],
+    public:     { type: Boolean, required: true, default: false }
 });
 
 groupSchema.methods.addMember = function(memberId, callback) {
@@ -60,8 +61,8 @@ groupSchema.methods.removeMember = function(memberId, callback) {
     return callback(null, true);
 };
 
-groupSchema.methods.isMember = function(arr, id) {
-    return isMember(this.members, id);
+groupSchema.methods.isMember = function(memberId) {
+    return isMember(this.members, memberId);
 };
 
 groupSchema.methods.addSendMailTo = function(memberId, callback) {
@@ -112,6 +113,12 @@ groupSchema.statics.getAllGroupsNoPopulate = function(callback) {
     return q.exec(callback);
 };
 
+groupSchema.statics.getAllPublicGroups = function(callback) {
+    var q = this.model(COLLECTION).find({public: true}).sort('name');
+
+    return q.exec(callback);
+};
+
 groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
     if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUser()");
 
@@ -144,7 +151,7 @@ groupSchema.statics.getGroupById = function(gId, callback) {
 
 function isMember(arr, id) {
     var matches = _.filter(arr, function (value) {
-        if (value._id == id) {
+        if (value._id.toString() == id.toString()) {
             return value;
         }
     });

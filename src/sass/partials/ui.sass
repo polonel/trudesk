@@ -147,6 +147,15 @@ textarea.md-input
       color: $accent_danger
     .md-input-bar
       bottom: 20px
+  &.has-error
+    .md-input-bar
+      &.bottom-fix
+        bottom: 0
+      &.error-color
+        &:before,
+        &:after
+          background: $accent_danger !important
+
 
 .md-input-wrapper-count
   padding-bottom: 24px

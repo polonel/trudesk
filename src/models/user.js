@@ -46,7 +46,7 @@ var COLLECTION = "accounts";
 var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
         password:   { type: String, required: true },
-        fullname:   { type: String, required: true },
+        fullname:   { type: String, required: true, index: true },
         email:      { type: String, required: true, unique: true },
         role:       { type: String, required: true },
         title:      String,
@@ -55,9 +55,9 @@ var userSchema = mongoose.Schema({
         resetPassHash: String,
         resetPassExpire: Date,
 
-        accessToken: { type: String, unique: true },
+        accessToken: { type: String, unique: true, sparse: true},
 
-        iOSDeviceTokens: [{type: String, unique: true}],
+        iOSDeviceTokens: [{type: String}],
 
         preferences: {
             autoRefreshTicketGrid: { type: Boolean, default: true }
@@ -65,12 +65,6 @@ var userSchema = mongoose.Schema({
 
         deleted:    { type: Boolean, default: false }
     });
-
-//Indexes
-userSchema.index({
-    username: 1,
-    fullname: 2
-});
 
 userSchema.pre('save', function(next) {
     var user = this;
@@ -337,6 +331,7 @@ userSchema.statics.createUser = function(data, callback) {
         if (_.size(items) > 0) {
           return callback("Username Already Exists", null);
         }
+
 
         return self.collection.insert(data, callback);
     });

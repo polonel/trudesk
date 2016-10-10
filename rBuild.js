@@ -23,6 +23,7 @@ modules: [
             'angular',
             'angularRoute',
             'angularCookies',
+            'angularSanitize',
             'modernizr',
             'fastclick',
             'placeholder',
@@ -71,7 +72,8 @@ modules: [
         //foundation: 'empty:',
         angular: 'empty:',
         angularRoute: 'empty:',
-        angularCookies: 'empty:'
+        angularCookies: 'empty:',
+        angularSanitize: 'empty:'
 },
 keepBuildDir: true
 })

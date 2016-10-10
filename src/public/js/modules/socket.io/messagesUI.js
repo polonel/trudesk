@@ -102,7 +102,7 @@ define('modules/socket.io/messagesUI', [
 
             var infoMessage = data.infoMessage;
             if (!_.isUndefined(infoMessage) && infoMessage.length > 0 && _.size(messages) > 0) {
-                helpers.showFlash(infoMessage);
+                helpers.UI.showSnackbar({text: infoMessage});
             }
 
             require(['pages/messages'], function(m) {
