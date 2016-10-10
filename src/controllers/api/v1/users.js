@@ -626,7 +626,7 @@ api_users.generateApiKey = function(req, res) {
  * @apiGroup User
  * @apiHeader {string} accesstoken The access token for the logged in user
  * @apiExample Example usage:
- * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generateapikey
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/removeapikey
  *
  * @apiSuccess {boolean}     success   Successful?
  *
@@ -653,7 +653,48 @@ api_users.removeApiKey = function(req, res) {
 };
 
 /**
- * @api {get} /api/v1/getassignees Get Assignees
+ * @api {post} /api/v1/users/checkemail
+ * @apiName checkEmail
+ * @apiDescription Returns a true if email exists
+ * @apiVersion 0.1.7
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/checkemail
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ * @apiSuccess {boolean}     emailexist Does Email Exist?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+
+api_users.checkEmail = function(req, res) {
+    var email = req.body.email;
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+    // if (_.isUndefined(token) || token.length < 25) return res.status(400).json({success: false, error: 'Invalid Private Token'});
+    if (_.isUndefined(email) || _.isNull(email))
+        return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+    userSchema.getUserByEmail(email, function(err, users) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (!_.isNull(users)) return res.json({success: true, exist: true});
+        else return res.json({success: true, exist: false});
+    });
+};
+
+/**
+ * @api {get} /api/v1/users/getassignees Get Assignees
  * @apiName getassignees
  * @apiDescription Returns a list of assignable users
  * @apiVersion 0.1.7

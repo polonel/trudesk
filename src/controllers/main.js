@@ -40,18 +40,25 @@ mainController.index = function(req, res, next) {
 
 mainController.about = function(req, res) {
     pkg = require('../../package.json');
-    var self = {};
-    self.content = {};
-    self.content.title = "About";
-    self.content.nav = 'about';
+    var settings = require('../models/setting');
+    settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
+        var self = {};
+        self.content = {};
+        self.content.title = "About";
+        self.content.nav = 'about';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+        self.content.data = {};
+        self.content.data.user = req.user;
+        self.content.data.common = req.viewdata;
 
-    self.content.data.version = pkg.version;
+        self.content.data.version = pkg.version;
+        if (privacyPolicy == null || _.isUndefined(privacyPolicy.value))
+            self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+        else
+            self.content.data.privacyPolicy = privacyPolicy.value;
 
-    res.render('about', self.content);
+        return res.render('about', self.content);
+    });
 };
 
 mainController.dashboard = function(req, res, next) {

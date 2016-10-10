@@ -159,11 +159,13 @@
                                                 <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
                                             </div>
                                         {{else}}
-                                            {{#canEditSelf data.user data.ticket.owner 'ticket'}}
-                                                <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
-                                                    <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
-                                                </div>
-                                            {{/canEditSelf}}
+                                            <!-- Once a new modal is in place to prevent adding of tags -->
+                                            <!-- the end user will be allowed to assign tags to their own tickets -->
+                                            <!--{{#canEditSelf data.user data.ticket.owner 'ticket'}}-->
+                                                <!--<div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>--->
+                                                    <!--<a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>-->
+                                                <!--</div>-->
+                                            <!--{{/canEditSelf}}-->
                                         {{/canUser}}
 
                                     </span>
@@ -269,7 +271,7 @@
                                         </div>
                                     </form>
                                 </div>
-                                <div class="edit-issue"><i class="material-icons">&#xE254;</i></div>
+                                <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}"><i class="material-icons">&#xE254;</i></div>
                             {{else}}
                                 {{#canEditSelf data.user data.ticket.owner 'ticket'}}
                                     <div class="edit-issue-form uk-clearfix hide" style="margin-bottom: 15px;">
@@ -287,11 +289,11 @@
                                             </div>
                                         </form>
                                     </div>
-                                    <div class="edit-issue"><i class="material-icons">&#xE254;</i></div>
+                                    <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}"><i class="material-icons">&#xE254;</i></div>
                                 {{/canEditSelf}}
                             {{/canUser}}
                             <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
-                                <div class="add-attachment" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
+                                <div class="add-attachment {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
 
                                 <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
                                 <input type="hidden" name="ownerId" value="{{data.user._id}}" />
@@ -352,7 +354,7 @@
                                             </div>
                                         {{/canEditSelf}}
                                     {{/canUser}}
-                                    <div class="comment-actions">
+                                    <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
                                         {{#canUser ../data.common.loggedInAccount "comment:delete"}}
                                             <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                         {{else}}

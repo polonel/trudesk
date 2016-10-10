@@ -43,7 +43,7 @@ define('modules/ajaximgupload', [
                     },
                     error: function(err) {
                         console.log('[trudesk:ajaximgupload:onChange] Error - ' + err);
-                        helpers.showFlash(err.responseText, true);
+                        helpers.UI.showSnackbar({text: 'Error: ' + err.responseText, actionTextColor: '#B92929'});
                     }
                 });
 

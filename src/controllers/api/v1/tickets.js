@@ -97,6 +97,18 @@ api_tickets.get = function(req, res) {
             })
         },
         function(grps, callback) {
+            var p = require('../../../permissions');
+            if (p.canThis(user.role, 'ticket:public')) {
+                groupModel.getAllPublicGroups(function(err, publicGroups) {
+                    if (err) return callback(err);
+
+                    grps = grps.concat(publicGroups);
+
+                    return callback(null, grps);
+                });
+            }
+        },
+        function(grps, callback) {
             ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
                 callback(err, results);
@@ -141,6 +153,18 @@ api_tickets.search = function(req, res) {
             groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 callback(err, grps);
             });
+        },
+        function(grps, callback) {
+            var p = require('../../../permissions');
+            if (p.canThis(req.user.role, 'ticket:public')) {
+                groupModel.getAllPublicGroups(function(err, publicGroups) {
+                    if (err) return callback(err);
+
+                    grps = grps.concat(publicGroups);
+
+                    return callback(null, grps);
+                });
+            }
         },
         function(grps, callback) {
             ticketModel.getTicketsWithSearchString(grps, searchString, function(err, results) {
@@ -249,6 +273,144 @@ api_tickets.create = function(req, res) {
 
         response.ticket = t;
         res.json(response);
+    });
+};
+
+/**
+ * @api {post} /api/v1/public/tickets/create Create Public Ticket
+ * @apiName createPublicTicket
+ * @apiDescription Creates a ticket with the given post data via public ticket submission. [Limited to Server Origin]
+ * @apiVersion 0.1.7
+ * @apiGroup Ticket
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "fullname": "Full Name",
+ *      "email": "email@email.com",
+ *      "subject": "Subject",
+ *      "issue": "Issue Exmaple"
+ * }
+ *
+ * @apiExample Example usage:
+ * curl -X POST
+ *      -H "Content-Type: application/json"
+ *      -d "{\"fullname\":\"{fullname}\",\"email\":{email}, \"subject\": \"{subject}\", \"issue\": \"{issue}\"}"
+ *      -l http://localhost/api/v1/public/tickets/create
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} ticket Saved Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_tickets.createPublicTicket = function(req, res) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
+    var Chance = require('chance'),
+        chance = new Chance();
+    var response = {};
+    response.success = true;
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(400).json({'success': false, 'error': 'Invalid Post Data'});
+
+    var user    = undefined,
+        group   = undefined,
+        ticket  = undefined,
+        plainTextPass = undefined;
+
+    async.waterfall([
+        function(next) {
+            var userSchema = require('../../../models/user');
+            plainTextPass = chance.string({length: 8, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%'});
+
+            user = new userSchema({
+                username: postData.user.email,
+                password: plainTextPass,
+                fullname: postData.user.fullname,
+                email: postData.user.email,
+                role: 'user'
+            });
+
+            user.save(function(err, savedUser) {
+                if (err) return next(err);
+
+                return next(null, savedUser);
+            });
+        },
+
+        function(savedUser, next) {
+            //Group Creation
+            var groupSchema = require('../../../models/group');
+            group = new groupSchema({
+                name: savedUser.email,
+                members: [savedUser._id],
+                sendMailTo: [savedUser._id],
+                public: true
+            });
+
+            group.save(function(err, group) {
+                if (err) return next(err);
+
+                return next(null, group, savedUser);
+            });
+        },
+
+        function(group, savedUser, next) {
+            //Create Ticket
+            var ticketTypeSchema = require('../../../models/tickettype');
+            ticketTypeSchema.getTypeByName('Issue', function(err, ticketType) {
+                if (err) return next(err);
+
+                var ticketSchema = require('../../../models/ticket');
+                var HistoryItem = {
+                    action: 'ticket:created',
+                    description: 'Ticket was created.',
+                    owner: savedUser._id
+                };
+                ticket = new ticketSchema({
+                    owner: savedUser._id,
+                    group: group._id,
+                    type: ticketType._id,
+                    priority: 1,
+                    subject: postData.ticket.subject,
+                    issue: postData.ticket.issue,
+                    history: [HistoryItem],
+                    subscribers: [savedUser._id]
+                });
+
+                var marked = require('marked');
+                var tIssue = ticket.issue;
+                tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+                ticket.issue = marked(tIssue);
+
+                ticket.save(function(err, t) {
+                    if (err) return next(err);
+
+                    emitter.emit('ticket:created', {socketId: null, ticket: t});
+
+                    return next(null, {user: savedUser, group: group, ticket: t});
+                });
+            });
+        }
+
+    ], function(err, result) {
+        if (err) winston.debug(err);
+        if (err) return res.status(400).json({'success': false, 'error': err.message});
+
+        delete result.user.password;
+        result.user.password = undefined;
+
+        return res.json({success: true, userData: {savedUser: result.user, chancepass: plainTextPass}, ticket: result.ticket});
     });
 };
 

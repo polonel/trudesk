@@ -225,6 +225,7 @@ module.exports = function(grunt) {
                             'angular',
                             'angularRoute',
                             'angularCookies',
+                            'angularSanitize',
                             'modernizr',
                             'fastclick',
                             'placeholder',

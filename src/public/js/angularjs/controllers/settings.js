@@ -13,8 +13,8 @@
  **/
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
-    return angular.module('trudesk.controllers.settings', [])
-        .controller('settingsCtrl', function($scope, $http) {
+    return angular.module('trudesk.controllers.settings', ['ngSanitize'])
+        .controller('settingsCtrl', function($scope, $http, $sce) {
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 setTimeout(function() {
@@ -154,12 +154,45 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.savePrivacyPolicy = function($event) {
+                $event.preventDefault();
+
+                $http.put('/api/v1/settings', {
+                    name: 'legal:privacypolicy', value: $scope.privacyPolicy
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+                    helpers.UI.showSnackbar('Privacy Policy Updated', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
             $scope.showOverdueTicketsChanged = function() {
                 $scope.showOverdueTickets = this.showOverdueTickets;
 
                 $http.put('/api/v1/settings', {
                     name: 'showOverdueTickets:enable',
                     value: $scope.showOverdueTickets
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.allowPublicTicketsChanged = function() {
+                $scope.allowPublicTickets = this.allowPublicTickets;
+
+                $http.put('/api/v1/settings', {
+                    name: 'allowPublicTickets:enable',
+                    value: $scope.allowPublicTickets
                 }, {
                     headers: {
                         'Content-Type': 'application/json'

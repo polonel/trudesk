@@ -48,8 +48,10 @@ define('modules/ajaxify', [
         });
 
         socketClient.ui.init(socketClient.socket);
+
         helpers.init();
         helpers.hideAllUiKitDropdowns();
+
         ajaxImgUpload.init();
         attachmentUpload.init();
         nav.init();

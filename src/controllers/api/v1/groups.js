@@ -45,11 +45,20 @@ var api_groups = {};
  */
 api_groups.get = function(req, res) {
     var user = req.user;
+    var permissions = require('../../../permissions');
+    var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
     groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
-        return res.json({success: true, groups: groups});
+        if (hasPublic) {
+            groupSchema.getAllPublicGroups(function (err, grps) {
+                groups = groups.concat(grps);
+
+                return res.json({success: true, groups: groups});
+            });
+        } else
+            return res.json({success: true, groups: groups});
     });
 };
 

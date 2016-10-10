@@ -21,6 +21,7 @@ requirejs.config({
         angular:        'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min',
         angularRoute:   'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-route',
         angularCookies: 'https://ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular-cookies',
+        angularSanitize:'https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.4.7/angular-sanitize',
         uikit:          'vendor/uikit/js/uikit_combined.min',
         modernizr:      'vendor/modernizr/modernizr',
         fastclick:      'vendor/fastclick/fastclick',
@@ -83,6 +84,10 @@ requirejs.config({
         },
 
         angularCookies: {
+            deps: ['angular']
+        },
+
+        angularSanitize: {
             deps: ['angular']
         },
 
