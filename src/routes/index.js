@@ -21,7 +21,6 @@ var express     = require('express'),
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
     router.get('/install', function(req, res){ return res.redirect('/'); });
-    //router.post('/install/mongotest', controllers.install.mongotest);
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
@@ -32,6 +31,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/resetpassword/:hash', controllers.main.resetPass);
 
     router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
+
+    router.get('/newissue', controllers.tickets.pubNewIssue);
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
@@ -170,6 +171,9 @@ function mainRoutes(router, middleware, controllers) {
 
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
+
+    router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
+    router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
 
     if (global.env === 'development') {
         router.get('/debug/sendmail', controllers.debug.sendmail);

@@ -218,7 +218,19 @@ viewController.getGroups = function(request, callback) {
             return callback(err);
         }
 
-        return callback(null, data);
+        var p = require('../../permissions');
+        if (p.canThis(request.user.role, 'ticket:public')) {
+            groupSchema.getAllPublicGroups(function(err, groups) {
+                if (err) {
+                    winston.debug(err);
+                    return callback(err);
+                }
+
+                data = data.concat(groups);
+                return callback(null, data);
+            });
+        } else
+            return callback(null, data);
     });
 };
 

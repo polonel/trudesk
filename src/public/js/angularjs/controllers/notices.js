@@ -129,7 +129,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     })
                     .error(function(err) {
                         console.log('[trudesk:notices:clearNotice] - ' + err);
-                        helpers.showFlash(err.message, true);
+                        helpers.UI.showSnackbar({text: 'Error: ' + err.message, actionTextColor: '#B92929'});
                     });
 
                 helpers.hideAllpDropDowns();
@@ -143,16 +143,16 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         '/api/v1/notices/' + id
                     ).success(function(data) {
                             if (!data.success) {
-                                helpers.showFlash(data.error, true);
+                                helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
                                 return;
                             }
 
                             removeCheckedFromGrid(id);
                             helpers.resizeDataTables('.noticesList');
-                            helpers.showFlash('Notice Successfully Deleted');
+                            helpers.UI.showSnackbar({text: 'Notice Successfully Deleted'});
                         }).error(function(err) {
                             console.log('[trudesk:notices:deleteNotices] - ' + err);
-                            helpers.showFlash(err, true);
+                            helpers.UI.showSnackbar({text: 'Error: ' + err, actionTextColor: '#B92929'});
                         });
                 });
             };

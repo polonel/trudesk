@@ -45,6 +45,32 @@ var ticketsController = {};
  */
 ticketsController.content = {};
 
+ticketsController.pubNewIssue = function(req, res) {
+    var settings = require('../models/setting');
+    settings.getSettingByName('allowPublicTickets:enable', function(err, setting) {
+        if (err) return handleError(res, err);
+        if (setting.value === true) {
+            settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
+                if (err) return handleError(res, err);
+
+                var self = ticketsController;
+                self.content = {};
+                self.content.title = "New Issue";
+                self.content.layout = false;
+                self.content.data = {};
+                if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
+                    self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+                else
+                    self.content.data.privacyPolicy = privacyPolicy.value;
+
+                return res.render('pub_createTicket', self.content);
+            });
+        } else {
+            return res.redirect('/');
+        }
+    });
+};
+
 /**
  * Get Ticket View based on ticket status
  * @param {object} req Express Request
@@ -255,15 +281,25 @@ ticketsController.processor = function(req, res) {
     async.waterfall([
         function(callback) {
             groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
+                if (err) return callback(err);
+                var p = require('../permissions');
                 userGroups = grps;
-                callback(err, grps);
+                if (p.canThis(req.user.role, 'ticket:public')) {
+                    groupSchema.getAllPublicGroups(function(err, groups) {
+                        if (err) return callback(err);
+                        userGroups = groups.concat(grps);
+
+                        return callback(null, userGroups);
+                    });
+                } else
+                    return callback(err, userGroups);
             });
         },
         function(grps, callback) {
             ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
-                callback(null, results);
+                return callback(null, results);
             });
         }
     ], function(err, results) {
@@ -330,10 +366,16 @@ ticketsController.print = function(req, res) {
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
+        var permissions = require('../permissions');
+        var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
-            winston.warn('User access ticket outside of group - UserId: ' + user._id);
-            return res.redirect('/tickets');
+            if (ticket.group.public && hasPublic) {
+                //Blank to bypass
+            } else {
+                winston.warn('User access ticket outside of group - UserId: ' + user._id);
+                return res.redirect('/tickets');
+            }
         }
 
         self.content.data.ticket = ticket;
@@ -387,9 +429,16 @@ ticketsController.single = function(req, res) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
+        var permissions = require('../permissions');
+        var hasPublic = permissions.canThis(user.role, 'ticket:public');
+
         if (!_.any(ticket.group.members, user._id)) {
-            winston.warn('User access ticket outside of group - UserId: ' + user._id);
-            return res.redirect('/tickets');
+            if (ticket.group.public && hasPublic) {
+                //Blank to bypass
+            } else {
+                winston.warn('User access ticket outside of group - UserId: ' + user._id);
+                return res.redirect('/tickets');
+            }
         }
 
         self.content.data.ticket = ticket;

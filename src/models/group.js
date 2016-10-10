@@ -32,7 +32,8 @@ var COLLECTION = 'groups';
 var groupSchema = mongoose.Schema({
     name:       { type: String, required: true, unique: true },
     members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}],
-    sendMailTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
+    sendMailTo: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}],
+    public:     { type: Boolean, required: true, default: false }
 });
 
 groupSchema.methods.addMember = function(memberId, callback) {
@@ -108,6 +109,12 @@ groupSchema.statics.getAllGroups = function(callback) {
 
 groupSchema.statics.getAllGroupsNoPopulate = function(callback) {
     var q = this.model(COLLECTION).find({}).sort('name');
+
+    return q.exec(callback);
+};
+
+groupSchema.statics.getAllPublicGroups = function(callback) {
+    var q = this.model(COLLECTION).find({public: true}).sort('name');
 
     return q.exec(callback);
 };
