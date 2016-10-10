@@ -49,7 +49,7 @@ ticketsController.pubNewIssue = function(req, res) {
     var settings = require('../models/setting');
     settings.getSettingByName('allowPublicTickets:enable', function(err, setting) {
         if (err) return handleError(res, err);
-        if (setting.value === true) {
+        if (setting && setting.value === true) {
             settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
                 if (err) return handleError(res, err);
 
