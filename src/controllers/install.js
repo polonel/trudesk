@@ -35,6 +35,13 @@ installController.index = function(req, res) {
 };
 
 installController.mongotest = function(req, res) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
     var data = req.body;
 
     var CONNECTION_URI = 'mongodb://' + data.username + ':' + data.password + '@' + data.host + ':' + data.port + '/' + data.database;
@@ -48,7 +55,55 @@ installController.mongotest = function(req, res) {
     });
 };
 
+installController.existingdb = function(req, res) {
+    var origin = req.headers.origin;
+    var shost = req.headers.host;
+    if (req.secure) shost = 'https://' + shost;
+    if (!req.secure) shost = 'http://' + shost;
+
+    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
+    var data        = req.body;
+
+    //Mongo
+    var host        = data['host'];
+    var port        = data['port'];
+    var database    = data['database'];
+    var username    = data['username'];
+    var password    = data['password'];
+
+    //Write Configfile
+    var fs = require('fs');
+    var configFile = path.join(__dirname, '../../config.json');
+
+    var conf = {
+        mongo: {
+            host: host,
+            port: port,
+            username: username,
+            password: password,
+            database: database
+        }
+    };
+
+    fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
+        if (err) {
+            winston.error('FS Error: ' + err.message);
+            return res.status(400).json({success: false, error: err.message});
+        }
+
+        return res.json({success: true});
+    });
+};
+
 installController.install = function(req, res) {
+    var origin = req.headers.origin;
+    var shost = req.headers.host;
+    if (req.secure) shost = 'https://' + shost;
+    if (!req.secure) shost = 'http://' + shost;
+
+    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
     var db                  = require('../database');
     var userSchema          = require('../models/user');
     var groupSchema         = require('../models/group');
@@ -224,6 +279,13 @@ installController.install = function(req, res) {
 };
 
 installController.restart = function(req, res) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
     var pm2 = require('pm2');
     pm2.connect(function(err) {
         if (err) {
