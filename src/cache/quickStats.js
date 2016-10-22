@@ -39,7 +39,7 @@ var init = function(tickets, callback) {
     async.series([
         function(done) {
             if (tickets) {
-                ticketSchema.populate(tickets, {path: 'owner comments comments.owner'}, function(err, _tickets) {
+                ticketSchema.populate(tickets, {path: 'owner comments comments.owner assignee'}, function(err, _tickets) {
                     $tickets = _tickets;
 
                     return done();
@@ -48,7 +48,7 @@ var init = function(tickets, callback) {
                 ticketSchema.getAllNoPopulate(function(err, tickets) {
                     if (err) return done(err);
 
-                    ticketSchema.populate(tickets, {path: 'owner comments comments.owner'}, function(err, _tickets) {
+                    ticketSchema.populate(tickets, {path: 'owner comments comments.owner assignee'}, function(err, _tickets) {
                         if (err) return done(err);
 
                         $tickets = _tickets;
@@ -117,12 +117,20 @@ function buildMostRequester(ticketArray, callback) {
     return callback(r);
 }
 
+function flatten(arr) {
+    return arr.reduce(function (flat, toFlatten) {
+        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
+}
+
 function buildMostComments(ticketArray, callback) {
     var commenters = _.map(ticketArray, function(m, k) {
         return _.map(m.comments, function(i,j) {
             return i.owner.fullname;
         });
     });
+
+    commenters = flatten(commenters);
 
     var c = _.reduce(commenters, function(c, k) {
         c[k]++;

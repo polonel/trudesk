@@ -80,7 +80,8 @@ var nconf = require('nconf'),
         router.get('/install', controllers.install.index);
         router.post('/install', controllers.install.install);
         router.post('/install/mongotest', controllers.install.mongotest);
-        router.get('/install/restart', controllers.install.restart);
+        router.post('/install/existingdb', controllers.install.existingdb);
+        router.post('/install/restart', controllers.install.restart);
 
         app.use('/', router);
 

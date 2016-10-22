@@ -295,6 +295,14 @@
 
             <!--<a href="https://www.mongodb.com/" class="no-ajaxy" target="_blank">What is MongoDB?</a>-->
         <!--</div>-->
+        <!--<div class="slide hide">-->
+            <!--<h2 style="margin-bottom: 25px;">Existing Database?</h2>-->
+            <!--<p style="text-align: left; margin-bottom: 20px;">-->
+                <!--Is this mongodb connection an existing database or a new database?-->
+            <!--</p>-->
+            <!--<button class="btn md-btn md-btn-wave md-btn-success" type="button" style="margin: 0 0 10px 0 !important;" data-next>New Database</button>-->
+            <!--<button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>-->
+        <!--</div>-->
         <div class="slide hide">
             <h2 style="margin-bottom: 25px;">Setup Account</h2>
             <p style="text-align: left;">
@@ -329,6 +337,15 @@
         <div class="slide hide">
             <h2 style="margin-bottom: 25px;">Installing...</h2>
             <p style="text-align: left;">Putting it all together. Trudesk is currently building itself and powering up its engine. Please wait, this may take a minute.</p>
+            <div class="loader">
+                <svg style="width: 140px; " viewBox="0 0 288.9 70.1">
+                    <line class="l1" x1="0" y1="0" x2="288" y2="0"></line>
+                </svg>
+            </div>
+        </div>
+        <div id="savingConfig" class="slide hide">
+            <h2 style="margin-bottom: 25px;">Saving Configuration...</h2>
+            <p style="text-align: left;">Currently writing trudesk configuration file to an existing MongoDB connection. Please wait, this should only take a second.</p>
             <div class="loader">
                 <svg style="width: 140px; " viewBox="0 0 288.9 70.1">
                     <line class="l1" x1="0" y1="0" x2="288" y2="0"></line>
@@ -376,6 +393,7 @@
         });
 
         $('button[data-next]').click(function() {
+            if (isDoubleClicked($(this))) return;
             var nextSlideIdx = activeSlide + 1;
             var nextSlide = $('.slide-' + nextSlideIdx);
             if (nextSlide.length > 0) {
@@ -393,7 +411,68 @@
         var mongoConnection = undefined;
         var adminAccount = undefined;
 
+        $('button#existing-database-btn').click(function() {
+            if (isDoubleClicked($(this))) return;
+
+            var $thisSlide = $('.activeSlide');
+            var $savingConfig = $('#savingConfig');
+            $thisSlide.fadeOut(300, function() {
+                $thisSlide.removeClass('activeSlide').addClass('hide');
+                $savingConfig.css({display: 'none'}).removeClass('hide');
+                $savingConfig.fadeIn(300, function() {
+                    $savingConfig.addClass('activeSlide');
+                });
+            });
+
+            setTimeout(function() {
+                var mongoFormData = $('form#mongoConnection').serializeObject();
+                $.ajax({
+                    method: 'POST',
+                    url: '/install/existingdb',
+                    data: {
+                        host: mongoFormData['mongo-server'],
+                        port: mongoFormData['mongo-port'],
+                        username: mongoFormData['mongo-username'],
+                        password: mongoFormData['mongo-password'],
+                        database: mongoFormData['mongo-database']
+                    },
+                    error: function(e) {
+                        window.Snackbar.show({
+                            text: 'Unable to save configuration!',
+                            actionTextColor: 'red'
+                        });
+
+                        console.log(e);
+                    },
+                    success: function(data) {
+                        if (!data.success) {
+                            window.Snackbar.show({
+                                text: 'Unable to save configuration!',
+                                actionTextColor: 'red'
+                            });
+
+                            console.log(data);
+                        } else {
+                            window.Snackbar.show({
+                                text: 'Configuration File Saved!'
+                            });
+                            var $savingConfig = $('#savingConfig');
+                            var $restartSlide = $('#restartSlide');
+                            $savingConfig.fadeOut(300, function() {
+                                $savingConfig.addClass('hide');
+                                $restartSlide.css({display: 'none'}).removeClass('hide');
+                                $restartSlide.fadeIn(300, function() {
+                                    $restartSlide.addClass('activeSlide');
+                                });
+                            })
+                        }
+                    }
+                });
+            }, 1000);
+        });
+
         $('button#test-mongo-connection').click(function() {
+            if (isDoubleClicked($(this))) return;
             var $connectBtn = $(this);
             $connectBtn.prop('disabled', true).text('Trying to connect...');
             var mongoFormData = $('form#mongoConnection').serializeObject();
@@ -497,8 +576,11 @@
             }, 10000);
 
             $.ajax({
-                method: 'GET',
-                url: '/install/restart'
+                method: 'POST',
+                url: '/install/restart',
+                data: {
+
+                }
             });
         });
 
@@ -538,6 +620,20 @@
                     }
                 }
             });
+        }
+
+        function isDoubleClicked(element) {
+            //if already clicked return TRUE to indicate this click is not allowed
+            if (element.data("isclicked")) return true;
+
+            //mark as clicked for 1 second
+            element.data("isclicked", true);
+            setTimeout(function () {
+                element.removeData("isclicked");
+            }, 1000);
+
+            //return FALSE to indicate this click was allowed
+            return false;
         }
 
         $.fn.serializeObject = function(){
