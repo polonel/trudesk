@@ -39,6 +39,13 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
+              viewController.unreadMessageCount(request, function(err, data) {
+                 if (err) return callback(err);
+                 viewdata.messages.unreadCount = data;
+                 return callback();
+              });
+          },
+          function(callback) {
               viewController.getUserNotifications(request, function(err, data) {
                   if (err) return callback(err);
                   viewdata.notifications.items = data;
@@ -49,18 +56,6 @@ viewController.getData = function(request, cb) {
               viewController.getUnreadNotificationsCount(request, function(err, count) {
                   if (err) return callback(err);
                   viewdata.notifications.unreadCount = count;
-                  return callback();
-              });
-          },
-          function(callback) {
-              viewController.unreadMessageCount(request, function(data) {
-                  viewdata.messages.unreadCount = data;
-                  return callback();
-              });
-          },
-          function(callback) {
-              viewController.getUserUnreadMessages(request, function(data) {
-                  viewdata.messages.unreadItems = data;
                   return callback();
               });
           },
@@ -163,25 +158,26 @@ viewController.getUnreadNotificationsCount = function(request, callback) {
 };
 
 viewController.unreadMessageCount = function(request, callback) {
-    var messageObj = require('../../models/message');
-    messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
-        if (err) {
-            return callback(0);
-        }
-
-        return callback(data);
-    });
+    return callback(null, 0);
+    // var messageObj = require('../../models/message');
+    // messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
+    //     if (err) {
+    //         return callback(0);
+    //     }
+    //
+    //     return callback(data);
+    // });
 };
 
 viewController.getUserUnreadMessages = function(request, callback) {
-    var messageSchema = require('../../models/message');
-    messageSchema.getUserUnreadMessages(request.user._id, function(err, data) {
-        if (err) {
-            return callback();
-        }
-
-        return callback(data);
-    });
+    // var messageSchema = require('../../models/message');
+    // messageSchema.getUserUnreadMessages(request.user._id, function(err, data) {
+    //     if (err) {
+    //         return callback();
+    //     }
+    //
+    //     return callback(data);
+    // });
 };
 
 viewController.getUsers = function(request, callback) {

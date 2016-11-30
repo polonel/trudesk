@@ -55,11 +55,11 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
-    router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
-    router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
-    router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
-    router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
-    router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
+    // router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
+    // router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    // router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
+    // router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
+    // router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
 
     //Calendar
     router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
@@ -162,6 +162,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
 
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
+    router.post('/api/v1/messages/conversation/start', middleware.api, controllers.api.messages.startConversation);
+    router.get('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.getMessagesForConversation);
+    router.get('/api/v1/messages/conversations', middleware.api, controllers.api.messages.getConversations);
+    router.get('/api/v1/messages/conversations/recent', middleware.api, controllers.api.messages.getRecentConversations);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
 
     router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
@@ -176,6 +180,20 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
 
     if (global.env === 'development') {
+        router.get('/debug/message', function(req, res) {
+            var mSchema = require('../models/chat/message');
+            var Message = new mSchema({
+                conversationId: '5836942a2d302233741073b1',
+                body: 'Test Message',
+                owner: req.user._id
+            });
+
+            Message.save(function(err) {
+                if (err) return res.status(400).json({err: err});
+                return res.json({success: true});
+            })
+        });
+
         router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
         router.get('/debug/cache/refresh', function (req, res) {

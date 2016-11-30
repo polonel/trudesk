@@ -60,18 +60,18 @@ define('pages/messages', [
     };
 
     messagesPage.loadMessage = function(id, callback) {
-        var rootUrl = History.getRootUrl();
-        var msgUrl = rootUrl + 'messages/' + id;
-        $.ajax({
-            url:        msgUrl,
-            type:       'GET',
-            success:    function(data) {
-                            callback(data);
-            },
-            error:      function(error) {
-                            throw new Error(error);
-            }
-        });
+        // var rootUrl = History.getRootUrl();
+        // var msgUrl = rootUrl + 'messages/' + id;
+        // $.ajax({
+        //     url:        msgUrl,
+        //     type:       'GET',
+        //     success:    function(data) {
+        //                     callback(data);
+        //     },
+        //     error:      function(error) {
+        //                     throw new Error(error);
+        //     }
+        // });
     };
 
     messagesPage.clearActive = function() {
@@ -95,21 +95,21 @@ define('pages/messages', [
 
     messagesPage.startRefresh = function() {
         //Refresh Current Folder
-        var folder = $('#__folder').html();
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
-
-        refreshInterval = setInterval(function() {
-            if (folder.length < 1) folder = 0;
-            ui.sendUpdateMessageFolder(folder);
-        }, 5000);
+        // var folder = $('#__folder').html();
+        // if (refreshInterval) {
+        //     clearInterval(refreshInterval);
+        // }
+        //
+        // refreshInterval = setInterval(function() {
+        //     if (folder.length < 1) folder = 0;
+        //     ui.sendUpdateMessageFolder(folder);
+        // }, 5000);
     };
 
     messagesPage.stopRefresh = function() {
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
+        // if (refreshInterval) {
+        //     clearInterval(refreshInterval);
+        // }
     };
 
     return messagesPage;

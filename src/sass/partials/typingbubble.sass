@@ -1,0 +1,65 @@
+=trf($trf)
+  $value: ''
+  @each $tr in $trf
+    @if $value == ''
+      $value: $tr
+    @else
+      $value: $value $tr
+  transform: $value
+
+=square($s)
+  width: $s
+  height: $s
+
+.user-is-typing-wrapper
+  position: relative
+  min-height: 40px
+  .chat-user-profile
+    height: 34px
+    width: 34px
+    position: absolute
+    left: 5px
+    display: block
+    img
+      width: 34px
+      height: 34px
+      +borderRadius(5px)
+.user-is-typing
+  width: 50px
+  height: 25px
+  background-color: #fff
+  margin: 0 0 0 52px
+  border-radius: 4px
+  border: 1px solid rgba(0,0,0,.18)
+  position: relative
+  padding: 0 10px 8px
+  display: flex
+  justify-content: space-around
+  align-items: flex-end
+  &:after
+    content: ''
+    position: absolute
+    width: 8px
+    height: 13px
+    top: 5px
+    right: 100%
+    background: url(/img/chat-arrow.png) no-repeat #fff
+    background-size: auto
+  .dot
+    display: inline-block
+    background-color: #90949c
+    border-radius: 50%
+    +square(5px)
+    animation: jump 1.5s linear infinite
+    &:nth-of-type(1)
+    &:nth-of-type(2)
+      animation-delay: .1s
+    &:nth-of-type(3)
+      animation-delay: .2s
+    @keyframes jump
+      0%
+        +trf((translateY(0)))
+      18%
+        +trf((translateY(-7px)))
+      36%, 100%
+        +trf((translateY(0px)))

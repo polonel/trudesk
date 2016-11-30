@@ -55,33 +55,33 @@ module.exports = function(ws) {
         }, 5000);
 
         function updateMailNotifications() {
-            var userId = socket.request.user._id;
-            var messageSchema = require('./models/message');
-            var payload = {};
-            async.parallel([
-                function(callback) {
-                    messageSchema.getUnreadInboxCount(userId, function(err, objs) {
-                        if (err) return callback();
-                        payload.unreadCount = objs;
-
-                       callback();
-                    });
-                },
-
-                function(callback){
-                    messageSchema.getUserUnreadMessages(userId, function(err, objs) {
-                        if (err) return callback();
-                        payload.unreadItems = objs;
-
-                        callback();
-                    });
-                }
-            ], function(err) {
-                if (err) return true;
-
-                utils.sendToSelf(socket, 'updateMailNotifications', payload);
-            });
-
+            utils.sendToSelf(socket, 'updateMailNotifications', {unreadCount: 0, unreadItems: []});
+            // var userId = socket.request.user._id;
+            // var messageSchema = require('./models/message');
+            // var payload = {};
+            // async.parallel([
+            //     function(callback) {
+            //         messageSchema.getUnreadInboxCount(userId, function(err, objs) {
+            //             if (err) return callback();
+            //             payload.unreadCount = objs;
+            //
+            //            callback();
+            //         });
+            //     },
+            //
+            //     function(callback){
+            //         messageSchema.getUserUnreadMessages(userId, function(err, objs) {
+            //             if (err) return callback();
+            //             payload.unreadItems = objs;
+            //
+            //             callback();
+            //         });
+            //     }
+            // ], function(err) {
+            //     if (err) return true;
+            //
+            //     utils.sendToSelf(socket, 'updateMailNotifications', payload);
+            // });
         }
 
         socket.on('updateMailNotifications', function() {
@@ -179,23 +179,23 @@ module.exports = function(ws) {
         });
 
         socket.on('updateMessageFolder', function(data) {
-            var messageSchema = require('./models/message');
-            var user = socket.request.user;
-            var folder = data.folder;
-            messageSchema.getUserFolder(user._id, folder, function(err, items) {
-                if (err) return true;
-
-                var payload = {
-                    folder: folder,
-                    items: items
-                };
-
-                utils.sendToSelf(socket, 'updateMessagesFolder', payload);
-            });
+            // var messageSchema = require('./models/message');
+            // var user = socket.request.user;
+            // var folder = data.folder;
+            // messageSchema.getUserFolder(user._id, folder, function(err, items) {
+            //     if (err) return true;
+            //
+            //     var payload = {
+            //         folder: folder,
+            //         items: items
+            //     };
+            //
+            //     utils.sendToSelf(socket, 'updateMessagesFolder', payload);
+            // });
         });
 
         socket.on('updateUsers', function(data) {
-            utils.sendToSelf(socket, 'updateUsers', usersOnline);
+            utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', usersOnline);
         });
 
         socket.on('updateAssigneeList', function() {
@@ -459,88 +459,6 @@ module.exports = function(ws) {
             });
         });
 
-        socket.on('setMessageRead', function(messageId) {
-            var messageSchema = require('./models/message');
-            messageSchema.getMessageById(messageId, function(err, message) {
-                if (err) {
-                    winston.warn(err.message);
-                    return true;
-                }
-
-                if (!message.unread) return true;
-
-                message.updateUnread(false, function(err, m) {
-                    if (err) {
-                        winston.warn(err.message);
-                        return true;
-                    }
-
-                    utils.sendToSelf(socket, 'updateSingleMessageItem', m);
-                });
-            });
-        });
-
-        socket.on('moveMessageToFolder', function(messageIds, toFolder, folderToRefresh) {
-            var messageSchema = require('./models/message');
-            var infoMessage = undefined;
-            switch(toFolder) {
-                case 2:
-                    infoMessage = 'Message Successfully Move to Trash.';
-                    break;
-            }
-
-            async.each(messageIds, function(mId, callback) {
-                messageSchema.getMessageById(mId, function(err, message) {
-                    message.moveToFolder(toFolder, function(err, m) {
-                       callback(err);
-                    });
-                });
-            }, function(err) {
-                if (err) {
-                    return true;
-                }
-
-                var user = socket.request.user;
-                messageSchema.getUserFolder(user._id, folderToRefresh, function(err, items) {
-                    if (err) return true;
-
-                    var payload = {
-                        folder: folderToRefresh,
-                        items: items,
-                        infoMessage: infoMessage
-                    };
-
-                    utils.sendToSelf(socket, 'updateMessagesFolder', payload);
-                });
-            });
-        });
-
-        socket.on('deleteMessages', function(messageIds) {
-            var messageSchema = require('./models/message');
-            async.each(messageIds, function(mId, callback) {
-                messageSchema.deleteMessage(mId, function(err, message) {
-                    callback(err);
-                });
-            }, function(err) {
-                if (err) {
-                    return true;
-                }
-
-                var user = socket.request.user;
-                messageSchema.getUserFolder(user._id, 2, function(err, items) {
-                    if (err) return true;
-
-                    var payload = {
-                        folder: 2,
-                        items: items,
-                        infoMessage: 'Message Successfully Deleted.'
-                    };
-
-                    utils.sendToSelf(socket, 'updateMessagesFolder', payload);
-                });
-            });
-        });
-
         socket.on('logs:fetch', function() {
             var path = require('path');
             var ansi_up = require('ansi_up');
@@ -651,6 +569,51 @@ module.exports = function(ws) {
             utils.sendToUser(sockets, usersOnline, fromUser.username, 'chatMessage', data);
         });
 
+        socket.on('chatTyping', function(data) {
+            var convoId = data.cid;
+            var to = data.to;
+            var from = data.from;
+
+            var user = null;
+            var fromUser = null;
+
+            _.find(usersOnline, function(v,k) {
+                if (String(v.user._id) === String(to)) {
+                    user = v.user;
+                }
+                if (String(v.user._id) === String(from)) {
+                    fromUser = v.user;
+                }
+            });
+
+            if (_.isNull(user) || _.isNull(fromUser)) {
+                return;
+            }
+
+            data.toUser = user;
+            data.fromUser = fromUser;
+
+            utils.sendToUser(sockets, usersOnline, user.username, 'chatTyping', data);
+        });
+
+        socket.on('chatStopTyping', function(data) {
+            var convoId = data.cid;
+            var to = data.to;
+
+            _.find(usersOnline, function(v,k) {
+                if (String(v.user._id) === String(to)) {
+                    user = v.user;
+                }
+            });
+
+            if (_.isNull(user)) {
+                return;
+            }
+
+            data.toUser = user;
+
+            utils.sendToUser(sockets, usersOnline, user.username, 'chatStopTyping', data);
+        });
 
         socket.on('disconnect', function() {
             var user = socket.request.user;

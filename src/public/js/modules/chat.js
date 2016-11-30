@@ -26,7 +26,7 @@ define('modules/chat',[
         socket = sock;
 
         socket.removeAllListeners('connect');
-        socket.on('connect', function(data) {
+        socket.on('connect', function() {
             socket.emit('joinChatServer');
         });
 
@@ -48,7 +48,7 @@ define('modules/chat',[
                 if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
                 html += '<li>';
                 html += '<a class="messageNotification no-ajaxify" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
-                html += '<div class="clearfix">';
+                html += '<div class="uk-clearfix">';
                 html += '<div class="profilePic left"><img src="/uploads/users/' + imageUrl + '" alt="profile"/></div>';
                 html += '<div class="messageAuthor"><strong>' + onlineUser.fullname + '</strong></div>';
                 html += '<div class="messageSnippet">';
@@ -98,19 +98,58 @@ define('modules/chat',[
                 selector = '.chat-box[data-chat-userId="' + from + '"]';
                 chatBox = $(selector);
                 if (chatBox.length < 1) {
-                    chatClient.openChatWindow(data.fromUser);
-                    chatBox = $(selector);
+                    chatClient.openChatWindow(data.fromUser, function() {
+                        chatBox = $(selector);
+                        chatMessage = createChatMessageFromUser(data.fromUser, data.message);
+                        chatMessageList = chatBox.find('.chat-message-list:first');
+                        chatMessageList.append(chatMessage);
+                        scroller = chatBox.find('.chat-box-messages');
+                        helpers.scrollToBottom(scroller);
+                    });
+                } else {
+                    chatMessage = createChatMessageFromUser(data.fromUser, data.message);
+                    chatMessageList = chatBox.find('.chat-message-list:first');
+                    chatMessageList.append(chatMessage);
+                    scroller = chatBox.find('.chat-box-messages');
+                    helpers.scrollToBottom(scroller);
                 }
-
-                chatMessage = createChatMessageFromUser(data.fromUser, data.message);
-                chatMessageList = chatBox.find('.chat-message-list:first');
-                chatMessageList.append(chatMessage);
-
-                scroller = chatBox.find('.chat-box-messages');
-                helpers.scrollToBottom(scroller);
             }
+
+            //Ajaxify Any ticket links
+            $('body').ajaxify();
+        });
+
+        socket.removeAllListeners('chatTyping');
+        socket.on('chatTyping', function(data) {
+            var chatBox = $('.chat-box[data-chat-conversation="' + data.cid + '"]');
+            var isTypingDiv = chatBox.find('.user-is-typing-wrapper');
+            isTypingDiv.removeClass('hide');
+            var scroller = chatBox.find('.chat-box-messages');
+            helpers.scrollToBottom(scroller);
+        });
+
+        socket.removeAllListeners('chatStopTyping');
+        socket.on('chatStopTyping', function(data) {
+            var chatBox = $('.chat-box[data-chat-conversation="' + data.cid + '"]');
+            var isTypingDiv = chatBox.find('.user-is-typing-wrapper');
+            isTypingDiv.addClass('hide');
+            var scroller = chatBox.find('.chat-box-messages');
+            helpers.scrollToBottom(scroller);
         });
     };
+
+    var typingTimeout = {};
+    var isTyping = {};
+    function stopTyping(cid, to) {
+        isTyping[cid] = false;
+        typingTimeout[cid] = undefined;
+        var loggedInAccountId = $('#__loggedInAccount__id').text();
+        socket.emit('chatStopTyping', {
+            cid: cid,
+            to: to,
+            from: loggedInAccountId
+        });
+    }
 
     chatClient.bindActions = function() {
         $(document).ready(function() {
@@ -124,24 +163,78 @@ define('modules/chat',[
                 });
             });
 
+            var $textarea = $('textarea.textAreaAutogrow');
 
-            $('textarea.textAreaAutogrow').off('keydown');
-            $('textarea.textAreaAutogrow').autogrow({
+            $textarea.off('keyup');
+            $textarea.off('keydown');
+            $textarea.on('keydown', function(e) {
+                if (e.keyCode == 13)
+                    return;
+
+                var self = $(this);
+                var cid = self.parent().parent().attr('data-chat-conversation');
+                var user = self.parent().parent().attr('data-chat-userid');
+
+                if (isTyping[cid]) {
+                    clearTimeout(typingTimeout[cid]);
+                    typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, user);
+                    return;
+                }
+
+                socket.emit('chatTyping', {
+                    cid: cid,
+                    to: user,
+                    from: $('#__loggedInAccount__id').text()
+                });
+
+                isTyping[cid] = true;
+
+                if (typingTimeout[cid] == undefined)
+                    typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, user);
+            });
+            $textarea.autogrow({
                 postGrowCallback: chatBoxTextAreaGrowCallback,
                 enterPressed: function(self, v) {
                     var messages = self.parent().siblings('.chat-box-messages');
+                    var cid = self.parent().parent().attr('data-chat-conversation');
+                    var loggedInAccountId = $('#__loggedInAccount__id').text();
                     //var messageDiv = createChatMessageDiv(v);
                     //messages.children('.chat-message-list').append(messageDiv);
                     helpers.scrollToBottom(messages);
                     //messages.getNiceScroll(0).resize().doScrollTop(messages.height(), 100);
                     if (v.length < 1) return;
-                    socket.emit('chatMessage',
-                        {
-                            to: self.parents('.chat-box').attr('data-chat-userId'),
-                            from: $('.profile-name[data-userId]').attr('data-userId'),
-                            type: 's',
-                            message: v
-                        });
+
+                    //Send Message
+                    $.ajax({
+                        url: '/api/v1/messages/send',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            cId: cid,
+                            owner: loggedInAccountId,
+                            body: v
+                        }),
+                        success: function(data) {
+                            var userId = self.parents('.chat-box').attr('data-chat-userId')
+                            socket.emit('chatMessage',
+                                {
+                                    conversation: cid,
+                                    to: userId,
+                                    from: loggedInAccountId,
+                                    type: 's',
+                                    messageId: data.message._id,
+                                    message: data.message.body
+                                });
+
+                            clearTimeout(typingTimeout[cid]);
+                            stopTyping(cid, userId);
+                        },
+                        error: function(error) {
+                            console.log('[trudesk:chat:bindActions] Error');
+                            console.log(error);
+                            helpers.UI.showSnackbar(error, true)
+                        }
+                    });
                 }
             });
 
@@ -159,7 +252,7 @@ define('modules/chat',[
 
             $('.chatCloseBtn').off('click');
             $('.chatCloseBtn').click(function() {
-                $(this).parents('.chat-box[data-chat-userId]').remove();
+                $(this).parents('.chat-box[data-chat-userId]').parent().remove();
             });
 
             $('.chat-box-title').off('click');
@@ -178,21 +271,104 @@ define('modules/chat',[
         });
     };
 
-    chatClient.openChatWindow = function(user) {
-        var username = $('.profile-name[data-username]').attr('data-username');
-        if (user.username === username) return true;
+    //Make this return messages with single HTTP request
+    function startConversation(owner, receiver, callback) {
+        console.log('O=' + owner);
+        console.log('R=' + receiver);
+        if (owner === receiver) {
+            return callback('Invalid Participants');
+        } else {
+            $.ajax({
+                url: '/api/v1/messages/conversation/start',
+                type: 'POST',
+                contentType: 'application/json',
+                dataType: 'json',
+                data: JSON.stringify({
+                    owner: owner,
+                    participants: [
+                        owner,
+                        receiver
+                    ]
+                }),
+                success: function(data) {
+                    $.ajax({
+                        url: '/api/v1/messages/conversation/' + data.conversation._id,
+                        type: 'GET',
+                        success: function(d) {
+                            data.conversation.messages = d.messages;
+                            return callback(null, data.conversation)
+                        },
+                        error: function(err) {
+                            return callback(err);
+                        }
+                    });
+                },
+                error: function(err) {
+                    return callback(err);
+                }
+            });
+        }
+    }
 
-        var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userId="' + user._id + '"]');
-        if (cWindow.length > 0) {
-            cWindow.find('textarea').focus();
-            return true;
+    function loadChatMessages(chatBox, messageArray, callback) {
+        var to = chatBox.attr('data-chat-userId'),
+            chatMessage,
+            chatMessageList,
+            scroller;
+
+        messageArray = messageArray.reverse();
+
+        _.each(messageArray, function(m) {
+            if (m.owner._id == to) {
+                chatMessage = createChatMessageFromUser(m.owner, m.body);
+                chatMessageList = chatBox.find('.chat-message-list:first');
+                chatMessageList.append(chatMessage);
+                scroller = chatBox.find('.chat-box-messages');
+                helpers.scrollToBottom(scroller);
+            } else {
+                chatMessage = createChatMessageDiv(m.body);
+                chatMessageList = chatBox.find('.chat-message-list:first');
+                scroller = chatBox.find('.chat-box-messages');
+                chatMessageList.append(chatMessage);
+                helpers.scrollToBottom(scroller);
+            }
+        });
+
+        //Ajaxify Any ticket links
+        $('body').ajaxify();
+    }
+
+    chatClient.openChatWindow = function(user, complete) {
+        var loggedInAccountId = $('#__loggedInAccount__id').text();
+        if (_.isUndefined(loggedInAccountId)) {
+            return helpers.UI.showSnackbar('Unable to start chat', true);
         }
 
-        var html = '<div class="chat-box-position">';
-            html += '<div class="chat-box" data-chat-userId="' + user._id + '">';
+        startConversation(loggedInAccountId, user._id, function(err, convo) {
+            if (err) {
+                console.log('[trudesk:chat:openChatWindow] - Error');
+                console.log(err);
+                return helpers.UI.showSnackbar('Unable to start chat', true);
+            }
+            var username = $('.profile-name[data-username]').attr('data-username');
+            if (user.username === username) return true;
+
+            var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userId="' + user._id + '"]');
+            if (cWindow.length > 0) {
+                loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userId="' + user._id + '"]'), convo.messages);
+                cWindow.find('textarea').focus();
+                helpers.scrollToBottom(cWindow.find('.chat-box-messages'));
+                return true;
+            }
+
+            var imageUrl = user.image;
+            if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
+
+            var html = '<div class="chat-box-position">';
+            html += '<div class="chat-box" data-chat-conversation="' + convo._id + '" data-chat-userId="' + user._id + '">';
             html += '<div class="chat-box-title">';
             html += '<div class="chat-box-title-buttons right">';
-            html += '<a href="#" class="chatCloseBtn"><i class="fa fa-times"></i></a>';
+            html += '<a href="#" class="chatCloseBtn"><i class="material-icons material-icons-small">close</i></a>';
             html += '</div>';
             html += '<h4 class="chat-box-title-text-wrapper">';
             html += '<a href="#">' + user.fullname + '</a>';
@@ -201,6 +377,10 @@ define('modules/chat',[
             html += '<div class="chat-box-messages scrollable">';
             html += '<div class="chat-message-list" data-chat-userId="' + user._id + '">';
             html += '</div>';
+            html += '<div class="user-is-typing-wrapper hide">';
+            html += '<div class="chat-user-profile"><a href="#"><img src="/uploads/users/' + imageUrl + '" alt="' + user.fullname + '"/></a></div>';
+            html += '<div class="user-is-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
+            html += '</div>';
             html += '</div>';
             html += '<div class="chat-box-text">';
             html += '<textarea class="textAreaAutogrow autogrow-short" name="message" rows="1"></textarea>';
@@ -208,11 +388,18 @@ define('modules/chat',[
             html += '</div>';
             html += '</div>';
 
-        $('.chat-box-wrapper').append(html);
-        $('.chat-box[data-chat-userId="' + user._id + '"] textarea').focus();
-        helpers.hideAllpDropDowns();
-        helpers.setupScrollers('.chat-box[data-chat-userId="' + user._id + '"] > div.scrollable');
-        this.bindActions();
+            $('.chat-box-wrapper').append(html);
+            $('.chat-box[data-chat-userId="' + user._id + '"] textarea').focus();
+            loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userId="' + user._id + '"]'), convo.messages);
+            helpers.hideAllpDropDowns();
+            helpers.setupScrollers('.chat-box[data-chat-userId="' + user._id + '"] > div.scrollable');
+            chatClient.bindActions();
+            helpers.scrollToBottom($('.chat-box[data-chat-userId="' + user._id + '"]').find('.chat-box-messages'));
+
+            //Fire when window is done loading
+            if (_.isFunction(complete))
+                return complete();
+        });
     };
 
     function UpdateOnlineBubbles(usersOnline) {
@@ -230,7 +417,7 @@ define('modules/chat',[
     }
 
     function createChatMessageDiv(message) {
-        var html  = '<div class="chat-message chat-message-user clearfix" data-chat-messageId="12">';
+        var html  = '<div class="chat-message chat-message-user uk-clearfix" data-chat-messageId="">';
         html += '<div class="chat-text-wrapper">';
         html += '<div class="chat-text chat-text-user">';
         html += '<div class="chat-text-inner"><span>' + message + '</span>';
@@ -242,7 +429,7 @@ define('modules/chat',[
     function createChatMessageFromUser(user, message) {
         var imageUrl = user.image;
         if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
-        var html  = '<div class="chat-message clearfix">';
+        var html  = '<div class="chat-message uk-clearfix">';
             html += '<div class="chat-user-profile"><a href="#"><img src="/uploads/users/' + imageUrl + '" alt="' + user.fullname + '"/></a></div>';
             html += '<div class="chat-text-wrapper">';
             html += '<div class="chat-text">';
@@ -262,20 +449,13 @@ define('modules/chat',[
 
         var textAreaHeight = self.parent().outerHeight();
         var messages = self.parent().siblings('.chat-box-messages');
+        messages.css({'min-height': '170px', 'max-height': '220px'});
+        self.parent().css({'max-height': '77px', 'min-height':'16px'});
 
-        switch (textAreaHeight) {
-            case 29:
-                messages.height(204);
-                break;
-            case 46:
-                messages.height(187);
-                break;
-            case 63:
-                messages.height(172);
-                break;
-            default:
-                messages.height(156);
-        }
+        if (newHeight < 80)
+            messages.height(messages.height() - (newHeight - oldHeight));
+        //else
+        //     messages.height(156);
 
         var ns = messages.getNiceScroll(0);
         if (ns) {
