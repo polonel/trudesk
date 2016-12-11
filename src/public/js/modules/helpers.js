@@ -617,6 +617,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                     cursoropacitymax: opacityMax,
                     horizrailenabled: false
                 });
+
+                $(this).trigger('scrollable', this);
             });
         });
     };
@@ -688,6 +690,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                 var h = $(window).height();
                 if (self.css('borderTopStyle') === "solid")
                     h = h - 1;
+
+                var dataOffset = self.attr('data-offset');
+                if (!_.isUndefined(dataOffset))
+                    h = h - dataOffset;
 
                 //self.css('overflow', 'hidden');
                 self.height(h - (self.offset().top));

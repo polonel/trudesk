@@ -55,7 +55,8 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
-    // router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
+    router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
     // router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
     // router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
     // router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);

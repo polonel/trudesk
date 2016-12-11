@@ -284,6 +284,20 @@ label.md-label
     color: white
     background: lighten($accent_color, 5%)
 
+.uk-tooltip-left:after
+  display: block !important
+  left: 100%
+  top: 50%
+  content: " "
+  height: 0
+  width: 0
+  position: absolute
+  pointer-events: none
+  border: 5px solid rgba(136, 183, 213, 0)
+  border-left-color: #424242
+  margin-top: -5px
+
+
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
 

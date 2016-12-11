@@ -1,74 +1,87 @@
-<div id="__folder" class="hide">{{folderNum}}</div>
 <div class="uk-grid uk-grid-collapse" ng-controller="messagesCtrl">
     <div class="uk-width-3-10 message-list">
-        <div class="page-title noshadow nopadding-right">
+        <div class="page-title noshadow nopadding-right" style="border-top: none !important; height: 68px !important; padding-left: 20px !important;">
             <div class="page-title-border-right">
-                <p>Messages</p>
+                <p style="font-size: 24px;">Conversations</p>
             </div>
         </div>
 
         <div class="page-content-left noborder full-height">
-            <form id="messagesForm" action="#" style="margin: 0">
-                <ul class="message-items full-height scrollable" data-folder="{{lowercase folder}}">
-                    <li class="message-folder font-weight-300">{{{folder}}}</li>
-
-                    {{#foreach data.messages.items}}
-                        <li class="{{#if unread}}unread message-tag{{/if}}" data-messageId="{{_id}}">
-                            <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                            <label for="c_{{_id}}" style="top: 23px"></label>
-                            <span class="message-date">{{calendarDate date "MM/DD/YYYY"}}</span>
-                            <span class="message-from">{{from.fullname}}</span>
-                            <span class="message-subject">{{subject}}</span>
-                        </li>
-                    {{/foreach}}
-
-
-
-                </ul>
-            </form>
-        </div>
-    </div>
-    <div class="uk-width-7-10 nopadding page-message">
-        <div class="page-title-right nopadding noshadow">
-            <ul class="button-group uk-clearfix">
-                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="showNewMessage()"><i class="fa fa-pencil"></i>New</a></li>
-                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="replyClicked($event)"><i class="fa fa-reply"></i>Reply</a></li>
-                <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="forwardClicked($event)"><i class="fa fa-mail-forward"></i>Forward</a></li>
-                <li class=""><a href="#" class="btn md-btn-wave-light"><i class="fa fa-print"></i>Print</a></li>
-                {{#is folder 'Trash'}}
-                    <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="deleteSelectedMessages($event)"><i class="fa fa-trash-o"></i>Delete</a></li>
-                {{else}}
-                    <li class=""><a href="#" class="btn no-ajaxy md-btn-wave-light" ng-click="moveSelectedMessagesToTrash($event)"><i class="fa fa-trash-o"></i>Trash</a></li>
-                {{/is}}
+            <ul class="message-items full-height scrollable">
+                {{#foreach data.conversations}}
+                    <li ng-click="loadConversation('{{_id}}');" data-conversation-id="{{_id}}" data-updatedAt="{{updatedAt}}">
+                        <div class="profile-pic">
+                            {{#if partner.image}}
+                                <img src="/uploads/users/{{partner.image}}" class="uk-border-circle" />
+                            {{else}}
+                                <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle" />
+                            {{/if}}
+                            <span class="user-offline uk-border-circle" data-user-status-id="{{partner._id}}"></span>
+                        </div>
+                        <div class="convo-info">
+                            <span class="message-from">{{partner.fullname}}</span>
+                            <span class="message-date">{{calendarDate updatedAt}}</span>
+                            <span class="message-subject">{{recentMessage}}</span>
+                        </div>
+                    </li>
+                {{/foreach}}
             </ul>
         </div>
-
-        <div id="message-content" class="page-content page-content-right full-height scrollable">
-            {{#if data.messages.message}}
-                <div class="message-header">
-                    <div class="message-from-id hide">{{data.messages.message.from._id}}</div>
-                    <div class="message-profile-image">
-                        {{#if data.messages.message.from.image}}
-                            <img src="/uploads/users/{{data.messages.message.from.image}}" alt="{{data.messages.message.from.fullname}}"/>
+    </div>
+    {{#if data.conversation}}
+        <div class="uk-width-7-10 nopadding page-message" style="position:relative;">
+            <div id="message-content" class="page-content page-content-right full-height scrollable" data-offset="41" style="margin-bottom: 41px !important;" data-conversation-id="{{data.conversation._id}}">
+                <span class="conversation-start">Conversation Started on {{formatDate data.conversation.createdAt 'MMM Do YYYY \at h:mma'}}</span>
+                <div id="conversation-scrollspy" class="uk-text-center">
+                    <i class="uk-icon-refresh uk-icon-spin uk-hidden"></i>
+                </div>
+                <div id="messages">
+                    {{#each data.conversation.messages}}
+                        {{#isNotAsString owner._id ../data.common.loggedInAccount._id}}
+                            <div class="message message-left" data-log="{{owner._id}}" data-d="{{../data.common.loggedInAccount._id}}">
+                                {{#if owner.image}}
+                                    <img src="/uploads/users/{{owner.image}}" data-uk-tooltip="{pos:'left', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                {{else}}
+                                    <img src="/uploads/users/defaultProfile.jpg" data-uk-tooltip="{pos:'left', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                {{/if}}
+                                <div class="message-body">
+                                    <p>{{{body}}}</p>
+                                </div>
+                            </div>
                         {{else}}
-                            <img src="/uploads/users/defaultProfile.jpg" alt="Default User Image"/>
+                            <div class="message message-right" data-log="{{owner._id}}" data-d="{{../data.common.loggedInAccount._id}}">
+                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}">
+                                    <p>{{{body}}}</p>
+                                </div>
+                            </div>
+                        {{/isNotAsString}}
+                    {{/each}}
+                </div>
 
+                <div class="user-is-typing-wrapper padding-10 uk-clearfix hide">
+                    <div class="chat-user-profile smaller round" style="position:relative; float: left;">
+                        {{#if data.conversation.partner.image}}
+                            <img class="round" src="/uploads/users/{{data.conversation.partner.image}}"/>
+                        {{else}}
+                            <img class="round" src="/uploads/users/defaultProfile.jpg"/>
                         {{/if}}
                     </div>
-                    <h1>{{data.messages.message.subject}}</h1>
-                    <span>From:</span>
-                    <h5>{{data.messages.message.from.fullname}}</h5>
-                    <br/>
-                    <span>Sent:</span>
-                    <h5>{{formatDate data.messages.message.date "MM/DD/YYYY hh:mma"}}</h5>
+                    <div class="user-is-typing hide-arrow" style="margin-left: 45px; margin-top: 3px; background: #ddd; border: none;">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>
                 </div>
-                <div class="message">
-                    {{{data.messages.message.message}}}
-                </div>
-            {{/if}}
-        </div>
-    </div>
+            </div>
 
+            <div class="message-textbox">
+                <form ng-submit="sendChatMessage('{{data.conversation._id}}', '{{data.conversation.partner._id}}', $event)">
+                    <input type="text" name="chatMessage" placeholder="Type your message..." ng-keydown="onKeyDown('{{data.conversation._id}}', '{{data.conversation.partner._id}}', $event);" />
+                    <button type="submit">SEND</button>
+                </form>
+            </div>
+        </div>
+    {{/if}}
 </div>
 
 {{#contentFor 'js-plugins'}}

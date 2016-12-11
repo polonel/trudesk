@@ -14,136 +14,35 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history'], function(angular, _, $, helpers, socket, md, UIkit) {
     return angular.module('trudesk.controllers.messages', [])
-        .controller('messagesCtrl', ['openNewMessageWindow', '$scope', '$http', '$window', function(openNewMessageWindow, $scope, $http, $window) {
-            $scope.showNewMessage = function() {
-                openNewMessageWindow.openWindow();
+        .controller('messagesCtrl', ['$scope', '$http', '$window', function($scope, $http, $window) {
+
+            $scope.loadConversation = function(convoId) {
+                History.pushState(null, null, '/messages/' + convoId );
             };
 
-            $scope.replyClicked = function($event) {
-                $event.preventDefault();
-                var messageContent = $('#message-content');
-                if (messageContent.length < 1) return true;
-                var replyToId = messageContent.find('.message-from-id').text().trim();
-                var subjectText = messageContent.find('.message-header > h1').text().trim();
-                subjectText = 'RE: ' + subjectText;
+            $scope.sendChatMessage = function(cid, toUserId, event) {
+                var form = $(event.target);
+                if (form.length < 1) return;
 
-                if (replyToId.length < 1 || subjectText.length < 1) return true;
+                var input = form.find('input[name="chatMessage"]');
 
-                openNewMessageWindow.openWindowWithOptions(replyToId, subjectText, '');
-            };
+                if (input.val().length < 1)
+                    return false;
 
-            $scope.forwardClicked = function($event) {
-                $event.preventDefault();
-                var messageContent = $('#message-content');
-                if (messageContent.length < 1) return true;
+                socket.chat.sendChatMessage(cid, toUserId, input.val(), function(err) {
+                    input.val('');
 
-                var subjectText = messageContent.find('.message-header > h1').text().trim();
-                subjectText = 'Fwd: ' + subjectText;
-                var messageText = messageContent.find('.message').html();
-
-                if (messageText.length < 1 || subjectText.length < 1) return true;
-
-                openNewMessageWindow.openWindowWithOptions(null, subjectText, messageText);
-            };
-
-            $scope.updateMessagesInbox = function($event) {
-                $event.preventDefault();
-
-                socket.ui.sendUpdateMessageFolder(0);
-            };
-
-            $scope.deleteSelectedMessages = function($event) {
-                $event.preventDefault();
-
-                var checkMessages = getChecked();
-                if (_.size(checkMessages) < 1) {
-                    var activeMessage = $('.message-items').find('li.active');
-                    if (activeMessage.length > 0) {
-                        var messageId = activeMessage.attr('data-messageid');
-                        checkMessages.push(messageId);
-                    }
-                }
-
-                if (_.size(checkMessages) < 1) return true;
-
-                socket.ui.deletedMessages(checkMessages);
-            };
-
-            $scope.moveSelectedMessagesToTrash = function($event) {
-                $event.preventDefault();
-
-                var checkMessages = getChecked();
-                var folder = $('#__folder').html();
-
-                if (_.size(checkMessages) < 1) {
-                    var activeMessage = $('.message-items').find('li.active');
-                    if (activeMessage.length > 0) {
-                        var messageId = activeMessage.attr('data-messageid');
-                        checkMessages.push(messageId);
-                    }
-                }
-
-                if (_.size(checkMessages) < 1) return true;
-
-                socket.ui.moveMessageToFolder(checkMessages, 2, folder);
-            };
-
-            function getChecked() {
-                var checkedIds = [];
-                $('#messagesForm input[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
-                    var $messageList = self.parents('li');
-                    if (!_.isUndefined($messageList)) {
-                        var messageOid = $messageList.attr('data-messageid');
-
-                        if (!_.isUndefined(messageOid) && messageOid.length > 0) {
-                            checkedIds.push(messageOid);
-                        }
-                    }
+                    socket.chat.stopTyping(cid, toUserId);
                 });
 
-                return checkedIds;
-            }
-        }])
-        .factory('openNewMessageWindow', function() {
-            return {
-                openWindow: function openWindow() {
-                    helpers.hideAllpDropDowns();
-                    var $newMessageModal = $('#newMessageModal');
-                    var $newMessageTo = $('#newMessageTo');
-                    $newMessageTo.find("option").prop('selected', false);
-                    $newMessageTo.trigger('chosen:updated');
-                    $('#newMessageSubject').val('');
-                    $('#newMessageText').val('');
+                event.preventDefault();
+            };
 
-                    UIkit.modal($newMessageModal).show();
-                },
-                openWindowWithOptions: function openWindowWithOptions(to, subject, text) {
-                    helpers.hideAllpDropDowns();
-                    var $newMessageModal = $('#newMessageModal');
-                    var $newMessageTo = $('#newMessageTo');
-                    $newMessageTo.find("option").prop('selected', false);
-                    $newMessageTo.find("option[value='" + to + "']").prop('selected', true);
-                    $newMessageTo.trigger('chosen:updated');
-                    $('#newMessageSubject').val(subject);
-                    var $mText = md(text);
-                    $mText = $mText.trim();
-                    $('#newMessageText').val($mText);
-
-                    UIkit.modal($newMessageModal).show();
-                },
-                closeWindow: function closeWindow() {
-                    //Close reveal and refresh page.
-                    var $newMessageModal = $('#newMessageModal');
-                    UIkit.modal($newMessageModal).hide();
-
-                    //Clear Fields
-                    var $newMessageTo = $('#newMessageTo');
-                    $newMessageTo.find("option").prop('selected', false);
-                    $newMessageTo.trigger('chosen:updated');
-                    $('#newMessageSubject').val('');
-                    $('#newMessageText').val('');
+            $scope.onKeyDown = function(cid, toUserId, $event) {
+                if ($event.keyCode != 13) {
+                    socket.chat.startTyping(cid, toUserId);
                 }
             }
-        });
+
+        }]);
 });

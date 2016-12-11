@@ -22,7 +22,7 @@ var viewController = {};
 var viewdata = {};
 viewdata.tickets = {};
 viewdata.notifications = {};
-viewdata.messages = {};
+viewdata.users = {};
 
 viewController.getData = function(request, cb) {
       async.parallel([
@@ -36,13 +36,6 @@ viewController.getData = function(request, cb) {
                     viewdata.noticeCookieName = data.name + "_" + moment(data.activeDate).format("MMMDDYYYY_HHmmss");
 
                   return callback();
-              });
-          },
-          function(callback) {
-              viewController.unreadMessageCount(request, function(err, data) {
-                 if (err) return callback(err);
-                 viewdata.messages.unreadCount = data;
-                 return callback();
               });
           },
           function(callback) {
@@ -61,7 +54,7 @@ viewController.getData = function(request, cb) {
           },
           function(callback) {
               viewController.getUsers(request, function(users) {
-                  viewdata.messages.users = users;
+                  viewdata.users = users;
 
                   return callback();
               });
@@ -157,29 +150,6 @@ viewController.getUnreadNotificationsCount = function(request, callback) {
     });
 };
 
-viewController.unreadMessageCount = function(request, callback) {
-    return callback(null, 0);
-    // var messageObj = require('../../models/message');
-    // messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
-    //     if (err) {
-    //         return callback(0);
-    //     }
-    //
-    //     return callback(data);
-    // });
-};
-
-viewController.getUserUnreadMessages = function(request, callback) {
-    // var messageSchema = require('../../models/message');
-    // messageSchema.getUserUnreadMessages(request.user._id, function(err, data) {
-    //     if (err) {
-    //         return callback();
-    //     }
-    //
-    //     return callback(data);
-    // });
-};
-
 viewController.getUsers = function(request, callback) {
     var userSchema = require('../../models/user');
     userSchema.findAll(function(err, users) {
@@ -189,6 +159,14 @@ viewController.getUsers = function(request, callback) {
         }
 
         var u = _.reject(users, function(u) { return u.deleted == true; });
+        delete u.password;
+        delete u.role;
+        delete u.resetPassHash;
+        delete u.resetPassExpire;
+        delete u.accessToken;
+        delete u.iOSDeviceTokens;
+        delete u.preferences;
+
         u = _.sortBy(u, 'fullname');
 
         return callback(u);

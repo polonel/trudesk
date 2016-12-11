@@ -16,9 +16,11 @@
   li
     height: 85px
     padding-top: 17px
-    padding-left: 32px
+    padding-left: 10px
     border-bottom: 1px solid $page_content_title_border_color
     position: relative
+    overflow: hidden
+    text-overflow: '...'
 
     &:hover
       background: white
@@ -53,6 +55,28 @@
       .message-subject
         font-weight: 600
 
+    .profile-pic
+      float: left
+      position: relative
+      img
+        height: 50px
+        width: 50px
+    .convo-info
+      margin-left: 65px
+      height: 50px
+      max-height: 50px
+    .message-subject,
+    .message-from,
+    .message-date
+      padding: 0
+    .message-subject
+      margin-top: 3px
+      color: lighten($text_color, 40%)
+      margin-right: 15px
+      text-overflow: ellipsis
+      white-space: nowrap
+      overflow: hidden
+
 
 .message-folder
   //padding: 35px 0
@@ -72,7 +96,7 @@
   top: 20px
   right: 20px
   color: #8891a3
-  font-size: 12px
+  font-size: 13px
   font-family: "Source Sans Pro", sans-serif
 .invoice-date
   font-family: "Roboto", sans-serif
@@ -97,6 +121,8 @@
   color: $text_color
   font-size: 14px
   padding-left: 8px
+  padding-top: 3px !important
+  font-weight: 500
 
 .invoice-name
   font-family: "Roboto", sans-serif
@@ -107,7 +133,7 @@
 .invoice-payee
   display: block
   padding-left: 25px
-  font-family: "Roboto", sans-serif
+  font-family: "Source Sans Pro", sans-serif
   font-size: 14px
   color: $text_color
 .invoice-payee
@@ -116,6 +142,47 @@
 
 .message-content
   background: white
+  position: relative
+.message-textbox
+  position: absolute
+  bottom: 1px
+  left: 0
+  right: 0
+  height: 40px
+  border: none
+  border-top: 1px solid #ddd
+  background: #fff
+  button
+    border: none
+    margin: 0
+    padding: 0
+    background: transparent
+    color: $accent_blue
+    display: block
+    float: right
+    width: 10%
+    line-height: 40px
+    font-family: "Source Sans Pro", sans-serif
+    font-size: 14px
+    text-transform: uppercase
+  input
+    border: none
+    float: left
+    width: 90%
+    padding: 5px 8px
+    height: 40px
+    font-size: 14px
+    font-family: "Source Sans Pro", sans-serif
+  a
+    display: block
+    float: right
+    width: 100%
+    font-family: "Source Sans Pro", sans-serif
+    font-size: 14px
+    text-transform: uppercase
+    text-align: right
+    padding-right: 20px
+    line-height: 40px
 
 .message-header
   border-bottom: 1px solid $page_content_title_border_color
@@ -183,16 +250,45 @@ input[type="checkbox"]:checked.poloCheckbox + label
 //.onoffswitch input[type="checkbox"]:checked + label
 //  background: $accent_color
 
-.message
-  padding: 30px 30px 30px 60px
-  overflow: auto
+.conversation-start
+  width: 100%
+  text-align: center
+  display: block
+  padding: 10px 5px 5px 5px
+  font-size: 11px
+  color: #989898
+  font-family: "Roboto", sans-serif
 
-  p
-    font-size: 14px
-    font-weight: normal
-    line-height: 30px
-    margin-bottom: 40px
-    color: #222
+.message
+  padding: 10px
+  display: flex
+  width: auto
+  max-width: 60%
+  clear: both
+  img
+    +square(30px)
+    +borderRadius(50%)
+    float: left
+  .message-body
+    margin-left: 10px
+    padding: 5px 8px
+    background: #ddd
+    +borderRadius(5px)
+    p
+      color: lighten(#222222, 20%)
+      font-size: 13px
+      //font-weight: 300
+      margin: 0
+  &.message-right
+    float: right
+    .message-body
+      background: $accent_color
+      margin-left: 0
+      margin-right: 10px
+      float: right
+      p
+        color: #fff
+
 
 //Navigation Components
 .button-group

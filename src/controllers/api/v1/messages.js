@@ -67,10 +67,12 @@ api_messages.getRecentConversations = function(req, res) {
                 if (err) return done(err);
                 var r = item.toObject();
                 r.recentMessage = _.first(m);
-                r.recentMessage.__v = undefined;
+                if (!_.isUndefined(r.recentMessage)) {
+                    r.recentMessage.__v = undefined;
+                    result.push(r);
+                }
 
-                result.push(r);
-                done();
+                return done();
             })
         }, function(err) {
             if (err) return res.status(400).json({success: false, error: err});
@@ -156,15 +158,17 @@ api_messages.send = function(req, res) {
 
     if (!_.isNull(matches) && matches.length > 0) {
         _.each(matches, function(m) {
-            console.log(m);
             message = message.replace(m, '<a href="/tickets/' + m.replace('T#', '').replace('t#', '') + '">T#' + m.replace('T#', '').replace('t#', '') + '</a>');
         });
     }
 
     async.waterfall([
         function(done) {
+            // Updated conversation to save UpdatedAt field automatically.
             conversationSchema.findOneAndUpdate({_id: cId}, {}, {new: false}, function(err, convo) {
                 if (err) return done(err);
+                if (convo == null || convo == undefined)
+                    return done('Invalid Conversation: ' + convo );
                 return done(null, convo);
             });
         },
@@ -198,6 +202,8 @@ api_messages.send = function(req, res) {
 
 api_messages.getMessagesForConversation = function(req, res) {
     var conversation = req.params.id;
+    var page = (req.query.page == undefined ? 0 : req.query.page);
+
     if (_.isUndefined(conversation) || _.isNull(conversation))
         return res.status(400).json({success: false, error: 'Invalid Conversation'});
 
@@ -213,7 +219,7 @@ api_messages.getMessagesForConversation = function(req, res) {
             });
         },
         function(done) {
-            messageSchema.getConversation(conversation, function(err, messages) {
+            messageSchema.getConversationWithObject({cid: conversation, page: page}, function(err, messages) {
                 if (err) return done(err);
 
                 response.messages = messages;

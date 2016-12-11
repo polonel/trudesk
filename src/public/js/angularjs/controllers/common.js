@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history'], function(angular, _, $, socket, UI) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-        .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
+        .controller('commonCtrl', ['$scope', '$http', '$cookies', '$timeout', function($scope, $http, $cookies, $timeout) {
 
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
@@ -122,11 +122,6 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 if ($id.length < 1) return;
 
                 socket.ui.markNotificationRead($id);
-            };
-
-            $scope.openNewMessageWindow = function($event) {
-                $event.preventDefault();
-                openNewMessageWindow.openWindow();
             };
 
             $scope.closeNoticeAlert = function($event) {

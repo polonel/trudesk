@@ -170,6 +170,9 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select {
 .padding-right-15 {
   padding-right: 15px !important; }
 
+.padding-10 {
+  padding: 10px !important; }
+
 .padtop20 {
   padding-top: 20px !important; }
 
@@ -217,6 +220,11 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select {
   border: 0 !important;
   margin: 0 !important;
   padding: 0 !important; }
+
+.round {
+  border-radius: 50% !important;
+  -webkit-border-radius: 50% !important;
+  -moz-border-radius: 50% !important; }
 
 .font-weight-300 {
   font-weight: 300 !important; }
@@ -461,6 +469,12 @@ a.button {
   height: 100%;
   margin: 0;
   padding: 0; }
+  .disconnected p {
+    color: white;
+    font-size: 22px;
+    font-weight: 300;
+    padding: 0;
+    margin: 0; }
 
 .page-center {
   position: absolute;
@@ -1387,6 +1401,106 @@ ul.side-nav-sub {
   background: url(/img/invoices.png) 0 0 no-repeat;
   top: 10px !important; }
 
+.uk-offcanvas {
+  background: rgba(0, 0, 0, 0.3); }
+
+.uk-offcanvas-bar {
+  background: #e6e7e8; }
+
+.online-list-sidebar h5 {
+  font-family: "Source Sans Pro", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: uppercase;
+  margin: 20px 5px 5px 5px;
+  color: #7c8186; }
+
+.online-list-sidebar hr {
+  width: 100%;
+  height: 1px;
+  display: block;
+  margin: 5px 0;
+  background: #ddd; }
+
+.online-list-sidebar .online-list-head {
+  height: 40px;
+  width: 100%;
+  background: #595f69;
+  margin-bottom: 8px; }
+  .online-list-sidebar .online-list-head h3 {
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 14px;
+    text-align: center;
+    width: 100%;
+    display: block;
+    color: #FFFFFF;
+    margin: 0;
+    line-height: 40px; }
+
+.online-list-sidebar .online-list,
+.online-list-sidebar .user-list {
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  .online-list-sidebar .online-list li a,
+  .online-list-sidebar .user-list li a {
+    display: block;
+    padding: 5px 10px;
+    color: #3c3c3c;
+    position: relative; }
+    .online-list-sidebar .online-list li a:hover,
+    .online-list-sidebar .user-list li a:hover {
+      background: #d2d3d6;
+      color: #3c3c3c;
+      text-decoration: none; }
+    .online-list-sidebar .online-list li a .online-list-user .image,
+    .online-list-sidebar .online-list li a .user-list-user .image,
+    .online-list-sidebar .user-list li a .online-list-user .image,
+    .online-list-sidebar .user-list li a .user-list-user .image {
+      height: 30px;
+      width: 30px;
+      float: left;
+      display: block; }
+      .online-list-sidebar .online-list li a .online-list-user .image img,
+      .online-list-sidebar .online-list li a .user-list-user .image img,
+      .online-list-sidebar .user-list li a .online-list-user .image img,
+      .online-list-sidebar .user-list li a .user-list-user .image img {
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%; }
+    .online-list-sidebar .online-list li a .online-name,
+    .online-list-sidebar .online-list li a .user-name,
+    .online-list-sidebar .user-list li a .online-name,
+    .online-list-sidebar .user-list li a .user-name {
+      font-size: 13px;
+      font-weight: 400;
+      margin-left: 40px;
+      line-height: 30px; }
+    .online-list-sidebar .online-list li a .online-status,
+    .online-list-sidebar .user-list li a .online-status {
+      position: absolute;
+      right: 10px;
+      top: 15px;
+      display: block; }
+      .online-list-sidebar .online-list li a .online-status:after,
+      .online-list-sidebar .user-list li a .online-status:after {
+        content: '';
+        background: #29b955;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        display: block; }
+    .online-list-sidebar .online-list li a .online-status-offline,
+    .online-list-sidebar .user-list li a .online-status-offline {
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      display: block;
+      font-size: 11px;
+      color: #88909c; }
+
 .message-list {
   padding: 0 !important; }
   @media only screen and (min-width: 40.063em) and (max-width: 64em) {
@@ -1405,9 +1519,11 @@ ul.side-nav-sub {
   .message-items li {
     height: 85px;
     padding-top: 17px;
-    padding-left: 32px;
+    padding-left: 10px;
     border-bottom: 1px solid #dadada;
-    position: relative; }
+    position: relative;
+    overflow: hidden;
+    text-overflow: '...'; }
     .message-items li:hover {
       background: white;
       cursor: pointer; }
@@ -1430,6 +1546,27 @@ ul.side-nav-sub {
     .message-items li.unread .message-from,
     .message-items li.unread .message-subject {
       font-weight: 600; }
+    .message-items li .profile-pic {
+      float: left;
+      position: relative; }
+      .message-items li .profile-pic img {
+        height: 50px;
+        width: 50px; }
+    .message-items li .convo-info {
+      margin-left: 65px;
+      height: 50px;
+      max-height: 50px; }
+    .message-items li .message-subject,
+    .message-items li .message-from,
+    .message-items li .message-date {
+      padding: 0; }
+    .message-items li .message-subject {
+      margin-top: 3px;
+      color: #a2a2a2;
+      margin-right: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden; }
 
 .message-folder {
   line-height: 85px;
@@ -1447,7 +1584,7 @@ ul.side-nav-sub {
   top: 20px;
   right: 20px;
   color: #8891a3;
-  font-size: 12px;
+  font-size: 13px;
   font-family: "Source Sans Pro", sans-serif; }
 
 .invoice-date {
@@ -1474,7 +1611,9 @@ ul.side-nav-sub {
   font-family: "Source Sans Pro", sans-serif;
   color: #3c3c3c;
   font-size: 14px;
-  padding-left: 8px; }
+  padding-left: 8px;
+  padding-top: 3px !important;
+  font-weight: 500; }
 
 .invoice-name {
   font-family: "Roboto", sans-serif;
@@ -1485,7 +1624,7 @@ ul.side-nav-sub {
 .invoice-payee {
   display: block;
   padding-left: 25px;
-  font-family: "Roboto", sans-serif;
+  font-family: "Source Sans Pro", sans-serif;
   font-size: 14px;
   color: #3c3c3c; }
 
@@ -1494,7 +1633,49 @@ ul.side-nav-sub {
   padding-top: 5px; }
 
 .message-content {
-  background: white; }
+  background: white;
+  position: relative; }
+
+.message-textbox {
+  position: absolute;
+  bottom: 1px;
+  left: 0;
+  right: 0;
+  height: 40px;
+  border: none;
+  border-top: 1px solid #ddd;
+  background: #fff; }
+  .message-textbox button {
+    border: none;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    color: #2196F3;
+    display: block;
+    float: right;
+    width: 10%;
+    line-height: 40px;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase; }
+  .message-textbox input {
+    border: none;
+    float: left;
+    width: 90%;
+    padding: 5px 8px;
+    height: 40px;
+    font-size: 14px;
+    font-family: "Source Sans Pro", sans-serif; }
+  .message-textbox a {
+    display: block;
+    float: right;
+    width: 100%;
+    font-family: "Source Sans Pro", sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    text-align: right;
+    padding-right: 20px;
+    line-height: 40px; }
 
 .message-header {
   border-bottom: 1px solid #dadada;
@@ -1547,15 +1728,48 @@ input[type="checkbox"].poloCheckbox + label {
 input[type="checkbox"]:checked.poloCheckbox + label {
   background-position: 0 -14px; }
 
+.conversation-start {
+  width: 100%;
+  text-align: center;
+  display: block;
+  padding: 10px 5px 5px 5px;
+  font-size: 11px;
+  color: #989898;
+  font-family: "Roboto", sans-serif; }
+
 .message {
-  padding: 30px 30px 30px 60px;
-  overflow: auto; }
-  .message p {
-    font-size: 14px;
-    font-weight: normal;
-    line-height: 30px;
-    margin-bottom: 40px;
-    color: #222; }
+  padding: 10px;
+  display: flex;
+  width: auto;
+  max-width: 60%;
+  clear: both; }
+  .message img {
+    height: 30px;
+    width: 30px;
+    border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    float: left; }
+  .message .message-body {
+    margin-left: 10px;
+    padding: 5px 8px;
+    background: #ddd;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px; }
+    .message .message-body p {
+      color: #555555;
+      font-size: 13px;
+      margin: 0; }
+  .message.message-right {
+    float: right; }
+    .message.message-right .message-body {
+      background: #E74C3C;
+      margin-left: 0;
+      margin-right: 10px;
+      float: right; }
+      .message.message-right .message-body p {
+        color: #fff; }
 
 .button-group li.active > a,
 .button-group li.active > button {
@@ -6134,7 +6348,8 @@ a.waves-effect .waves-ripple {
 
 .user-is-typing-wrapper {
   position: relative;
-  min-height: 40px; }
+  min-height: 40px;
+  clear: both; }
   .user-is-typing-wrapper .chat-user-profile {
     height: 34px;
     width: 34px;
@@ -6147,6 +6362,12 @@ a.waves-effect .waves-ripple {
       border-radius: 5px;
       -webkit-border-radius: 5px;
       -moz-border-radius: 5px; }
+    .user-is-typing-wrapper .chat-user-profile.smaller {
+      width: 30px;
+      height: 30px; }
+      .user-is-typing-wrapper .chat-user-profile.smaller img {
+        width: 30px;
+        height: 30px; }
 
 .user-is-typing {
   width: 50px;
@@ -6169,6 +6390,8 @@ a.waves-effect .waves-ripple {
     right: 100%;
     background: url(/img/chat-arrow.png) no-repeat #fff;
     background-size: auto; }
+  .user-is-typing.hide-arrow:after {
+    content: none; }
   .user-is-typing .dot {
     display: inline-block;
     background-color: #90949c;
@@ -6467,6 +6690,19 @@ label.md-label {
   .uk-button.uk-button-accent:hover, .uk-button.uk-button-accent:active, .uk-button.uk-button-accent:focus {
     color: white;
     background: #ea6153; }
+
+.uk-tooltip-left:after {
+  display: block !important;
+  left: 100%;
+  top: 50%;
+  content: " ";
+  height: 0;
+  width: 0;
+  position: absolute;
+  pointer-events: none;
+  border: 5px solid rgba(136, 183, 213, 0);
+  border-left-color: #424242;
+  margin-top: -5px; }
 
 .title-shadow {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24) !important; }

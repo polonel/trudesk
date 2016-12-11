@@ -14,6 +14,7 @@
 .user-is-typing-wrapper
   position: relative
   min-height: 40px
+  clear: both
   .chat-user-profile
     height: 34px
     width: 34px
@@ -24,6 +25,11 @@
       width: 34px
       height: 34px
       +borderRadius(5px)
+    &.smaller
+      +square(30px)
+      img
+        +square(30px)
+
 .user-is-typing
   width: 50px
   height: 25px
@@ -45,6 +51,9 @@
     right: 100%
     background: url(/img/chat-arrow.png) no-repeat #fff
     background-size: auto
+  &.hide-arrow
+    &:after
+      content: none
   .dot
     display: inline-block
     background-color: #90949c

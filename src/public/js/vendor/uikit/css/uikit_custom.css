@@ -2250,7 +2250,6 @@ a.uk-datepicker-table-muted {
     min-width: 80px;
     text-align: center;
     z-index: 1114;
-    opacity: 0;
 }
 .uk-tooltip .uk-tooltip-inner {
     text-overflow: ellipsis;

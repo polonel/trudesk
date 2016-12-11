@@ -53,8 +53,8 @@ conversationSchema.methods.isGroup = function() {
 
 conversationSchema.statics.getConversations = function(userId, callback) {
     if (!_.isArray(userId)) userId = [userId];
-    var size = userId.length;
-    return this.model(COLLECTION).find({ participants: {$size: size, $all: userId} })
+    //var size = userId.length;
+    return this.model(COLLECTION).find({ participants: {$size: 2, $all: userId} })
         .sort('-updatedAt')
         .exec(callback);
 };
@@ -63,7 +63,7 @@ conversationSchema.statics.getConversation = function(convoId, callback) {
     return this.model(COLLECTION).findOne({ _id: convoId })
         .populate({
             path: 'participants',
-            select: 'username fullname email title image'
+            select: '_id username fullname email title image lastOnline'
         })
         .exec(callback);
 };
@@ -71,13 +71,12 @@ conversationSchema.statics.getConversation = function(convoId, callback) {
 conversationSchema.statics.getConversationsWithLimit = function(userId, limit, callback) {
    // if (!_.isArray(userId)) userId = [userId];
     var l = (!_.isUndefined(limit)) ? limit : 1000;
-    var size = userId.length;
     return this.model(COLLECTION).find({ participants: userId })
         .sort('-updatedAt')
         .limit(l)
         .populate({
             path: 'participants',
-            select: 'username fullname email title image'
+            select: 'username fullname email title image lastOnline'
         })
         .exec(callback);
 

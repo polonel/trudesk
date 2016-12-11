@@ -161,6 +161,8 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
   padding-right: 15px !important
 .padding-right-15
   padding-right: 15px !important
+.padding-10
+  padding: 10px !important
 .padtop20
   padding-top: 20px !important
 .padright20
@@ -194,6 +196,9 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
   border: 0 !important
   margin: 0 !important
   padding: 0 !important
+
+.round
+  +borderRadius(50% !important)
 
 .font-weight-300
   font-weight: 300 !important
@@ -438,6 +443,12 @@ a.button
   height: 100%
   margin: 0
   padding: 0
+  p
+    color: white
+    font-size: 22px
+    font-weight: 300
+    padding: 0
+    margin: 0
 
 .page-center
   position: absolute
@@ -463,6 +474,7 @@ a.button
 @import "partials/common"
 @import "partials/topnav"
 @import "partials/sidebar"
+@import "partials/offcanvas"
 @import "partials/messages"
 @import "partials/tickets"
 @import "partials/datatables"
