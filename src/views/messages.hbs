@@ -1,20 +1,24 @@
 <div class="uk-grid uk-grid-collapse" ng-controller="messagesCtrl">
     <div class="uk-width-3-10 message-list">
         <div class="page-title noshadow nopadding-right" style="border-top: none !important; height: 68px !important; padding-left: 20px !important;">
-            <div class="page-title-border-right">
+            <div class="page-title-border-right" style="position:relative;">
                 <p style="font-size: 24px;">Conversations</p>
+                <div id="convo-actions" style="position:absolute; top: 20px; right: 15px;">
+                    <a style="display: block; height: 28px;" ng-click="showUserList($event);"><i class="material-icons no-ajaxy" style="font-size: 28px; font-weight: 300;">add</i></a>
+                    <a class="no-ajaxy" style="display: none; height: 28px; line-height: 30px; font-size: 16px; font-weight: 300;" ng-click="hideUserList($event);">Cancel</a>
+                </div>
             </div>
         </div>
 
-        <div class="page-content-left noborder full-height">
-            <ul class="message-items full-height scrollable">
+        <div id="convo-list" class="page-content-left noborder full-height">
+            <ul class="message-items scrollable">
                 {{#foreach data.conversations}}
                     <li ng-click="loadConversation('{{_id}}');" data-conversation-id="{{_id}}" data-updatedAt="{{updatedAt}}">
                         <div class="profile-pic">
                             {{#if partner.image}}
-                                <img src="/uploads/users/{{partner.image}}" class="uk-border-circle" />
+                                <img src="/uploads/users/{{partner.image}}" class="uk-border-circle profileImage" data-userid="{{partner._id}}" />
                             {{else}}
-                                <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle" />
+                                <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage" data-userid="{{partner._id}}" />
                             {{/if}}
                             <span class="user-offline uk-border-circle" data-user-status-id="{{partner._id}}"></span>
                         </div>
@@ -27,6 +31,35 @@
                 {{/foreach}}
             </ul>
         </div>
+
+        <div id="new-convo-user-list" class="page-content-left noborder full-height" style="display: none;" data-offset="192">
+            <div class="search-box">
+                <input type="text" placeholder="Search" />
+            </div>
+            <ul class="all-user-list message-items scrollable">
+                {{#each data.common.users}}
+                    {{#compare username '!=' ../data.common.loggedInAccount.username}}
+                        <li data-search-term="{{lowercase fullname}}" ng-click="startNewConversation('{{_id}}');">
+                            <div class="profile-pic">
+                                {{#if image}}
+                                    <img src="/uploads/users/{{image}}" class="uk-border-circle profileImage"/>
+                                {{else}}
+                                    <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage"/>
+                                {{/if}}
+                                <span class="user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
+                            </div>
+                            <div class="convo-info">
+                                <span class="message-from">{{fullname}}</span>
+                                <span class="message-date">{{group.name}}</span>
+                                <span class="message-subject">{{email}}</span>
+                            </div>
+                        </li>
+
+                    {{/compare}}
+                {{/each}}
+            </ul>
+        </div>
+
     </div>
     {{#if data.conversation}}
         <div class="uk-width-7-10 nopadding page-message" style="position:relative;">
@@ -38,18 +71,26 @@
                 <div id="messages">
                     {{#each data.conversation.messages}}
                         {{#isNotAsString owner._id ../data.common.loggedInAccount._id}}
-                            <div class="message message-left" data-log="{{owner._id}}" data-d="{{../data.common.loggedInAccount._id}}">
+                            <div class="message message-left">
                                 {{#if owner.image}}
-                                    <img src="/uploads/users/{{owner.image}}" data-uk-tooltip="{pos:'left', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                    <img class="profileImage"
+                                         src="/uploads/users/{{owner.image}}"
+                                         data-userid="{{owner._id}}"
+                                         data-uk-tooltip="{pos:'left', animation: false}"
+                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
                                 {{else}}
-                                    <img src="/uploads/users/defaultProfile.jpg" data-uk-tooltip="{pos:'left', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                    <img class="profileImage"
+                                         src="/uploads/users/defaultProfile.jpg"
+                                         data-userid="{{owner._id}}"
+                                         data-uk-tooltip="{pos:'left', animation: false}"
+                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
                                 {{/if}}
                                 <div class="message-body">
                                     <p>{{{body}}}</p>
                                 </div>
                             </div>
                         {{else}}
-                            <div class="message message-right" data-log="{{owner._id}}" data-d="{{../data.common.loggedInAccount._id}}">
+                            <div class="message message-right">
                                 <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}">
                                     <p>{{{body}}}</p>
                                 </div>
@@ -59,14 +100,14 @@
                 </div>
 
                 <div class="user-is-typing-wrapper padding-10 uk-clearfix hide">
-                    <div class="chat-user-profile smaller round" style="position:relative; float: left;">
+                    <div class="chat-user-profile smaller round" style="position:relative; float: left; left: 0;">
                         {{#if data.conversation.partner.image}}
-                            <img class="round" src="/uploads/users/{{data.conversation.partner.image}}"/>
+                            <img class="round profileImage" src="/uploads/users/{{data.conversation.partner.image}}" data-userid="{{data.conversation.partner._id}}"/>
                         {{else}}
-                            <img class="round" src="/uploads/users/defaultProfile.jpg"/>
+                            <img class="round profileImage" src="/uploads/users/defaultProfile.jpg" data-userid="{{data.conversation.partner._id}}"/>
                         {{/if}}
                     </div>
-                    <div class="user-is-typing hide-arrow" style="margin-left: 45px; margin-top: 3px; background: #ddd; border: none;">
+                    <div class="user-is-typing hide-arrow" style="margin-left: 40px; margin-top: 3px; background: #ddd; border: none;">
                         <div class="dot"></div>
                         <div class="dot"></div>
                         <div class="dot"></div>
@@ -82,6 +123,14 @@
             </div>
         </div>
     {{/if}}
+
+    <div>
+        <ul class="context-menu">
+            <li data-action="123">First Menu Option</li>
+            <li data-action="456">Second Menu Option</li>
+            <li data-action="789">Third Menu Option</li>
+        </ul>
+    </div>
 </div>
 
 {{#contentFor 'js-plugins'}}

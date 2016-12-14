@@ -51,8 +51,10 @@
       border-left: 4px solid #2980b9 !important
 
     &.unread
+      border-left: 4px solid $accent_blue !important
       .message-from,
-      .message-subject
+      .message-subject,
+      .message-date
         font-weight: 600
 
     .profile-pic
@@ -335,3 +337,17 @@ input[type="checkbox"]:checked.poloCheckbox + label
 
   i
     font-size: 24px
+
+.search-box
+  padding: 10px
+  border-top: 1px solid #ddd
+  border-right: $sidebar_border_right
+  input
+    width: 100%
+    border: none
+    background: lighten(#ddd, 8%)
+    padding: 5px 15px
+    color: #222
+    font-size: 13px
+    font-weight: 300
+    +borderRadius(15px)

@@ -42,7 +42,85 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 if ($event.keyCode != 13) {
                     socket.chat.startTyping(cid, toUserId);
                 }
-            }
+            };
 
+            $scope.showUserList = function($event) {
+                $event.preventDefault();
+                var convoList = document.getElementById('convo-list');
+                convoList.style.transition = 'opacity 0.25s';
+                convoList.style.opacity = 0;
+
+                var allUserList = document.getElementById('new-convo-user-list');
+                allUserList.style.opacity = 0;
+                allUserList.classList.remove('hide');
+                allUserList.style.display = 'block';
+                allUserList.style.transition = 'opacity 0.25s';
+
+                setTimeout(function() {
+                    convoList.style.display = 'none';
+
+                    allUserList.style.opacity = 1;
+
+                    var actions = document.getElementById('convo-actions').children;
+                    [].forEach.call(actions, function(el) {
+                        if (el.style.display == 'none')
+                            el.style.display = 'block';
+                        else
+                            el.style.display = 'none';
+                    });
+
+                }, 200);
+            };
+
+            $scope.hideUserList = function($event) {
+                $event.preventDefault();
+                var allUserList = document.getElementById('new-convo-user-list');
+                allUserList.style.transition = 'opacity 0.25s';
+                allUserList.style.opacity = 0;
+
+
+                var convoList = document.getElementById('convo-list');
+                convoList.style.transition = 'opacity 0.25s';
+                convoList.style.opacity = 0;
+
+                setTimeout(function() {
+                    allUserList.style.display = 'none';
+                    convoList.style.display = 'block';
+
+                    convoList.style.opacity = 1;
+
+                    document.querySelector('.search-box > input').value = '';
+                    $('.all-user-list li').each(function() {
+                        $(this).show();
+                    });
+
+                    var actions = document.getElementById('convo-actions').children;
+                    [].forEach.call(actions, function(el) {
+                        if (el.style.display == 'none')
+                            el.style.display = 'block';
+                        else
+                            el.style.display = 'none';
+                    });
+                }, 200);
+            };
+
+            $scope.startNewConversation = function(userId) {
+                var $loggedInAccountId = $('#__loggedInAccount__id').text();
+                $http.post('/api/v1/messages/conversation/start', {
+                    owner: $loggedInAccountId,
+                    participants: [
+                        userId,
+                        $loggedInAccountId
+                    ]
+                }).then(function(response) {
+                    var conversation = response.data.conversation;
+                    if (!_.isUndefined(conversation)) {
+                        History.pushState(null, null, '/messages/' + conversation._id );
+                    }
+                }, function(err) {
+                    console.log('[trudesk.Messages.startNewConversation()] - Error: ');
+                    console.log(err);
+                })
+            };
         }]);
 });

@@ -35,6 +35,7 @@ define('pages/messages', [
                 $messagesWrapper    = $('#messages'),
                 $scrollspy          = $('#conversation-scrollspy'),
                 $spinner            = $scrollspy.find('i'),
+                $searchBox          = $('.search-box').find('input'),
 
                 $nextPage           = 2,
                 $enabled            = true,
@@ -44,9 +45,25 @@ define('pages/messages', [
                 $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
                 $loggedInAccountId  = $('#__loggedInAccount__id').text();
 
+
+            //Setup Context Menu
+            helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
+                var $li = $(target).parents('li');
+                var convoId = $li.attr('data-conversation-id');
+
+                // console.log('Action: ' + action);
+                // console.log('Conversation: ' + convoId);
+            });
+
+            $searchBox.off('keyup');
+            $searchBox.on('keyup', onSearchKeyUp);
+
             $messageScroller.on('scrollable', function() {
                 $messageScrollerNS = $messageScroller.getNiceScroll(0);
                 $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
+
+                //set active
+                $('ul > li[data-conversation-id="' + $convoId + '"]').addClass('active');
 
                 //Remove All Chat Boxes
                 $('.chat-box-position').each(function() {
@@ -63,6 +80,17 @@ define('pages/messages', [
                     }
                 });
             });
+
+            function onSearchKeyUp() {
+                var searchTerm = $searchBox.val().toLowerCase();
+                $('.all-user-list li').each(function() {
+                    if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                })
+            }
 
             function loadMoreMessages() {
                 if (!$enabled || $loading) return false;
@@ -118,7 +146,7 @@ define('pages/messages', [
 
                 if (left) {
                     html    += '<div class="message message-left">';
-                    html    += '<img src="/uploads/users/' + image + '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '"/>';
+                    html    += '<img class="profileImage" src="/uploads/users/' + image + '" data-userId="' + message.owner._id + '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '"/>';
                     html    += '<div class="message-body">';
                     html    += '<p>' + message.body + '</p>';
                     html    += '</div>';
@@ -165,7 +193,7 @@ define('pages/messages', [
                 var html = buildMessageHTML(message);
                 var messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]');
                 if (messageWrapper.length > 0) {
-                    messageWrapper.append(html);
+                    messageWrapper.find('#messages').append(html);
                 }
 
                 var convoListItem = $('li[data-conversation-id="' + data.conversation + '"]');
@@ -223,7 +251,7 @@ define('pages/messages', [
                 var imageUrl = 'defaultProfile.jpg';
                 if (data.partner.image)
                     imageUrl = data.partner.image;
-                html += '<img src="/uploads/users/' + imageUrl + '" class="uk-border-circle" />';
+                html += '<img src="/uploads/users/' + imageUrl + '" class="uk-border-circle profileImage" data-userid="' + data.partner._id + '" />';
                 html += '<span class="user-online uk-border-circle" data-user-status-id="' + data.partner._id + '"></span>';
                 html += '</div>';
                 html += '<div class="convo-info">';

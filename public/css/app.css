@@ -733,6 +733,28 @@ div.hoverAction {
 .datepicker td.active.year {
   background: #ea6153; }
 
+.context-menu {
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  overflow: hidden;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+  font-family: sans-serif;
+  background: #FFF;
+  color: #333;
+  border-radius: 0;
+  -webkit-border-radius: 0;
+  -moz-border-radius: 0;
+  list-style: none;
+  margin: 0;
+  padding: 0; }
+  .context-menu li {
+    padding: 8px 12px;
+    cursor: pointer; }
+    .context-menu li:hover {
+      background-color: #ddd; }
+
 .top-nav,
 .top-bar {
   background: #42464d;
@@ -1543,9 +1565,12 @@ ul.side-nav-sub {
       border-left: 4px solid #E74C3C; }
     .message-items li.message-tag-blue:before {
       border-left: 4px solid #2980b9 !important; }
-    .message-items li.unread .message-from,
-    .message-items li.unread .message-subject {
-      font-weight: 600; }
+    .message-items li.unread {
+      border-left: 4px solid #2196F3 !important; }
+      .message-items li.unread .message-from,
+      .message-items li.unread .message-subject,
+      .message-items li.unread .message-date {
+        font-weight: 600; }
     .message-items li .profile-pic {
       float: left;
       position: relative; }
@@ -1816,6 +1841,22 @@ input[type="checkbox"]:checked.poloCheckbox + label {
     color: #E74C3C; }
   .icon-button i {
     font-size: 24px; }
+
+.search-box {
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd; }
+  .search-box input {
+    width: 100%;
+    border: none;
+    background: #f1f1f1;
+    padding: 5px 15px;
+    color: #222;
+    font-size: 13px;
+    font-weight: 300;
+    border-radius: 15px;
+    -webkit-border-radius: 15px;
+    -moz-border-radius: 15px; }
 
 @media only screen and (min-width: 40.063em) and (max-width: 64em) {
   .ticketContent {
