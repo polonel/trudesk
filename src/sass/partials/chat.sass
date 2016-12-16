@@ -32,19 +32,20 @@
       z-index: 300
       border: 1px solid rgba(100,100,100,0.4)
       border-bottom: none
-      +borderRadius(3px)
+      +borderRadius(0)
       +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
       +transition(opacity 0.5s ease)
 
       .chat-box-title
         display: block
-        background: #223140
+        background: $topbar_bg
         height: 29px
         border: 1px solid transparent
         cursor: pointer
-        +boxShadow(0 0 0 1px #223140)
-        +borderRadius(3px 3px 0 0)
-
+        +boxShadow(0 0 0 1px $topbar_bg)
+        //+borderRadius(3px 3px 0 0)
+        .material-icons
+          font-size: 14px
         h4
           font-size: 14px
           margin: 5px 8px 3px
@@ -153,7 +154,7 @@
               position: relative
               text-align: left
               //white-space: pre-wrap
-              word-break: break-word
+              word-wrap: break-word
 
               &:after
                 content: ''

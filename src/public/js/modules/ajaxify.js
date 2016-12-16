@@ -60,7 +60,6 @@ define('modules/ajaxify', [
         dashboardPage.init();
 
         //Messages
-        messagesPage.stopRefresh();
         messagesPage.init();
 
         //Tickets

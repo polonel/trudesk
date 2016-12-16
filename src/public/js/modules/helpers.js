@@ -617,6 +617,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                     cursoropacitymax: opacityMax,
                     horizrailenabled: false
                 });
+
+                $(this).trigger('scrollable', this);
             });
         });
     };
@@ -688,6 +690,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                 var h = $(window).height();
                 if (self.css('borderTopStyle') === "solid")
                     h = h - 1;
+
+                var dataOffset = self.attr('data-offset');
+                if (!_.isUndefined(dataOffset))
+                    h = h - dataOffset;
 
                 //self.css('overflow', 'hidden');
                 self.height(h - (self.offset().top));
@@ -1098,6 +1104,53 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         } else {
             return false;
         }
+    };
+
+    helpers.setupContextMenu = function(selector, complete) {
+        var $selector = $(selector);
+        if ($selector.length < 1) return false;
+
+        $(document).off('mousedown');
+        $(document).on('mousedown', function(e) {
+            if (!$(e.target).parents('.context-menu').length > 0) {
+                var cm = $('.context-menu');
+                if (cm.length > 0)
+                    cm.hide(100);
+            }
+        });
+
+        var menuOpenFor = undefined;
+        $selector.off('contextmenu');
+        $selector.on('contextmenu', function(event) {
+            event.preventDefault();
+            menuOpenFor = event.target;
+            $('.context-menu').finish().toggle(100).
+                css({
+                    top: event.pageY + 'px',
+                    left: event.pageX + 'px'
+            });
+        });
+
+        $selector.off('mousedown');
+        $selector.on('mousedown', function(event) {
+            if (!$(event.target).parents('.context-menu').length > 0) {
+                $('.context-menu').hide(100);
+            }
+        });
+
+        var $contextMenuLi = $('.context-menu li');
+        $contextMenuLi.each(function() {
+            var $item = $(this);
+            $item.off('click');
+            $item.on('click', function() {
+                $('.context-menu').hide(100);
+                if (!_.isFunction(complete)) {
+                    console.log('Invalid Callback Function in Context-Menu!');
+                } else
+                    return complete($(this).attr('data-action'), menuOpenFor);
+            });
+        });
+
     };
 
     function stringStartsWith(string, prefix) {

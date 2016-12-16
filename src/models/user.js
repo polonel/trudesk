@@ -33,6 +33,7 @@ var COLLECTION = "accounts";
  * @property {String} fullname ```Required``` Full name of user
  * @property {String} email ```Required``` ```unique``` Email Address of user
  * @property {String} role ```Required``` Permission role of the given user. See {@link Permissions}
+ * @property {Date} lastOnline Last timestamp given user was online.
  * @property {String} title Job Title of user
  * @property {String} image Filename of user image
  * @property {String} resetPassHash Password reset has for recovery password link.
@@ -49,6 +50,7 @@ var userSchema = mongoose.Schema({
         fullname:   { type: String, required: true, index: true },
         email:      { type: String, required: true, unique: true },
         role:       { type: String, required: true },
+        lastOnline: Date,
         title:      String,
         image:      String,
 
@@ -269,8 +271,9 @@ userSchema.statics.getUserWithObject = function(object, callback) {
 
     var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
         .sort({'fullname': 1})
-        .skip(page*limit)
-        .limit(limit);
+        .skip(page*limit);
+    if (limit != -1)
+        q.limit(limit);
 
     if (!_.isEmpty(search))
         q.where({fullname: new RegExp("^" + search.toLowerCase(), 'i') });

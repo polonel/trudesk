@@ -45,7 +45,7 @@ define([
             'trudesk.controllers.reports',
             'trudesk.controllers.settings'
         ])
-        .controller('truCtrl', ['openNewMessageWindow', '$scope', function(openNewMessageWindow, $scope) {
+        .controller('truCtrl', ['$scope', function($scope) {
             $scope.submitForm = function(formName, $event) {
                 if (_.isNull(formName) || _.isUndefined(formName)) return true;
 
