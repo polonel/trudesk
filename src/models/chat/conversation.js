@@ -37,6 +37,8 @@ var COLLECTION = "conversations";
 
 var conversationSchema = mongoose.Schema({
     title: { type: String },
+    createdAt: {type: Date, default: Date.now },
+    updatedAt: {type: Date, default: Date.now },
     userMeta: [new mongoose.Schema({
         userId: {type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},
         joinedAt: {type: Date},
@@ -45,7 +47,7 @@ var conversationSchema = mongoose.Schema({
         deletedAt: {type: Date}
     }, {_id: false, timestamps: true})],
     participants: [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
-}, {timestamps: true});
+});
 
 conversationSchema.methods.isGroup = function() {
     return this.participants.length > 2;

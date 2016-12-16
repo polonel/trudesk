@@ -116,6 +116,8 @@ middleware.api = function(req, res, next) {
             if (err) return res.status(401).json({'error': err.message});
             if (!user) return res.status(401).json({'error': 'Invalid Access Token'});
 
+            delete user['password'];
+
             req.user = user;
 
             next();

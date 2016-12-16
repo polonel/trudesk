@@ -90,7 +90,6 @@ api_messages.get = function(req, res) {
 
             messageSchema.getFullConversation(item._id, function(err, messages) {
                 if (err) return done(err);
-                console.log(item);
                 fullConversations.push({cId: item._id, p: item.participants, messages: messages});
 
                 return done();
@@ -123,7 +122,7 @@ api_messages.startConversation = function(req, res) {
             _.each(participants, function(item) {
                 var meta =  {
                     userId: item,
-                    joinedAd: new Date()
+                    joinedAt: new Date()
                 };
 
                 if (requester == item)
@@ -134,7 +133,8 @@ api_messages.startConversation = function(req, res) {
 
             var Conversation = new conversationSchema({
                 participants: participants,
-                userMeta: userMeta
+                userMeta: userMeta,
+                updatedAt: new Date()
             });
 
             Conversation.save(function(err, cSave) {
@@ -164,8 +164,8 @@ api_messages.send = function(req, res) {
 
     async.waterfall([
         function(done) {
-            // Updated conversation to save UpdatedAt field automatically.
-            conversationSchema.findOneAndUpdate({_id: cId}, {}, {new: false}, function(err, convo) {
+            // Updated conversation to save UpdatedAt field.
+            conversationSchema.findOneAndUpdate({_id: cId}, {updatedAt: new Date()}, {new: false}, function(err, convo) {
                 if (err) return done(err);
                 if (convo == null || convo == undefined)
                     return done('Invalid Conversation: ' + convo );
@@ -234,6 +234,30 @@ api_messages.getMessagesForConversation = function(req, res) {
         }
 
         return res.json({success: true, conversation: response.conversation, messages: response.messages});
+    });
+};
+
+api_messages.deleteConversation = function(req, res) {
+    var conversation = req.params.id;
+
+    if (_.isUndefined(conversation) || _.isNull(conversation))
+        return res.status(400).json({success: false, error: 'Invalid Conversation'});
+
+    conversationSchema.getConversation(conversation, function(err, convo) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        var user = req.user;
+        var idx = _.findIndex(convo.userMeta, function(item) { return item.userId.toString() == user._id.toString(); });
+        if (idx == -1)
+            return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
+
+        convo.userMeta[idx].deletedAt = new Date();
+
+        convo.save(function(err, sConvo) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            return res.json({success: true, conversation: sConvo});
+        });
     });
 };
 

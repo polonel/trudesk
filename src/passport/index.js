@@ -45,6 +45,8 @@ module.exports = function(app) {
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 
+            delete user['password'];
+
             req.user = user;
 
             return done(null, user);

@@ -155,7 +155,15 @@ define('modules/chat',[
         socket.removeAllListeners('chatStopTyping');
         socket.on('chatStopTyping', function(data) {
             $.event.trigger('$trudesk:chat:stoptyping', data);
-            var chatBox = $('div[data-conversation-id="' + data.cid + '"]');
+        });
+
+        socket.removeAllListeners('leftChatServer');
+        socket.on('leftChatServer', function(data) {
+           $.event.trigger('$trudesk:chat:leftchatserver', data);
+        });
+
+        $(window).on('$trudesk:chat:stoptyping.chatSystem', function(event, data) {
+            var chatBox = $('#message-content[data-conversation-id="' + data.cid + '"]');
             var isTypingDiv = chatBox.find('.user-is-typing-wrapper');
             isTypingDiv.addClass('hide');
             var scroller = chatBox.find('.chat-box-messages');

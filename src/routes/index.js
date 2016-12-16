@@ -165,6 +165,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
     router.post('/api/v1/messages/conversation/start', middleware.api, controllers.api.messages.startConversation);
     router.get('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.getMessagesForConversation);
+    router.delete('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.deleteConversation);
     router.get('/api/v1/messages/conversations', middleware.api, controllers.api.messages.getConversations);
     router.get('/api/v1/messages/conversations/recent', middleware.api, controllers.api.messages.getRecentConversations);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);

@@ -50,9 +50,20 @@ define('pages/messages', [
             helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
                 var $li = $(target).parents('li');
                 var convoId = $li.attr('data-conversation-id');
-
-                // console.log('Action: ' + action);
-                // console.log('Conversation: ' + convoId);
+                switch(action.toLowerCase()) {
+                    case "delete":
+                        UIKit.modal.confirm('Are you sure you want to delete this conversation?', function() {
+                            //Confirm
+                            deleteConversation(convoId);
+                        }, function() {
+                            //Cancel
+                        }, {
+                            labels: {
+                                'Ok': 'YES'
+                            },
+                            confirmButtonClass: 'confirm-delete-button'
+                        });
+                }
             });
 
             $searchBox.off('keyup');
@@ -80,6 +91,32 @@ define('pages/messages', [
                     }
                 });
             });
+
+            function deleteConversation(convoId) {
+                $.ajax({
+                    url: '/api/v1/messages/conversation/' + convoId,
+                    method: 'DELETE',
+                    success: function(response) {
+                        if (response.success) {
+                            //Check if on conversation
+                            var $convo = $('#message-content[data-conversation-id="' + response.conversation._id +'"]');
+                            if ($convo.length > 0) {
+                                History.pushState(null, null, '/messages', false);
+                            } else {
+                                var $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]');
+                                if ($convoLI.length > 0) {
+                                    $convoLI.remove();
+                                }
+                            }
+
+                            helpers.UI.showSnackbar('Conversation Deleted.', false);
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
 
             function onSearchKeyUp() {
                 var searchTerm = $searchBox.val().toLowerCase();
@@ -167,7 +204,7 @@ define('pages/messages', [
 
             //On user Typing
             $(window).on('$trudesk:chat:typing.conversation', function(event, data) {
-                var convoListItem = $('li[data-conversation-id="' + data.cid + '"]');
+                var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]');
                 if (convoListItem.length > 0) {
                     $recentMessages[data.cid] = convoListItem.find('.message-subject').text();
                     convoListItem.find('.message-subject').text(data.fromUser.fullname + ' is typing...');
@@ -175,7 +212,7 @@ define('pages/messages', [
             });
 
             $(window).on('$trudesk:chat:stoptyping.conversation', function(event, data) {
-                var convoListItem = $('li[data-conversation-id="' + data.cid + '"]');
+                var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]');
                 if (convoListItem.length > 0) {
                     convoListItem.find('.message-subject').text($recentMessages[data.cid]);
                 }
