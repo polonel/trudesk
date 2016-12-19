@@ -65,6 +65,8 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
             helpers.hideLoader(1000);
             helpers.countUpMe();
             helpers.UI.cardShow();
+
+            $.event.trigger('$trudesk:ready');
         }, 2000);
         //eh.init();
     });

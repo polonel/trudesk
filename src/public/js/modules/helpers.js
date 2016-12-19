@@ -25,7 +25,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         var self = this;
 
         self.resizeFullHeight();
-        //self.removeAllScrollers();
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
@@ -579,7 +578,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.setupScrollers = function(selector) {
-        var self = this;
         if (_.isUndefined(selector)) {
             selector = '.scrollable';
         }
@@ -675,11 +673,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         }
     };
 
-    helpers.removeAllScrollers = function() {
+    helpers.removeAllScrollers = function(complete) {
         $('.nicescroll-rails').each(function() {
             var self = $(this);
             self.remove();
         });
+
+        if (_.isFunction(complete)) {
+            return complete();
+        }
     };
 
     helpers.resizeFullHeight = function() {

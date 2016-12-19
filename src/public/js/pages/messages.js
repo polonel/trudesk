@@ -48,7 +48,9 @@ define('pages/messages', [
 
             //Setup Context Menu
             helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
-                var $li = $(target).parents('li');
+                var $li = $(target);
+                if (!$li.is('li'))
+                    $li = $(target).parents('li');
                 var convoId = $li.attr('data-conversation-id');
                 switch(action.toLowerCase()) {
                     case "delete":
@@ -69,9 +71,11 @@ define('pages/messages', [
             $searchBox.off('keyup');
             $searchBox.on('keyup', onSearchKeyUp);
 
-            $messageScroller.on('scrollable', function() {
+            $(window).off('$trudesk:ready.messages');
+            $(window).on('$trudesk:ready.messages', function() {
                 $messageScrollerNS = $messageScroller.getNiceScroll(0);
-                $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
+                if ($messageScrollerNS != false)
+                    $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
 
                 //set active
                 $('ul > li[data-conversation-id="' + $convoId + '"]').addClass('active');
@@ -200,7 +204,7 @@ define('pages/messages', [
             }
 
             //Remove all Events in the .conversation namespace for this page.
-            $(window).off('$trudesk:chat:message.conversation');
+            $(window).off('.conversation');
 
             //On user Typing
             $(window).on('$trudesk:chat:typing.conversation', function(event, data) {
