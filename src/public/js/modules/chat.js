@@ -163,12 +163,16 @@ define('modules/chat',[
         });
 
         $(window).on('$trudesk:chat:stoptyping.chatSystem', function(event, data) {
-            var chatBox = $('#message-content[data-conversation-id="' + data.cid + '"]');
-            var isTypingDiv = chatBox.find('.user-is-typing-wrapper');
-            isTypingDiv.addClass('hide');
-            var scroller = chatBox.find('.chat-box-messages');
-            if (scroller != undefined)
-                helpers.scrollToBottom(scroller);
+            var chatBox = [];
+            var scroller = undefined;
+            chatBox[0] = $('#message-content[data-conversation-id="' + data.cid + '"]');
+            chatBox[1] = $('.chat-box[data-conversation-id="' + data.cid + '"]');
+            for (var i = 0; i < chatBox.length; i++) {
+                chatBox[i].find('.user-is-typing-wrapper').addClass('hide');
+                scroller = chatBox[i].find('.chat-box-messages');
+                if (scroller != undefined)
+                    helpers.scrollToBottom(scroller);
+            }
 
             scroller = $('#message-content');
             if (scroller != undefined) {

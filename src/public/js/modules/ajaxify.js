@@ -89,6 +89,8 @@ define('modules/ajaxify', [
         //Load UI Animations Load
         helpers.UI.cardShow();
         helpers.countUpMe();
+
+        $.event.trigger('$trudesk:ready');
     });
     // Prepare our Variables
     var

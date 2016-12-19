@@ -69,6 +69,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             el.style.display = 'none';
                     });
 
+                    if ($('.all-user-list').getNiceScroll(0) != false) {
+                        $('.all-user-list').getNiceScroll(0).resize();
+                    }
+
                 }, 200);
             };
 
