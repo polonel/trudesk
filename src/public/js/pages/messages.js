@@ -258,7 +258,7 @@ define('pages/messages', [
 
                     convoListItem.find('.message-date').text(moment().calendar());
                 } else {
-                    var convoUL = $('ul.message-items');
+                    var convoUL = $('#convo-list > ul.message-items');
                     if (convoUL.length > 0) {
                         var partner = message.owner;
                         if (message.owner._id.toString() == $loggedInAccountId.toString())
