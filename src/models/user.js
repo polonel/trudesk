@@ -62,7 +62,8 @@ var userSchema = mongoose.Schema({
         iOSDeviceTokens: [{type: String}],
 
         preferences: {
-            autoRefreshTicketGrid: { type: Boolean, default: true }
+            autoRefreshTicketGrid: { type: Boolean, default: true },
+            openChatWindows: [{type: String, default: []}]
         },
 
         deleted:    { type: Boolean, default: false }
@@ -134,9 +135,64 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
         user.save(function(err, u) {
             if (err) return callback(err, null);
 
-            callback(null, u.iOSDeviceTokens);
+            return callback(null, u.iOSDeviceTokens);
         });
     }
+};
+
+userSchema.methods.addOpenChatWindow = function(convoId, callback) {
+    if (convoId == undefined) {
+        if (!_.isFunction(callback)) return;
+        return callback('Invalid convoId');
+    }
+    var user = this;
+    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
+         return value.toString() === convoId.toString();
+    }).length > 0);
+
+    if (hasChatWindow) {
+        if (!_.isFunction(callback)) return;
+        return callback();
+    }
+    user.preferences.openChatWindows.push(convoId.toString());
+    user.save(function(err, u) {
+        if (err) {
+            if (!_.isFunction(callback)) return;
+            return callback(err);
+        }
+
+        if (!_.isFunction(callback)) return;
+        return callback(null, u.preferences.openChatWindows);
+    })
+};
+
+userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
+    if (convoId == undefined) {
+        if (!_.isFunction(callback)) return;
+        return callback('Invalid convoId');
+    }
+    var user = this;
+    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
+        return value.toString() === convoId.toString();
+    }).length > 0);
+
+    if (!hasChatWindow) {
+        if (!_.isFunction(callback)) return;
+        return callback();
+    }
+    user.preferences.openChatWindows.splice(_.findIndex(user.preferences.openChatWindows, function(item) {
+        return item.toString() === convoId.toString();
+    }), 1);
+
+    user.save(function(err, u) {
+        if (err) {
+            if (!_.isFunction(callback)) return;
+            return callback(err);
+        }
+
+        if (!_.isFunction(callback)) return;
+        return callback(null, u.preferences.openChatWindows);
+    });
 };
 
 userSchema.methods.softDelete = function(callback) {

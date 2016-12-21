@@ -81,19 +81,21 @@ define('pages/messages', [
                 $('ul > li[data-conversation-id="' + $convoId + '"]').addClass('active');
 
                 //Remove All Chat Boxes
-                $('.chat-box-position').each(function() {
-                    var self = $(this);
-                    self.remove();
-                });
+                if ($('#__page').text().toLowerCase() === 'messages') {
+                    $('.chat-box-position').each(function() {
+                        var self = $(this);
+                        self.remove();
+                    });
 
-                $('.message-textbox').find('input').focus();
+                    $('.message-textbox').find('input').focus();
 
-                $messageScroller.scroll(function() {
-                    if ($scrollspy.isInView($messageScroller)) {
-                        var run = _.throttle(loadMoreMessages, 100);
-                        run();
-                    }
-                });
+                    $messageScroller.scroll(function() {
+                        if ($scrollspy.isInView($messageScroller)) {
+                            var run = _.throttle(loadMoreMessages, 100);
+                            run();
+                        }
+                    });
+                }
             });
 
             function deleteConversation(convoId) {
@@ -112,6 +114,8 @@ define('pages/messages', [
                                     $convoLI.remove();
                                 }
                             }
+
+                            $.event.trigger('$trudesk:chat:conversation:deleted', {conversation: response.conversation});
 
                             helpers.UI.showSnackbar('Conversation Deleted.', false);
                         }

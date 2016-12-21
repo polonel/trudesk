@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history'], function(angular, _, $, helpers, socket, md, UIkit) {
     return angular.module('trudesk.controllers.messages', [])
-        .controller('messagesCtrl', ['$scope', '$http', '$window', function($scope, $http, $window) {
+        .controller('messagesCtrl', ['$scope', '$http', '$window', '$cookies', function($scope, $http, $window, $cookies) {
 
             $scope.loadConversation = function(convoId) {
                 History.pushState(null, null, '/messages/' + convoId );

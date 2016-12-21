@@ -48,6 +48,7 @@ define('modules/ajaxify', [
         });
 
         socketClient.ui.init(socketClient.socket);
+        socketClient.chat.getOpenWindows();
 
         helpers.init();
         helpers.hideAllUiKitDropdowns();

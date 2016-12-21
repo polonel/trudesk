@@ -110,12 +110,10 @@ api_messages.startConversation = function(req, res) {
     //Check if Conversation with these participants exist
     conversationSchema.getConversations(participants, function(err, convo) {
         if (err) {
-            //winston.debug(err);
             return res.status(400).json({success: false, error: err.message});
         }
 
         if (convo.length == 1) {
-            //winston.debug('Using Convo Found: ' + convo[0]);
             return res.json({success: true, conversation: convo[0]});
         } else {
             var userMeta = [];

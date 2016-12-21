@@ -18,7 +18,6 @@ var winston             = require('winston'),
     passportSocketIo    = require('passport.socketio'),
     cookieparser        = require('cookie-parser'),
     emitter             = require('./emitter'),
-    async               = require('async'),
     marked              = require('marked');
 
 module.exports = function(ws) {
@@ -577,6 +576,8 @@ module.exports = function(ws) {
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                     sockets.push(socket);
+
+                    spawnOpenChatWindows(socket, user._id);
                 }
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
@@ -585,17 +586,85 @@ module.exports = function(ws) {
                 sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 sockets.push(socket);
+
+                spawnOpenChatWindows(socket, user._id);
             }
         });
 
-        socket.on('spawnChatWindow', function(data) {
+        socket.on('getOpenChatWindows', function() {
+            spawnOpenChatWindows(socket, socket.request.user._id);
+        });
+
+        function spawnOpenChatWindows(socket, loggedInAccountId) {
+            var userSchema = require('./models/user');
+            var conversationSchema = require('./models/chat/conversation');
+            userSchema.getUser(loggedInAccountId, function(err, user) {
+                if (err) return true;
+
+                async.eachSeries(user.preferences.openChatWindows, function(convoId, done) {
+                    var partner = null;
+                    conversationSchema.getConversation(convoId, function(err, conversation) {
+                        if (err) return done();
+
+                        _.each(conversation.participants, function(i) {
+                            if (i._id.toString() !== loggedInAccountId.toString()) {
+                                return partner = i.toObject();
+                            }
+                        });
+
+                        if (partner == null) return done();
+
+                        delete partner['password'];
+                        delete partner['resetPassHash'];
+                        delete partner['resetPassExpire'];
+                        delete partner['accessToken'];
+                        delete partner['iOSDeviceTokens'];
+                        delete partner['deleted'];
+
+                        utils.sendToSelf(socket, 'spawnChatWindow', partner);
+
+                        return done();
+                    });
+                });
+            });
+        }
+
+        socket.on('spawnChatWindow', function(userId) {
             //Get user
             var userSchema = require('./models/user');
-            userSchema.getUser(data, function(err, user) {
+            userSchema.getUser(userId, function(err, user) {
                 if (err) return true;
-                if (user != null)
-                    utils.sendToSelf(socket,'spawnChatWindow', user);
+                if (user != null) {
+                    var u = user.toObject();
+                    delete u['password'];
+                    delete u['resetPassHash'];
+                    delete u['resetPassExpire'];
+                    delete u['accessToken'];
+                    delete u['iOSDeviceTokens'];
+                    delete u['deleted'];
+
+                    utils.sendToSelf(socket,'spawnChatWindow', u);
+                }
             });
+        });
+
+        socket.on('saveChatWindow', function(data) {
+             var userId = data.userId;
+             var convoId = data.convoId;
+             var remove = data.remove;
+
+             var userSchema = require('./models/user');
+             userSchema.getUser(userId, function(err, user) {
+                 if (err) return true;
+                 if (user != null) {
+                     if (remove) {
+                        user.removeOpenChatWindow(convoId);
+                     } else {
+                         user.addOpenChatWindow(convoId);
+
+                     }
+                 }
+             });
         });
 
         socket.on('chatMessage', function(data) {
