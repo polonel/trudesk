@@ -90,41 +90,63 @@ module.exports = function(ws) {
 
         //TODO: This is a JANK lag that needs to be removed and optimized!!!!
         setInterval(function() {
-            updateMailNotifications();
+            updateConversationsNotifications();
             updateNotifications();
             var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
             utils.sendToSelf(socket, 'updateUsers', sortedUserList);
 
         }, 5000);
 
-        function updateMailNotifications() {
-            utils.sendToSelf(socket, 'updateMailNotifications', {unreadCount: 0, unreadItems: []});
-            // var userId = socket.request.user._id;
-            // var messageSchema = require('./models/message');
-            // var payload = {};
-            // async.parallel([
-            //     function(callback) {
-            //         messageSchema.getUnreadInboxCount(userId, function(err, objs) {
-            //             if (err) return callback();
-            //             payload.unreadCount = objs;
-            //
-            //            callback();
-            //         });
-            //     },
-            //
-            //     function(callback){
-            //         messageSchema.getUserUnreadMessages(userId, function(err, objs) {
-            //             if (err) return callback();
-            //             payload.unreadItems = objs;
-            //
-            //             callback();
-            //         });
-            //     }
-            // ], function(err) {
-            //     if (err) return true;
-            //
-            //     utils.sendToSelf(socket, 'updateMailNotifications', payload);
-            // });
+        function updateConversationsNotifications() {
+            var userId = socket.request.user._id;
+            var messageSchema = require('./models/chat/message');
+            var conversationSchema = require('./models/chat/conversation');
+            conversationSchema.getConversationsWithLimit(userId, 10, function(err, conversations) {
+                if (err) {
+                    winston.warn(err.message);
+                    return false;
+                }
+
+                var convos = [];
+
+                async.eachSeries(conversations, function(convo, done) {
+                    var c = convo.toObject();
+
+                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == userId.toString(); })];
+                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+                        return done();
+                    }
+
+                    messageSchema.getMostRecentMessage(c._id, function(err, rm) {
+                        if (err) return done(err);
+
+                        _.each(c.participants, function(p) {
+                            if (p._id.toString() !== userId.toString())
+                                c.partner = p;
+                        });
+
+                        rm = _.first(rm);
+
+                        if (!_.isUndefined(rm)) {
+                            if (String(c.partner._id) == String(rm.owner._id)) {
+                                c.recentMessage = c.partner.fullname + ': ' + rm.body;
+                            } else {
+                                c.recentMessage = 'You: ' + rm.body
+                            }
+                        } else {
+                            c.recentMessage = 'New Conversation';
+                        }
+
+                        convos.push(c);
+
+                        return done();
+                    })
+
+                }, function(err) {
+                    if (err) return false;
+                    return utils.sendToSelf(socket, 'updateConversationsNotifications', {conversations: convos});
+                });
+            });
         }
 
         socket.on('authenticate', function(data) {
@@ -145,8 +167,8 @@ module.exports = function(ws) {
             });
         });
 
-        socket.on('updateMailNotifications', function() {
-            updateMailNotifications();
+        socket.on('updateConversationsNotifications', function() {
+            updateConversationsNotifications();
         });
 
         function updateNotifications() {
@@ -237,22 +259,6 @@ module.exports = function(ws) {
 
                 utils.sendToAllConnectedClients(io, 'updateComments', ticket);
             });
-        });
-
-        socket.on('updateMessageFolder', function(data) {
-            // var messageSchema = require('./models/message');
-            // var user = socket.request.user;
-            // var folder = data.folder;
-            // messageSchema.getUserFolder(user._id, folder, function(err, items) {
-            //     if (err) return true;
-            //
-            //     var payload = {
-            //         folder: folder,
-            //         items: items
-            //     };
-            //
-            //     utils.sendToSelf(socket, 'updateMessagesFolder', payload);
-            // });
         });
 
         socket.on('updateUsers', function(data) {

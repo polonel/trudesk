@@ -55,9 +55,12 @@ conversationSchema.methods.isGroup = function() {
 
 conversationSchema.statics.getConversations = function(userId, callback) {
     if (!_.isArray(userId)) userId = [userId];
-    //var size = userId.length;
     return this.model(COLLECTION).find({ participants: {$size: 2, $all: userId} })
         .sort('-updatedAt')
+        .populate({
+            path: 'participants',
+            select: 'username fullname email title image lastOnline'
+        })
         .exec(callback);
 };
 

@@ -32,6 +32,7 @@ messagesController.get = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.conversations = [];
+    self.content.data.showNewConvo = req.showNewConvo;
 
     conversationSchema.getConversationsWithLimit(req.user._id, undefined, function(err, convos) {
         if (err) {
@@ -128,7 +129,7 @@ messagesController.getConversation = function(req, res, next) {
                             c.recentMessage = 'New Conversation';
                         }
 
-                        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && rm.createdAt < userMeta.deletedAt)
+                        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && !_.isUndefined(rm) && rm.createdAt < userMeta.deletedAt)
                             c.recentMessage = 'New Conversation';
 
                         self.content.data.conversations.push(c);

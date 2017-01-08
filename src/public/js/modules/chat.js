@@ -42,9 +42,15 @@ define('modules/chat',[
         socket.on('updateUsers', function(data) {
             var html = '';
             var onlineList = $('.online-list-wrapper').find('ul.online-list');
-            onlineList.html('');
             var username = $('#__loggedInAccount_username').text();
             var filteredData = _.filter(data, function(item) { return item.user.username !== username; });
+            var activeNow = $('.active-now');
+            if (_.size(filteredData) < 1) {
+                activeNow.hide();
+            } else {
+                activeNow.show();
+            }
+            onlineList.html('');
             _.each(filteredData, function(v,k) {
                 var onlineUser = v.user;
                 if (onlineUser.username === username) return true;
@@ -474,7 +480,7 @@ define('modules/chat',[
 
             var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]');
             if (cWindow.length > 0) {
-                loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
+                //loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
                 cWindow.find('textarea').focus();
                 helpers.scrollToBottom(cWindow.find('.chat-box-messages'));
                 return true;

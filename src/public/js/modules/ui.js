@@ -35,7 +35,8 @@ define('modules/ui', [
         this.onDisconnect();
         this.updateUsers();
         this.updateNotifications();
-        this.updateMailNotifications();
+        //this.updateMailNotifications();
+        this.updateConversationsNotifications();
         this.updateComments();
         this.updateUi();
         this.updateTicketStatus();
@@ -136,18 +137,19 @@ define('modules/ui', [
         socket.emit('clearAssignee', id);
     };
 
-    socketUi.updateMailNotifications = function() {
+    socketUi.updateConversationsNotifications = function() {
         $(document).ready(function() {
             var btnMailNotifications = $('#btn_mail-notifications');
             btnMailNotifications.off('click', updateMailNotificationsClicked);
             btnMailNotifications.on('click', updateMailNotificationsClicked);
         });
 
-        socket.removeAllListeners('updateMailNotifications');
-        socket.on('updateMailNotifications', function(data) {
+        socket.removeAllListeners('updateConversationsNotifications');
+        socket.on('updateConversationsNotifications', function(data) {
             var label = $('#btn_mail-notifications').find('> span');
-            var count = data.unreadCount;
-            var items = data.unreadItems;
+            //TODO: Fixed this once unread messages is fully impl.
+            var count = 0;
+            var items = data.conversations;
             if (count < 1) {
                 label.hide();
             } else {
@@ -167,16 +169,16 @@ define('modules/ui', [
                 html    += '<li>';
                 html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
                 html    += '<div class="uk-clearfix">';
-                if (item.from.image)
-                    html    += '<div class="profilePic left"><img src="/uploads/users/' + item.from.image + '" alt="profile"/></div>';
+                if (item.partner.image)
+                    html    += '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>';
                 else
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
-                html    += '<div class="messageAuthor"><strong>' + item.from.fullname + '</strong></div>';
+                html    += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>';
                 html    += '<div class="messageSnippet">';
-                html    += '<span>' + item.subject + '</span>';
+                html    += '<span>' + item.recentMessage + '</span>';
                 html    += '</div>';
-                html    += '<div class="messageDate">';
-                html    += '<time datetime="' + helpers.formatDate(item.date, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.date, "MMM DD, YYYY") + '</time>';
+                html    += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">';
+                html    += '<time datetime="' + helpers.formatDate(item.updatedAt, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.updatedAt, "MMM DD, YYYY") + '</time>';
                 html    += '</div>';
                 html    += '</div>';
                 html    += '</a>';
@@ -184,6 +186,8 @@ define('modules/ui', [
             });
 
             mailDropList.append(html);
+
+            $('body').ajaxify();
         });
     };
 

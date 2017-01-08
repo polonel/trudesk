@@ -45,7 +45,6 @@ define('pages/messages', [
                 $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
                 $loggedInAccountId  = $('#__loggedInAccount__id').text();
 
-
             //Setup Context Menu
             helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
                 var $li = $(target);

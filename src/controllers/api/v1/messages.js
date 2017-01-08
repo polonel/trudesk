@@ -63,9 +63,18 @@ api_messages.getRecentConversations = function(req, res) {
 
         var result = [];
         async.eachSeries(conversations, function(item, done) {
+
+            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() == req.user._id.toString(); });
+            if (idx == -1)
+                return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
+
             messageSchema.getMostRecentMessage(item._id, function(err, m) {
                 if (err) return done(err);
                 var r = item.toObject();
+
+                if (item.userMeta[idx].deletedAt && item.userMeta[idx].deletedAt > _.first(m).createdAt)
+                    return done();
+
                 r.recentMessage = _.first(m);
                 if (!_.isUndefined(r.recentMessage)) {
                     r.recentMessage.__v = undefined;

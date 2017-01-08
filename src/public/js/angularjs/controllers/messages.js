@@ -44,8 +44,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }
             };
 
-            $scope.showUserList = function($event) {
-                $event.preventDefault();
+            $scope.showUserList = function($event, callback) {
+                if (!_.isUndefined($event))
+                    $event.preventDefault();
                 var convoList = document.getElementById('convo-list');
                 convoList.style.transition = 'opacity 0.25s';
                 convoList.style.opacity = 0;
@@ -73,11 +74,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         $('.all-user-list').getNiceScroll(0).resize();
                     }
 
+                    if (_.isFunction(callback))
+                        return callback();
+
                 }, 200);
             };
 
             $scope.hideUserList = function($event) {
-                $event.preventDefault();
+                if (!_.isUndefined($event))
+                    $event.preventDefault();
                 var allUserList = document.getElementById('new-convo-user-list');
                 allUserList.style.transition = 'opacity 0.25s';
                 allUserList.style.opacity = 0;
@@ -107,6 +112,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     });
                 }, 200);
             };
+
+            $scope.showNewConvo = $('#__showNewConvo').text();
+            if ($scope.showNewConvo.length > 0) {
+                $scope.showUserList(undefined, function() {
+                    return _.defer(function() {
+                        helpers.resizeFullHeight();
+                        helpers.hideAllpDropDowns();
+                        helpers.hideDropDownScrolls();
+
+                        helpers.resizeScroller();
+                    }, 500);
+                });
+            }
 
             $scope.startNewConversation = function(userId) {
                 var $loggedInAccountId = $('#__loggedInAccount__id').text();

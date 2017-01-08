@@ -20,7 +20,6 @@ var async   = require('async'),
 
 var viewController = {};
 var viewdata = {};
-viewdata.tickets = {};
 viewdata.notifications = {};
 viewdata.users = {};
 
@@ -49,6 +48,15 @@ viewController.getData = function(request, cb) {
               viewController.getUnreadNotificationsCount(request, function(err, count) {
                   if (err) return callback(err);
                   viewdata.notifications.unreadCount = count;
+                  return callback();
+              });
+          },
+          function(callback) {
+              viewController.getConversations(request, function(err, conversations) {
+                  if (err) return callback(err);
+
+                  viewdata.conversations = conversations;
+
                   return callback();
               });
           },
@@ -147,6 +155,56 @@ viewController.getUnreadNotificationsCount = function(request, callback) {
         }
 
         return callback(null, count);
+    });
+};
+
+viewController.getConversations = function(request, callback) {
+    var conversationSchema = require('../../models/chat/conversation');
+    var messageSchema = require('../../models/chat/message');
+    conversationSchema.getConversationsWithLimit(request.user._id, 10, function(err, conversations) {
+        if (err) {
+            winston.warn(err.message);
+            return callback(er);
+        }
+
+        var convos = [];
+
+        async.eachSeries(conversations, function(convo, done) {
+            var c = convo.toObject();
+
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == request.user._id.toString(); })];
+            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+                return done();
+            }
+
+            messageSchema.getMostRecentMessage(c._id, function(err, rm) {
+                if (err) return done(err);
+
+                _.each(c.participants, function(p) {
+                    if (p._id.toString() !== request.user._id.toString())
+                        c.partner = p;
+                });
+
+                rm = _.first(rm);
+
+                if (!_.isUndefined(rm)) {
+                    if (String(c.partner._id) == String(rm.owner._id)) {
+                        c.recentMessage = c.partner.fullname + ': ' + rm.body;
+                    } else {
+                        c.recentMessage = 'You: ' + rm.body
+                    }
+                } else {
+                    c.recentMessage = 'New Conversation';
+                }
+
+                convos.push(c);
+
+                return done();
+            })
+
+        }, function(err) {
+            return callback(err, convos);
+        });
     });
 };
 
