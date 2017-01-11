@@ -82,6 +82,9 @@ settingsController.get = function(req, res) {
         s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable' });
         s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
 
+        s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
+        s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
+
         self.content.data.settings = s;
 
         return res.render('settings', self.content);

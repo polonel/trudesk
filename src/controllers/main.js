@@ -34,8 +34,18 @@ mainController.index = function(req, res, next) {
     self.content.layout = false;
     self.content.flash = req.flash('loginMessage');
 
+    var settings = require('../models/setting');
+    settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
+        if (err) {
+            winston.warn(err);
+            return res.render('login', self.content);
+        }
 
-    res.render('login', self.content);
+        self.content.allowUserRegistration = setting.value;
+
+        return res.render('login', self.content);
+    });
+
 };
 
 mainController.about = function(req, res) {
@@ -77,27 +87,27 @@ mainController.dashboard = function(req, res, next) {
         totalCount: function(callback) {
             ticketSchema.getTotalCount(function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         totalMonthCount: function(callback) {
             var month = new Date().getMonth();
             ticketSchema.getTotalMonthCount(month, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         closedMonthCount: function(callback) {
             var month = new Date().getMonth();
             ticketSchema.getMonthCount(month, 3, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         newCount: function(callback) {
             ticketSchema.getStatusCount(0, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         activeCount: function(callback) {
@@ -106,28 +116,28 @@ mainController.dashboard = function(req, res, next) {
                     ticketSchema.getStatusCount(1, function(err, count) {
                         if (err) return cb(err, null);
 
-                        cb(null, count);
+                        return cb(null, count);
                     });
                 },
                 function(cb) {
                     ticketSchema.getStatusCount(2, function(err, count) {
                         if (err) return cb(err, null);
 
-                        cb(null, count);
+                        return cb(null, count);
                     });
                 }
             ], function(err, results) {
                 if (err) return callback(err, null);
                 var aCount = _.sum(results);
 
-                callback(null, aCount);
+                return callback(null, aCount);
             });
         },
         closedCount: function(callback) {
             ticketSchema.getStatusCount(3, function(err, count) {
                 if (err) return callback(err, null);
 
-                callback(null, count);
+                return callback(null, count);
             });
         },
         dailyCount: function(callback) {
@@ -155,14 +165,14 @@ mainController.dashboard = function(req, res, next) {
                                     ticketSchema.getDateCount(dates[key], function(err, c) {
                                         if (err) return next(null, 0);
 
-                                        next(null, c);
+                                        return next(null, c);
                                     });
                                 },
                                 closedCount: function(next) {
                                     ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
                                         if (err) return next(null, 0);
 
-                                        next(null, c);
+                                        return next(null, c);
                                     });
                                 }
                             }, function(err, done) {
@@ -171,15 +181,15 @@ mainController.dashboard = function(req, res, next) {
 
                                 final[key].percent = (done.total / 25)*100;
 
-                                cb();
+                                return cb();
                             });
                         })(k);
                     }, function(err) {
-                       next(err, final);
+                        return next(err, final);
                     });
                 }
             ], function(err) {
-                callback(err, final);
+                return callback(err, final);
             });
         }
     }, function(err, results) {
@@ -218,7 +228,7 @@ mainController.dashboard = function(req, res, next) {
             self.content.data.dailyYAxis.v3 = 5;
         }
 
-        res.render('dashboard', self.content);
+        return res.render('dashboard', self.content);
     });
 };
 
@@ -245,7 +255,7 @@ mainController.loginPost = function(req, res, next) {
 mainController.logout = function(req, res, next) {
     req.logout();
     req.session.destroy();
-    res.redirect('/');
+    return res.redirect('/');
 };
 
 mainController.forgotPass = function(req, res, next) {

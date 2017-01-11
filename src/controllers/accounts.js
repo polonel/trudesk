@@ -26,6 +26,32 @@ var accountsController = {};
 
 accountsController.content = {};
 
+accountsController.signup = function(req, res, next) {
+    var settings = require('../models/setting');
+    settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
+        if (err) return handleError(res, err);
+        if (setting && setting.value === true) {
+            settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
+                if (err) return handleError(res, err);
+                var self = accountsController;
+                self.content = {};
+                self.content.title = "Create Account";
+                self.content.layout = false;
+                self.content.data = {};
+
+                if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
+                    self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+                else
+                    self.content.data.privacyPolicy = privacyPolicy.value;
+
+                return res.render('pub_signup', self.content);
+            });
+        } else {
+            return res.redirect('/');
+        }
+    });
+};
+
 accountsController.get = function(req, res, next) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {

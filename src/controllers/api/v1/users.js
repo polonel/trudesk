@@ -187,6 +187,91 @@ api_users.create = function(req, res) {
 };
 
 /**
+ * @api {post} /api/v1/public/account/create Create Public Account
+ * @apiName createPublicAccount
+ * @apiDescription Creates an account with the given post data.
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "aFullname":    "user name",
+ *      "aEmail":       "email@email.com""
+ *      "aPassword":    "password",
+ * }
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} account Saved Account Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_users.createPublicAccount = function(req, res) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
+    var response = {};
+    response.success = true;
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+    var user = undefined,
+        group = undefined;
+
+    async.waterfall([
+        function(next) {
+            var userSchema = require('../../../models/user');
+            user = new userSchema({
+                username: postData.user.email,
+                password: postData.user.password,
+                fullname: postData.user.fullname,
+                email: postData.user.email,
+                role: 'user'
+            });
+
+            user.save(function(err, savedUser) {
+                if (err) return next(err);
+
+                return next(null, savedUser);
+            });
+        },
+        function (savedUser, next) {
+            var groupSchema = require('../../../models/group');
+            group = new groupSchema({
+                name: savedUser.email,
+                members: [savedUser._id],
+                sendMailTo: [savedUser._id],
+                public: true
+            });
+
+            group.save(function(err, savedGroup) {
+                if (err) return next(err);
+
+                return next(null, {user: savedUser, group: savedGroup});
+            });
+        }
+    ], function(err, result) {
+        if (err) winston.debug(err);
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        delete result.user.password;
+        result.user.password = undefined;
+
+        return res.json({success: true, userData: {user: result.user, group: result.group}});
+    });
+};
+
+/**
  * @api {put} /api/v1/users/:username Update User
  * @apiName updateUser
  * @apiDescription Updates a single user.

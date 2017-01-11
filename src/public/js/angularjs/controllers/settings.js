@@ -204,6 +204,23 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.allowUserRegistrationChanged = function() {
+                $scope.allowUserRegistration = this.allowUserRegistration;
+
+                $http.put('/api/v1/settings', {
+                    name: 'allowUserRegistration:enable',
+                    value: $scope.allowUserRegistration
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(data) {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
             $scope.editTag = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
                     $event.target.tagName.toLowerCase() === 'label' ||

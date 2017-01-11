@@ -269,9 +269,9 @@
 <div class="wrapper">
     <div class="slides">
         <div class="slide">
-            <h2 style="margin-bottom: 18px;">New Issue</h2>
+            <h2 style="margin-bottom: 18px;">Create Account</h2>
             <p style="text-align: left;">
-                This wizard will walk you through the process of submitting a new issue.
+                This wizard will walk you through the process of creating an account to access trudesk.
             </p>
 
             <button class="btn md-btn md-btn-wave md-btn-success" data-next>Lets Get Started</button>
@@ -280,7 +280,7 @@
         <div id="userInfoSlide" class="slide hide">
             <h2 style="margin-bottom: 25px;">User Information</h2>
             <p style="text-align: left;">
-                We need to know how to store your request. Please give us a little information about you.
+                Please fill out the information below. All fields are required.
             </p>
             <form id="userInfo" class="uk-form-stacked uk-clearfix">
                 <div class="uk-margin-medium-bottom">
@@ -290,6 +290,14 @@
                 <div class="uk-margin-medium-bottom">
                     <label for="user-email">Email</label>
                     <input id="user-email" name="user-email" class="md-input" type="email" required />
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="user-password">Password</label>
+                    <input id="user-password" name="user-password" class="md-input" type="password" required />
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="user-cPassword">Confirm Password</label>
+                    <input id="user-cPassword" name="user-cPassword" class="md-input" type="password" required />
                 </div>
                 <div style="width: 25%; float: left;">
                     <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
@@ -302,49 +310,18 @@
             <a href="#" class="no-ajaxy" id="privacyPolicyBtn">Privacy Policy</a>
         </div>
         <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Issue</h2>
-            <p style="text-align: left; margin-bottom: 25px;">
-                Please tell us about the issue you're having.
-                Remember to be as detailed as possible to ensure its resolved promptly.
-            </p>
-
-            <form id="adminAccount" class="uk-form-stacked uk-clearfix">
-                <div class="uk-margin-medium-bottom">
-                    <label for="ticket-subject">Subject</label>
-                    <input type="text" id="ticket-subject" name="ticket-subject" class="md-input" />
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="ticket-issue">Issue</label>
-                    <textarea name="ticket-issue" id="ticket-issue" cols="30" rows="10" class="md-input"></textarea>
-                </div>
-
-                <div style="width: 25%; float: left;">
-                    <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
-                </div>
-                <div style="width: 70%; float: right;">
-                    <button class="btn md-btn md-btn-wave md-btn-success" type="button" id="submit-issue">Submit Issue</button>
-                </div>
-            </form>
-        </div>
-        <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Creating Issue...</h2>
-            <p style="text-align: left;">Thank you for submitting your issue. An email has been sent to you with login details to view and create future tickets.</p>
+            <h2 style="margin-bottom: 25px;">Creating Account...</h2>
+            <p style="text-align: center;">Please wait while we create your account.</p>
             <div class="loader">
                 <svg style="width: 140px; " viewBox="0 0 288.9 70.1">
                     <line class="l1" x1="0" y1="0" x2="288" y2="0"></line>
                 </svg>
             </div>
         </div>
-        <div id="restartSlide" class="slide hide">
-            <h2 style="margin-bottom: 25px;">Time to Restart</h2>
-            <p style="text-align: left;"><i>So here we are, together sharpening a knife.</i> Trudesk needs to restart to come out of install mode. Just restart it and you should get a login screen. (hopefully)!</p>
-            <button class="btn md-btn md-btn-wave" type="button" id="restartTrudesk">restart me!</button>
-        </div>
         <div id="errorSlide" class="slide hide">
             <h2 style="margin-bottom: 25px;">Crap! Something funky happened.</h2>
             <p style="text-align: justify;">
-                Alright. This entire install script is in <i>beta</i>. Didn't I mention that? Anyway, there are a couple of options below to try and resolve the issue. There are some common pit falls and workarounds
-                in the docs that may help. Submitting the issue will help identify any bugs in the script and will help others as well.
+                Something didn't work out the way it should. Please try again or submit a bug report below.
             </p>
             <pre style="text-align: left; font-size: 11px; font-weight: normal; margin-bottom: 15px;"></pre>
             <div style="width: 100%;">
@@ -366,20 +343,16 @@
                 <a href="/login" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
                     <button class="btn md-btn md-btn-wave md-btn-primary" type="button" style="width: 100%; margin-bottom: 10px !important;">Login</button>
                 </a>
-                <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;" onclick="location.reload();">Start Over</button>
+                <button class="btn md-btn md-btn-wave" type="button" style="width: 100%; margin-bottom: 10px !important;" data-prev>Back</button>
             </div>
         </div>
-        <div id="ticketCreatedSlide" class="slide hide">
+        <div id="accountCreatedSlide" class="slide hide">
             <h2 style="margin-bottom: 25px; text-align: left;">Thank you <span id="spanfullname" style="color: #2196f3;">[fullname]</span>,</h2>
             <p style="text-align: justify;">
-                Your issue, <strong id="strongSubject">[Subject]</strong> has been submitted. Please store the following information to access and update your ticket.
-            </p>
-            <p style="text-align: left;">
-                Username: <strong id="strongUsername">[Username]</strong> <br>
-                Password: <strong id="strongPassword">[Password]</strong>
+                Your account has been created.
             </p>
             <p style="text-align: justify;">
-                Please follow the link below in order to login and update or view the current status of this issue.
+                Please follow the link below in order to login with your email (<span id="spanemail" style="color: #2196f3">[EMAIL]</span>).
             </p>
             <div style="width: 100%; margin-top: 50px;">
                 <a href="/login" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
@@ -432,19 +405,6 @@
             if (isDoubleClicked($(this))) return;
             //return showTicketCreated();
             advanceSlide();
-//            var nextSlideIdx = activeSlide + 1;
-//            var nextSlide = $('.slide-' + nextSlideIdx);
-//            if (nextSlide.length > 0) {
-//
-//                $(this).parents('.slide').fadeOut(300, function() {
-//                    nextSlide.css({display: 'none'}).removeClass('hide');
-//                    $(this).addClass('hide').removeClass('activeSlide');
-//                    nextSlide.fadeIn(300, function() {
-//                        nextSlide.addClass('activeSlide');
-//                    });
-//                });
-//                activeSlide++;
-//            }
         });
 
         $('button[data-prev]').click(function() {
@@ -470,8 +430,8 @@
         $('button#checkEmail').click(function() {
             if (isDoubleClicked($(this))) return;
             var userInfoFormData = $('form#userInfo').serializeObject();
-            var $emailField, $fullnameField;
-            var $emailValid = false, $fullnameValid = false;
+            var $emailField, $fullnameField, $passwordField, $confirmPasswordField;
+            var $emailValid = false, $fullnameValid = false, $passwordValid = false, $confirmPasswordValid = false;
 
             if (!userInfoFormData['user-email'] || !validateEmail(userInfoFormData['user-email'])) {
                 $emailField = $('form#userInfo').find('input#user-email');
@@ -501,7 +461,36 @@
                 $fullnameValid = true;
             }
 
-            if (!$fullnameValid || !$emailValid)
+            if (!userInfoFormData['user-password'] || (userInfoFormData['user-password'].length < 5)) {
+                $passwordField = $('form#userInfo').find('input#user-password');
+                $passwordField.parent('.md-input-wrapper').addClass('has-error');
+                $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                $passwordField.addClass('uk-form-danger');
+            } else {
+                $passwordField = $('form#userInfo').find('input#user-password');
+                $passwordField.parent('.md-input-wrapper').removeClass('has-error');
+                $passwordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                $passwordField.removeClass('uk-form-danger');
+
+                $passwordValid = true;
+            }
+
+            if (!userInfoFormData['user-cPassword'] || (userInfoFormData['user-cPassword'].length < 5)) {
+                $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
+                $confirmPasswordField.parent('.md-input-wrapper').addClass('has-error');
+                $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                $confirmPasswordField.addClass('uk-form-danger');
+            } else {
+                $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
+                $confirmPasswordField.parent('.md-input-wrapper').removeClass('has-error');
+                $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                $confirmPasswordField.removeClass('uk-form-danger');
+
+                if ($passwordValid && ($passwordField.text().toString() === $confirmPasswordField.text().toString()))
+                    $confirmPasswordValid = true;
+            }
+
+            if (!$fullnameValid || !$emailValid || !$confirmPasswordValid)
                 return false;
 
             var $checkEmailBtn = $(this);
@@ -549,7 +538,8 @@
                         } else {
                             userInfo = {
                                 'fullname': userInfoFormData['user-fullname'],
-                                'email': userInfoFormData['user-email']
+                                'email': userInfoFormData['user-email'],
+                                'password': userInfoFormData['user-cPassword']
                             };
 
                             //Reset Error Classes
@@ -563,6 +553,10 @@
                             $fullnameField.removeClass('uk-form-danger');
 
                             advanceSlide();
+
+                            setTimeout(function() {
+                                createAccount();
+                            }, 1500);
                         }
                     }
                 }
@@ -585,21 +579,6 @@
                 activeSlide++;
             }
         }
-
-        $('button#submit-issue').click(function() {
-            if (isDoubleClicked($(this))) return;
-            ticket = {
-                subject: $('#ticket-subject').val(),
-                issue: $('#ticket-issue').val()
-            };
-
-            advanceSlide();
-
-            //Send the install POST wait for Response...
-            setTimeout(function() {
-                sendIssue();
-            }, 1500);
-        });
 
         $('a#privacyPolicyBtn').click(function() {
             if (isDoubleClicked($(this))) return;
@@ -626,6 +605,48 @@
             }
         });
 
+        function createAccount() {
+            console.log('here');
+            var data = {
+                user: userInfo
+            };
+            $.ajax({
+                method: 'POST',
+                url: '/api/v1/public/account/create',
+                data: JSON.stringify(data),
+                contentType: 'application/json',
+                success: function(response) {
+                    if (!response.success) {
+                        //TODO: Show Error Slide
+                    } else {
+                        console.log(response);
+                        $('span#spanfullname').text(userInfo.fullname);
+                        $('span#spanemail').text(userInfo.email);
+
+                        showAccountCreated();
+                    }
+                },
+                error: function(err) {
+                    console.log(err);
+                }
+            })
+        }
+
+        function showAccountCreated() {
+            //Show Account Created Slide
+            var $active = $('.activeSlide');
+            var accountCreatedSlide = $('#accountCreatedSlide');
+            if (accountCreatedSlide.length > 0) {
+                $active.fadeOut(300, function() {
+                    accountCreatedSlide.css({display: 'none'}).removeClass('hide');
+                    $(this).addClass('hide').removeClass('activeSlide');
+                    accountCreatedSlide.fadeIn(300, function() {
+                        accountCreatedSlide.addClass('activeSlide');
+                    });
+                });
+            }
+        }
+
         function showPrivacyPolicy() {
             //Show Ticket Created Slide
             var $active = $('.activeSlide');
@@ -640,52 +661,6 @@
                     });
                 });
             }
-        }
-
-        function showTicketCreated() {
-            //Show Ticket Created Slide
-            var $active = $('.activeSlide');
-            var ticketCreatedSlide = $('#ticketCreatedSlide');
-            if (ticketCreatedSlide.length > 0) {
-                //$('span#emailSpan').text(userInfoFormData['user-email']);
-                $active.fadeOut(300, function() {
-                    ticketCreatedSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    ticketCreatedSlide.fadeIn(300, function() {
-                        ticketCreatedSlide.addClass('activeSlide');
-                    });
-                });
-                activeSlide++;
-            }
-        }
-
-        function sendIssue() {
-            var d = {
-                user: userInfo,
-                ticket: ticket
-            };
-            $.ajax({
-                method: 'POST',
-                url: '/api/v1/public/tickets/create',
-                data: JSON.stringify(d),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        //TODO: Show Error Slide
-                    } else {
-                        //console.log(response);
-                        $('span#spanfullname').text(userInfo.fullname);
-                        $('strong#strongSubject').text(ticket.subject);
-                        $('strong#strongUsername').text(userInfo.email);
-                        $('strong#strongPassword').text(response.userData.chancepass);
-
-                        showTicketCreated();
-                    }
-                },
-                error: function(err) {
-                    console.log(err);
-                }
-            })
         }
 
         function validateEmail(email) {
