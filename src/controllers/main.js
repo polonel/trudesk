@@ -41,7 +41,8 @@ mainController.index = function(req, res, next) {
             return res.render('login', self.content);
         }
 
-        self.content.allowUserRegistration = setting.value;
+        if (!_.isNull(setting))
+            self.content.allowUserRegistration = setting.value;
 
         return res.render('login', self.content);
     });
