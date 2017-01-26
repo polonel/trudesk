@@ -14,9 +14,7 @@ var express     = require('express'),
     controllers = require('../controllers/index.js'),
     path        = require('path'),
     winston     = require('winston'),
-    mongoose    = require('mongoose'),
-    packagejson = require('../../package.json'),
-    passport = require('passport');
+    packagejson = require('../../package.json');
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
@@ -260,10 +258,9 @@ module.exports = function(app, middleware) {
     });
 };
 
-function handleErrors(err, req, res, next) {
+function handleErrors(err, req, res) {
     var status = err.status || 500;
     res.status(status);
-    //req.flash('errorMessage', err.message);
 
     if (status == 404) {
         winston.debug(err.message);

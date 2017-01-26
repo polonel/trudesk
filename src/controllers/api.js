@@ -16,7 +16,6 @@ var async = require('async'),
     _ = require('underscore'),
     _s = require('underscore.string'),
     winston = require('winston'),
-    passport = require('passport'),
     permissions = require('../permissions'),
     emitter = require('../emitter'),
 
@@ -292,7 +291,7 @@ apiController.devices.setDeviceToken = function(req, res) {
         if (err) return res.status(401).json({error: err.message});
         if (!user) return res.status(401).json({error: 'Unknown User'});
 
-        user.addDeviceToken(token, 1, function(err, u) {
+        user.addDeviceToken(token, 1, function(err) {
             if (err) return res.status(400).json({error: err.message});
 
             res.json({success: true, token: token});

@@ -13,7 +13,6 @@
  **/
 
 var mongoose            = require('mongoose');
-var _                   = require('underscore');
 
 var COLLECTION = 'mailqueue';
 

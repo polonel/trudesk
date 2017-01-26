@@ -18,7 +18,7 @@ var _                   = require('underscore');
 var deepPopulate        = require('mongoose-deep-populate')(mongoose);
 var moment              = require('moment');
 
-//Needed!
+//Needed - Even if unused!
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var userSchema          = require('./user');

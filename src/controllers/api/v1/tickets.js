@@ -14,13 +14,10 @@
 
 var async           = require('async'),
     _               = require('underscore'),
-    _s              = require('underscore.string'),
     moment          = require('moment'),
     winston         = require('winston'),
-    permissions     = require('../../../permissions'),
-    emitter         = require('../../../emitter'),
-
-    userSchema      = require('../../../models/user');
+    //permissions     = require('../../../permissions'),
+    emitter         = require('../../../emitter');
 
 var api_tickets = {};
 
@@ -223,7 +220,7 @@ api_tickets.create = function(req, res) {
     if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
-    var tagSchema = require('../../../models/tag');
+    //var tagSchema = require('../../../models/tag');
     //var tags = [];
     //if (!_.isUndefined(postData.tags)) {
     //    var t = _s.clean(postData.tags);
@@ -537,7 +534,7 @@ api_tickets.update = function(req, res) {
                         cb();
                     }
                 }
-            ], function(err) {
+            ], function() {
                 ticket.save(function(err, t) {
                     if (err) return res.send(err.message);
 
@@ -815,7 +812,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         return [key, 0];
                     })));
 
-                    tags = _.sortKeysBy(tags, function(value, key) {
+                    tags = _.sortKeysBy(tags, function(value) {
                         return -value;
                     });
 
@@ -907,7 +904,7 @@ function buildAvgResponse(ticketArray, callback) {
            return callback();
         });
     }, function (err) {
-        if (err) return c(err);
+        if (err) return callback(err);
 
         var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
             return m + x;

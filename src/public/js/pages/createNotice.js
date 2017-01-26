@@ -14,12 +14,11 @@
 
 define('pages/createNotice', [
     'jquery',
-    'modules/helpers',
     'chosen',
     'history',
     'colorpicker'
 
-], function($, helpers) {
+], function($) {
     var createNotice = {};
 
     createNotice.init = function() {

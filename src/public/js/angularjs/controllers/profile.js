@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], function(angular, _, $, helpers) {
     return angular.module('trudesk.controllers.profile', [])
-        .controller('profileCtrl', function($scope, $http) {
+        .controller('profileCtrl', function($scope, $http, $log) {
 
             $scope.updateUser = function() {
                 var id = $('div[data-user_id]').attr('data-user_id');
@@ -32,7 +32,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
                         saveGroups:     false
                     }
-                ).success(function(d) {
+                ).success(function() {
                         resetForm();
                         //helpers.showFlash('Profile Successfully Saved!');
                         helpers.UI.showSnackbar({
@@ -40,7 +40,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                             textColor: '#f8f8f2'
                         });
                     }).error(function(e) {
-                        console.log('[trudesk:profile:updateUser] - ' + e.error.message);
+                        $log.log('[trudesk:profile:updateUser] - ' + e.error.message);
                         //helpers.showFlash('Error: ' + e, true);
                         helpers.UI.showSnackbar('Error ' + e.error.message, true);
                     });
@@ -66,9 +66,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                         //helpers.showFlash('API Key Successfully Generated');
                         helpers.UI.showSnackbar('API Key Successfully Generated', false);
                     }).error(function(e) {
-                        console.log('[trudesk:profile:generateApiKey] - ' + e);
+                        $log.log('[trudesk:profile:generateApiKey] - ' + e);
                         //helpers.showFlash('Error: ' + e, true);
-                        helpersUI.showSnackbar('Error: ' + e, true);
+                        helpers.UI.showSnackbar('Error: ' + e, true);
                     });
 
             };
@@ -81,14 +81,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
                 $http.post(
                     '/api/v1/users/' + id + '/removeapikey'
-                ).success(function(d) {
+                ).success(function() {
                         $('#aApiKey').val('');
                         $('.generateApiButton').removeClass('hide');
                         $('.removeApiButton').addClass('hide');
                         //helpers.showFlash('API Key Successfully Revoked');
                         helpers.UI.showSnackbar('API Key Successfully Revoked', false);
                     }).error(function(e) {
-                        console.log('[trudesk:profile:removeApiKey] - ' + e);
+                        $log.log('[trudesk:profile:removeApiKey] - ' + e);
                         //helpers.showFlash('Error: ' + e, true);
                         helpers.UI.showSnackbar('Error: ' + e, true);
                     });

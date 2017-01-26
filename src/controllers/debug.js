@@ -14,20 +14,13 @@
 
 var async           = require('async');
 var path            = require('path');
-var _               = require('underscore');
-var _s              = require('underscore.string');
-var flash           = require('connect-flash');
-var userSchema      = require('../models/user');
-var reports         = require('../models/report');
-var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 var winston         = require('winston');
 
 var debugController = {};
 
 debugController.content = {};
 
-debugController.sendmail = function(req, res, next) {
+debugController.sendmail = function(req, res) {
     var mailer              = require('../mailer');
     var emailTemplates      = require('email-templates');
     var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');

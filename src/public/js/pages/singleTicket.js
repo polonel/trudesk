@@ -100,7 +100,7 @@ define('pages/singleTicket', [
             $.ajax({
                 url: '/api/v1/tickets/' + ticketId + '/attachments/remove/' + attachmentId,
                 type: 'DELETE',
-                success: function(res) {
+                success: function() {
                     socketClient.ui.refreshTicketAttachments(ticketId);
                 },
                 error: function(err) {
@@ -151,7 +151,7 @@ define('pages/singleTicket', [
         }
     }
 
-    function onEditIssueClick(e) {
+    function onEditIssueClick() {
         var issueForm = $('.edit-issue-form');
         var issueText = $('.initial-issue').find('.issue-text').find('.issue-body');
 

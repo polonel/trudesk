@@ -14,7 +14,6 @@
 
 var async       = require('async'),
     _           = require('underscore'),
-    _s          = require('underscore.string'),
     winston     = require('winston'),
     permissions = require('../../../permissions'),
     emitter     = require('../../../emitter'),
@@ -356,7 +355,7 @@ api_users.update = function(req, res) {
                             if (err) return callback(err);
 
                             if (result) {
-                                grp.save(function(err, savedGroup) {
+                                grp.save(function(err) {
                                     if (err) return callback(err);
                                     callback();
                                 });
@@ -369,7 +368,7 @@ api_users.update = function(req, res) {
                         grp.removeMember(obj._id, function(err, result) {
                             if (err) return callback(err);
                             if (result) {
-                                grp.save(function(err, savedGroup) {
+                                grp.save(function(err) {
                                     if (err) return callback(err);
 
                                     callback();
@@ -561,7 +560,7 @@ api_users.enableUser = function(req, res) {
 
         user.deleted = false;
 
-        user.save(function(err, user) {
+        user.save(function(err) {
             if (err) return res.status(400).json({error: err.message});
 
             res.json({success: true});
@@ -729,7 +728,7 @@ api_users.removeApiKey = function(req, res) {
     userSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
-        user.removeAccessToken(function(err, user) {
+        user.removeAccessToken(function(err) {
             if (err) return res.status(400).json({error: 'Invalid Request'});
 
             return res.json({success: true});

@@ -164,7 +164,7 @@ viewController.getConversations = function(request, callback) {
     conversationSchema.getConversationsWithLimit(request.user._id, 10, function(err, conversations) {
         if (err) {
             winston.warn(err.message);
-            return callback(er);
+            return callback(err);
         }
 
         var convos = [];

@@ -40,7 +40,7 @@ define('pages/messages', [
                 $nextPage           = 2,
                 $enabled            = true,
                 $loading            = false,
-                $inview             = null,
+                //$inview             = null,
                 $recentMessages     = {},
                 $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
                 $loggedInAccountId  = $('#__loggedInAccount__id').text();

@@ -25,8 +25,7 @@ var path            = require('path'),
     favicon         = require('serve-favicon'),
     session         = require('express-session'),
     MongoStore      = require('connect-mongo')(session),
-    passportConfig  = require('../passport')(),
-    logger          = require('morgan');
+    passportConfig  = require('../passport')();
 
 
 var middleware = {};
@@ -102,7 +101,7 @@ module.exports = function(app, db, callback) {
     ], function(err, s) {
         if (err) {
             winston.error(err);
-            process.exit();
+            throw new Error(err);
         }
 
         callback(middleware, s);

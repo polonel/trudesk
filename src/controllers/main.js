@@ -15,18 +15,17 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    _mixins         = require('../helpers/underscore'),
+    //_mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
     ticketSchema    = require('../models/ticket'),
     nconf           = require('nconf'),
-    winston         = require('winston'),
-    moment          = require('moment');
+    winston         = require('winston');
 
 var mainController = {};
 
 mainController.content = {};
 
-mainController.index = function(req, res, next) {
+mainController.index = function(req, res) {
     "use strict";
     var self = mainController;
     self.content = {};
@@ -50,7 +49,7 @@ mainController.index = function(req, res, next) {
 };
 
 mainController.about = function(req, res) {
-    pkg = require('../../package.json');
+    var pkg = require('../../package.json');
     var settings = require('../models/setting');
     settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
         var self = {};
@@ -72,7 +71,7 @@ mainController.about = function(req, res) {
     });
 };
 
-mainController.dashboard = function(req, res, next) {
+mainController.dashboard = function(req, res) {
     var self = mainController;
     self.content = {};
     self.content.title = "Dashboard";
@@ -234,7 +233,7 @@ mainController.dashboard = function(req, res, next) {
 };
 
 mainController.loginPost = function(req, res, next) {
-    passport.authenticate('local', function(err, user, info) {
+    passport.authenticate('local', function(err, user) {
         if (err) return next(err);
         if (!user) return res.redirect('/');
 
@@ -253,13 +252,13 @@ mainController.loginPost = function(req, res, next) {
     })(req, res, next);
 };
 
-mainController.logout = function(req, res, next) {
+mainController.logout = function(req, res) {
     req.logout();
     req.session.destroy();
     return res.redirect('/');
 };
 
-mainController.forgotPass = function(req, res, next) {
+mainController.forgotPass = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data['forgotPass-email'])) {
         return res.send(400).send('No Form Data');
@@ -325,7 +324,7 @@ mainController.forgotPass = function(req, res, next) {
                         generateTextFromHTML: true
                     };
 
-                    mailer.sendMail(mailOptions, function(err, info) {
+                    mailer.sendMail(mailOptions, function(err) {
                         if (err) {
                             req.flash('Error: ' + err.message);
                             winston.warn(err.message);
@@ -340,7 +339,7 @@ mainController.forgotPass = function(req, res, next) {
     });
 };
 
-mainController.resetPass = function(req, res, next) {
+mainController.resetPass = function(req, res) {
     var hash = req.params.hash;
 
     if (_.isUndefined(hash)) {
@@ -401,7 +400,7 @@ mainController.resetPass = function(req, res, next) {
                             generateTextFromHTML: true
                         };
 
-                        mailer.sendMail(mailOptions, function(err, info) {
+                        mailer.sendMail(mailOptions, function(err) {
                             if (err) {
                                 req.flash('Error: ' + err.message);
                                 return res.status(500).send(err.message);

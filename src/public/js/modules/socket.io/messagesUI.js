@@ -22,7 +22,7 @@ define('modules/socket.io/messagesUI', [
 
 ], function($, _, moment, helpers, nav) {
     var messagesUI = {};
-
+//TODO: CLEAN THIS!!!
     messagesUI.updateSingleMessageItem = function(socket) {
         // socket.removeAllListeners('updateSingleMessageItem');
         // socket.on('updateSingleMessageItem', function(message) {

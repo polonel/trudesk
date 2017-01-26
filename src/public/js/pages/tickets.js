@@ -133,7 +133,7 @@ define('pages/tickets', [
 
             helpers.resizeAll();
 
-            $('#ticketTable tbody').on('click', 'td', function(e) {
+            $('#ticketTable tbody').on('click', 'td', function() {
                 var i = $(this).parents('tr').attr('data-ticket');
                 var j = $(this).find('input[type=checkbox]');
                 if ($(j).length !== 0)

@@ -15,18 +15,17 @@
 var async           = require('async');
 var _               = require('underscore');
 var _s              = require('underscore.string');
-var flash           = require('connect-flash');
+var winston         = require('winston');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 var emitter         = require('../emitter');
 
 var accountsController = {};
 
 accountsController.content = {};
 
-accountsController.signup = function(req, res, next) {
+accountsController.signup = function(req, res) {
     var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) return handleError(res, err);
@@ -52,7 +51,7 @@ accountsController.signup = function(req, res, next) {
     });
 };
 
-accountsController.get = function(req, res, next) {
+accountsController.get = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
         return res.redirect('/');
@@ -123,7 +122,7 @@ accountsController.get = function(req, res, next) {
     });
 };
 
-accountsController.profile = function(req, res, next) {
+accountsController.profile = function(req, res) {
     var user = req.user;
     var backUrl = req.header('Referer') || '/';
     if (_.isUndefined(user)) {
@@ -161,7 +160,7 @@ accountsController.profile = function(req, res, next) {
     });
 };
 
-accountsController.editAccount = function(req, res, next) {
+accountsController.editAccount = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
         req.flash('message', 'Permission Denied.');
@@ -217,7 +216,7 @@ accountsController.editAccount = function(req, res, next) {
     });
 };
 
-accountsController.postEdit = function(req, res, next) {
+accountsController.postEdit = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
         req.flash('message', 'Permission Denied.');
@@ -314,7 +313,7 @@ accountsController.postEdit = function(req, res, next) {
     });
 };
 
-accountsController.createAccount = function(req, res, next) {
+accountsController.createAccount = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
         req.flash('message', 'Permission Denied.');
@@ -421,7 +420,7 @@ accountsController.postCreate = function(req, res) {
     });
 };
 
-accountsController.uploadImage = function(req, res, next) {
+accountsController.uploadImage = function(req, res) {
     var fs = require('fs');
     var path = require('path');
     var Busboy = require('busboy');

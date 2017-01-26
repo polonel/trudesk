@@ -14,10 +14,9 @@
 
 define('pages/editaccount', [
     'jquery',
-    'modules/helpers',
     'history'
 
-], function($, helpers) {
+], function($) {
     var editaccount = {};
 
     editaccount.init = function() {

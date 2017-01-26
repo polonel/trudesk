@@ -14,15 +14,12 @@
 
 "use strict";
 
-var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
-var path = require('path');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
-var app,
-    middleware = {};
+var app, middleware = {};
 
 middleware.db = function(req, res, next) {
     if (mongoose.connection.readyState !== 1) {

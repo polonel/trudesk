@@ -41,7 +41,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, eh, UI) {
+    ], function(nav, eh) {
         nav.init();
         setTimeout(function(){
 

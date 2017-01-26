@@ -156,7 +156,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         e.preventDefault();
     }
 
-    function liClick(e) {
+    function liClick() {
         helpers.hideAllpDropDowns();
         helpers.hideDropDownScrolls();
     }

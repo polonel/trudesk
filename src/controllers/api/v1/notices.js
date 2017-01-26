@@ -12,14 +12,8 @@
 
  **/
 
-var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
+var _ = require('underscore'),
     winston = require('winston'),
-    permissions = require('../../../permissions'),
-    emitter = require('../../../emitter'),
-
-    userSchema = require('../../../models/user'),
     noticeSchema = require('../../../models/notice');
 
 var api_notices = {};

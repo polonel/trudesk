@@ -15,7 +15,6 @@
 var _       = require('underscore'),
     async   = require('async'),
     winston = require('winston'),
-    userSchema = require('../models/user'),
     conversationSchema = require('../models/chat/conversation'),
     messageSchema = require('../models/chat/message');
 
@@ -23,7 +22,7 @@ var messagesController = {};
 
 messagesController.content = {};
 
-messagesController.get = function(req, res, next) {
+messagesController.get = function(req, res) {
     var self = this;
     self.content = {};
     self.content.title = "Messages";
@@ -84,7 +83,7 @@ messagesController.get = function(req, res, next) {
     });
 };
 
-messagesController.getConversation = function(req, res, next) {
+messagesController.getConversation = function(req, res) {
     var self = this;
     var cid = req.params.convoid;
     if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!');

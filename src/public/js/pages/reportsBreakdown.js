@@ -88,7 +88,7 @@ define('pages/reportsBreakdown', [
                             });
 
                             var responseTime_text = $('#responseTime_text');
-                            var responseTime_graph = $('#responseTime_graph');
+                            //var responseTime_graph = $('#responseTime_graph');
                             var oldResponseTime = responseTime_text.text() == '--' ? 0 : responseTime_text.text();
                             var responseTime = _data.data.avgResponse;
                             var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
@@ -145,7 +145,7 @@ define('pages/reportsBreakdown', [
                                 '#455a64'
                             ];
 
-                            var c = _.object(_.map(arr, function(v,i) {
+                            var c = _.object(_.map(arr, function(v) {
                                 return v[0];
                             }), colors);
 
@@ -161,7 +161,7 @@ define('pages/reportsBreakdown', [
                                 },
                                 donut: {
                                     label: {
-                                        format: function (value, ratio, id) {
+                                        format: function () {
                                             return '';
                                         }
                                     }

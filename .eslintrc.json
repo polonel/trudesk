@@ -1,0 +1,22 @@
+{
+  "plugins": ["node"],
+  "extends": ["eslint:recommended", "plugin:node/recommended"],
+  "root": true,
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "node/exports-style": ["error", "module.exports"],
+    "no-console": "off"
+  },
+  "globals": {
+    "angular": 1,
+    "define": 1,
+    "requirejs": 1,
+    "MG": 1,
+    "Snackbar": 1,
+    "ROLES": 1,
+    "io": 1
+  }
+}

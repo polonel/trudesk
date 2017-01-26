@@ -117,7 +117,7 @@ userSchema.methods.addDeviceToken = function(token, type, callback) {
         if (hasDeviceToken(user, token, type)) return callback(null, token);
 
         user.iOSDeviceTokens.push(token);
-        user.save(function(err, u) {
+        user.save(function(err) {
             if (err) return callback(err, null);
 
             callback(null, token);
@@ -200,7 +200,7 @@ userSchema.methods.softDelete = function(callback) {
 
     user.deleted = true;
 
-    user.save(function(err, user) {
+    user.save(function(err) {
         if (err) return callback(err, false);
 
         callback(null, true);
