@@ -138,8 +138,8 @@ module.exports = function(grunt) {
 
         apidoc: {
             trudesk: {
-                src: "src/controllers/api/",
-                dest: "apidocs/",
+                src: 'src/controllers/api/',
+                dest: 'apidocs/',
                 options: {
                     //debug: true,
                     includeFilters: ['.*\\.js$'],
