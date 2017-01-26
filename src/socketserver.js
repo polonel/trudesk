@@ -611,8 +611,7 @@ module.exports = function(ws) {
                 async.eachSeries(user.preferences.openChatWindows, function(convoId, done) {
                     var partner = null;
                     conversationSchema.getConversation(convoId, function(err, conversation) {
-                        if (err) return done();
-
+                        if (err || !conversation) return done();
                         _.each(conversation.participants, function(i) {
                             if (i._id.toString() !== loggedInAccountId.toString()) {
                                 return partner === i.toObject();
