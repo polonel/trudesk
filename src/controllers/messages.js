@@ -15,7 +15,6 @@
 var _       = require('underscore'),
     async   = require('async'),
     winston = require('winston'),
-    userSchema = require('../models/user'),
     conversationSchema = require('../models/chat/conversation'),
     messageSchema = require('../models/chat/message');
 
@@ -23,7 +22,7 @@ var messagesController = {};
 
 messagesController.content = {};
 
-messagesController.get = function(req, res, next) {
+messagesController.get = function(req, res) {
     var self = this;
     self.content = {};
     self.content.title = "Messages";
@@ -32,6 +31,7 @@ messagesController.get = function(req, res, next) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
     self.content.data.conversations = [];
+    self.content.data.showNewConvo = req.showNewConvo;
 
     conversationSchema.getConversationsWithLimit(req.user._id, undefined, function(err, convos) {
         if (err) {
@@ -83,7 +83,7 @@ messagesController.get = function(req, res, next) {
     });
 };
 
-messagesController.getConversation = function(req, res, next) {
+messagesController.getConversation = function(req, res) {
     var self = this;
     var cid = req.params.convoid;
     if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!');
@@ -128,7 +128,7 @@ messagesController.getConversation = function(req, res, next) {
                             c.recentMessage = 'New Conversation';
                         }
 
-                        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && rm.createdAt < userMeta.deletedAt)
+                        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && !_.isUndefined(rm) && rm.createdAt < userMeta.deletedAt)
                             c.recentMessage = 'New Conversation';
 
                         self.content.data.conversations.push(c);

@@ -13,7 +13,6 @@
  **/
 
 var mongoose            = require('mongoose');
-var _                   = require('underscore');
 
 var historySchema = mongoose.Schema({
     action:         { type: String, required: true},

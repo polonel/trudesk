@@ -18,10 +18,10 @@ var winston             = require('winston'),
     passportSocketIo    = require('passport.socketio'),
     cookieparser        = require('cookie-parser'),
     emitter             = require('./emitter'),
-    async               = require('async'),
     marked              = require('marked');
 
 module.exports = function(ws) {
+    "use strict";
     var _ = require('lodash'),
         __ = require('underscore'),
         usersOnline = {},
@@ -81,51 +81,75 @@ module.exports = function(ws) {
         'polling'
     ]);
 
-    function onAuthorizeFail(data, message, error, accept) {
-        winston.warn('Forcing Accept of socket connect! - (' + message + ') -- ' + 'Maybe iOS?');
-        accept();
-    }
+    // function onAuthorizeFail(data, message, error, accept) {
+    //     winston.warn('Forcing Accept of socket connect! - (' + message + ') -- ' + 'Maybe iOS?');
+    //     accept();
+    // }
 
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
 
-        //TODO: This is a JANK lag that needs to be removed and optimized!!!!
         setInterval(function() {
-            updateMailNotifications();
+            updateConversationsNotifications();
             updateNotifications();
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
-            utils.sendToSelf(socket, 'updateUsers', sortedUserList);
+
+            //TODO: This is a JANK lag that needs to be removed and optimized!!!!
+            // Running Test to see if this is actually needed
+            //var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+            //utils.sendToSelf(socket, 'updateUsers', sortedUserList);
 
         }, 5000);
 
-        function updateMailNotifications() {
-            utils.sendToSelf(socket, 'updateMailNotifications', {unreadCount: 0, unreadItems: []});
-            // var userId = socket.request.user._id;
-            // var messageSchema = require('./models/message');
-            // var payload = {};
-            // async.parallel([
-            //     function(callback) {
-            //         messageSchema.getUnreadInboxCount(userId, function(err, objs) {
-            //             if (err) return callback();
-            //             payload.unreadCount = objs;
-            //
-            //            callback();
-            //         });
-            //     },
-            //
-            //     function(callback){
-            //         messageSchema.getUserUnreadMessages(userId, function(err, objs) {
-            //             if (err) return callback();
-            //             payload.unreadItems = objs;
-            //
-            //             callback();
-            //         });
-            //     }
-            // ], function(err) {
-            //     if (err) return true;
-            //
-            //     utils.sendToSelf(socket, 'updateMailNotifications', payload);
-            // });
+        function updateConversationsNotifications() {
+            var userId = socket.request.user._id;
+            var messageSchema = require('./models/chat/message');
+            var conversationSchema = require('./models/chat/conversation');
+            conversationSchema.getConversationsWithLimit(userId, 10, function(err, conversations) {
+                if (err) {
+                    winston.warn(err.message);
+                    return false;
+                }
+
+                var convos = [];
+
+                async.eachSeries(conversations, function(convo, done) {
+                    var c = convo.toObject();
+
+                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == userId.toString(); })];
+                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+                        return done();
+                    }
+
+                    messageSchema.getMostRecentMessage(c._id, function(err, rm) {
+                        if (err) return done(err);
+
+                        _.each(c.participants, function(p) {
+                            if (p._id.toString() !== userId.toString())
+                                c.partner = p;
+                        });
+
+                        rm = _.first(rm);
+
+                        if (!_.isUndefined(rm)) {
+                            if (String(c.partner._id) == String(rm.owner._id)) {
+                                c.recentMessage = c.partner.fullname + ': ' + rm.body;
+                            } else {
+                                c.recentMessage = 'You: ' + rm.body
+                            }
+                        } else {
+                            c.recentMessage = 'New Conversation';
+                        }
+
+                        convos.push(c);
+
+                        return done();
+                    });
+
+                }, function(err) {
+                    if (err) return false;
+                    return utils.sendToSelf(socket, 'updateConversationsNotifications', {conversations: convos});
+                });
+            });
         }
 
         socket.on('authenticate', function(data) {
@@ -146,8 +170,8 @@ module.exports = function(ws) {
             });
         });
 
-        socket.on('updateMailNotifications', function() {
-            updateMailNotifications();
+        socket.on('updateConversationsNotifications', function() {
+            updateConversationsNotifications();
         });
 
         function updateNotifications() {
@@ -178,16 +202,16 @@ module.exports = function(ws) {
                 if (err) return true;
 
                 notification.markRead(function() {
-                    notification.save(function(err, final) {
+                    notification.save(function(err) {
                         if (err) return true;
 
                         updateNotifications();
                     });
-                })
+                });
             });
         });
 
-        socket.on('clearNotifications', function(data) {
+        socket.on('clearNotifications', function() {
             var userId = socket.request.user._id;
             if (_.isUndefined(userId)) return true;
             var notifications = {};
@@ -240,24 +264,8 @@ module.exports = function(ws) {
             });
         });
 
-        socket.on('updateMessageFolder', function(data) {
-            // var messageSchema = require('./models/message');
-            // var user = socket.request.user;
-            // var folder = data.folder;
-            // messageSchema.getUserFolder(user._id, folder, function(err, items) {
-            //     if (err) return true;
-            //
-            //     var payload = {
-            //         folder: folder,
-            //         items: items
-            //     };
-            //
-            //     utils.sendToSelf(socket, 'updateMessagesFolder', payload);
-            // });
-        });
-
-        socket.on('updateUsers', function(data) {
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+        socket.on('updateUsers', function() {
+            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
             utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
         });
 
@@ -267,7 +275,7 @@ module.exports = function(ws) {
                 if (err) return true;
 
                 utils.sendToSelf(socket, 'updateAssigneeList', users);
-            })
+            });
         });
 
         socket.on('setAssignee', function(data) {
@@ -441,7 +449,7 @@ module.exports = function(ws) {
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return winston.error(err);
 
-                ticket.updateComment(ownerId, commentId, markedComment, function(err, t) {
+                ticket.updateComment(ownerId, commentId, markedComment, function(err) {
                     if (err) return winston.error(err);
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
@@ -558,44 +566,113 @@ module.exports = function(ws) {
             utils.sendToAllConnectedClients(io, 'updateClearNotice');
         });
 
-        socket.on('joinChatServer', function(data) {
+        socket.on('joinChatServer', function() {
             var user = socket.request.user;
             var exists = false;
             _.find(usersOnline, function(v,k) {
                 if (k.toLowerCase() === user.username.toLowerCase())
-                    return exists = true;
+                    return exists === true;
             });
 
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
 
             if (!exists) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
 
                     totalOnline = _.size(usersOnline);
-                    sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+                    sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                     sockets.push(socket);
+
+                    spawnOpenChatWindows(socket, user._id);
                 }
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
 
                 utils.sendToSelf(socket, 'joinSuccessfully');
-                sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+                sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 sockets.push(socket);
+
+                spawnOpenChatWindows(socket, user._id);
             }
         });
 
-        socket.on('spawnChatWindow', function(data) {
+        socket.on('getOpenChatWindows', function() {
+            spawnOpenChatWindows(socket, socket.request.user._id);
+        });
+
+        function spawnOpenChatWindows(socket, loggedInAccountId) {
+            var userSchema = require('./models/user');
+            var conversationSchema = require('./models/chat/conversation');
+            userSchema.getUser(loggedInAccountId, function(err, user) {
+                if (err) return true;
+
+                async.eachSeries(user.preferences.openChatWindows, function(convoId, done) {
+                    var partner = null;
+                    conversationSchema.getConversation(convoId, function(err, conversation) {
+                        if (err || !conversation) return done();
+                        _.each(conversation.participants, function(i) {
+                            if (i._id.toString() !== loggedInAccountId.toString()) {
+                                return partner === i.toObject();
+                            }
+                        });
+
+                        if (partner === null) return done();
+
+                        delete partner['password'];
+                        delete partner['resetPassHash'];
+                        delete partner['resetPassExpire'];
+                        delete partner['accessToken'];
+                        delete partner['iOSDeviceTokens'];
+                        delete partner['deleted'];
+
+                        utils.sendToSelf(socket, 'spawnChatWindow', partner);
+
+                        return done();
+                    });
+                });
+            });
+        }
+
+        socket.on('spawnChatWindow', function(userId) {
             //Get user
             var userSchema = require('./models/user');
-            userSchema.getUser(data, function(err, user) {
+            userSchema.getUser(userId, function(err, user) {
                 if (err) return true;
-                if (user != null)
-                    utils.sendToSelf(socket,'spawnChatWindow', user);
+                if (user !== null) {
+                    var u = user.toObject();
+                    delete u['password'];
+                    delete u['resetPassHash'];
+                    delete u['resetPassExpire'];
+                    delete u['accessToken'];
+                    delete u['iOSDeviceTokens'];
+                    delete u['deleted'];
+
+                    utils.sendToSelf(socket,'spawnChatWindow', u);
+                }
             });
+        });
+
+        socket.on('saveChatWindow', function(data) {
+             var userId = data.userId;
+             var convoId = data.convoId;
+             var remove = data.remove;
+
+             var userSchema = require('./models/user');
+             userSchema.getUser(userId, function(err, user) {
+                 if (err) return true;
+                 if (user !== null) {
+                     if (remove) {
+                        user.removeOpenChatWindow(convoId);
+                     } else {
+                         user.addOpenChatWindow(convoId);
+
+                     }
+                 }
+             });
         });
 
         socket.on('chatMessage', function(data) {
@@ -603,7 +680,7 @@ module.exports = function(ws) {
             var from = data.from;
             var od = data.type;
             if (data.type === 's') {
-                data.type = 'r'
+                data.type = 'r';
             } else {
                 data.type = 's';
             }
@@ -619,7 +696,7 @@ module.exports = function(ws) {
                         data.toUser = toUser;
 
                         return next();
-                    })
+                    });
                 },
                 function(next) {
                     userSchema.getUser(from, function(err, fromUser) {
@@ -629,7 +706,7 @@ module.exports = function(ws) {
                         data.fromUser = fromUser;
 
                         return next();
-                    })
+                    });
                 }
             ], function(err) {
                 if (err) return utils.sendToSelf(socket, 'chatMessage', {message: err});
@@ -647,7 +724,7 @@ module.exports = function(ws) {
             var user = null;
             var fromUser = null;
 
-            _.find(usersOnline, function(v,k) {
+            _.find(usersOnline, function(v) {
                 if (String(v.user._id) === String(to)) {
                     user = v.user;
                 }
@@ -670,7 +747,7 @@ module.exports = function(ws) {
             var to = data.to;
             var user = null;
 
-            _.find(usersOnline, function(v,k) {
+            _.find(usersOnline, function(v) {
                 if (String(v.user._id) === String(to)) {
                     user = v.user;
                 }
@@ -695,7 +772,7 @@ module.exports = function(ws) {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+                var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
@@ -723,6 +800,8 @@ module.exports = function(ws) {
 };
 
 function onAuthorizeSuccess(data, accept) {
+    "use strict";
+
     winston.debug('User successfully connected: ' + data.user.username);
 
     accept();

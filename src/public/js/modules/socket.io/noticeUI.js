@@ -21,7 +21,7 @@ define('modules/socket.io/noticeUI', [
     'modules/navigation',
     'history'
 
-], function($, _, moment, helpers, UIkit, nav) {
+], function($, _, moment, helpers, UIkit) {
     var noticeUI = {};
 
     noticeUI.setShowNotice = function(socket, notice) {

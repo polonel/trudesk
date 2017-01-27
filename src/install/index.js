@@ -149,7 +149,8 @@ function checkSetupFlag(next) {
             install.values = setupVal;
             next();
         } else {
-            winston.error('Required values are missing for automated setup:');
+            const error = 'Required values are missing for automated setup:';
+            winston.error(error);
             if (!setupVal['admin:username']) {
                 winston.error('  admin:username');
             }
@@ -163,7 +164,7 @@ function checkSetupFlag(next) {
                 winston.error('  admin:email');
             }
 
-            process.exit();
+            throw new Error(error);
         }
     } else {
         next();
@@ -250,7 +251,7 @@ function setupConfig(next) {
             if (err) {
                 process.stdout.write('\n\n');
                 winston.warn('trudesk setup ' + err.message);
-                process.exit();
+                throw new Error('Error: ' + err.message);
             }
 
             completeConfigSetup(err, config, next);
@@ -277,13 +278,13 @@ function createAdministrator(next) {
     db.init(function(err) {
         if (err) {
             winston.error('Database Error: ' + err.message);
-            process.exit();
+            throw new Error('Database Error: ' + err.message);
         } else {
             var Group = require('../models/group');
             Group.getGroupByName('Administrators', function(err, group) {
                 if (err) {
                     winston.error('Database Error: ' + err.message);
-                    process.exit();
+                    throw new Error('Database Error: ' + err.message);
                 }
 
                 if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
@@ -300,7 +301,7 @@ function createAdministrator(next) {
                     adminGroup.save(function(err) {
                         if (err) {
                             winston.error('Database Error:' + err.message);
-                            process.exit();
+                            throw new Error('Database Error: ' + err.message);
                         }
 
                         createAdmin(next);
@@ -319,13 +320,13 @@ function createAdmin(next) {
     db.init(function(err) {
         if (err) {
             winston.error('Database Error: ' + err.message);
-            process.exit();
+            throw new Error('Database Error: ' + err.message);
         }
 
         User.getUserByUsername('Administrator', function(err, admin) {
             if (err) {
                 winston.error('Database Error: ' + err.message);
-                process.exit();
+                throw new Error('Database Error: ' + err.message);
             }
 
             if (!_.isNull(admin)) {
@@ -346,31 +347,31 @@ function createAdmin(next) {
                 user.save(function(err, aUser) {
                     if (err) {
                         winston.error('Database Error: ' + err.message);
-                        process.exit();
+                            throw new Error('Database Error: ' + err.message);
                     }
 
                     Group.getGroupByName('Administrators', function(err, adminGroup) {
                         if (err) {
                             winston.error('Database Error: ' + err.message);
-                            process.exit();
+                                throw new Error('Database Error: ' + err.message);
                         }
 
                         if (!_.isNull(adminGroup) && !_.isUndefined(adminGroup) && !_.isEmpty(adminGroup)) {
                             adminGroup.addMember(aUser._id, function(err, success) {
                                 if (err) {
                                     winston.error('Database Error: ' + err.message);
-                                    process.exit();
+                                        throw new Error('Database Error: ' + err.message);
                                 }
 
                                 if (!success) {
                                     winston.error('Unable to add Administrator to group Administrators. Aborting...');
-                                    process.exit();
+                                        throw new Error('Database Error: ' + err.message);
                                 }
 
                                 adminGroup.save(function(err) {
                                     if (err) {
                                         winston.error('Database Error: ' + err.message);
-                                        process.exit();
+                                            throw new Error('Database Error: ' + err.message);
                                     }
 
                                     next();
@@ -494,8 +495,8 @@ install.setup = function(callback) {
 
     ], function(err) {
         if (err) {
-            winston.err('trudesk Setup Aborted. ' + err.message);
-            process.exit();
+            winston.err('Trudesk Setup Aborted. ' + err.message);
+            throw new Error('Trudesk Setup Aborted. ' + err.message);
         } else {
             callback();
         }

@@ -14,10 +14,6 @@
 
 var _               = require('underscore');
 var async           = require('async');
-var winston         = require('winston');
-var moment          = require('moment');
-
-var userSchema      = require('../models/user');
 var ticketSchema    = require('../models/ticket');
 
 _.mixin({
@@ -95,7 +91,7 @@ var init = function(tickets, callback) {
 };
 
 function buildMostRequester(ticketArray, callback) {
-    var requesters = _.map(ticketArray, function(m,k) {
+    var requesters = _.map(ticketArray, function(m) {
         return m.owner.fullname;
     });
 
@@ -106,7 +102,7 @@ function buildMostRequester(ticketArray, callback) {
         return [key, 0];
     })));
 
-    r = _.sortKeysBy(r, function(v, k) {
+    r = _.sortKeysBy(r, function(v) {
         return -v;
     });
 
@@ -124,8 +120,8 @@ function flatten(arr) {
 }
 
 function buildMostComments(ticketArray, callback) {
-    var commenters = _.map(ticketArray, function(m, k) {
-        return _.map(m.comments, function(i,j) {
+    var commenters = _.map(ticketArray, function(m) {
+        return _.map(m.comments, function(i) {
             return i.owner.fullname;
         });
     });
@@ -139,7 +135,7 @@ function buildMostComments(ticketArray, callback) {
         return [key, 0];
     })));
 
-    c = _.sortKeysBy(c, function(v, k) {
+    c = _.sortKeysBy(c, function(v) {
         return -v;
     });
 
@@ -155,7 +151,7 @@ function buildMostAssignee(ticketArray, callback) {
         return (_.isUndefined(v.assignee) || _.isNull(v.assignee));
     });
 
-    var assignees = _.map(ticketArray, function(m,k) {
+    var assignees = _.map(ticketArray, function(m) {
         return m.assignee.fullname;
     });
 
@@ -178,7 +174,7 @@ function buildMostAssignee(ticketArray, callback) {
 }
 
 function buildMostActiveTicket(ticketArray, callback) {
-    var tickets = _.map(ticketArray, function(m, k) {
+    var tickets = _.map(ticketArray, function(m) {
         return {uid: m.uid, cSize: _.size(m.history) };
     });
 

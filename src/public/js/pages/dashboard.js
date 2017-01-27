@@ -23,7 +23,7 @@ define('pages/dashboard', [
     'peity',
     'history'
 
-], function($, _, helpers, CountUp, c3, d3pie) {
+], function($, _, helpers, CountUp, c3) {
     var dashboardPage = {};
 
     dashboardPage.init = function() {
@@ -95,7 +95,7 @@ define('pages/dashboard', [
                         });
 
                         var responseTime_text = $('#responseTime_text');
-                        var responseTime_graph = $('#responseTime_graph');
+                        //var responseTime_graph = $('#responseTime_graph');
                         var oldResponseTime = responseTime_text.text() == '--' ? 0 : responseTime_text.text();
                         var responseTime = _data.ticketAvg;
                         var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
@@ -136,7 +136,7 @@ define('pages/dashboard', [
                             '#607D8B'
                         ];
 
-                        var c = _.object(_.map(arr, function(v,i) {
+                        var c = _.object(_.map(arr, function(v, i) {
                             return v[0];
                         }), _.shuffle(colors));
 

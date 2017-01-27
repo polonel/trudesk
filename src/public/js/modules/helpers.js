@@ -451,12 +451,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.showFlash = function(message, error, sticky) {
-        var self = this;
         var flash = $('.flash-message');
         if (flash.length < 1) return true;
 
-        var e = error ? true : false;
-        var s = sticky ? true : false;
+        var e = !!error;
+        var s = !!sticky;
 
         var flashTO;
         var flashText = flash.find('.flash-text');
@@ -1069,7 +1068,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         var role = $('div#__loggedInAccount_role').text();
         if (_.isUndefined(role)) return false;
 
-        var rolePerm = _.find(roles, {'id': role});
+        var rolePerm = _.find(ROLES, {'id': role});
         if (_.isUndefined(rolePerm)) return false;
 
         if (rolePerm.allowedAction === '*') return true;

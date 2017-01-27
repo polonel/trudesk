@@ -15,18 +15,17 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    _mixins         = require('../helpers/underscore'),
+    //_mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
     ticketSchema    = require('../models/ticket'),
     nconf           = require('nconf'),
-    winston         = require('winston'),
-    moment          = require('moment');
+    winston         = require('winston');
 
 var mainController = {};
 
 mainController.content = {};
 
-mainController.index = function(req, res, next) {
+mainController.index = function(req, res) {
     "use strict";
     var self = mainController;
     self.content = {};
@@ -34,12 +33,23 @@ mainController.index = function(req, res, next) {
     self.content.layout = false;
     self.content.flash = req.flash('loginMessage');
 
+    var settings = require('../models/setting');
+    settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
+        if (err) {
+            winston.warn(err);
+            return res.render('login', self.content);
+        }
 
-    res.render('login', self.content);
+        if (!_.isNull(setting))
+            self.content.allowUserRegistration = setting.value;
+
+        return res.render('login', self.content);
+    });
+
 };
 
 mainController.about = function(req, res) {
-    pkg = require('../../package.json');
+    var pkg = require('../../package.json');
     var settings = require('../models/setting');
     settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
         var self = {};
@@ -61,7 +71,7 @@ mainController.about = function(req, res) {
     });
 };
 
-mainController.dashboard = function(req, res, next) {
+mainController.dashboard = function(req, res) {
     var self = mainController;
     self.content = {};
     self.content.title = "Dashboard";
@@ -77,27 +87,27 @@ mainController.dashboard = function(req, res, next) {
         totalCount: function(callback) {
             ticketSchema.getTotalCount(function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         totalMonthCount: function(callback) {
             var month = new Date().getMonth();
             ticketSchema.getTotalMonthCount(month, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         closedMonthCount: function(callback) {
             var month = new Date().getMonth();
             ticketSchema.getMonthCount(month, 3, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         newCount: function(callback) {
             ticketSchema.getStatusCount(0, function(err, count) {
                 if (err) return callback(err, null);
-                callback(null, count);
+                return callback(null, count);
             });
         },
         activeCount: function(callback) {
@@ -106,28 +116,28 @@ mainController.dashboard = function(req, res, next) {
                     ticketSchema.getStatusCount(1, function(err, count) {
                         if (err) return cb(err, null);
 
-                        cb(null, count);
+                        return cb(null, count);
                     });
                 },
                 function(cb) {
                     ticketSchema.getStatusCount(2, function(err, count) {
                         if (err) return cb(err, null);
 
-                        cb(null, count);
+                        return cb(null, count);
                     });
                 }
             ], function(err, results) {
                 if (err) return callback(err, null);
                 var aCount = _.sum(results);
 
-                callback(null, aCount);
+                return callback(null, aCount);
             });
         },
         closedCount: function(callback) {
             ticketSchema.getStatusCount(3, function(err, count) {
                 if (err) return callback(err, null);
 
-                callback(null, count);
+                return callback(null, count);
             });
         },
         dailyCount: function(callback) {
@@ -155,14 +165,14 @@ mainController.dashboard = function(req, res, next) {
                                     ticketSchema.getDateCount(dates[key], function(err, c) {
                                         if (err) return next(null, 0);
 
-                                        next(null, c);
+                                        return next(null, c);
                                     });
                                 },
                                 closedCount: function(next) {
                                     ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
                                         if (err) return next(null, 0);
 
-                                        next(null, c);
+                                        return next(null, c);
                                     });
                                 }
                             }, function(err, done) {
@@ -171,15 +181,15 @@ mainController.dashboard = function(req, res, next) {
 
                                 final[key].percent = (done.total / 25)*100;
 
-                                cb();
+                                return cb();
                             });
                         })(k);
                     }, function(err) {
-                       next(err, final);
+                        return next(err, final);
                     });
                 }
             ], function(err) {
-                callback(err, final);
+                return callback(err, final);
             });
         }
     }, function(err, results) {
@@ -218,12 +228,12 @@ mainController.dashboard = function(req, res, next) {
             self.content.data.dailyYAxis.v3 = 5;
         }
 
-        res.render('dashboard', self.content);
+        return res.render('dashboard', self.content);
     });
 };
 
 mainController.loginPost = function(req, res, next) {
-    passport.authenticate('local', function(err, user, info) {
+    passport.authenticate('local', function(err, user) {
         if (err) return next(err);
         if (!user) return res.redirect('/');
 
@@ -242,13 +252,13 @@ mainController.loginPost = function(req, res, next) {
     })(req, res, next);
 };
 
-mainController.logout = function(req, res, next) {
+mainController.logout = function(req, res) {
     req.logout();
     req.session.destroy();
-    res.redirect('/');
+    return res.redirect('/');
 };
 
-mainController.forgotPass = function(req, res, next) {
+mainController.forgotPass = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data['forgotPass-email'])) {
         return res.send(400).send('No Form Data');
@@ -314,7 +324,7 @@ mainController.forgotPass = function(req, res, next) {
                         generateTextFromHTML: true
                     };
 
-                    mailer.sendMail(mailOptions, function(err, info) {
+                    mailer.sendMail(mailOptions, function(err) {
                         if (err) {
                             req.flash('Error: ' + err.message);
                             winston.warn(err.message);
@@ -329,7 +339,7 @@ mainController.forgotPass = function(req, res, next) {
     });
 };
 
-mainController.resetPass = function(req, res, next) {
+mainController.resetPass = function(req, res) {
     var hash = req.params.hash;
 
     if (_.isUndefined(hash)) {
@@ -390,7 +400,7 @@ mainController.resetPass = function(req, res, next) {
                             generateTextFromHTML: true
                         };
 
-                        mailer.sendMail(mailOptions, function(err, info) {
+                        mailer.sendMail(mailOptions, function(err) {
                             if (err) {
                                 req.flash('Error: ' + err.message);
                                 return res.status(500).send(err.message);

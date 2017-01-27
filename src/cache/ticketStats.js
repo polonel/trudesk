@@ -14,7 +14,6 @@
 
 var _               = require('underscore');
 var async           = require('async');
-var winston         = require('winston');
 var moment          = require('moment');
 
 var userSchema      = require('../models/user');
@@ -186,7 +185,7 @@ var init = function(tickets, callback) {
                 });
             });
         }
-    }, function(err, done) {
+    }, function(err) {
         callback(err, ex);
     });
 };
@@ -238,7 +237,7 @@ function buildAvgResponse(ticketArray, callback) {
         });
 
     }, function (err) {
-        if (err) return c(err);
+        if (err) return callback(err);
 
         var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
             return m + x;

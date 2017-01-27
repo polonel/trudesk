@@ -23,7 +23,7 @@ define('pages/reports', [
     'peity',
     'history'
 
-], function($, _, helpers, CountUp, c3, d3pie) {
+], function($, _, helpers, CountUp, c3) {
     var reportsPage = {};
 
     reportsPage.init = function() {
@@ -93,7 +93,7 @@ define('pages/reports', [
                             });
 
                             var responseTime_text = $('#responseTime_text');
-                            var responseTime_graph = $('#responseTime_graph');
+                            //var responseTime_graph = $('#responseTime_graph');
                             var oldResponseTime = responseTime_text.text() == '--' ? 0 : responseTime_text.text();
                             var responseTime = _data.ticketAvg;
                             var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
@@ -146,7 +146,7 @@ define('pages/reports', [
                             '#607D8B'
                         ];
 
-                        var c = _.object(_.map(arr, function(v,i) {
+                        var c = _.object(_.map(arr, function(v) {
                             return v[0];
                         }), _.shuffle(colors));
 
@@ -162,7 +162,7 @@ define('pages/reports', [
                             },
                             donut: {
                                 label: {
-                                    format: function (value, ratio, id) {
+                                    format: function () {
                                         return '';
                                     }
                                 }
@@ -178,7 +178,7 @@ define('pages/reports', [
                     method: 'GET',
                     success: function(data) {
 
-                        var arr = _.map(data.items, function(v, key) {
+                        var arr = _.map(data.items, function(v) {
                             return [v.name, v.count];
                         });
 
@@ -203,7 +203,7 @@ define('pages/reports', [
 
                         colors = _.shuffle(colors);
 
-                        var c = _.object(_.map(arr, function(v,i) {
+                        var c = _.object(_.map(arr, function(v) {
                             return v[0];
                         }), colors);
 
@@ -219,70 +219,12 @@ define('pages/reports', [
                             },
                             donut: {
                                 label: {
-                                    format: function (value, ratio, id) {
+                                    format: function () {
                                         return '';
                                     }
                                 }
                             }
                         });
-
-                        //_.each(data.items, function(item) {
-                        //    var obj = {};
-                        //    obj.label = item.name;
-                        //    obj.value = item.count;
-                        //    var color = _.sample(colors);
-                        //    colors = _.without(colors, color);
-                        //
-                        //    obj.color = color;
-                        //
-                        //    d.content.push(obj);
-                        //});
-                        //
-                        //$('#pieChart').find('svg').remove();
-                        //
-                        //new d3pie("pieChart", {
-                        //    "size": {
-                        //        "canvasHeight": 215,
-                        //        "canvasWidth": 450,
-                        //        "pieInnerRadius": "60%",
-                        //        "pieOuterRadius": "68%"
-                        //    },
-                        //    "data": d,
-                        //    "labels": {
-                        //        "outer": {
-                        //            "pieDistance": 15
-                        //        },
-                        //        "inner": {
-                        //            "format": "value"
-                        //        },
-                        //        "mainLabel": {
-                        //            "font": "roboto"
-                        //        },
-                        //        "percentage": {
-                        //            "color": "#ffffff",
-                        //            "font": "roboto",
-                        //            "decimalPlaces": 0
-                        //        },
-                        //        "value": {
-                        //            "color": "#ffffff",
-                        //            "font": "roboto"
-                        //        },
-                        //        "lines": {
-                        //            "enabled": true,
-                        //            "color": "#78909c"
-                        //        },
-                        //        "truncation": {
-                        //            "enabled": true
-                        //        }
-                        //    },
-                        //    "effects": {
-                        //        "pullOutSegmentOnClick": {
-                        //            "effect": "linear",
-                        //            "speed": 400,
-                        //            "size": 3
-                        //        }
-                        //    }
-                        //});
                     }
                 });
             }

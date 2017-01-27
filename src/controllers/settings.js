@@ -14,15 +14,11 @@
 
 var async           = require('async');
 var _               = require('underscore');
-var _s              = require('underscore.string');
 var winston         = require('winston');
-var flash           = require('connect-flash');
 var jsStringEscape  = require('js-string-escape');
-var userSchema      = require('../models/user');
 var settingSchema   = require('../models/setting');
 var tagSchema       = require('../models/tag');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 
 var settingsController = {};
 
@@ -81,6 +77,9 @@ settingsController.get = function(req, res) {
 
         s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable' });
         s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
+
+        s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
+        s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
 
         self.content.data.settings = s;
 
@@ -181,7 +180,7 @@ settingsController.tags = function(req, res) {
                return next(err);
             });
         }
-    ], function(err) {
+    ], function() {
         self.content.data.tags = _.sortBy(resultTags, function(o){ return o.tag.name; });
         return res.render('tags', self.content)
     });

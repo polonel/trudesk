@@ -15,12 +15,13 @@
 define('modules/chat',[
     'jquery',
     'underscore',
+    'moment',
     'modules/helpers',
     'uikit',
     'autogrow',
     'history'
 
-], function($, _, helpers, UIKit) {
+], function($, _, moment, helpers, UIKit) {
     var chatClient = {},
         socket;
 
@@ -37,13 +38,21 @@ define('modules/chat',[
 
         });
 
+        //TODO: This is called often. Even on 5sec loop. This needs to be optimized. JANK!
+        // This should not be on loop. Maybe have the UI update based on Connect/Disconnect
         socket.removeAllListeners('updateUsers');
         socket.on('updateUsers', function(data) {
             var html = '';
             var onlineList = $('.online-list-wrapper').find('ul.online-list');
-            onlineList.html('');
             var username = $('#__loggedInAccount_username').text();
             var filteredData = _.filter(data, function(item) { return item.user.username !== username; });
+            var activeNow = $('.active-now');
+            if (_.size(filteredData) < 1) {
+                activeNow.hide();
+            } else {
+                activeNow.show();
+            }
+            onlineList.html('');
             _.each(filteredData, function(v,k) {
                 var onlineUser = v.user;
                 if (onlineUser.username === username) return true;
@@ -88,7 +97,21 @@ define('modules/chat',[
 
         socket.removeAllListeners('spawnChatWindow');
         socket.on('spawnChatWindow', function(data) {
-            chatClient.openChatWindow(data);
+            var messageContent = $('#message-content[data-conversation-id]');
+            if (messageContent.length > 0) {
+                var loggedInAccountId = $('#__loggedInAccount__id').text();
+                startConversation(loggedInAccountId, data._id, function(err, convo) {
+                    if (err) {
+                        console.log('[trudesk:chat:openChatWindow] - Error');
+                        console.log(err);
+                        return helpers.UI.showSnackbar('Unable to start chat', true);
+                    } else {
+                        History.pushState(null, null, '/messages/' + convo._id, true);
+                    }
+                });
+            } else {
+                chatClient.openChatWindow(data);
+            }
         });
 
         socket.removeAllListeners('chatMessage');
@@ -225,7 +248,6 @@ define('modules/chat',[
             return complete();
     };
 
-    //This needs to be split because it is being called on the 5sec ui update thread and causing lag in the chat window!!!!!
     chatClient.bindActions = function() {
         $(document).ready(function() {
             $('*[data-action="startChat"]').each(function() {
@@ -238,77 +260,91 @@ define('modules/chat',[
                     e.preventDefault();
                 });
             });
-
-            var $textarea = $('textarea.textAreaAutogrow');
-
-            $textarea.off('keyup');
-            $textarea.off('keydown');
-            $textarea.on('keydown', function(e) {
-                if (e.keyCode == 13)
-                    return;
-
-                var self = $(this);
-                var cid = self.parent().parent().attr('data-conversation-id');
-                var user = self.parent().parent().attr('data-chat-userid');
-
-                if (cid == undefined || user == undefined) {
-                    console.log('Invalid Conversation ID or User ID');
-                    return false;
-                }
-
-                chatClient.startTyping(cid, user, function() {
-
-                });
-            });
-            $textarea.autogrow({
-                postGrowCallback: chatBoxTextAreaGrowCallback,
-                enterPressed: function(self, v) {
-                    var messages = self.parent().siblings('.chat-box-messages');
-                    var cid = self.parent().parent().attr('data-conversation-id');
-                    var userId = self.parents('.chat-box').attr('data-chat-userid');
-                    helpers.scrollToBottom(messages);
-                    if (v.length < 1) return;
-
-                    //Send Message
-                    chatClient.sendChatMessage(cid, userId, v, function(err) {
-                        clearTimeout(typingTimeout[cid]);
-                        stopTyping(cid, userId);
-                    });
-                }
-            });
-
-            $('.chat-box-text').off('click');
-            $('.chat-box-text').click(function(e) {
-                if ($(this).children('textarea').is(":focus")) {
-                    e.stopPropagation();
-                    return false;
-                }
-
-                $(this).children('textarea').focus();
-                var val = $(this).children('textarea').val();
-                $(this).children('textarea').val('').val(val);
-            });
-
-            $('.chatCloseBtn').off('click');
-            $('.chatCloseBtn').click(function() {
-                $(this).parents('.chat-box[data-chat-userid]').parent().remove();
-            });
-
-            $('.chat-box-title').off('click');
-            $('.chat-box-title').click(function() {
-                var p = $(this).parents('.chat-box-position');
-                if (p.css('top') === '-280px') {
-                    p.animate({
-                        top: -29
-                    }, 250);
-                } else {
-                    p.animate({
-                        top: -280
-                    }, 250);
-                }
-            });
         });
     };
+
+    function bindChatWindowActions(convoId) {
+        var $chatBox = $('.chat-box[data-conversation-id="' + convoId + '"]');
+        if ($chatBox.length < 1)
+            return false;
+
+        var $textarea = $chatBox.find('textarea.textAreaAutogrow');
+        var $chatBoxText = $chatBox.find('.chat-box-text');
+        var $chatCloseButton = $chatBox.find('.chatCloseBtn');
+        var $chatTitleBar = $chatBox.find('.chat-box-title');
+
+        $textarea.off('keyup');
+        $textarea.off('keydown');
+        $textarea.on('keydown', function(e) {
+            if (e.keyCode == 13)
+                return;
+
+            var self = $(this);
+            var cid = self.parent().parent().attr('data-conversation-id');
+            var user = self.parent().parent().attr('data-chat-userid');
+
+            if (cid == undefined || user == undefined) {
+                console.log('Invalid Conversation ID or User ID');
+                return false;
+            }
+
+            chatClient.startTyping(cid, user, function() {
+
+            });
+        });
+        $textarea.autogrow({
+            postGrowCallback: chatBoxTextAreaGrowCallback,
+            enterPressed: function(self, v) {
+                var messages = self.parent().siblings('.chat-box-messages');
+                var cid = self.parent().parent().attr('data-conversation-id');
+                var userId = self.parents('.chat-box').attr('data-chat-userid');
+                helpers.scrollToBottom(messages);
+                if (v.length < 1) return;
+
+                //Send Message
+                chatClient.sendChatMessage(cid, userId, v, function(err) {
+                    clearTimeout(typingTimeout[cid]);
+                    stopTyping(cid, userId);
+                });
+            }
+        });
+
+        $chatBoxText.off('click');
+        $chatBoxText.click(function(e) {
+            if ($(this).children('textarea').is(":focus")) {
+                e.stopPropagation();
+                return false;
+            }
+
+            $(this).children('textarea').focus();
+            var val = $(this).children('textarea').val();
+            $(this).children('textarea').val('').val(val);
+        });
+
+        $chatCloseButton.off('click');
+        $chatCloseButton.click(function(e) {
+            e.preventDefault();
+            $(this).parents('.chat-box[data-chat-userid]').parent().remove();
+
+            var $loggedInAccountId = $('#__loggedInAccount__id').text();
+            var cid = $chatCloseButton.parents('.chat-box[data-conversation-id]').attr('data-conversation-id');
+            socket.emit('saveChatWindow', {userId: $loggedInAccountId, convoId: cid, remove: true});
+        });
+
+        $chatTitleBar.off('click');
+        $chatTitleBar.click(function() {
+            var p = $(this).parents('.chat-box-position');
+            if (p.css('top') === '-280px') {
+                p.animate({
+                    top: -29
+                }, 250);
+            } else {
+                p.animate({
+                    top: -280
+                }, 250);
+            }
+        });
+    }
 
     //Make this return messages with single HTTP request
     function startConversation(owner, receiver, callback) {
@@ -332,6 +368,12 @@ define('modules/chat',[
                         url: '/api/v1/messages/conversation/' + data.conversation._id,
                         type: 'GET',
                         success: function(d) {
+                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() == owner.toString()})];
+                            if (userMeta && userMeta.deletedAt) {
+                                d.messages = _.filter(d.messages, function(message) {
+                                    return moment(message.createdAt) > moment(userMeta.deletedAt);
+                                });
+                            }
                             data.conversation.messages = d.messages;
                             return callback(null, data.conversation)
                         },
@@ -412,8 +454,12 @@ define('modules/chat',[
         });
     };
 
+    chatClient.getOpenWindows = function() {
+        socket.emit('getOpenChatWindows');
+    };
+
     chatClient.openChatWindow = function(user, complete) {
-        var isOnMessagesPage = ($('#message-content').find('#messages').length > 0);
+        var isOnMessagesPage = ($('#__page').text().toLowerCase() === 'messages');
         if (isOnMessagesPage) {
             if (_.isFunction(complete))
                 return complete();
@@ -436,7 +482,7 @@ define('modules/chat',[
 
             var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]');
             if (cWindow.length > 0) {
-                loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
+                //loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
                 cWindow.find('textarea').focus();
                 helpers.scrollToBottom(cWindow.find('.chat-box-messages'));
                 return true;
@@ -445,17 +491,20 @@ define('modules/chat',[
             var imageUrl = user.image;
             if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
 
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == loggedInAccountId.toString(); })];
             var html = '<div class="chat-box-position">';
             html += '<div class="chat-box" data-conversation-id="' + convo._id + '" data-chat-userid="' + user._id + '">';
             html += '<div class="chat-box-title">';
             html += '<div class="chat-box-title-buttons right">';
-            html += '<a href="#" class="chatCloseBtn"><i class="material-icons material-icons-small">close</i></a>';
+            html += '<a class="chatCloseBtn"><i class="material-icons material-icons-small">close</i></a>';
             html += '</div>';
             html += '<h4 class="chat-box-title-text-wrapper">';
             html += '<a href="#">' + user.fullname + '</a>';
             html += '</h4>';
             html += '</div>';
             html += '<div class="chat-box-messages scrollable">';
+            if (userMeta && userMeta.deletedAt)
+                html += '<div class="chat-box-deletedAt">Conversation deleted at ' + moment(userMeta.deletedAt).format('MM.D.YY \\at h:mma') + '</div>';
             html += '<div class="chat-message-list" data-chat-userid="' + user._id + '">';
             html += '</div>';
             html += '<div class="user-is-typing-wrapper hide">';
@@ -474,8 +523,10 @@ define('modules/chat',[
             loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
             helpers.hideAllpDropDowns();
             helpers.setupScrollers('.chat-box[data-chat-userid="' + user._id + '"] > div.scrollable');
-            chatClient.bindActions();
+            bindChatWindowActions(convo._id);
             helpers.scrollToBottom($('.chat-box[data-chat-userid="' + user._id + '"]').find('.chat-box-messages'));
+
+            socket.emit('saveChatWindow', {userId: loggedInAccountId, convoId: convo._id, remove: false});
 
             //Fire when window is done loading
             if (_.isFunction(complete))

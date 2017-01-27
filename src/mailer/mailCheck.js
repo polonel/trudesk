@@ -15,8 +15,8 @@
 var _           = require('underscore');
 var async       = require('async');
 var Imap        = require('imap');
-var inspect     = require('util').inspect;
-var MailParser  = require('mailparser').MailParser;
+//var inspect     = require('util').inspect;
+//var MailParser  = require('mailparser').MailParser;
 var winston     = require('winston');
 var nconf       = require('nconf');
 var marked      = require('marked');
@@ -185,6 +185,7 @@ mailCheck.fetchMail = function() {
             ], function(err) {
                 if (err) winston.warn(err);
                 mailCheck.Imap.closeBox(true, function(err) {
+                    winston.debug(err);
                     mailCheck.Imap.end();
                 });
             });

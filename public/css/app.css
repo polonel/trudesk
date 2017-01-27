@@ -2698,6 +2698,12 @@ div.dataTables_wrapper {
                 top: 5px;
                 left: 100%;
                 background: #E74C3C url("/img/chat-arrow.png") no-repeat 0 -13px; }
+        .chat-dock .chat-box-wrapper .chat-box .chat-box-messages .chat-box-deletedAt {
+          font-family: "Source Sans Pro", sans-serif;
+          font-size: 11px;
+          color: #888;
+          margin-bottom: 5px;
+          text-align: center; }
 
 .circle-chart-wrapper {
   margin-bottom: 15px; }

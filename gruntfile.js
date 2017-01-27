@@ -138,8 +138,8 @@ module.exports = function(grunt) {
 
         apidoc: {
             trudesk: {
-                src: "src/controllers/",
-                dest: "apidocs/",
+                src: 'src/controllers/api/',
+                dest: 'apidocs/',
                 options: {
                     //debug: true,
                     includeFilters: ['.*\\.js$'],
@@ -282,8 +282,14 @@ module.exports = function(grunt) {
             requirejs: {
                 command: 'r.js -o rBuild.js'
             },
+            requirejsdist: {
+                command: 'r.js -o rBuild_dist.js'
+            },
             requirejswin: {
                 command: 'r.js.cmd -o rBuild.js'
+            },
+            requirejsdistwin: {
+                command: 'r.js.cmd -o rBuild_dist.js'
             }
         }
     });
@@ -296,5 +302,7 @@ module.exports = function(grunt) {
     grunt.registerTask('sbuild', ['shell:requirejs']);
     grunt.registerTask('swinbuild', ['shell:requirejswin']);
     grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejswin', 'buildcss', 'builddocs']);
+    grunt.registerTask('distbuild', ['uglify:uikit', 'shell:requirejsdist', 'buildcss', 'builddocs']);
+    grunt.registerTask('windistbuild', ['uglify:uikit', 'shell:requirejsdistwin', 'buildcss', 'builddocs']);
     grunt.registerTask('default', ['server']);
 };

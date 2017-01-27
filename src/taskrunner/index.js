@@ -10,13 +10,8 @@
 */
 
 var _               = require('underscore');
-var async           = require('async');
 var winston         = require('winston');
 var taskSchema      = require('../models/task');
-var reportSchema    = require('../models/report');
-
-var userSchema      = require('../models/user');
-var ticketSchema    = require('../models/ticket');
 
 /**
  * @namespace

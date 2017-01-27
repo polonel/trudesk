@@ -104,7 +104,6 @@ if (process.env.HEROKU) {
 }
 
 //if (nconf.get('install') || !configExists && !process.env.HEROKU) {
-//    var ws = require('./src/webserver');
 //    ws.installServer(function() {
 //        return winston.info('Trudesk Install Server Running...');
 //    });
@@ -230,8 +229,8 @@ function dbCallback(err, db) {
 
                         n.on('message', function(data) {
                             if (data.cache) {
-                                var nodeCache = require('./src/cache/node-cache');
-                                global.cache = new nodeCache({
+                        var NodeCache = require('./src/cache/node-cache');
+                        global.cache = new NodeCache({
                                     data: data.cache.data,
                                     checkperiod: 0
                                 });

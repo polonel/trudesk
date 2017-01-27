@@ -12,8 +12,6 @@
 var mongoose        = require('mongoose');
 var _               = require('underscore');
 var deepPopulate    = require('mongoose-deep-populate')(mongoose);
-var accountsSchema  = require('./user');
-var groupSchema     = require('./group');
 
 var COLLECTION = 'reports';
 
@@ -50,7 +48,7 @@ reportSchema.pre('save', function(next) {
 
     var c = require('./counters');
     var self = this;
-    c.increment('reports', function(err, res, k) {
+    c.increment('reports', function(err, res) {
         if (err) return next(err);
 
         self.uid = res.value.next;

@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history'], function(angular, _, $, helpers, socket, md, UIkit) {
     return angular.module('trudesk.controllers.messages', [])
-        .controller('messagesCtrl', ['$scope', '$http', '$window', function($scope, $http, $window) {
+        .controller('messagesCtrl', function($scope, $document, $http, $window, $cookies, $timeout, $log) {
 
             $scope.loadConversation = function(convoId) {
                 History.pushState(null, null, '/messages/' + convoId );
@@ -30,6 +30,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     return false;
 
                 socket.chat.sendChatMessage(cid, toUserId, input.val(), function(err) {
+                    $log.warn(err);
                     input.val('');
 
                     socket.chat.stopTyping(cid, toUserId);
@@ -44,24 +45,25 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }
             };
 
-            $scope.showUserList = function($event) {
-                $event.preventDefault();
-                var convoList = document.getElementById('convo-list');
+            $scope.showUserList = function($event, callback) {
+                if (!_.isUndefined($event))
+                    $event.preventDefault();
+                var convoList = $document[0].getElementById('convo-list');
                 convoList.style.transition = 'opacity 0.25s';
                 convoList.style.opacity = 0;
 
-                var allUserList = document.getElementById('new-convo-user-list');
+                var allUserList = $document[0].getElementById('new-convo-user-list');
                 allUserList.style.opacity = 0;
                 allUserList.classList.remove('hide');
                 allUserList.style.display = 'block';
                 allUserList.style.transition = 'opacity 0.25s';
 
-                setTimeout(function() {
+                $timeout(function() {
                     convoList.style.display = 'none';
 
                     allUserList.style.opacity = 1;
 
-                    var actions = document.getElementById('convo-actions').children;
+                    var actions = $document[0].getElementById('convo-actions').children;
                     [].forEach.call(actions, function(el) {
                         if (el.style.display == 'none')
                             el.style.display = 'block';
@@ -73,32 +75,36 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         $('.all-user-list').getNiceScroll(0).resize();
                     }
 
+                    if (_.isFunction(callback))
+                        return callback();
+
                 }, 200);
             };
 
             $scope.hideUserList = function($event) {
-                $event.preventDefault();
-                var allUserList = document.getElementById('new-convo-user-list');
+                if (!_.isUndefined($event))
+                    $event.preventDefault();
+                var allUserList = $document[0].getElementById('new-convo-user-list');
                 allUserList.style.transition = 'opacity 0.25s';
                 allUserList.style.opacity = 0;
 
 
-                var convoList = document.getElementById('convo-list');
+                var convoList = $document[0].getElementById('convo-list');
                 convoList.style.transition = 'opacity 0.25s';
                 convoList.style.opacity = 0;
 
-                setTimeout(function() {
+                $timeout(function() {
                     allUserList.style.display = 'none';
                     convoList.style.display = 'block';
 
                     convoList.style.opacity = 1;
 
-                    document.querySelector('.search-box > input').value = '';
+                    $document[0].querySelector('.search-box > input').value = '';
                     $('.all-user-list li').each(function() {
                         $(this).show();
                     });
 
-                    var actions = document.getElementById('convo-actions').children;
+                    var actions = $document[0].getElementById('convo-actions').children;
                     [].forEach.call(actions, function(el) {
                         if (el.style.display == 'none')
                             el.style.display = 'block';
@@ -107,6 +113,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     });
                 }, 200);
             };
+
+            $scope.showNewConvo = $('#__showNewConvo').text();
+            if ($scope.showNewConvo.length > 0) {
+                $scope.showUserList(undefined, function() {
+                    return _.defer(function() {
+                        helpers.resizeFullHeight();
+                        helpers.hideAllpDropDowns();
+                        helpers.hideDropDownScrolls();
+
+                        helpers.resizeScroller();
+                    }, 500);
+                });
+            }
 
             $scope.startNewConversation = function(userId) {
                 var $loggedInAccountId = $('#__loggedInAccount__id').text();
@@ -122,9 +141,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         History.pushState(null, null, '/messages/' + conversation._id );
                     }
                 }, function(err) {
-                    console.log('[trudesk.Messages.startNewConversation()] - Error: ');
-                    console.log(err);
+                    $log.error('[trudesk.Messages.startNewConversation()] - Error: ');
+                    $log.error(err);
                 })
             };
-        }]);
+        });
 });

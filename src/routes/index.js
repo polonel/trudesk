@@ -14,16 +14,14 @@ var express     = require('express'),
     controllers = require('../controllers/index.js'),
     path        = require('path'),
     winston     = require('winston'),
-    mongoose    = require('mongoose'),
-    packagejson = require('../../package.json'),
-    passport = require('passport');
+    packagejson = require('../../package.json');
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
-    router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
+    router.get('/login', middleware.redirectToLogin, middleware.redirectToDashboardIfLoggedIn);
     router.post('/login', controllers.main.loginPost);
     //router.get('/l2auth', middleware.checkUserHasL2Auth, middleware.cache(5*60), controllers.main.l2authget);
     router.get('/logout', controllers.main.logout);
@@ -33,6 +31,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
 
     router.get('/newissue', controllers.tickets.pubNewIssue);
+    router.get('/signup', controllers.accounts.signup);
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
@@ -56,6 +55,7 @@ function mainRoutes(router, middleware, controllers) {
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    router.get('/messages/startconversation', middleware.redirectToLogin, middleware.loadCommonData, function(req, res, next){ req.showNewConvo = true; next();}, controllers.messages.get);
     router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
     // router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
     // router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
@@ -180,6 +180,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
+    router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
 
     if (global.env === 'development') {
         router.get('/debug/message', function(req, res) {
@@ -257,10 +258,9 @@ module.exports = function(app, middleware) {
     });
 };
 
-function handleErrors(err, req, res, next) {
+function handleErrors(err, req, res) {
     var status = err.status || 500;
     res.status(status);
-    //req.flash('errorMessage', err.message);
 
     if (status == 404) {
         winston.debug(err.message);

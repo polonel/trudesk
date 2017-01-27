@@ -21,7 +21,7 @@ var async = require('async'),
 
     userSchema = require('../../../models/user'),
 
-    conversationSchema = require('../../../models/chat/conversation');
+    conversationSchema = require('../../../models/chat/conversation'),
     messageSchema = require('../../../models/chat/message');
 
 var api_messages = {};
@@ -63,9 +63,18 @@ api_messages.getRecentConversations = function(req, res) {
 
         var result = [];
         async.eachSeries(conversations, function(item, done) {
+
+            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() == req.user._id.toString(); });
+            if (idx == -1)
+                return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
+
             messageSchema.getMostRecentMessage(item._id, function(err, m) {
                 if (err) return done(err);
                 var r = item.toObject();
+
+                if (item.userMeta[idx].deletedAt && item.userMeta[idx].deletedAt > _.first(m).createdAt)
+                    return done();
+
                 r.recentMessage = _.first(m);
                 if (!_.isUndefined(r.recentMessage)) {
                     r.recentMessage.__v = undefined;
@@ -110,12 +119,10 @@ api_messages.startConversation = function(req, res) {
     //Check if Conversation with these participants exist
     conversationSchema.getConversations(participants, function(err, convo) {
         if (err) {
-            //winston.debug(err);
             return res.status(400).json({success: false, error: err.message});
         }
 
         if (convo.length == 1) {
-            //winston.debug('Using Convo Found: ' + convo[0]);
             return res.json({success: true, conversation: convo[0]});
         } else {
             var userMeta = [];
@@ -203,23 +210,23 @@ api_messages.send = function(req, res) {
 api_messages.getMessagesForConversation = function(req, res) {
     var conversation = req.params.id;
     var page = (req.query.page == undefined ? 0 : req.query.page);
-
+    var limit = (req.query.limit == undefined ? 10 : req.query.limit);
     if (_.isUndefined(conversation) || _.isNull(conversation))
         return res.status(400).json({success: false, error: 'Invalid Conversation'});
 
     var response = {};
-    async.parallel([
+    async.series([
         function(done) {
             conversationSchema.getConversation(conversation, function(err, convo) {
                 if (err) return done(err);
 
                 response.conversation = convo;
 
-                done();
+                return done();
             });
         },
         function(done) {
-            messageSchema.getConversationWithObject({cid: conversation, page: page}, function(err, messages) {
+            messageSchema.getConversationWithObject({cid: conversation, page: page, limit: limit, userMeta: response.conversation.userMeta, requestingUser: req.user}, function(err, messages) {
                 if (err) return done(err);
 
                 response.messages = messages;

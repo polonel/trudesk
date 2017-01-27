@@ -62,5 +62,5 @@ if (typeof exports !== 'undefined') {
         exports = module.exports = roles;
     }
 } else {
-    window.roles = roles;
+    window.ROLES = roles;
 }

@@ -18,7 +18,7 @@ define('pages/settings', [
     'modules/helpers',
     'history'
 
-], function($, _, helpers) {
+], function($) {
     var settingsPage = {};
 
     settingsPage.init = function() {

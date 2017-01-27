@@ -40,11 +40,10 @@ define('pages/messages', [
                 $nextPage           = 2,
                 $enabled            = true,
                 $loading            = false,
-                $inview             = null,
+                //$inview             = null,
                 $recentMessages     = {},
                 $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
                 $loggedInAccountId  = $('#__loggedInAccount__id').text();
-
 
             //Setup Context Menu
             helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
@@ -81,19 +80,21 @@ define('pages/messages', [
                 $('ul > li[data-conversation-id="' + $convoId + '"]').addClass('active');
 
                 //Remove All Chat Boxes
-                $('.chat-box-position').each(function() {
-                    var self = $(this);
-                    self.remove();
-                });
+                if ($('#__page').text().toLowerCase() === 'messages') {
+                    $('.chat-box-position').each(function() {
+                        var self = $(this);
+                        self.remove();
+                    });
 
-                $('.message-textbox').find('input').focus();
+                    $('.message-textbox').find('input').focus();
 
-                $messageScroller.scroll(function() {
-                    if ($scrollspy.isInView($messageScroller)) {
-                        var run = _.throttle(loadMoreMessages, 100);
-                        run();
-                    }
-                });
+                    $messageScroller.scroll(function() {
+                        if ($scrollspy.isInView($messageScroller)) {
+                            var run = _.throttle(loadMoreMessages, 100);
+                            run();
+                        }
+                    });
+                }
             });
 
             function deleteConversation(convoId) {
@@ -112,6 +113,8 @@ define('pages/messages', [
                                     $convoLI.remove();
                                 }
                             }
+
+                            $.event.trigger('$trudesk:chat:conversation:deleted', {conversation: response.conversation});
 
                             helpers.UI.showSnackbar('Conversation Deleted.', false);
                         }
@@ -258,7 +261,7 @@ define('pages/messages', [
 
                     convoListItem.find('.message-date').text(moment().calendar());
                 } else {
-                    var convoUL = $('ul.message-items');
+                    var convoUL = $('#convo-list > ul.message-items');
                     if (convoUL.length > 0) {
                         var partner = message.owner;
                         if (message.owner._id.toString() == $loggedInAccountId.toString())

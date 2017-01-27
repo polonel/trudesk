@@ -1,4 +1,6 @@
 <div class="uk-grid uk-grid-collapse" ng-controller="messagesCtrl">
+    <div id="__showNewConvo" class="hide uk-hidden">{{data.showNewConvo}}</div>
+    <div id="__page" class="hide uk-hidden">messages</div>
     <div class="uk-width-3-10 message-list">
         <div class="page-title noshadow nopadding-right" style="border-top: none !important; height: 68px !important; padding-left: 20px !important;">
             <div class="page-title-border-right" style="position:relative;">
@@ -129,8 +131,6 @@
 
     <div>
         <ul class="context-menu">
-            <li data-action="123">First Menu Option</li>
-            <li data-action="456">Second Menu Option</li>
             <li data-action="delete" style="color: red;">Delete Conversation</li>
         </ul>
     </div>
