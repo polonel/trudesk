@@ -72,6 +72,9 @@ api_messages.getRecentConversations = function(req, res) {
                 if (err) return done(err);
                 var r = item.toObject();
 
+                if (_.first(m) === undefined)
+                    return done();
+
                 if (item.userMeta[idx].deletedAt && item.userMeta[idx].deletedAt > _.first(m).createdAt)
                     return done();
 
@@ -82,7 +85,7 @@ api_messages.getRecentConversations = function(req, res) {
                 }
 
                 return done();
-            })
+            });
         }, function(err) {
             if (err) return res.status(400).json({success: false, error: err});
             return res.json({success: true, conversations: result});
