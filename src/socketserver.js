@@ -89,14 +89,16 @@ module.exports = function(ws) {
     io.sockets.on('connection', function(socket) {
         var totalOnline = _.size(usersOnline);
 
-        //TODO: This is a JANK lag that needs to be removed and optimized!!!!
-        // setInterval(function() {
-        //     updateConversationsNotifications();
-        //     updateNotifications();
-        //     var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
-        //     utils.sendToSelf(socket, 'updateUsers', sortedUserList);
-        //
-        // }, 5000);
+        setInterval(function() {
+            updateConversationsNotifications();
+            updateNotifications();
+
+            //TODO: This is a JANK lag that needs to be removed and optimized!!!!
+            // Running Test to see if this is actually needed
+            //var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+            //utils.sendToSelf(socket, 'updateUsers', sortedUserList);
+
+        }, 5000);
 
         function updateConversationsNotifications() {
             var userId = socket.request.user._id;
