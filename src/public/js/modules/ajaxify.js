@@ -40,10 +40,6 @@ define('modules/ajaxify', [
             ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage,
             noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
 
-    $(window).on('statechange', function() {
-        //helpers.removeAllScrollers();
-    });
-
     $(window).on('statechangecomplete', function() {
         //Global
         var $ele = $('#page-content');
@@ -53,6 +49,7 @@ define('modules/ajaxify', [
 
         socketClient.ui.init(socketClient.socket);
         socketClient.chat.getOpenWindows();
+        socketClient.chat.updateOnlineBubbles();
 
         helpers.init();
         helpers.hideAllUiKitDropdowns();
@@ -170,7 +167,7 @@ define('modules/ajaxify', [
             var $this = $(this);
 
             // Ajaxify
-            $this.find('a:internal:not(.no-ajaxy)').click(function(event){
+            $this.find('a:internal:not(.no-ajaxy):not(.ajaxify-bound)').addClass('ajaxify-bound').on('click', function(event){
                 // Prepare
                 var
                     $this = $(this),
@@ -252,9 +249,15 @@ define('modules/ajaxify', [
                     // This fixes showing the overflow on scrollers when removing them before page load
                     $('#page-content').animate({opacity:0}, 0, function() {
                         helpers.removeAllScrollers();
+                        //Memory Leak Fix- Remove events before destroying content;
+                        var $oldContent = $('#page-content');
+                        $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change');
 
                         // Update the content
                         $content.stop(true,true);
+                        $oldContent.find('*').remove();
+                        $oldContent = null;
+
                         $content.html(contentHtml).ajaxify().css('opacity',1).show(); /* you could fade in here if you'd like */
 
                         // Update the title

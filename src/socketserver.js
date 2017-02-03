@@ -101,6 +101,9 @@ module.exports = function(ws) {
 
         }, 5000);
 
+        socket.on('$trudesk:chat:updateOnlineBubbles', function() {
+           updateOnlineBubbles();
+        });
         function updateOnlineBubbles() {
             var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
             utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
@@ -272,7 +275,8 @@ module.exports = function(ws) {
 
         socket.on('updateUsers', function() {
             var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
-            utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
+            //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
+            utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
 
         socket.on('updateAssigneeList', function() {

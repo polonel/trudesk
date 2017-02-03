@@ -288,8 +288,15 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             return {
                 restrict: 'A',
                 link: function(scope, element, attr) {
-                    $document.off('mouseup', mouseup);
                     $document.on('mouseup', mouseup);
+
+                    scope.$on('$destroy', function() {
+                        $document.off('mouseup', mouseup);
+                    });
+
+                    element.on('$destroy', function() {
+                        $document.off('mouseup', mouseup);
+                    })
 
                     function mouseup($event) {
                         var target = $event.target.offsetParent;

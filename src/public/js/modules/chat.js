@@ -463,6 +463,10 @@ define('modules/chat',[
         socket.emit('getOpenChatWindows');
     };
 
+    chatClient.updateOnlineBubbles = function() {
+        socket.emit('$trudesk:chat:updateOnlineBubbles');
+    };
+
     chatClient.openChatWindow = function(user, complete) {
         var isOnMessagesPage = ($('#__page').text().toLowerCase() === 'messages');
         if (isOnMessagesPage) {

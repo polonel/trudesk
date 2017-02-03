@@ -55,8 +55,6 @@ define('modules/ui', [
         this.onUpdateTicketGrid();
         this.onProfileImageUpdate();
 
-        this.updateMessagesFolder(socket);
-        this.updateSingleMessageItem(socket);
         this.updateShowNotice(socket);
         this.updateClearNotice(socket);
         this.updateSubscribe(socket);
@@ -64,25 +62,6 @@ define('modules/ui', [
         //Logs
         this.updateServerLogs(socket);
     };
-
-    socketUi.setMessageRead = function(messageId) {
-        msgUI.setMessageRead(socket, messageId);
-    };
-
-    socketUi.sendUpdateMessageFolder = function(folder) {
-        socket.emit('updateMessageFolder', {folder: folder});
-    };
-
-    socketUi.moveMessageToFolder = function(messageIds, toFolder, folderToRefresh) {
-        socket.emit('moveMessageToFolder', messageIds, toFolder, folderToRefresh);
-    };
-
-    socketUi.deletedMessages = function(messageIds) {
-        socket.emit('deleteMessages', messageIds);
-    };
-
-    socketUi.updateSingleMessageItem = msgUI.updateSingleMessageItem;
-    socketUi.updateMessagesFolder = msgUI.updateMessagesFolder;
 
     socketUi.setShowNotice = function(notice) {
         noticeUI.setShowNotice(socket, notice);
@@ -112,19 +91,16 @@ define('modules/ui', [
     socketUi.onDisconnect = function() {
         socket.removeAllListeners('disconnect');
         socket.on('disconnect', function(data) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('reconnect_attempt');
         socket.on('reconnect_attempt', function(err) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('connect_timeout');
         socket.on('connect_timeout', function(err) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
     };
@@ -744,7 +720,7 @@ define('modules/ui', [
 
             commentContainer.html(html);
             helpers.resizeAll();
-            socketUi.updateUsers();
+            socketUi.chat.updateOnlineBubbles();
 
             require(['pages/singleTicket'], function(st) {
                 st.init();

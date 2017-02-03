@@ -22,6 +22,8 @@ define('pages/singleTicket', [
     var st = {};
     st.init = function() {
         $(document).ready(function() {
+            socketClient.chat.updateOnlineBubbles();
+
             $('.remove-attachment').each(function() {
                 var self = $(this);
                 self.off('click', onRemoveAttachmentClick);
