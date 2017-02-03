@@ -92,6 +92,7 @@ module.exports = function(ws) {
         setInterval(function() {
             updateConversationsNotifications();
             updateNotifications();
+            updateOnlineBubbles();
 
             //TODO: This is a JANK lag that needs to be removed and optimized!!!!
             // Running Test to see if this is actually needed
@@ -99,6 +100,11 @@ module.exports = function(ws) {
             //utils.sendToSelf(socket, 'updateUsers', sortedUserList);
 
         }, 5000);
+
+        function updateOnlineBubbles() {
+            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
+        }
 
         function updateConversationsNotifications() {
             var userId = socket.request.user._id;

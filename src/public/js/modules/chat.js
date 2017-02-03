@@ -88,6 +88,11 @@ define('modules/chat',[
 
             chatClient.bindActions();
 
+
+        });
+
+        socket.removeAllListeners('$trudesk:chat:udateOnlineBubbles');
+        socket.on('$trudesk:chat:updateOnlineBubbles', function(data) {
             var $u = _.throttle(function() {
                 UpdateOnlineBubbles(data);
             }, 1500, {trailing: false});

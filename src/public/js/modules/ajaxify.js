@@ -40,6 +40,10 @@ define('modules/ajaxify', [
             ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage,
             noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
 
+    $(window).on('statechange', function() {
+        //helpers.removeAllScrollers();
+    });
+
     $(window).on('statechangecomplete', function() {
         //Global
         var $ele = $('#page-content');
@@ -93,6 +97,8 @@ define('modules/ajaxify', [
 
         $.event.trigger('$trudesk:ready');
     });
+
+
     // Prepare our Variables
     var
         History = window.History,
@@ -111,10 +117,10 @@ define('modules/ajaxify', [
             contentSelector = '.wrapper > .ajaxyContent:first',
             $content = $(contentSelector).filter(':first'),
             contentNode = $content.get(0),
-            $menu = $('.sidebar > .side-nav').filter(':first'),
-            activeClass = 'active',
-            activeSelector = '.active',
-            menuChildrenSelector = '> li,> ul > li,> li > ul > li',
+            //$menu = $('.sidebar > .side-nav').filter(':first'),
+            //activeClass = 'active',
+            //activeSelector = '.active',
+            //menuChildrenSelector = '> li,> ul > li,> li > ul > li',
             completedEventName = 'statechangecomplete',
         /* Application Generic Variables */
             $window = $(window),
@@ -201,9 +207,10 @@ define('modules/ajaxify', [
             // Start Fade Out
             // Animating to opacity to 0 still keeps the element's height intact
             // Which prevents that annoying pop bang issue when loading in new content
-            //$content.animate({opacity:0},800);
+            //$content.animate({opacity:0},100);
 
             // Ajax Request the Traditional Page
+
             $.ajax({
                 url: url,
                 success: function(data, textStatus, jqXHR){
@@ -212,7 +219,7 @@ define('modules/ajaxify', [
                         $data = $(documentHtml(data)),
                         $dataBody = $data.find('.document-body:first'),
                         $dataContent = $dataBody.find(contentSelector).filter(':first'),
-                        $menuChildren, contentHtml, $scripts;
+                        contentHtml, $scripts;
 
                     // Fetch the scripts
                     $scripts = $dataContent.find('.document-script');
@@ -228,61 +235,64 @@ define('modules/ajaxify', [
                     }
 
                     // Update the menu -- Custom to close submenu and add classes
-                    $menuChildren = $menu.find(menuChildrenSelector);
-                    $menuChildren.filter(activeSelector).removeClass(activeClass);
-                    $menuChildren = $menuChildren.has(
-                                'a[href^="'+relativeUrl+'"],' +
-                                'a[href^="/'+relativeUrl+'"],' +
-                                'a[href^="'+url+'"]' +
-                                'a[data-url^="'+relativeUrl+'"]'
-
-                    );
+                    // This is not needed because I am settin the menu active on the node.js route (Controller)
+                    // $menuChildren = $menu.find(menuChildrenSelector);
+                    // $menuChildren.filter(activeSelector).removeClass(activeClass);
+                    // $menuChildren = $menuChildren.has(
+                    //             'a[href^="'+relativeUrl+'"],' +
+                    //             'a[href^="/'+relativeUrl+'"],' +
+                    //             'a[href^="'+url+'"]' +
+                    //             'a[data-url^="'+relativeUrl+'"]'
+                    //
+                    // );
 
 //                    if ( $menuChildren.length === 1 ) { $menuChildren.addClass(activeClass); }
 
 
+                    // This fixes showing the overflow on scrollers when removing them before page load
+                    $('#page-content').animate({opacity:0}, 0, function() {
+                        helpers.removeAllScrollers();
 
-                    // Update the content
-                    $content.stop(true,true);
-                    $content.html(contentHtml).ajaxify().css('opacity',100).show(); /* you could fade in here if you'd like */
+                        // Update the content
+                        $content.stop(true,true);
+                        $content.html(contentHtml).ajaxify().css('opacity',1).show(); /* you could fade in here if you'd like */
 
-                    // Update the title
-                    document.title = $data.find('.document-title:first').text();
-                    try {
-                        document.getElementsByTagName('title')[0].innerHTML = document.title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ');
-                    }
-                    catch ( Exception ) { }
-
-                    // Add the scripts
-                    $scripts.each(function(){
-                        var $script = $(this), scriptText = $script.text(), scriptNode = document.createElement('script');
-                        if ( $script.attr('src') ) {
-                            if ( !$script[0].async ) { scriptNode.async = false; }
-                            scriptNode.src = $script.attr('src');
+                        // Update the title
+                        document.title = $data.find('.document-title:first').text();
+                        try {
+                            document.getElementsByTagName('title')[0].innerHTML = document.title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ');
                         }
-                        scriptNode.appendChild(document.createTextNode(scriptText));
-                        contentNode.appendChild(scriptNode);
+                        catch ( Exception ) { }
+
+                        // Add the scripts
+                        $scripts.each(function(){
+                            var $script = $(this), scriptText = $script.text(), scriptNode = document.createElement('script');
+                            if ( $script.attr('src') ) {
+                                if ( !$script[0].async ) { scriptNode.async = false; }
+                                scriptNode.src = $script.attr('src');
+                            }
+                            scriptNode.appendChild(document.createTextNode(scriptText));
+                            contentNode.appendChild(scriptNode);
+                        });
+
+                        //helpers.removeAllScrollers();
+
+                        // Complete the change
+                        if ( $body.ScrollTo||false ) { $body.ScrollTo(scrollOptions); } /* http://balupton.com/projects/jquery-scrollto */
+                        $body.removeClass('loading');
+                        $window.trigger(completedEventName);
+
+                        // Inform Google Analytics of the change
+                        if ( typeof window._gaq !== 'undefined' ) {
+                            window._gaq.push(['_trackPageview', relativeUrl]);
+                        }
                     });
 
-                    // Complete the change
-                    if ( $body.ScrollTo||false ) { $body.ScrollTo(scrollOptions); } /* http://balupton.com/projects/jquery-scrollto */
-                    $body.removeClass('loading');
-                    $window.trigger(completedEventName);
-
-                    // Inform Google Analytics of the change
-                    if ( typeof window._gaq !== 'undefined' ) {
-                        window._gaq.push(['_trackPageview', relativeUrl]);
-                    }
-
-                    // Inform ReInvigorate of a state change
-                    if ( typeof window.reinvigorate !== 'undefined' && typeof window.reinvigorate.ajax_track !== 'undefined' ) {
-                        reinvigorate.ajax_track(url);
-                        // ^ we use the full url here as that is what reinvigorate supports
-                    }
                 },
                 error: function(jqXHR, textStatus, errorThrown){
                     document.location.href = url;
                     console.log('[trudesk:ajaxify:Load] - Error Loading Document!!!');
+                    console.error(errorThrown);
                     return false;
                 }
             }); // end ajax

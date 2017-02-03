@@ -217,13 +217,13 @@ viewController.getUsers = function(request, callback) {
         }
 
         var u = _.reject(users, function(u) { return u.deleted == true; });
-        delete u.password;
-        delete u.role;
-        delete u.resetPassHash;
-        delete u.resetPassExpire;
-        delete u.accessToken;
-        delete u.iOSDeviceTokens;
-        delete u.preferences;
+        u.password = null;
+        u.role = null;
+        u.resetPassHash = null;
+        u.resetPassExpire = null;
+        u.accessToken = null;
+        u.iOSDeviceTokens = null;
+        u.preferences = null;
 
         u = _.sortBy(u, 'fullname');
 

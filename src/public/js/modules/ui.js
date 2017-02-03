@@ -153,36 +153,36 @@ define('modules/ui', [
             if (count < 1) {
                 label.hide();
             } else {
-                label.html(count);
+                label.text(count);
                 label.removeClass('hide');
                 label.show();
             }
 
             var mailDropList = $('div.mail-Messages').find('ul');
-            mailDropList.find('li').each(function() {
-                $(this).remove();
-            });
+            mailDropList.empty();
 
             var html = "";
 
             _.each(items, function(item) {
-                html    += '<li>';
-                html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
-                html    += '<div class="uk-clearfix">';
-                if (item.partner.image)
-                    html    += '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>';
-                else
-                    html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
-                html    += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>';
-                html    += '<div class="messageSnippet">';
-                html    += '<span>' + item.recentMessage + '</span>';
-                html    += '</div>';
-                html    += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">';
-                html    += '<time datetime="' + helpers.formatDate(item.updatedAt, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.updatedAt, "MMM DD, YYYY") + '</time>';
-                html    += '</div>';
-                html    += '</div>';
-                html    += '</a>';
-                html    += '</li>';
+                if (item.partner != undefined) {
+                    html    += '<li>';
+                    html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
+                    html    += '<div class="uk-clearfix">';
+                    if (item.partner.image)
+                        html    += '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>';
+                    else
+                        html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
+                    html    += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>';
+                    html    += '<div class="messageSnippet">';
+                    html    += '<span>' + item.recentMessage + '</span>';
+                    html    += '</div>';
+                    html    += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">';
+                    html    += '<time datetime="' + helpers.formatDate(item.updatedAt, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.updatedAt, "MMM DD, YYYY") + '</time>';
+                    html    += '</div>';
+                    html    += '</div>';
+                    html    += '</a>';
+                    html    += '</li>';
+                }
             });
 
             mailDropList.append(html);
@@ -322,7 +322,7 @@ define('modules/ui', [
             var wrapper = '';
             _.each(users, function(user) {
                 var html = '<li data-setAssignee="' + user._id + '">';
-                html    += '<a class="messageNotification" href="#" role="button">';
+                html    += '<a class="messageNotification" href="#" role="button" class="no-ajaxy">';
                 html    += '<div class="uk-clearfix">';
                 if (_.isUndefined(user.image)) {
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
