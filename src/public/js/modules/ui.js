@@ -708,10 +708,10 @@ define('modules/ui', [
                     '</div>' +
                     '<div class="comment-actions">';
                     if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>';
+                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE5CD;</i></div>';
                     }
                     if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="fa fa-pencil fa-lg"></i></div>';
+                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE254;</i></div>';
                     }
 
                     html += '</div>' +
@@ -720,7 +720,6 @@ define('modules/ui', [
 
             commentContainer.html(html);
             helpers.resizeAll();
-            socketUi.chat.updateOnlineBubbles();
 
             require(['pages/singleTicket'], function(st) {
                 st.init();
