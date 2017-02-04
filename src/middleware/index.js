@@ -104,7 +104,6 @@ module.exports = function(app, db, callback) {
                if (err) throw err;
                var plugin = require(path.join(dir, 'plugin.json'));
                var pluginPublic = path.join(dir, '/public');
-               console.log(plugin.name);
                app.use('/plugins/' + plugin.name, express.static(pluginPublic));
             }, function() {
                next(null, store);

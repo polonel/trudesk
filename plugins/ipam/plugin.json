@@ -7,5 +7,7 @@
       "class": "material-icons",
       "icon": "desktop_windows"
     }
-  }
+  },
+
+  "permissions": "admin mod support"
 }

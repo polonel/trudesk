@@ -327,7 +327,6 @@ viewController.getPluginsInfo = function(request, callback) {
         var pluginPackage = require(path.join(dir, '/plugin.json'));
         plugins.push(pluginPackage);
     }, function() {
-        console.log(plugins);
         return callback(null, _.sortBy(plugins, 'name'));
     });
 

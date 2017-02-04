@@ -1,9 +1,15 @@
 var path = require('path');
-var ipobj = require('../models/ipobj');
+var pluginHelpers = require('../../../src/helpers/plugins');
+var ipObj = require('../models/ipobj');
+var pluginJson = require('../plugin.json');
 
 var controller = {};
 
 controller.get = function(req, res) {
+    //Check plugin Permissions
+    if (!pluginHelpers.checkPermissions(req.user.role, pluginJson.permissions))
+        return res.redirect('/plugins');
+
     var self = this;
     self.content = {};
     self.content.title = "IPAM";
@@ -19,7 +25,7 @@ controller.get = function(req, res) {
     //     ipaddress: '192.168.1.1'
     // });
 
-    ipobj.getAll(function(err, ipos) {
+    ipObj.getAll(function(err, ipos) {
         if (err) return res.render('error', err);
 
         self.content.data.ipobjs = ipos;
@@ -27,6 +33,8 @@ controller.get = function(req, res) {
         return res.render(path.join(__dirname, '../views/ipam'), self.content);
     });
 };
+
+
 
 
 module.exports = controller;
