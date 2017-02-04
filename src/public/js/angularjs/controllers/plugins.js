@@ -1,4 +1,4 @@
-/*
+/**
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -12,22 +12,10 @@
 
  **/
 
-var Controllers = {
-    install: require('./install'),
-    main: require('./main'),
-    tickets: require('./tickets'),
-    messages: require('./messages'),
-    servers: require('./servers'),
-    accounts: require('./accounts'),
-    groups: require('./groups'),
-    reports: require('./reports'),
-    invoices: require('./invoices'),
-    notices: require('./notices'),
-    plugins: require('./plugins'),
-    settings: require('./settings'),
-    api: require('./api'),
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socketClient) {
+    return angular.module('trudesk.controllers.plugins', [])
+        .controller('pluginsCtrl', function($scope, $http, $log) {
 
-    debug: require('./debug')
-};
 
-module.exports = Controllers;
+        });
+});

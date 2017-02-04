@@ -26,6 +26,7 @@ define([
     'angularjs/controllers/singleTicket',
     'angularjs/controllers/messages',
     'angularjs/controllers/notices',
+    'angularjs/controllers/plugins',
     'angularjs/controllers/reports',
     'angularjs/controllers/settings'
 
@@ -42,6 +43,7 @@ define([
             'trudesk.controllers.singleTicket',
             'trudesk.controllers.messages',
             'trudesk.controllers.notices',
+            'trudesk.controllers.plugins',
             'trudesk.controllers.reports',
             'trudesk.controllers.settings'
         ])

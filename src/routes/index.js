@@ -105,6 +105,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
 
+    //Plugins
+    router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
+
     //API
     router.get('/api', controllers.api.index);
     router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
@@ -250,9 +253,9 @@ module.exports = function(app, middleware) {
     //Load Plugin routes
     var dive = require('dive');
     var fs = require('fs');
-    var addinDir = path.join(__dirname, '../../plugins');
-    if (!fs.existsSync(addinDir)) fs.mkdirSync(addinDir);
-    dive(addinDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+    var pluginDir = path.join(__dirname, '../../plugins');
+    if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir);
+    dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
         if (err) throw err;
         var pluginRoutes = require(path.join(dir, '/routes'));
         pluginRoutes(router, middleware);

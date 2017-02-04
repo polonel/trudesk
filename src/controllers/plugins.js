@@ -7,27 +7,32 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
+ Created:    02/03/2017
  Author:     Chris Brame
 
  **/
 
-var Controllers = {
-    install: require('./install'),
-    main: require('./main'),
-    tickets: require('./tickets'),
-    messages: require('./messages'),
-    servers: require('./servers'),
-    accounts: require('./accounts'),
-    groups: require('./groups'),
-    reports: require('./reports'),
-    invoices: require('./invoices'),
-    notices: require('./notices'),
-    plugins: require('./plugins'),
-    settings: require('./settings'),
-    api: require('./api'),
+var _               = require('underscore');
 
-    debug: require('./debug')
+var pluginsController = {};
+
+pluginsController.get = function(req, res) {
+    var self = this;
+    self.content = {};
+    self.content.title = "Plugins";
+    self.content.nav = 'plugins';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    res.render('plugins', self.content);
 };
 
-module.exports = Controllers;
+function handleError(res, err) {
+    if (err) {
+        return res.render('error', {layout: false, error: err, message: err.message});
+    }
+}
+
+module.exports = pluginsController;
