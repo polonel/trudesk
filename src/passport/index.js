@@ -47,7 +47,7 @@ module.exports = function() {
 
             user['password'] = null;
 
-            req.user = user;
+            //req.user = user;
 
             return done(null, user);
         });

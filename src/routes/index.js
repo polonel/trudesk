@@ -211,7 +211,8 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/plugin', function (req, res) {
             return res.render('pluginTest');
         });
-        //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
             var pm2 = require('pm2');
@@ -249,7 +250,7 @@ module.exports = function(app, middleware) {
     //Load Plugin routes
     var dive = require('dive');
     var fs = require('fs');
-    var addinDir = path.join(__dirname, '../../addins');
+    var addinDir = path.join(__dirname, '../../plugins');
     if (!fs.existsSync(addinDir)) fs.mkdirSync(addinDir);
     dive(addinDir, {directories: true, files: false, recursive: false}, function(err, dir) {
         if (err) throw err;

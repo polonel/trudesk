@@ -415,4 +415,15 @@ mainController.resetPass = function(req, res) {
     });
 };
 
+mainController.l2authget = function(req, res) {
+    "use strict";
+    var self = mainController;
+    self.content = {};
+    self.content.title = "Login";
+    self.content.layout = false;
+
+
+    res.render('login-otp', self.content);
+};
+
 module.exports = mainController;

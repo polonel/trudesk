@@ -81,6 +81,19 @@ middleware.redirectToLogin = function(req, res, next) {
     }
 };
 
+middleware.checkUserHasL2Auth = function(req, res, next) {
+    if (!req.user) {
+        return res.redirect('/');
+    } else {
+        if (_.isUndefined(req.user.tOTPKey)) {
+            req.flash.message = 'Two Level Auth not configured.';
+            return res.redirect('/');
+        }
+
+        next();
+    }
+};
+
 //Common
 middleware.loadCommonData = function(req, res, next) {
     var viewdata = require('../helpers/viewdata');

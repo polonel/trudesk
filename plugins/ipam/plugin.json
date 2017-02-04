@@ -1,0 +1,11 @@
+{
+  "name": "ipam",
+  "menu": {
+    "main": {
+      "name": "IPAM",
+      "link": "/plugins/ipam",
+      "class": "material-icons",
+      "icon": "create"
+    }
+  }
+}

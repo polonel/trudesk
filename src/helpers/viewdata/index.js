@@ -110,6 +110,13 @@ viewController.getData = function(request, cb) {
 
                   return callback();
               });
+          },
+          function(callback) {
+            viewController.getPluginsInfo(request, function(err, data) {
+                viewdata.plugins = data;
+
+                return callback();
+            });
           }
       ], function(err) {
           if (err) {
@@ -304,6 +311,26 @@ viewController.getOverdueSetting = function(request, callback) {
         if (_.isNull(data)) return callback(null, true);
         return callback(null, data.value);
     });
+};
+
+viewController.getPluginsInfo = function(request, callback) {
+    //Load Plugin routes
+    var dive = require('dive');
+    var path = require('path');
+    var fs = require('fs');
+    var pluginDir = path.join(__dirname, '../../../plugins');
+    if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir);
+    var plugins = [];
+    dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+        if (err) throw err;
+        delete require.cache[require.resolve(path.join(dir, '/plugin.json'))];
+        var pluginPackage = require(path.join(dir, '/plugin.json'));
+        plugins.push(pluginPackage);
+    }, function() {
+        console.log(plugins);
+        return callback(null, _.sortBy(plugins, 'name'));
+    });
+
 };
 
 module.exports = viewController;

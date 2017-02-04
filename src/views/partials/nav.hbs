@@ -62,6 +62,19 @@
         {{#canUser data.user "notices:view"}}
             <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
         {{/canUser}}
+
+        <li {{#is nav 'plugins'}} class='active' {{/is}}>
+            <a href="/plugins">
+                <i class="material-icons">select_all</i>
+                Plugins
+            </a>
+            <ul id="side-nav-sub-plugins" class="side-nav-sub {{#is nav 'plugins'}} subMenuOpen {{/is}}">
+                {{#each data.common.plugins}}
+                    <li {{#is ../subnav name}} class='active' {{/is}}><a href="{{menu.main.link}}"><i class="fa-sub-icon {{menu.main.class}}">{{menu.main.icon}}</i>{{menu.main.name}}</a></li>
+                {{/each}}
+            </ul>
+        </li>
+
         <hr>
         {{#canUser data.user "settings:edit"}}
             <li {{#is nav 'settings'}} class="active" {{/is}}>

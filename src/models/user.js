@@ -56,6 +56,7 @@ var userSchema = mongoose.Schema({
 
         resetPassHash: String,
         resetPassExpire: Date,
+        tOTPKey: String,
 
         accessToken: { type: String, unique: true, sparse: true},
 
