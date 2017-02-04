@@ -599,7 +599,7 @@ var helpers = {
             return i._id.toString() == value.toString();
         });
 
-        return !!result;
+        return result;
     },
 
     json: function(str) {

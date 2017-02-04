@@ -2533,7 +2533,7 @@ div.dataTables_wrapper {
           background: #b92929; }
         .server-box .server-services .server-services-list li span {
           display: block;
-          font-size: 0px;
+          font-size: 0;
           height: 100%;
           width: 100%; }
 
@@ -5476,7 +5476,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .selectize-control.single {
   height: 40px;
-  margin-top: 0px; }
+  margin-top: 0; }
   .selectize-control.single .selectize-input {
     border-width: 0 0 1px;
     padding: 8px 8px 9px; }
@@ -6192,8 +6192,8 @@ a.waves-effect .waves-ripple {
     position: absolute;
     top: 0;
     left: 30%;
-    transform-origin: 0% 100%;
-    -ms-transform-origin: 0% 100%;
+    transform-origin: 0 100%;
+    -ms-transform-origin: 0 100%;
     -webkit-transform-origin: 13px 100%;
     transform: scale(1.5); }
     .loader-wrapper svg.t circle {
