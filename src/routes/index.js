@@ -21,9 +21,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
-    router.get('/login', middleware.redirectToLogin, middleware.redirectToDashboardIfLoggedIn);
+    router.get('/login', middleware.redirectToLogin);
     router.post('/login', controllers.main.loginPost);
-    //router.get('/l2auth', middleware.checkUserHasL2Auth, middleware.cache(5*60), controllers.main.l2authget);
+    router.get('/l2auth', controllers.main.l2authget);
+    router.post('/l2auth', controllers.main.l2AuthPost);
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
@@ -71,11 +72,13 @@ function mainRoutes(router, middleware, controllers) {
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
-    router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
-    router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
-    router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
-    router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
-    router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
+    //02/05/2017
+    //Removed in 0.1.8 As its Old code before Revamp.
+    // router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
+    // router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
+    // router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
+    // router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
+    // router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
     router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage);
 
     //Groups
@@ -162,6 +165,8 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
+    router.post('/api/v1/users/:id/generatel2auth', middleware.api, controllers.api.users.generateL2Auth);
+    router.post('/api/v1/users/:id/removel2auth', middleware.api, controllers.api.users.removeL2Auth);
 
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
 

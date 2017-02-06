@@ -38,6 +38,7 @@ modules: [
             'selectize',
             'waves',
             'formvalidator',
+            'qrcode',
             'snackbar',
 
             '../../src/permissions/roles',

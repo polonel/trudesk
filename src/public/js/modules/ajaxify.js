@@ -24,7 +24,7 @@ define('modules/ajaxify', [
     'pages/groups',
     'modules/ajaximgupload',
     'modules/attachmentUpload',
-    'pages/editaccount',
+    'pages/profile',
     'pages/singleTicket',
     'pages/reports',
     'pages/reportsBreakdown',
@@ -37,7 +37,7 @@ define('modules/ajaxify', [
     'history'
 
 ], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
-            ajaxImgUpload, attachmentUpload, editAccountPage, singleTicketPage, reportsPage, reportsBreakdownPage,
+            ajaxImgUpload, attachmentUpload, profilePage, singleTicketPage, reportsPage, reportsBreakdownPage,
             noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
 
     $(window).on('statechangecomplete', function() {
@@ -70,7 +70,7 @@ define('modules/ajaxify', [
 
         //Accounts
         accountsPage.init();
-        editAccountPage.init();
+        profilePage.init();
 
         //Groups
         groupsPage.init();

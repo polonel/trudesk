@@ -168,6 +168,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 var data = form.serializeObject();
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
+                data.saveGroups = true;
 
                 $http({
                     method: 'PUT',

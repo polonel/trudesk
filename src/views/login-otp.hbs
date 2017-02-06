@@ -216,20 +216,25 @@
     </svg>
 
     <div class="level2auth" style="margin-top: 25px;">
-        <form action="/" id="level2auth" method="post">
+        <form action="/l2auth" id="level2auth" method="post">
             <div class="uk-margin-medium-bottom">
-                <label for="l2auth-code">Code</label>
-                <input type="text" id="l2auth-code" class="md-input" name="l2auth-code" />
+                <label for="code">Code</label>
+                <input type="text" id="code" class="md-input" name="code" />
             </div>
 
             <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Send</button>
         </form>
+        <hr>
+        <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
     </div>
-
 </div>
 
 <script type="text/javascript">
-
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('#code').focus();
+        }, 250);
+    });
 </script>
 </body>
 </html>
