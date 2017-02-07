@@ -36,27 +36,10 @@ middleware.db = function(req, res, next) {
     next();
 };
 
-// middleware.redirectToInstall = function(req, res, next) {
-//     var fs = require('fs');
-//     var path = require('path');
-//     var config = path.join(__dirname, '../../config.json');
-//     if (!fs.existsSync(config))
-//         res.redirect('/install');
-//     else
-//         next();
-// };
-//
-// middleware.hasConfig = function(req, res, next) {
-//     var fs = require('fs');
-//     var path = require('path');
-//     var config = path.join(__dirname, '../../config.json');
-//     if (fs.existsSync(config))
-//         res.redirect('/install');
-//     else
-//         next();
-// };
-
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
+    if (req.user && req.user.tOTPKey !== undefined) {
+        return middleware.ensurel2Auth(req, res, next);
+    }
     if (req.user) {
         res.redirect('/dashboard');
     } else {
@@ -69,16 +52,39 @@ middleware.redirectToLogin = function(req, res, next) {
         if (!_.isUndefined(req.session))
             req.session.redirectUrl = req.url;
 
-        res.redirect('/');
+        return res.redirect('/');
     } else {
         if (req.user.deleted) {
             req.logout();
+            req.session.l2auth = null;
             req.session.destroy();
-            res.redirect('/');
+            return res.redirect('/');
         } else {
-            next();
+            if (!_.isUndefined(req.user.tOTPKey)) {
+                if (req.session.l2auth !== 'totp')
+                    return res.redirect('/');
+            }
+
+            return next();
         }
     }
+};
+
+middleware.checkUserHasL2Auth = function(req, res, next) {
+    if (!req.user) {
+        return res.redirect('/');
+    } else {
+        if (_.isUndefined(req.user.tOTPKey)) {
+            return next()
+        }
+
+        next();
+    }
+};
+
+middleware.ensurel2Auth = function(req, res, next) {
+    if (req.session.l2auth == 'totp') return next();
+    return res.redirect('/l2auth');
 };
 
 //Common

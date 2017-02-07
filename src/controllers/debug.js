@@ -56,6 +56,81 @@ debugController.sendmail = function(req, res) {
     });
 };
 
+debugController.uploadPlugin = function(req, res) {
+    var fs = require('fs');
+    var path = require('path');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: 10 * 1024*1024 // 10mb limit
+        }
+    });
+
+    var object = {}, error;
+
+    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+        if (fieldname === 'plugin') object.plugin = val;
+    });
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        console.log(mimetype);
+        if (mimetype.indexOf('x-zip-compressed') == -1) {
+            error = {
+                status: 500,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../public/uploads/plugins');
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+
+        object.plugin = path.basename(filename);
+        object.filePath = path.join(savePath, object.plugin);
+        object.mimetype = mimetype;
+
+        console.log(object);
+
+        file.on('limit', function() {
+            error = {
+                status: 500,
+                message: 'File too large'
+            };
+
+            // Delete the temp file
+            //if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath);
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).send(error.message);
+
+        if (_.isUndefined(object.plugin) ||
+            _.isUndefined(object.filePath)) {
+
+            return res.status(500).send('Invalid Form Data');
+        }
+
+        // Everything Checks out lets make sure the file exists and then add it to the attachments array
+        if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');
+
+        var unzip = require('unzip');
+        fs.createReadStream(object.filePath).pipe(unzip.Extract({path: path.join(__dirname, '../../plugins')}));
+
+        return res.sendStatus(200);
+    });
+
+    req.pipe(busboy);
+};
+
 function handleError(res, err) {
     if (err) {
         return res.render('error', {layout: false, error: err, message: err.message});

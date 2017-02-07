@@ -1,0 +1,13 @@
+{
+  "name": "ipam",
+  "menu": {
+    "main": {
+      "name": "IPAM",
+      "link": "/plugins/ipam",
+      "class": "material-icons",
+      "icon": "desktop_windows"
+    }
+  },
+
+  "permissions": "admin mod support"
+}

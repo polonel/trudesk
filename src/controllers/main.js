@@ -234,7 +234,10 @@ mainController.dashboard = function(req, res) {
 
 mainController.loginPost = function(req, res, next) {
     passport.authenticate('local', function(err, user) {
-        if (err) return next(err);
+        if (err) {
+            winston.error(err);
+            return next(err);
+        }
         if (!user) return res.redirect('/');
 
         var redirectUrl = '/dashboard';
@@ -248,12 +251,37 @@ mainController.loginPost = function(req, res, next) {
             if (err) return next(err);
 
             return res.redirect(redirectUrl);
-        })
+        });
+    })(req, res, next);
+};
+
+mainController.l2AuthPost = function(req, res, next) {
+    if (!req.user)
+        return res.redirect('/');
+    passport.authenticate('totp', function(err, success) {
+        if (err) {
+            winston.error(err);
+            return next(err);
+        }
+
+        if (!success) return res.redirect('/l2auth');
+
+        req.session.l2auth = 'totp';
+
+        var redirectUrl = '/dashboard';
+
+        if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl;
+            req.session.redirectUrl = null;
+        }
+
+        return res.redirect(redirectUrl);
     })(req, res, next);
 };
 
 mainController.logout = function(req, res) {
     req.logout();
+    req.session.l2auth = null;
     req.session.destroy();
     return res.redirect('/');
 };
@@ -413,6 +441,18 @@ mainController.resetPass = function(req, res) {
             });
         }
     });
+};
+
+mainController.l2authget = function(req, res) {
+    if (!req.user)
+        return res.redirect('/');
+
+    var self = mainController;
+    self.content = {};
+    self.content.title = "Login";
+    self.content.layout = false;
+
+    res.render('login-otp', self.content);
 };
 
 module.exports = mainController;

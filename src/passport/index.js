@@ -14,6 +14,8 @@
 
 var passport = require('passport');
 var Local = require('passport-local').Strategy;
+var TotpStrategy = require('passport-totp').Strategy;
+var base32 = require('thirty-two');
 var User = require('../models/user');
 
 module.exports = function() {
@@ -45,13 +47,20 @@ module.exports = function() {
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 
-            delete user['password'];
-
-            req.user = user;
-
             return done(null, user);
         });
     }));
+
+    passport.use('totp', new TotpStrategy({
+        window: 6
+    },
+        function(user, done) {
+            if (user.tOTPPeriod === null || user.tOTPPeriod === undefined)
+                user.tOTPPeriod = 30;
+
+            return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod);
+        }
+    ));
 
     return passport;
 };

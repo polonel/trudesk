@@ -18,8 +18,6 @@ var permissions     = require('../permissions');
 
 var noticesController = {};
 
-noticesController.content = {};
-
 noticesController.get = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {

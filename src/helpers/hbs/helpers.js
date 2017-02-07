@@ -568,6 +568,22 @@ var helpers = {
         }
     },
 
+    checkPlugin: function(user, permissions, options) {
+        if (user === undefined || permissions === undefined)
+            return options.inverse(this);
+        var pluginPermissions = permissions.split(' ');
+        var result = false;
+        for (var i = 0; i < pluginPermissions.length; i++) {
+            if (pluginPermissions[i] == user.role)
+                result = true;
+        }
+
+        if (result)
+            return options.fn(this);
+        else
+            return options.inverse(this);
+    },
+
     checkEditSelf: function(user, owner, perm, options) {
         var P = require('../../permissions');
         if (P.canThis(user.role, perm + ':editSelf')) {
@@ -599,7 +615,7 @@ var helpers = {
             return i._id.toString() == value.toString();
         });
 
-        return !!result;
+        return result;
     },
 
     json: function(str) {
@@ -663,6 +679,7 @@ helpers.foreach    = helpers.forEach;
 helpers.canUser    = helpers.checkPerm;
 helpers.canUserRole = helpers.checkRole;
 helpers.canEditSelf = helpers.checkEditSelf;
+helpers.hasPluginPerm = helpers.checkPlugin;
 helpers.inArray    = helpers.hasGroup;
 
 

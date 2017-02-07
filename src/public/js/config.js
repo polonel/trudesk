@@ -63,6 +63,7 @@ requirejs.config({
         isinview:       'plugins/jquery.isinview',
         jquery_docsize: 'plugins/jquery.documentsize',
         formvalidator:  'vendor/formvalidator/jquery.form-validator',
+        qrcode:         'vendor/qrcode/jquery.qrcode.min',
         snackbar:       'plugins/snackbar'
     },
     config: {
@@ -205,6 +206,10 @@ requirejs.config({
 
         inview: {
             deps: ['jquery', 'waypoints']
+        },
+
+        qrcode: {
+            deps: ['jquery']
         },
 
         snackbar: {

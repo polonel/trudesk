@@ -110,6 +110,13 @@ viewController.getData = function(request, cb) {
 
                   return callback();
               });
+          },
+          function(callback) {
+            viewController.getPluginsInfo(request, function(err, data) {
+                viewdata.plugins = data;
+
+                return callback();
+            });
           }
       ], function(err) {
           if (err) {
@@ -217,13 +224,13 @@ viewController.getUsers = function(request, callback) {
         }
 
         var u = _.reject(users, function(u) { return u.deleted == true; });
-        delete u.password;
-        delete u.role;
-        delete u.resetPassHash;
-        delete u.resetPassExpire;
-        delete u.accessToken;
-        delete u.iOSDeviceTokens;
-        delete u.preferences;
+        u.password = null;
+        u.role = null;
+        u.resetPassHash = null;
+        u.resetPassExpire = null;
+        u.accessToken = null;
+        u.iOSDeviceTokens = null;
+        u.preferences = null;
 
         u = _.sortBy(u, 'fullname');
 
@@ -304,6 +311,25 @@ viewController.getOverdueSetting = function(request, callback) {
         if (_.isNull(data)) return callback(null, true);
         return callback(null, data.value);
     });
+};
+
+viewController.getPluginsInfo = function(request, callback) {
+    //Load Plugin routes
+    var dive = require('dive');
+    var path = require('path');
+    var fs = require('fs');
+    var pluginDir = path.join(__dirname, '../../../plugins');
+    if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir);
+    var plugins = [];
+    dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+        if (err) throw err;
+        delete require.cache[require.resolve(path.join(dir, '/plugin.json'))];
+        var pluginPackage = require(path.join(dir, '/plugin.json'));
+        plugins.push(pluginPackage);
+    }, function() {
+        return callback(null, _.sortBy(plugins, 'name'));
+    });
+
 };
 
 module.exports = viewController;

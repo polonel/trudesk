@@ -23,6 +23,7 @@ var Controllers = {
     reports: require('./reports'),
     invoices: require('./invoices'),
     notices: require('./notices'),
+    plugins: require('./plugins'),
     settings: require('./settings'),
     api: require('./api'),
 

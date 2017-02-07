@@ -331,8 +331,9 @@ api_users.update = function(req, res) {
                                 user.password = obj.password;
 
                     user.fullname = obj.fullname;
-                    if (!_.isUndefined(obj.title)) user.title = obj.title;
                     user.email = obj.email;
+
+                    if (!_.isUndefined(obj.title)) user.title = obj.title;
                     if (!_.isUndefined(obj.role)) user.role = obj.role;
 
                     user.save(function (err, nUser) {
@@ -730,6 +731,77 @@ api_users.removeApiKey = function(req, res) {
 
         user.removeAccessToken(function(err) {
             if (err) return res.status(400).json({error: 'Invalid Request'});
+
+            return res.json({success: true});
+        });
+    });
+};
+
+/**
+ * @api {post} /api/v1/users/:id/generatel2auth Generate Layer Two Auth
+ * @apiName generateL2Auth
+ * @apiDescription Generate a new layer two auth for the given user id
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generatel2auth
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.generateL2Auth = function(req, res) {
+    var id = req.params.id;
+    if (id.toString() !== req.user._id.toString())
+        return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+        user.generateL2Auth(function(err, generatedKey) {
+            if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+            console.log(generatedKey);
+            return res.json({success: true, generatedKey: generatedKey});
+        });
+    });
+};
+
+/**
+ * @api {post} /api/v1/users/:id/removel2auth Removes Layer Two Auth
+ * @apiName removeL2Auth
+ * @apiDescription Removes Layer Two Auth for the given user id
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/removel2auth
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.removeL2Auth = function(req, res) {
+    var id = req.params.id;
+    if (id.toString() !== req.user._id.toString())
+        return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+        user.removeL2Auth(function(err) {
+            if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
             return res.json({success: true});
         });

@@ -1,86 +1,139 @@
 <div data-user_id="{{data.account._id}}" class="hide"></div>
-<div class="grid grid-collapse page-content" ng-controller="profileCtrl">
+<div data-host="{{data.host}}" class="hide"></div>
+<div class="grid grid-collapse page-content" ng-controller="profileCtrl"
+    ng-init="
+
+    otpEnabled={{#isNotNull data.account.tOTPKey}}true{{else}}false{{/isNotNull}};
+
+    init();
+">
+
     <div class="page-title uk-width-1-1 noshadow page-title-border-bottom">
         <p class="left">{{data.account.fullname}}</p>
-        <div class="right">
-            <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
-                <ul class="button-group">
-                    <li><a href="#" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="back($event)"><span class="uk-margin-top-remove">Cancel</span></a></li>
-                    <li class="active">
-                        <a href="#" class="btn no-ajaxy md-btn-wave-light" style="color: white; border-radius: 3px;" ng-click="updateUser()">
-                            <span class="uk-margin-top-remove">Save</span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
     </div>
     <!--Content Here-->
     <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
         <div id="page-content-inner" class="uk-grid">
             <div class="uk-width-1-1 relative">
-                <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin uk-clearfix" enctype="multipart/form-data">
-                    <input type="hidden" name="_id" value="{{data.account._id}}" />
-                    <input type="hidden" name="username" value="{{data.account.username}}" />
-                    <div class="largeProfilePic cursor-pointer hoverEffect" style="position: absolute; left: 35px; top: 0;" ng-click="accountEditPic()">
-                        <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
-                        {{#if data.account.image}}
-                            <img id="profileImage" data-userid="{{data.account._id}}" src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
-                        {{else}}
-                            <img id="profileImage" data-userid="{{data.account._id}}" src="/uploads/users/defaultProfile.jpg" alt="{{data.account.username}}"/>
-                        {{/if}}
-                        <div class="img-caption">
-                            <h3>Upload Profile Image</h3>
-                            <span>Image must be square and at least 256x256</span>
-                            <!--<a href="#">Upload</a>-->
+                <div class="profilePicFormWrap uk-width-1-1 uk-float-left">
+                    <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin uk-clearfix" enctype="multipart/form-data">
+                        <input type="hidden" name="_id" value="{{data.account._id}}" />
+                        <input type="hidden" name="username" value="{{data.account.username}}" />
+                        <div class="largeProfilePic cursor-pointer hoverEffect" style="position: absolute; left: 35px; top: 0;" ng-click="accountEditPic()">
+                            <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
+                            {{#if data.account.image}}
+                                <img id="profileImage" data-userid="{{data.account._id}}" src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
+                            {{else}}
+                                <img id="profileImage" data-userid="{{data.account._id}}" src="/uploads/users/defaultProfile.jpg" alt="{{data.account.username}}"/>
+                            {{/if}}
+                            <div class="img-caption">
+                                <h3>Upload Profile Image</h3>
+                                <span>Image must be square and at least 256x256</span>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="totp-settings-wrap uk-float-left" style="min-width: 256px; margin-top: 275px;">
+                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 12px; line-height: 10px;">Two Factor Authentication</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 10px;" class="uk-text-muted">
+                                Extra account security.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="otpEnabled" ng-click="otpChange($event)">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <hr class="nomargin-top">
+                        <div class="panel-body2" style="margin: 10px 7px 7px 7px;">
+                            <div class="uk-margin-small-bottom">
+                                <label for="tOTPKey" style="color:#727272;">Shared Key</label>
+                                <input id="tOTPKey" type="text" class="md-input md-input-width-medium" value="{{data.account.tOTPKey}}" disabled />
+                            </div>
+                            <div id="totp-qrcode"
+                                 data-hasKey="{{#isNotNull data.account.tOTPKey}}true{{else}}false{{/isNotNull}}"
+                                 data-totpkey="otpauth://totp/{{data.host}}-{{data.account.username}}:{{data.host}}-{{data.account.username}}?secret={{data.account.tOTPKey}}&issuer=Trudesk">
+                            </div>
                         </div>
                     </div>
-                </form>
-                <form id="createAccountForm" class="uk-form-stacked" action="/accounts/edit" method="POST">
+                </div>
+
+                <form id="updateProfileForm" class="uk-form-stacked" action="" method="POST">
                     <input name="aId" type="hidden" value="{{data.account._id}}" />
                     <input type="hidden" name="aRole" value="{{data.account.role}}" />
                     <div style="margin-left: 285px;">
-                        <div class="uk-margin-medium-bottom">
-                            <label for="aUsername">Username</label>
-                            <input id="aUsername" class="md-input" name="aUsername" type="text" value="{{data.account.username}}" disabled/>
-                        </div>
-
-                        <div class="uk-margin-medium-bottom">
-                            <label for="aFullname">Name</label>
-                            <input id="aFullname" class="md-input" name="aFullname" type="text" value="{{data.account.fullname}}"/>
-                        </div>
-
-                        <div class="uk-margin-medium-bottom">
-                            <label for="aPass">Password</label>
-                            <input id="aPass" class="md-input" name="aPass" type="password" />
-                        </div>
-
-                        <div class="uk-margin-medium-bottom">
-                            <label for="aPassConfirm">Confirm Password</label>
-                            <input id="aPassConfirm" class="md-input" name="aPassConfirm" type="password" />
-                        </div>
-
-                        <div class="uk-margin-medium-bottom">
-                            <label for="aEmail">Email</label>
-                            <input id="aEmail" class="md-input" name="aEmail" type="text" value="{{data.account.email}}"/>
-                        </div>
-
-                        <div class="uk-grid uk-grid-collapse">
-                            <div class="uk-width-8-10">
-                                <label for="aApiKey">API Key</label>
-                                <input id="aApiKey" class="md-input" name="aApiKey" type="text" value="{{data.account.accessToken}}" disabled/>
+                        <div class="profile-item-wrap uk-margin-medium-bottom">
+                            <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                                <div class="left">
+                                    <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">User Information</h6>
+                                    <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                        Your profile information.
+                                    </h5>
+                                </div>
+                                <hr class="nomargin-top">
+                                <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                    <div class="">
+                                        <div class="uk-margin-medium-bottom">
+                                            <label for="aUsername" style="color: #727272;">Username</label>
+                                            <input id="aUsername" class="md-input md-input-width-medium" name="aUsername" type="text" disabled value="{{data.account.username}}" />
+                                        </div>
+                                        <div class="uk-margin-medium-bottom">
+                                            <label for="aFullname">Name</label>
+                                            <input id="aFullname" class="md-input md-input-width-medium" name="aFullname" type="text" value="{{data.account.fullname}}" />
+                                        </div>
+                                        <div class="uk-margin-medium-bottom">
+                                            <label for="aPass">Password</label>
+                                            <input id="aPass" class="md-input" name="aPass" type="password" />
+                                        </div>
+                                        <div class="uk-margin-medium-bottom">
+                                            <label for="aPassConfirm">Confirm Password</label>
+                                            <input id="aPassConfirm" class="md-input" name="aPassConfirm" type="password" />
+                                        </div>
+                                        <div class="uk-margin-medium-bottom">
+                                            <label for="aEmail">Email</label>
+                                            <input id="aEmail" class="md-input" name="aEmail" type="email" value="{{data.account.email}}"/>
+                                        </div>
+                                        <div class="uk-clearfix">
+                                            <button type="submit" class="uk-float-right md-btn md-btn-small md-btn-success md-btn-wave-light" ng-click="updateUser($event)">Save</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="uk-width-2-10" style="padding-top: 16px;">
-                                <button
-                                        class="uk-button uk-button-accent md-btn-wave-light right {{#unless data.account.accessToken}} hide {{/unless}} removeApiButton"
-                                        type="button" ng-click="removeApiKey($event)">
-                                    Remove Key
-                                </button>
-
-                                <button class="uk-button uk-button-accent md-btn-wave-light right {{#if data.account.accessToken}} hide {{/if}} generateApiButton"
-                                        type="button" ng-click="generateApiKey($event)">
-                                    Generate Key
-                                </button>
+                        </div>
+                        <div class="profile-item-wrap uk-margin-medium-bottom">
+                            <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                                <div class="left">
+                                    <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mobile API Token</h6>
+                                    <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                        API Token for the trudesk mobile app.
+                                    </h5>
+                                </div>
+                                <div class="right" style="position:relative; padding: 15px;">
+                                    <button
+                                            type="button"
+                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-danger md-btn-wave-light removeApiButton {{#unless data.account.accessToken}} hide {{/unless}}"
+                                            ng-click="removeApiKey($event)">Remove Token
+                                    </button>
+                                    <button
+                                            type="button"
+                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-success md-btn-wave-light generateApiButton {{#if data.account.accessToken}} hide {{/if}}"
+                                            ng-click="generateApiKey($event)">Generate Token
+                                    </button>
+                                </div>
+                                <hr class="nomargin-top">
+                                <div class="panel-body2" style="padding: 20px 15px 15px 15px">
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="aApiKey" style="color: #727272;">API Token</label>
+                                        <input type="text" id="aApiKey" class="md-input" name="aApiKey" value="{{data.account.accessToken}}" disabled>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -92,9 +145,9 @@
 
 {{#contentFor 'js-plugins'}}
     <script type="text/javascript">
-        require(['modules/ajaximgupload', 'pages/editaccount'], function(a, editAccount) {
+        require(['modules/ajaximgupload', 'pages/profile'], function(a, profile) {
             a.init();
-            editAccount.init();
+            profile.init();
         });
     </script>
 {{/contentFor}}

@@ -603,17 +603,18 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
         $(document).ready(function() {
             $(selector).each(function() {
-                // var ns = $(this).getNiceScroll(0);
-                // if (ns !== false)
-                //     $(selector).niceScroll().remove();
-
-                $(this).niceScroll({
-                    cursorcolor: color,
-                    cursorwidth: size,
-                    cursorborder: colorBrd,
-                    cursoropacitymax: opacityMax,
-                    horizrailenabled: false
-                });
+                 var ns = $(this).getNiceScroll(0);
+                 if (ns !== false) {
+                     ns.resize();
+                 } else {
+                     $(this).niceScroll({
+                         cursorcolor: color,
+                         cursorwidth: size,
+                         cursorborder: colorBrd,
+                         cursoropacitymax: opacityMax,
+                         horizrailenabled: false
+                     });
+                 }
 
                 $(this).trigger('scrollable', this);
             });
@@ -673,9 +674,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.removeAllScrollers = function(complete) {
-        $('.nicescroll-rails').each(function() {
-            var self = $(this);
-            self.remove();
+        $('*').each(function() {
+            var ns = $(this).getNiceScroll(0);
+            if (ns) return ns.remove();
         });
 
         if (_.isFunction(complete)) {

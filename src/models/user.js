@@ -38,6 +38,8 @@ var COLLECTION = "accounts";
  * @property {String} image Filename of user image
  * @property {String} resetPassHash Password reset has for recovery password link.
  * @property {Date} resetPassExpire Date when the password recovery link will expire
+ * @property {String} tOTPKey One Time Password Secret Key
+ * @property {Number} tOTPPeriod One Time Password Key Length (Time) - Default 30 Seconds
  * @property {String} accessToken API Access Token
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  * @property {Object} preferences Object to hold user preferences
@@ -56,6 +58,8 @@ var userSchema = mongoose.Schema({
 
         resetPassHash: String,
         resetPassExpire: Date,
+        tOTPKey: String,
+        tOTPPeriod: Number,
 
         accessToken: { type: String, unique: true, sparse: true},
 
@@ -80,7 +84,7 @@ userSchema.pre('save', function(next) {
             if (err) return next(err);
 
             user.password = hash;
-            next();
+            return next();
         });
     })
 });
@@ -92,7 +96,7 @@ userSchema.methods.addAccessToken = function(callback) {
     user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback(null, user.accessToken);
+        return callback(null, user.accessToken);
     });
 };
 
@@ -104,8 +108,42 @@ userSchema.methods.removeAccessToken = function(callback) {
     user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback();
+        return callback();
     });
+};
+
+userSchema.methods.generateL2Auth = function(callback) {
+    var user = this;
+    console.log(user.tOTPKey);
+    if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
+        var chance = new Chance();
+        var base32 = require('thirty-two');
+
+        var genOTPKey = chance.string({length: 7, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'});
+        var base32GenOTPKey = base32.encode(genOTPKey).toString().replace(/=/g, '');
+
+        user.tOTPKey = base32GenOTPKey;
+        user.save(function(err) {
+            if (err) return callback(err);
+
+            return callback(null, base32GenOTPKey);
+        });
+    } else
+        return callback();
+
+
+};
+
+userSchema.methods.removeL2Auth = function(callback) {
+    var user = this;
+    if (!user.tOTPKey) return callback();
+
+    user.tOTPKey = undefined;
+    user.save(function(err) {
+        if (err) return callback(err, null);
+
+        return callback();
+    })
 };
 
 userSchema.methods.addDeviceToken = function(token, type, callback) {

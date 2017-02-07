@@ -30,7 +30,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     return false;
 
                 socket.chat.sendChatMessage(cid, toUserId, input.val(), function(err) {
-                    $log.warn(err);
+                    if (err) $log.warn(err);
                     input.val('');
 
                     socket.chat.stopTyping(cid, toUserId);
