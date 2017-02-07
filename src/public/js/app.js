@@ -42,6 +42,9 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'easypiechart'
 
     ], function(nav, eh) {
+        //Page loading (init)
+        require(['pages/pageloader'], function(pl) { pl.init(); });
+
         nav.init();
         setTimeout(function(){
 
@@ -50,7 +53,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
             helpers.UI.cardShow();
 
             $.event.trigger('$trudesk:ready');
-        }, 2000);
+        }, 500);
         //eh.init();
     });
 });

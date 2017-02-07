@@ -153,7 +153,8 @@
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
@@ -251,57 +252,61 @@
 </div>
 
 <script type="text/javascript">
-    $('#forgotPass').click(function(e) {
-        e.preventDefault();
-        $('.loginForm').fadeOut(100, function() {
-            $('.forgotPassForm').fadeIn();
+    window.truRequire(['jquery'], function(loadedModules) {
+        var $ = loadedModules[0];
+
+        $('#forgotPass').click(function(e) {
+            e.preventDefault();
+            $('.loginForm').fadeOut(100, function() {
+                $('.forgotPassForm').fadeIn();
+            });
+
         });
 
-    });
-
-    $('#backToLogin').click(function(e) {
-        e.preventDefault();
-        $('.forgotPassForm').fadeOut(100, function() {
-            $('.loginForm').fadeIn();
-        })
-    });
-
-    $('#forgotPassForm').submit(function(e) {
-        e.preventDefault();
-        var self = $(this);
-        var alertMessage = $('.alert-message');
-        $.ajax({
-            type: 'POST',
-            url: '/forgotpass',
-            data: self.serialize(),
-            async: true,
-            success: function(data) {
-                alertMessage.removeClass('hide')
-                        .addClass('green')
-                        .find('p')
-                        .html('Password Reset Email Sent!');
-
-                $('#forgotPass-email').val('');
-
-                $('.forgotPassForm').fadeOut(100, function() {
-                    $('.loginForm').fadeIn();
-                })
-            },
-
-            error: function(xhr, ajaxOptions, thrownError) {
-                alertMessage.removeClass('hide')
-                        .find('p')
-                        .html(xhr.responseText);
-            }
+        $('#backToLogin').click(function(e) {
+            e.preventDefault();
+            $('.forgotPassForm').fadeOut(100, function() {
+                $('.loginForm').fadeIn();
+            })
         });
 
-        return false;
-    });
+        $('#forgotPassForm').submit(function(e) {
+            e.preventDefault();
+            var self = $(this);
+            var alertMessage = $('.alert-message');
+            $.ajax({
+                type: 'POST',
+                url: '/forgotpass',
+                data: self.serialize(),
+                async: true,
+                success: function(data) {
+                    alertMessage.removeClass('hide')
+                            .addClass('green')
+                            .find('p')
+                            .html('Password Reset Email Sent!');
 
-    $(document).ready(function() {
-        setTimeout(function() {
-            $('#login-username').focus();
-        }, 250);
+                    $('#forgotPass-email').val('');
+
+                    $('.forgotPassForm').fadeOut(100, function() {
+                        $('.loginForm').fadeIn();
+                    })
+                },
+
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alertMessage.removeClass('hide')
+                            .find('p')
+                            .html(xhr.responseText);
+                }
+            });
+
+            return false;
+        });
+
+        $(document).ready(function() {
+            setTimeout(function() {
+                $('#login-username').focus();
+            }, 800);
+        });
     });
 </script>
 </body>

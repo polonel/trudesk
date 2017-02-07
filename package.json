@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-    "postinstall": "npm install -g requirejs@2.1.15 grunt-cli && grunt build",
     "build": "grunt build",
     "test": "mocha --recursive",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive"
@@ -34,7 +33,6 @@
     "grunt": "1.0.1",
     "grunt-apidoc": "0.11.0",
     "grunt-contrib-cssmin": "1.0.1",
-    "grunt-contrib-requirejs": "1.0.0",
     "grunt-contrib-uglify": "0.11.0",
     "grunt-jsdoc": "2.1.0",
     "grunt-sass": "1.2.0",
@@ -79,24 +77,32 @@
     "winston": "2.2.0"
   },
   "devDependencies": {
+    "apidoc": "0.17.5",
     "chai": "*",
     "coveralls": "2.11.11",
     "eslint": "3.14.0",
     "eslint-config-angular": "0.5.0",
     "eslint-plugin-angular": "1.6.1",
     "eslint-plugin-node": "3.0.5",
+    "exports-loader": "0.6.3",
+    "expose-loader": "0.7.1",
     "grunt-contrib-uglify": "1.0.1",
     "grunt-contrib-watch": "1.0.0",
     "grunt-express-server": "0.5.3",
     "grunt-htmlhint": "0.9.13",
     "grunt-parallel": "0.5.1",
+    "imports-loader": "0.7.0",
     "istanbul": "0.4.4",
     "istanbul-coveralls": "1.0.3",
+    "jsdoc": "3.4.3",
     "mocha": "2.5.3",
     "mocha-lcov-reporter": "1.2.0",
     "request": "2.73.0",
+    "script-loader": "0.7.0",
     "superagent": "2.0.0",
-    "supertest": "1.2.0"
+    "supertest": "1.2.0",
+    "webpack": "2.2.1",
+    "webpack-node-externals": "1.5.4"
   },
   "config": {
     "blanket": {

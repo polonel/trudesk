@@ -5,7 +5,6 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <link rel="stylesheet" href="/css/normalize.min.css"/>
-    <!--<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/foundation/5.5.0/css/foundation.min.css"/>-->
 
     {{#block 'css'}}
 
@@ -19,7 +18,8 @@
     {{/block}}
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 
 </head>
@@ -113,8 +113,8 @@
     {{> chatdock }}
 </div>
 
-<!--<audio id="newticketaudio" src="/sounds/newticket.ogg" class="uk-hidden"></audio>-->
-<!--<audio id="newmessageaudio" src="/sounds/newmessage.ogg" class="uk-hidden"></audio>-->
+<audio id="newticketaudio" src="/sounds/newticket.ogg" class="uk-hidden"></audio>
+<audio id="newmessageaudio" src="/sounds/newmessage.ogg" class="uk-hidden"></audio>
 
 {{> ticketFilterWindow }}
 {{> createTicketWindow}}
