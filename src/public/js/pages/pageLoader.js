@@ -15,7 +15,7 @@
 
  **/
 
-define('pages/pageloader', function() {
+define('pages/pageLoader', function() {
     var pageLoader = {};
 
     pageLoader.init = function() {
