@@ -132,8 +132,6 @@ module.exports = function(grunt) {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',
                     configure: 'docs/jaguarjs-jsdoc/conf.json'
-                        //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
-                        //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
                 }
             }
         },
@@ -177,30 +175,9 @@ module.exports = function(grunt) {
         },
 
         shell: {
-            webpackWatch: {
-                options: {
-                    execOptions: {
-                        cwd: './node_modules/.bin/'
-                    }
-                },
-                command: 'webpack --config ../../webpack.config.js --watch'
-            },
-            webpackDev: {
-                options: {
-                    execOptions: {
-                        cwd: './node_modules/.bin/'
-                    }
-                },
-                command: 'webpack --config ../../webpack.config.js'
-            },
-            webpackDist: {
-                options: {
-                    execOptions: {
-                        cwd: './node_modules/.bin/'
-                    }
-                },
-                command: 'webpack --config ../../webpack.config.dist.js'
-            }
+            webpackWatch: 'npm run webpackwatch',
+            webpackDev: 'npm run webpackdev',
+            webpackDist: 'npm run webpackdist'
         }
     });
 
