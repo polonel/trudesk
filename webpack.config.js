@@ -16,6 +16,10 @@ module.exports = {
     resolve: {
         modules: [path.resolve(__dirname, 'src/public/js/')],
         alias: {
+            //server side
+            roles:          path.resolve(__dirname, 'src/permissions/roles'),
+
+            //client side
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
             angular:        'vendor/angular/angular.min',
