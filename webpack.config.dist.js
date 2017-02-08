@@ -93,7 +93,10 @@ module.exports = {
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
         new webpack.optimize.OccurrenceOrderPlugin(),
-        new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.UglifyJsPlugin({
+            mangle: false,
+            sourceMap:false
+        })
     ],
     performance: {
         hints: "warning",

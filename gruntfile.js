@@ -81,20 +81,18 @@ module.exports = function(grunt) {
                     'public/css/plugins.css': [
                         'public/css/plugins/datatables/dataTables.scroller.css',
                         'public/css/plugins/datatables/dataTables.foundation.css',
-                        'public/js/vendor/chosen/chosen.css',
-                        'public/js/vendor/pace/pace.theme.css',
-                        'public/js/vendor/enjoyhint/enjoyhint.css',
-                        'public/js/vendor/metricsgraphics/metricsgraphics.css',
+                        'src/public/js/vendor/chosen/chosen.css',
+                        'src/public/js/vendor/pace/pace.theme.css',
+                        'src/public/js/vendor/enjoyhint/enjoyhint.css',
+                        'src/public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
-                        //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
-                        //'public/css/plugins/datepicker/foundation-datepicker.css',
-                        'public/js/vendor/uikit/css/uikit.css',
-                        'public/js/vendor/uikit/css/uikit_custom.css',
-                        'public/js/plugins/snackbar.css',
-                        'public/js/vendor/c3/c3.css',
-                        'public/js/vendor/formvalidator/theme-default.css'
+                        'src/public/js/vendor/uikit/css/uikit.css',
+                        'src/public/js/vendor/uikit/css/uikit_custom.css',
+                        'src/public/js/plugins/snackbar.css',
+                        'src/public/js/vendor/c3/c3.css',
+                        'src/public/js/vendor/formvalidator/theme-default.css'
                     ]
                 }
             },
@@ -211,7 +209,6 @@ module.exports = function(grunt) {
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss', 'builddocs']);
-    grunt.registerTask('sbuild', ['shell:webpackDev']);
-    grunt.registerTask('swinbuild', ['shell:webpackDev']);
+    grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('default', ['server']);
 };
