@@ -77,7 +77,10 @@ define('pages/messages', [
                     $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
 
                 //set active
-                $('ul > li[data-conversation-id="' + $convoId + '"]').addClass('active');
+                if ($convoId !== undefined) {
+                    var item = $('ul > li[data-conversation-id="' + $convoId + '"]');
+                    item.addClass('active');
+                }
 
                 //Remove All Chat Boxes
                 if ($('#__page').text().toLowerCase() === 'messages') {

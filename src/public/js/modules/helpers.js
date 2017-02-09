@@ -48,6 +48,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.UI.matchHeight();
 
         var layout = self.onWindowResize();
+        //Initial Call to Load Layout
+        layout();
         $(window).resize(layout);
     };
 

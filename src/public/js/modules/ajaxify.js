@@ -14,6 +14,7 @@
 
 define('modules/ajaxify', [
     'jquery',
+    'underscore',
     'angular',
     'modules/helpers',
     'modules/navigation',
@@ -21,7 +22,7 @@ define('modules/ajaxify', [
     'modules/socket',
     'history'
 
-], function($, angular, helpers, nav, pageLoader, socketClient) {
+], function($, _, angular, helpers, nav, pageLoader, socketClient) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -46,7 +47,11 @@ define('modules/ajaxify', [
         helpers.UI.cardShow();
         helpers.countUpMe();
 
-        $.event.trigger('$trudesk:ready');
+        var event = _.debounce(function() {
+            $.event.trigger('$trudesk:ready');
+        }, 100);
+
+        event();
     });
 
 

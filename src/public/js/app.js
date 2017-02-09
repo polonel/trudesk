@@ -29,6 +29,7 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
     });
 
     require([
+        'underscore',
         'modules/navigation',
         'modules/enjoyhint',
         'uikit',
@@ -41,19 +42,20 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, eh) {
+    ], function(_, nav, eh) {
         //Page loading (init)
         require(['pages/pageloader'], function(pl) { pl.init(); });
 
         nav.init();
-        setTimeout(function(){
 
+        var $event = _.debounce(function() {
             helpers.hideLoader(1000);
             helpers.countUpMe();
             helpers.UI.cardShow();
 
             $.event.trigger('$trudesk:ready');
-        }, 500);
-        //eh.init();
+        }, 100);
+
+        $event();
     });
 });
