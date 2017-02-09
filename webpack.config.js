@@ -102,6 +102,6 @@ module.exports = {
     performance: {
         hints: "warning",
         maxEntrypointSize: 400000,
-        maxAssetSize: 1000000
+        maxAssetSize: 8000000
     }
 };
