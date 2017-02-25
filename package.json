@@ -5,6 +5,7 @@
   "scripts": {
     "start": "node ./app",
     "build": "grunt build && npm run webpackdist",
+    "heroku-postbuild": "npm run build",
     "test": "mocha --recursive",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive",
     "webpackwatch": "webpack --config webpack.config.js --watch",
