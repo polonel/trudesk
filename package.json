@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node ./app",
-    "build": "grunt build",
+    "build": "grunt build && npm run webpackdist",
     "test": "mocha --recursive",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive",
     "webpackwatch": "webpack --config webpack.config.js --watch",
