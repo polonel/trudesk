@@ -5,7 +5,7 @@
   "scripts": {
     "start": "node ./app",
     "build": "grunt build",
-    "heroku-postbuild": "npm install -g webpack && npm run build",
+    "heroku-postbuild": "npm run build",
     "test": "mocha --recursive",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive",
     "webpackwatch": "webpack --config webpack.config.js --watch",
@@ -80,9 +80,7 @@
     "underscore.string": "3.3.4",
     "unzip": "0.1.11",
     "util": "0.10.3",
-    "winston": "2.2.0",
-    "webpack": "2.2.1",
-    "webpack-node-externals": "1.5.4"
+    "winston": "2.2.0"
   },
   "devDependencies": {
     "apidoc": "0.17.5",
@@ -106,7 +104,9 @@
     "mocha-lcov-reporter": "1.2.0",
     "script-loader": "0.7.0",
     "superagent": "2.0.0",
-    "supertest": "1.2.0"
+    "supertest": "1.2.0",
+    "webpack": "2.2.1",
+    "webpack-node-externals": "1.5.4"
   },
   "config": {
     "blanket": {
