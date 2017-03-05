@@ -45,6 +45,30 @@
         </svg>
     </div>
 </div>
+<div id="serverRestarting" class="loader-wrapper hide" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #ddd; z-index: 999998;">
+    <div class="shadow-wrapper">
+        <svg class="shadow">
+            <defs>
+                <radialGradient r="0.5" cy="0.5" cx="0.5" id="shadow">
+                    <stop stop-color="#323232" offset="0"/>
+                    <stop stop-opacity="0" stop-color="#323232" offset="1"/>
+                </radialGradient>
+            </defs>
+            <ellipse class="shadow" opacity="0.2" ry="6" rx="35" id="svg_1" cy="65" cx="90" stroke-linecap="null" stroke-linejoin="null" stroke-width="0" stroke="#323232" fill="url(#shadow)"/>
+        </svg>
+    </div>
+    <div class="test-wrapper" style="width: 280px;">
+        <svg id="t" class="t" style="width: 140px; height: 75px;" viewBox="0 0 288.9 70.1" preserveAspectRatio="xMidYMid meet">
+            <g id="g" style="width: 100%; height: 100%;">
+                <path class="s1" d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z" />
+                <circle class="s1" cx="35.9" cy="82" r="4" />
+            </g>
+        </svg>
+    </div>
+    <div class="test-wrapper" style="height: auto; top: 52%; width: 280px;">
+        <h4 style="font-size: 24px; font-weight: 300; margin-left: 25px;">Please Wait...</h4>
+    </div>
+</div>
 <div id="nomobile" class="uk-visible-small uk-hidden-medium uk-hidden-large" style="
     position: fixed;
     top: 0;
@@ -57,7 +81,7 @@
 <div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 32px; font-weight: 300;">Currently No Mobile Support.</div>
 </div>
 
-<div class="disconnected loader-wrapper" style="display: none; opacity: 0;">
+<div class="disconnected loader-wrapper" style="display: none; opacity: 0; z-index: 999997;">
     <div class="shadow-wrapper">
         <svg class="shadow">
             <defs>

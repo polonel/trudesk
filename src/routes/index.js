@@ -17,11 +17,11 @@ var express     = require('express'),
     packagejson = require('../../package.json');
 
 function mainRoutes(router, middleware, controllers) {
-    router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
+    router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
-    router.get('/login', middleware.redirectToLogin);
+    router.get('/login', function(req, res) { return res.redirect('/');});
     router.post('/login', controllers.main.loginPost);
     router.get('/l2auth', controllers.main.l2authget);
     router.post('/l2auth', controllers.main.l2AuthPost);
@@ -95,7 +95,7 @@ function mainRoutes(router, middleware, controllers) {
     //router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
 
     //Invoices
-    router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
+    //router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
 
     //Notices
     router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
@@ -186,9 +186,38 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
+    router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
+    router.get('/api/v1/plugins/install/:packageid', middleware.api, controllers.api.plugins.installPlugin);
+    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, controllers.api.plugins.removePlugin);
+
     router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
+
+
+    router.get('/api/v1/admin/restart', middleware.api, function(req, res) {
+        if (req.user.role === 'admin') {
+            var pm2 = require('pm2');
+            pm2.connect(function(err) {
+                if (err) {
+                    winston.error(err);
+                    res.status(400).send(err);
+                    return;
+                }
+                pm2.restart('trudesk', function(err) {
+                    if (err) {
+                        res.status(400).send(err);
+                        return winston.error(err);
+                    }
+
+                    pm2.disconnect();
+                    res.json({success: true});
+                });
+            });
+        } else {
+            return res.status(403).json({success: false, error: 'Unauthorized!'});
+        }
+    });
 
     if (global.env === 'development') {
         router.get('/debug/message', function(req, res) {
@@ -263,7 +292,10 @@ module.exports = function(app, middleware) {
     dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
         if (err) throw err;
         var pluginRoutes = require(path.join(dir, '/routes'));
-        pluginRoutes(router, middleware);
+        if (pluginRoutes)
+            pluginRoutes(router, middleware);
+        else
+            winston.warn('Unable to load plugin: ' + pluginDir);
     });
 };
 

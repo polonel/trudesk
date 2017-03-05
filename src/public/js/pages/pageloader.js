@@ -31,13 +31,14 @@ define('pages/pageloader', function() {
             'pages/reportsBreakdown',
             'pages/notices',
             'pages/createNotice',
+            'pages/plugins',
             'pages/settings',
             'pages/logs',
             'pages/tags',
 
             'modules/ajaximgupload',
             'modules/attachmentUpload'
-        ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p) {
+        ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) {
             a.init();
             b.init();
             c.init();
@@ -54,6 +55,7 @@ define('pages/pageloader', function() {
             n.init();
             o.init();
             p.init();
+            q.init();
         });
     };
 

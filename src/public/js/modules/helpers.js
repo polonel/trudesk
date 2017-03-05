@@ -181,8 +181,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     function updateInput(object) {
         // clear wrapper classes
-        object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success');
-        object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success md-input-wrapper-disabled');
+        object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success uk-input-group-nocolor');
+        object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success uk-input-wrapper-nocolor md-input-wrapper-disabled');
 
         if(object.hasClass('md-input-danger')) {
             if(object.closest('.uk-input-group').length) {
@@ -195,6 +195,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                 object.closest('.uk-input-group').addClass('uk-input-group-success')
             }
             object.closest('.md-input-wrapper').addClass('md-input-wrapper-success')
+        }
+        if(object.hasClass('md-input-nocolor')) {
+            if(object.closest('.uk-input-group').length) {
+                object.closest('.uk-input-group').addClass('uk-input-group-nocolor')
+            }
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-nocolor')
         }
         if(object.prop('disabled')) {
             object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled')
@@ -338,6 +344,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
                 var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
+                var maxOptions = $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000;
                 $this
                     .after('<div class="selectize_fix"></div>')
                     .closest('div').addClass('uk-position-relative')
@@ -350,6 +357,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                         dropdownParent: $this.closest('div'),
                         hideSelected: true,
                         closeAfterSelect: closeOnSelect,
+                        maxOptions: maxOptions,
                         onDropdownOpen: function($dropdown) {
                             $dropdown
                                 .hide()

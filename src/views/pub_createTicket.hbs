@@ -211,7 +211,8 @@
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
@@ -399,39 +400,43 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var $slides = $('.slides > .slide');
-        var totalSlides = 0;
-        var activeSlide = 0;
-        $slides.each(function(idx) {
-            $(this).addClass('slide-' + idx);
-            if (idx == 0)
-                $(this).addClass('activeSlide');
-            else
-                $(this).addClass('hide');
+    window.truRequire(['jquery', 'snackbar'], function(loadedModules) {
+        var $ = loadedModules[0];
+        window.Snackbar = loadedModules[1];
 
-            totalSlides++;
-        });
+        $(document).ready(function() {
+            var $slides = $('.slides > .slide');
+            var totalSlides = 0;
+            var activeSlide = 0;
+            $slides.each(function(idx) {
+                $(this).addClass('slide-' + idx);
+                if (idx == 0)
+                    $(this).addClass('activeSlide');
+                else
+                    $(this).addClass('hide');
+
+                totalSlides++;
+            });
 
 
-        function isDoubleClicked(element) {
-            //if already clicked return TRUE to indicate this click is not allowed
-            if (element.data("isclicked")) return true;
+            function isDoubleClicked(element) {
+                //if already clicked return TRUE to indicate this click is not allowed
+                if (element.data("isclicked")) return true;
 
-            //mark as clicked for 1 second
-            element.data("isclicked", true);
-            setTimeout(function () {
-                element.removeData("isclicked");
-            }, 1000);
+                //mark as clicked for 1 second
+                element.data("isclicked", true);
+                setTimeout(function () {
+                    element.removeData("isclicked");
+                }, 1000);
 
-            //return FALSE to indicate this click was allowed
-            return false;
-        }
+                //return FALSE to indicate this click was allowed
+                return false;
+            }
 
-        $('button[data-next]').click(function() {
-            if (isDoubleClicked($(this))) return;
-            //return showTicketCreated();
-            advanceSlide();
+            $('button[data-next]').click(function() {
+                if (isDoubleClicked($(this))) return;
+                //return showTicketCreated();
+                advanceSlide();
 //            var nextSlideIdx = activeSlide + 1;
 //            var nextSlide = $('.slide-' + nextSlideIdx);
 //            if (nextSlide.length > 0) {
@@ -445,270 +450,271 @@
 //                });
 //                activeSlide++;
 //            }
-        });
+            });
 
-        $('button[data-prev]').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var prevSlideIdx = activeSlide - 1;
-            var prevSlide = $('.slide-' + prevSlideIdx);
-            if (prevSlide.length > 0) {
-                $(this).parents('.slide').fadeOut(300, function() {
-                    prevSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    prevSlide.fadeIn(300, function() {
-                        prevSlide.addClass('activeSlide');
-                    });
-                });
-
-                activeSlide--;
-            }
-        });
-
-        var userInfo = undefined;
-        var ticket = undefined;
-
-        $('button#checkEmail').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var userInfoFormData = $('form#userInfo').serializeObject();
-            var $emailField, $fullnameField;
-            var $emailValid = false, $fullnameValid = false;
-
-            if (!userInfoFormData['user-email'] || !validateEmail(userInfoFormData['user-email'])) {
-                $emailField = $('form#userInfo').find('input#user-email');
-                $emailField.parent('.md-input-wrapper').addClass('has-error');
-                $emailField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $emailField.addClass('uk-form-danger');
-            } else {
-                $emailField = $('form#userInfo').find('input#user-email');
-                $emailField.parent('.md-input-wrapper').removeClass('has-error');
-                $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $emailField.removeClass('uk-form-danger');
-
-                $emailValid = true;
-            }
-
-            if (!userInfoFormData['user-fullname'] || (userInfoFormData['user-fullname'].length < 5)) {
-                $fullnameField = $('form#userInfo').find('input#user-fullname');
-                $fullnameField.parent('.md-input-wrapper').addClass('has-error');
-                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $fullnameField.addClass('uk-form-danger');
-            } else {
-                $fullnameField = $('form#userInfo').find('input#user-fullname');
-                $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
-                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $fullnameField.removeClass('uk-form-danger');
-
-                $fullnameValid = true;
-            }
-
-            if (!$fullnameValid || !$emailValid)
-                return false;
-
-            var $checkEmailBtn = $(this);
-            $checkEmailBtn.prop('disabled', true).text('Validating...');
-            $.ajax({
-                method: 'POST',
-                url: '/api/v1/public/users/checkemail',
-                data: {
-                    email: userInfoFormData['user-email']
-                },
-                error: function(e) {
-                    $checkEmailBtn.prop('disabled', false).text('Next');
-                    window.Snackbar.show({
-                        text: 'An Error occurred.',
-                        actionTextColor: 'red'
+            $('button[data-prev]').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var prevSlideIdx = activeSlide - 1;
+                var prevSlide = $('.slide-' + prevSlideIdx);
+                if (prevSlide.length > 0) {
+                    $(this).parents('.slide').fadeOut(300, function() {
+                        prevSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        prevSlide.fadeIn(300, function() {
+                            prevSlide.addClass('activeSlide');
+                        });
                     });
 
-                    console.log(e);
-                },
-                success: function(data) {
-                    $checkEmailBtn.prop('disabled', false).text('Next');
-                    if (!data.success) {
+                    activeSlide--;
+                }
+            });
+
+            var userInfo = undefined;
+            var ticket = undefined;
+
+            $('button#checkEmail').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var userInfoFormData = $('form#userInfo').serializeObject();
+                var $emailField, $fullnameField;
+                var $emailValid = false, $fullnameValid = false;
+
+                if (!userInfoFormData['user-email'] || !validateEmail(userInfoFormData['user-email'])) {
+                    $emailField = $('form#userInfo').find('input#user-email');
+                    $emailField.parent('.md-input-wrapper').addClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $emailField.addClass('uk-form-danger');
+                } else {
+                    $emailField = $('form#userInfo').find('input#user-email');
+                    $emailField.parent('.md-input-wrapper').removeClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $emailField.removeClass('uk-form-danger');
+
+                    $emailValid = true;
+                }
+
+                if (!userInfoFormData['user-fullname'] || (userInfoFormData['user-fullname'].length < 5)) {
+                    $fullnameField = $('form#userInfo').find('input#user-fullname');
+                    $fullnameField.parent('.md-input-wrapper').addClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $fullnameField.addClass('uk-form-danger');
+                } else {
+                    $fullnameField = $('form#userInfo').find('input#user-fullname');
+                    $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $fullnameField.removeClass('uk-form-danger');
+
+                    $fullnameValid = true;
+                }
+
+                if (!$fullnameValid || !$emailValid)
+                    return false;
+
+                var $checkEmailBtn = $(this);
+                $checkEmailBtn.prop('disabled', true).text('Validating...');
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/v1/public/users/checkemail',
+                    data: {
+                        email: userInfoFormData['user-email']
+                    },
+                    error: function(e) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
                         window.Snackbar.show({
                             text: 'An Error occurred.',
                             actionTextColor: 'red'
                         });
-                    } else {
-                        if (data.exist) {
-                            //Email already Exist
-                            //Show email exists slide
-                            var $active = $('.activeSlide');
-                            var errorSlide = $('#emailExistsSlide');
-                            if (errorSlide.length > 0) {
-                                $('span#emailSpan').text(userInfoFormData['user-email']);
-                                $active.fadeOut(300, function() {
-                                    errorSlide.css({display: 'none'}).removeClass('hide');
-                                    $(this).addClass('hide').removeClass('activeSlide');
-                                    errorSlide.fadeIn(300, function() {
-                                        errorSlide.addClass('activeSlide');
-                                    });
-                                });
-                                activeSlide++;
-                            }
+
+                        console.log(e);
+                    },
+                    success: function(data) {
+                        $checkEmailBtn.prop('disabled', false).text('Next');
+                        if (!data.success) {
+                            $checkEmailBtn.prop('disabled', false).text('Next');
+                            window.Snackbar.show({
+                                text: 'An Error occurred.',
+                                actionTextColor: 'red'
+                            });
                         } else {
-                            userInfo = {
-                                'fullname': userInfoFormData['user-fullname'],
-                                'email': userInfoFormData['user-email']
-                            };
+                            if (data.exist) {
+                                //Email already Exist
+                                //Show email exists slide
+                                var $active = $('.activeSlide');
+                                var errorSlide = $('#emailExistsSlide');
+                                if (errorSlide.length > 0) {
+                                    $('span#emailSpan').text(userInfoFormData['user-email']);
+                                    $active.fadeOut(300, function() {
+                                        errorSlide.css({display: 'none'}).removeClass('hide');
+                                        $(this).addClass('hide').removeClass('activeSlide');
+                                        errorSlide.fadeIn(300, function() {
+                                            errorSlide.addClass('activeSlide');
+                                        });
+                                    });
+                                    activeSlide++;
+                                }
+                            } else {
+                                userInfo = {
+                                    'fullname': userInfoFormData['user-fullname'],
+                                    'email': userInfoFormData['user-email']
+                                };
 
-                            //Reset Error Classes
-                            $emailField = $('form#userInfo').find('input#user-email');
-                            $emailField.parent('.md-input-wrapper').removeClass('has-error');
-                            $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                            $emailField.removeClass('uk-form-danger');
-                            $fullnameField = $('form#userInfo').find('input#user-fullname');
-                            $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
-                            $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                            $fullnameField.removeClass('uk-form-danger');
+                                //Reset Error Classes
+                                $emailField = $('form#userInfo').find('input#user-email');
+                                $emailField.parent('.md-input-wrapper').removeClass('has-error');
+                                $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                                $emailField.removeClass('uk-form-danger');
+                                $fullnameField = $('form#userInfo').find('input#user-fullname');
+                                $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
+                                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                                $fullnameField.removeClass('uk-form-danger');
 
-                            advanceSlide();
+                                advanceSlide();
+                            }
                         }
                     }
+                });
+            });
+
+            function advanceSlide() {
+                var $active = $('.activeSlide');
+                var nextSlideIdx = activeSlide + 1;
+                var nextSlide = $('.slide-' + nextSlideIdx);
+                if (nextSlide.length > 0) {
+                    $active.fadeOut(300, function() {
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        nextSlide.css({display: 'none'}).removeClass('hide');
+                        nextSlide.fadeIn(300, function() {
+                            nextSlide.addClass('activeSlide');
+                        });
+                    });
+
+                    activeSlide++;
+                }
+            }
+
+            $('button#submit-issue').click(function() {
+                if (isDoubleClicked($(this))) return;
+                ticket = {
+                    subject: $('#ticket-subject').val(),
+                    issue: $('#ticket-issue').val()
+                };
+
+                advanceSlide();
+
+                //Send the install POST wait for Response...
+                setTimeout(function() {
+                    sendIssue();
+                }, 1500);
+            });
+
+            $('a#privacyPolicyBtn').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                showPrivacyPolicy();
+            });
+
+            $('button#privacyPolicyBackBtn').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                var privacyPolicySlide = $('#privacyPolicySlide');
+                if (privacyPolicySlide.length > 0) {
+                    privacyPolicySlide.fadeOut(300, function() {
+                        privacyPolicySlide.addClass('hide');
+
+                        var userInfoSlide = $('#userInfoSlide');
+                        userInfoSlide.removeClass('hide');
+                        userInfoSlide.fadeIn(300, function() {
+                            userInfoSlide.addClass('activeSlide');
+                        });
+                    });
+
+                    activeSlide = 1;
                 }
             });
-        });
 
-        function advanceSlide() {
-            var $active = $('.activeSlide');
-            var nextSlideIdx = activeSlide + 1;
-            var nextSlide = $('.slide-' + nextSlideIdx);
-            if (nextSlide.length > 0) {
-                $active.fadeOut(300, function() {
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    nextSlide.css({display: 'none'}).removeClass('hide');
-                    nextSlide.fadeIn(300, function() {
-                        nextSlide.addClass('activeSlide');
+            function showPrivacyPolicy() {
+                //Show Ticket Created Slide
+                var $active = $('.activeSlide');
+                var privacyPolicySlide = $('#privacyPolicySlide');
+                if (privacyPolicySlide.length > 0) {
+                    //$('span#emailSpan').text(userInfoFormData['user-email']);
+                    $active.fadeOut(300, function() {
+                        privacyPolicySlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide');
+                        privacyPolicySlide.fadeIn(300, function() {
+
+                        });
                     });
-                });
-
-                activeSlide++;
+                }
             }
-        }
 
-        $('button#submit-issue').click(function() {
-            if (isDoubleClicked($(this))) return;
-            ticket = {
-                subject: $('#ticket-subject').val(),
-                issue: $('#ticket-issue').val()
-            };
-
-            advanceSlide();
-
-            //Send the install POST wait for Response...
-            setTimeout(function() {
-                sendIssue();
-            }, 1500);
-        });
-
-        $('a#privacyPolicyBtn').click(function() {
-            if (isDoubleClicked($(this))) return;
-
-            showPrivacyPolicy();
-        });
-
-        $('button#privacyPolicyBackBtn').click(function() {
-            if (isDoubleClicked($(this))) return;
-
-            var privacyPolicySlide = $('#privacyPolicySlide');
-            if (privacyPolicySlide.length > 0) {
-                privacyPolicySlide.fadeOut(300, function() {
-                    privacyPolicySlide.addClass('hide');
-
-                    var userInfoSlide = $('#userInfoSlide');
-                    userInfoSlide.removeClass('hide');
-                    userInfoSlide.fadeIn(300, function() {
-                        userInfoSlide.addClass('activeSlide');
+            function showTicketCreated() {
+                //Show Ticket Created Slide
+                var $active = $('.activeSlide');
+                var ticketCreatedSlide = $('#ticketCreatedSlide');
+                if (ticketCreatedSlide.length > 0) {
+                    //$('span#emailSpan').text(userInfoFormData['user-email']);
+                    $active.fadeOut(300, function() {
+                        ticketCreatedSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        ticketCreatedSlide.fadeIn(300, function() {
+                            ticketCreatedSlide.addClass('activeSlide');
+                        });
                     });
-                });
-
-                activeSlide = 1;
+                    activeSlide++;
+                }
             }
-        });
 
-        function showPrivacyPolicy() {
-            //Show Ticket Created Slide
-            var $active = $('.activeSlide');
-            var privacyPolicySlide = $('#privacyPolicySlide');
-            if (privacyPolicySlide.length > 0) {
-                //$('span#emailSpan').text(userInfoFormData['user-email']);
-                $active.fadeOut(300, function() {
-                    privacyPolicySlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide');
-                    privacyPolicySlide.fadeIn(300, function() {
+            function sendIssue() {
+                var d = {
+                    user: userInfo,
+                    ticket: ticket
+                };
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/v1/public/tickets/create',
+                    data: JSON.stringify(d),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (!response.success) {
+                            //TODO: Show Error Slide
+                        } else {
+                            //console.log(response);
+                            $('span#spanfullname').text(userInfo.fullname);
+                            $('strong#strongSubject').text(ticket.subject);
+                            $('strong#strongUsername').text(userInfo.email);
+                            $('strong#strongPassword').text(response.userData.chancepass);
 
-                    });
-                });
-            }
-        }
-
-        function showTicketCreated() {
-            //Show Ticket Created Slide
-            var $active = $('.activeSlide');
-            var ticketCreatedSlide = $('#ticketCreatedSlide');
-            if (ticketCreatedSlide.length > 0) {
-                //$('span#emailSpan').text(userInfoFormData['user-email']);
-                $active.fadeOut(300, function() {
-                    ticketCreatedSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    ticketCreatedSlide.fadeIn(300, function() {
-                        ticketCreatedSlide.addClass('activeSlide');
-                    });
-                });
-                activeSlide++;
-            }
-        }
-
-        function sendIssue() {
-            var d = {
-                user: userInfo,
-                ticket: ticket
-            };
-            $.ajax({
-                method: 'POST',
-                url: '/api/v1/public/tickets/create',
-                data: JSON.stringify(d),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        //TODO: Show Error Slide
-                    } else {
-                        //console.log(response);
-                        $('span#spanfullname').text(userInfo.fullname);
-                        $('strong#strongSubject').text(ticket.subject);
-                        $('strong#strongUsername').text(userInfo.email);
-                        $('strong#strongPassword').text(response.userData.chancepass);
-
-                        showTicketCreated();
+                            showTicketCreated();
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
                     }
-                },
-                error: function(err) {
-                    console.log(err);
-                }
-            })
-        }
+                })
+            }
 
-        function validateEmail(email) {
-            var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            return email.match(mailFormat);
-        }
+            function validateEmail(email) {
+                var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                return email.match(mailFormat);
+            }
 
-        $.fn.serializeObject = function(){
-            var obj = {};
+            $.fn.serializeObject = function(){
+                var obj = {};
 
-            $.each( this.serializeArray(), function(i,o){
-                var n = o.name,
-                        v = o.value;
+                $.each( this.serializeArray(), function(i,o){
+                    var n = o.name,
+                            v = o.value;
 
-                obj[n] = obj[n] === undefined ? v
-                        : $.isArray( obj[n] ) ? obj[n].concat( v )
-                        : [ obj[n], v ];
-            });
+                    obj[n] = obj[n] === undefined ? v
+                            : $.isArray( obj[n] ) ? obj[n].concat( v )
+                            : [ obj[n], v ];
+                });
 
-            return obj;
-        };
+                return obj;
+            };
 
 
+        });
     });
 </script>
 </body>

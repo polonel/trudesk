@@ -196,7 +196,8 @@
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
@@ -378,57 +379,111 @@
 </div>
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var $slides = $('.slides > .slide');
-        var totalSlides = 0;
-        var activeSlide = 0;
-        $slides.each(function(idx) {
-            $(this).addClass('slide-' + idx);
-            if (idx == 0)
-                $(this).addClass('activeSlide');
-            else
-                $(this).addClass('hide');
+    window.truRequire(['jquery', 'snackbar'], function(loadedModules) {
+        var $ = loadedModules[0];
+        window.Snackbar = loadedModules[1];
 
-            totalSlides++;
-        });
+        $(document).ready(function() {
+            var $slides = $('.slides > .slide');
+            var totalSlides = 0;
+            var activeSlide = 0;
+            $slides.each(function(idx) {
+                $(this).addClass('slide-' + idx);
+                if (idx == 0)
+                    $(this).addClass('activeSlide');
+                else
+                    $(this).addClass('hide');
 
-        $('button[data-next]').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var nextSlideIdx = activeSlide + 1;
-            var nextSlide = $('.slide-' + nextSlideIdx);
-            if (nextSlide.length > 0) {
-                $(this).parents('.slide').fadeOut(300, function() {
-                    nextSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    nextSlide.fadeIn(300, function() {
-                        nextSlide.addClass('activeSlide');
-                    });
-                });
-                activeSlide++;
-            }
-        });
-
-        var mongoConnection = undefined;
-        var adminAccount = undefined;
-
-        $('button#existing-database-btn').click(function() {
-            if (isDoubleClicked($(this))) return;
-
-            var $thisSlide = $('.activeSlide');
-            var $savingConfig = $('#savingConfig');
-            $thisSlide.fadeOut(300, function() {
-                $thisSlide.removeClass('activeSlide').addClass('hide');
-                $savingConfig.css({display: 'none'}).removeClass('hide');
-                $savingConfig.fadeIn(300, function() {
-                    $savingConfig.addClass('activeSlide');
-                });
+                totalSlides++;
             });
 
-            setTimeout(function() {
+            $('button[data-next]').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var nextSlideIdx = activeSlide + 1;
+                var nextSlide = $('.slide-' + nextSlideIdx);
+                if (nextSlide.length > 0) {
+                    $(this).parents('.slide').fadeOut(300, function() {
+                        nextSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        nextSlide.fadeIn(300, function() {
+                            nextSlide.addClass('activeSlide');
+                        });
+                    });
+                    activeSlide++;
+                }
+            });
+
+            var mongoConnection = undefined;
+            var adminAccount = undefined;
+
+            $('button#existing-database-btn').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                var $thisSlide = $('.activeSlide');
+                var $savingConfig = $('#savingConfig');
+                $thisSlide.fadeOut(300, function() {
+                    $thisSlide.removeClass('activeSlide').addClass('hide');
+                    $savingConfig.css({display: 'none'}).removeClass('hide');
+                    $savingConfig.fadeIn(300, function() {
+                        $savingConfig.addClass('activeSlide');
+                    });
+                });
+
+                setTimeout(function() {
+                    var mongoFormData = $('form#mongoConnection').serializeObject();
+                    $.ajax({
+                        method: 'POST',
+                        url: '/install/existingdb',
+                        data: {
+                            host: mongoFormData['mongo-server'],
+                            port: mongoFormData['mongo-port'],
+                            username: mongoFormData['mongo-username'],
+                            password: mongoFormData['mongo-password'],
+                            database: mongoFormData['mongo-database']
+                        },
+                        error: function(e) {
+                            window.Snackbar.show({
+                                text: 'Unable to save configuration!',
+                                actionTextColor: 'red'
+                            });
+
+                            console.log(e);
+                        },
+                        success: function(data) {
+                            if (!data.success) {
+                                window.Snackbar.show({
+                                    text: 'Unable to save configuration!',
+                                    actionTextColor: 'red'
+                                });
+
+                                console.log(data);
+                            } else {
+                                window.Snackbar.show({
+                                    text: 'Configuration File Saved!'
+                                });
+                                var $savingConfig = $('#savingConfig');
+                                var $restartSlide = $('#restartSlide');
+                                $savingConfig.fadeOut(300, function() {
+                                    $savingConfig.addClass('hide');
+                                    $restartSlide.css({display: 'none'}).removeClass('hide');
+                                    $restartSlide.fadeIn(300, function() {
+                                        $restartSlide.addClass('activeSlide');
+                                    });
+                                })
+                            }
+                        }
+                    });
+                }, 1000);
+            });
+
+            $('button#test-mongo-connection').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var $connectBtn = $(this);
+                $connectBtn.prop('disabled', true).text('Trying to connect...');
                 var mongoFormData = $('form#mongoConnection').serializeObject();
                 $.ajax({
                     method: 'POST',
-                    url: '/install/existingdb',
+                    url: '/install/mongotest',
                     data: {
                         host: mongoFormData['mongo-server'],
                         port: mongoFormData['mongo-port'],
@@ -437,219 +492,170 @@
                         database: mongoFormData['mongo-database']
                     },
                     error: function(e) {
+                        $connectBtn.prop('disabled', false).text('Test Connection!');
                         window.Snackbar.show({
-                            text: 'Unable to save configuration!',
+                            text: 'Couldn\'t connect; make sure connection is correct.',
                             actionTextColor: 'red'
                         });
-
                         console.log(e);
                     },
                     success: function(data) {
                         if (!data.success) {
                             window.Snackbar.show({
-                                text: 'Unable to save configuration!',
+                                text: 'Couldn\'t connect; make sure connection is correct.',
                                 actionTextColor: 'red'
                             });
-
-                            console.log(data);
+                            $connectBtn.prop('disabled', false).text('Test Connection!');
                         } else {
+                            mongoConnection = {
+                                host: mongoFormData['mongo-server'],
+                                port: mongoFormData['mongo-port'],
+                                username: mongoFormData['mongo-username'],
+                                password: mongoFormData['mongo-password'],
+                                database: mongoFormData['mongo-database']
+                            };
+
                             window.Snackbar.show({
-                                text: 'Configuration File Saved!'
+                                text: 'Connection Successful!'
                             });
-                            var $savingConfig = $('#savingConfig');
-                            var $restartSlide = $('#restartSlide');
-                            $savingConfig.fadeOut(300, function() {
-                                $savingConfig.addClass('hide');
-                                $restartSlide.css({display: 'none'}).removeClass('hide');
-                                $restartSlide.fadeIn(300, function() {
-                                    $restartSlide.addClass('activeSlide');
+
+                            //Advance to next slide
+                            var nextSlideIdx = activeSlide + 1;
+                            var nextSlide = $('.slide-' + nextSlideIdx);
+                            if (nextSlide.length > 0) {
+                                $connectBtn.parents('.slide').fadeOut(300, function() {
+                                    nextSlide.css({display: 'none'}).removeClass('hide');
+                                    $(this).addClass('hide').removeClass('activeSlide');
+                                    nextSlide.fadeIn(300, function() {
+                                        nextSlide.addClass('activeSlide');
+                                    });
                                 });
-                            })
+                                activeSlide++;
+                            }
                         }
                     }
                 });
-            }, 1000);
-        });
-
-        $('button#test-mongo-connection').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var $connectBtn = $(this);
-            $connectBtn.prop('disabled', true).text('Trying to connect...');
-            var mongoFormData = $('form#mongoConnection').serializeObject();
-            $.ajax({
-                method: 'POST',
-                url: '/install/mongotest',
-                data: {
-                    host: mongoFormData['mongo-server'],
-                    port: mongoFormData['mongo-port'],
-                    username: mongoFormData['mongo-username'],
-                    password: mongoFormData['mongo-password'],
-                    database: mongoFormData['mongo-database']
-                },
-                error: function(e) {
-                    $connectBtn.prop('disabled', false).text('Test Connection!');
-                    window.Snackbar.show({
-                        text: 'Couldn\'t connect; make sure connection is correct.',
-                        actionTextColor: 'red'
-                    });
-                    console.log(e);
-                },
-                success: function(data) {
-                    if (!data.success) {
-                        window.Snackbar.show({
-                            text: 'Couldn\'t connect; make sure connection is correct.',
-                            actionTextColor: 'red'
-                        });
-                        $connectBtn.prop('disabled', false).text('Test Connection!');
-                    } else {
-                        mongoConnection = {
-                            host: mongoFormData['mongo-server'],
-                            port: mongoFormData['mongo-port'],
-                            username: mongoFormData['mongo-username'],
-                            password: mongoFormData['mongo-password'],
-                            database: mongoFormData['mongo-database']
-                        };
-
-                        window.Snackbar.show({
-                            text: 'Connection Successful!'
-                        });
-
-                        //Advance to next slide
-                        var nextSlideIdx = activeSlide + 1;
-                        var nextSlide = $('.slide-' + nextSlideIdx);
-                        if (nextSlide.length > 0) {
-                            $connectBtn.parents('.slide').fadeOut(300, function() {
-                                nextSlide.css({display: 'none'}).removeClass('hide');
-                                $(this).addClass('hide').removeClass('activeSlide');
-                                nextSlide.fadeIn(300, function() {
-                                    nextSlide.addClass('activeSlide');
-                                });
-                            });
-                            activeSlide++;
-                        }
-                    }
-                }
             });
-        });
 
-        function advanceSlide() {
-            var $active = $('.activeSlide');
-            var nextSlideIdx = activeSlide + 1;
-            var nextSlide = $('.slide-' + nextSlideIdx);
-            if (nextSlide.length > 0) {
-                $active.fadeOut(300, function() {
-                    nextSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    nextSlide.fadeIn(300, function() {
-                        nextSlide.addClass('activeSlide');
+            function advanceSlide() {
+                var $active = $('.activeSlide');
+                var nextSlideIdx = activeSlide + 1;
+                var nextSlide = $('.slide-' + nextSlideIdx);
+                if (nextSlide.length > 0) {
+                    $active.fadeOut(300, function() {
+                        nextSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        nextSlide.fadeIn(300, function() {
+                            nextSlide.addClass('activeSlide');
+                        });
                     });
-                });
-                activeSlide++;
+                    activeSlide++;
+                }
             }
-        }
 
-        $('button#set-admin-account').click(function() {
-            adminAccount = {
-                username: $('#admin-username').val(),
-                fullname: $('#admin-fullname').val(),
-                password: $('#admin-password').val(),
-                cpassword: $('#admin-cpassword').val(),
-                email: $('#admin-email').val()
-            };
+            $('button#set-admin-account').click(function() {
+                adminAccount = {
+                    username: $('#admin-username').val(),
+                    fullname: $('#admin-fullname').val(),
+                    password: $('#admin-password').val(),
+                    cpassword: $('#admin-cpassword').val(),
+                    email: $('#admin-email').val()
+                };
 
-            advanceSlide();
+                advanceSlide();
 
-            //Send the install POST wait for Response...
-            setTimeout(function() {
-                sendInstall();
-            }, 3000);
-        });
-
-        $('button#restartTrudesk').click(function() {
-            var $restartSlide = $('#restartSlide');
-            $restartSlide.find('h2').html('Restarting...');
-            $restartSlide.find('p').css('text-align', 'center').html('I\'m restarting now... Give me about 10seconds!');
-            $restartSlide.find('button').hide();
-
-            setTimeout(function() {
-                window.location.reload();
-            }, 10000);
-
-            $.ajax({
-                method: 'POST',
-                url: '/install/restart',
-                data: {
-
-                }
+                //Send the install POST wait for Response...
+                setTimeout(function() {
+                    sendInstall();
+                }, 3000);
             });
-        });
 
-        function sendInstall() {
-            $.ajax({
-                method: 'POST',
-                url: '/install',
-                data: {
-                    mongo: mongoConnection,
-                    account: adminAccount
-                },
-                success: function(response) {
-                    window.Snackbar.show({
-                        text: 'We did it! Everything is all set up!'
-                    });
+            $('button#restartTrudesk').click(function() {
+                var $restartSlide = $('#restartSlide');
+                $restartSlide.find('h2').html('Restarting...');
+                $restartSlide.find('p').css('text-align', 'center').html('I\'m restarting now... Give me about 10seconds!');
+                $restartSlide.find('button').hide();
 
-                    advanceSlide();
-                },
-                error: function(response) {
+                setTimeout(function() {
+                    window.location.reload();
+                }, 10000);
+
+                $.ajax({
+                    method: 'POST',
+                    url: '/install/restart',
+                    data: {
+
+                    }
+                });
+            });
+
+            function sendInstall() {
+                $.ajax({
+                    method: 'POST',
+                    url: '/install',
+                    data: {
+                        mongo: mongoConnection,
+                        account: adminAccount
+                    },
+                    success: function(response) {
+                        window.Snackbar.show({
+                            text: 'We did it! Everything is all set up!'
+                        });
+
+                        advanceSlide();
+                    },
+                    error: function(response) {
 //                    window.Snackbar.show({
 //                        text: response.responseText,
 //                        actionTextColor: '#FF4835'
 //                    });
 
-                    var $active = $('.activeSlide');
-                    var errorSlide = $('#errorSlide');
-                    if (errorSlide.length > 0) {
-                        errorSlide.find('pre').html(response.responseText);
-                        $active.fadeOut(300, function() {
-                            errorSlide.css({display: 'none'}).removeClass('hide');
-                            $(this).addClass('hide').removeClass('activeSlide');
-                            errorSlide.fadeIn(300, function() {
-                                errorSlide.addClass('activeSlide');
+                        var $active = $('.activeSlide');
+                        var errorSlide = $('#errorSlide');
+                        if (errorSlide.length > 0) {
+                            errorSlide.find('pre').html(response.responseText);
+                            $active.fadeOut(300, function() {
+                                errorSlide.css({display: 'none'}).removeClass('hide');
+                                $(this).addClass('hide').removeClass('activeSlide');
+                                errorSlide.fadeIn(300, function() {
+                                    errorSlide.addClass('activeSlide');
+                                });
                             });
-                        });
-                        activeSlide++;
+                            activeSlide++;
+                        }
                     }
-                }
-            });
-        }
+                });
+            }
 
-        function isDoubleClicked(element) {
-            //if already clicked return TRUE to indicate this click is not allowed
-            if (element.data("isclicked")) return true;
+            function isDoubleClicked(element) {
+                //if already clicked return TRUE to indicate this click is not allowed
+                if (element.data("isclicked")) return true;
 
-            //mark as clicked for 1 second
-            element.data("isclicked", true);
-            setTimeout(function () {
-                element.removeData("isclicked");
-            }, 1000);
+                //mark as clicked for 1 second
+                element.data("isclicked", true);
+                setTimeout(function () {
+                    element.removeData("isclicked");
+                }, 1000);
 
-            //return FALSE to indicate this click was allowed
-            return false;
-        }
+                //return FALSE to indicate this click was allowed
+                return false;
+            }
 
-        $.fn.serializeObject = function(){
-            var obj = {};
+            $.fn.serializeObject = function(){
+                var obj = {};
 
-            $.each( this.serializeArray(), function(i,o){
-                var n = o.name,
-                        v = o.value;
+                $.each( this.serializeArray(), function(i,o){
+                    var n = o.name,
+                            v = o.value;
 
-                obj[n] = obj[n] === undefined ? v
-                        : $.isArray( obj[n] ) ? obj[n].concat( v )
-                        : [ obj[n], v ];
-            });
+                    obj[n] = obj[n] === undefined ? v
+                            : $.isArray( obj[n] ) ? obj[n].concat( v )
+                            : [ obj[n], v ];
+                });
 
-            return obj;
-        };
+                return obj;
+            };
+        });
     });
 </script>
 </body>

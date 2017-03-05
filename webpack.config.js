@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     //context: path.resolve(__dirname, 'public/js'),
     entry : {
-        vendor: ['jquery', 'angular'],
+        vendor: ['jquery', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
         "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
     },
@@ -42,6 +42,7 @@ module.exports = {
             dt_responsive:  'vendor/datatables/dataTables.responsive',
             dt_grouping:    'vendor/datatables/dataTables.grouping',
             dt_scroller:    'vendor/datatables/dataTables.scroller',
+            dt_ipaddress:   'vendor/datatables/dataTables.ipaddress',
             flot:           'vendor/flot/jquery.flot',
             flot_symbol:    'vendor/flot/jquery.flot.symbol',
             flot_time:      'vendor/flot/jquery.flot.time',
@@ -96,12 +97,11 @@ module.exports = {
             minChunks: Infinity
         }),
         new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
-        new webpack.optimize.OccurrenceOrderPlugin(),
-        //new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.OccurrenceOrderPlugin()
     ],
     performance: {
         hints: "warning",
-        maxEntrypointSize: 400000,
+        maxEntrypointSize: 1000000,
         maxAssetSize: 8000000
     }
 };

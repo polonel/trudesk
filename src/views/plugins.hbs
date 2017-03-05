@@ -1,36 +1,96 @@
-<div class="small-12 large-10 columns nopadding ticketContent" ng-controller="pluginsCtrl">
-    <div class="page-title noshadow">
+<div class="nopadding plugins" ng-controller="pluginsCtrl" ng-init="
+    installedPlugins='{{data.plugins.installed}}';
+
+    init();
+">
+    <div class="uk-width-1-1 page-title" style="padding-left: 25px !important;">
         <p class="left">{{title}}</p>
     </div>
+    <!--Content Here-->
+    <div class="page-wrapper full-height scrollable no-overflow-x">
+        <div id="page-content-inner" style="padding-bottom: 0px !important;">
+            <div class="uk-grid uk-grid-medium uk-margin-medium-bottom">
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro1" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <span class="uk-text-muted uk-text-small">Outdated Plugins</span>
+                            <h2 class="uk-margin-remove">
+                                <span id="outdatedPluginCount">--</span>
+                            </h2>
+                        </div>
 
-    <div class="full-height page-content no-border-top scrollable">
-        <!--<div class="noticesList">-->
-            <!--<table id="noticesTable" class="pDataTable stripe">-->
-                <!--<thead>-->
-                <!--<tr>-->
-                    <!--<th></th>-->
-                    <!--<th>Name</th>-->
-                    <!--<th>Message</th>-->
-                    <!--<th>Date</th>-->
-                    <!--<th></th>-->
-                <!--</tr>-->
-                <!--</thead>-->
-                <!--<tbody>-->
-                <!--{{#each data.notices}}-->
-                    <!--<tr ng-click="editNotice($event)" data-noticeOId="{{_id}}">-->
-                        <!--<td>-->
-                            <!--<input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>-->
-                            <!--<label for="c_{{_id}}"></label>-->
-                        <!--</td>-->
-                        <!--<td>{{name}}</td>-->
-                        <!--<td>{{message}}</td>-->
-                        <!--<td>{{formatDate date "MMM DD, YYYY h:mma"}}</td>-->
-                        <!--<td><span style="display: block;width:15px; height:15px; background: {{color}}"></span></td>-->
-                    <!--</tr>-->
-                <!--{{/each}}-->
-                <!--</tbody>-->
-            <!--</table>-->
-        <!--</div>-->
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro1" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span id="pie_complete" class="peity-pie">0/100</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Tickets Completed</span>
+
+                            <h2 class="uk-margin-remove">
+                                <span id="text_complete">--</span>%
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro1" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span id="responseTime_graph" class="peity-line">5,3,9,6,5,9,7,3,5,2</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Avg Response Time</span>
+
+                            <h2 class="uk-margin-remove">
+                                <span id="responseTime_text">--</span> hours
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="breakdown-wrap uk-margin-small-bottom">
+                <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 600px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Install New Plugin</h6>
+                    </div>
+                    <div class="right" style="position:relative;">
+                        <div class="md-input-wrapper uk-position-relative" style="margin-right: 15px; width: 224px;">
+
+                            <input type="text" class="md-input uk-margin-remove" id="search_plugin_list" style="padding-bottom: 5px !important; width: 200px;"/>
+
+                            <div class="md-input-bar"></div>
+                            <i class="material-icons search-icon" style="color: #ccc !important; top: 13px;">search</i>
+                        </div>
+                    </div>
+                    <hr class="nomargin-top">
+                    <div class="panel-body2">
+                        <div id="plugin_list" class="">
+                            <table id="plugin_list_table" class="uk-table uk-table-hover uk-table-striped cursor-pointer">
+                                <thead>
+                                    <tr>
+                                        <th style="border-bottom-width: 1px;">Name</th>
+                                        <th style="border-bottom-width: 1px;">Description</th>
+                                        <th style="border-bottom-width: 1px;">Version</th>
+                                        <th style="border-bottom-width: 1px;"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="vertical-align: middle;">Loading Plugins...</td>
+                                        <td style="vertical-align: middle;"></td>
+                                        <td style="vertical-align: middle;"></td>
+                                        <td style="text-align: right;"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
