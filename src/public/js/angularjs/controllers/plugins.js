@@ -46,7 +46,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                             var loadedPlugin = _.findWhere($scope.installedPlugins, {'name': p.name});
                             var hasPluginInstalled = loadedPlugin !== undefined;
-                            var update = compareVersions(loadedPlugin.version, '<', p.pluginjson.version);
+                            var update = false;
+                            if (hasPluginInstalled)
+                                update = compareVersions(loadedPlugin.version, '<', p.pluginjson.version);
 
                             html += '<tr data-plugin-id="' + p._id + '" data-plugin-name="' + p.name.toLowerCase() + '">';
                             html += '<td style="vertical-align: middle;">' + p.name.toLowerCase() + '</td>';
