@@ -15,7 +15,7 @@
 //http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
 //window.name = "NG_DEFER_BOOTSTRAP!";
 
-require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], function(config, $, helpers, angular) {
+require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, helpers, angular) {
     helpers.init();
 
     angular.element(document).ready(function() {
