@@ -25,6 +25,8 @@ pluginsController.get = function(req, res) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
+    self.content.data.plugins = {};
+    self.content.data.plugins.installed = JSON.stringify(global.plugins, null, 2);
 
     res.render('plugins', self.content);
 };

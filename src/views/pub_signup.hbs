@@ -211,7 +211,8 @@
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
@@ -372,318 +373,323 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function() {
-        var $slides = $('.slides > .slide');
-        var totalSlides = 0;
-        var activeSlide = 0;
-        $slides.each(function(idx) {
-            $(this).addClass('slide-' + idx);
-            if (idx == 0)
-                $(this).addClass('activeSlide');
-            else
-                $(this).addClass('hide');
+    window.truRequire(['jquery', 'snackbar'], function(loadedModules) {
+        var $ = loadedModules[0];
+        window.Snackbar = loadedModules[1];
 
-            totalSlides++;
-        });
+        $(document).ready(function() {
+            var $slides = $('.slides > .slide');
+            var totalSlides = 0;
+            var activeSlide = 0;
+            $slides.each(function(idx) {
+                $(this).addClass('slide-' + idx);
+                if (idx == 0)
+                    $(this).addClass('activeSlide');
+                else
+                    $(this).addClass('hide');
+
+                totalSlides++;
+            });
 
 
-        function isDoubleClicked(element) {
-            //if already clicked return TRUE to indicate this click is not allowed
-            if (element.data("isclicked")) return true;
+            function isDoubleClicked(element) {
+                //if already clicked return TRUE to indicate this click is not allowed
+                if (element.data("isclicked")) return true;
 
-            //mark as clicked for 1 second
-            element.data("isclicked", true);
-            setTimeout(function () {
-                element.removeData("isclicked");
-            }, 1000);
+                //mark as clicked for 1 second
+                element.data("isclicked", true);
+                setTimeout(function () {
+                    element.removeData("isclicked");
+                }, 1000);
 
-            //return FALSE to indicate this click was allowed
-            return false;
-        }
-
-        $('button[data-next]').click(function() {
-            if (isDoubleClicked($(this))) return;
-            //return showTicketCreated();
-            advanceSlide();
-        });
-
-        $('button[data-prev]').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var prevSlideIdx = activeSlide - 1;
-            var prevSlide = $('.slide-' + prevSlideIdx);
-            if (prevSlide.length > 0) {
-                $(this).parents('.slide').fadeOut(300, function() {
-                    prevSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    prevSlide.fadeIn(300, function() {
-                        prevSlide.addClass('activeSlide');
-                    });
-                });
-
-                activeSlide--;
-            }
-        });
-
-        var userInfo = undefined;
-        var ticket = undefined;
-
-        $('button#checkEmail').click(function() {
-            if (isDoubleClicked($(this))) return;
-            var userInfoFormData = $('form#userInfo').serializeObject();
-            var $emailField, $fullnameField, $passwordField, $confirmPasswordField;
-            var $emailValid = false, $fullnameValid = false, $passwordValid = false, $confirmPasswordValid = false;
-
-            if (!userInfoFormData['user-email'] || !validateEmail(userInfoFormData['user-email'])) {
-                $emailField = $('form#userInfo').find('input#user-email');
-                $emailField.parent('.md-input-wrapper').addClass('has-error');
-                $emailField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $emailField.addClass('uk-form-danger');
-            } else {
-                $emailField = $('form#userInfo').find('input#user-email');
-                $emailField.parent('.md-input-wrapper').removeClass('has-error');
-                $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $emailField.removeClass('uk-form-danger');
-
-                $emailValid = true;
-            }
-
-            if (!userInfoFormData['user-fullname'] || (userInfoFormData['user-fullname'].length < 5)) {
-                $fullnameField = $('form#userInfo').find('input#user-fullname');
-                $fullnameField.parent('.md-input-wrapper').addClass('has-error');
-                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $fullnameField.addClass('uk-form-danger');
-            } else {
-                $fullnameField = $('form#userInfo').find('input#user-fullname');
-                $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
-                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $fullnameField.removeClass('uk-form-danger');
-
-                $fullnameValid = true;
-            }
-
-            if (!userInfoFormData['user-password'] || (userInfoFormData['user-password'].length < 5)) {
-                $passwordField = $('form#userInfo').find('input#user-password');
-                $passwordField.parent('.md-input-wrapper').addClass('has-error');
-                $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $passwordField.addClass('uk-form-danger');
-            } else {
-                $passwordField = $('form#userInfo').find('input#user-password');
-                $passwordField.parent('.md-input-wrapper').removeClass('has-error');
-                $passwordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $passwordField.removeClass('uk-form-danger');
-
-                $passwordValid = true;
-            }
-
-            if (!userInfoFormData['user-cPassword'] || (userInfoFormData['user-cPassword'].length < 5)) {
-                $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
-                $confirmPasswordField.parent('.md-input-wrapper').addClass('has-error');
-                $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
-                $confirmPasswordField.addClass('uk-form-danger');
-            } else {
-                $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
-                $confirmPasswordField.parent('.md-input-wrapper').removeClass('has-error');
-                $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                $confirmPasswordField.removeClass('uk-form-danger');
-
-                if ($passwordValid && ($passwordField.text().toString() === $confirmPasswordField.text().toString()))
-                    $confirmPasswordValid = true;
-            }
-
-            if (!$fullnameValid || !$emailValid || !$confirmPasswordValid)
+                //return FALSE to indicate this click was allowed
                 return false;
+            }
 
-            var $checkEmailBtn = $(this);
-            $checkEmailBtn.prop('disabled', true).text('Validating...');
-            $.ajax({
-                method: 'POST',
-                url: '/api/v1/public/users/checkemail',
-                data: {
-                    email: userInfoFormData['user-email']
-                },
-                error: function(e) {
-                    $checkEmailBtn.prop('disabled', false).text('Next');
-                    window.Snackbar.show({
-                        text: 'An Error occurred.',
-                        actionTextColor: 'red'
+            $('button[data-next]').click(function() {
+                if (isDoubleClicked($(this))) return;
+                //return showTicketCreated();
+                advanceSlide();
+            });
+
+            $('button[data-prev]').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var prevSlideIdx = activeSlide - 1;
+                var prevSlide = $('.slide-' + prevSlideIdx);
+                if (prevSlide.length > 0) {
+                    $(this).parents('.slide').fadeOut(300, function() {
+                        prevSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        prevSlide.fadeIn(300, function() {
+                            prevSlide.addClass('activeSlide');
+                        });
                     });
 
-                    console.log(e);
-                },
-                success: function(data) {
-                    $checkEmailBtn.prop('disabled', false).text('Next');
-                    if (!data.success) {
+                    activeSlide--;
+                }
+            });
+
+            var userInfo = undefined;
+            var ticket = undefined;
+
+            $('button#checkEmail').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var userInfoFormData = $('form#userInfo').serializeObject();
+                var $emailField, $fullnameField, $passwordField, $confirmPasswordField;
+                var $emailValid = false, $fullnameValid = false, $passwordValid = false, $confirmPasswordValid = false;
+
+                if (!userInfoFormData['user-email'] || !validateEmail(userInfoFormData['user-email'])) {
+                    $emailField = $('form#userInfo').find('input#user-email');
+                    $emailField.parent('.md-input-wrapper').addClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $emailField.addClass('uk-form-danger');
+                } else {
+                    $emailField = $('form#userInfo').find('input#user-email');
+                    $emailField.parent('.md-input-wrapper').removeClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $emailField.removeClass('uk-form-danger');
+
+                    $emailValid = true;
+                }
+
+                if (!userInfoFormData['user-fullname'] || (userInfoFormData['user-fullname'].length < 5)) {
+                    $fullnameField = $('form#userInfo').find('input#user-fullname');
+                    $fullnameField.parent('.md-input-wrapper').addClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $fullnameField.addClass('uk-form-danger');
+                } else {
+                    $fullnameField = $('form#userInfo').find('input#user-fullname');
+                    $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $fullnameField.removeClass('uk-form-danger');
+
+                    $fullnameValid = true;
+                }
+
+                if (!userInfoFormData['user-password'] || (userInfoFormData['user-password'].length < 5)) {
+                    $passwordField = $('form#userInfo').find('input#user-password');
+                    $passwordField.parent('.md-input-wrapper').addClass('has-error');
+                    $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $passwordField.addClass('uk-form-danger');
+                } else {
+                    $passwordField = $('form#userInfo').find('input#user-password');
+                    $passwordField.parent('.md-input-wrapper').removeClass('has-error');
+                    $passwordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $passwordField.removeClass('uk-form-danger');
+
+                    $passwordValid = true;
+                }
+
+                if (!userInfoFormData['user-cPassword'] || (userInfoFormData['user-cPassword'].length < 5)) {
+                    $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
+                    $confirmPasswordField.parent('.md-input-wrapper').addClass('has-error');
+                    $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $confirmPasswordField.addClass('uk-form-danger');
+                } else {
+                    $confirmPasswordField = $('form#userInfo').find('input#user-cPassword');
+                    $confirmPasswordField.parent('.md-input-wrapper').removeClass('has-error');
+                    $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $confirmPasswordField.removeClass('uk-form-danger');
+
+                    if ($passwordValid && ($passwordField.text().toString() === $confirmPasswordField.text().toString()))
+                        $confirmPasswordValid = true;
+                }
+
+                if (!$fullnameValid || !$emailValid || !$confirmPasswordValid)
+                    return false;
+
+                var $checkEmailBtn = $(this);
+                $checkEmailBtn.prop('disabled', true).text('Validating...');
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/v1/public/users/checkemail',
+                    data: {
+                        email: userInfoFormData['user-email']
+                    },
+                    error: function(e) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
                         window.Snackbar.show({
                             text: 'An Error occurred.',
                             actionTextColor: 'red'
                         });
-                    } else {
-                        if (data.exist) {
-                            //Email already Exist
-                            //Show email exists slide
-                            var $active = $('.activeSlide');
-                            var errorSlide = $('#emailExistsSlide');
-                            if (errorSlide.length > 0) {
-                                $('span#emailSpan').text(userInfoFormData['user-email']);
-                                $active.fadeOut(300, function() {
-                                    errorSlide.css({display: 'none'}).removeClass('hide');
-                                    $(this).addClass('hide').removeClass('activeSlide');
-                                    errorSlide.fadeIn(300, function() {
-                                        errorSlide.addClass('activeSlide');
-                                    });
-                                });
-                                activeSlide++;
-                            }
+
+                        console.log(e);
+                    },
+                    success: function(data) {
+                        $checkEmailBtn.prop('disabled', false).text('Next');
+                        if (!data.success) {
+                            $checkEmailBtn.prop('disabled', false).text('Next');
+                            window.Snackbar.show({
+                                text: 'An Error occurred.',
+                                actionTextColor: 'red'
+                            });
                         } else {
-                            userInfo = {
-                                'fullname': userInfoFormData['user-fullname'],
-                                'email': userInfoFormData['user-email'],
-                                'password': userInfoFormData['user-cPassword']
-                            };
+                            if (data.exist) {
+                                //Email already Exist
+                                //Show email exists slide
+                                var $active = $('.activeSlide');
+                                var errorSlide = $('#emailExistsSlide');
+                                if (errorSlide.length > 0) {
+                                    $('span#emailSpan').text(userInfoFormData['user-email']);
+                                    $active.fadeOut(300, function() {
+                                        errorSlide.css({display: 'none'}).removeClass('hide');
+                                        $(this).addClass('hide').removeClass('activeSlide');
+                                        errorSlide.fadeIn(300, function() {
+                                            errorSlide.addClass('activeSlide');
+                                        });
+                                    });
+                                    activeSlide++;
+                                }
+                            } else {
+                                userInfo = {
+                                    'fullname': userInfoFormData['user-fullname'],
+                                    'email': userInfoFormData['user-email'],
+                                    'password': userInfoFormData['user-cPassword']
+                                };
 
-                            //Reset Error Classes
-                            $emailField = $('form#userInfo').find('input#user-email');
-                            $emailField.parent('.md-input-wrapper').removeClass('has-error');
-                            $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                            $emailField.removeClass('uk-form-danger');
-                            $fullnameField = $('form#userInfo').find('input#user-fullname');
-                            $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
-                            $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
-                            $fullnameField.removeClass('uk-form-danger');
+                                //Reset Error Classes
+                                $emailField = $('form#userInfo').find('input#user-email');
+                                $emailField.parent('.md-input-wrapper').removeClass('has-error');
+                                $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                                $emailField.removeClass('uk-form-danger');
+                                $fullnameField = $('form#userInfo').find('input#user-fullname');
+                                $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
+                                $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                                $fullnameField.removeClass('uk-form-danger');
 
-                            advanceSlide();
+                                advanceSlide();
 
-                            setTimeout(function() {
-                                createAccount();
-                            }, 1500);
+                                setTimeout(function() {
+                                    createAccount();
+                                }, 1500);
+                            }
                         }
                     }
+                });
+            });
+
+            function advanceSlide() {
+                var $active = $('.activeSlide');
+                var nextSlideIdx = activeSlide + 1;
+                var nextSlide = $('.slide-' + nextSlideIdx);
+                if (nextSlide.length > 0) {
+                    $active.fadeOut(300, function() {
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        nextSlide.css({display: 'none'}).removeClass('hide');
+                        nextSlide.fadeIn(300, function() {
+                            nextSlide.addClass('activeSlide');
+                        });
+                    });
+
+                    activeSlide++;
+                }
+            }
+
+            $('a#privacyPolicyBtn').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                showPrivacyPolicy();
+            });
+
+            $('button#privacyPolicyBackBtn').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                var privacyPolicySlide = $('#privacyPolicySlide');
+                if (privacyPolicySlide.length > 0) {
+                    privacyPolicySlide.fadeOut(300, function() {
+                        privacyPolicySlide.addClass('hide');
+
+                        var userInfoSlide = $('#userInfoSlide');
+                        userInfoSlide.removeClass('hide');
+                        userInfoSlide.fadeIn(300, function() {
+                            userInfoSlide.addClass('activeSlide');
+                        });
+                    });
+
+                    activeSlide = 1;
                 }
             });
-        });
 
-        function advanceSlide() {
-            var $active = $('.activeSlide');
-            var nextSlideIdx = activeSlide + 1;
-            var nextSlide = $('.slide-' + nextSlideIdx);
-            if (nextSlide.length > 0) {
-                $active.fadeOut(300, function() {
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    nextSlide.css({display: 'none'}).removeClass('hide');
-                    nextSlide.fadeIn(300, function() {
-                        nextSlide.addClass('activeSlide');
-                    });
-                });
+            function createAccount() {
+                console.log('here');
+                var data = {
+                    user: userInfo
+                };
+                $.ajax({
+                    method: 'POST',
+                    url: '/api/v1/public/account/create',
+                    data: JSON.stringify(data),
+                    contentType: 'application/json',
+                    success: function(response) {
+                        if (!response.success) {
+                            //TODO: Show Error Slide
+                        } else {
+                            console.log(response);
+                            $('span#spanfullname').text(userInfo.fullname);
+                            $('span#spanemail').text(userInfo.email);
 
-                activeSlide++;
-            }
-        }
-
-        $('a#privacyPolicyBtn').click(function() {
-            if (isDoubleClicked($(this))) return;
-
-            showPrivacyPolicy();
-        });
-
-        $('button#privacyPolicyBackBtn').click(function() {
-            if (isDoubleClicked($(this))) return;
-
-            var privacyPolicySlide = $('#privacyPolicySlide');
-            if (privacyPolicySlide.length > 0) {
-                privacyPolicySlide.fadeOut(300, function() {
-                    privacyPolicySlide.addClass('hide');
-
-                    var userInfoSlide = $('#userInfoSlide');
-                    userInfoSlide.removeClass('hide');
-                    userInfoSlide.fadeIn(300, function() {
-                        userInfoSlide.addClass('activeSlide');
-                    });
-                });
-
-                activeSlide = 1;
-            }
-        });
-
-        function createAccount() {
-            console.log('here');
-            var data = {
-                user: userInfo
-            };
-            $.ajax({
-                method: 'POST',
-                url: '/api/v1/public/account/create',
-                data: JSON.stringify(data),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (!response.success) {
-                        //TODO: Show Error Slide
-                    } else {
-                        console.log(response);
-                        $('span#spanfullname').text(userInfo.fullname);
-                        $('span#spanemail').text(userInfo.email);
-
-                        showAccountCreated();
+                            showAccountCreated();
+                        }
+                    },
+                    error: function(err) {
+                        console.log(err);
                     }
-                },
-                error: function(err) {
-                    console.log(err);
+                })
+            }
+
+            function showAccountCreated() {
+                //Show Account Created Slide
+                var $active = $('.activeSlide');
+                var accountCreatedSlide = $('#accountCreatedSlide');
+                if (accountCreatedSlide.length > 0) {
+                    $active.fadeOut(300, function() {
+                        accountCreatedSlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide').removeClass('activeSlide');
+                        accountCreatedSlide.fadeIn(300, function() {
+                            accountCreatedSlide.addClass('activeSlide');
+                        });
+                    });
                 }
-            })
-        }
-
-        function showAccountCreated() {
-            //Show Account Created Slide
-            var $active = $('.activeSlide');
-            var accountCreatedSlide = $('#accountCreatedSlide');
-            if (accountCreatedSlide.length > 0) {
-                $active.fadeOut(300, function() {
-                    accountCreatedSlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide').removeClass('activeSlide');
-                    accountCreatedSlide.fadeIn(300, function() {
-                        accountCreatedSlide.addClass('activeSlide');
-                    });
-                });
             }
-        }
 
-        function showPrivacyPolicy() {
-            //Show Ticket Created Slide
-            var $active = $('.activeSlide');
-            var privacyPolicySlide = $('#privacyPolicySlide');
-            if (privacyPolicySlide.length > 0) {
-                //$('span#emailSpan').text(userInfoFormData['user-email']);
-                $active.fadeOut(300, function() {
-                    privacyPolicySlide.css({display: 'none'}).removeClass('hide');
-                    $(this).addClass('hide');
-                    privacyPolicySlide.fadeIn(300, function() {
+            function showPrivacyPolicy() {
+                //Show Ticket Created Slide
+                var $active = $('.activeSlide');
+                var privacyPolicySlide = $('#privacyPolicySlide');
+                if (privacyPolicySlide.length > 0) {
+                    //$('span#emailSpan').text(userInfoFormData['user-email']);
+                    $active.fadeOut(300, function() {
+                        privacyPolicySlide.css({display: 'none'}).removeClass('hide');
+                        $(this).addClass('hide');
+                        privacyPolicySlide.fadeIn(300, function() {
 
+                        });
                     });
-                });
+                }
             }
-        }
 
-        function validateEmail(email) {
-            var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            return email.match(mailFormat);
-        }
+            function validateEmail(email) {
+                var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                return email.match(mailFormat);
+            }
 
-        $.fn.serializeObject = function(){
-            var obj = {};
+            $.fn.serializeObject = function(){
+                var obj = {};
 
-            $.each( this.serializeArray(), function(i,o){
-                var n = o.name,
-                        v = o.value;
+                $.each( this.serializeArray(), function(i,o){
+                    var n = o.name,
+                            v = o.value;
 
-                obj[n] = obj[n] === undefined ? v
-                        : $.isArray( obj[n] ) ? obj[n].concat( v )
-                        : [ obj[n], v ];
-            });
+                    obj[n] = obj[n] === undefined ? v
+                            : $.isArray( obj[n] ) ? obj[n].concat( v )
+                            : [ obj[n], v ];
+                });
 
-            return obj;
-        };
+                return obj;
+            };
 
 
+        });
     });
 </script>
 </body>

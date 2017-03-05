@@ -47,6 +47,8 @@ module.exports = function() {
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             }
 
+            req.user = user;
+
             return done(null, user);
         });
     }));

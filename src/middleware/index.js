@@ -12,10 +12,12 @@
 
  **/
 
-var path            = require('path'),
+var _               = require('underscore'),
+    path            = require('path'),
     async           = require('async'),
     express         = require('express'),
     mongoose        = require('mongoose'),
+    HandleBars      = require('handlebars').create(),
     hbs             = require('express-hbs'),
     hbsHelpers      = require('../helpers/hbs/helpers'),
     winston         = require('winston'),
@@ -34,7 +36,9 @@ module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
 
     app.set('views', path.join(__dirname, '../views/'));
-    app.engine('hbs', hbs.express3({
+    global.HandleBars = HandleBars;
+    app.engine('hbs', hbs.express4({
+        handlebars: HandleBars,
         defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
         partialsDir: [path.join(__dirname + '/../views/partials/')]
     }));
@@ -98,15 +102,20 @@ module.exports = function(app, db, callback) {
 
             //Remove to enable plugins
             //next(null, store);
-
+            global.plugins = [];
             var dive = require('dive');
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
                if (err) throw err;
                var plugin = require(path.join(dir, 'plugin.json'));
+               if (_.findWhere(global.plugins, {'name': plugin.name}) != undefined)
+                   throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
+
+               global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
                var pluginPublic = path.join(dir, '/public');
                app.use('/plugins/' + plugin.name, express.static(pluginPublic));
+               winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
             }, function() {
-               next(null, store);
+                next(null, store);
             });
         }
     ], function(err, s) {

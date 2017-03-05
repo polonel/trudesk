@@ -649,6 +649,11 @@ div.hoverAction {
     .uk-modal button:not(.md-btn).red:hover, .uk-modal button:not(.md-btn).red:active {
       background: #f72f25; }
 
+.breads {
+  padding: 10px 15px;
+  background: white;
+  border-top: 1px solid #dadada; }
+
 .pagination {
   margin-right: 8px; }
   .pagination .pagination-info {
@@ -5199,6 +5204,9 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     .selectize-control.plugin-remove_button .disabled [data-value] .remove:hover {
       background: none; }
 
+.selectize-control.plugin-remove_button.selectize-noremove .item {
+  padding-right: 0 !important; }
+
 .selectize-dropdown {
   color: #303030;
   font-family: Roboto, sans-serif;
@@ -6357,6 +6365,15 @@ select.md-input.md-input-success:focus, textarea.md-input.md-input-success:focus
 input:not([type]).md-input.md-input-success:focus, input[type="text"].md-input.md-input-success:focus, input[type="password"].md-input.md-input-success:focus, input[type="datetime"].md-input.md-input-success:focus, input[type="datetime-local"].md-input.md-input-success:focus, input[type="date"].md-input.md-input-success:focus, input[type="month"].md-input.md-input-success:focus, input[type="time"].md-input.md-input-success:focus, input[type="week"].md-input.md-input-success:focus, input[type="number"].md-input.md-input-success:focus, input[type="email"].md-input.md-input-success:focus, input[type="url"].md-input.md-input-success:focus, input[type="search"].md-input.md-input-success:focus, input[type="tel"].md-input.md-input-success:focus, input[type="color"].md-input.md-input-success:focus {
   border-bottom-color: #7cb342; }
 
+input:not([type]).md-input.md-input-nocolor, input[type="text"].md-input.md-input-nocolor, input[type="password"].md-input.md-input-nocolor, input[type="datetime"].md-input.md-input-nocolor, input[type="datetime-local"].md-input.md-input-nocolor, input[type="date"].md-input.md-input-nocolor, input[type="month"].md-input.md-input-nocolor, input[type="time"].md-input.md-input-nocolor, input[type="week"].md-input.md-input-nocolor, input[type="number"].md-input.md-input-nocolor, input[type="email"].md-input.md-input-nocolor, input[type="url"].md-input.md-input-nocolor, input[type="search"].md-input.md-input-nocolor, input[type="tel"].md-input.md-input-nocolor, input[type="color"].md-input.md-input-nocolor {
+  border-color: rgba(0, 0, 0, 0.12); }
+
+select.md-input.md-input-nocolor:focus, textarea.md-input.md-input-nocolor:focus {
+  border-bottom-color: #ccc; }
+
+input:not([type]).md-input.md-input-nocolor:focus, input[type="text"].md-input.md-input-nocolor:focus, input[type="password"].md-input.md-input-nocolor:focus, input[type="datetime"].md-input.md-input-nocolor:focus, input[type="datetime-local"].md-input.md-input-nocolor:focus, input[type="date"].md-input.md-input-nocolor:focus, input[type="month"].md-input.md-input-nocolor:focus, input[type="time"].md-input.md-input-nocolor:focus, input[type="week"].md-input.md-input-nocolor:focus, input[type="number"].md-input.md-input-nocolor:focus, input[type="email"].md-input.md-input-nocolor:focus, input[type="url"].md-input.md-input-nocolor:focus, input[type="search"].md-input.md-input-nocolor:focus, input[type="tel"].md-input.md-input-nocolor:focus, input[type="color"].md-input.md-input-nocolor:focus {
+  border-bottom-color: rgba(0, 0, 0, 0.12); }
+
 select.md-input:focus, textarea.md-input:focus {
   background: transparent;
   border-color: rgba(0, 0, 0, 0.12); }
@@ -6434,6 +6451,14 @@ textarea.md-input {
     bottom: 0; }
   .md-input-wrapper.has-error .md-input-bar.error-color:before, .md-input-wrapper.has-error .md-input-bar.error-color:after {
     background: #d32f2f !important; }
+  .md-input-wrapper .search-icon {
+    position: absolute;
+    top: 20px;
+    right: 0;
+    display: block;
+    color: #727272;
+    line-height: 26px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12); }
 
 .md-input-wrapper-count {
   padding-bottom: 24px; }
@@ -6476,6 +6501,12 @@ textarea.md-input {
 
 .md-input-wrapper-success.md-input-wrapper-count .text-count-wrapper {
   color: #7cb342; }
+
+.md-input-wrapper-nocolor .md-input-bar:before, .md-input-wrapper-nocolor .md-input-bar:after {
+  background: rgba(0, 0, 0, 0.5); }
+
+.md-input-wrapper-nocolor.md-input-wrapper-count .text-count-wrapper {
+  color: rgba(0, 0, 0, 0.12); }
 
 .md-form-group {
   position: relative; }

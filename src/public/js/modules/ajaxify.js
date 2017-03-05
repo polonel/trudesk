@@ -14,31 +14,15 @@
 
 define('modules/ajaxify', [
     'jquery',
+    'underscore',
     'angular',
     'modules/helpers',
     'modules/navigation',
-    'pages/dashboard',
-    'pages/messages',
-    'pages/tickets',
-    'pages/accounts',
-    'pages/groups',
-    'modules/ajaximgupload',
-    'modules/attachmentUpload',
-    'pages/profile',
-    'pages/singleTicket',
-    'pages/reports',
-    'pages/reportsBreakdown',
-    'pages/notices',
-    'pages/createNotice',
-    'pages/settings',
-    'pages/logs',
-    'pages/tags',
+    'pages/pageloader',
     'modules/socket',
     'history'
 
-], function($, angular, helpers, nav, dashboardPage, messagesPage, ticketsPage, accountsPage, groupsPage,
-            ajaxImgUpload, attachmentUpload, profilePage, singleTicketPage, reportsPage, reportsBreakdownPage,
-            noticesPage, createNoticePage, settingsPage, logsPage, tagsPage, socketClient) {
+], function($, _, angular, helpers, nav, pageLoader, socketClient) {
 
     $(window).on('statechangecomplete', function() {
         //Global
@@ -54,45 +38,20 @@ define('modules/ajaxify', [
         helpers.init();
         helpers.hideAllUiKitDropdowns();
 
-        ajaxImgUpload.init();
-        attachmentUpload.init();
         nav.init();
 
-        //Dashbaord
-        dashboardPage.init();
-
-        //Messages
-        messagesPage.init();
-
-        //Tickets
-        ticketsPage.init();
-        singleTicketPage.init();
-
-        //Accounts
-        accountsPage.init();
-        profilePage.init();
-
-        //Groups
-        groupsPage.init();
-
-        //Reports
-        reportsPage.init();
-        reportsBreakdownPage.init();
-
-        //Notices
-        noticesPage.init();
-        createNoticePage.init();
-
-        //Settings
-        settingsPage.init();
-        tagsPage.init();
-        logsPage.init();
+        //Page Loader
+        pageLoader.init();
 
         //Load UI Animations Load
         helpers.UI.cardShow();
         helpers.countUpMe();
 
-        $.event.trigger('$trudesk:ready');
+        var event = _.debounce(function() {
+            $.event.trigger('$trudesk:ready');
+        }, 100);
+
+        event();
     });
 
 

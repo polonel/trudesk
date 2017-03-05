@@ -12,10 +12,12 @@
 
  **/
 
-define(['angular', 'angularjs/controllers', 'angularRoute', 'angularCookies', 'angularSanitize'], function(angular) {
-    return angular.module('trudesk', ['ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
-        .config(function($interpolateProvider) {
-            $interpolateProvider.startSymbol('{[{');
-            $interpolateProvider.endSymbol('}]}');
-        });
-});
+// require.ensure([], function(require) {
+    define(['angular', 'angularjs/controllers', 'angularRoute', 'angularCookies', 'angularSanitize'], function(angular) {
+        return angular.module('trudesk', ['ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
+            .config(function($interpolateProvider) {
+                $interpolateProvider.startSymbol('{[{');
+                $interpolateProvider.endSymbol('}]}');
+            });
+    });
+// });
