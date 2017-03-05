@@ -4,7 +4,6 @@ RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
 
 COPY package.json /usr/src/trudesk
-RUN npm install -g requirejs grunt grunt-cli
 RUN npm install
 
 COPY . /usr/src/trudesk
