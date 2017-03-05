@@ -9,7 +9,7 @@ RUN npm install
 
 COPY . /usr/src/trudesk
 
-RUN grunt distbuild
+RUN npm run build
 
 EXPOSE 8118
 
