@@ -23,7 +23,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 $scope.installedPlugins = angular.fromJson($scope.installedPlugins);
                 $http({
                     method: 'GET',
-                    url: 'http://localhost:8117/api/plugins',
+                    url: 'http://plugins.trudesk.io/api/plugins',
                     headers: { 'Content-Type': 'apllication/json' }
                 })
                     .success(function(data) {
