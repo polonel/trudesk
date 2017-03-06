@@ -12,13 +12,17 @@
 
        pm2.start({
            name: 'trudesk',
-           script: 'app.js',
+           script: path.join(__dirname, '/app.js'),
            output: path.join(__dirname, '/logs/output.log'),
            error: path.join(__dirname, '/logs/output.log'),
            mergeLogs: true
        }, function(err) {
+           if (err) {
+               console.log(err);
+               throw err;
+           }
+
            pm2.disconnect();
-           if (err) throw err;
        });
     });
 })();
