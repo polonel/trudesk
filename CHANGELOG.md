@@ -1,3 +1,5 @@
+## [0.1.8](https://github.com/polonel/trudesk/compare/0.1.7...v0.1.8) (2017-03-06)
+
 # Change Log
 
 ## [0.1.7](https://github.com/polonel/trudesk/tree/0.1.7) (2016-10-22)

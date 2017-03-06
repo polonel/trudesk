@@ -97,6 +97,7 @@
     "exports-loader": "0.6.3",
     "expose-loader": "0.7.1",
     "grunt-contrib-watch": "1.0.0",
+    "grunt-conventional-changelog": "6.1.0",
     "grunt-express-server": "0.5.3",
     "grunt-htmlhint": "0.9.13",
     "grunt-parallel": "0.5.1",
