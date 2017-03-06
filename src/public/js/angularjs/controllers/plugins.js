@@ -106,7 +106,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         $('#serverRestarting').removeClass('hide');
                         $timeout(function() {
                             $window.location.reload();
-                        }, 5000);
+                        }, 10000);
 
                     })
                     .error(function(err) {
@@ -137,7 +137,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         $('#serverRestarting').removeClass('hide');
                         $timeout(function() {
                             $window.location.reload();
-                        }, 5000);
+                        }, 10000);
                     })
                     .error(function(err) {
                         if (err) {

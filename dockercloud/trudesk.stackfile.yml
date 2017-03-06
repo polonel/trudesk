@@ -11,7 +11,8 @@ trudesk-___**CHANGE**___:
     MONGODB_DATABASE_NAME: ___**CHANGE**___
     VIRTUAL_HOST: ___**CHANGE**___
   volumes:
-    - /data/___**CHANGE**___.trudesk:/usr/src/trudesk/public/uploads
+    - /data/___**CHANGE**___.trudesk/uploads:/usr/src/trudesk/public/uploads
+    - /data/___**CHANGE**___.trudesk/plugins:/usr/src/trudesk/plugins
     - /etc/timezone:/etc/timezone:ro
     - /etc/localtime:/etc/localtime:ro
 mongo-___**CHANGE**___:
