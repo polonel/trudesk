@@ -1,0 +1,18 @@
+{
+  "plugins": ["angular"],
+  "extends": ["eslint:recommended", "angular"],
+  "env": {
+    "browser": true,
+    "node": true
+  },
+  "rules": {
+    "no-console": "off",
+    "angular/angularelement": "off",
+    "angular/controller-as": "off"
+  },
+  "globals": {
+    "angular": 1,
+    "define": 1,
+    "requirejs": 1
+  }
+}

@@ -39,11 +39,11 @@ define('modules/socket.io/logs.io', [
 
     function cleanPreTags() {
         [].forEach.call(document.querySelectorAll('pre'), function($pre) {
-            var lines = $pre.innerHTML.split('\n');
+            var lines = $($pre).html().split('\n');
             var matches;
             for (var i = 0; i < lines.length; i++) {
                 var indentation = (matches = /^\s+/.exec(lines[i])) != null ? matches[0] : null;
-                if (!!indentation) {
+                if (indentation) {
                     // lines = lines.map(function(line) {
                     //     return line.replace(indentation, '');
                     // });
@@ -51,7 +51,7 @@ define('modules/socket.io/logs.io', [
                 }
             }
 
-            return $pre.innerHTML = lines.join('\n').trim();
+            return $($pre).html(lines.join('\n').trim());
         });
     }
 

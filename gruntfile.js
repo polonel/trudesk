@@ -4,6 +4,30 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
+        conventionalChangelog: {
+            options: {
+                changelogOpts: {
+                    // conventional-changelog options go here
+                    preset: 'eslint'
+                },
+                context: {
+                    // context goes here
+                },
+                gitRawCommitsOpts: {
+                    // git-raw-commits options go here
+                },
+                parserOpts: {
+                    // conventional-commits-parser options go here
+                },
+                writerOpts: {
+                    // conventional-changelog-writer options go here
+                }
+            },
+            release: {
+                src: 'CHANGELOG.md'
+            }
+        },
+
         express: {
             options: {
                 //Override Defaults
@@ -17,22 +41,6 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            //gruntfile: {
-            //    files: ['gruntfile.js'],
-            //    tasks: ['minjs']
-            //},
-            //frontend: {
-            //    options: {
-            //        livereload: true
-            //    },
-            //    files: [
-            //        'public/**/*.css',
-            //        'public/**/*.js',
-            //        'views/**/*.hbs',
-            //        '!public/js/main.min.js'
-            //    ],
-            //    tasks: ['minjs']
-            //},
             sass: {
                 files: [
                     'src/sass/**/*.sass'
@@ -68,20 +76,15 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
-                    //{
-                    //    grunt: true,
-                    //    args: ['watch:gruntfile']
-                    //},
-                    //{
-                    //    grunt: true,
-                    //    args: ['watch:frontend']
-                    //},
                     {
                         grunt: true,
                         args: ['watch:sass']
                     }, {
                         grunt: true,
                         args: ['watch:web']
+                    }, {
+                        grunt: true,
+                        args: ['shell:webpackWatch']
                     }
                 ]
             },
@@ -102,20 +105,18 @@ module.exports = function(grunt) {
                     'public/css/plugins.css': [
                         'public/css/plugins/datatables/dataTables.scroller.css',
                         'public/css/plugins/datatables/dataTables.foundation.css',
-                        'public/js/vendor/chosen/chosen.css',
-                        'public/js/vendor/pace/pace.theme.css',
-                        'public/js/vendor/enjoyhint/enjoyhint.css',
-                        'public/js/vendor/metricsgraphics/metricsgraphics.css',
+                        'src/public/js/vendor/chosen/chosen.css',
+                        'src/public/js/vendor/pace/pace.theme.css',
+                        'src/public/js/vendor/enjoyhint/enjoyhint.css',
+                        'src/public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
                         'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
-                        //'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-regularfont.css',
-                        //'public/css/plugins/datepicker/foundation-datepicker.css',
-                        'public/js/vendor/uikit/css/uikit.css',
-                        'public/js/vendor/uikit/css/uikit_custom.css',
-                        'public/js/plugins/snackbar.css',
-                        'public/js/vendor/c3/c3.css',
-                        'public/js/vendor/formvalidator/theme-default.css'
+                        'src/public/js/vendor/uikit/css/uikit.css',
+                        'src/public/js/vendor/uikit/css/uikit_custom.css',
+                        'src/public/js/plugins/snackbar.css',
+                        'src/public/js/vendor/c3/c3.css',
+                        'src/public/js/vendor/formvalidator/theme-default.css'
                     ]
                 }
             },
@@ -138,8 +139,8 @@ module.exports = function(grunt) {
 
         apidoc: {
             trudesk: {
-                src: "src/controllers/",
-                dest: "apidocs/",
+                src: 'src/controllers/api/',
+                dest: 'apidocs/',
                 options: {
                     //debug: true,
                     includeFilters: ['.*\\.js$'],
@@ -155,8 +156,6 @@ module.exports = function(grunt) {
                     destination: 'docs',
                     template: 'docs/jaguarjs-jsdoc',
                     configure: 'docs/jaguarjs-jsdoc/conf.json'
-                        //template : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template",
-                        //configure : "node_modules/grunt-jsdoc/node_modules/ink-docstrap/template/jsdoc.conf.json"
                 }
             }
         },
@@ -199,92 +198,10 @@ module.exports = function(grunt) {
             }
         },
 
-        requirejs: {
-            compile: {
-                options: {
-                    appDir: 'src/public/js',
-                    baseUrl: './',
-                    mainConfigFile: 'src/public/js/config.js',
-                    dir: 'public/js',
-                    removeCombined: true,
-                    preserveLicenseComments: false,
-                    kipDirOptimize: false,
-                    optimize: 'uglify2',
-                    //optimize: 'none',
-                    uglify2: {
-                        mangle: false
-                    },
-                    modules: [{
-                        name: 'trudesk.min',
-                        create: true,
-                        include: [
-                            'jquery',
-                            'jquery_scrollTo',
-                            'jquery_custom',
-                            'uikit',
-                            'angular',
-                            'angularRoute',
-                            'angularCookies',
-                            'angularSanitize',
-                            'modernizr',
-                            'fastclick',
-                            'placeholder',
-                            'nicescroll',
-                            'underscore',
-                            'history',
-                            'd3',
-                            'metricsgraphics',
-                            'd3pie',
-                            'peity',
-                            'countup',
-                            'selectize',
-                            'waves',
-                            'formvalidator',
-                            'snackbar',
-
-                            '../../src/permissions/roles',
-
-                            'angularjs/main',
-                            'angularjs/controllers',
-                            'app',
-
-                            'modules/ajaxify',
-                            'modules/ajaximgupload',
-                            'modules/attachmentUpload',
-
-                            'pages/accounts',
-                            'pages/dashboard',
-                            'pages/editaccount',
-                            'pages/groups',
-                            'pages/messages',
-                            'pages/reports',
-                            'pages/singleTicket',
-                            'pages/tickets'
-                        ],
-                        shim: {
-                            angular: {
-                                exports: 'angular'
-                            }
-                        }
-                    }],
-                    paths: {
-                        //foundation: 'empty:',
-                        angular: 'empty:',
-                        angularRoute: 'empty:',
-                        angularCookies: 'empty:'
-                    },
-                    keepBuildDir: true
-                }
-            }
-        },
-
         shell: {
-            requirejs: {
-                command: 'r.js -o rBuild.js'
-            },
-            requirejswin: {
-                command: 'r.js.cmd -o rBuild.js'
-            }
+            webpackWatch: 'npm run webpackwatch',
+            webpackDev: 'npm run webpackdev',
+            webpackDist: 'npm run webpackdist'
         }
     });
 
@@ -292,9 +209,8 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['uglify:uikit', 'shell:requirejs', 'buildcss', 'builddocs']);
-    grunt.registerTask('sbuild', ['shell:requirejs']);
-    grunt.registerTask('swinbuild', ['shell:requirejswin']);
-    grunt.registerTask('winbuild', ['uglify:uikit', 'shell:requirejswin', 'buildcss', 'builddocs']);
+    grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss', 'builddocs']);
+    grunt.registerTask('devbuild', ['shell:webpackDev']);
+    grunt.registerTask('changelog', ['conventionalChangelog']);
     grunt.registerTask('default', ['server']);
 };

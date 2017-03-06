@@ -14,7 +14,6 @@
 
 var async       = require('async'),
     _           = require('underscore'),
-    _s          = require('underscore.string'),
     winston     = require('winston'),
     permissions = require('../../../permissions'),
     emitter     = require('../../../emitter'),
@@ -187,6 +186,91 @@ api_users.create = function(req, res) {
 };
 
 /**
+ * @api {post} /api/v1/public/account/create Create Public Account
+ * @apiName createPublicAccount
+ * @apiDescription Creates an account with the given post data.
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiParamExample {json} Request-Example:
+ * {
+ *      "aFullname":    "user name",
+ *      "aEmail":       "email@email.com""
+ *      "aPassword":    "password",
+ * }
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ * @apiSuccess {object} account Saved Account Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_users.createPublicAccount = function(req, res) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
+    var response = {};
+    response.success = true;
+    var postData = req.body;
+    if (!_.isObject(postData)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+    var user = undefined,
+        group = undefined;
+
+    async.waterfall([
+        function(next) {
+            var userSchema = require('../../../models/user');
+            user = new userSchema({
+                username: postData.user.email,
+                password: postData.user.password,
+                fullname: postData.user.fullname,
+                email: postData.user.email,
+                role: 'user'
+            });
+
+            user.save(function(err, savedUser) {
+                if (err) return next(err);
+
+                return next(null, savedUser);
+            });
+        },
+        function (savedUser, next) {
+            var groupSchema = require('../../../models/group');
+            group = new groupSchema({
+                name: savedUser.email,
+                members: [savedUser._id],
+                sendMailTo: [savedUser._id],
+                public: true
+            });
+
+            group.save(function(err, savedGroup) {
+                if (err) return next(err);
+
+                return next(null, {user: savedUser, group: savedGroup});
+            });
+        }
+    ], function(err, result) {
+        if (err) winston.debug(err);
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        delete result.user.password;
+        result.user.password = undefined;
+
+        return res.json({success: true, userData: {user: result.user, group: result.group}});
+    });
+};
+
+/**
  * @api {put} /api/v1/users/:username Update User
  * @apiName updateUser
  * @apiDescription Updates a single user.
@@ -228,7 +312,7 @@ api_users.update = function(req, res) {
         passconfirm:    data.aPassConfirm,
         email:          data.aEmail,
         role:           data.aRole,
-        groups:         data.aGrps,
+        groups:         data.aGrps
     };
 
     if (_.isNull(obj.groups) || _.isUndefined(obj.groups))
@@ -247,8 +331,9 @@ api_users.update = function(req, res) {
                                 user.password = obj.password;
 
                     user.fullname = obj.fullname;
-                    if (!_.isUndefined(obj.title)) user.title = obj.title;
                     user.email = obj.email;
+
+                    if (!_.isUndefined(obj.title)) user.title = obj.title;
                     if (!_.isUndefined(obj.role)) user.role = obj.role;
 
                     user.save(function (err, nUser) {
@@ -271,7 +356,7 @@ api_users.update = function(req, res) {
                             if (err) return callback(err);
 
                             if (result) {
-                                grp.save(function(err, savedGroup) {
+                                grp.save(function(err) {
                                     if (err) return callback(err);
                                     callback();
                                 });
@@ -284,7 +369,7 @@ api_users.update = function(req, res) {
                         grp.removeMember(obj._id, function(err, result) {
                             if (err) return callback(err);
                             if (result) {
-                                grp.save(function(err, savedGroup) {
+                                grp.save(function(err) {
                                     if (err) return callback(err);
 
                                     callback();
@@ -476,7 +561,7 @@ api_users.enableUser = function(req, res) {
 
         user.deleted = false;
 
-        user.save(function(err, user) {
+        user.save(function(err) {
             if (err) return res.status(400).json({error: err.message});
 
             res.json({success: true});
@@ -644,8 +729,79 @@ api_users.removeApiKey = function(req, res) {
     userSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
-        user.removeAccessToken(function(err, user) {
+        user.removeAccessToken(function(err) {
             if (err) return res.status(400).json({error: 'Invalid Request'});
+
+            return res.json({success: true});
+        });
+    });
+};
+
+/**
+ * @api {post} /api/v1/users/:id/generatel2auth Generate Layer Two Auth
+ * @apiName generateL2Auth
+ * @apiDescription Generate a new layer two auth for the given user id
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/generatel2auth
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.generateL2Auth = function(req, res) {
+    var id = req.params.id;
+    if (id.toString() !== req.user._id.toString())
+        return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+        user.generateL2Auth(function(err, generatedKey) {
+            if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+            console.log(generatedKey);
+            return res.json({success: true, generatedKey: generatedKey});
+        });
+    });
+};
+
+/**
+ * @api {post} /api/v1/users/:id/removel2auth Removes Layer Two Auth
+ * @apiName removeL2Auth
+ * @apiDescription Removes Layer Two Auth for the given user id
+ * @apiVersion 0.1.8
+ * @apiGroup User
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/users/:id/removel2auth
+ *
+ * @apiSuccess {boolean}     success   Successful?
+ *
+ * @apiError InvalidRequest The request was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Request"
+ }
+ */
+api_users.removeL2Auth = function(req, res) {
+    var id = req.params.id;
+    if (id.toString() !== req.user._id.toString())
+        return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
+
+    userSchema.getUser(id, function(err, user) {
+        if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
+
+        user.removeL2Auth(function(err) {
+            if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
             return res.json({success: true});
         });

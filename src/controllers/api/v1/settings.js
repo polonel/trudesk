@@ -14,13 +14,9 @@
 
 var async           = require('async'),
     _               = require('underscore'),
-    _s              = require('underscore.string'),
     winston         = require('winston'),
-    permissions     = require('../../../permissions'),
-    emitter         = require('../../../emitter'),
     sanitizeHtml    = require('sanitize-html'),
 
-    userSchema      = require('../../../models/user'),
     settingSchema   = require('../../../models/setting');
 
 var api_settings = {};

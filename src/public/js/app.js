@@ -15,7 +15,7 @@
 //http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
 //window.name = "NG_DEFER_BOOTSTRAP!";
 
-require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], function(config, $, helpers, angular) {
+require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, helpers, angular) {
     helpers.init();
 
     angular.element(document).ready(function() {
@@ -29,43 +29,33 @@ require(['config', 'jquery', 'modules/helpers', 'angular', 'angularjs/main'], fu
     });
 
     require([
+        'underscore',
         'modules/navigation',
         'modules/enjoyhint',
-        //'foundation',
         'uikit',
         'modules/socket',
         'modules/ajaxify',
         'modernizr',
         'fastclick',
         'placeholder',
-        //'foundation',
         'pace',
         'nicescroll',
         'easypiechart'
 
-    ], function(nav, eh, UI) {
-        //Start App
-        //$(document).foundation({
-        //    abide: {
-        //        patterns: {
-        //            is5Long: /.{5,}/
-        //        }
-        //    },
-        //    reveal: {
-        //        animation: 'fade',
-        //        animation_speed: 200,
-        //        close_on_background_click: true,
-        //        close_on_esc: true
-        //    }
-        //});
+    ], function(_, nav, eh) {
+        //Page loading (init)
+        require(['pages/pageloader'], function(pl) { pl.init(); });
 
         nav.init();
-        setTimeout(function(){
 
+        var $event = _.debounce(function() {
             helpers.hideLoader(1000);
             helpers.countUpMe();
             helpers.UI.cardShow();
-        }, 2000);
-        //eh.init();
+
+            $.event.trigger('$trudesk:ready');
+        }, 100);
+
+        $event();
     });
 });

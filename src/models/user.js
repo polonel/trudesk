@@ -33,10 +33,13 @@ var COLLECTION = "accounts";
  * @property {String} fullname ```Required``` Full name of user
  * @property {String} email ```Required``` ```unique``` Email Address of user
  * @property {String} role ```Required``` Permission role of the given user. See {@link Permissions}
+ * @property {Date} lastOnline Last timestamp given user was online.
  * @property {String} title Job Title of user
  * @property {String} image Filename of user image
  * @property {String} resetPassHash Password reset has for recovery password link.
  * @property {Date} resetPassExpire Date when the password recovery link will expire
+ * @property {String} tOTPKey One Time Password Secret Key
+ * @property {Number} tOTPPeriod One Time Password Key Length (Time) - Default 30 Seconds
  * @property {String} accessToken API Access Token
  * @property {Array} iOSDeviceTokens Array of String based device Ids for Apple iOS devices. *push notifications*
  * @property {Object} preferences Object to hold user preferences
@@ -49,18 +52,22 @@ var userSchema = mongoose.Schema({
         fullname:   { type: String, required: true, index: true },
         email:      { type: String, required: true, unique: true },
         role:       { type: String, required: true },
+        lastOnline: Date,
         title:      String,
         image:      String,
 
         resetPassHash: String,
         resetPassExpire: Date,
+        tOTPKey: String,
+        tOTPPeriod: Number,
 
         accessToken: { type: String, unique: true, sparse: true},
 
         iOSDeviceTokens: [{type: String}],
 
         preferences: {
-            autoRefreshTicketGrid: { type: Boolean, default: true }
+            autoRefreshTicketGrid: { type: Boolean, default: true },
+            openChatWindows: [{type: String, default: []}]
         },
 
         deleted:    { type: Boolean, default: false }
@@ -77,7 +84,7 @@ userSchema.pre('save', function(next) {
             if (err) return next(err);
 
             user.password = hash;
-            next();
+            return next();
         });
     })
 });
@@ -89,7 +96,7 @@ userSchema.methods.addAccessToken = function(callback) {
     user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback(null, user.accessToken);
+        return callback(null, user.accessToken);
     });
 };
 
@@ -101,8 +108,42 @@ userSchema.methods.removeAccessToken = function(callback) {
     user.save(function(err) {
         if (err) return callback(err, null);
 
-        callback();
+        return callback();
     });
+};
+
+userSchema.methods.generateL2Auth = function(callback) {
+    var user = this;
+    console.log(user.tOTPKey);
+    if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
+        var chance = new Chance();
+        var base32 = require('thirty-two');
+
+        var genOTPKey = chance.string({length: 7, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'});
+        var base32GenOTPKey = base32.encode(genOTPKey).toString().replace(/=/g, '');
+
+        user.tOTPKey = base32GenOTPKey;
+        user.save(function(err) {
+            if (err) return callback(err);
+
+            return callback(null, base32GenOTPKey);
+        });
+    } else
+        return callback();
+
+
+};
+
+userSchema.methods.removeL2Auth = function(callback) {
+    var user = this;
+    if (!user.tOTPKey) return callback();
+
+    user.tOTPKey = undefined;
+    user.save(function(err) {
+        if (err) return callback(err, null);
+
+        return callback();
+    })
 };
 
 userSchema.methods.addDeviceToken = function(token, type, callback) {
@@ -114,7 +155,7 @@ userSchema.methods.addDeviceToken = function(token, type, callback) {
         if (hasDeviceToken(user, token, type)) return callback(null, token);
 
         user.iOSDeviceTokens.push(token);
-        user.save(function(err, u) {
+        user.save(function(err) {
             if (err) return callback(err, null);
 
             callback(null, token);
@@ -132,9 +173,64 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
         user.save(function(err, u) {
             if (err) return callback(err, null);
 
-            callback(null, u.iOSDeviceTokens);
+            return callback(null, u.iOSDeviceTokens);
         });
     }
+};
+
+userSchema.methods.addOpenChatWindow = function(convoId, callback) {
+    if (convoId == undefined) {
+        if (!_.isFunction(callback)) return;
+        return callback('Invalid convoId');
+    }
+    var user = this;
+    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
+         return value.toString() === convoId.toString();
+    }).length > 0);
+
+    if (hasChatWindow) {
+        if (!_.isFunction(callback)) return;
+        return callback();
+    }
+    user.preferences.openChatWindows.push(convoId.toString());
+    user.save(function(err, u) {
+        if (err) {
+            if (!_.isFunction(callback)) return;
+            return callback(err);
+        }
+
+        if (!_.isFunction(callback)) return;
+        return callback(null, u.preferences.openChatWindows);
+    })
+};
+
+userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
+    if (convoId == undefined) {
+        if (!_.isFunction(callback)) return;
+        return callback('Invalid convoId');
+    }
+    var user = this;
+    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
+        return value.toString() === convoId.toString();
+    }).length > 0);
+
+    if (!hasChatWindow) {
+        if (!_.isFunction(callback)) return;
+        return callback();
+    }
+    user.preferences.openChatWindows.splice(_.findIndex(user.preferences.openChatWindows, function(item) {
+        return item.toString() === convoId.toString();
+    }), 1);
+
+    user.save(function(err, u) {
+        if (err) {
+            if (!_.isFunction(callback)) return;
+            return callback(err);
+        }
+
+        if (!_.isFunction(callback)) return;
+        return callback(null, u.preferences.openChatWindows);
+    });
 };
 
 userSchema.methods.softDelete = function(callback) {
@@ -142,7 +238,7 @@ userSchema.methods.softDelete = function(callback) {
 
     user.deleted = true;
 
-    user.save(function(err, user) {
+    user.save(function(err) {
         if (err) return callback(err, false);
 
         callback(null, true);
@@ -269,8 +365,9 @@ userSchema.statics.getUserWithObject = function(object, callback) {
 
     var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
         .sort({'fullname': 1})
-        .skip(page*limit)
-        .limit(limit);
+        .skip(page*limit);
+    if (limit != -1)
+        q.limit(limit);
 
     if (!_.isEmpty(search))
         q.where({fullname: new RegExp("^" + search.toLowerCase(), 'i') });

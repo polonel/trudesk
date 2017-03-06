@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http, $timeout) {
+        .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
 
             $scope.createAccount = function(event) {
                 var data = {};
@@ -23,7 +23,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.aGrps = form.find('#aGrps').val();
-                data.socketId = socketId;
                 $http({
                     method: 'POST',
                     url: '/api/v1/users/create',
@@ -48,7 +47,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         //History.pushState(null, null, '/tickets/');
 
                     }).error(function(err) {
-                        console.log('[trudesk:accounts:createAccount] - ' + err.error.message);
+                        $log.log('[trudesk:accounts:createAccount] - ' + err.error.message);
                         helpers.UI.showSnackbar('Error: ' + err.error.message, true);
                 });
             };
@@ -89,7 +88,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
                     running = false;
                 }).error(function(err) {
-                    console.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
+                    $log.log('[trudesk:accounts:deleteAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
 
                     running = false;
@@ -117,7 +116,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
                     helpers.UI.showSnackbar('Account successfully enabled', false);
                 }).error(function(err) {
-                    console.log('[trudesk:accounts:enableAccount] - Error: ' + err.error);
+                    $log.log('[trudesk:accounts:enableAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
                 });
             };
@@ -159,7 +158,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     if (!modal.isActive()) modal.show();
 
                 }).error(function(err) {
-                    console.log('[trudesk:Accounts:editAccount] - Error: ' + err.error);
+                    $log.log('[trudesk:Accounts:editAccount] - Error: ' + err.error);
                     helpers.UI.showSnackbar(err.error, true);
                 });
             };
@@ -169,6 +168,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 var data = form.serializeObject();
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
+                data.saveGroups = true;
 
                 $http({
                     method: 'PUT',
@@ -192,7 +192,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
 
                     }).error(function(err) {
-                    console.log('[trudesk:accounts:saveAccount] - ' + err.error.message);
+                    $log.log('[trudesk:accounts:saveAccount] - ' + err.error.message);
                     helpers.UI.showSnackbar('Error: ' + err.error.message, true);
                 });
             };

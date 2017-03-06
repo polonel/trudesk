@@ -12,18 +12,11 @@
 
  **/
 
-var async           = require('async');
 var _               = require('underscore');
-var _s              = require('underscore.string');
-var flash           = require('connect-flash');
-var userSchema      = require('../models/user');
 var noticeSchema    = require('../models/notice');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 
 var noticesController = {};
-
-noticesController.content = {};
 
 noticesController.get = function(req, res) {
     var user = req.user;

@@ -17,9 +17,8 @@ var NodeCache   = require('node-cache'),
     path        = require('path'),
     nconf       = require('nconf'),
     _           = require('underscore'),
-    winston     = require('winston');
+    winston     = require('winston'),
     moment      = require('moment');
-var emitter     = require('../emitter');
 
 var truCache = {};
 var cache;
@@ -269,7 +268,7 @@ truCache.refreshCache = function(callback) {
         truCache.init(function(err) {
             if (err) {
                 winston.error(err);
-                process.exit();
+                throw new Error(err);
             }
         });
     });

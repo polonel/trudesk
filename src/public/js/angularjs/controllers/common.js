@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history'], function(angular, _, $, socket, UI) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-        .controller('commonCtrl', ['openNewMessageWindow', '$scope', '$http', '$cookies', '$timeout', function(openNewMessageWindow, $scope, $http, $cookies, $timeout) {
+        .controller('commonCtrl', function($scope, $http, $cookies, $timeout) {
 
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
@@ -23,11 +23,11 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                       var modal = $(event.target);
                       if (modal.length > 0) {
                           var $group = modal.find('select#group');
-                          if ($group[0] !== undefined) {
+                          if (angular.isDefined($group[0])) {
                               var $group_selectize = $group[0].selectize;
                               var options = $group_selectize.options;
                               var first = _.chain(options).map(function(v, k) {
-                                  if (v.$order != undefined && v.$order === 1) return k;
+                                  if (angular.isDefined(v.$order) && v.$order === 1) return k;
                               }).first().value();
                               if (first)
                                   $group_selectize.addItem(first, true);
@@ -36,11 +36,11 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                           }
 
                           var $type = modal.find('select#type');
-                          if ($type[0] !== undefined) {
+                          if (angular.isDefined($type[0])) {
                               var $type_selectize = $type[0].selectize;
                               options = $type_selectize.options;
                               first = _.chain(options).map(function(v, k) {
-                                  if (v.$order != undefined && v.$order === 1) return k;
+                                  if (angular.isDefined(v.$order) && v.$order === 1) return k;
                               }).first().value();
 
                               if (first)
@@ -86,8 +86,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                     $scope.noticeAlertWindow = $('#noticeAlertWindow');
                     if ($scope.noticeAlertWindow.length > 0) {
                         var cookieName = $('#__noticeCookieName').text();
-                        if (cookieName == 'undefined' || _.isEmpty(cookieName)) return true;
-                        var shouldShowNotice = ($cookies.get(cookieName) == 'true' || $cookies.get(cookieName) == undefined);
+                        if (angular.isUndefined(cookieName) || _.isEmpty(cookieName)) return true;
+                        var shouldShowNotice = ($cookies.get(cookieName) == 'true' || angular.isUndefined($cookies.get(cookieName)));
 
                         if (shouldShowNotice) {
                             var modal = UI.modal($scope.noticeAlertWindow, {
@@ -124,11 +124,6 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 socket.ui.markNotificationRead($id);
             };
 
-            $scope.openNewMessageWindow = function($event) {
-                $event.preventDefault();
-                openNewMessageWindow.openWindow();
-            };
-
             $scope.closeNoticeAlert = function($event) {
                 $event.preventDefault();
                 UI.modal('#noticeAlertWindow').hide();
@@ -148,18 +143,18 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 }
             };
 
-        }])
-        .directive('closeUkDropdown', ['$document', '$timeout', function($document, $timeout) {
+        })
+        .directive('closeUkDropdown', function($document, $timeout) {
             return {
                 restrict: 'A',
-                link: function(scope, element, attr) {
+                link: function(scope, element) {
                     //$document.off('mouseup', mouseup);
                     //$document.on('mouseup', mouseup);
 
                     element.off('mouseup', mouseup);
                     element.on('mouseup', mouseup);
 
-                    function mouseup($event) {
+                    function mouseup() {
                         var this_dropdown = element.parents('.uk-dropdown');
 
                         this_dropdown.removeClass('uk-dropdown-shown');
@@ -172,5 +167,5 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                     }
                 }
             }
-        }]);
+        });
 });

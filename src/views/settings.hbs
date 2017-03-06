@@ -15,6 +15,7 @@
 
     showOverdueTickets={{data.settings.showOverdueTickets.value}};
     allowPublicTickets={{data.settings.allowPublicTickets.value}};
+    allowUserRegistration={{data.settings.allowUserRegistration.value}};
     tpsEnabled={{data.settings.tpsEnabled.value}};
 
     init();
@@ -62,6 +63,27 @@
                                 <label>
                                     Enable
                                     <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow User Registration</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Allow users to create accounts on the login screen.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged()" ng-model="allowUserRegistration">
                                     <span class="lever"></span>
                                 </label>
                             </div>
@@ -217,9 +239,5 @@
 </div>
 
 {{#contentFor 'js-plugins'}}
-    <script type="text/javascript">
-        require(['jquery', 'pages/settings'], function($, s) {
-            s.init();
-        });
-    </script>
+
 {{/contentFor}}

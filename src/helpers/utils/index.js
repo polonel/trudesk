@@ -14,7 +14,6 @@
 
 var _       = require('lodash');
 var __      = require('underscore');
-var winston = require('winston');
 
 module.exports.sendToSelf = function (socket, method, data) {
     socket.emit(method, data);

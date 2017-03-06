@@ -46,9 +46,7 @@ define('pages/accounts', [
 
                 $nextPage       = 2,
                 $enabled        = true,
-                $loading        = false,
-
-                $inview         = null;
+                $loading        = false;
 
             UIkit.grid($account_list,{
                 controls: '#account_list_filter',
@@ -121,7 +119,9 @@ define('pages/accounts', [
             });
 
             function getAccounts() {
-                if (!$enabled || $loading) return false;
+                if (!$enabled || $loading) {
+                    return false;
+                }
                 if (!$filterAll.hasClass('uk-active')) return true;
 
                 $loading = true;

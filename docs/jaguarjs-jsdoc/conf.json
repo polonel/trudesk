@@ -2,7 +2,7 @@
 	"tags": {
 		"allowUnknownTags" : true
 	},
-	"plugins": ["plugins/markdown"],
+	"plugins": ["node_modules/jsdoc/plugins/markdown"],
 	"templates": {
 		"cleverLinks": true,
 		"monospaceLinks": true,

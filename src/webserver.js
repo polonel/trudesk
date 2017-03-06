@@ -88,6 +88,7 @@ var nconf = require('nconf'),
         app.use(function(req, res) {
             return res.redirect('/install');
         });
+
         var io = require('socket.io')(server);
 
         server.listen(port, '0.0.0.0', function() {

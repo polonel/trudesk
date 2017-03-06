@@ -16,7 +16,6 @@ var async = require('async'),
     _ = require('underscore'),
     _s = require('underscore.string'),
     winston = require('winston'),
-    passport = require('passport'),
     permissions = require('../permissions'),
     emitter = require('../emitter'),
 
@@ -28,7 +27,8 @@ var async = require('async'),
     api_users_v1        = require('./api/v1/users'),
     api_messages_v1     = require('./api/v1/messages'),
     api_groups_v1       = require('./api/v1/groups'),
-    api_settings_v1     = require('./api/v1/settings');
+    api_settings_v1     = require('./api/v1/settings'),
+    api_plugins_v1      = require('./api/v1/plugins');
 
 /**
  * @since 1.0
@@ -54,6 +54,7 @@ apiController.users = api_users_v1;
 apiController.messages = api_messages_v1;
 apiController.groups = api_groups_v1;
 apiController.settings = api_settings_v1;
+apiController.plugins = api_plugins_v1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');
@@ -292,7 +293,7 @@ apiController.devices.setDeviceToken = function(req, res) {
         if (err) return res.status(401).json({error: err.message});
         if (!user) return res.status(401).json({error: 'Unknown User'});
 
-        user.addDeviceToken(token, 1, function(err, u) {
+        user.addDeviceToken(token, 1, function(err) {
             if (err) return res.status(400).json({error: err.message});
 
             res.json({success: true, token: token});

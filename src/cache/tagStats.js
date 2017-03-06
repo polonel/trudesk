@@ -14,13 +14,9 @@
 
 var _               = require('underscore');
 var async           = require('async');
-var winston         = require('winston');
 var moment          = require('moment');
 
-var userSchema      = require('../models/user');
 var ticketSchema    = require('../models/ticket');
-var tagSchema       = require('../models/tag');
-
 
 var init = function(tickets, timespan, callback) {
     var tags = [];
@@ -87,7 +83,7 @@ var init = function(tickets, timespan, callback) {
                     return [key, 0];
                 })));
 
-                tags = _.sortKeysBy(tags, function(value, key) {
+                tags = _.sortKeysBy(tags, function(value) {
                     return -value;
                 });
 

@@ -35,7 +35,8 @@ define('modules/ui', [
         this.onDisconnect();
         this.updateUsers();
         this.updateNotifications();
-        this.updateMailNotifications();
+        //this.updateMailNotifications();
+        this.updateConversationsNotifications();
         this.updateComments();
         this.updateUi();
         this.updateTicketStatus();
@@ -54,8 +55,6 @@ define('modules/ui', [
         this.onUpdateTicketGrid();
         this.onProfileImageUpdate();
 
-        this.updateMessagesFolder(socket);
-        this.updateSingleMessageItem(socket);
         this.updateShowNotice(socket);
         this.updateClearNotice(socket);
         this.updateSubscribe(socket);
@@ -63,25 +62,6 @@ define('modules/ui', [
         //Logs
         this.updateServerLogs(socket);
     };
-
-    socketUi.setMessageRead = function(messageId) {
-        msgUI.setMessageRead(socket, messageId);
-    };
-
-    socketUi.sendUpdateMessageFolder = function(folder) {
-        socket.emit('updateMessageFolder', {folder: folder});
-    };
-
-    socketUi.moveMessageToFolder = function(messageIds, toFolder, folderToRefresh) {
-        socket.emit('moveMessageToFolder', messageIds, toFolder, folderToRefresh);
-    };
-
-    socketUi.deletedMessages = function(messageIds) {
-        socket.emit('deleteMessages', messageIds);
-    };
-
-    socketUi.updateSingleMessageItem = msgUI.updateSingleMessageItem;
-    socketUi.updateMessagesFolder = msgUI.updateMessagesFolder;
 
     socketUi.setShowNotice = function(notice) {
         noticeUI.setShowNotice(socket, notice);
@@ -111,19 +91,16 @@ define('modules/ui', [
     socketUi.onDisconnect = function() {
         socket.removeAllListeners('disconnect');
         socket.on('disconnect', function(data) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('reconnect_attempt');
         socket.on('reconnect_attempt', function(err) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('connect_timeout');
         socket.on('connect_timeout', function(err) {
-            //helpers.showFlash('Disconnected from server. Reconnecting...', true, true);
             helpers.UI.showDisconnectedOverlay();
         });
     };
@@ -136,54 +113,57 @@ define('modules/ui', [
         socket.emit('clearAssignee', id);
     };
 
-    socketUi.updateMailNotifications = function() {
+    socketUi.updateConversationsNotifications = function() {
         $(document).ready(function() {
             var btnMailNotifications = $('#btn_mail-notifications');
             btnMailNotifications.off('click', updateMailNotificationsClicked);
             btnMailNotifications.on('click', updateMailNotificationsClicked);
         });
 
-        socket.removeAllListeners('updateMailNotifications');
-        socket.on('updateMailNotifications', function(data) {
+        socket.removeAllListeners('updateConversationsNotifications');
+        socket.on('updateConversationsNotifications', function(data) {
             var label = $('#btn_mail-notifications').find('> span');
-            var count = data.unreadCount;
-            var items = data.unreadItems;
+            //TODO: Fixed this once unread messages is fully impl.
+            var count = 0;
+            var items = data.conversations;
             if (count < 1) {
                 label.hide();
             } else {
-                label.html(count);
+                label.text(count);
                 label.removeClass('hide');
                 label.show();
             }
 
             var mailDropList = $('div.mail-Messages').find('ul');
-            mailDropList.find('li').each(function() {
-                $(this).remove();
-            });
+            mailDropList.empty();
 
             var html = "";
 
             _.each(items, function(item) {
-                html    += '<li>';
-                html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
-                html    += '<div class="uk-clearfix">';
-                if (item.from.image)
-                    html    += '<div class="profilePic left"><img src="/uploads/users/' + item.from.image + '" alt="profile"/></div>';
-                else
-                    html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
-                html    += '<div class="messageAuthor"><strong>' + item.from.fullname + '</strong></div>';
-                html    += '<div class="messageSnippet">';
-                html    += '<span>' + item.subject + '</span>';
-                html    += '</div>';
-                html    += '<div class="messageDate">';
-                html    += '<time datetime="' + helpers.formatDate(item.date, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.date, "MMM DD, YYYY") + '</time>';
-                html    += '</div>';
-                html    += '</div>';
-                html    += '</a>';
-                html    += '</li>';
+                if (item.partner != undefined) {
+                    html    += '<li>';
+                    html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
+                    html    += '<div class="uk-clearfix">';
+                    if (item.partner.image)
+                        html    += '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>';
+                    else
+                        html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
+                    html    += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>';
+                    html    += '<div class="messageSnippet">';
+                    html    += '<span>' + item.recentMessage + '</span>';
+                    html    += '</div>';
+                    html    += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">';
+                    html    += '<time datetime="' + helpers.formatDate(item.updatedAt, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.updatedAt, "MMM DD, YYYY") + '</time>';
+                    html    += '</div>';
+                    html    += '</div>';
+                    html    += '</a>';
+                    html    += '</li>';
+                }
             });
 
             mailDropList.append(html);
+
+            $('body').ajaxify();
         });
     };
 
@@ -318,7 +298,7 @@ define('modules/ui', [
             var wrapper = '';
             _.each(users, function(user) {
                 var html = '<li data-setAssignee="' + user._id + '">';
-                html    += '<a class="messageNotification" href="#" role="button">';
+                html    += '<a class="messageNotification" href="#" role="button" class="no-ajaxy">';
                 html    += '<div class="uk-clearfix">';
                 if (_.isUndefined(user.image)) {
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
@@ -728,10 +708,10 @@ define('modules/ui', [
                     '</div>' +
                     '<div class="comment-actions">';
                     if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="fa fa-times fa-lg"></i></div>';
+                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE5CD;</i></div>';
                     }
                     if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="fa fa-pencil fa-lg"></i></div>';
+                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE254;</i></div>';
                     }
 
                     html += '</div>' +
@@ -740,7 +720,6 @@ define('modules/ui', [
 
             commentContainer.html(html);
             helpers.resizeAll();
-            socketUi.updateUsers();
 
             require(['pages/singleTicket'], function(st) {
                 st.init();
@@ -867,7 +846,7 @@ define('modules/ui', [
     socketUi.onProfileImageUpdate = function() {
         socket.removeAllListeners('trudesk:profileImageUpdate');
         socket.on('trudesk:profileImageUpdate', function(data) {
-            var profileImage = $('#profileImage[data-userid="' + data.userid + '"]');
+            var profileImage = $('.profileImage[data-userid="' + data.userid + '"]');
             if (profileImage.length > 0) {
                 profileImage.attr('src', '/uploads/users/' + data.img + '?r=' + new Date().getTime());
             }

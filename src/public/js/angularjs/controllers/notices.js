@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socketClient) {
     return angular.module('trudesk.controllers.notices', [])
-        .controller('noticesCtrl', function($scope, $http) {
+        .controller('noticesCtrl', function($scope, $http, $log) {
 
             $scope.editNotice = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
@@ -52,7 +52,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
-                        console.log('[trudesk:notices:submitCreateNoticeForm] - ' + err);
+                        $log.log('[trudesk:notices:submitCreateNoticeForm] - ' + err);
                         helpers.UI.showSnackbar(err, true);
                     });
             };
@@ -80,7 +80,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         History.pushState(null, null, '/notices/');
                     })
                     .error(function(err) {
-                        console.log('[trudesk:notices:submitEditNoticeForm] - ' + err);
+                        $log.log('[trudesk:notices:submitEditNoticeForm] - ' + err);
                         helpers.UI.showSnackbar(err, true);
                     });
             };
@@ -108,11 +108,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                                 History.pushState(null, null, '/notices/');
                             })
                             .error(function(err) {
-                                console.log('[trudesk:notices:activateNotice] - ' + err);
+                                $log.log('[trudesk:notices:activateNotice] - ' + err);
                                 helpers.UI.showSnackbar(err, true);
                             });
                     })
-                    .error(function(err) {
+                    .error(function() {
 
                     });
 
@@ -128,7 +128,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         helpers.UI.showSnackbar('Notice has been deactivated', false);
                     })
                     .error(function(err) {
-                        console.log('[trudesk:notices:clearNotice] - ' + err);
+                        $log.log('[trudesk:notices:clearNotice] - ' + err);
                         helpers.UI.showSnackbar({text: 'Error: ' + err.message, actionTextColor: '#B92929'});
                     });
 
@@ -151,7 +151,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             helpers.resizeDataTables('.noticesList');
                             helpers.UI.showSnackbar({text: 'Notice Successfully Deleted'});
                         }).error(function(err) {
-                            console.log('[trudesk:notices:deleteNotices] - ' + err);
+                        $log.log('[trudesk:notices:deleteNotices] - ' + err);
                             helpers.UI.showSnackbar({text: 'Error: ' + err, actionTextColor: '#B92929'});
                         });
                 });

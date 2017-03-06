@@ -16,6 +16,7 @@ var async   = require('async'),
     nconf = require('nconf'),
     pkg     = require('./package.json'),
     ws = require('./src/webserver');
+    //var memory = require('./src/memory');
 
 
 global.forks = [];
@@ -64,7 +65,7 @@ if (!process.env.FORK) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2016 Chris Brame');
+    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2017 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
@@ -82,14 +83,7 @@ if (process.env.HEROKU) {
     //Build Config for Heroku
     var configHeroku = {
         "url": "http://localhost:8118",
-        "port": "8118",
-        "mailer": {
-            "enable": false,
-
-            "check": {
-                "enable": false
-            }
-        }
+        "port": "8118"
     };
 
     winston.info('Creating heroku config file...');
@@ -104,7 +98,6 @@ if (process.env.HEROKU) {
 }
 
 if (nconf.get('install') || !configExists && !process.env.HEROKU) {
-    var ws = require('./src/webserver');
     ws.installServer(function() {
         return winston.info('Trudesk Install Server Running...');
     });
@@ -118,8 +111,6 @@ if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nc
     setup();
 } else if (nconf.get('upgrade')) {
     //upgrade();
-} else if (nconf.get('reset')) {
-    reset();
 }
 
 function loadConfig() {
@@ -252,8 +243,8 @@ function dbCallback(err, db) {
 
                 n.on('message', function(data) {
                     if (data.cache) {
-                        var nodeCache = require('./src/cache/node-cache');
-                        global.cache = new nodeCache({
+                        var NodeCache = require('./src/cache/node-cache');
+                        global.cache = new NodeCache({
                             data: data.cache.data,
                             checkperiod: 0
                         });

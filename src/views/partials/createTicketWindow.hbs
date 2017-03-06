@@ -20,7 +20,7 @@
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="group" class="uk-form-label">Group</label>
-                <select class="uk-form-width-full selectize-white" name="group" id="group" data-md-selectize-inline>
+                <select class="uk-form-width-full selectize-white selectize-noremove" name="group" id="group" data-md-selectize-inline>
                     {{#each data.common.groups}}
                         <option value="{{{_id}}}">{{name}}</option>
                     {{/each}}

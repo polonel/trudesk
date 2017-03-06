@@ -475,7 +475,7 @@ form p:last-child {
     width: 20px;
     background-color: transparent;
     border: 2px solid $radio-empty-color;
-    top: 0px;
+    top: 0;
     z-index: 0;
   }
 
@@ -498,7 +498,7 @@ form p:last-child {
     }
 
     + label:after {
-      top: 0px;
+      top: 0;
       width: 20px;
       height: 20px;
       border: 2px solid $secondary-color;
@@ -764,7 +764,7 @@ input[type=range] {
   border: none;
   outline: none;
   width: 100%;
-  margin: 15px 0px;
+  margin: 15px 0;
   padding: 0;
 }
 input[type=range] + .thumb {

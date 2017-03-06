@@ -14,12 +14,13 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
-        .controller('settingsCtrl', function($scope, $http, $sce) {
+        .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
-                setTimeout(function() {
+                $timeout(function() {
                     $('input.md-input').each(function() {
-                        var self = $(this);
+                        var vm = this;
+                        var self = $(vm);
                         if (!_.isEmpty(self.val())) {
                             var s = self.parent('.md-input-wrapper');
                             if (s.length > 0)
@@ -40,7 +41,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             });
 
             $scope.mailerEnabledChange = function() {
-                $scope.mailerEnabled = this.mailerEnabled;
+                var vm = this;
+                $scope.mailerEnabled = vm.mailerEnabled;
 
                 $http.put('/api/v1/settings', {
                     name: 'mailer:enable',
@@ -49,7 +51,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar('Error: ' + err, true);
@@ -57,7 +59,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.mailerSSLChange = function() {
-                $scope.mailerSSL = this.mailerSSL;
+                var vm = this;
+                $scope.mailerSSL = vm.mailerSSL;
 
                 $http.put('/api/v1/settings', {
                     name: 'mailer:ssl',
@@ -66,7 +69,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar('Error: ' + err, true);
@@ -118,7 +121,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             });
 
             $scope.mailerCheckEnabledChange = function() {
-                $scope.mailerCheckEnabled = this.mailerCheckEnabled;
+                var vm = this;
+                $scope.mailerCheckEnabled = vm.mailerCheckEnabled;
 
                 $http.put('/api/v1/settings', {
                     name: 'mailer:check:enable',
@@ -127,7 +131,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
@@ -163,7 +167,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
                     helpers.UI.showSnackbar('Privacy Policy Updated', false);
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
@@ -171,7 +175,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.showOverdueTicketsChanged = function() {
-                $scope.showOverdueTickets = this.showOverdueTickets;
+                var vm = this;
+                $scope.showOverdueTickets = vm.showOverdueTickets;
 
                 $http.put('/api/v1/settings', {
                     name: 'showOverdueTickets:enable',
@@ -180,7 +185,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
@@ -188,7 +193,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.allowPublicTicketsChanged = function() {
-                $scope.allowPublicTickets = this.allowPublicTickets;
+                var vm = this;
+                $scope.allowPublicTickets = vm.allowPublicTickets;
 
                 $http.put('/api/v1/settings', {
                     name: 'allowPublicTickets:enable',
@@ -197,7 +203,25 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.allowUserRegistrationChanged = function() {
+                var vm = this;
+                $scope.allowUserRegistration = vm.allowUserRegistration;
+
+                $http.put('/api/v1/settings', {
+                    name: 'allowUserRegistration:enable',
+                    value: $scope.allowUserRegistration
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
@@ -234,7 +258,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     headers: {
                         'Content-Type': 'application/json'
                     }
-                }).then(function successCallback(data) {
+                }).then(function successCallback() {
                     helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
 
                 }, function errorCallback(err) {
@@ -271,7 +295,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         return History.pushState(null, null, '/settings/tags/');
                     }
                 }, function errorCallback(response) {
-                    console.log('[trudesk:settings:deleteTag] Error - ' + response.data.error);
+                    $log.error('[trudesk:settings:deleteTag] Error - ' + response.data.error);
                     helpers.UI.showSnackbar('Unable to remove Tag. Check console.', true);
 
                 });

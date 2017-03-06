@@ -14,19 +14,15 @@
 
 var async           = require('async');
 var _               = require('underscore');
-var _s              = require('underscore.string');
-var flash           = require('connect-flash');
-var userSchema      = require('../models/user');
 var ticketSchema    = require('../models/ticket');
 var reports         = require('../models/report');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 
 var reportsController = {};
 
 reportsController.content = {};
 
-reportsController.overview = function(req, res, next) {
+reportsController.overview = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
         req.flash('message', 'Permission Denied.');
@@ -75,7 +71,7 @@ reportsController.overview = function(req, res, next) {
         });
 };
 
-reportsController.breakdown = function(req, res, next) {
+reportsController.breakdown = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:view')) {
         req.flash('message', 'Permission Denied.');

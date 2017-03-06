@@ -14,8 +14,8 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     var helpers = {};
 
@@ -25,7 +25,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         var self = this;
 
         self.resizeFullHeight();
-        //self.removeAllScrollers();
         self.setupScrollers();
         self.setupScrollers('.scrollable-dark');
         self.setupScrollers('.wrapper');
@@ -49,6 +48,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         self.UI.matchHeight();
 
         var layout = self.onWindowResize();
+        //Initial Call to Load Layout
+        layout();
         $(window).resize(layout);
     };
 
@@ -180,8 +181,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
     function updateInput(object) {
         // clear wrapper classes
-        object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success');
-        object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success md-input-wrapper-disabled');
+        object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success uk-input-group-nocolor');
+        object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success uk-input-wrapper-nocolor md-input-wrapper-disabled');
 
         if(object.hasClass('md-input-danger')) {
             if(object.closest('.uk-input-group').length) {
@@ -194,6 +195,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                 object.closest('.uk-input-group').addClass('uk-input-group-success')
             }
             object.closest('.md-input-wrapper').addClass('md-input-wrapper-success')
+        }
+        if(object.hasClass('md-input-nocolor')) {
+            if(object.closest('.uk-input-group').length) {
+                object.closest('.uk-input-group').addClass('uk-input-group-nocolor')
+            }
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-nocolor')
         }
         if(object.prop('disabled')) {
             object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled')
@@ -337,6 +344,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
                 var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
+                var maxOptions = $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000;
                 $this
                     .after('<div class="selectize_fix"></div>')
                     .closest('div').addClass('uk-position-relative')
@@ -349,6 +357,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                         dropdownParent: $this.closest('div'),
                         hideSelected: true,
                         closeAfterSelect: closeOnSelect,
+                        maxOptions: maxOptions,
                         onDropdownOpen: function($dropdown) {
                             $dropdown
                                 .hide()
@@ -452,12 +461,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.showFlash = function(message, error, sticky) {
-        var self = this;
         var flash = $('.flash-message');
         if (flash.length < 1) return true;
 
-        var e = error ? true : false;
-        var s = sticky ? true : false;
+        var e = !!error;
+        var s = !!sticky;
 
         var flashTO;
         var flashText = flash.find('.flash-text');
@@ -579,7 +587,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
     };
 
     helpers.setupScrollers = function(selector) {
-        var self = this;
         if (_.isUndefined(selector)) {
             selector = '.scrollable';
         }
@@ -606,17 +613,20 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
 
         $(document).ready(function() {
             $(selector).each(function() {
-                // var ns = $(this).getNiceScroll(0);
-                // if (ns !== false)
-                //     $(selector).niceScroll().remove();
+                 var ns = $(this).getNiceScroll(0);
+                 if (ns !== false) {
+                     ns.resize();
+                 } else {
+                     $(this).niceScroll({
+                         cursorcolor: color,
+                         cursorwidth: size,
+                         cursorborder: colorBrd,
+                         cursoropacitymax: opacityMax,
+                         horizrailenabled: false
+                     });
+                 }
 
-                $(this).niceScroll({
-                    cursorcolor: color,
-                    cursorwidth: size,
-                    cursorborder: colorBrd,
-                    cursoropacitymax: opacityMax,
-                    horizrailenabled: false
-                });
+                $(this).trigger('scrollable', this);
             });
         });
     };
@@ -673,11 +683,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         }
     };
 
-    helpers.removeAllScrollers = function() {
-        $('.nicescroll-rails').each(function() {
-            var self = $(this);
-            self.remove();
+    helpers.removeAllScrollers = function(complete) {
+        $('*').each(function() {
+            var ns = $(this).getNiceScroll(0);
+            if (ns) return ns.remove();
         });
+
+        if (_.isFunction(complete)) {
+            return complete();
+        }
     };
 
     helpers.resizeFullHeight = function() {
@@ -688,6 +702,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
                 var h = $(window).height();
                 if (self.css('borderTopStyle') === "solid")
                     h = h - 1;
+
+                var dataOffset = self.attr('data-offset');
+                if (!_.isUndefined(dataOffset))
+                    h = h - dataOffset;
 
                 //self.css('overflow', 'hidden');
                 self.height(h - (self.offset().top));
@@ -1061,7 +1079,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         var role = $('div#__loggedInAccount_role').text();
         if (_.isUndefined(role)) return false;
 
-        var rolePerm = _.find(roles, {'id': role});
+        var rolePerm = _.find(ROLES, {'id': role});
         if (_.isUndefined(rolePerm)) return false;
 
         if (rolePerm.allowedAction === '*') return true;
@@ -1098,6 +1116,53 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar) {
         } else {
             return false;
         }
+    };
+
+    helpers.setupContextMenu = function(selector, complete) {
+        var $selector = $(selector);
+        if ($selector.length < 1) return false;
+
+        $(document).off('mousedown');
+        $(document).on('mousedown', function(e) {
+            if (!$(e.target).parents('.context-menu').length > 0) {
+                var cm = $('.context-menu');
+                if (cm.length > 0)
+                    cm.hide(100);
+            }
+        });
+
+        var menuOpenFor = undefined;
+        $selector.off('contextmenu');
+        $selector.on('contextmenu', function(event) {
+            event.preventDefault();
+            menuOpenFor = event.target;
+            $('.context-menu').finish().toggle(100).
+                css({
+                    top: event.pageY + 'px',
+                    left: event.pageX + 'px'
+            });
+        });
+
+        $selector.off('mousedown');
+        $selector.on('mousedown', function(event) {
+            if (!$(event.target).parents('.context-menu').length > 0) {
+                $('.context-menu').hide(100);
+            }
+        });
+
+        var $contextMenuLi = $('.context-menu li');
+        $contextMenuLi.each(function() {
+            var $item = $(this);
+            $item.off('click');
+            $item.on('click', function() {
+                $('.context-menu').hide(100);
+                if (!_.isFunction(complete)) {
+                    console.log('Invalid Callback Function in Context-Menu!');
+                } else
+                    return complete($(this).attr('data-action'), menuOpenFor);
+            });
+        });
+
     };
 
     function stringStartsWith(string, prefix) {

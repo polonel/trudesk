@@ -94,6 +94,10 @@
       border-left-color: #ffffff
   position: relative
 
+.selectize-control.plugin-remove_button.selectize-noremove
+  .item
+    padding-right: 0 !important
+
 .selectize-dropdown
   color: #303030
   font-family: Roboto, sans-serif
@@ -153,7 +157,8 @@
     display: -moz-inline-stack
     display: inline-block
     zoom: 1
-    *display: inline
+    *
+      display: inline
 
 .selectize-control.multi .selectize-input
   > div
@@ -364,7 +369,7 @@
         font-size: 18px
   &.single
     height: 40px
-    margin-top: 0px
+    margin-top: 0
     .selectize-input
       border-width: 0 0 1px
       padding: 8px 8px 9px

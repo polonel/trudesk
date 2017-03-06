@@ -26,7 +26,6 @@ var moment  = require('moment');
 
 var conf = require('nconf');
 
-
 // The module to be exported
 var helpers = {
 
@@ -65,7 +64,18 @@ var helpers = {
         if (value == null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value === test) {
+        if (value == test) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
+    isAsString: function (value, test, options) {
+        if (value == null || value === 'undefined') {
+            return options.inverse(this);
+        }
+        if (value.toString() == test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -74,6 +84,17 @@ var helpers = {
 
     isnot: function (value, test, options) {
         if (value !== test) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
+    isNotAsString: function (value, test, options) {
+        if (value == null || value === 'undefined') {
+            return options.inverse(this);
+        }
+        if (value.toString() != test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -448,7 +469,41 @@ var helpers = {
     },
 
     calendarDate: function(date) {
+        moment.locale('en', {
+            calendar: {
+                sameDay: '[Today at] LT',
+                lastDay: '[Yesterday at] LT',
+                nextDay: '[Tomorrow at] LT',
+                lastWeek: '[Last] ddd [at] LT',
+                nextWeek: 'ddd [at] LT',
+                sameElse: 'L'
+            }
+        });
         return moment(date).calendar();
+    },
+
+    fromNow: function(date) {
+        if (date == undefined)
+            return 'Never';
+        moment.locale('en', {
+            relativeTime : {
+                future: "in %s",
+                past:   "%s ago",
+                s:  "a few seconds",
+                m:  "1m",
+                mm: "%dm",
+                h:  "1h",
+                hh: "%dh",
+                d:  "1d",
+                dd: "%dd",
+                M:  "1mo",
+                MM: "%dmos",
+                y:  "1y",
+                yy: "%dyrs"
+            }
+        });
+
+        return moment(date).fromNow();
     },
 
     firstCap: function(str) {
@@ -513,6 +568,22 @@ var helpers = {
         }
     },
 
+    checkPlugin: function(user, permissions, options) {
+        if (user === undefined || permissions === undefined)
+            return options.inverse(this);
+        var pluginPermissions = permissions.split(' ');
+        var result = false;
+        for (var i = 0; i < pluginPermissions.length; i++) {
+            if (pluginPermissions[i] == user.role)
+                result = true;
+        }
+
+        if (result)
+            return options.fn(this);
+        else
+            return options.inverse(this);
+    },
+
     checkEditSelf: function(user, owner, perm, options) {
         var P = require('../../permissions');
         if (P.canThis(user.role, perm + ':editSelf')) {
@@ -544,7 +615,7 @@ var helpers = {
             return i._id.toString() == value.toString();
         });
 
-        return !!result;
+        return result;
     },
 
     json: function(str) {
@@ -608,6 +679,7 @@ helpers.foreach    = helpers.forEach;
 helpers.canUser    = helpers.checkPerm;
 helpers.canUserRole = helpers.checkRole;
 helpers.canEditSelf = helpers.checkEditSelf;
+helpers.hasPluginPerm = helpers.checkPlugin;
 helpers.inArray    = helpers.hasGroup;
 
 

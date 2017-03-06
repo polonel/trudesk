@@ -14,102 +14,303 @@
 
 define('pages/messages', [
     'jquery',
+    'underscore',
+    'angular',
+    'uikit',
+    'moment',
     'modules/helpers',
     'modules/socket',
-    'history'
+    'history',
+    'isinview',
+    'nicescroll'
 
-], function($, helpers, socketClient) {
+], function($, _, angular, UIKit, moment, helpers, socketClient) {
     var ui = socketClient.ui;
     var messagesPage = {};
-    var refreshInterval = null;
 
     messagesPage.init = function() {
         $(document).ready(function() {
-            messagesPage.findActive();
-            var messageItem = $('ul.message-items > li:not(.message-folder)');
+            var $messageScroller    = $('#message-content.scrollable'),
+                $messageScrollerNS  = null,
+                $messagesWrapper    = $('#messages'),
+                $scrollspy          = $('#conversation-scrollspy'),
+                $spinner            = $scrollspy.find('i'),
+                $searchBox          = $('.search-box').find('input'),
 
-            messageItem.click(function(e) {
-                var target = e.target;
-                if (target.tagName.toLowerCase() == 'label' || $(target).is(":checkbox")) return true;
+                $nextPage           = 2,
+                $enabled            = true,
+                $loading            = false,
+                //$inview             = null,
+                $recentMessages     = {},
+                $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
+                $loggedInAccountId  = $('#__loggedInAccount__id').text();
 
-                var self = $(this);
-                if (self.hasClass('active')) {
-                    return true;
+            //Setup Context Menu
+            helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
+                var $li = $(target);
+                if (!$li.is('li'))
+                    $li = $(target).parents('li');
+                var convoId = $li.attr('data-conversation-id');
+                switch(action.toLowerCase()) {
+                    case "delete":
+                        UIKit.modal.confirm('Are you sure you want to delete this conversation?', function() {
+                            //Confirm
+                            deleteConversation(convoId);
+                        }, function() {
+                            //Cancel
+                        }, {
+                            labels: {
+                                'Ok': 'YES'
+                            },
+                            confirmButtonClass: 'confirm-delete-button'
+                        });
                 }
-
-                var id = self.attr('data-messageid');
-
-                messagesPage.loadMessage(id, function(data) {
-                    var pageContent = $('.page-content').filter(':first');
-                    var page = $(data).find('.page-content').filter(':first').html();
-
-                    messagesPage.clearActive();
-                    self.addClass('active');
-
-                    pageContent.html(page);
-
-                    ui.setMessageRead(id);
-                });
             });
 
-            var messageItems = $('ul.message-items');
-            if (messageItems.length > 0) {
-                messagesPage.startRefresh();
+            $searchBox.off('keyup');
+            $searchBox.on('keyup', onSearchKeyUp);
+
+            $(window).off('$trudesk:ready.messages');
+            $(window).on('$trudesk:ready.messages', function() {
+                $messageScrollerNS = $messageScroller.getNiceScroll(0);
+                if ($messageScrollerNS != false)
+                    $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
+
+                //set active
+                if ($convoId !== undefined) {
+                    var item = $('ul > li[data-conversation-id="' + $convoId + '"]');
+                    item.addClass('active');
+                }
+
+                //Remove All Chat Boxes
+                if ($('#__page').text().toLowerCase() === 'messages') {
+                    $('.chat-box-position').each(function() {
+                        var self = $(this);
+                        self.remove();
+                    });
+
+                    $('.message-textbox').find('input').focus();
+
+                    $messageScroller.scroll(function() {
+                        if ($scrollspy.isInView($messageScroller)) {
+                            var run = _.throttle(loadMoreMessages, 100);
+                            run();
+                        }
+                    });
+                }
+            });
+
+            function deleteConversation(convoId) {
+                $.ajax({
+                    url: '/api/v1/messages/conversation/' + convoId,
+                    method: 'DELETE',
+                    success: function(response) {
+                        if (response.success) {
+                            //Check if on conversation
+                            var $convo = $('#message-content[data-conversation-id="' + response.conversation._id +'"]');
+                            if ($convo.length > 0) {
+                                History.pushState(null, null, '/messages', false);
+                            } else {
+                                var $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]');
+                                if ($convoLI.length > 0) {
+                                    $convoLI.remove();
+                                }
+                            }
+
+                            $.event.trigger('$trudesk:chat:conversation:deleted', {conversation: response.conversation});
+
+                            helpers.UI.showSnackbar('Conversation Deleted.', false);
+                        }
+                    },
+                    error: function(error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+            function onSearchKeyUp() {
+                var searchTerm = $searchBox.val().toLowerCase();
+                $('.all-user-list li').each(function() {
+                    if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                        $(this).show();
+                    } else {
+                        $(this).hide();
+                    }
+                })
+            }
+
+            function loadMoreMessages() {
+                if (!$enabled || $loading) return false;
+                if (_.isUndefined($convoId)) return false;
+                $loading = true;
+                $spinner.removeClass('uk-hidden');
+
+                //Load Messages
+                $.ajax({
+                    url: '/api/v1/messages/conversation/' + $convoId + '?page=' + $nextPage
+                }).done(function(data) {
+                   $spinner.addClass('uk-hidden');
+                   var messages = data.messages;
+                   if (_.size(messages) < 1) {
+                       $enabled = false;
+                       $loading = false;
+                       return false;
+                   }
+
+                   var html = '';
+
+                   _.each(messages, function(m) {
+                       var h = buildMessageHTML(m);
+                       if (h.length > 0) html += h;
+                   });
+
+                   var stage = $('<div></div>').appendTo('body').addClass('stage').css({'opacity': 0, 'visibility': 'hidden', 'position': 'absolute', 'top': '-9999em', 'left': '-9999em'}).append(html);
+                   var height = $(stage).outerHeight();
+                   $(stage).remove();
+
+                   $messagesWrapper.prepend(html);
+
+                   UIKit.$html.trigger('changed.uk.dom');
+                   helpers.resizeScroller($messageScroller);
+                   $messageScrollerNS.doScrollTop(height, -1);
+
+                   $nextPage = $nextPage + 1;
+                   $loading = false;
+                }).error(function(err) {
+                    console.log(err);
+                })
+            }
+
+            function buildMessageHTML(message) {
+                var html = '';
+                var loggedInAccountId = $('#__loggedInAccount__id').text();
+                if (loggedInAccountId == undefined) return false;
+                var left = true;
+                if (message.owner._id.toString() === loggedInAccountId.toString())
+                    left = false;
+
+                var image = (message.owner.image == undefined ? 'defaultProfile.jpg' : message.owner.image);
+
+                if (left) {
+                    html    += '<div class="message message-left">';
+                    html    += '<img class="profileImage" src="/uploads/users/' + image + '" data-userId="' + message.owner._id + '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '"/>';
+                    html    += '<div class="message-body">';
+                    html    += '<p>' + message.body + '</p>';
+                    html    += '</div>';
+                    html    += '</div>';
+                } else {
+                    html    += '<div class="message message-right">';
+                    html    += '<div class="message-body" data-uk-tooltip="{pos:\'right\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '">';
+                    html    += '<p>' + message.body + '</p>';
+                    html    += '</div>';
+                    html    += '</div>';
+                }
+
+                return html;
+            }
+
+            //Remove all Events in the .conversation namespace for this page.
+            $(window).off('.conversation');
+
+            //On user Typing
+            $(window).on('$trudesk:chat:typing.conversation', function(event, data) {
+                var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]');
+                if (convoListItem.length > 0) {
+                    $recentMessages[data.cid] = convoListItem.find('.message-subject').text();
+                    convoListItem.find('.message-subject').text(data.fromUser.fullname + ' is typing...');
+                }
+            });
+
+            $(window).on('$trudesk:chat:stoptyping.conversation', function(event, data) {
+                var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]');
+                if (convoListItem.length > 0) {
+                    convoListItem.find('.message-subject').text($recentMessages[data.cid]);
+                }
+            });
+
+            //On Chat Message
+            $(window).on('$trudesk:chat:message.conversation', function(event, data) {
+                var message = {
+                    _id: data.messageId,
+                    conversation: data.conversation,
+                    body: data.message,
+                    owner: data.fromUser
+                };
+
+                var html = buildMessageHTML(message);
+                var messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]');
+                if (messageWrapper.length > 0) {
+                    messageWrapper.find('#messages').append(html);
+                }
+
+                var convoListItem = $('li[data-conversation-id="' + data.conversation + '"]');
+                if (convoListItem.length > 0) {
+                    convoListItem.attr('data-updatedAt', new Date());
+                    var ul = convoListItem.parent('ul');
+                    var li = ul.children('li');
+                    li.detach().sort(function(a, b) {
+                        return new Date($(a).attr('data-updatedAt')) < new Date($(b).attr('data-updatedAt'));
+                    });
+
+                    ul.append(li);
+
+
+                    var fromName = message.owner.fullname;
+                    if (message.owner._id.toString() == $loggedInAccountId) {
+                        fromName = 'You';
+                    }
+                    convoListItem.find('.message-subject').text(fromName + ': ' + message.body);
+                    $recentMessages[message.conversation] = fromName + ': ' + message.body;
+
+                    convoListItem.find('.message-date').text(moment().calendar());
+                } else {
+                    var convoUL = $('#convo-list > ul.message-items');
+                    if (convoUL.length > 0) {
+                        var partner = message.owner;
+                        if (message.owner._id.toString() == $loggedInAccountId.toString())
+                            partner = data.toUser;
+                        var newLI = buildConversationListItem({
+                            _id: message.conversation,
+                            partner: partner,
+                            updatedAt: new Date(),
+                            recentMessage: message.owner.fullname + ': ' + message.body
+                        });
+
+                        var $injector = angular.injector(["ng", "trudesk"]);
+                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                            var $scope = convoUL.prepend(newLI).scope();
+                            $compile(convoUL)($scope || $rootScope);
+                            $rootScope.$digest();
+                        }]);
+                    }
+                }
+
+                UIKit.$html.trigger('changed.uk.dom');
+                helpers.resizeScroller($messageScroller);
+                helpers.scrollToBottom($messageScroller);
+            });
+
+            function buildConversationListItem(data) {
+                var html = '';
+
+                html += '<li ng-click="loadConversation(\'' + data._id + '\');" data-conversation-id="' + data._id + '" data-updatedAt="' + data.updatedAt + '">';
+                html += '<div class="profile-pic">';
+                var imageUrl = 'defaultProfile.jpg';
+                if (data.partner.image)
+                    imageUrl = data.partner.image;
+                html += '<img src="/uploads/users/' + imageUrl + '" class="uk-border-circle profileImage" data-userid="' + data.partner._id + '" />';
+                html += '<span class="user-online uk-border-circle" data-user-status-id="' + data.partner._id + '"></span>';
+                html += '</div>';
+                html += '<div class="convo-info">';
+                html += '<span class="message-from">' + data.partner.fullname + '</span>';
+                html += '<span class="message-date">' + moment(data.updatedAt).calendar() + '</span>';
+                html += '<span class="message-subject">' + data.recentMessage + '</span>';
+                html += '</div>';
+                html += '</li>';
+
+                return html;
             }
         });
-    };
-
-    messagesPage.loadMessage = function(id, callback) {
-        var rootUrl = History.getRootUrl();
-        var msgUrl = rootUrl + 'messages/' + id;
-        $.ajax({
-            url:        msgUrl,
-            type:       'GET',
-            success:    function(data) {
-                            callback(data);
-            },
-            error:      function(error) {
-                            throw new Error(error);
-            }
-        });
-    };
-
-    messagesPage.clearActive = function() {
-        $('ul.message-items > li.active').each(function() {
-            var self = $(this);
-            self.removeClass('active');
-        });
-    };
-
-    messagesPage.findActive = function() {
-        var path = location.pathname.split('/')[1];
-        if (path.toLowerCase() !== 'messages') return;
-        var mId = location.pathname.split('/')[2];
-        if (!mId) return true;
-
-        var item = $('ul.message-items > li[data-messageId=' + mId + ']');
-        if (item) {
-            item.addClass('active');
-        }
-    };
-
-    messagesPage.startRefresh = function() {
-        //Refresh Current Folder
-        var folder = $('#__folder').html();
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
-
-        refreshInterval = setInterval(function() {
-            if (folder.length < 1) folder = 0;
-            ui.sendUpdateMessageFolder(folder);
-        }, 5000);
-    };
-
-    messagesPage.stopRefresh = function() {
-        if (refreshInterval) {
-            clearInterval(refreshInterval);
-        }
     };
 
     return messagesPage;

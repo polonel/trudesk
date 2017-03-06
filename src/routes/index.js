@@ -14,18 +14,17 @@ var express     = require('express'),
     controllers = require('../controllers/index.js'),
     path        = require('path'),
     winston     = require('winston'),
-    mongoose    = require('mongoose'),
-    packagejson = require('../../package.json'),
-    passport = require('passport');
+    packagejson = require('../../package.json');
 
 function mainRoutes(router, middleware, controllers) {
-    router.get('/', middleware.redirectToDashboardIfLoggedIn, middleware.cache(5*60), controllers.main.index);
+    router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
-    router.get('/login', middleware.redirectToLogin, middleware.cache(5*60), middleware.redirectToDashboardIfLoggedIn);
+    router.get('/login', function(req, res) { return res.redirect('/');});
     router.post('/login', controllers.main.loginPost);
-    //router.get('/l2auth', middleware.checkUserHasL2Auth, middleware.cache(5*60), controllers.main.l2authget);
+    router.get('/l2auth', controllers.main.l2authget);
+    router.post('/l2auth', controllers.main.l2AuthPost);
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
@@ -33,6 +32,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
 
     router.get('/newissue', controllers.tickets.pubNewIssue);
+    router.get('/signup', controllers.accounts.signup);
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
@@ -55,11 +55,13 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
-    router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/messages/inbox');});
-    router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
-    router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
-    router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
-    router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
+    router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    router.get('/messages/startconversation', middleware.redirectToLogin, middleware.loadCommonData, function(req, res, next){ req.showNewConvo = true; next();}, controllers.messages.get);
+    router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
+    // router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
+    // router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
+    // router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
+    // router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
 
     //Calendar
     router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
@@ -70,11 +72,13 @@ function mainRoutes(router, middleware, controllers) {
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
-    router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
-    router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
-    router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
-    router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
-    router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
+    //02/05/2017
+    //Removed in 0.1.8 As its Old code before Revamp.
+    // router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
+    // router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
+    // router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
+    // router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
+    // router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
     router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage);
 
     //Groups
@@ -91,7 +95,7 @@ function mainRoutes(router, middleware, controllers) {
     //router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
 
     //Invoices
-    router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
+    //router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
 
     //Notices
     router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
@@ -103,6 +107,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
+
+    //Plugins
+    router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
 
     //API
     router.get('/api', controllers.api.index);
@@ -158,10 +165,17 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser);
     router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey);
     router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey);
+    router.post('/api/v1/users/:id/generatel2auth', middleware.api, controllers.api.users.generateL2Auth);
+    router.post('/api/v1/users/:id/removel2auth', middleware.api, controllers.api.users.removeL2Auth);
 
     router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
 
     router.get('/api/v1/messages', middleware.api, controllers.api.messages.get);
+    router.post('/api/v1/messages/conversation/start', middleware.api, controllers.api.messages.startConversation);
+    router.get('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.getMessagesForConversation);
+    router.delete('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.deleteConversation);
+    router.get('/api/v1/messages/conversations', middleware.api, controllers.api.messages.getConversations);
+    router.get('/api/v1/messages/conversations/recent', middleware.api, controllers.api.messages.getRecentConversations);
     router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send);
 
     router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create);
@@ -172,10 +186,54 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
+    router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
+    router.get('/api/v1/plugins/install/:packageid', middleware.api, controllers.api.plugins.installPlugin);
+    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, controllers.api.plugins.removePlugin);
+
     router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
+    router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
+
+
+    router.get('/api/v1/admin/restart', middleware.api, function(req, res) {
+        if (req.user.role === 'admin') {
+            var pm2 = require('pm2');
+            pm2.connect(function(err) {
+                if (err) {
+                    winston.error(err);
+                    res.status(400).send(err);
+                    return;
+                }
+                pm2.restart('trudesk', function(err) {
+                    if (err) {
+                        res.status(400).send(err);
+                        return winston.error(err);
+                    }
+
+                    pm2.disconnect();
+                    res.json({success: true});
+                });
+            });
+        } else {
+            return res.status(403).json({success: false, error: 'Unauthorized!'});
+        }
+    });
 
     if (global.env === 'development') {
+        router.get('/debug/message', function(req, res) {
+            var mSchema = require('../models/chat/message');
+            var Message = new mSchema({
+                conversationId: '5836942a2d302233741073b1',
+                body: 'Test Message',
+                owner: req.user._id
+            });
+
+            Message.save(function(err) {
+                if (err) return res.status(400).json({err: err});
+                return res.json({success: true});
+            })
+        });
+
         router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
         router.get('/debug/cache/refresh', function (req, res) {
@@ -190,7 +248,8 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/plugin', function (req, res) {
             return res.render('pluginTest');
         });
-        //router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
+
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
             var pm2 = require('pm2');
@@ -228,19 +287,21 @@ module.exports = function(app, middleware) {
     //Load Plugin routes
     var dive = require('dive');
     var fs = require('fs');
-    var addinDir = path.join(__dirname, '../../addins');
-    if (!fs.existsSync(addinDir)) fs.mkdirSync(addinDir);
-    dive(addinDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+    var pluginDir = path.join(__dirname, '../../plugins');
+    if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir);
+    dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
         if (err) throw err;
         var pluginRoutes = require(path.join(dir, '/routes'));
-        pluginRoutes(router, middleware);
+        if (pluginRoutes)
+            pluginRoutes(router, middleware);
+        else
+            winston.warn('Unable to load plugin: ' + pluginDir);
     });
 };
 
-function handleErrors(err, req, res, next) {
+function handleErrors(err, req, res) {
     var status = err.status || 500;
     res.status(status);
-    //req.flash('errorMessage', err.message);
 
     if (status == 404) {
         winston.debug(err.message);

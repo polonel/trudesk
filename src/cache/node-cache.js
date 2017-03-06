@@ -52,7 +52,6 @@
                 vsize: 0
             };
             this._checkData();
-            return;
         }
 
         NodeCache.prototype.get = function(key, cb, errorOnMissing) {

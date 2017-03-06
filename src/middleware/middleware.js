@@ -14,15 +14,12 @@
 
 "use strict";
 
-var async = require('async');
 var _ = require('lodash');
 var db = require('../database');
-var path = require('path');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
-var app,
-    middleware = {};
+var app, middleware = {};
 
 middleware.db = function(req, res, next) {
     if (mongoose.connection.readyState !== 1) {
@@ -39,31 +36,15 @@ middleware.db = function(req, res, next) {
     next();
 };
 
-// middleware.redirectToInstall = function(req, res, next) {
-//     var fs = require('fs');
-//     var path = require('path');
-//     var config = path.join(__dirname, '../../config.json');
-//     if (!fs.existsSync(config))
-//         res.redirect('/install');
-//     else
-//         next();
-// };
-//
-// middleware.hasConfig = function(req, res, next) {
-//     var fs = require('fs');
-//     var path = require('path');
-//     var config = path.join(__dirname, '../../config.json');
-//     if (fs.existsSync(config))
-//         res.redirect('/install');
-//     else
-//         next();
-// };
-
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
-        res.redirect('/dashboard');
+        if (req.user.tOTPKey) {
+            return middleware.ensurel2Auth(req, res, next);
+        } else {
+            return res.redirect('/dashboard');
+        }
     } else {
-        next();
+        return next();
     }
 };
 
@@ -72,16 +53,45 @@ middleware.redirectToLogin = function(req, res, next) {
         if (!_.isUndefined(req.session))
             req.session.redirectUrl = req.url;
 
-        res.redirect('/');
+        return res.redirect('/');
     } else {
         if (req.user.deleted) {
             req.logout();
+            req.session.l2auth = null;
             req.session.destroy();
-            res.redirect('/');
+            return res.redirect('/');
         } else {
-            next();
+            if (!_.isUndefined(req.user.tOTPKey)) {
+                if (req.session.l2auth !== 'totp') {
+                    return res.redirect('/');
+                }
+            }
+
+            return next();
         }
     }
+};
+
+middleware.checkUserHasL2Auth = function(req, res, next) {
+    if (!req.user) {
+        return res.redirect('/');
+    } else {
+        if (_.isUndefined(req.user.tOTPKey)) {
+            return next()
+        }
+
+        next();
+    }
+};
+
+middleware.ensurel2Auth = function(req, res, next) {
+    if (req.session.l2auth == 'totp') {
+        if (req.user)
+            return res.redirect('/dashboard');
+        else
+            return next();
+    }
+    return res.redirect('/l2auth');
 };
 
 //Common
@@ -115,6 +125,8 @@ middleware.api = function(req, res, next) {
         userSchema.getUserByAccessToken(accessToken, function(err, user) {
             if (err) return res.status(401).json({'error': err.message});
             if (!user) return res.status(401).json({'error': 'Invalid Access Token'});
+
+            delete user['password'];
 
             req.user = user;
 

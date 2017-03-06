@@ -152,7 +152,8 @@
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/vendor/requirejs/requirejs.min.js"></script>
+    <script src="/js/vendor.js"></script>
+    <script src="/js/truRequire.js"></script>
     <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
@@ -215,94 +216,26 @@
     <circle class="st1" cx="284.9" cy="64.7" r="4"/>
     </svg>
 
-    <div class="loginForm">
-        <form method="post" action="/login" class="uk-form-stacked uk-clearfix">
+    <div class="level2auth" style="margin-top: 25px;">
+        <form action="/l2auth" id="level2auth" method="post">
             <div class="uk-margin-medium-bottom">
-                <label for="login-username">Username</label>
-                <input id="login-username" name="login-username" class="md-input" type="text" />
-            </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="login-password">Password</label>
-                <input id="login-password" name="login-password" class="md-input md-waves-light" type="password" />
-            </div>
-            <button class="btn md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Login</button>
-        </form>
-
-        <a id="forgotPass" href="#" class="no-ajaxy">Forgot your password?</a>
-    </div>
-
-    <div class="forgotPassForm" style="display: none;">
-        <form id="forgotPassForm" method="post" action="/">
-            <div class="uk-margin-medium-bottom">
-                <label for="forgotPass-email">Email</label>
-                <input id="forgotPass-email" name="forgotPass-email" type="text" class="md-input" />
-            </div>
-            <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
-            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Forgot Password</button>
-        </form>
-
-        <a id="backToLogin" href="#" class="no-ajaxy">Back to Login</a>
-    </div>
-
-    <div class="level2auth" style="display: none;">
-        <form action="/" id="level2auth" method="post">
-            <div class="uk-margin-medium-bottom">
-                <label for="l2auth-code">Code</label>
-                <input type="text" id="l2auth-code" class="md-input" name="l2auth-code" />
+                <label for="code">Code</label>
+                <input type="text" id="code" class="md-input" name="code" />
             </div>
 
             <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Send</button>
         </form>
+        <hr>
+        <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
     </div>
-
 </div>
 
 <script type="text/javascript">
-    $('#forgotPass').click(function(e) {
-        e.preventDefault();
-        $('.loginForm').fadeOut(100, function() {
-            $('.forgotPassForm').fadeIn();
+    window.truRequire(['jquery'], function(loadedModules) {
+        var $ = loadedModules[0];
+        $(window).on('$trudesk:ready', function() {
+            $('#code').focus();
         });
-
-    });
-
-    $('#backToLogin').click(function(e) {
-        e.preventDefault();
-        $('.forgotPassForm').fadeOut(100, function() {
-            $('.loginForm').fadeIn();
-        })
-    });
-
-    $('#forgotPassForm').submit(function(e) {
-        e.preventDefault();
-        var self = $(this);
-        var alertMessage = $('.alert-message');
-        $.ajax({
-            type: 'POST',
-            url: '/forgotpass',
-            data: self.serialize(),
-            async: true,
-            success: function(data) {
-                alertMessage.removeClass('hide')
-                        .addClass('green')
-                        .find('p')
-                        .html('Password Reset Email Sent!');
-
-                $('#forgotPass-email').val('');
-
-                $('.forgotPassForm').fadeOut(100, function() {
-                    $('.loginForm').fadeIn();
-                })
-            },
-
-            error: function(xhr, ajaxOptions, thrownError) {
-                alertMessage.removeClass('hide')
-                        .find('p')
-                        .html(xhr.responseText);
-            }
-        });
-
-        return false;
     });
 </script>
 </body>

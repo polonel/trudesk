@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.groups', [])
-        .controller('groupsCtrl', function($scope, $http) {
+        .controller('groupsCtrl', function($scope, $http, $timeout, $log) {
 
             $scope.editGroup = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target))
@@ -49,7 +49,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         UIkit.modal('#groupEditModal').show();
                     })
                     .error(function(err) {
-                        console.log('[trudesk:groups:editGroup] - Error: ' + err);
+                        $log.log('[trudesk:groups:editGroup] - Error: ' + err);
                         helpers.UI.showSnackbar(err, true);
                     });
             };
@@ -80,7 +80,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         refreshGrid();
                     })
                     .error(function(err) {
-                        console.log('[trudesk:groups:saveEditGroup] - Error: ' + err);
+                        $log.log('[trudesk:groups:saveEditGroup] - Error: ' + err);
                         helpers.UI.showSnackbar(err.error, true);
                     });
             };
@@ -103,12 +103,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         helpers.UI.showSnackbar('Group Created Successfully', false);
                         UIkit.modal("#groupCreateModal").hide();
                         //Refresh Grid
-                        setTimeout(function() {
+                        $timeout(function() {
                             refreshGrid();
                         }, 0);
                     })
                     .error(function(err) {
-                        console.log('[trudesk:groups:createGroup] - Error: ' + err);
+                        $log.log('[trudesk:groups:createGroup] - Error: ' + err);
                         helpers.UI.showSnackbar(err, true);
                     })
             };
@@ -129,7 +129,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                             UIkit.$html.trigger('changed.uk.dom');
                         })
                         .error(function(err) {
-                            console.log('[trudesk:groups:deleteGroup] - Error: ' + err.error);
+                            $log.log('[trudesk:groups:deleteGroup] - Error: ' + err.error);
                             helpers.UI.showSnackbar(err.error, true);
                         });
                 }
@@ -161,7 +161,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         UIkit.$html.trigger('changed.uk.dom');
                     })
                     .error(function(err) {
-                        console.log('[trudesk:groups:refreshGrid] - Error: ' + err.error);
+                        $log.log('[trudesk:groups:refreshGrid] - Error: ' + err.error);
                         helpers.UI.showSnackbar(err.error, true);
                     })
 

@@ -12,7 +12,6 @@
 
  **/
 
-var async = require('async');
 var mongoose = require('mongoose');
 var _ = require('lodash');
 

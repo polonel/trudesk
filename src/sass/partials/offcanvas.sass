@@ -1,0 +1,85 @@
+.uk-offcanvas
+  background: rgba(0,0,0,0.3)
+.uk-offcanvas-bar
+  background: $sidebar_bg
+  //border-left: $sidebar_border_right
+
+.online-list-sidebar
+  h5
+    font-family: "Source Sans Pro", sans-serif
+    font-size: 12px
+    font-weight: 500
+    text-transform: uppercase
+    margin: 20px 5px 5px 5px
+    color: darken($sidebar_bg, 40%)
+
+  hr
+    width: 100%
+    height: 1px
+    display: block
+    margin: 5px 0
+    background: #ddd
+    //border-bottom: 1px solid #ddd
+  .online-list-head
+    height: 40px
+    width: 100%
+    background: $sidebar_item_active
+    margin-bottom: 8px
+    h3
+      font-family: "Source Sans Pro", sans-serif
+      font-size: 14px
+      text-align: center
+      width: 100%
+      display: block
+      color: $topbar_user_text
+      margin: 0
+      line-height: 40px
+  .online-list,
+  .user-list
+    list-style: none
+    margin: 0
+    padding: 0
+    li
+      a
+        display: block
+        padding: 5px 10px
+        color: $text_color
+        position: relative
+        &:hover
+          background: $sidebar_item_hover
+          color: $text_color
+          text-decoration: none
+        .online-list-user,
+        .user-list-user
+          .image
+            height: 30px
+            width: 30px
+            float: left
+            display: block
+            img
+              +borderRadius(50%)
+        .online-name,
+        .user-name
+          font-size: 13px
+          font-weight: 400
+          margin-left: 40px
+          line-height: 30px
+        .online-status
+          position: absolute
+          right: 10px
+          top: 15px
+          display: block
+          &:after
+            content: ''
+            background: $accent_success
+            width: 6px
+            height: 6px
+            +borderRadius(50%)
+            display: block
+        .online-status-offline
+          position: absolute
+          right: 10px
+          top: 10px
+          display: block
+          font-size: 11px
+          color: lighten($sidebar_text, 30%)

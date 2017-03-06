@@ -1,0 +1,20 @@
+<div class="nopadding pluginTest">
+    <div class="uk-width-1-1 page-title" style="padding-left: 25px !important;">
+        <p class="left">{{title}}</p>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper full-height scrollable no-overflow-x">
+        <div id="page-content-inner">
+            <div class="uk-grid uk-grid-medium uk-margin-medium-bottom">
+                <form action="/debug/uploadplugin" method="post" enctype="multipart/form-data">
+                    <input type="file" name="plugin" id="plugin" />
+                    <button type="submit">Send</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+
+{{/contentFor}}

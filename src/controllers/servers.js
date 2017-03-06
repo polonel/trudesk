@@ -12,13 +12,13 @@
 
  **/
 
-var async = require('async');
+
 
 var serversController = {};
 
 serversController.content = {};
 
-serversController.get = function(req, res, next) {
+serversController.get = function(req, res) {
     var self = this;
     self.content = {};
     self.content.title = "Servers";

@@ -20,7 +20,7 @@ define('modules/socket.io/ticketsUI', [
     'modules/navigation',
     'history'
 
-], function($, _, moment, helpers, nav) {
+], function($) {
     var ticketsUI = {};
 
     ticketsUI.updateSubscribe = function(socket) {

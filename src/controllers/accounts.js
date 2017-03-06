@@ -15,18 +15,43 @@
 var async           = require('async');
 var _               = require('underscore');
 var _s              = require('underscore.string');
-var flash           = require('connect-flash');
+var winston         = require('winston');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 var emitter         = require('../emitter');
 
 var accountsController = {};
 
 accountsController.content = {};
 
-accountsController.get = function(req, res, next) {
+accountsController.signup = function(req, res) {
+    var settings = require('../models/setting');
+    settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
+        if (err) return handleError(res, err);
+        if (setting && setting.value === true) {
+            settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
+                if (err) return handleError(res, err);
+                var self = accountsController;
+                self.content = {};
+                self.content.title = "Create Account";
+                self.content.layout = false;
+                self.content.data = {};
+
+                if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
+                    self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+                else
+                    self.content.data.privacyPolicy = privacyPolicy.value;
+
+                return res.render('pub_signup', self.content);
+            });
+        } else {
+            return res.redirect('/');
+        }
+    });
+};
+
+accountsController.get = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
         return res.redirect('/');
@@ -97,7 +122,7 @@ accountsController.get = function(req, res, next) {
     });
 };
 
-accountsController.profile = function(req, res, next) {
+accountsController.profile = function(req, res) {
     var user = req.user;
     var backUrl = req.header('Referer') || '/';
     if (_.isUndefined(user)) {
@@ -114,6 +139,7 @@ accountsController.profile = function(req, res, next) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
+    self.content.data.host = req.hostname;
     self.content.data.account = {};
 
     async.parallel({
@@ -135,267 +161,269 @@ accountsController.profile = function(req, res, next) {
     });
 };
 
-accountsController.editAccount = function(req, res, next) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/accounts');
-    }
+//02/05/2017
+//Removed in 0.1.8 As its Old code before Revamp.
+// accountsController.editAccount = function(req, res) {
+//     var user = req.user;
+//     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
+//         req.flash('message', 'Permission Denied.');
+//         return res.redirect('/accounts');
+//     }
+//
+//     var username = req.params.username;
+//     if (_.isUndefined(username)) {
+//         req.flash('message', 'Invalid User.');
+//         return res.redirect('/accounts');
+//     }
+//
+//     var self = this;
+//     self.content = {};
+//     self.content.title = "Accounts";
+//     self.content.nav = 'accounts';
+//
+//     self.content.data = {};
+//     self.content.data.user = req.user;
+//     self.content.data.common = req.viewdata;
+//     self.content.data.account = {};
+//
+//     async.parallel({
+//         roles: function (callback) {
+//             callback(null, permissions.roles);
+//         },
+//
+//         groups: function(callback) {
+//             groupSchema.getAllGroups(function(err, grps) {
+//                 callback(err, grps);
+//             });
+//         },
+//
+//         account: function(callback) {
+//             userSchema.getUserByUsername(username, function (err, obj) {
+//                 callback(err, obj);
+//             });
+//         }
+//     }, function(err, result) {
+//         if (err) {
+//             req.flash('message', err.message);
+//             winston.warn(err);
+//             return res.redirect('/accounts');
+//         }
+//
+//         self.content.data.account = result.account;
+//         self.content.data.roles = result.roles;
+//         result.groups.members = undefined;
+//         result.groups.sendMailTo = undefined;
+//         self.content.data.groups = _.sortBy(result.groups, 'name');
+//
+//         res.render('subviews/editAccount', self.content);
+//     });
+// };
+//
+// accountsController.postEdit = function(req, res) {
+//     var user = req.user;
+//     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
+//         req.flash('message', 'Permission Denied.');
+//         return res.redirect('/accounts');
+//     }
+//
+//     var self = this;
+//     self.content = {};
+//     self.content.title = "Accounts";
+//     self.content.nav = 'accounts';
+//
+//     self.content.data = {};
+//     self.content.data.user = user;
+//     self.content.data.common = req.viewdata;
+//
+//     async.parallel({
+//         groups: function(callback) {
+//             var gIds = req.body.aGrps;
+//
+//             if (!_.isArray(gIds)) {
+//                 gIds = [gIds];
+//             }
+//             var aId = req.body.aId;
+//             groupSchema.getAllGroups(function(err, grps) {
+//                 if (err) return callback(err, null);
+//
+//                 async.each(grps, function(grp, c) {
+//                     // Adding User to Group
+//                     if (_.contains(gIds, grp._id.toString())) {
+//                         grp.addMember(aId, function(err, result) {
+//                            if (result) {
+//                                grp.save(function(err) {
+//                                    if (err) return c(err);
+//                                    c();
+//                                })
+//                            } else {
+//                                c();
+//                            }
+//                         });
+//                     } else {
+//                         //Remove User from Group
+//                         grp.removeMember(aId, function(err, result) {
+//                             if (result) {
+//                                 grp.save(function (err) {
+//                                     if (err) return c(err);
+//
+//                                     c();
+//                                 });
+//                             } else {
+//                                 c();
+//                             }
+//                         });
+//                     }
+//
+//                 }, function(err) {
+//                     if (err) return callback(err, null);
+//
+//                     callback(null, true);
+//                 });
+//             });
+//         },
+//
+//         user: function(callback) {
+//             userSchema.getUser(req.body.aId, function(err, u) {
+//                 if (err) return callback(err, null);
+//
+//                 u.fullname = req.body.aFullname;
+//                 u.title = req.body.aTitle;
+//                 u.email = req.body.aEmail;
+//                 u.role = req.body.aRole;
+//
+//                 if (!_s.isBlank(req.body.aPass)) {
+//                     var pass = req.body.aPass;
+//                     var cPass = req.body.aPassConfirm;
+//
+//                     if (pass == cPass) {
+//                         u.password = cPass;
+//                     }
+//                 }
+//
+//                 u.save(function(err) {
+//                     if (err) return callback(err, null);
+//
+//                     callback(null, u);
+//                 })
+//             })
+//         }
+//
+//     }, function(err, results) {
+//         if (err) return handleError(res, err);
+//         //if (!res.groups) return handleError(res, {message: 'Unable to Save Groups for User'});
+//
+//         return res.redirect('/accounts/' + results.user.username);
+//     });
+// };
+//
+// accountsController.createAccount = function(req, res) {
+//     var user = req.user;
+//     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
+//         req.flash('message', 'Permission Denied.');
+//         return res.redirect('/accounts');
+//     }
+//
+//     var self = this;
+//     self.content = {};
+//     self.content.title = "Accounts";
+//     self.content.nav = 'accounts';
+//
+//     self.content.data = {};
+//     self.content.data.user = req.user;
+//     self.content.data.common = req.viewdata;
+//     self.content.data.accounts = {};
+//
+//     async.parallel({
+//         groups: function(callback) {
+//             groupSchema.getAllGroups(function(err, grps) {
+//                 callback(err, grps);
+//             });
+//         },
+//         roles: function(callback) {
+//             callback(null, permissions.roles);
+//         }
+//     }, function(err, results) {
+//         if (err) {
+//             res.render('error', {error: err, message: err.message});
+//         } else {
+//             if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
+//             if (!_.isUndefined(results.roles)) self.content.data.roles = results.roles;
+//
+//             res.render('subviews/createAccount', self.content);
+//         }
+//     });
+// };
+//
+// accountsController.postCreate = function(req, res) {
+//     var user = req.user;
+//     if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
+//         req.flash('message', 'Permission Denied.');
+//         return res.redirect('/accounts');
+//     }
+//
+//     var self = this;
+//     self.content = {};
+//     self.content.title = "Accounts";
+//     self.content.nav = 'accounts';
+//
+//     self.content.data = {};
+//     self.content.data.user = user;
+//     self.content.data.common = req.viewdata;
+//
+//     var username = req.body.aUsername;
+//     var fullname = req.body.aFullname;
+//     var title = req.body.aTitle;
+//     var password = req.body.aPass;
+//     var confirmPass = req.body.aPassConfirm;
+//     var email = req.body.aEmail;
+//     var role = req.body.aRole;
+//     var groups = req.body.aGrps;
+//
+//     //Todo Error and Resend to correct page
+//     if (password !== confirmPass) return handleError(res, {message: "Password Mismatch"});
+//
+//     var User = userSchema;
+//
+//     var newUser = new User({
+//         username: username,
+//         password: password,
+//         fullname: fullname,
+//         email: email,
+//         title: title,
+//         role: role
+//     });
+//
+//     newUser.save(function(err, obj) {
+//         if (err) return handleError(res, err);
+//         if (_.isUndefined(obj)) return handleError(res, {message: "Invalid Obj"});
+//
+//         if (!_.isArray(groups)) {
+//             groups = [groups];
+//         }
+//
+//         async.each(groups, function(g, callback) {
+//             if (_.isUndefined(g)) return callback(null);
+//
+//             groupSchema.getGroupById(g, function(err, grp) {
+//                 if (err) return callback(err);
+//                 grp.addMember(obj._id, function(err, success) {
+//                     if (err) return callback(err);
+//
+//                     grp.save(function(err) {
+//                         if (err) return callback(err);
+//                         callback(null, success);
+//                     });
+//                 });
+//             });
+//         }, function(err) {
+//             if (err) return handleError(res, err);
+//
+//             res.redirect('/accounts');
+//         });
+//     });
+// };
 
-    var username = req.params.username;
-    if (_.isUndefined(username)) {
-        req.flash('message', 'Invalid User.');
-        return res.redirect('/accounts');
-    }
-
-    var self = this;
-    self.content = {};
-    self.content.title = "Accounts";
-    self.content.nav = 'accounts';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.account = {};
-
-    async.parallel({
-        roles: function (callback) {
-            callback(null, permissions.roles);
-        },
-
-        groups: function(callback) {
-            groupSchema.getAllGroups(function(err, grps) {
-                callback(err, grps);
-            });
-        },
-
-        account: function(callback) {
-            userSchema.getUserByUsername(username, function (err, obj) {
-                callback(err, obj);
-            });
-        }
-    }, function(err, result) {
-        if (err) {
-            req.flash('message', err.message);
-            winston.warn(err);
-            return res.redirect('/accounts');
-        }
-
-        self.content.data.account = result.account;
-        self.content.data.roles = result.roles;
-        result.groups.members = undefined;
-        result.groups.sendMailTo = undefined;
-        self.content.data.groups = _.sortBy(result.groups, 'name');
-
-        res.render('subviews/editAccount', self.content);
-    });
-};
-
-accountsController.postEdit = function(req, res, next) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:edit')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/accounts');
-    }
-
-    var self = this;
-    self.content = {};
-    self.content.title = "Accounts";
-    self.content.nav = 'accounts';
-
-    self.content.data = {};
-    self.content.data.user = user;
-    self.content.data.common = req.viewdata;
-
-    async.parallel({
-        groups: function(callback) {
-            var gIds = req.body.aGrps;
-
-            if (!_.isArray(gIds)) {
-                gIds = [gIds];
-            }
-            var aId = req.body.aId;
-            groupSchema.getAllGroups(function(err, grps) {
-                if (err) return callback(err, null);
-
-                async.each(grps, function(grp, c) {
-                    // Adding User to Group
-                    if (_.contains(gIds, grp._id.toString())) {
-                        grp.addMember(aId, function(err, result) {
-                           if (result) {
-                               grp.save(function(err) {
-                                   if (err) return c(err);
-                                   c();
-                               })
-                           } else {
-                               c();
-                           }
-                        });
-                    } else {
-                        //Remove User from Group
-                        grp.removeMember(aId, function(err, result) {
-                            if (result) {
-                                grp.save(function (err) {
-                                    if (err) return c(err);
-
-                                    c();
-                                });
-                            } else {
-                                c();
-                            }
-                        });
-                    }
-
-                }, function(err) {
-                    if (err) return callback(err, null);
-
-                    callback(null, true);
-                });
-            });
-        },
-
-        user: function(callback) {
-            userSchema.getUser(req.body.aId, function(err, u) {
-                if (err) return callback(err, null);
-
-                u.fullname = req.body.aFullname;
-                u.title = req.body.aTitle;
-                u.email = req.body.aEmail;
-                u.role = req.body.aRole;
-
-                if (!_s.isBlank(req.body.aPass)) {
-                    var pass = req.body.aPass;
-                    var cPass = req.body.aPassConfirm;
-
-                    if (pass == cPass) {
-                        u.password = cPass;
-                    }
-                }
-
-                u.save(function(err) {
-                    if (err) return callback(err, null);
-
-                    callback(null, u);
-                })
-            })
-        }
-
-    }, function(err, results) {
-        if (err) return handleError(res, err);
-        //if (!res.groups) return handleError(res, {message: 'Unable to Save Groups for User'});
-
-        return res.redirect('/accounts/' + results.user.username);
-    });
-};
-
-accountsController.createAccount = function(req, res, next) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/accounts');
-    }
-
-    var self = this;
-    self.content = {};
-    self.content.title = "Accounts";
-    self.content.nav = 'accounts';
-
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.accounts = {};
-
-    async.parallel({
-        groups: function(callback) {
-            groupSchema.getAllGroups(function(err, grps) {
-                callback(err, grps);
-            });
-        },
-        roles: function(callback) {
-            callback(null, permissions.roles);
-        }
-    }, function(err, results) {
-        if (err) {
-            res.render('error', {error: err, message: err.message});
-        } else {
-            if (!_.isUndefined(results.groups)) self.content.data.groups = results.groups;
-            if (!_.isUndefined(results.roles)) self.content.data.roles = results.roles;
-
-            res.render('subviews/createAccount', self.content);
-        }
-    });
-};
-
-accountsController.postCreate = function(req, res) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:create')) {
-        req.flash('message', 'Permission Denied.');
-        return res.redirect('/accounts');
-    }
-
-    var self = this;
-    self.content = {};
-    self.content.title = "Accounts";
-    self.content.nav = 'accounts';
-
-    self.content.data = {};
-    self.content.data.user = user;
-    self.content.data.common = req.viewdata;
-
-    var username = req.body.aUsername;
-    var fullname = req.body.aFullname;
-    var title = req.body.aTitle;
-    var password = req.body.aPass;
-    var confirmPass = req.body.aPassConfirm;
-    var email = req.body.aEmail;
-    var role = req.body.aRole;
-    var groups = req.body.aGrps;
-
-    //Todo Error and Resend to correct page
-    if (password !== confirmPass) return handleError(res, {message: "Password Mismatch"});
-
-    var User = userSchema;
-
-    var newUser = new User({
-        username: username,
-        password: password,
-        fullname: fullname,
-        email: email,
-        title: title,
-        role: role
-    });
-
-    newUser.save(function(err, obj) {
-        if (err) return handleError(res, err);
-        if (_.isUndefined(obj)) return handleError(res, {message: "Invalid Obj"});
-
-        if (!_.isArray(groups)) {
-            groups = [groups];
-        }
-
-        async.each(groups, function(g, callback) {
-            if (_.isUndefined(g)) return callback(null);
-
-            groupSchema.getGroupById(g, function(err, grp) {
-                if (err) return callback(err);
-                grp.addMember(obj._id, function(err, success) {
-                    if (err) return callback(err);
-
-                    grp.save(function(err) {
-                        if (err) return callback(err);
-                        callback(null, success);
-                    });
-                });
-            });
-        }, function(err) {
-            if (err) return handleError(res, err);
-
-            res.redirect('/accounts');
-        });
-    });
-};
-
-accountsController.uploadImage = function(req, res, next) {
+accountsController.uploadImage = function(req, res) {
     var fs = require('fs');
     var path = require('path');
     var Busboy = require('busboy');
@@ -403,7 +431,7 @@ accountsController.uploadImage = function(req, res, next) {
         headers: req.headers,
         limits: {
             files: 1,
-            fileSize: (1024*1024) * 3 // 1mb limit
+            fileSize: (1024*1024) * 3 // 3mb limit
         }
     });
 

@@ -12,7 +12,8 @@
         {
             var self         = this;
             var $self        = $(self);
-            var minHeight    = $self.height();
+            //var minHeight    = $self.height();
+            var minHeight = 16;
             var noFlickerPad = $self.hasClass('autogrow-short') ? 0 : parseInt($self.css('lineHeight')) || 0;
             var settings = $.extend({
                 preGrowCallback: null,

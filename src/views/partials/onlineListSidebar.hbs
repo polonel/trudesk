@@ -1,0 +1,34 @@
+<div id="online-list-sidebar" class="online-list-sidebar uk-offcanvas">
+    <div class="uk-offcanvas-bar uk-offcanvas-bar-flip scrollable">
+        <div class="online-list-head"><h3>Online Users</h3></div>
+        <div class="active-now">
+            <h5>Active Now</h5>
+            <div class="online-list-wrapper">
+                <ul class="online-list"></ul>
+            </div>
+        </div>
+
+        <h5>More Conversations</h5>
+        <div class="user-list-wrapper">
+            <ul class="user-list">
+                {{#each data.common.users}}
+                    {{#compare username '!=' ../data.common.loggedInAccount.username}}
+                        <li data-user-id="{{_id}}">
+                            <a class="no-ajaxify" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
+                                <div class="user-list-user">
+                                    {{#if image}}
+                                        <div class="image"><img src="/uploads/users/{{image}}"></div>
+                                    {{else}}
+                                        <div class="image"><img src="/uploads/users/defaultProfile.jpg"></div>
+                                    {{/if}}
+                                    <div class="online-status-offline">{{fromNow lastOnline}}</div>
+                                    <div class="user-name">{{fullname}}</div>
+                                </div>
+                            </a>
+                        </li>
+                    {{/compare}}
+                {{/each}}
+            </ul>
+        </div>
+    </div>
+</div>

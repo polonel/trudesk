@@ -20,9 +20,8 @@ var async   = require('async'),
 
 var viewController = {};
 var viewdata = {};
-viewdata.tickets = {};
 viewdata.notifications = {};
-viewdata.messages = {};
+viewdata.users = {};
 
 viewController.getData = function(request, cb) {
       async.parallel([
@@ -53,20 +52,17 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
-              viewController.unreadMessageCount(request, function(data) {
-                  viewdata.messages.unreadCount = data;
-                  return callback();
-              });
-          },
-          function(callback) {
-              viewController.getUserUnreadMessages(request, function(data) {
-                  viewdata.messages.unreadItems = data;
+              viewController.getConversations(request, function(err, conversations) {
+                  if (err) return callback(err);
+
+                  viewdata.conversations = conversations;
+
                   return callback();
               });
           },
           function(callback) {
               viewController.getUsers(request, function(users) {
-                  viewdata.messages.users = users;
+                  viewdata.users = users;
 
                   return callback();
               });
@@ -114,6 +110,13 @@ viewController.getData = function(request, cb) {
 
                   return callback();
               });
+          },
+          function(callback) {
+            viewController.getPluginsInfo(request, function(err, data) {
+                viewdata.plugins = data;
+
+                return callback();
+            });
           }
       ], function(err) {
           if (err) {
@@ -162,25 +165,53 @@ viewController.getUnreadNotificationsCount = function(request, callback) {
     });
 };
 
-viewController.unreadMessageCount = function(request, callback) {
-    var messageObj = require('../../models/message');
-    messageObj.getUnreadInboxCount(request.user._id, function(err, data) {
+viewController.getConversations = function(request, callback) {
+    var conversationSchema = require('../../models/chat/conversation');
+    var messageSchema = require('../../models/chat/message');
+    conversationSchema.getConversationsWithLimit(request.user._id, 10, function(err, conversations) {
         if (err) {
-            return callback(0);
+            winston.warn(err.message);
+            return callback(err);
         }
 
-        return callback(data);
-    });
-};
+        var convos = [];
 
-viewController.getUserUnreadMessages = function(request, callback) {
-    var messageSchema = require('../../models/message');
-    messageSchema.getUserUnreadMessages(request.user._id, function(err, data) {
-        if (err) {
-            return callback();
-        }
+        async.eachSeries(conversations, function(convo, done) {
+            var c = convo.toObject();
 
-        return callback(data);
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == request.user._id.toString(); })];
+            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+                return done();
+            }
+
+            messageSchema.getMostRecentMessage(c._id, function(err, rm) {
+                if (err) return done(err);
+
+                _.each(c.participants, function(p) {
+                    if (p._id.toString() !== request.user._id.toString())
+                        c.partner = p;
+                });
+
+                rm = _.first(rm);
+
+                if (!_.isUndefined(rm)) {
+                    if (String(c.partner._id) == String(rm.owner._id)) {
+                        c.recentMessage = c.partner.fullname + ': ' + rm.body;
+                    } else {
+                        c.recentMessage = 'You: ' + rm.body
+                    }
+                } else {
+                    c.recentMessage = 'New Conversation';
+                }
+
+                convos.push(c);
+
+                return done();
+            })
+
+        }, function(err) {
+            return callback(err, convos);
+        });
     });
 };
 
@@ -193,6 +224,14 @@ viewController.getUsers = function(request, callback) {
         }
 
         var u = _.reject(users, function(u) { return u.deleted == true; });
+        u.password = null;
+        u.role = null;
+        u.resetPassHash = null;
+        u.resetPassExpire = null;
+        u.accessToken = null;
+        u.iOSDeviceTokens = null;
+        u.preferences = null;
+
         u = _.sortBy(u, 'fullname');
 
         return callback(u);
@@ -272,6 +311,25 @@ viewController.getOverdueSetting = function(request, callback) {
         if (_.isNull(data)) return callback(null, true);
         return callback(null, data.value);
     });
+};
+
+viewController.getPluginsInfo = function(request, callback) {
+    //Load Plugin routes
+    var dive = require('dive');
+    var path = require('path');
+    var fs = require('fs');
+    var pluginDir = path.join(__dirname, '../../../plugins');
+    if (!fs.existsSync(pluginDir)) fs.mkdirSync(pluginDir);
+    var plugins = [];
+    dive(pluginDir, {directories: true, files: false, recursive: false}, function(err, dir) {
+        if (err) throw err;
+        delete require.cache[require.resolve(path.join(dir, '/plugin.json'))];
+        var pluginPackage = require(path.join(dir, '/plugin.json'));
+        plugins.push(pluginPackage);
+    }, function() {
+        return callback(null, _.sortBy(plugins, 'name'));
+    });
+
 };
 
 module.exports = viewController;
