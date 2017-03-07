@@ -29,6 +29,7 @@
  ticket:viewHistory      = can view ticket history on single page
  ticket:setAssignee      = can set ticket Assignee
  ticket:public           = can view public created tickets
+ plugins:manage          = user can add/remove Plugins
  */
 var roles = {
     admin: {

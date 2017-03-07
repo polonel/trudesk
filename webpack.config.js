@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     //context: path.resolve(__dirname, 'public/js'),
     entry : {
-        vendor: ['jquery', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
+        vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
         "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
     },
