@@ -19,11 +19,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.installedPlugins = [];
 
+            var pluginUrl = 'http://plugins.trudesk.io';
+
             $scope.init = function() {
                 $scope.installedPlugins = angular.fromJson($scope.installedPlugins);
                 $http({
                     method: 'GET',
-                    url: 'http://plugins.trudesk.io/api/plugins',
+                    url: pluginUrl + '/api/plugins',
                     headers: { 'Content-Type': 'apllication/json' }
                 })
                     .success(function(data) {
@@ -49,19 +51,25 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             var update = false;
                             if (hasPluginInstalled)
                                 update = compareVersions(loadedPlugin.version, '<', p.pluginjson.version);
+                            var canUserManage = helpers.canUser('plugins:manage');
 
                             html += '<tr data-plugin-id="' + p._id + '" data-plugin-name="' + p.name.toLowerCase() + '">';
                             html += '<td style="vertical-align: middle;">' + p.name.toLowerCase() + '</td>';
                             html += '<td style="vertical-align: middle;">' + description + '</td>';
                             html += '<td style="vertical-align: middle;">' + p.pluginjson.version + '</td>';
-                            if (hasPluginInstalled) {
-                                html += '<td style="text-align: right;"><button class="uk-button uk-button-danger uk-button-small" ng-click="removePlugin(\'' + p._id + '\')">Remove</button>';
-                                if (update)
-                                    html += '<button class="uk-button uk-button-primary uk-button-small" style="margin-left: 5px;" ng-click="installPlugin(\'' + p._id + '\')">Update</button>';
-                                html += '</td>';
+                            if (canUserManage) {
+                                if (hasPluginInstalled) {
+                                    html += '<td style="text-align: right;"><button class="uk-button uk-button-danger uk-button-small" ng-click="removePlugin(\'' + p._id + '\')">Remove</button>';
+                                    if (update)
+                                        html += '<button class="uk-button uk-button-primary uk-button-small" style="margin-left: 5px;" ng-click="installPlugin(\'' + p._id + '\')">Update</button>';
+                                    html += '</td>';
+                                }
+                                else
+                                    html += '<td style="text-align: right;"><button class="uk-button uk-button-success uk-button-small" ng-click="installPlugin(\'' + p._id + '\')">Install</button></td>';
+                            } else {
+                                html += '<td></td>';
                             }
-                            else
-                                html += '<td style="text-align: right;"><button class="uk-button uk-button-success uk-button-small" ng-click="installPlugin(\'' + p._id + '\')">Install</button></td>';
+
                             html += '</tr>';
                         });
 
