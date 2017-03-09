@@ -34,6 +34,9 @@ api_plugins.installPlugin = function(req, res) {
 
         var plugin = JSON.parse(response.body).plugin;
 
+        if (!plugin || !plugin.url)
+            return res.status(400).json({success: false, error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl});
+
         request.get(pluginServerUrl + '/plugin/download/' + plugin.url)
             .on('response', function(response) {
 
@@ -54,8 +57,10 @@ api_plugins.installPlugin = function(req, res) {
                                 //File has been extracted Delete Zip File...
                                 rimraf(path.join(pluginPath, plugin.url), function(){
                                     //Wrap it up!!!!
-                                    res.json({success: true, plugin: plugin});
-                                    restartServer();
+                                    request.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads', function() {
+                                        res.json({success: true, plugin: plugin});
+                                        restartServer();
+                                    });
                                 });
                             });
 

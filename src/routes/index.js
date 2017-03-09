@@ -187,15 +187,15 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
     router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
-    router.get('/api/v1/plugins/install/:packageid', middleware.api, controllers.api.plugins.installPlugin);
-    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, controllers.api.plugins.removePlugin);
+    router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
+    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
     router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
 
 
-    router.get('/api/v1/admin/restart', middleware.api, function(req, res) {
+    router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
         if (req.user.role === 'admin') {
             var pm2 = require('pm2');
             pm2.connect(function(err) {
@@ -215,7 +215,7 @@ function mainRoutes(router, middleware, controllers) {
                 });
             });
         } else {
-            return res.status(403).json({success: false, error: 'Unauthorized!'});
+            return res.status(401).json({success: false, error: 'Unauthorized!'});
         }
     });
 
@@ -244,11 +244,6 @@ function mainRoutes(router, middleware, controllers) {
 
             res.send('OK');
         });
-
-        router.get('/debug/plugin', function (req, res) {
-            return res.render('pluginTest');
-        });
-        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
 
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
