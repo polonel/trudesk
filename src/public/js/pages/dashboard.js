@@ -136,7 +136,7 @@ define('pages/dashboard', [
                             '#607D8B'
                         ];
 
-                        var c = _.object(_.map(arr, function(v, i) {
+                        var c = _.object(_.map(arr, function(v) {
                             return v[0];
                         }), _.shuffle(colors));
 
@@ -168,7 +168,7 @@ define('pages/dashboard', [
                     method: 'GET',
                     success: function(data) {
 
-                        var arr = _.map(data.items, function(v, key) {
+                        var arr = _.map(data.items, function(v) {
                             return [v.name, v.count];
                         });
 
@@ -193,7 +193,7 @@ define('pages/dashboard', [
 
                         colors = _.shuffle(colors);
 
-                        var c = _.object(_.map(arr, function(v,i) {
+                        var c = _.object(_.map(arr, function(v) {
                             return v[0];
                         }), colors);
 

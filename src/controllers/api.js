@@ -148,7 +148,7 @@ apiController.testPromo = function(req, res) {
                         generateTextFromHTML: true
                     };
 
-                    mailer.sendMail(mailOptions, function(err, info) {
+                    mailer.sendMail(mailOptions, function(err) {
                         if (err) {
                             winston.warn(err);
                             return res.send(err);

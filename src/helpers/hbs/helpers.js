@@ -610,12 +610,10 @@ var helpers = {
     },
 
     isSubscribed: function(arr, value) {
-        var result = _.some(arr, function(i) {
+        return _.some(arr, function(i) {
             if (_.isUndefined(i) || _.isUndefined(value)) return false;
             return i._id.toString() == value.toString();
         });
-
-        return result;
     },
 
     json: function(str) {

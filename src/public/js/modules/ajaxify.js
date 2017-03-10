@@ -93,7 +93,7 @@ define('modules/ajaxify', [
         }
 
         // Internal Helper
-        $.expr[':'].internal = function(obj, index, meta, stack){
+        $.expr[':'].internal = function(obj){
             // Prepare
             var
                 $this = $(obj),
@@ -169,7 +169,7 @@ define('modules/ajaxify', [
 
             $.ajax({
                 url: url,
-                success: function(data, textStatus, jqXHR){
+                success: function(data){
                     // Prepare
                     var
                         $data = $(documentHtml(data)),

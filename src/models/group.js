@@ -12,9 +12,9 @@
 
  **/
 
-var mongoose    = require('mongoose');
-var _           = require('underscore');
-var accountsSchema = require('./user');
+var _               = require('underscore');
+var mongoose        = require('mongoose');
+var accountsSchema  = require('./user');
 
 var COLLECTION = 'groups';
 

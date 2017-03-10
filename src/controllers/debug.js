@@ -12,7 +12,7 @@
 
  **/
 
-var async           = require('async');
+var _               = require('underscore');
 var path            = require('path');
 var winston         = require('winston');
 
@@ -41,7 +41,7 @@ debugController.sendmail = function(req, res) {
                         generateTextFromHTML: true
                     };
 
-                    mailer.sendMail(mailOptions, function(err, info) {
+                    mailer.sendMail(mailOptions, function(err) {
                         if (err) {
                             winston.warn(err);
                             return res.send(err);
@@ -70,7 +70,7 @@ debugController.uploadPlugin = function(req, res) {
 
     var object = {}, error;
 
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+    busboy.on('field', function(fieldname, val) {
         if (fieldname === 'plugin') object.plugin = val;
     });
 
