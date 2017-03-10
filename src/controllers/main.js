@@ -15,7 +15,7 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    //_mixins         = require('../helpers/underscore'),
+    _mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
     ticketSchema    = require('../models/ticket'),
     nconf           = require('nconf'),
