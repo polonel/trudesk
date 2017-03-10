@@ -46,6 +46,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.UI.selectize();
         self.UI.waves();
         self.UI.matchHeight();
+        self.UI.onlineUserSearch();
 
         var layout = self.onWindowResize();
         //Initial Call to Load Layout
@@ -63,6 +64,23 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.onlineUserSearch = function() {
+        var $searchBox = $('.online-list-search-box').find('input');
+        $searchBox.off('keyup', onSearchKeyUp);
+        $searchBox.on('keyup', onSearchKeyUp);
+
+        function onSearchKeyUp() {
+            var searchTerm = $searchBox.val().toLowerCase();
+            $('.user-list li').each(function() {
+                if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            })
+        }
+    };
 
     helpers.UI.matchHeight = function() {
         var $d = $('div[data-match-height]');
