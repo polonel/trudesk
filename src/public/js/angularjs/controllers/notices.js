@@ -29,7 +29,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 History.pushState(null, null, '/notices/' + id);
             };
 
-            $scope.submitCreateNoticeForm = function() {
+            $scope.submitCreateNoticeForm = function(event) {
+                event.preventDefault();
                 var formData = $('#createNoticeForm').serializeObject();
                 if (!formData.nName || !formData.nMessage) return false;
                 var apiData = {
@@ -57,7 +58,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     });
             };
 
-            $scope.submitEditNoticeForm = function() {
+            $scope.submitEditNoticeForm = function(event) {
+                event.preventDefault();
                 var noticeId = $('#__noticeId').text();
                 var formData = $('#editNoticeForm').serializeObject();
                 var apiData = {
