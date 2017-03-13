@@ -70,16 +70,18 @@
                     {{#hasPluginPerm ../data.user permissions}}
                         <li {{#is ../subnav name}} class='active' {{/is}}><a href="{{menu.main.link}}"><i class="fa-sub-icon {{menu.main.class}}">{{menu.main.icon}}</i>{{menu.main.name}}</a></li>
                         {{#compare (size menu.sub) '>' 0}}
-                            <ul class="side-nav-sub level-2 {{#is ../nav 'plugins'}} subMenuOpen {{/is}}" style="margin: 0; padding: 0;">
-                                {{#each menu.sub.items}}
-                                    <li style="margin: 0; padding: 0;">
-                                        <a href="{{url}}" style="font-size: 12px; padding-left: 30px;">
-                                            <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
-                                            {{title}}
-                                        </a>
-                                    </li>
-                                {{/each}}
-                            </ul>
+                            {{#is ../subnav name}}
+                                <ul class="side-nav-sub level-2 {{#is ../nav 'plugins'}} subMenuOpen {{/is}}" style="margin: 0; padding: 0;">
+                                    {{#each menu.sub.items}}
+                                        <li {{#is ../../childnav id}} class='active' {{/is}} style="margin: 0; padding: 0;">
+                                            <a href="{{url}}" style="font-size: 12px; padding-left: 30px;">
+                                                <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
+                                                {{title}}
+                                            </a>
+                                        </li>
+                                    {{/each}}
+                                </ul>
+                            {{/is}}
                         {{/compare}}
                         {{#unless @last}}
                             <hr style="background: #ccc;"/>

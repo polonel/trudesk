@@ -15,7 +15,7 @@
     <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
         <div id="page-content-inner" class="uk-grid">
             <div class="uk-width-1-1 relative">
-                <div class="profilePicFormWrap uk-width-1-1 uk-float-left">
+                <div class="profilePicFormWrap no-touch uk-width-1-1 uk-float-left">
                     <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin uk-clearfix" enctype="multipart/form-data">
                         <input type="hidden" name="_id" value="{{data.account._id}}" />
                         <input type="hidden" name="username" value="{{data.account.username}}" />
