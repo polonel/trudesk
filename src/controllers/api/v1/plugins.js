@@ -49,6 +49,7 @@ api_plugins.installPlugin = function(req, res) {
                     //Extract plugin
                     var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase());
                     rimraf(pluginExtractFolder, function(error) {
+                        if (error) winston.debug(error);
                         if (error) return res.json({success: false, error: 'Unable to remove plugin directory.'});
 
                         var extracter = tar.Extract({path: pluginPath})
@@ -92,6 +93,7 @@ api_plugins.removePlugin = function(req, res) {
             return res.json({success: false, error: 'Invalid Plugin'});
 
         rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function(err) {
+            if (err) winston.debug(err);
             if (err) return res.json({success: false, error: 'Unable to remove plugin directory.'});
 
             res.json({success: true});
