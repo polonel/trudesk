@@ -68,6 +68,8 @@ module.exports = {
             jquery_docsize: 'plugins/jquery.documentsize',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
+            tether:         'vendor/tether/tether.min',
+            shepherd:       'vendor/shepherd/js/shepherd.min',
             snackbar:       'plugins/snackbar'
         }
     },

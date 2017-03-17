@@ -66,6 +66,7 @@ var userSchema = mongoose.Schema({
         iOSDeviceTokens: [{type: String}],
 
         preferences: {
+            tourCompleted: { type: Boolean, default: false },
             autoRefreshTicketGrid: { type: Boolean, default: true },
             openChatWindows: [{type: String, default: []}]
         },

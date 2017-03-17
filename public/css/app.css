@@ -6693,3 +6693,17 @@ table tr.even, table tr.alt, table tr:nth-of-type(even) {
   .confirm-delete-button:hover, .confirm-delete-button:active, .confirm-delete-button:focus {
     color: #d32f2f;
     background: #fceaea; }
+
+body.shepherd-active .shepherd-target.shepherd-enabled {
+  position: relative;
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  pointer-events: auto;
+  transition: all 0.3s ease; }
+
+body.shepherd-active .shepherd-step {
+  pointer-events: auto;
+  z-index: 9999; }
+
+body.shepherd-active {
+  pointer-events: none !important; }

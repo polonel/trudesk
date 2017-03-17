@@ -20,12 +20,7 @@
             </ul>
         </li>
         <li {{#is nav 'messages'}} class='active' {{/is}}>
-            <a href="/messages" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">chat</i>Messages</a>
-            <!--<ul id="side-nav-sub-messages" class="side-nav-sub {{#is nav 'messages'}} subMenuOpen {{/is}}">-->
-                <!--<li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="material-icons fa-sub-icon">inbox</i>Inbox</a></li>-->
-                <!--<li {{#is subnav 'messages-sentitems'}} class='active' {{/is}}><a href="/messages/sentitems"><i class="material-icons fa-sub-icon">move_to_inbox</i>Sent</a></li>-->
-                <!--<li {{#is subnav 'messages-trash'}} class='active' {{/is}}><a href="/messages/trash"><i class="material-icons fa-sub-icon">delete</i>Trash</a></li>-->
-            <!--</ul>-->
+            <a href="/messages" class="navMessages ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">chat</i>Messages</a>
         </li>
         <!--<li {{#is nav 'calendar'}} class='active' {{/is}}><a href="/calendar"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>-->
         <!--<li {{#is nav 'servers'}} class='active' {{/is}}>-->
@@ -60,7 +55,7 @@
             </li>
         {{/canUser}}
 
-        <li {{#is nav 'plugins'}} class='active' {{/is}}>
+        <li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}}>
             <a href="/plugins">
                 <i class="material-icons">select_all</i>
                 Plugins

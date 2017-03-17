@@ -174,6 +174,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.showTourChanged = function() {
+                var vm = this;
+                $scope.showTour = vm.showTour;
+
+                $http.put('/api/v1/settings', {
+                    name: 'showTour:enable',
+                    value: $scope.showTour
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
             $scope.showOverdueTicketsChanged = function() {
                 var vm = this;
                 $scope.showOverdueTickets = vm.showOverdueTickets;

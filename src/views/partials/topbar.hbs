@@ -3,7 +3,6 @@
         <nav class="top-bar" data-topbar>
             <div class="title-area uk-float-left">
                 <div class="logo">
-                    <!--<img src="/img/themes/bw/logo.png" alt="Logo"/>-->
                     <svg style="width: 140px; height: 75px;" viewBox="0 0 288.9 70.1">
                         <path d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z"/>
                         <path d="M29.6,69.1H29c-0.1-0.5-0.2-1.6-0.2-3.4c0-1.8,0.8-6.6,2.5-14.4c1.7-7.8,2.5-12.3,2.5-13.4	c0-1.9-0.9-4.1-2.6-6.4l-0.8-1.1l0.1-1.2c3.4-0.9,8.8-1.4,16.2-1.4c0.8,1.6,1.1,3.9,1.1,6.8c0.7-1.1,2.1-2.6,4.3-4.5	c2.2-1.9,4.4-2.8,6.8-2.8c3.4,0,5.1,2.9,5.1,8.8c-0.3,0.4-0.7,0.9-1.3,1.5c-0.5,0.6-1.6,1.4-3.2,2.5c-1.6,1.1-3.1,1.7-4.6,2	c-0.1,0-0.6-0.8-1.6-2.5c-1-1.7-1.8-2.5-2.3-2.5c-1.6,0.6-2.9,1.5-4.1,2.8c-2.9,12.9-4.3,21.3-4.3,25.1c0,1.4,0,2.3,0.1,2.9	C40.5,68.7,36.2,69.1,29.6,69.1z"/>
@@ -23,28 +22,27 @@
                     <ul class="uk-subnav uk-margin-bottom-remove">
                         <!--<li class="top-bar-icon"><a href="/tickets/create/"><i class="material-icons">&#xE145;</i></a></li>-->
                         {{#canUser data.user "ticket:create"}}
-                            <li class="top-bar-icon nopadding"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
+                            <li class="top-bar-icon nopadding tour-addTicket"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
                             <li class="top-bar-icon nopadding">
                                 <i class="material-icons">more_vert</i>
                             </li>
                         {{/canUser}}
-                        <li class="top-bar-icon">
+                        <li class="top-bar-icon tour-messagesNotification">
                             <a id="btn_mail-notifications" href="#" class="no-ajaxy uk-vertical-align" data-notifications="mail-notifications"><i class="material-icons">email</i>
                                 <!--<span class="alert uk-border-circle label"></span>-->
                             </a>
                         </li>
-                        <li class="top-bar-icon">
+                        <li class="top-bar-icon tour-ticketNotifications">
                             <a id="btn_notifications" href="#" class="no-ajaxy uk-vertical-align" data-updateUi="notifications" data-notifications="notifications"><i class="material-icons">&#xE88E;</i>
                                 <span class="alert uk-border-circle label {{#compare data.common.notifications.unreadCount "==" 0}}hide{{/compare}} ">{{data.common.notifications.unreadCount}}</span>
                             </a>
                         </li>
-                        <li class="top-bar-icon">
+                        <li class="top-bar-icon tour-onlineUserListButton">
                             <a href="#online-list-sidebar" class="no-ajaxy" data-updateUi="online-Users" data-uk-offcanvas="{mode: 'slide'}">
                                 <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                                     <path d="M9,22A1,1 0 0,1 8,21V18H4A2,2 0 0,1 2,16V4C2,2.89 2.9,2 4,2H20A2,2 0 0,1 22,4V16A2,2 0 0,1 20,18H13.9L10.2,21.71C10,21.9 9.75,22 9.5,22V22H9M16,14V13C16,11.67 13.33,11 12,11C10.67,11 8,11.67 8,13V14H16M12,6A2,2 0 0,0 10,8A2,2 0 0,0 12,10A2,2 0 0,0 14,8A2,2 0 0,0 12,6Z" />
                                 </svg>
                                 <span class="online-user-count alert uk-border-circle label hide"></span>
-
                             </a>
                         </li>
                         <li class="profile-area profile-name" data-username="{{data.user.username}}" data-userId="{{data.user._id}}"><span>{{data.user.fullname}}</span>
@@ -79,7 +77,7 @@
                             </ul>
                         </div>
                     </div>
-                    <div ng-controller="commonCtrl" ng-init="setDefaultCreateTicketValues();">
+                    <div ng-controller="commonCtrl" ng-init="setDefaultCreateTicketValues();loadTour();">
                         {{> noticeAlertWindow}}
 
                         {{> topbar/notifications }}

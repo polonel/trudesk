@@ -92,7 +92,13 @@ module.exports = function(grunt) {
                         'src/public/js/vendor/uikit/css/uikit_custom.css',
                         'src/public/js/plugins/snackbar.css',
                         'src/public/js/vendor/c3/c3.css',
-                        'src/public/js/vendor/formvalidator/theme-default.css'
+                        'src/public/js/vendor/formvalidator/theme-default.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-default.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-dark.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-arrows.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-arrows-fix.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css'
                     ]
                 }
             },
@@ -117,6 +123,7 @@ module.exports = function(grunt) {
             trudesk: {
                 src: 'src/controllers/api/',
                 dest: 'apidocs/',
+                template: 'apidoc_template/',
                 options: {
                     //debug: true,
                     includeFilters: ['.*\\.js$'],

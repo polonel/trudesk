@@ -15,9 +15,10 @@
 define('pages/plugins', [
     'jquery',
     'modules/helpers',
+    'tether',
     'history'
 
-], function($, helpers) {
+], function($, helpers, Tether) {
     var pluginsPage = {};
 
     pluginsPage.init = function() {
@@ -31,6 +32,16 @@ define('pages/plugins', [
                     $(this).toggle(id.indexOf(value) !== -1);
                 })
             });
+
+            if ($('.plugin-tether').length > 0) {
+                new Tether({
+                    element: '.plugin-tether',
+                    target: '.tether-plugins',
+                    attachment: 'top left',
+                    targetAttachment: 'top right',
+                    offset: '0 -20px'
+                });
+            }
         });
     };
 
