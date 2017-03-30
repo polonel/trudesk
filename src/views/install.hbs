@@ -273,7 +273,7 @@
             <form id="mongoConnection" class="uk-form-stacked uk-clearfix">
                 <div class="uk-margin-medium-bottom">
                     <label for="mongo-server">Server</label>
-                    <input id="mongo-server" name="mongo-server" class="md-input" type="text" value="192.168.1.101" />
+                    <input id="mongo-server" name="mongo-server" class="md-input" type="text" value="localhost" />
                 </div>
                 <div class="uk-margin-medium-bottom">
                     <label for="mongo-port">Port</label>
@@ -285,7 +285,7 @@
                 </div>
                 <div class="uk-margin-medium-bottom">
                     <label for="mongo-password">Password</label>
-                    <input id="mongo-password" name="mongo-password" class="md-input" type="password" value="#TruDesk$" />
+                    <input id="mongo-password" name="mongo-password" class="md-input" type="password" value="#TruDesk1$" />
                 </div>
                 <div class="uk-margin-medium-bottom">
                     <label for="mongo-database">Database</label>
@@ -469,7 +469,7 @@
                                     $restartSlide.fadeIn(300, function() {
                                         $restartSlide.addClass('activeSlide');
                                     });
-                                })
+                                });
                             }
                         }
                     });
@@ -602,7 +602,16 @@
                             text: 'We did it! Everything is all set up!'
                         });
 
-                        advanceSlide();
+                        var $savingConfig = $('#savingConfig');
+                        var $restartSlide = $('#restartSlide');
+                        $savingConfig.fadeOut(300, function() {
+                            $savingConfig.addClass('hide');
+                            $restartSlide.css({display: 'none'}).removeClass('hide');
+                            $restartSlide.fadeIn(300, function() {
+                                $restartSlide.addClass('activeSlide');
+                            });
+                        });
+
                     },
                     error: function(response) {
 //                    window.Snackbar.show({
