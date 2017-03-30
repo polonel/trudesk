@@ -227,20 +227,29 @@ api_groups.updateGroup = function(req, res) {
 };
 
 /**
- * Deletes a group object. <br> <br>
- * Route: **[delete] /api/groups/:id**
+ * @api {delete} /api/v1/groups/:id Delete Group
+ * @apiName deleteGroup
+ * @apiDescription Deletes the given group by ID
+ * @apiVersion 0.1.6
+ * @apiGroup Group
+ * @apiHeader {string} accesstoken The access token for the logged in user
  *
- * @todo revamp to support access token
- * @param {object} req Express Request
- * @param {object} res Express Response
- * @return {JSON} Success/Error Json Object
+ * @apiExample Example usage:
+ * curl -X DELETE -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/groups/:id
+ *
+ * @apiSuccess {boolean} success If the Request was a success
+ * @apiSuccess {object} error Error, if occurred
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
  */
 api_groups.deleteGroup = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id)) return res.status(400).json({success: false, error:'Error: Invalid Group Id.'});
-    var returnData = {
-        success: true
-    };
 
     async.series([
         function(next) {
@@ -261,6 +270,8 @@ api_groups.deleteGroup = function(req, res) {
             groupSchema.getGroupById(id, function(err, group) {
                 if (err) return next('Error: ' + err.message);
 
+                if (group.name.toLowerCase() === 'administrators') return next('Error: Unable to delete default Administrators group.');
+
                 group.remove(function(err, success) {
                     if (err) return next('Error: ' + err.message);
 
@@ -268,16 +279,10 @@ api_groups.deleteGroup = function(req, res) {
                 });
             });
         }
-    ], function(err, done) {
-        if (err) {
-            returnData.success = false;
-            returnData.error = err;
+    ], function(err) {
+        if (err) return res.status(400).json({success: false, error: err});
 
-            return res.json(returnData);
-        }
-
-        returnData.success = true;
-        return res.json(returnData);
+        return res.json({success: true});
     });
 };
 
