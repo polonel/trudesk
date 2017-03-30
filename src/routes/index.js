@@ -276,9 +276,6 @@ module.exports = function(app, middleware) {
     mainRoutes(router, middleware, controllers);
     app.use('/', router);
 
-    app.use(handle404);
-    app.use(handleErrors);
-
     //Load Plugin routes
     var dive = require('dive');
     var fs = require('fs');
@@ -292,14 +289,16 @@ module.exports = function(app, middleware) {
         else
             winston.warn('Unable to load plugin: ' + pluginDir);
     });
+
+    app.use(handle404);
+    app.use(handleErrors);
 };
 
 function handleErrors(err, req, res) {
     var status = err.status || 500;
-    res.status(status);
+    res.status(err.status);
 
     if (status == 404) {
-        winston.debug(err.message);
         res.render('404', {layout: false});
         return;
     }
@@ -319,9 +318,6 @@ function handleErrors(err, req, res) {
 
 }
 
-function handle404(req, res, next) {
-    var err = new Error('Not Found: ' + req.protocol + '://' + req.hostname + req.path);
-    err.status = 404;
-
-    next(err);
+function handle404(req, res) {
+    return res.status(404).render('404', {layout: false});
 }
