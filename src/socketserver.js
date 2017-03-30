@@ -791,7 +791,7 @@ module.exports = function(ws) {
             //Save lastOnline Time
             var userSchema = require('./models/user');
             userSchema.getUser(user._id, function(err, u) {
-                if (!err) {
+                if (!err && u) {
                     u.lastOnline = new Date();
 
                     u.save();
