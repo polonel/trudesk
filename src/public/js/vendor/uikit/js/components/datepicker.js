@@ -40,8 +40,8 @@
                 var content = '', i;
 
                 content += '<div class="uk-datepicker-nav">';
-                content += '<a href="" class="uk-datepicker-previous"></a>';
-                content += '<a href="" class="uk-datepicker-next"></a>';
+                content += '<a href="" class="no-ajaxy uk-datepicker-previous"></a>';
+                content += '<a href="" class="no-ajaxy uk-datepicker-next"></a>';
 
                 if (UI.formSelect) {
 
@@ -104,7 +104,7 @@
                                 if(day.selected) cls.push("uk-active");
                                 if(day.disabled) cls.push('uk-datepicker-date-disabled uk-datepicker-table-muted');
 
-                                content += '<td><a href="" class="'+cls.join(" ")+'" data-date="'+day.day.format()+'">'+day.day.format("D")+'</a></td>';
+                                content += '<td><a href="" class="no-ajaxy '+cls.join(" ")+'" data-date="'+day.day.format()+'">'+day.day.format("D")+'</a></td>';
                             }
                         }
                         content += '</tr>';
@@ -341,9 +341,15 @@
         }
     });
 
-    require(['moment'], function(moment) {
-        UI.Utils.moment = moment;
-    });
+    moment = window.moment;
+    UI.Utils.moment = moment;
+
+    // require(['moment'], function(moment) {
+    //     if (typeof moment === 'function')
+    //         UI.Utils.moment = moment;
+    //     else
+    //         UI.Utils.moment = window.moment;
+    // });
 
     return UI.datepicker;
 });
