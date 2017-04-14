@@ -222,8 +222,9 @@ function buildGraphData(arr, days, callback) {
 function buildAvgResponse(ticketArray, callback) {
     var cbObj = {};
     var $ticketAvg = [];
-    async.eachSeries(ticketArray, function (ticket, callback) {
-        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return callback();
+    for (var i = 0; i < ticketArray.length; i++) {
+        var ticket = ticketArray[i];
+        if (ticket.comments.length < 1) continue;
 
         var ticketDate = moment(ticket.date);
         var firstCommentDate = moment(ticket.comments[0].date);
@@ -232,21 +233,20 @@ function buildAvgResponse(ticketArray, callback) {
         $ticketAvg.push(diff);
 
         //Next Event Loop - async@2.0
-        async.setImmediate(function() {
-            return callback();
-        });
+        // async.setImmediate(function() {
+        //     return callback();
+        // });
 
-    }, function (err) {
-        if (err) return callback(err);
+    }
 
-        var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
-            return m + x;
-        }, 0);
-        var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
-        cbObj.avgResponse = Math.floor(tvt);
+    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+        return m + x;
+    }, 0);
 
-        return callback(cbObj);
-    });
+    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
+    cbObj.avgResponse = Math.floor(tvt);
+
+    return callback(cbObj);
 }
 
 module.exports = init;
