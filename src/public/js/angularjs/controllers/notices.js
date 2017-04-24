@@ -119,7 +119,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     });
 
                 helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
             };
 
             $scope.clearNotice = function() {
@@ -135,7 +134,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     });
 
                 helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
             };
 
             $scope.deleteNotices = function() {

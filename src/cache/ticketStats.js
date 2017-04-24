@@ -186,6 +186,7 @@ var init = function(tickets, callback) {
             });
         }
     }, function(err) {
+        $tickets = null; //Clear it
         callback(err, ex);
     });
 };

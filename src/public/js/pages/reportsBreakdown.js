@@ -29,8 +29,11 @@ define('pages/reportsBreakdown', [
 
     reportsBreakdownPage.init = function() {
         $(document).ready(function() {
-            var testPage = $('#page-content').find('.reportsBreakdown');
-            if (testPage.length < 1) return;
+            var testPage = $('#page-content').find('.reportsBreakdownGroup');
+            if (testPage.length < 1) {
+                testPage = $('#page-content').find('.reportsBreakdownUser');
+                if (testPage.length < 1) return true;
+            }
 
             helpers.resizeAll();
 
@@ -49,12 +52,18 @@ define('pages/reportsBreakdown', [
 
             $('#select_group').on('change', function() {
                 var self = $(this);
-                getData(self.val());
+                getData('/api/v1/tickets/stats/group/' + self.val());
             });
 
-            function getData(group) {
+            $('#select_user').on('change', function() {
+                var self = $(this);
+
+                getData('/api/v1/tickets/stats/user/' + self.val());
+            });
+
+            function getData(url) {
                 $.ajax({
-                        url: '/api/v1/tickets/stats/group/' + group,
+                        url: url,
                         method: 'GET',
                         success: function(_data) {
                             if (!_data.data.graphData)
@@ -173,7 +182,7 @@ define('pages/reportsBreakdown', [
                     })
                     .error(function(err) {
                         //console.log(err);
-                        console.log('[trudesk:dashboard:getData] Error - ' + err.responseText);
+                        console.log('[trudesk:reportsBreakdownGroup:getData] Error - ' + err.responseText);
                         helpers.UI.showSnackbar(JSON.parse(err.responseText).error, true);
                     });
             }

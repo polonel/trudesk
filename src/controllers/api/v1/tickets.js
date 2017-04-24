@@ -856,8 +856,109 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
 
         return res.json({success: true, data: data});
     });
-
 };
+
+/**
+ * @api {get} /api/v1/tickets/stats/user/:user Get Ticket Stats For User
+ * @apiName getTicketStatsForUser
+ * @apiDescription Gets live ticket stats for given userId
+ * @apiVersion 0.1.9
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/stats/user/{userid}
+ *
+ * @apiError InvalidRequest Invalid Post Data
+ *
+ */
+api_tickets.getTicketStatsForUser = function(req, res) {
+    var userId = req.params.user;
+    if (userId == 0) return res.status(200).json({success: false, error: 'Please Select User.'});
+    if (_.isUndefined(userId)) return res.status(400).json({success: false, error: 'Invalid User Id.'});
+
+    var ticketModel = require('../../../models/ticket');
+    var data = {};
+    var tags = {};
+    async.waterfall([
+        function(callback) {
+            ticketModel.getTicketsByRequester(userId, function(err, tickets) {
+                if (err) return callback(err);
+                if (_.isEmpty(tickets)) return callback(null, tickets);
+                var t = [];
+
+                async.each(tickets, function(ticket, cb) {
+                    _.each(ticket.tags, function(tag) {
+                        t.push(tag.name);
+                    });
+
+                    return cb();
+                }, function() {
+                    _.mixin({
+                        'sortKeysBy': function (obj, comparator) {
+                            var keys = _.sortBy(_.keys(obj), function (key) {
+                                return comparator ? comparator(obj[key], key) : key;
+                            });
+
+                            return _.object(keys, _.map(keys, function (key) {
+                                return obj[key];
+                            }));
+                        }
+                    });
+
+                    tags = _.reduce(t, function(counts, key) {
+                        counts[key]++;
+                        return counts;
+                    }, _.object(_.map(_.uniq(t), function(key) {
+                        return [key, 0];
+                    })));
+
+                    tags = _.sortKeysBy(tags, function(value) {
+                        return -value;
+                    });
+
+                    return callback(null, tickets);
+                });
+            });
+        },
+        function(tickets, callback) {
+            if (_.isEmpty(tickets)) return callback('User has no tickets to report.');
+            var today = moment().hour(23).minute(59).second(59);
+            var r = {};
+            tickets = _.sortBy(tickets, 'date');
+            r.recentTickets = _.last(tickets, 5);
+            r.closedTickets = _.filter(tickets, function(v) {
+                return v.status === 3;
+            });
+
+            var firstDate = moment(_.first(tickets).date).subtract(30, 'd');
+            var diffDays = today.diff(firstDate, 'days');
+
+            buildGraphData(tickets, diffDays, function(graphData) {
+                r.graphData = graphData;
+
+                //Get average Response
+                buildAvgResponse(tickets, function(obj) {
+                    r.avgResponse = obj.avgResponse;
+
+                    return callback(null, r);
+                });
+            });
+        }
+    ], function(err, results) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        //data.closedTickets = results.closedTickets;
+        data.recentTickets = results.recentTickets;
+        data.closedCount = _.size(results.closedTickets);
+        data.graphData = results.graphData;
+        data.avgResponse = results.avgResponse;
+        data.tags = tags;
+
+        return res.json({success: true, data: data});
+    });
+};
+
 
 function buildGraphData(arr, days, callback) {
     var graphData = [];

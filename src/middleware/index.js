@@ -40,7 +40,7 @@ module.exports = function(app, db, callback) {
     app.engine('hbs', hbs.express4({
         handlebars: HandleBars,
         defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
-        partialsDir: [path.join(__dirname + '/../views/partials/')]
+        partialsDir: [path.join(__dirname + '/../views/partials/'), path.join(__dirname + '/../views/subviews/reports')]
     }));
     app.set('view engine', 'hbs');
     hbsHelpers.register(hbs.handlebars);

@@ -17,7 +17,7 @@
                 {{#each data.common.users}}
                     {{#compare username '!=' ../data.common.loggedInAccount.username}}
                         <li data-search-term="{{lowercase fullname}}" data-user-id="{{_id}}">
-                            <a class="no-ajaxify" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
+                            <a class="no-ajaxy" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
                                 <div class="user-list-user">
                                     {{#if image}}
                                         <div class="image"><img src="/uploads/users/{{image}}"></div>

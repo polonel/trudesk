@@ -100,6 +100,16 @@ define('pages/dashboard', [
                         var responseTime = _data.ticketAvg;
                         var responseTime_animation = new CountUp('responseTime_text', oldResponseTime, responseTime, 0, 1.5);
                         responseTime_animation.start();
+
+                        //QuickStats
+                        var mostRequester = $('#mostRequester');
+                        mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
+                        var mostCommenter = $('#mostCommenter');
+                        mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
+                        var mostAssignee = $('#mostAssignee');
+                        mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
+                        var mostActiveTicket = $('#mostActiveTicket');
+                        mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
                     },
                     error: function(err) {
                         console.log('[trudesk:dashboard:getData] Error - ' + err.responseText);
@@ -148,7 +158,9 @@ define('pages/dashboard', [
                             data: {
                                 columns: arr,
                                 type: 'donut',
-                                colors: c
+                                colors: c,
+                                empty: { label: { text: "No Data Available" } }
+
                             },
                             donut: {
                                 label: {
@@ -205,7 +217,8 @@ define('pages/dashboard', [
                             data: {
                                 columns: arr,
                                 type: 'pie',
-                                colors: c
+                                colors: c,
+                                empty: { label: { text: "No Data Available" } }
                             },
                             donut: {
                                 label: {

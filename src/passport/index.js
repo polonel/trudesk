@@ -34,7 +34,7 @@ module.exports = function() {
         passwordField : 'login-password',
         passReqToCallback : true
     }, function(req, username, password, done) {
-        User.findOne({'username' : new RegExp("^" + username + "$", 'i')}, function(err, user) {
+        User.findOne({'username' : new RegExp("^" + username + "$", 'i')}).select('+password').exec(function(err, user) {
             if (err) {
                 return done(err);
             }

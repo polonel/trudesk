@@ -21,8 +21,7 @@ define('pages/messages', [
     'modules/helpers',
     'modules/socket',
     'history',
-    'isinview',
-    'nicescroll'
+    'isinview'
 
 ], function($, _, angular, UIKit, moment, helpers, socketClient) {
     var ui = socketClient.ui;
@@ -31,7 +30,6 @@ define('pages/messages', [
     messagesPage.init = function() {
         $(document).ready(function() {
             var $messageScroller    = $('#message-content.scrollable'),
-                $messageScrollerNS  = null,
                 $messagesWrapper    = $('#messages'),
                 $scrollspy          = $('#conversation-scrollspy'),
                 $spinner            = $scrollspy.find('i'),
@@ -72,9 +70,7 @@ define('pages/messages', [
 
             $(window).off('$trudesk:ready.messages');
             $(window).on('$trudesk:ready.messages', function() {
-                $messageScrollerNS = $messageScroller.getNiceScroll(0);
-                if ($messageScrollerNS != false)
-                    $messageScrollerNS.doScrollTop($messageScroller.outerHeight() + 5000, 1000);
+                helpers.scrollToBottom($messageScroller);
 
                 //set active
                 if ($convoId !== undefined) {
@@ -171,8 +167,7 @@ define('pages/messages', [
                    $messagesWrapper.prepend(html);
 
                    UIKit.$html.trigger('changed.uk.dom');
-                   helpers.resizeScroller($messageScroller);
-                   $messageScrollerNS.doScrollTop(height, -1);
+                   $messageScroller.scrollTop(height, true);
 
                    $nextPage = $nextPage + 1;
                    $loading = false;
@@ -254,7 +249,6 @@ define('pages/messages', [
 
                     ul.append(li);
 
-
                     var fromName = message.owner.fullname;
                     if (message.owner._id.toString() == $loggedInAccountId) {
                         fromName = 'You';
@@ -286,7 +280,6 @@ define('pages/messages', [
                 }
 
                 UIKit.$html.trigger('changed.uk.dom');
-                helpers.resizeScroller($messageScroller);
                 helpers.scrollToBottom($messageScroller);
             });
 

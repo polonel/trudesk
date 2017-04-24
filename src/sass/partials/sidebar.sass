@@ -35,36 +35,48 @@ ul.side-nav
     font-family: "Roboto", sans-serif
     margin: 0
     font-weight: normal
+    position: relative
 
     &.active > a
-      border-left: 2px solid $accent_color
       font-family: "Roboto", sans-serif !important
       background: $sidebar_item_active !important
       color: $sidebar_item_active_text !important
 
+      border-left: 5px solid $accent_color
+      &:hover
+        &:after
+          width: 0
+          transform: translateX(0)
+
       i,svg
-        color: $sidebar_item_active_text
-        fill: $sidebar_item_active_text
-      &:after
-        width: 0
-        height: 0
-        border-style: solid
-        border-width: 9px 9px 9px 0
-        border-color: transparent #f7f8fa transparent transparent
-        content: ""
-        position: absolute
-        top: 50%
-        margin-top: -9px
-        right: 0
+        color: $sidebar_item_active_text !important
+        fill: $sidebar_item_active_text !important
 
   a
     padding: 0 0.875rem !important
     color: $sidebar_text !important
-    border-left: 2px solid $sidebar_bg
+    //border-left: 2px solid $sidebar_bg
     position: relative
     padding-left: 60px !important
     line-height: 48px
     height: 48px
+
+    &:after
+      background: $accent_color
+      bottom: 0
+      content: ''
+      position: absolute
+      right: 100%
+      top: 0
+      width: 5px
+      -webkit-transition: -webkit-transform 0.2s ease-in-out
+      transition: -webkit-transform 0.2s ease-in-out
+      transition: transform 0.2s ease-in-out
+      transition: transform 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out
+
+    &:hover
+      &:after
+        transform: translateX(5px)
 
     &:not(.button)
       display: block
@@ -74,8 +86,9 @@ ul.side-nav
       padding-bottom: 5px
 
     &:hover
-      border-left: 2px solid $accent_color
+      //border-left: 2px solid $accent_color
       background: $sidebar_item_hover !important
+
       i,svg
         color: $sidebar_text_hover
         fill: $sidebar_text_hover
@@ -100,7 +113,6 @@ ul.side-nav-sub
   @extend .side-nav
   list-style: none
   background: $sidebar_subnav_bg
-  //+boxShadow(inset 0px 3px 4px rgba(0,0,0,0.07))
   box-shadow: $sidebar_subnav_box_shadow
   +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
   margin: 0
@@ -116,18 +128,24 @@ ul.side-nav-sub
     background: $sidebar_subnav_hr
   li
     margin: 5px 0
+    position: relative
+
     &.active
-      a
+      > a
         background: $sidebar_subnav_bg !important
         color: $sidebar_subnav_active !important
         font-weight: bold
         border: none
         border-right: 1px solid rgba(0,0,0,0.1)
-        &:after
-          content: none
+
+        //&:after
+        //  content: none
 
         &:hover
           background: $sidebar_subnav_item_hover !important
+          &:after
+            width: 5px
+            transform: translateX(5px)
         i,svg
           color: $sidebar_subnav_active !important
           fill: $sidebar_subnav_active !important

@@ -37,7 +37,7 @@ var api_notices = {};
  * }
  *
  * @apiExample Example usage:
- * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/notices/create
+ * curl -X POST -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/notices/create
  *
  * @apiSuccess {object} notice Notice Object that was created.
  *

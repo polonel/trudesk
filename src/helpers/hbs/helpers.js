@@ -464,6 +464,10 @@ var helpers = {
         return buffer;
     },
 
+    now: function() {
+        return new moment();
+    },
+
     formatDate: function(date, format) {
         return moment(date).format(format);
     },

@@ -115,6 +115,94 @@
                 </div>
             </div>
 
+            <div class="uk-grid uk-margin-medium-bottom">
+                <div class="uk-width-1-2">
+                    <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.tru-card-content'}">
+                        <div class="uk-width-medium-1-1">
+                            <div id="overdue_tickets" class="tru-card tru-card-hover" style="min-height: 245px;">
+                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">Overdue Tickets</h6>
+                                <hr class="nomargin">
+                                <div class="tru-card-content">
+                                    <div class="uk-overflow-container">
+                                        <table class="uk-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="uk-text-nowrap">Ticket</th>
+                                                <th class="uk-text-nowrap">Status</th>
+                                                <th class="uk-text-nowrap">Subject</th>
+                                                <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {{#each data.tickets.overdue}}
+                                                <tr class="uk-table-middle">
+                                                    <td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/{{uid}}">T#{{uid}}</a></td>
+                                                    <td class="uk-width-1-10 uk-text-nowrap"><span
+                                                            class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>
+                                                    <td class="uk-width-6-10">
+                                                        {{subject}}
+                                                    </td>
+                                                    <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                        {{{formatDate updated "MM.DD.YYYY"}}}
+                                                    </td>
+                                                </tr>
+                                            {{/each}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-2">
+                    <div class="uk-grid" data-uk-grid-margin>
+                        <div class="uk-width-1-1">
+                            <div class="tru-card tru-card-hover" data-match-height="#overdue_tickets2">
+                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">Quick Stats (Lifetime)</h6>
+                                <hr class="nomargin">
+                                <div class="tru-card-content">
+                                    <div class="uk-overflow-container">
+                                        <table class="uk-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="uk-text-nowrap">Stat</th>
+                                                <th class="uk-text-nowrap uk-text-right">Value</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most tickets by...</td>
+                                                <td id="mostRequester" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
+
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most comments by....</td>
+                                                <td id="mostCommenter" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
+
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most assigned support user....</td>
+                                                <td id="mostAssignee" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
+                                            </tr>
+
+                                            <tr class="uk-table-middle">
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most active ticket...</td>
+                                                <td class="uk-width-4-10 uk-text-right  uk-text-small"><a id="mostActiveTicket" href="#">--</a></td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </div>

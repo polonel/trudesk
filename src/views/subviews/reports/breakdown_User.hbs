@@ -1,4 +1,4 @@
-<div class="uk-grid uk-grid-collpase nopadding reportsOverview" ng-controller="reportsCtrl">
+<div class="uk-grid uk-grid-collpase nopadding reportsBreakdownUser" ng-controller="reportsCtrl">
     <div class="uk-width-1-1 page-title">
         <p class="left uk-margin-medium-left">{{title}}</p>
 
@@ -21,19 +21,14 @@
                 <!--</div>-->
             <!--</div>-->
             <div style="margin-top: 8px;">
-                <select id="select_timespan" name="select_timespan" data-md-selectize>
-                    <option value="30" selected>Last 30 Days</option>
-                    <option value="60">Last 60 Days</option>
-                    <option value="90">Last 90 Days</option>
-                    <option value="180">Last 180 Days</option>
-                    <option value="365">Last 365 Days</option>
-                    <option value="0">Lifetime</option>
+                <select id="select_user" name="select_user" data-md-selectize>
+                    <option value="0">Select User</option>
+                    {{#each data.common.users}}
+                        <option value="{{_id}}">{{fullname}}</option>
+                    {{/each}}
                 </select>
             </div>
         </div>
-
-        <div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;"><strong>Last
-            Updated:</strong> <span>Cache Still Loading...</span></div>
     </div>
 
     <div class="uk-width-1-1 full-height page-content scrollable">
@@ -45,7 +40,7 @@
                             <div class="right uk-margin-top uk-margin-small-right">
                                 <span class="peity-bar">5,3,9,6,5,9,7</span>
                             </div>
-                            <span class="uk-text-muted uk-text-small">Total Tickets (last 30d)</span>
+                            <span class="uk-text-muted uk-text-small">Total Tickets (Lifetime)</span>
 
                             <h2 class="uk-margin-remove">
                                 <span id="ticketCount">--</span>
@@ -89,8 +84,8 @@
                     <div class="left">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
                     </div>
-                    <div class="right" style="position:relative;">
-                        <button class="action-link"><i class="material-icons">refresh</i></button>
+                    <!--<div class="right" style="position:relative;">-->
+                        <!--<button class="action-link"><i class="material-icons">refresh</i></button>-->
                         <!--<div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"-->
                              <!--aria-expanded="false">-->
                             <!--<button class="action-link"><i class="material-icons">more_vert</i></button>-->
@@ -101,8 +96,9 @@
                                     <!--<li><a href="#">This is a Link</a></li>-->
                                 <!--</ul>-->
                             <!--</div>-->
+
                         <!--</div>-->
-                    </div>
+                    <!--</div>-->
                     <hr class="nomargin-top">
                     <div class="panel-body2">
                         <div id="test" class="mGraph mGraph-panel graph-blue1">
@@ -113,45 +109,38 @@
             </div>
             <div class="uk-grid uk-margin-medium-bottom">
                 <div class="uk-width-1-2">
-                    <div class="panel trupanel nopadding" style="min-height: 265px;">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 5 Groups</h6>
+                    <div id="recentTickets" class="panel trupanel nopadding" style="min-height: 265px;">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Most Recent Tickets</h6>
                         <hr class="nomargin">
-                        <div id="pieChart"></div>
-                    </div>
-                </div>
-                <div class="uk-width-1-2">
-                    <div class="panel trupanel nopadding" style="min-height: 265px;">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 10 Tags</h6>
-                        <hr class="nomargin">
-                        <div class="" style="padding: 10px;">
-                            <div id="topTenTags" style="width: 100%;"></div>
+                        <div class="tru-card-content">
+                            <div class="uk-overflow-container">
+                                <table class="uk-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="uk-text-nowrap">Ticket</th>
+                                        <th class="uk-text-nowrap">Status</th>
+                                        <th class="uk-text-nowrap">Subject</th>
+                                        <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="recent-tickets">
+
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
-
-                <!--<div class="small-3 columns">-->
-                <!--<div class="panel trupanel nopadding">-->
-                <!--<div class="tru-card tru-card-overlay">-->
-                <!--<div class="tru-card-content">-->
-                <!--<div class="epc_chart donutchart" data-percent="76" data-bar-color="#03a9f4" data-size="135">-->
-                <!--<span class="epc_chart_icon">-->
-                <!--<i class="fa fa-user"></i>-->
-                <!--</span>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--<div class="tru-card-overlay-content">-->
-                <!--<div class="clearfix tru-card-overlay-header">-->
-                <!--<i class="material-icons tru-icon tru-card-overlay-toggler">more_vert</i>-->
-                <!--<h3>User Messages</h3>-->
-                <!--</div>-->
-                <!--Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus alias consectetur.-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
-                <!--</div>-->
+                <div class="uk-width-1-2">
+                    <div id="grpTags" class="panel trupanel nopadding" style="min-height: 265px;" data-match-height="#recentTickets">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Tags</h6>
+                        <hr class="nomargin">
+                        <div class="tru-card-content">
+                            <div id="topTags" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-
         </div>
     </div>
 </div>

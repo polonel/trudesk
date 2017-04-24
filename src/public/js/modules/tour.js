@@ -89,123 +89,123 @@ define('modules/tour', [
         }
     });
 
-    // tour.addStep('dashboard', {
-    //     title: 'Dashboard',
-    //     text: 'This is your dashboard screen. It will show you stats at a glance.'
-    // });
-    //
-    // tour.addStep('topbar', {
-    //     title: 'Top Nav',
-    //     text: 'This is your top nav. It has quick links to frequently used functions and notifications.',
-    //     attachTo: '.top-nav bottom'
-    // });
-    //
-    // tour.addStep('addTicket', {
-    //     title: 'Quick Link - Add Ticket',
-    //     text: '<strong> Add Ticket </strong> quick link will is the fastest way to submit and enter a ticket. Go ahead give it a push!',
-    //     attachTo: '.top-menu .tour-addTicket bottom',
-    //     buttons: [],
-    //     when: {
-    //         show: function() {
-    //             var $target = $('.tour-addTicket');
-    //             $target.on('click', advanceTourDelayed);
-    //             $('button.uk-modal-close').attr('disabled', true);
-    //             $('button#submitNewTicket').attr('disabled', true);
-    //         },
-    //         hide: function() {
-    //             setTimeout(function() {
-    //                 var $target = $('.tour-addTicket');
-    //                 $target.off('click', advanceTourDelayed);
-    //             }, 5000);
-    //         }
-    //     }
-    // });
-    //
-    // tour.addStep('addTicketForm', {
-    //     title: 'Add Ticket Form',
-    //     text: 'The great ticket form. Use this to submit new request. Don\'t worry it\'s pretty simple. Remember, always try to be as detailed as possible.',
-    //     attachTo: '#ticketCreateModal .uk-modal-dialog left',
-    //     when: {
-    //         hide: function() {
-    //             UIKit.modal($('#ticketCreateModal')).hide();
-    //         }
-    //     }
-    // });
-    //
-    // tour.addStep('messagesIcon', {
-    //     title: 'Messages Notification',
-    //     text: 'Here you will see your notification for chat messages sent by other users.',
-    //     attachTo: '.tour-messagesNotification bottom'
-    // });
-    //
-    // tour.addStep('ticketNotifications', {
-    //     title: 'Ticket Notifications',
-    //     text: 'This is where you\'ll get notification updates about tickets.',
-    //     attachTo: '.tour-ticketNotifications bottom'
-    // });
+    tour.addStep('dashboard', {
+        title: 'Dashboard',
+        text: 'This is your dashboard screen. It will show you stats at a glance.'
+    });
 
-    // tour.addStep('onlineUserListButton', {
-    //     title: 'Chat - User List',
-    //     text: 'Push this to open the user list to quickly send a message to any user.',
-    //     attachTo: '.tour-onlineUserListButton bottom',
-    //     buttons: [],
-    //     //advanceOn: '.tour-onlineUserListButton click',
-    //     when: {
-    //         show: function() {
-    //             var $target = $('.tour-onlineUserListButton');
-    //             $target.on('click', function() {
-    //                 setTimeout(function() {
-    //                     tour.show('onlineUserList');
-    //                 }, 300);
-    //             });
-    //         },
-    //         hide: function() {
-    //             var $target = $('.tour-onlineUserListButton');
-    //             $target.off('click');
-    //         }
-    //     }
-    // });
-    //
-    // tour.addStep('onlineUserList', {
-    //     title: 'Chat - User List',
-    //     text: 'There it is! Your user list. Lets move on!',
-    //     when: {
-    //         hide: function() {
-    //             // History.pushState(null, null, '/tickets');
-    //         }
-    //     }
-    // });
-    //
+    tour.addStep('topbar', {
+        title: 'Top Nav',
+        text: 'This is your top nav. It has quick links to frequently used functions and notifications.',
+        attachTo: '.top-nav bottom'
+    });
 
-    // tour.addStep('profileButton', {
-    //     title: 'Profile',
-    //     text: 'Clicking your profile picture will open up your profile dropdown.',
-    //     attachTo: 'img#profileImage bottom'
-    // });
+    tour.addStep('addTicket', {
+        title: 'Quick Link - Add Ticket',
+        text: '<strong> Add Ticket </strong> quick link will is the fastest way to submit and enter a ticket. Go ahead give it a push!',
+        attachTo: '.top-menu .tour-addTicket bottom',
+        buttons: [],
+        when: {
+            show: function() {
+                var $target = $('.tour-addTicket');
+                $target.on('click', advanceTourDelayed);
+                $('button.uk-modal-close').attr('disabled', true);
+                $('button#submitNewTicket').attr('disabled', true);
+            },
+            hide: function() {
+                setTimeout(function() {
+                    var $target = $('.tour-addTicket');
+                    $target.off('click', advanceTourDelayed);
+                }, 5000);
+            }
+        }
+    });
 
-    // tour.addStep('sidebar_tickets', {
-    //     title: 'Tickets',
-    //     text: 'This is the core of trudesk. You\'ll find all your current and past tickets located here.',
-    //     attachTo: '.navTickets right',
-    //     buttons: [],
-    //     when: {
-    //         show: function() {
-    //             UIKit.offcanvas.hide();
-    //             //$('#page-content').css({background: 'rgba(0,0,0,0.5)'});
-    //             $('#page-content').css({opacity: 0.5});
-    //             var $target = $('.navTickets');
-    //             $target.on('click', function() {
-    //                 tour.next();
-    //             });
-    //         }
-    //     }
-    // });
-    //
-    // tour.addStep('tickets_page', {
-    //     title: 'Tickets',
-    //     text: 'Here you will find all new, open, or pending tickets. If any tickets are overdue they will flash red. <br /><br />' +
-    //             'Take a minute to review this screen and click next to proceed.'
-    // });
+    tour.addStep('addTicketForm', {
+        title: 'Add Ticket Form',
+        text: 'The great ticket form. Use this to submit new request. Don\'t worry it\'s pretty simple. Remember, always try to be as detailed as possible.',
+        attachTo: '#ticketCreateModal .uk-modal-dialog left',
+        when: {
+            hide: function() {
+                UIKit.modal($('#ticketCreateModal')).hide();
+            }
+        }
+    });
+
+    tour.addStep('messagesIcon', {
+        title: 'Messages Notification',
+        text: 'Here you will see your notification for chat messages sent by other users.',
+        attachTo: '.tour-messagesNotification bottom'
+    });
+
+    tour.addStep('ticketNotifications', {
+        title: 'Ticket Notifications',
+        text: 'This is where you\'ll get notification updates about tickets.',
+        attachTo: '.tour-ticketNotifications bottom'
+    });
+
+    tour.addStep('onlineUserListButton', {
+        title: 'Chat - User List',
+        text: 'Push this to open the user list to quickly send a message to any user.',
+        attachTo: '.tour-onlineUserListButton bottom',
+        buttons: [],
+        //advanceOn: '.tour-onlineUserListButton click',
+        when: {
+            show: function() {
+                var $target = $('.tour-onlineUserListButton');
+                $target.on('click', function() {
+                    setTimeout(function() {
+                        tour.show('onlineUserList');
+                    }, 300);
+                });
+            },
+            hide: function() {
+                var $target = $('.tour-onlineUserListButton');
+                $target.off('click');
+            }
+        }
+    });
+
+    tour.addStep('onlineUserList', {
+        title: 'Chat - User List',
+        text: 'There it is! Your user list. Lets move on!',
+        when: {
+            hide: function() {
+                // History.pushState(null, null, '/tickets');
+            }
+        }
+    });
+
+
+    tour.addStep('profileButton', {
+        title: 'Profile',
+        text: 'Clicking your profile picture will open up your profile dropdown.',
+        attachTo: 'img#profileImage bottom'
+    });
+
+    tour.addStep('sidebar_tickets', {
+        title: 'Tickets',
+        text: 'This is the core of trudesk. You\'ll find all your current and past tickets located here.',
+        attachTo: '.navTickets right',
+        buttons: [],
+        when: {
+            show: function() {
+                UIKit.offcanvas.hide();
+                //$('#page-content').css({background: 'rgba(0,0,0,0.5)'});
+                $('#page-content').css({opacity: 0.5});
+                var $target = $('.navTickets');
+                $target.on('click', function() {
+                    tour.next();
+                });
+            }
+        }
+    });
+
+    tour.addStep('tickets_page', {
+        title: 'Tickets',
+        text: 'Here you will find all new, open, or pending tickets. If any tickets are overdue they will flash red. <br /><br />' +
+                'Take a minute to review this screen and click next to proceed.'
+    });
 
     tour.addStep('sidebar_messages', {
         title: 'Messages',

@@ -39,7 +39,6 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
         'fastclick',
         'placeholder',
         'pace',
-        'nicescroll',
         'easypiechart'
 
     ], function(_, nav, tour) {

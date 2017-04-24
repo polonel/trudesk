@@ -238,6 +238,7 @@ viewController.getUsers = function(request, callback) {
         u.accessToken = null;
         u.iOSDeviceTokens = null;
         u.preferences = null;
+        u.tOTPKey = null;
 
         u = _.sortBy(u, 'fullname');
 

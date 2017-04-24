@@ -1,0 +1,61 @@
+<div class="uk-grid uk-grid-collpase nopadding reportsGenerate" ng-controller="reportsCtrl">
+    <div class="uk-width-1-1 page-title">
+        <p class="left uk-margin-medium-left">{{title}}</p>
+
+        <!--<div class="uk-float-right clearfix" style="min-width: 250px;">-->
+            <!--<button class="uk-float-right btn md-btn md-btn-flat md-btn-flat-primary" style="margin: 15px 15px 0 0; min-width: 15px !important;"><i class="fa fa-question fa-align-center fa-large"></i></button>-->
+        <!--</div>-->
+    </div>
+
+    <div class="uk-width-1-1 full-height page-content scrollable">
+        <div id="page-content-inner" style="padding-bottom: 0;">
+            <div id="selectReportType" class="uk-grid uk-grid-medium uk-margin-medium-bottom">
+                <div class="uk-width-1-4">
+                    <div class="tru-card full-height" data-offset="25">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Select Report</h6>
+                        <hr class="nomargin">
+                        <div class="tru-card-content">
+                            <ul style="margin: 0; padding: 0; list-style: none;">
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_group');">Tickets by Groups</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_priorities');">Tickets by Priorities</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_status');">Tickets by Status</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_tags');">Tickets by Tags</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_types');">Tickets by Types</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_users');">Tickets by Users</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-3-4">
+                    <div id="select_report_type" class="active_report_type">
+                        <h3 class="uk-text-muted" style="font-weight: 300; opacity: 0.7;">Please select a report type...</h3>
+                    </div>
+                    <div id="report_tickets_by_group" class="hide">
+                        {{> generate_partials/report_TicketsByGroup }}
+                    </div>
+                    <div id="report_tickets_by_priorities" class="hide">
+                        {{> generate_partials/report_TicketsByPriorities }}
+                    </div>
+                    <div id="report_tickets_by_status" class="hide">
+                        {{> generate_partials/report_TicketsByStatus }}
+                    </div>
+                    <div id="report_tickets_by_tags" class="hide">
+                        {{> generate_partials/report_TicketsByTags }}
+                    </div>
+                    <div id="report_tickets_by_types" class="hide">
+                        {{> generate_partials/report_TicketsByTypes }}
+                    </div>
+                    <div id="report_tickets_by_users" class="hide">
+                        {{> generate_partials/report_TicketsByUsers }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{{#contentFor 'js-plugins'}}
+
+{{/contentFor}}

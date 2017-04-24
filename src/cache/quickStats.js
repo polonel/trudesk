@@ -84,6 +84,7 @@ var init = function(tickets, callback) {
         }
 
     ], function(err) {
+        $tickets = null; //clear it
         if (err) return callback(err);
 
         return callback(null, obj);

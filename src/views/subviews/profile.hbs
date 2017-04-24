@@ -11,7 +11,7 @@
     <div class="page-title uk-width-1-1 noshadow page-title-border-bottom">
         <p class="left">{{data.account.fullname}}</p>
         <div class="right" style="margin: 15px 15px 0 0;">
-            <button class="md-btn md-btn-flat md-btn-flat-primary md-btn-wave md-btn-wave-light md-btn-small" ng-click="showTour();">Show Tour</button>
+            <button class="md-btn md-btn-white md-btn-flat-primary md-btn-wave md-btn-wave-light md-btn-small" ng-click="showTour();">Show Tour</button>
         </div>
     </div>
     <!--Content Here-->
@@ -120,12 +120,12 @@
                                 <div class="right" style="position:relative; padding: 15px;">
                                     <button
                                             type="button"
-                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-danger md-btn-wave-light removeApiButton {{#unless data.account.accessToken}} hide {{/unless}}"
+                                            class="uk-float-right md-btn md-btn-small md-btn-danger md-btn-wave-light removeApiButton {{#unless data.account.accessToken}} hide {{/unless}}"
                                             ng-click="removeApiKey($event)">Remove Token
                                     </button>
                                     <button
                                             type="button"
-                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-success md-btn-wave-light generateApiButton {{#if data.account.accessToken}} hide {{/if}}"
+                                            class="uk-float-right md-btn md-btn-small md-btn-success md-btn-wave-light generateApiButton {{#if data.account.accessToken}} hide {{/if}}"
                                             ng-click="generateApiKey($event)">Generate Token
                                     </button>
                                 </div>

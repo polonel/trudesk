@@ -188,6 +188,16 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   }
 }
 
+.md-btn-white {
+  background: #fff;
+  &:hover, &:focus {
+    background: rgba(153,153,153,0.2);
+  },
+  &:active {
+    background: rgba(153, 153, 153, 0.4);
+  }
+}
+
 .md-btn-flat-danger {
   color: #e53935;
   &:hover, &:focus, &:active {

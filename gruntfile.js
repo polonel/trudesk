@@ -192,7 +192,7 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss', 'builddocs']);
+    grunt.registerTask('build', ['builddocs', 'uglify:uikit', 'shell:webpackDist', 'buildcss']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('changelog', ['conventionalChangelog']);
     grunt.registerTask('default', ['server']);

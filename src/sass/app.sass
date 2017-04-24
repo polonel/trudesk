@@ -11,12 +11,27 @@
   -moz-box-sizing: border-box
   box-sizing: border-box
 
+::-webkit-scrollbar
+  background: rgba(255,255,255,0.1)
+  position: absolute
+  width: 5px
+
+::-webkit-scrollbar-thumb
+  //background-color: darken(#42464d, 3%)
+  background-color: darken(#ddd, 25%)
+
+::-webkit-scrollbar-track
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.0)
+
 html,
 body
   background: #f7f8fa
-  overflow: hidden
   font-family: $fontFamily
   height: 100%
+  -webkit-font-smoothing: antialiased
+
+//body
+//  overflow: hidden
 
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td
   margin: 0

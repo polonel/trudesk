@@ -47,7 +47,6 @@ define('pages/tags', [
             });
 
             helpers.resizeDataTables('.tagsList');
-            helpers.resizeScroller();
         });
     };
 

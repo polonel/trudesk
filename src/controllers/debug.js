@@ -13,12 +13,149 @@
  **/
 
 var _               = require('underscore');
+var async           = require('async');
 var path            = require('path');
 var winston         = require('winston');
 
 var debugController = {};
 
 debugController.content = {};
+
+debugController.populatedatabase = function(req, res) {
+    var ticketSchema = require('../models/ticket');
+    var ticketTypeSchema = require('../models/tickettype');
+    var userSchema = require('../models/user');
+    var groupSchema = require('../models/group');
+
+    async.series([
+        function(done) {
+            var users = [];
+            for (var i = 0; i < 11; i++) {
+                var random = Math.floor(Math.random() * (10000 - 1 + 1)) + 1;
+                var user = {
+                    username: 'User.' + random,
+                    fullname: 'User ' + random,
+                    email: 'user.' + random + '@fakeemail.com',
+                    password: 'password',
+                    role: 'user'
+                };
+
+                users.push(user);
+            }
+
+            async.each(users, function(u, cb) {
+                var U = new userSchema(u);
+                U.save(cb);
+            }, function(err) {
+                done(err);
+            })
+        },
+        function(done) {
+            var groups = [];
+            for (var i = 0; i < 11; i++) {
+                var random = Math.floor(Math.random() * (10000 - 1 + 1)) + 1;
+                var group = {
+                    name: 'Test Group ' + random
+                };
+
+                groups.push(group)
+            }
+
+            async.each(groups, function(g, cb) {
+                var G = new groupSchema(g);
+                G.save(cb);
+            }, function(err) { done(err); });
+        },
+        function(done) {
+            userSchema.findAll(function(err, users) {
+                groupSchema.getAllGroups(function(err, groups) {
+                    ticketTypeSchema.getTypes(function(err, types) {
+                        var tickets = [];
+                        for (var i = 0; i < 1001; i++) { // 1000 Tickets
+                            var user = users[Math.floor(Math.random()*users.length)];
+                            var group = groups[Math.floor(Math.random()*groups.length)];
+                            var type = types[Math.floor(Math.random()*types.length)];
+                            var ticket = {
+                                date: randomDate(new Date(2015, 0, 1), new Date()),
+                                owner: user._id,
+                                group: group._id,
+                                type: type._id,
+                                status: Math.floor(Math.random() * 4),
+                                priority: Math.floor(Math.random() * 3) + 1,
+                                subject: 'Example Ticket With ' + Math.floor(Math.random() * (10000 - 1 + 1)) + 1,
+                                issue: 'Here is my issue Text'
+                            };
+
+                            tickets.push(ticket);
+                        }
+
+                        async.each(tickets, function(t, cb) {
+                            var T = new ticketSchema(t);
+                            T.save(cb);
+                        }, function (err){ done(err); });
+                    });
+                });
+            });
+        }
+    ], function(err) {
+        if (err) return res.status(400).send(err);
+
+        return res.send('OK');
+    });
+};
+
+function randomDate(start, end) {
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+}
+
+// debugController.testexport = function(req, res) {
+//     var ticketSchema = require('../models/ticket');
+//     var csv          = require('csv');
+//     var moment       = require('moment');
+//     ticketSchema.getAll(function(err, tickets) {
+//         if (err) return res.status(500).send(err);
+//
+//         var input = [];
+//         for (var i = 0; i < 11; i++) {
+//             var ticket = tickets[i];
+//             var t = [];
+//             t.push(ticket.uid);
+//             t.push(ticket.priorityFormatted);
+//             t.push(ticket.statusFormatted);
+//             t.push(moment(ticket.date).format('MMM DD, YY HH:mm:ss'));
+//             t.push(ticket.subject);
+//             t.push(ticket.owner.fullname);
+//             t.push(ticket.group.name);
+//             if (ticket.assignee)
+//                 t.push(ticket.assignee.fullname);
+//             else
+//                 t.push('');
+//
+//             input.push(t);
+//         }
+//
+//         tickets = null;
+//
+//         var headers = {
+//             uid: 'uid',
+//             priority: 'priority',
+//             status: 'status',
+//             created: 'created',
+//             subject: 'subject',
+//             requester: 'requester',
+//             group: 'group',
+//             assignee: 'assignee'
+//         };
+//
+//        csv.stringify(input, { header: true, columns: headers }, function(err, output) {
+//            if (err) return res.status(500).send(err);
+//
+//            res.setHeader('Content-disposition', 'attachment; filename=report_output.csv');
+//            res.set('Content-Type', 'text/csv');
+//            res.send(output);
+//        });
+//     })
+// };
 
 debugController.sendmail = function(req, res) {
     var mailer              = require('../mailer');
