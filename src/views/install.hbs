@@ -469,7 +469,7 @@
                                     $restartSlide.fadeIn(300, function() {
                                         $restartSlide.addClass('activeSlide');
                                     });
-                                })
+                                });
                             }
                         }
                     });
@@ -602,7 +602,16 @@
                             text: 'We did it! Everything is all set up!'
                         });
 
-                        advanceSlide();
+                        var $savingConfig = $('#savingConfig');
+                        var $restartSlide = $('#restartSlide');
+                        $savingConfig.fadeOut(300, function() {
+                            $savingConfig.addClass('hide');
+                            $restartSlide.css({display: 'none'}).removeClass('hide');
+                            $restartSlide.fadeIn(300, function() {
+                                $restartSlide.addClass('activeSlide');
+                            });
+                        });
+
                     },
                     error: function(response) {
 //                    window.Snackbar.show({

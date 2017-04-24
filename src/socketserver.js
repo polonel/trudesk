@@ -625,8 +625,9 @@ module.exports = function(ws) {
                     conversationSchema.getConversation(convoId, function(err, conversation) {
                         if (err || !conversation) return done();
                         _.each(conversation.participants, function(i) {
-                            if (i._id.toString() !== loggedInAccountId.toString()) {
-                                return partner === i.toObject();
+                            if (i._id.toString() != loggedInAccountId.toString()) {
+                                partner = i.toObject();
+                                return partner;
                             }
                         });
 
@@ -791,7 +792,7 @@ module.exports = function(ws) {
             //Save lastOnline Time
             var userSchema = require('./models/user');
             userSchema.getUser(user._id, function(err, u) {
-                if (!err) {
+                if (!err && u) {
                     u.lastOnline = new Date();
 
                     u.save();

@@ -59,7 +59,7 @@ define('modules/chat',[
                 var imageUrl = onlineUser.image;
                 if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
                 html += '<li>';
-                html += '<a class="no-ajaxify" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
+                html += '<a class="no-ajaxy" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
                 html += '<div class="online-list-user">';
                 html += '<div class="image"><img src="/uploads/users/' + imageUrl + '"></div>';
                 html += '<div class="online-status"></div>';
@@ -95,7 +95,7 @@ define('modules/chat',[
         socket.on('$trudesk:chat:updateOnlineBubbles', function(data) {
             var $u = _.throttle(function() {
                 UpdateOnlineBubbles(data);
-            }, 1500, {trailing: false});
+            }, 1000, {trailing: false});
 
             $u();
         });
@@ -108,7 +108,7 @@ define('modules/chat',[
                 startConversation(loggedInAccountId, data._id, function(err, convo) {
                     if (err) {
                         console.log('[trudesk:chat:openChatWindow] - Error');
-                        console.log(err);
+                        console.error(err);
                         return helpers.UI.showSnackbar('Unable to start chat', true);
                     } else {
                         History.pushState(null, null, '/messages/' + convo._id, true);
@@ -168,14 +168,14 @@ define('modules/chat',[
             var isTypingDiv = chatBox.find('.user-is-typing-wrapper');
             isTypingDiv.removeClass('hide');
             var scroller = chatBox.find('.chat-box-messages');
-            if (scroller != undefined)
-                helpers.scrollToBottom(scroller);
+            if (scroller.length > 0)
+                if (scroller.scrollTop() == scroller[0].scrollHeight)
+                    helpers.scrollToBottom(scroller);
 
             scroller = $('#message-content');
-            if (scroller != undefined) {
+            if (scroller.length > 0) {
                 // Only scroll if the scroller is on bottom
-                var ns = scroller.getNiceScroll(0);
-                if (ns && ns.getScrollTop() == ns.page.maxh)
+                if (scroller.scrollTop() == scroller[0].scrollHeight)
                     helpers.scrollToBottom(scroller);
             }
         });
@@ -198,15 +198,15 @@ define('modules/chat',[
             for (var i = 0; i < chatBox.length; i++) {
                 chatBox[i].find('.user-is-typing-wrapper').addClass('hide');
                 scroller = chatBox[i].find('.chat-box-messages');
-                if (scroller != undefined)
-                    helpers.scrollToBottom(scroller);
+                if (scroller.length > 0)
+                    if (scroller.scrollTop() == scroller[0].scrollHeight)
+                        helpers.scrollToBottom(scroller);
             }
 
             scroller = $('#message-content');
-            if (scroller != undefined) {
+            if (scroller.length > 0) {
                 // Only scroll if the scroller is on bottom
-                var ns = scroller.getNiceScroll(0);
-                if (ns && ns.getScrollTop() == ns.page.maxh)
+                if (scroller.scrollTop() == scroller[0].scrollHeight)
                     helpers.scrollToBottom(scroller);
             }
         });
@@ -483,7 +483,7 @@ define('modules/chat',[
             if (err) {
                 console.log('[trudesk:chat:openChatWindow] - Error');
                 console.log(err);
-                return helpers.UI.showSnackbar('Unable to start chat', true);
+                // return helpers.UI.showSnackbar('Unable to start chat', true);
             }
 
             var username = $('#__loggedInAccount_username').text();
@@ -598,11 +598,7 @@ define('modules/chat',[
         //else
         //     messages.height(156);
 
-        var ns = messages.getNiceScroll(0);
-        if (ns) {
-            ns.resize();
-            ns.doScrollTop(99999, 100);
-        }
+        messages.scrollTop(messages[0].scrollHeight);
     }
 
     return chatClient;

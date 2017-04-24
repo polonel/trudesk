@@ -20,12 +20,7 @@
             </ul>
         </li>
         <li {{#is nav 'messages'}} class='active' {{/is}}>
-            <a href="/messages" class="ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">chat</i>Messages</a>
-            <!--<ul id="side-nav-sub-messages" class="side-nav-sub {{#is nav 'messages'}} subMenuOpen {{/is}}">-->
-                <!--<li {{#is subnav 'messages-inbox'}} class='active' {{/is}}><a href="/messages/inbox"><i class="material-icons fa-sub-icon">inbox</i>Inbox</a></li>-->
-                <!--<li {{#is subnav 'messages-sentitems'}} class='active' {{/is}}><a href="/messages/sentitems"><i class="material-icons fa-sub-icon">move_to_inbox</i>Sent</a></li>-->
-                <!--<li {{#is subnav 'messages-trash'}} class='active' {{/is}}><a href="/messages/trash"><i class="material-icons fa-sub-icon">delete</i>Trash</a></li>-->
-            <!--</ul>-->
+            <a href="/messages" class="navMessages ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">chat</i>Messages</a>
         </li>
         <!--<li {{#is nav 'calendar'}} class='active' {{/is}}><a href="/calendar"><i class="fa fa-calendar fa-large"></i>Calendar</a></li>-->
         <!--<li {{#is nav 'servers'}} class='active' {{/is}}>-->
@@ -50,9 +45,11 @@
                 </a>
                 <ul id="side-nav-sub-reports" class="side-nav-sub {{#is nav 'reports'}} subMenuOpen {{/is}}">
                     <li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i>Overview</a></li>
+                    <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i>Generate</a></li>
                     <hr/>
                     <!--<li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown">< i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>-->
-                    <li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown"><i class="material-icons fa-sub-icon">poll</i>Breakdown</a></li>
+                    <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i>Group Breakdown</a></li>
+                    <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i>User Breakdown</a></li>
                     <!--<li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>-->
                     <!--<li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>-->
                     <!--<li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>-->
@@ -60,7 +57,7 @@
             </li>
         {{/canUser}}
 
-        <li {{#is nav 'plugins'}} class='active' {{/is}}>
+        <li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}}>
             <a href="/plugins">
                 <i class="material-icons">select_all</i>
                 Plugins
@@ -69,6 +66,23 @@
                 {{#each data.common.plugins}}
                     {{#hasPluginPerm ../data.user permissions}}
                         <li {{#is ../subnav name}} class='active' {{/is}}><a href="{{menu.main.link}}"><i class="fa-sub-icon {{menu.main.class}}">{{menu.main.icon}}</i>{{menu.main.name}}</a></li>
+                        {{#compare (size menu.sub) '>' 0}}
+                            {{#is ../subnav name}}
+                                <ul class="side-nav-sub level-2 {{#is ../nav 'plugins'}} subMenuOpen {{/is}}" style="margin: 0; padding: 0;">
+                                    {{#each menu.sub.items}}
+                                        <li {{#is ../../childnav id}} class='active' {{/is}} style="margin: 0; padding: 0;">
+                                            <a href="{{url}}" style="font-size: 12px; padding-left: 30px;">
+                                                <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
+                                                {{title}}
+                                            </a>
+                                        </li>
+                                    {{/each}}
+                                </ul>
+                            {{/is}}
+                        {{/compare}}
+                        {{#unless @last}}
+                            <hr style="background: #ccc;"/>
+                        {{/unless}}
                     {{/hasPluginPerm}}
                 {{/each}}
             </ul>

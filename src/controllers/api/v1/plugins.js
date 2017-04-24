@@ -34,6 +34,9 @@ api_plugins.installPlugin = function(req, res) {
 
         var plugin = JSON.parse(response.body).plugin;
 
+        if (!plugin || !plugin.url)
+            return res.status(400).json({success: false, error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl});
+
         request.get(pluginServerUrl + '/plugin/download/' + plugin.url)
             .on('response', function(response) {
 
@@ -46,6 +49,7 @@ api_plugins.installPlugin = function(req, res) {
                     //Extract plugin
                     var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase());
                     rimraf(pluginExtractFolder, function(error) {
+                        if (error) winston.debug(error);
                         if (error) return res.json({success: false, error: 'Unable to remove plugin directory.'});
 
                         var extracter = tar.Extract({path: pluginPath})
@@ -54,8 +58,10 @@ api_plugins.installPlugin = function(req, res) {
                                 //File has been extracted Delete Zip File...
                                 rimraf(path.join(pluginPath, plugin.url), function(){
                                     //Wrap it up!!!!
-                                    res.json({success: true, plugin: plugin});
-                                    restartServer();
+                                    request.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads', function() {
+                                        res.json({success: true, plugin: plugin});
+                                        restartServer();
+                                    });
                                 });
                             });
 
@@ -78,12 +84,16 @@ api_plugins.installPlugin = function(req, res) {
 api_plugins.removePlugin = function(req, res) {
     var packageid = req.params.packageid;
 
-    request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response) {
+    request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response, body) {
         if (err) return res.status(400).json({success: false, error: err});
 
-        var plugin = JSON.parse(response.body).plugin;
+        var plugin = JSON.parse(body).plugin;
+
+        if (plugin == null)
+            return res.json({success: false, error: 'Invalid Plugin'});
 
         rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function(err) {
+            if (err) winston.debug(err);
             if (err) return res.json({success: false, error: 'Unable to remove plugin directory.'});
 
             res.json({success: true});

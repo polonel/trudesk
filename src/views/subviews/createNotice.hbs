@@ -4,86 +4,70 @@
             <p>{{title}}</p>
         </div>
         <div class="uk-width-6-10 pagination nomargin nopadding">
-            <ul class="button-group" style="float: right !important;">
-                <li class="pagination">
-                    <a href="/notices" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;">Cancel</a>
-                </li>
-                <li class="pagination">
-                    <a href="#" class="no-ajaxy btn btn-success md-btn-wave-light" style="border-radius: 3px;" ng-click="submitCreateNoticeForm()">Save</a>
-                </li>
-            </ul>
+
         </div>
-        <!--<p class="left">{{title}}</p>-->
-        <!--<div class="right">-->
-            <!--<ul class="button-group">-->
-                <!--<li><a href="/notices" role="button" class="btn">Cancel</a></li>-->
-                <!--<li class="active"><button class="btn" ng-click="submitCreateNoticeForm()">Save</button>-->
-                <!--</li>-->
-            <!--</ul>-->
-        <!--</div>-->
     </div>
     <!--Content Here-->
     <div class="full-height page-right-content scrollable">
         <div class="">
             <div class="uk-width-1-1" style="padding: 25px;">
-                <form id="createNoticeForm" class="uk-form-stacked" action="/" method="POST">
-                    <div>
-                        <div class="uk-margin-medium-bottom">
-                            <label for="nName">Notice Name</label>
-                            <input id="nName" name="nName" type="text" class="md-input"/>
-                        </div>
+                <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                    <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                        <form id="createNoticeForm" class="uk-form-stacked" action="/">
+                            <div class="uk-position-relative">
+                                <div class="uk-margin-medium-bottom">
+                                    <div class="right">
+                                        <div class="md-switch md-green" style="position: absolute; top: 5px; right: -15px; z-index: 99;">
+                                            <label>
+                                                Alert Window
+                                                <input id="nAlertWindow" name="nAlertWindow" type="checkbox" {{#compare data.notice.alertWindow '==' true}} checked {{/compare}}>
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <label for="nName">Name</label>
+                                    <input id="nName" class="md-input md-input-width-medium" name="nName" type="text" value="{{data.notice.name}}" />
 
-                        <div class="uk-margin-medium-bottom">
-                            <label for="nMessage">Notice Message</label>
-                            <input id="nMessage" name="nMessage" type="text" class="md-input"/>
-                        </div>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="nMessage">Message</label>
+                                    <input id="nMessage" class="md-input md-input-width-medium" name="nMessage" type="text" value="{{data.notice.message}}" />
+                                </div>
 
-                        <div class="uk-clearfix" style="">
-                            <p class="left" style="
-                                padding-top: 3px;
-                                margin-right: 15px;
-                                font-size: 14px;
-                                font-weight: 400;
-                                color: #2c3e50;
-                                display: inline-block;">Alert Window: </p>
-                            <div class="onoffswitch onSwitch left">
-                                <input type="checkbox" name="nAlertWindow" class="onoffswitch-checkbox" id="nAlertWindow" >
-                                <label class="onoffswitch-label" for="nAlertWindow">
-                                    <span class="onoffswitch-inner onSwitch-inner"></span>
-                                    <span class="onoffswitch-switch onSwitch-switch"></span>
-                                </label>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="nFontColor">Font Color:</label>
+                                    <select name="nFontColor" id="nFontColor">
+                                        <option value="#f6f6f6">White</option>
+                                        <option value="#000000">Black</option>
+                                    </select>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="nColor" style="margin-right: 23px;" class="uk-form-label">Notice Color:</label>
+                                    <select id="nColor" name="nColor">
+                                        <option value="#7bd148" {{#compare data.notice.color '==' '#7bd148'}} selected {{/compare}}>Green</option>
+                                        <option value="#5484ed" {{#compare data.notice.color '==' '#5484ed'}} selected {{/compare}}>Bold blue</option>
+                                        <option value="#a4bdfc" {{#compare data.notice.color '==' '#a4bdfc'}} selected {{/compare}}>Blue</option>
+                                        <option value="#46d6db" {{#compare data.notice.color '==' '#46d6db'}} selected {{/compare}}>Turquoise</option>
+                                        <option value="#7ae7bf" {{#compare data.notice.color '==' '#7ae7bf'}} selected {{/compare}}>Light green</option>
+                                        <option value="#51b749" {{#compare data.notice.color '==' '#51b749'}} selected {{/compare}}>Bold green</option>
+                                        <option value="#fbd75b" {{#compare data.notice.color '==' '#fbd75b'}} selected {{/compare}}>Yellow</option>
+                                        <option value="#ffb878" {{#compare data.notice.color '==' '#ffb878'}} selected {{/compare}}>Orange</option>
+                                        <option value="#ff887c" {{#compare data.notice.color '==' '#ff887c'}} selected {{/compare}}>Red</option>
+                                        <option value="#e74c3c" {{#compare data.notice.color '==' '#e74c3c'}} selected {{/compare}}>Bold red</option>
+                                        <option value="#dbadff" {{#compare data.notice.color '==' '#dbadff'}} selected {{/compare}}>Purple</option>
+                                        <option value="#e1e1e1" {{#compare data.notice.color '==' '#e1e1e1'}} selected {{/compare}}>Gray</option>
+                                    </select>
+                                </div>
+
+
+                                <div class="uk-clearfix">
+                                    <button type="submit" class="uk-margin-left uk-float-right md-btn md-btn-success md-btn-wave-light" id="createNoticeSubmit" ng-click="submitCreateNoticeForm($event);">Save</button>
+                                    <a href="/notices" class="uk-float-right md-btn md-btn-wave-light">Back</a>
+                                </div>
                             </div>
-                        </div>
-
-                        <div class="uk-clearfix" style="display: block;">
-                            <label for="nFontColor" style="margin-right: 33px;">Font Color:</label>
-                            <select id="nFontColor" name="nFontColor">
-                                <option value="#f6f6f6">White</option>
-                                <option value="#000000">Black</option>
-                            </select>
-                        </div>
-
-                        <div style="margin-bottom: 85px;">
-                            <label for="nColor" style="margin-right: 22px;">Notice Color:</label>
-                            <select id="nColor" name="nColor">
-                                <option value="#7bd148">Green</option>
-                                <option value="#5484ed">Bold blue</option>
-                                <option value="#a4bdfc">Blue</option>
-                                <option value="#46d6db">Turquoise</option>
-                                <option value="#7ae7bf">Light green</option>
-                                <option value="#51b749">Bold green</option>
-                                <option value="#fbd75b">Yellow</option>
-                                <option value="#ffb878">Orange</option>
-                                <option value="#ff887c">Red</option>
-                                <option value="#dc2127">Bold red</option>
-                                <option value="#dbadff">Purple</option>
-                                <option value="#e1e1e1">Gray</option>
-                            </select>
-                        </div>
-
-
+                        </form>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>

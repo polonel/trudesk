@@ -7,7 +7,7 @@
 
     <div ng-controller="singleTicket">
         <div class="uk-grid uk-grid-collapse page-right-content">
-            <div class="uk-width-3-10 page-title page-title-small noshadow nopadding">
+            <div class="uk-width-3-10 page-title page-title-small noshadow nopadding relative">
                 <div class="page-title-border-right relative" style="padding: 0 30px">
                     <p>Ticket #{{data.ticket.uid}}</p>
                     <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
@@ -52,13 +52,13 @@
                         </div>
                     </div>
                 </div>
-                <div class="page-content-left full-height">
+                <div class="page-content-left full-height scrollable">
                     <div class="ticket-details-wrap uk-clearfix">
-                        <div class="ticket-assignee-wrap uk-clearfix" style="position: relative; padding-right: 30px;">
+                        <div class="ticket-assignee-wrap uk-clearfix" style="padding-right: 30px;">
                             <h4>Assignee</h4>
                             {{#if data.ticket.assignee}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
-                                    <a href="#"
+                                    <a role="button"
                                        {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
                                            data-notifications="assigneeDropdown"
                                            data-updateui="assigneeList"
@@ -80,7 +80,7 @@
                                 </div>
                             {{else}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
-                                    <a href="#"
+                                    <a role="button"
                                         {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
                                            data-notifications="assigneeDropdown"
                                            data-updateui="assigneeList"
@@ -95,8 +95,8 @@
                                 </div>
                             {{/if}}
 
-                            <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-override="true" data-left-offset="35" data-top-offset="123" class="notifications p-dropdown p-dropdown-left" style="display: block !important;">
-                                <div class="actions"><strong>Select Assignee</strong><div class="right"><a href="#" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
+                            <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-override="true" data-left-offset="35" data-top-offset="200" class="notifications p-dropdown p-dropdown-left" style="display: block !important;">
+                                <div class="actions"><strong>Select Assignee</strong><div class="right"><a role="button" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
                                 <div id="assigneeDropdown-content" class="" style="height: 215px;">
                                     <ul>
                                         <li style="width: 295px; text-align: center; font-size: 16px; padding-top: 80px; background: white !important;">LOADING...</li>

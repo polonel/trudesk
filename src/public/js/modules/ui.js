@@ -21,7 +21,6 @@ define('modules/ui', [
     'modules/socket.io/noticeUI',
     'modules/socket.io/ticketsUI',
     'modules/socket.io/logs.io',
-    'nicescroll',
     'history'
 
 ], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI, logsIO) {
@@ -298,7 +297,7 @@ define('modules/ui', [
             var wrapper = '';
             _.each(users, function(user) {
                 var html = '<li data-setAssignee="' + user._id + '">';
-                html    += '<a class="messageNotification" href="#" role="button" class="no-ajaxy">';
+                html    += '<a class="messageNotification no-ajaxy" role="button">';
                 html    += '<div class="uk-clearfix">';
                 if (_.isUndefined(user.image)) {
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
@@ -334,6 +333,8 @@ define('modules/ui', [
     };
 
     function setAssigneeClicked(e) {
+        e.preventDefault();
+
         var _id = e.data._id;
         var ticketId = $('#__ticketId').html();
         var payload = {
@@ -342,8 +343,6 @@ define('modules/ui', [
         };
 
         socket.emit('setAssignee', payload);
-
-        e.preventDefault();
     }
 
     socketUi.updateAssignee = function() {
@@ -393,7 +392,6 @@ define('modules/ui', [
             }
 
             $('#assigneeDropdown').removeClass('pDropOpen');
-            helpers.hideDropDownScrolls();
         });
     };
 
@@ -656,7 +654,6 @@ define('modules/ui', [
 
                                 var obj = $('.comments').parents('.page-content');
                                 helpers.resizeFullHeight();
-                                helpers.resizeScroller();
                                 helpers.scrollToBottom(obj);
                             }
                         });

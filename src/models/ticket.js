@@ -106,6 +106,50 @@ ticketSchema.pre('save', function(next) {
     });
 });
 
+ticketSchema.virtual('statusFormatted').get(function() {
+    var s = this.status;
+    var formatted;
+    switch (s) {
+        case 0:
+            formatted = 'New';
+            break;
+        case 1:
+            formatted = 'Open';
+            break;
+        case 2:
+            formatted = 'Pending';
+            break;
+        case 3:
+            formatted = 'Closed';
+            break;
+        default:
+            formatted = 'New';
+    }
+
+    return formatted;
+});
+
+ticketSchema.virtual('priorityFormatted').get(function() {
+    var p = this.priority;
+    var formatted;
+
+    switch(p) {
+        case 1:
+            formatted = 'Normal';
+            break;
+        case 2:
+            formatted = 'Urgent';
+            break;
+        case 3:
+            formatted = 'Critical';
+            break;
+        default:
+            formatted = 'Normal';
+    }
+
+    return formatted;
+});
+
 /**
  * Set Status on Instanced Ticket
  * @instance
@@ -439,12 +483,29 @@ ticketSchema.methods.removeSubscriber = function(userId, callback) {
 ticketSchema.statics.getAll = function(callback) {
     var self = this;
     var q = self.model(COLLECTION).find({deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getAllForCache = function(callback) {
+    var self = this;
+    var q = self.model(COLLECTION).find({deleted: false})
+        .select('_id')
+        .select('uid')
+        .select('date')
+        .select('closedDate')
+        .select('status')
+        .select('history')
+        .select('comments')
+        .select('assignee')
+        .select('owner')
+        .select('group');
 
     return q.exec(callback);
 };
@@ -463,7 +524,9 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
         status = [status];
 
     var q = self.model(COLLECTION).find({status: {$in: status}, deleted: false})
-        .populate('owner assignee type tags')
+        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('type tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
@@ -491,8 +554,8 @@ ticketSchema.statics.getTickets = function(grpId, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
@@ -520,8 +583,26 @@ ticketSchema.statics.getTicketsDateRange = function(start, end, callback) {
     var e = moment(end).hour(23).minute(59).second(59);
 
     var q = self.model(COLLECTION).find({date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTicketsGroupsDateRange = function(groups, start, end, callback) {
+    if (_.isUndefined(start) || _.isUndefined(end)) return callback("Invalid Date Range - TicketSchema.GetTicketsDateRange()", null);
+
+    var self = this;
+
+    var s = moment(start).hour(23).minute(59).second(59);
+    var e = moment(end).hour(23).minute(59).second(59);
+
+    var q = self.model(COLLECTION).find({date: {$lte: s.toDate(), $gte: e.toDate()}, deleted: false})
+        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
@@ -574,20 +655,21 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     }
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner', 'username fullname email role preferences image title')
-        .populate('assignee', 'username fullname email role preferences image title')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .populate('group')
-        .populate('group.members', 'username fullname email role preferences image title')
-        .populate('group.sendMailTo', 'username fullname email role preferences image title')
-        .populate('subscribers', 'username fullname email role preferences image title')
-        .populate('comments').populate('comments.owner', 'username fullname email role preferences image title')
-        .populate('history.owner', 'username fullname email role preferences image title')
-        .sort('-uid')
+        .populate('group.members', 'username fullname email role image title')
+        .populate('group.sendMailTo', 'username fullname email role image title')
+        .populate('subscribers', 'username fullname email role image title')
+        .populate('comments').populate('comments.owner', 'username fullname email role image title')
+        .populate('history.owner', 'username fullname email role image title')
+        .sort('-uid');
         //.sort({'status': 1})
-        .skip(page*limit)
-        .limit(limit);
+    if (limit != -1) {
+        q.skip(page*limit).limit(limit);
+    }
 
     if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
         q.where({status: {$in: _status}});
@@ -607,6 +689,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
         q.where({assignee: {$in: object.filter.assignee}});
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.owner)) {
+        q.where({owner: {$in: object.filter.owner}});
     }
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
@@ -694,8 +780,8 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
@@ -729,8 +815,8 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, status: status, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
@@ -754,11 +840,14 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).findOne({uid: uid, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
+        .populate('subscribers', 'username fullname email role image title')
+        .populate('history.owner', 'username fullname email role image title')
+        .populate('comments.owner', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+        .deepPopulate(['group']);
 
     return q.exec(callback);
 };
@@ -778,8 +867,8 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).findOne({_id: id, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
@@ -802,8 +891,8 @@ ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({owner: userId, deleted: false})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
@@ -821,7 +910,9 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
     async.parallel([
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, $where: '/^' + search + '.*/.test(this.uid)'})
-                .populate('owner assignee type tags')
+                .populate('owner', 'username fullname email role image title')
+                .populate('assignee', 'username fullname email role image title')
+                .populate('type tags')
                 .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
             q.exec(function(err, results) {
                 if (err) return callback(err);
@@ -832,7 +923,9 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         },
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, subject: { $regex: search, $options: 'i'}})
-                .populate('owner assignee type tags')
+                .populate('owner', 'username fullname email role image title')
+                .populate('assignee', 'username fullname email role image title')
+                .populate('type tags')
                 .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
             q.exec(function(err, results) {
                 if (err) return callback(err);
@@ -843,7 +936,9 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         },
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, issue: { $regex: search, $options: 'i'}})
-                .populate('owner assignee type tags')
+                .populate('owner', 'username fullname email role image title')
+                .populate('assignee', 'username fullname email role image title')
+                .populate('type tags')
                 .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
             q.exec(function(err, results) {
                 if (err) return callback(err);
@@ -886,11 +981,6 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
             timeout.setDate(timeout.getDate() + 2);
             return now > timeout;
         });
-        //.populate('owner')
-        //.populate('assignee')
-        //.populate('type')
-        //.populate('tags')
-        //.deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };
@@ -941,8 +1031,8 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({assignee: user_id, deleted: false, status: {$ne: 3}})
-        .populate('owner')
-        .populate('assignee')
+        .populate('owner', 'username fullname email role image title')
+        .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
@@ -967,7 +1057,7 @@ ticketSchema.statics.getComments = function(tId, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).findOne({_id: tId, deleted: false})
-        .deepPopulate('comments comments.owner');
+        .populate('comments').populate('comments.owner', 'username fullname email role image title');
 
     return q.exec(callback);
 };

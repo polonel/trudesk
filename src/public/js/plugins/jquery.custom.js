@@ -11,6 +11,7 @@
 // serializes a form into an (arguably more useful) object.
 
 (function($,undefined){
+
     '$:nomunge'; // Used by YUI compressor.
 
     $.fn.serializeObject = function(){

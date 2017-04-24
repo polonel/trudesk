@@ -31,7 +31,7 @@ module.exports = {
             modernizr:      'vendor/modernizr/modernizr',
             fastclick:      'vendor/fastclick/fastclick',
             placeholder:    'vendor/placeholder/placeholder',
-            nicescroll:     'vendor/nicescroll/nicescroll.min',
+            // nicescroll:     'vendor/nicescroll/nicescroll.min',
             underscore:     'vendor/underscore/underscore',
             history:        'vendor/history/jquery.history',
             app:            'app',
@@ -68,6 +68,8 @@ module.exports = {
             jquery_docsize: 'plugins/jquery.documentsize',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
+            tether:         'vendor/tether/tether.min',
+            shepherd:       'vendor/shepherd/js/shepherd.min',
             snackbar:       'plugins/snackbar'
         }
     },
@@ -90,6 +92,8 @@ module.exports = {
             "window.$": 'jquery',
             Modernizr: 'modernizr',
             "window.Modernizr": 'modernizr',
+            moment: 'moment',
+            "window.moment": 'moment',
             setImmediate: 'async'
         }),
         new webpack.optimize.CommonsChunkPlugin({
@@ -101,7 +105,7 @@ module.exports = {
     ],
     performance: {
         hints: "warning",
-        maxEntrypointSize: 1000000,
-        maxAssetSize: 8000000
+        maxEntrypointSize: 10000000,
+        maxAssetSize: 80000000
     }
 };

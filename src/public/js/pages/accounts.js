@@ -20,7 +20,6 @@ define('pages/accounts', [
     'uikit',
     'modules/socket',
     'isinview',
-    'nicescroll',
     'datatables',
     'dt_responsive',
     'dt_grouping',

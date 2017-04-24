@@ -8,12 +8,23 @@
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
 
+::-webkit-scrollbar {
+  background: rgba(255, 255, 255, 0.1);
+  position: absolute;
+  width: 5px; }
+
+::-webkit-scrollbar-thumb {
+  background-color: #9d9d9d; }
+
+::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 4px transparent; }
+
 html,
 body {
   background: #f7f8fa;
-  overflow: hidden;
   font-family: "Roboto", "Open Sans", sans-serif;
-  height: 100%; }
+  height: 100%;
+  -webkit-font-smoothing: antialiased; }
 
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td {
   margin: 0; }
@@ -940,6 +951,7 @@ div.actions {
   .p-dropdown .notifications-Messages,
   .p-dropdown .online-Users-List {
     float: left;
+    width: 100%;
     max-height: 320px;
     overflow-x: hidden;
     overflow-y: auto; }
@@ -1201,41 +1213,46 @@ ul.side-nav, ul.side-nav-sub {
     font-size: 14px;
     font-family: "Roboto", sans-serif;
     margin: 0;
-    font-weight: normal; }
+    font-weight: normal;
+    position: relative; }
     ul.side-nav li.active > a, ul.side-nav-sub li.active > a {
-      border-left: 2px solid #E74C3C;
       font-family: "Roboto", sans-serif !important;
       background: #595f69 !important;
-      color: #fff !important; }
-      ul.side-nav li.active > a i, ul.side-nav-sub li.active > a i, ul.side-nav li.active > a svg, ul.side-nav-sub li.active > a svg {
-        color: #fff;
-        fill: #fff; }
-      ul.side-nav li.active > a:after, ul.side-nav-sub li.active > a:after {
+      color: #fff !important;
+      border-left: 5px solid #E74C3C; }
+      ul.side-nav li.active > a:hover:after, ul.side-nav-sub li.active > a:hover:after {
         width: 0;
-        height: 0;
-        border-style: solid;
-        border-width: 9px 9px 9px 0;
-        border-color: transparent #f7f8fa transparent transparent;
-        content: "";
-        position: absolute;
-        top: 50%;
-        margin-top: -9px;
-        right: 0; }
+        transform: translateX(0); }
+      ul.side-nav li.active > a i, ul.side-nav-sub li.active > a i, ul.side-nav li.active > a svg, ul.side-nav-sub li.active > a svg {
+        color: #fff !important;
+        fill: #fff !important; }
   ul.side-nav a, ul.side-nav-sub a {
     padding: 0 0.875rem !important;
     color: #3f444c !important;
-    border-left: 2px solid #e6e7e8;
     position: relative;
     padding-left: 60px !important;
     line-height: 48px;
     height: 48px; }
+    ul.side-nav a:after, ul.side-nav-sub a:after {
+      background: #E74C3C;
+      bottom: 0;
+      content: '';
+      position: absolute;
+      right: 100%;
+      top: 0;
+      width: 5px;
+      -webkit-transition: -webkit-transform 0.2s ease-in-out;
+      transition: -webkit-transform 0.2s ease-in-out;
+      transition: transform 0.2s ease-in-out;
+      transition: transform 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out; }
+    ul.side-nav a:hover:after, ul.side-nav-sub a:hover:after {
+      transform: translateX(5px); }
     ul.side-nav a:not(.button), ul.side-nav-sub a:not(.button) {
       display: block;
       margin: 0; }
     ul.side-nav a span, ul.side-nav-sub a span {
       padding-bottom: 5px; }
     ul.side-nav a:hover, ul.side-nav-sub a:hover {
-      border-left: 2px solid #E74C3C;
       background: #d2d3d6 !important; }
       ul.side-nav a:hover i, ul.side-nav-sub a:hover i, ul.side-nav a:hover svg, ul.side-nav-sub a:hover svg {
         color: #3f444c;
@@ -1273,34 +1290,36 @@ ul.side-nav-sub {
     height: 1px;
     background: #9c9fa5; }
   ul.side-nav-sub li {
-    margin: 5px 0; }
-    ul.side-nav-sub li.active a {
+    margin: 5px 0;
+    position: relative; }
+    ul.side-nav-sub li.active > a {
       background: #dfe0e2 !important;
       color: #000 !important;
       font-weight: bold;
       border: none;
       border-right: 1px solid rgba(0, 0, 0, 0.1); }
-      ul.side-nav-sub li.active a:after {
-        content: none; }
-      ul.side-nav-sub li.active a:hover {
+      ul.side-nav-sub li.active > a:hover {
         background: #d2d3d6 !important; }
-      ul.side-nav-sub li.active a i, ul.side-nav-sub li.active a svg {
+        ul.side-nav-sub li.active > a:hover:after {
+          width: 5px;
+          transform: translateX(5px); }
+      ul.side-nav-sub li.active > a i, ul.side-nav-sub li.active > a svg {
         color: #000 !important;
         fill: #000 !important; }
-      ul.side-nav-sub li.active a .fa-sub-icon {
+      ul.side-nav-sub li.active > a .fa-sub-icon {
         line-height: 20px;
         font-size: 20px;
         left: 20px;
         top: 0; }
-        ul.side-nav-sub li.active a .fa-sub-icon.material-icons {
+        ul.side-nav-sub li.active > a .fa-sub-icon.material-icons {
           font-size: 24px; }
-      ul.side-nav-sub li.active a .icon-inbox {
+      ul.side-nav-sub li.active > a .icon-inbox {
         background-position: 0 -18px; }
-      ul.side-nav-sub li.active a .icon-sent {
+      ul.side-nav-sub li.active > a .icon-sent {
         background-position: -16px -17px; }
-      ul.side-nav-sub li.active a .icon-trash {
+      ul.side-nav-sub li.active > a .icon-trash {
         background-position: -32px -16px; }
-      ul.side-nav-sub li.active a .icon-check {
+      ul.side-nav-sub li.active > a .icon-check {
         background-position: 0 -16px; }
   ul.side-nav-sub a {
     border: none;
@@ -4919,6 +4938,13 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   .md-btn-flat:active {
     background: rgba(153, 153, 153, 0.4); }
 
+.md-btn-white {
+  background: #fff; }
+  .md-btn-white:hover, .md-btn-white:focus {
+    background: rgba(153, 153, 153, 0.2); }
+  .md-btn-white, .md-btn-white:active {
+    background: rgba(153, 153, 153, 0.4); }
+
 .md-btn-flat-danger {
   color: #e53935; }
   .md-btn-flat-danger:hover, .md-btn-flat-danger:focus, .md-btn-flat-danger:active {
@@ -6693,3 +6719,17 @@ table tr.even, table tr.alt, table tr:nth-of-type(even) {
   .confirm-delete-button:hover, .confirm-delete-button:active, .confirm-delete-button:focus {
     color: #d32f2f;
     background: #fceaea; }
+
+body.shepherd-active .shepherd-target.shepherd-enabled {
+  position: relative;
+  box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  pointer-events: auto;
+  transition: all 0.3s ease; }
+
+body.shepherd-active .shepherd-step {
+  pointer-events: auto;
+  z-index: 9999; }
+
+body.shepherd-active {
+  pointer-events: none !important; }

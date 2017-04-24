@@ -4,7 +4,7 @@ var webpack = require('webpack');
 module.exports = {
     //context: path.resolve(__dirname, 'public/js'),
     entry : {
-        vendor: ['jquery', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
+        vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
         "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
     },
@@ -31,7 +31,7 @@ module.exports = {
             modernizr:      'vendor/modernizr/modernizr',
             fastclick:      'vendor/fastclick/fastclick',
             placeholder:    'vendor/placeholder/placeholder',
-            nicescroll:     'vendor/nicescroll/nicescroll.min',
+            // nicescroll:     'vendor/nicescroll/nicescroll.min',
             underscore:     'vendor/underscore/underscore',
             history:        'vendor/history/jquery.history',
             app:            'app',
@@ -68,6 +68,8 @@ module.exports = {
             jquery_docsize: 'plugins/jquery.documentsize',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
+            tether:         'vendor/tether/tether.min',
+            shepherd:       'vendor/shepherd/js/shepherd.min',
             snackbar:       'plugins/snackbar'
         }
     },
@@ -90,6 +92,8 @@ module.exports = {
             "window.$": 'jquery',
             Modernizr: 'modernizr',
             "window.Modernizr": 'modernizr',
+            moment: 'moment',
+            'window.moment': 'moment',
             setImmediate: 'async'
         }),
         new webpack.optimize.CommonsChunkPlugin({

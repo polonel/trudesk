@@ -69,7 +69,6 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
             if (!drop.is(e.target) && drop.has(e.target).length === 0)
                 if (drop.hasClass('pDropOpen')) {
                     drop.removeClass('pDropOpen');
-                    helpers.hideDropDownScrolls();
                 }
         });
     }
@@ -79,7 +78,6 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         var scroll = $('#' + $(drop).attr('data-scroll'));
         if (drop.css('visibility') === 'visible') {
             drop.removeClass('pDropOpen');
-            helpers.hideDropDownScrolls();
 
             return true;
         }
@@ -143,22 +141,11 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         $(drop).addClass('pDropOpen');
         $(drop).css({'position': 'absolute', 'left': left, 'top': top});
 
-        if ($(scroll).getNiceScroll().length < 1)
-            $(scroll).niceScroll({
-                cursorcolor: "#a9b1bf",
-                cursorwidth: 7,
-                cursorborder: "1px solid #fff"
-            });
-
-        $(scroll).getNiceScroll().resize();
-        $(scroll).getNiceScroll().show();
-
         e.preventDefault();
     }
 
     function liClick() {
         helpers.hideAllpDropDowns();
-        helpers.hideDropDownScrolls();
     }
 
     return navigation;

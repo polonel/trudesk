@@ -486,9 +486,10 @@ api_users.deleteUser = function(req, res) {
                 if (err) return cb(err);
 
                 if (_.isNull(user)) {
-                    console.log(username + ' was null');
                     return cb({message: 'Invalid User'});
                 }
+                if (user.username.toLowerCase() === req.user.username)
+                    return cb({message: 'Cannot remove yourself!'});
 
                 return cb(null, user);
             })

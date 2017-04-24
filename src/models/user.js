@@ -48,7 +48,7 @@ var COLLECTION = "accounts";
  */
 var userSchema = mongoose.Schema({
         username:   { type: String, required: true, unique: true },
-        password:   { type: String, required: true },
+        password:   { type: String, required: true, select: false },
         fullname:   { type: String, required: true, index: true },
         email:      { type: String, required: true, unique: true },
         role:       { type: String, required: true },
@@ -66,6 +66,7 @@ var userSchema = mongoose.Schema({
         iOSDeviceTokens: [{type: String}],
 
         preferences: {
+            tourCompleted: { type: Boolean, default: false },
             autoRefreshTicketGrid: { type: Boolean, default: true },
             openChatWindows: [{type: String, default: []}]
         },
@@ -295,7 +296,7 @@ userSchema.statics.getUserByUsername = function(user, callback) {
         return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
     }
 
-    return this.model(COLLECTION).findOne({username: new RegExp("^" + user + "$", 'i') }, callback);
+    return this.model(COLLECTION).findOne({username: new RegExp("^" + user + "$", 'i') }).select('+password').exec(callback);
 };
 
 /**

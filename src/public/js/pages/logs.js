@@ -27,8 +27,6 @@ define('pages/logs', [
             var $sLogs = $('#serverlogs');
             if ($sLogs.length > 0)
                 $sLogs.scrollTop(99999999999999 * 999999999999999);
-            //helpers.setupScrollers('#serverlogs');
-            //helpers.scrollToBottom($('#serverlogs'));
         });
     };
 

@@ -15,10 +15,7 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    _mixins         = require('../helpers/underscore'),
-    nconf           = require('nconf'),
-    winston         = require('winston'),
-    moment          = require('moment');
+    winston         = require('winston');
 
 var installController = {};
 

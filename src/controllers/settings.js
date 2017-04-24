@@ -69,6 +69,9 @@ settingsController.get = function(req, res) {
         s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
         s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
 
+        s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable' });
+        s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;
+
         s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable' });
         s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
 

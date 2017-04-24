@@ -10,12 +10,15 @@
 
     <div class="page-title uk-width-1-1 noshadow page-title-border-bottom">
         <p class="left">{{data.account.fullname}}</p>
+        <div class="right" style="margin: 15px 15px 0 0;">
+            <button class="md-btn md-btn-white md-btn-flat-primary md-btn-wave md-btn-wave-light md-btn-small" ng-click="showTour();">Show Tour</button>
+        </div>
     </div>
     <!--Content Here-->
     <div class="page-wrapper scrollable no-overflow-x full-height" ng-controller="accountsCtrl">
         <div id="page-content-inner" class="uk-grid">
             <div class="uk-width-1-1 relative">
-                <div class="profilePicFormWrap uk-width-1-1 uk-float-left">
+                <div class="profilePicFormWrap no-touch uk-width-1-1 uk-float-left">
                     <form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin uk-clearfix" enctype="multipart/form-data">
                         <input type="hidden" name="_id" value="{{data.account._id}}" />
                         <input type="hidden" name="username" value="{{data.account.username}}" />
@@ -118,12 +121,12 @@
                                 <div class="right" style="position:relative; padding: 15px;">
                                     <button
                                             type="button"
-                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-danger md-btn-wave-light removeApiButton {{#unless data.account.accessToken}} hide {{/unless}}"
+                                            class="uk-float-right md-btn md-btn-small md-btn-danger md-btn-wave-light removeApiButton {{#unless data.account.accessToken}} hide {{/unless}}"
                                             ng-click="removeApiKey($event)">Remove Token
                                     </button>
                                     <button
                                             type="button"
-                                            class="uk-float-right md-btn md-btn-small md-btn-flat md-btn-flat-success md-btn-wave-light generateApiButton {{#if data.account.accessToken}} hide {{/if}}"
+                                            class="uk-float-right md-btn md-btn-small md-btn-success md-btn-wave-light generateApiButton {{#if data.account.accessToken}} hide {{/if}}"
                                             ng-click="generateApiKey($event)">Generate Token
                                     </button>
                                 </div>

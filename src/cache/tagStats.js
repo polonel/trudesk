@@ -96,6 +96,8 @@ var init = function(tickets, timespan, callback) {
     ], function(err) {
         if (err) return callback(err);
 
+        $tickets = null; //clear it
+
         return callback(null, tags);
     });
 };

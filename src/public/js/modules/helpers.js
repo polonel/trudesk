@@ -14,7 +14,7 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'nicescroll', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     var helpers = {};
@@ -26,9 +26,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
         self.resizeFullHeight();
         self.setupScrollers();
-        self.setupScrollers('.scrollable-dark');
-        self.setupScrollers('.wrapper');
-        self.setupScrollers('.uk-modal');
         self.formvalidator();
         self.pToolTip();
         self.setupDonutchart();
@@ -46,6 +43,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.UI.selectize();
         self.UI.waves();
         self.UI.matchHeight();
+        self.UI.onlineUserSearch();
 
         var layout = self.onWindowResize();
         //Initial Call to Load Layout
@@ -63,6 +61,23 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.onlineUserSearch = function() {
+        var $searchBox = $('.online-list-search-box').find('input');
+        $searchBox.off('keyup', onSearchKeyUp);
+        $searchBox.on('keyup', onSearchKeyUp);
+
+        function onSearchKeyUp() {
+            var searchTerm = $searchBox.val().toLowerCase();
+            $('.user-list li').each(function() {
+                if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+            })
+        }
+    };
 
     helpers.UI.matchHeight = function() {
         var $d = $('div[data-match-height]');
@@ -293,6 +308,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             var $this = $(this);
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                var posTopOffset = $this.attr('data-md-selectize-top-offset');
                 var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
                     $this
                     .after('<div class="selectize_fix"></div>')
@@ -309,7 +325,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                                 .velocity('slideDown', {
                                     begin: function() {
                                         if (typeof thisPosBottom !== 'undefined') {
-                                            $dropdown.css({'margin-top':'0'})
+                                            $dropdown.css({'margin-top':'0'});
+                                            if (typeof posTopOffset !== 'undefined') {
+                                                $dropdown.css({'margin-top': posTopOffset+'px'});
+                                            }
                                         }
                                     },
                                     duration: 200,
@@ -343,6 +362,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             var $this = $(this);
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
+                var posTopOffset = $this.attr('data-md-selectize-top-offset');
                 var closeOnSelect = $this.attr('data-md-selectize-closeOnSelect') !== 'undefined' ? $this.attr('data-md-selectize-closeOnSelect') : false;
                 var maxOptions = $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000;
                 $this
@@ -365,6 +385,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                                     begin: function() {
                                         if (typeof thisPosBottom !== 'undefined') {
                                             $dropdown.css({'margin-top':'0'})
+                                            if (typeof posTopOffset !== 'undefined') {
+                                                $dropdown.css({'margin-top': posTopOffset+'px'});
+                                            }
                                         }
                                     },
                                     duration: 200,
@@ -577,68 +600,29 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         return _.debounce(function() {
             self.resizeFullHeight();
             self.hideAllpDropDowns();
-            self.hideDropDownScrolls();
 
             self.resizeDataTables('.ticketList');
             self.resizeDataTables('.tagsList');
 
-            self.resizeScroller();
         }, 100);
     };
 
-    helpers.setupScrollers = function(selector) {
-        if (_.isUndefined(selector)) {
-            selector = '.scrollable';
-        }
-
-        var color = "#a9b1bf";
-        var colorBrd = "1px solid #fff";
-        if (selector == '.scrollable-dark' || selector == '.uk-modal') {
-            color = '#353e47';
-            colorBrd = "1px solid #000";
-        }
-
-        var size = 7;
-        var opacityMax = 1;
-        if (selector == '.wrapper') {
-            size = 1;
-            opacityMax = 0;
-        }
-
-        if (!_.isUndefined($(selector).attr('data-scroll-size')))
-            size = $(selector).attr('data-scroll-size');
-
-        if (!_.isUndefined($(selector).attr('data-scroll-opacitymax')))
-            opacityMax = $(selector).attr('data-scroll-opacitymax');
-
-        $(document).ready(function() {
-            $(selector).each(function() {
-                 var ns = $(this).getNiceScroll(0);
-                 if (ns !== false) {
-                     ns.resize();
-                 } else {
-                     $(this).niceScroll({
-                         cursorcolor: color,
-                         cursorwidth: size,
-                         cursorborder: colorBrd,
-                         cursoropacitymax: opacityMax,
-                         horizrailenabled: false
-                     });
-                 }
-
-                $(this).trigger('scrollable', this);
-            });
-        });
+    helpers.setupScrollers = function() {
+        $('.scrollable').css({'overflow-y': 'auto', 'overflow-x': 'hidden'});
+        $('.scrollable-dark').css({'overflow-y': 'auto', 'overflow-x': 'hidden'});
     };
 
-    helpers.scrollToBottom = function(jqueryObject) {
-        if (_.isUndefined(jqueryObject)) return true;
+    helpers.scrollToBottom = function(jqueryObject, animate) {
+        if (_.isUndefined(jqueryObject) || jqueryObject.length < 1) return true;
+        if (_.isUndefined(animate)) animate = false;
 
-        var niceScroll = $(jqueryObject).getNiceScroll(0);
-        if (!niceScroll) return true;
+        if (!jqueryObject.jquery)
+            jqueryObject = $(jqueryObject);
 
-        niceScroll.resize();
-        niceScroll.doScrollTop(99999999999*99999999999);
+        if (animate)
+            jqueryObject.animate({scrollTop: jqueryObject[0].scrollHeight}, 1000);
+        else
+            jqueryObject.scrollTop(jqueryObject[0].scrollHeight);
     };
 
     helpers.resizeAll = function() {
@@ -647,51 +631,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             self.resizeFullHeight();
             self.UI.matchHeight();
             self.hideAllpDropDowns();
-            self.hideDropDownScrolls();
 
             self.resizeDataTables('.ticketList');
             self.resizeDataTables('.tagsList');
 
-            self.resizeScroller();
         }, 100);
 
         l();
-    };
-
-    helpers.resizeScroller = function(scrollerObject) {
-        if (_.isUndefined(scrollerObject)) {
-            $('.scrollable').each(function() {
-                var self = $(this);
-                var ns = self.getNiceScroll(0);
-                if (!ns) return true;
-
-                ns.resize();
-            });
-
-            $('.scrollable-dark').each(function() {
-                var self = $(this);
-                var ns = self.getNiceScroll(0);
-                if (!ns) return true;
-
-                ns.resize();
-            });
-        } else {
-            var niceScroll = $(scrollerObject).getNiceScroll(0);
-            if (!niceScroll) return true;
-
-            niceScroll.resize();
-        }
-    };
-
-    helpers.removeAllScrollers = function(complete) {
-        $('*').each(function() {
-            var ns = $(this).getNiceScroll(0);
-            if (ns) return ns.remove();
-        });
-
-        if (_.isFunction(complete)) {
-            return complete();
-        }
     };
 
     helpers.resizeFullHeight = function() {
@@ -723,8 +669,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             hasFooter = false;
         }
 
-        var self = this;
-
         $(document).ready(function() {
             var $selector = $(selector);
             var scroller = $selector.find('.dataTables_scrollBody');
@@ -741,17 +685,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                 if (hasFooter)
                     footerHeight = tableHead.height();
                 scroller.css({'height': ($selector.height() - tableHead.height() - headHeight - footerHeight) + 'px'});
-                self.setupScrollers(selector + ' .dataTables_scrollBody');
-                self.resizeScroller(selector + ' .dataTables_scrollBody');
             }
-        });
-    };
-
-    helpers.hideDropDownScrolls = function() {
-        $('div[data-scroll]').each(function() {
-            var scroll = $('#' + $(this).attr('data-scroll'));
-            if ($(scroll).length !== 0)
-                $(scroll).getNiceScroll().hide();
         });
     };
 
@@ -760,7 +694,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             var drop = $('#' + $(this).attr('data-notifications'));
             if (drop.hasClass('pDropOpen')) {
                 drop.removeClass('pDropOpen');
-                helpers.hideDropDownScrolls();
             }
         });
     };
@@ -923,8 +856,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                         var target = $(targetScroll);
                         if (target.length !== 0) {
                             self.click(function(e) {
-                                var windowHeight = target.children('div:first').outerHeight();
-                                target.getNiceScroll(0).doScrollTop(windowHeight+200, 1000);
+                                target.animate({scrollTop: target[0].scrollHeight}, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
                                 if (_.isUndefined(preventDefault) || preventDefault.length < 1) {

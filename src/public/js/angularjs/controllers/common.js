@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history'], function(angular, _, $, socket, UI) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/tour', 'history'], function(angular, _, $, socket, UI, tour) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-        .controller('commonCtrl', function($scope, $http, $cookies, $timeout) {
+        .controller('commonCtrl', function($scope, $window, $http, $cookies, $timeout) {
 
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
@@ -115,6 +115,19 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'history']
                 $event.stopPropagation();
 
                 socket.ui.clearNotifications();
+            };
+
+            //Fired from Topbar.hbs
+            $scope.loadTour = function() {
+                $timeout(function() {
+                    var showTour = ($('#__tourEnabled').text() === 'true');
+                    if (showTour) {
+                        if ($window.location.pathname != '/dashboard') {
+                            $window.location.href = '/dashboard';
+                        } else
+                            tour.init();
+                    }
+                }, 0, false);
             };
 
             $scope.markRead = function($event) {

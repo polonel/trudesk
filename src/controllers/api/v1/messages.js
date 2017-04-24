@@ -222,6 +222,7 @@ api_messages.getMessagesForConversation = function(req, res) {
         function(done) {
             conversationSchema.getConversation(conversation, function(err, convo) {
                 if (err) return done(err);
+                if (!convo) return done({message: 'Invalid Conversation'});
 
                 response.conversation = convo;
 

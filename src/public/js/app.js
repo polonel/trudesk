@@ -31,7 +31,7 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
     require([
         'underscore',
         'modules/navigation',
-        'modules/enjoyhint',
+        'modules/tour',
         'uikit',
         'modules/socket',
         'modules/ajaxify',
@@ -39,10 +39,9 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
         'fastclick',
         'placeholder',
         'pace',
-        'nicescroll',
         'easypiechart'
 
-    ], function(_, nav, eh) {
+    ], function(_, nav, tour) {
         //Page loading (init)
         require(['pages/pageloader'], function(pl) { pl.init(); });
 
@@ -54,6 +53,9 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
             helpers.UI.cardShow();
 
             $.event.trigger('$trudesk:ready');
+
+            //tour.init();
+
         }, 100);
 
         $event();

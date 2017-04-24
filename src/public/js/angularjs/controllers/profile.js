@@ -64,6 +64,22 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                     });
             };
 
+            $scope.showTour = function() {
+                var username = $('#__loggedInAccount_username').text();
+                $http.put(
+                    '/api/v1/users/' + username + '/updatepreferences',
+                    {
+                        preference: 'tourCompleted',
+                        value: false
+                    }
+                ).success(function() {
+                    $window.location.href = '/';
+                }).error(function(e) {
+                    $log.log('[trudesk:profile:showTour] - ' + e.error.message);
+                    helpers.UI.showSnackbar('Error ' + e.error.message, true);
+                })
+            };
+
             $scope.back = function($event) {
                 History.go(-1);
                 $event.preventDefault();

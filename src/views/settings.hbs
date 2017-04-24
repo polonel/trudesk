@@ -13,6 +13,7 @@
     mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
     mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
 
+    showTour={{data.settings.showTour.value}};
     showOverdueTickets={{data.settings.showOverdueTickets.value}};
     allowPublicTickets={{data.settings.allowPublicTickets.value}};
     allowUserRegistration={{data.settings.allowUserRegistration.value}};
@@ -27,6 +28,27 @@
         <!--Content Here-->
         <div class="page-wrapper full-height scrollable no-overflow-x">
             <div id="page-content-inner">
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Tour the users through trudesk on initial login.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative;">
+                            <!-- Switch -->
+                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                <label>
+                                    Enable
+                                    <input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">
+                                    <span class="lever"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="setting-item-wrap uk-margin-medium-bottom">
                     <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">

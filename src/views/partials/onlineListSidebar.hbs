@@ -10,11 +10,14 @@
 
         <h5>More Conversations</h5>
         <div class="user-list-wrapper">
+            <div class="online-list-search-box search-box">
+                <input type="text" placeholder="Search" style="background: #f6f6f6; border: 1px solid #ccc;" />
+            </div>
             <ul class="user-list">
                 {{#each data.common.users}}
                     {{#compare username '!=' ../data.common.loggedInAccount.username}}
-                        <li data-user-id="{{_id}}">
-                            <a class="no-ajaxify" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
+                        <li data-search-term="{{lowercase fullname}}" data-user-id="{{_id}}">
+                            <a class="no-ajaxy" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
                                 <div class="user-list-user">
                                     {{#if image}}
                                         <div class="image"><img src="/uploads/users/{{image}}"></div>

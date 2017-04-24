@@ -27,6 +27,7 @@ var async = require('async'),
     api_users_v1        = require('./api/v1/users'),
     api_messages_v1     = require('./api/v1/messages'),
     api_groups_v1       = require('./api/v1/groups'),
+    api_reports_v1      = require('./api/v1/reports'),
     api_settings_v1     = require('./api/v1/settings'),
     api_plugins_v1      = require('./api/v1/plugins');
 
@@ -53,6 +54,7 @@ apiController.notices = api_notices_v1;
 apiController.users = api_users_v1;
 apiController.messages = api_messages_v1;
 apiController.groups = api_groups_v1;
+apiController.reports = api_reports_v1;
 apiController.settings = api_settings_v1;
 apiController.plugins = api_plugins_v1;
 
@@ -148,7 +150,7 @@ apiController.testPromo = function(req, res) {
                         generateTextFromHTML: true
                     };
 
-                    mailer.sendMail(mailOptions, function(err, info) {
+                    mailer.sendMail(mailOptions, function(err) {
                         if (err) {
                             winston.warn(err);
                             return res.send(err);
@@ -217,13 +219,16 @@ apiController.login = function(req, res) {
         delete resUser.resetPassExpire;
         delete resUser.resetPassHash;
         delete resUser.password;
-        delete resUser.iOSDeviceToken;
+        delete resUser.iOSDeviceTokens;
+        delete resUser.tOTPKey;
+        delete resUser.__v;
+        delete resUser.preferences;
 
         if (_.isUndefined(resUser.accessToken) || _.isNull(resUser.accessToken))
             return res.status(200).json({'success': false, 'error': 'No API Key assigned to this User.'});
 
         req.user = resUser;
-
+        res.header('X-Subject-Token', resUser.accessToken);
         return res.json({'success': true, 'accessToken': resUser.accessToken, 'user': resUser});
     });
 };

@@ -19,10 +19,8 @@ var winston             = require('winston');
 var emitter             = require('../emitter');
 var util                = require('../helpers/utils');
 var ticketSchema        = require('../models/ticket');
-var historySchema       = require('../models/history');
 var userSchema          = require('../models/user');
 var notificationSchema  = require('../models/notification');
-var mailqueue           = require('../mailer/mailqueue');
 var emailTemplates      = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 

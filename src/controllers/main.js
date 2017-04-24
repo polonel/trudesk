@@ -15,7 +15,7 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    //_mixins         = require('../helpers/underscore'),
+    _mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
     ticketSchema    = require('../models/ticket'),
     nconf           = require('nconf'),
@@ -84,6 +84,19 @@ mainController.dashboard = function(req, res) {
     self.content.data.dailycount = {};
 
     async.parallel({
+        overdueTickets: function(callback) {
+            var groupSchema = require('../models/group');
+            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+                if (err) return callback(err);
+                ticketSchema.getOverdue(grps, function(err, objs) {
+                    if (err) return callback(err);
+
+                    var sorted = _.sortBy(objs, 'updated').reverse();
+
+                    return callback(null, sorted);
+                })
+            })
+        },
         totalCount: function(callback) {
             ticketSchema.getTotalCount(function(err, count) {
                 if (err) return callback(err, null);
@@ -193,6 +206,9 @@ mainController.dashboard = function(req, res) {
             });
         }
     }, function(err, results) {
+        self.content.data.tickets = {};
+        self.content.data.tickets.overdue = results.overdueTickets;
+
         var activePercent = (results.activeCount / results.totalCount)*100;
         var newPercent = (results.newCount / (results.activeCount + results.newCount))*100;
         var completedPercent = (results.closedMonthCount / results.totalMonthCount)*100;

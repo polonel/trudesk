@@ -1,0 +1,152 @@
+<div class="uk-grid uk-grid-collpase nopadding reportsBreakdownUser" ng-controller="reportsCtrl">
+    <div class="uk-width-1-1 page-title">
+        <p class="left uk-margin-medium-left">{{title}}</p>
+
+        <div class="right clearfix" style="min-width: 250px;">
+            <!--<div class="md-fab-wrapper">-->
+                <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">-->
+                    <!--<i class="material-icons" style="color: white">&#xE8BE;</i>-->
+
+                    <!--<div class="md-fab-toolbar-actions">-->
+                        <!--<button type="submit" id="user_edit_save"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i-->
+                                <!--class="material-icons md-color-white">&#xE161;</i></button>-->
+                        <!--<button type="submit" id="user_edit_print"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i-->
+                                <!--class="material-icons md-color-white">&#xE555;</i></button>-->
+                        <!--<button type="submit" id="user_edit_delete"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i-->
+                                <!--class="material-icons md-color-white">&#xE872;</i></button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+            <div style="margin-top: 8px;">
+                <select id="select_user" name="select_user" data-md-selectize>
+                    <option value="0">Select User</option>
+                    {{#each data.common.users}}
+                        <option value="{{_id}}">{{fullname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="uk-width-1-1 full-height page-content scrollable">
+        <div id="page-content-inner">
+            <div class="uk-grid uk-grid-medium uk-margin-medium-bottom">
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top uk-margin-small-right">
+                                <span class="peity-bar">5,3,9,6,5,9,7</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Total Tickets (Lifetime)</span>
+
+                            <h2 class="uk-margin-remove">
+                                <span id="ticketCount">--</span>
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span id="pie_complete" class="peity-pie">0/100</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Tickets Completed</span>
+
+                            <h2 class="uk-margin-remove">
+                                <span id="text_complete">--</span>%
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div class="panel trupanel nopadding tru-card-intro" style="min-height: 85px;">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-top ukmargin-small-right">
+                                <span id="responseTime_graph" class="peity-line">5,3,9,6,5,9,7,3,5,2</span>
+                            </div>
+                            <span class="uk-text-muted uk-text-small">Avg Response Time</span>
+
+                            <h2 class="uk-margin-remove">
+                                <span id="responseTime_text">--</span> hours
+                            </h2>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="breakdown-wrap uk-margin-medium-bottom">
+                <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 300px;">
+                    <div class="left">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
+                    </div>
+                    <!--<div class="right" style="position:relative;">-->
+                        <!--<button class="action-link"><i class="material-icons">refresh</i></button>-->
+                        <!--<div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"-->
+                             <!--aria-expanded="false">-->
+                            <!--<button class="action-link"><i class="material-icons">more_vert</i></button>-->
+                            <!--<div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">-->
+                                <!--<ul class="uk-nav">-->
+                                    <!--<li><a href="/tickets">This is a Link</a></li>-->
+                                    <!--<li><a href="#">This is a Link</a></li>-->
+                                    <!--<li><a href="#">This is a Link</a></li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
+
+                        <!--</div>-->
+                    <!--</div>-->
+                    <hr class="nomargin-top">
+                    <div class="panel-body2">
+                        <div id="test" class="mGraph mGraph-panel graph-blue1">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="uk-grid uk-margin-medium-bottom">
+                <div class="uk-width-1-2">
+                    <div id="recentTickets" class="panel trupanel nopadding" style="min-height: 265px;">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Most Recent Tickets</h6>
+                        <hr class="nomargin">
+                        <div class="tru-card-content">
+                            <div class="uk-overflow-container">
+                                <table class="uk-table">
+                                    <thead>
+                                    <tr>
+                                        <th class="uk-text-nowrap">Ticket</th>
+                                        <th class="uk-text-nowrap">Status</th>
+                                        <th class="uk-text-nowrap">Subject</th>
+                                        <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody class="recent-tickets">
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="uk-width-1-2">
+                    <div id="grpTags" class="panel trupanel nopadding" style="min-height: 265px;" data-match-height="#recentTickets">
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Tags</h6>
+                        <hr class="nomargin">
+                        <div class="tru-card-content">
+                            <div id="topTags" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+{{#contentFor 'js-plugins'}}
+
+{{/contentFor}}

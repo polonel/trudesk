@@ -105,6 +105,13 @@ viewController.getData = function(request, cb) {
               return callback();
           },
           function(callback) {
+            viewController.getShowTourSetting(request, function(err, data) {
+                viewdata.showTour = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
               viewController.getOverdueSetting(request, function(err, data) {
                   viewdata.showOverdue = data;
 
@@ -231,6 +238,7 @@ viewController.getUsers = function(request, callback) {
         u.accessToken = null;
         u.iOSDeviceTokens = null;
         u.preferences = null;
+        u.tOTPKey = null;
 
         u = _.sortBy(u, 'fullname');
 
@@ -311,6 +319,31 @@ viewController.getOverdueSetting = function(request, callback) {
         if (_.isNull(data)) return callback(null, true);
         return callback(null, data.value);
     });
+};
+
+viewController.getShowTourSetting = function(request, callback) {
+    var settingSchema = require('../../models/setting');
+    settingSchema.getSettingByName('showTour:enable', function(err, data) {
+        if (err) {
+            winston.debug(err);
+            return callback(null, true);
+        }
+        if (_.isNull(data)) return callback(null, true);
+
+        var userSchema = require('../../models/user');
+        userSchema.getUser(request.user._id, function(err, user) {
+            var hasTourCompleted = false;
+            if (user.preferences.tourCompleted === undefined) {
+                hasTourCompleted = false;
+            } else {
+                hasTourCompleted = user.preferences.tourCompleted;
+            }
+
+            if (hasTourCompleted) return callback(null, false);
+
+            return callback(null, data.value);
+        });
+    })
 };
 
 viewController.getPluginsInfo = function(request, callback) {

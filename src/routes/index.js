@@ -58,10 +58,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
     router.get('/messages/startconversation', middleware.redirectToLogin, middleware.loadCommonData, function(req, res, next){ req.showNewConvo = true; next();}, controllers.messages.get);
     router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
-    // router.get('/messages/inbox', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
-    // router.get('/messages/sentitems', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getSentItems);
-    // router.get('/messages/trash', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getTrashItems);
-    // router.get('/messages/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getById);
 
     //Calendar
     router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
@@ -72,13 +68,6 @@ function mainRoutes(router, middleware, controllers) {
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
-    //02/05/2017
-    //Removed in 0.1.8 As its Old code before Revamp.
-    // router.get('/accounts/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.createAccount);
-    // router.post('/accounts/create', middleware.redirectToLogin, controllers.accounts.postCreate);
-    // router.post('/accounts/edit', middleware.redirectToLogin, controllers.accounts.postEdit);
-    // router.get('/accounts/edit', middleware.redirectToLogin, function(req, res) { res.redirect('/accounts');});
-    // router.get('/accounts/:username', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.editAccount);
     router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage);
 
     //Groups
@@ -89,13 +78,9 @@ function mainRoutes(router, middleware, controllers) {
     //Reports
     router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
     router.get('/reports/overview', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    router.get('/reports/breakdown', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.breakdown);
-    //router.get('/reports/active', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    //router.get('/reports/inactive', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-    //router.get('/reports/completed', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview);
-
-    //Invoices
-    //router.get('/invoices', middleware.redirectToLogin, middleware.loadCommonData, controllers.invoices.get);
+    router.get('/reports/generate', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.generate);
+    router.get('/reports/breakdown/group', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.breakdownGroup);
+    router.get('/reports/breakdown/user', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.breakdownUser);
 
     //Notices
     router.get('/notices', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.get);
@@ -128,9 +113,6 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
-    //Removed 4.12.2016 -- v0.1.7
-    //router.get('/api/v1/tickets/count/year/:year', middleware.api, controllers.api.tickets.getYearData);
-    //router.get('/api/v1/tickets/count/month', middleware.api, controllers.api.tickets.getMonthData);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups);
@@ -138,6 +120,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/count/topgroups/:timespan/:top', middleware.api, controllers.api.tickets.getTopTicketGroups);
     router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup);
+    router.get('/api/v1/tickets/stats/user/:user', middleware.api, controllers.api.tickets.getTicketStatsForUser);
     router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats);
     router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single);
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
@@ -183,19 +166,28 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice);
     router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice);
 
+    //Reports Generator
+    router.post('/api/v1/reports/generate/tickets_by_group', middleware.api, controllers.api.reports.generate.ticketsByGroup);
+    router.post('/api/v1/reports/generate/tickets_by_status', middleware.api, controllers.api.reports.generate.ticketsByStatus);
+    router.post('/api/v1/reports/generate/tickets_by_priority', middleware.api, controllers.api.reports.generate.ticketsByPriority);
+    router.post('/api/v1/reports/generate/tickets_by_tags', middleware.api, controllers.api.reports.generate.ticketsByTags);
+    router.post('/api/v1/reports/generate/tickets_by_type', middleware.api, controllers.api.reports.generate.ticketsByType);
+    router.post('/api/v1/reports/generate/tickets_by_user', middleware.api, controllers.api.reports.generate.ticketsByUser);
+
+
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
     router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
-    router.get('/api/v1/plugins/install/:packageid', middleware.api, controllers.api.plugins.installPlugin);
-    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, controllers.api.plugins.removePlugin);
+    router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
+    router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
     router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
     router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
 
 
-    router.get('/api/v1/admin/restart', middleware.api, function(req, res) {
+    router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
         if (req.user.role === 'admin') {
             var pm2 = require('pm2');
             pm2.connect(function(err) {
@@ -215,24 +207,12 @@ function mainRoutes(router, middleware, controllers) {
                 });
             });
         } else {
-            return res.status(403).json({success: false, error: 'Unauthorized!'});
+            return res.status(401).json({success: false, error: 'Unauthorized!'});
         }
     });
 
     if (global.env === 'development') {
-        router.get('/debug/message', function(req, res) {
-            var mSchema = require('../models/chat/message');
-            var Message = new mSchema({
-                conversationId: '5836942a2d302233741073b1',
-                body: 'Test Message',
-                owner: req.user._id
-            });
-
-            Message.save(function(err) {
-                if (err) return res.status(400).json({err: err});
-                return res.json({success: true});
-            })
-        });
+        router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
@@ -244,11 +224,6 @@ function mainRoutes(router, middleware, controllers) {
 
             res.send('OK');
         });
-
-        router.get('/debug/plugin', function (req, res) {
-            return res.render('pluginTest');
-        });
-        router.post('/debug/uploadplugin', controllers.debug.uploadPlugin);
 
         router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
@@ -281,9 +256,6 @@ module.exports = function(app, middleware) {
     mainRoutes(router, middleware, controllers);
     app.use('/', router);
 
-    app.use(handle404);
-    app.use(handleErrors);
-
     //Load Plugin routes
     var dive = require('dive');
     var fs = require('fs');
@@ -297,14 +269,16 @@ module.exports = function(app, middleware) {
         else
             winston.warn('Unable to load plugin: ' + pluginDir);
     });
+
+    app.use(handle404);
+    app.use(handleErrors);
 };
 
 function handleErrors(err, req, res) {
     var status = err.status || 500;
-    res.status(status);
+    res.status(err.status);
 
     if (status == 404) {
-        winston.debug(err.message);
         res.render('404', {layout: false});
         return;
     }
@@ -324,9 +298,6 @@ function handleErrors(err, req, res) {
 
 }
 
-function handle404(req, res, next) {
-    var err = new Error('Not Found: ' + req.protocol + '://' + req.hostname + req.path);
-    err.status = 404;
-
-    next(err);
+function handle404(req, res) {
+    return res.status(404).render('404', {layout: false});
 }

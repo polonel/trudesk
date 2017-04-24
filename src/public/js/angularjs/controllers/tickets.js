@@ -116,7 +116,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                 //hide Dropdown
                 helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
             };
 
             $scope.openTickets = function() {
@@ -157,7 +156,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 //hide Dropdown
                 clearChecked();
                 helpers.hideAllpDropDowns();
-                helpers.hideDropDownScrolls();
             };
 
             $scope.GridRefreshChanged = function() {

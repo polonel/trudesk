@@ -71,9 +71,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             el.style.display = 'none';
                     });
 
-                    if ($('.all-user-list').getNiceScroll(0) != false) {
-                        $('.all-user-list').getNiceScroll(0).resize();
-                    }
+                    // if ($('.all-user-list').getNiceScroll(0) != false) {
+                    //     $('.all-user-list').getNiceScroll(0).resize();
+                    // }
 
                     if (_.isFunction(callback))
                         return callback();
@@ -120,9 +120,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     return _.defer(function() {
                         helpers.resizeFullHeight();
                         helpers.hideAllpDropDowns();
-                        helpers.hideDropDownScrolls();
-
-                        helpers.resizeScroller();
                     }, 500);
                 });
             }

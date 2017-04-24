@@ -12,9 +12,8 @@
 
  **/
 
-var async = require('async');
-var mongoose = require('mongoose');
-var _ = require('underscore');
+var mongoose        = require('mongoose');
+var _               = require('underscore');
 
 var COLLECTION = "conversations";
 

@@ -4,30 +4,6 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
 
-        conventionalChangelog: {
-            options: {
-                changelogOpts: {
-                    // conventional-changelog options go here
-                    preset: 'eslint'
-                },
-                context: {
-                    // context goes here
-                },
-                gitRawCommitsOpts: {
-                    // git-raw-commits options go here
-                },
-                parserOpts: {
-                    // conventional-commits-parser options go here
-                },
-                writerOpts: {
-                    // conventional-changelog-writer options go here
-                }
-            },
-            release: {
-                src: 'CHANGELOG.md'
-            }
-        },
-
         express: {
             options: {
                 //Override Defaults
@@ -116,7 +92,13 @@ module.exports = function(grunt) {
                         'src/public/js/vendor/uikit/css/uikit_custom.css',
                         'src/public/js/plugins/snackbar.css',
                         'src/public/js/vendor/c3/c3.css',
-                        'src/public/js/vendor/formvalidator/theme-default.css'
+                        'src/public/js/vendor/formvalidator/theme-default.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-default.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-dark.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-arrows.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-arrows-fix.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square.css',
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css'
                     ]
                 }
             },
@@ -141,6 +123,7 @@ module.exports = function(grunt) {
             trudesk: {
                 src: 'src/controllers/api/',
                 dest: 'apidocs/',
+                template: 'apidoc_template/',
                 options: {
                     //debug: true,
                     includeFilters: ['.*\\.js$'],
@@ -209,7 +192,7 @@ module.exports = function(grunt) {
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss', 'builddocs']);
+    grunt.registerTask('build', ['builddocs', 'uglify:uikit', 'shell:webpackDist', 'buildcss']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('changelog', ['conventionalChangelog']);
     grunt.registerTask('default', ['server']);

@@ -1,44 +1,18 @@
-<div class="uk-grid uk-grid-collpase nopadding reportsBreakdown" ng-controller="reportsCtrl">
+<div class="uk-grid uk-grid-collpase nopadding reportsBreakdownGroup" ng-controller="reportsCtrl">
     <div class="uk-width-1-1 page-title">
         <p class="left uk-margin-medium-left">{{title}}</p>
 
         <div class="right clearfix" style="min-width: 250px;">
-            <!--<div class="md-fab-wrapper">-->
-                <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">-->
-                    <!--<i class="material-icons" style="color: white">&#xE8BE;</i>-->
 
-                    <!--<div class="md-fab-toolbar-actions">-->
-                        <!--<button type="submit" id="user_edit_save"-->
-                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i-->
-                                <!--class="material-icons md-color-white">&#xE161;</i></button>-->
-                        <!--<button type="submit" id="user_edit_print"-->
-                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i-->
-                                <!--class="material-icons md-color-white">&#xE555;</i></button>-->
-                        <!--<button type="submit" id="user_edit_delete"-->
-                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i-->
-                                <!--class="material-icons md-color-white">&#xE872;</i></button>-->
-                    <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
             <div style="margin-top: 8px;">
                 <select id="select_group" name="select_group" data-md-selectize>
                     <option value="0">Select Group</option>
                     {{#each data.common.groups}}
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
-                    <!--<option value="30" selected>Last 30 Days</option>-->
-                    <!--<option value="60">Last 60 Days</option>-->
-                    <!--<option value="90">Last 90 Days</option>-->
-                    <!--<option value="180">Last 180 Days</option>-->
-                    <!--<option value="365">Last 365 Days</option>-->
-                    <!--<option value="0">Lifetime</option>-->
                 </select>
             </div>
         </div>
-
-        <!--<div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;">-->
-            <!--<strong>Last Updated:</strong> <span>Cache Still Loading...</span>-->
-        <!--</div>-->
     </div>
 
     <div class="uk-width-1-1 full-height page-content scrollable">
@@ -94,21 +68,6 @@
                     <div class="left">
                         <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
                     </div>
-                    <!--<div class="right" style="position:relative;">-->
-                        <!--<button class="action-link"><i class="material-icons">refresh</i></button>-->
-                        <!--<div class="right" data-uk-dropdown="{pos: 'bottom-right'}" aria-haspopup="true"-->
-                             <!--aria-expanded="false">-->
-                            <!--<button class="action-link"><i class="material-icons">more_vert</i></button>-->
-                            <!--<div class="uk-dropdown uk-dropdown-small uk-dropdown-bottom">-->
-                                <!--<ul class="uk-nav">-->
-                                    <!--<li><a href="/tickets">This is a Link</a></li>-->
-                                    <!--<li><a href="#">This is a Link</a></li>-->
-                                    <!--<li><a href="#">This is a Link</a></li>-->
-                                <!--</ul>-->
-                            <!--</div>-->
-
-                        <!--</div>-->
-                    <!--</div>-->
                     <hr class="nomargin-top">
                     <div class="panel-body2">
                         <div id="test" class="mGraph mGraph-panel graph-blue1">

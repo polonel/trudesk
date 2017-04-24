@@ -93,7 +93,7 @@ define('modules/ajaxify', [
         }
 
         // Internal Helper
-        $.expr[':'].internal = function(obj, index, meta, stack){
+        $.expr[':'].internal = function(obj){
             // Prepare
             var
                 $this = $(obj),
@@ -169,7 +169,7 @@ define('modules/ajaxify', [
 
             $.ajax({
                 url: url,
-                success: function(data, textStatus, jqXHR){
+                success: function(data){
                     // Prepare
                     var
                         $data = $(documentHtml(data)),
@@ -207,7 +207,6 @@ define('modules/ajaxify', [
 
                     // This fixes showing the overflow on scrollers when removing them before page load
                     $('#page-content').animate({opacity:0}, 0, function() {
-                        helpers.removeAllScrollers();
                         //Memory Leak Fix- Remove events before destroying content;
                         var $oldContent = $('#page-content');
                         $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change');
