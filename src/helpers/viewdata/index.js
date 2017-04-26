@@ -328,7 +328,9 @@ viewController.getShowTourSetting = function(request, callback) {
             winston.debug(err);
             return callback(null, true);
         }
-        if (_.isNull(data)) return callback(null, true);
+
+        if (!_.isNull(data) && !_.isUndefined(data) && data === false)
+            return callback(null, true);
 
         var userSchema = require('../../models/user');
         userSchema.getUser(request.user._id, function(err, user) {
@@ -340,6 +342,8 @@ viewController.getShowTourSetting = function(request, callback) {
             }
 
             if (hasTourCompleted) return callback(null, false);
+
+            if (_.isNull(data)) return callback(null, true);
 
             return callback(null, data.value);
         });
