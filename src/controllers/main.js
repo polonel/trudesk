@@ -80,169 +80,24 @@ mainController.dashboard = function(req, res) {
     self.content.data = {};
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
-    self.content.data.summary = {};
-    self.content.data.dailycount = {};
 
     async.parallel({
         overdueTickets: function(callback) {
             var groupSchema = require('../models/group');
-            groupSchema.getAllGroupsOfUser(req.user._id, function(err, grps) {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
                 if (err) return callback(err);
-                ticketSchema.getOverdue(grps, function(err, objs) {
+                ticketSchema.getOverdue(grps, function (err, objs) {
                     if (err) return callback(err);
 
                     var sorted = _.sortBy(objs, 'updated').reverse();
 
                     return callback(null, sorted);
-                })
-            })
-        },
-        totalCount: function(callback) {
-            ticketSchema.getTotalCount(function(err, count) {
-                if (err) return callback(err, null);
-                return callback(null, count);
-            });
-        },
-        totalMonthCount: function(callback) {
-            var month = new Date().getMonth();
-            ticketSchema.getTotalMonthCount(month, function(err, count) {
-                if (err) return callback(err, null);
-                return callback(null, count);
-            });
-        },
-        closedMonthCount: function(callback) {
-            var month = new Date().getMonth();
-            ticketSchema.getMonthCount(month, 3, function(err, count) {
-                if (err) return callback(err, null);
-                return callback(null, count);
-            });
-        },
-        newCount: function(callback) {
-            ticketSchema.getStatusCount(0, function(err, count) {
-                if (err) return callback(err, null);
-                return callback(null, count);
-            });
-        },
-        activeCount: function(callback) {
-            async.series([
-                function(cb) {
-                    ticketSchema.getStatusCount(1, function(err, count) {
-                        if (err) return cb(err, null);
-
-                        return cb(null, count);
-                    });
-                },
-                function(cb) {
-                    ticketSchema.getStatusCount(2, function(err, count) {
-                        if (err) return cb(err, null);
-
-                        return cb(null, count);
-                    });
-                }
-            ], function(err, results) {
-                if (err) return callback(err, null);
-                var aCount = _.sum(results);
-
-                return callback(null, aCount);
-            });
-        },
-        closedCount: function(callback) {
-            ticketSchema.getStatusCount(3, function(err, count) {
-                if (err) return callback(err, null);
-
-                return callback(null, count);
-            });
-        },
-        dailyCount: function(callback) {
-            var dates = [];
-            for (var i = 0; i < 14; i++) {
-                var today = new Date();
-                today.setHours(23);
-                today.setMinutes(59);
-                today.setSeconds(59);
-                today.setDate(today.getDate()-i);
-                dates.push(today.toISOString());
-            }
-
-            dates.reverse();
-
-            var final = {};
-            async.series([
-                function(next) {
-                    async.forEachOf(dates, function(value, k, cb) {
-                        (function(key) {
-                            final[key] = {date: dates[key]};
-
-                            async.series({
-                                total: function(next) {
-                                    ticketSchema.getDateCount(dates[key], function(err, c) {
-                                        if (err) return next(null, 0);
-
-                                        return next(null, c);
-                                    });
-                                },
-                                closedCount: function(next) {
-                                    ticketSchema.getStatusCountByDate(3, dates[key], function(err, c) {
-                                        if (err) return next(null, 0);
-
-                                        return next(null, c);
-                                    });
-                                }
-                            }, function(err, done) {
-                                final[key].total = done.total;
-                                final[key].closedCount = done.closedCount;
-
-                                final[key].percent = (done.total / 25)*100;
-
-                                return cb();
-                            });
-                        })(k);
-                    }, function(err) {
-                        return next(err, final);
-                    });
-                }
-            ], function(err) {
-                return callback(err, final);
+                });
             });
         }
     }, function(err, results) {
         self.content.data.tickets = {};
         self.content.data.tickets.overdue = results.overdueTickets;
-
-        var activePercent = (results.activeCount / results.totalCount)*100;
-        var newPercent = (results.newCount / (results.activeCount + results.newCount))*100;
-        var completedPercent = (results.closedMonthCount / results.totalMonthCount)*100;
-        if (isNaN(completedPercent)) completedPercent = 0;
-        if (isNaN(activePercent)) activePercent = 0;
-        if (isNaN(newPercent)) newPercent = 0;
-        activePercent = Math.round(activePercent);
-        completedPercent = Math.round(completedPercent);
-        newPercent = Math.round(newPercent);
-        if (completedPercent > 100) completedPercent = 100;
-        if (self.content.data.summary == undefined) self.content.data.summary = {};
-        self.content.data.summary.totalCount = results.totalCount;
-        self.content.data.summary.newCount = results.newCount;
-        self.content.data.summary.newPercent = newPercent;
-        self.content.data.summary.activeCount = results.activeCount;
-        self.content.data.summary.activePercent = activePercent;
-        self.content.data.summary.completedPercent = completedPercent;
-
-        self.content.data.dailycount = results.dailyCount;
-        self.content.data.dailyYAxis = {};
-
-        var maxNewCount = _.max(_.pluck(results.dailyCount, "newCount"));
-        var maxClosedCount = _.max(_.pluck(results.dailyCount, "closedCount"));
-        var max = _.max([maxNewCount, maxClosedCount]);
-        self.content.data.dailyYAxis.maxValue = 25;
-        self.content.data.dailyYAxis.v1 = 15;
-        self.content.data.dailyYAxis.v2 = 10;
-        self.content.data.dailyYAxis.v3 = 5;
-        if (max > 25) {
-            self.content.data.dailyYAxis.maxValue = 50;
-            self.content.data.dailyYAxis.v1 = 35;
-            self.content.data.dailyYAxis.v2 = 20;
-            self.content.data.dailyYAxis.v3 = 5;
-        }
 
         return res.render('dashboard', self.content);
     });

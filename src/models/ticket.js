@@ -1347,7 +1347,7 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
     var tsDate = today.clone().subtract(timespan, 'd');
 
     var q = self.model(COLLECTION).find({date: {$gte: tsDate.toDate(), $lte: today.toDate()}, deleted: false})
-        .deepPopulate('group')
+        .populate('group')
         .select('group')
         .sort('group');
 
@@ -1360,14 +1360,17 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 
                 var a = [];
 
-                _.each(g, function(item) {
+                for (var i = 0; i < g.length; i++) {
+                    var ticket = g[i];
                     var o = {};
-                    o.name = item.group.name;
-                    o._id = item.group._id;
+                    o._id = ticket.group._id;
+                    o.name = ticket.group.name;
 
-                    if (!_.where(a, {'name': o.name}).length) a.push(o);
-
-                });
+                    if (!_.where(a, {'name': o.name}).length)
+                        a.push(o);
+                    else
+                        o = null;
+                }
 
                 var final = _.uniq(a);
 
@@ -1397,9 +1400,9 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
         }
 
     ], function(err, result) {
-        if (err) return callback(err);
+        if (err) return callback(err, null);
 
-        callback(null, result);
+        return callback(null, result);
     });
 };
 

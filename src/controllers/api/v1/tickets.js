@@ -824,6 +824,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
             if (_.isEmpty(tickets)) return callback('Group has no tickets to report.');
             var today = moment().hour(23).minute(59).second(59);
             var r = {};
+            r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
             r.recentTickets = _.last(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
@@ -847,7 +848,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
     ], function(err, results) {
         if (err) return res.status(400).json({success: false, error: err});
 
-        //data.closedTickets = results.closedTickets;
+        data.ticketCount = results.ticketCount;
         data.recentTickets = results.recentTickets;
         data.closedCount = _.size(results.closedTickets);
         data.graphData = results.graphData;
@@ -925,6 +926,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
             if (_.isEmpty(tickets)) return callback('User has no tickets to report.');
             var today = moment().hour(23).minute(59).second(59);
             var r = {};
+            r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
             r.recentTickets = _.last(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
@@ -948,7 +950,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
     ], function(err, results) {
         if (err) return res.status(400).json({success: false, error: err});
 
-        //data.closedTickets = results.closedTickets;
+        data.ticketCount = results.ticketCount;
         data.recentTickets = results.recentTickets;
         data.closedCount = _.size(results.closedTickets);
         data.graphData = results.graphData;
