@@ -4938,6 +4938,13 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   .md-btn-flat:active {
     background: rgba(153, 153, 153, 0.4); }
 
+.md-btn-white {
+  background: #fff; }
+  .md-btn-white:hover, .md-btn-white:focus {
+    background: #fff; }
+  .md-btn-white, .md-btn-white:active {
+    background: #fff; }
+
 .md-btn-flat-danger {
   color: #e53935; }
   .md-btn-flat-danger:hover, .md-btn-flat-danger:focus, .md-btn-flat-danger:active {
@@ -6025,8 +6032,7 @@ a.waves-effect .waves-ripple {
   z-index: 1304;
   background: rgba(0, 0, 0, 0.5);
   -webkit-transition: opacity 250ms ease-out;
-  transition: opacity 250ms ease-out;
-  overflow: hidden !important; }
+  transition: opacity 250ms ease-out; }
   .uk-modal.uk-modal-no-backdrop {
     background: transparent; }
 
