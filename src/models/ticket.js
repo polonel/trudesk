@@ -505,6 +505,7 @@ ticketSchema.statics.getAllForCache = function(callback) {
         .select('comments')
         .select('assignee')
         .select('owner')
+        .select('tags')
         .select('group');
 
     return q.exec(callback);
