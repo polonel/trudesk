@@ -103,12 +103,14 @@ api_tickets.get = function(req, res) {
 
                     return callback(null, grps);
                 });
+            } else {
+                return callback(null, grps);
             }
         },
         function(grps, callback) {
             ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
-                callback(err, results);
+                return callback(err, results);
             });
         }
     ], function(err, results) {
@@ -161,6 +163,8 @@ api_tickets.search = function(req, res) {
 
                     return callback(null, grps);
                 });
+            } else {
+                return callback(null, grps);
             }
         },
         function(grps, callback) {
