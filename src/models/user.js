@@ -105,7 +105,7 @@ userSchema.methods.removeAccessToken = function(callback) {
     var user = this;
     if (!user.accessToken) return callback();
 
-    user.accessToken = null;
+    user.accessToken = undefined;
     user.save(function(err) {
         if (err) return callback(err, null);
 

@@ -728,10 +728,10 @@ api_users.removeApiKey = function(req, res) {
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
 
     userSchema.getUser(id, function(err, user) {
-        if (err) return res.status(400).json({error: 'Invalid Request'});
+        if (err) return res.status(400).json({error: 'Invalid Request', fullError: err});
 
         user.removeAccessToken(function(err) {
-            if (err) return res.status(400).json({error: 'Invalid Request'});
+            if (err) return res.status(400).json({error: 'Invalid Request', fullError: err});
 
             return res.json({success: true});
         });
