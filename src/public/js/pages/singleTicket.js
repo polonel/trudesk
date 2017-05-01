@@ -20,7 +20,7 @@ define('pages/singleTicket', [
     'modules/helpers'
 ], function($, _, socketClient, md, helpers) {
     var st = {};
-    st.init = function() {
+    st.init = function(callback) {
         $(document).ready(function() {
             socketClient.chat.updateOnlineBubbles();
 
@@ -88,6 +88,9 @@ define('pages/singleTicket', [
                     }
                 });
             });
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

@@ -72,7 +72,11 @@
                                     {{#each menu.sub.items}}
                                         <li {{#is ../../childnav id}} class='active' {{/is}} style="margin: 0; padding: 0;">
                                             <a href="{{url}}" style="font-size: 12px; padding-left: 30px;">
-                                                <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
+                                                {{#isNotNull icon}}
+                                                    <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">{{icon}}</i>
+                                                {{else}}
+                                                    <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
+                                                {{/isNotNull}}
                                                 {{title}}
                                             </a>
                                         </li>

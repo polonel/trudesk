@@ -16,7 +16,7 @@ var async   = require('async'),
     nconf = require('nconf'),
     pkg     = require('./package.json'),
     ws = require('./src/webserver');
-    //var memory = require('./src/memory');
+    //`var memory = require('./src/memory');
 
 
 global.forks = [];

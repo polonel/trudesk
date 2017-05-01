@@ -27,12 +27,17 @@ define('pages/reportsBreakdown', [
 ], function($, _, helpers, CountUp, c3, d3pie, moment) {
     var reportsBreakdownPage = {};
 
-    reportsBreakdownPage.init = function() {
+    reportsBreakdownPage.init = function(callback) {
         $(document).ready(function() {
             var testPage = $('#page-content').find('.reportsBreakdownGroup');
             if (testPage.length < 1) {
                 testPage = $('#page-content').find('.reportsBreakdownUser');
-                if (testPage.length < 1) return true;
+                if (testPage.length < 1) {
+                    if (typeof callback === 'function')
+                        return callback();
+
+                    return;
+                }
             }
 
             helpers.resizeAll();
@@ -186,6 +191,9 @@ define('pages/reportsBreakdown', [
                         helpers.UI.showSnackbar(JSON.parse(err.responseText).error, true);
                     });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

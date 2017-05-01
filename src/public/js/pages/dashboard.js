@@ -26,10 +26,15 @@ define('pages/dashboard', [
 ], function($, _, helpers, CountUp, c3) {
     var dashboardPage = {};
 
-    dashboardPage.init = function() {
+    dashboardPage.init = function(callback) {
         $(document).ready(function() {
             var testPage = $('#page-content').find('.dashboard');
-            if (testPage.length < 1) return;
+            if (testPage.length < 1) {
+                if (typeof callback === 'function')
+                    return callback();
+
+                return;
+            }
 
             helpers.resizeAll();
 
@@ -237,6 +242,9 @@ define('pages/dashboard', [
                     }
                 });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

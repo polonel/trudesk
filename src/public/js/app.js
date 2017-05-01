@@ -43,21 +43,22 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
 
     ], function(_, nav, tour) {
         //Page loading (init)
-        require(['pages/pageloader'], function(pl) { pl.init(); });
+        require(['pages/pageloader'], function(pl) {
+            pl.init(function() {
+                nav.init();
 
-        nav.init();
+                var $event = _.debounce(function() {
+                    helpers.hideLoader(1000);
+                    helpers.countUpMe();
+                    helpers.UI.cardShow();
 
-        var $event = _.debounce(function() {
-            helpers.hideLoader(1000);
-            helpers.countUpMe();
-            helpers.UI.cardShow();
+                    $.event.trigger('$trudesk:ready', window);
+                    //tour.init();
 
-            $.event.trigger('$trudesk:ready');
+                }, 100);
 
-            //tour.init();
-
-        }, 100);
-
-        $event();
+                $event();
+            });
+        });
     });
 });

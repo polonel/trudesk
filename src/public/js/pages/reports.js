@@ -26,10 +26,15 @@ define('pages/reports', [
 ], function($, _, helpers, CountUp, c3) {
     var reportsPage = {};
 
-    reportsPage.init = function() {
+    reportsPage.init = function(callback) {
         $(document).ready(function() {
             var testPage = $('#page-content').find('.reportsOverview');
-            if (testPage.length < 1) return;
+            if (testPage.length < 1) {
+                if (typeof callback === 'function')
+                    return callback();
+
+                return;
+            }
 
             helpers.resizeAll();
 
@@ -226,6 +231,9 @@ define('pages/reports', [
                     }
                 });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

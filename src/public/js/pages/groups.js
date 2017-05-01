@@ -26,7 +26,7 @@ define('pages/groups', [
 ], function($, helpers, UIkit) {
     var groupsPage = {};
 
-    groupsPage.init = function() {
+    groupsPage.init = function(callback) {
         $(document).ready(function() {
             // get all filters
             var filterArray = [];
@@ -97,6 +97,9 @@ define('pages/groups', [
 ////            });
 //
 //            helpers.resizeDataTables('.groupsList');
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

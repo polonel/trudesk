@@ -27,7 +27,7 @@ define('pages/tickets', [
 ], function($, helpers, moment, eh) {
     var ticketsPage = {};
 
-    ticketsPage.init = function() {
+    ticketsPage.init = function(callback) {
         $(document).ready(function() {
             var table = $('#ticketTable');
             table.dataTable({
@@ -173,6 +173,9 @@ define('pages/tickets', [
                     }
                 }, 800);
             });
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

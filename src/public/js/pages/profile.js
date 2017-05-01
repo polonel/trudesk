@@ -20,9 +20,12 @@ define('pages/profile', [
 ], function($) {
     var profile = {};
 
-    profile.init = function() {
+    profile.init = function(callback) {
         $(document).ready(function() {
             generateQRCode();
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 
