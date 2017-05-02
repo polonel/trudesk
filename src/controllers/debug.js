@@ -71,7 +71,7 @@ debugController.populatedatabase = function(req, res) {
                 groupSchema.getAllGroups(function(err, groups) {
                     ticketTypeSchema.getTypes(function(err, types) {
                         var tickets = [];
-                        for (var i = 0; i < 1001; i++) { // 1000 Tickets
+                        for (var i = 0; i < 10001; i++) { // 10000 Tickets
                             var user = users[Math.floor(Math.random()*users.length)];
                             var group = groups[Math.floor(Math.random()*groups.length)];
                             var type = types[Math.floor(Math.random()*types.length)];
@@ -86,13 +86,21 @@ debugController.populatedatabase = function(req, res) {
                                 issue: 'Here is my issue Text'
                             };
 
+                            winston.debug('Adding Ticket...(' + i+1 + ')');
                             tickets.push(ticket);
                         }
 
-                        async.each(tickets, function(t, cb) {
+                        winston.debug('Saving Tickets...');
+                        async.eachSeries(tickets, function(t, cb) {
                             var T = new ticketSchema(t);
-                            T.save(cb);
-                        }, function (err){ done(err); });
+                            T.save(function(err, savedTicket) {
+                                if (err) return cb(err);
+                                winston.debug('Saved Ticket - ' + savedTicket.uid);
+                                T = null;
+
+                                return cb(null);
+                            });
+                        }, function (err){ tickets = null; done(err); });
                     });
                 });
             });

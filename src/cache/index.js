@@ -47,7 +47,6 @@ function loadConfig() {
 }
 
 var refreshTimer;
-var now = moment();
 var lastUpdated = moment();
 
 truCache.init = function(callback) {
@@ -264,7 +263,7 @@ truCache.refreshCache = function(callback) {
 
     loadConfig();
     var db = require('../database');
-    db.init(function(err, db) {
+    db.init(function(err) {
         if (err) return winston.error(err);
         truCache.init(function(err) {
             if (err) {

@@ -18,7 +18,7 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 ### Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
 2. Install dependencies: ```npm install```
-3. Build the scripts: ```grunt build```
+3. Build the scripts: ```npm run build```
 3. Start the server: ```npm start```
 4. Navigate to: ```http://localhost:8118```
 

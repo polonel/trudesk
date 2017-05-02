@@ -21,7 +21,6 @@ var Controllers = {
     accounts: require('./accounts'),
     groups: require('./groups'),
     reports: require('./reports'),
-    invoices: require('./invoices'),
     notices: require('./notices'),
     plugins: require('./plugins'),
     settings: require('./settings'),

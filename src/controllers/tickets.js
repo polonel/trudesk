@@ -277,6 +277,7 @@ ticketsController.processor = function(req, res) {
     self.content.data.filter = object.filter;
 
     var userGroups = [];
+    var totalCount = 0;
 
     async.waterfall([
         function(callback) {
@@ -308,6 +309,7 @@ ticketsController.processor = function(req, res) {
         //Ticket Data
         self.content.data.totalCount = 0;
         self.content.data.tickets = results;
+        totalCount = results.length;
 
         var countObject = {
             status: object.status,
@@ -317,8 +319,8 @@ ticketsController.processor = function(req, res) {
         };
 
         //Get Pagination
-        ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
-            if (err) return handleError(res, err);
+        //ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
+            //if (err) return handleError(res, err);
 
             self.content.data.pagination = {};
             self.content.data.pagination.type = processor.pagetype;
@@ -337,7 +339,7 @@ ticketsController.processor = function(req, res) {
             self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
 
             res.render(processor.renderpage, self.content);
-        });
+        //});
     });
 };
 
