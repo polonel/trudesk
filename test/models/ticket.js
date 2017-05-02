@@ -238,7 +238,7 @@ describe('ticket.js', function() {
     });
 
     it('should get all tickets', function(done) {
-        ticketSchema.getAll(function(err, tickets) {
+        ticketSchema.getAllForCache(function(err, tickets) {
             expect(err).to.not.exist;
             expect(tickets).to.have.length(1);
 

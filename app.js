@@ -251,7 +251,7 @@ function dbCallback(err, db) {
                     }
                 });
 
-                next();
+                return next();
             }
         ], function() {
             winston.info("TruDesk Ready");

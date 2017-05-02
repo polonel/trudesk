@@ -12,17 +12,16 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var async           = require('async');
 var moment          = require('moment');
+var winston         = require('winston');
 
-var userSchema      = require('../models/user');
 var ticketSchema    = require('../models/ticket');
 
 var ex = {};
 
 var init = function(tickets, callback) {
-    var ticketAvg   = {};
     var $tickets    = [];
     ex.e30          = {};
     ex.e60          = {};
@@ -38,156 +37,164 @@ var init = function(tickets, callback) {
         e180 = today.clone().subtract(180, 'd'),
         e365 = today.clone().subtract(365, 'd');
 
-    async.series({
-        allTickets: function(c) {
+
+    async.series([
+        function(done) {
             if (tickets) {
                 $tickets = tickets;
 
-                c();
+                return done();
             } else {
-                ticketSchema.getAllNoPopulate(function(err, tickets) {
-                    if (err) return c(err);
+                winston.debug('No Tickets sent to cache (Pulling...)');
+                ticketSchema.getAllForCache(function(err, tickets) {
+                    if (err) return done(err);
 
                     $tickets = tickets;
 
-                    c();
+                    return done();
                 });
             }
         },
-        e30: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e30.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e30.toDate());
-            });
+        function(done) {
+            async.parallel({
+                e30: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e30.tickets = _.filter($tickets, function(v) {
+                        return (v.date < today.toDate() && v.date > e30.toDate());
+                    });
 
-            ex.e30.closedTickets = _.filter(ex.e30.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e30.closedTickets = _.filter(ex.e30.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            buildGraphData(ex.e30.tickets, 30, function(graphData) {
-                ex.e30.graphData = graphData;
+                    buildGraphData(ex.e30.tickets, 30, function(graphData) {
+                        ex.e30.graphData = graphData;
 
-                buildAvgResponse(ex.e30.tickets, function(obj) {
-                    ex.e30.avgResponse = obj.avgResponse;
-                    ex.e30.tickets = _.size(ex.e30.tickets);
-                    ex.e30.closedTickets = _.size(ex.e30.closedTickets);
-                    c();
-                });
-            });
-        },
-        e60: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e60.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e60.toDate());
-            });
+                        buildAvgResponse(ex.e30.tickets, function(obj) {
+                            ex.e30.avgResponse = obj.avgResponse;
+                            ex.e30.tickets = _.size(ex.e30.tickets);
+                            ex.e30.closedTickets = _.size(ex.e30.closedTickets);
+                            return c();
+                        });
+                    });
+                },
+                e60: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e60.tickets = _.filter($tickets, function(v) {
+                        return (v.date < today.toDate() && v.date > e60.toDate());
+                    });
 
-            ex.e60.closedTickets = _.filter(ex.e60.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e60.closedTickets = _.filter(ex.e60.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            buildGraphData(ex.e60.tickets, 60, function(graphData) {
-                ex.e60.graphData = graphData;
+                    buildGraphData(ex.e60.tickets, 60, function(graphData) {
+                        ex.e60.graphData = graphData;
 
-                buildAvgResponse(ex.e60.tickets, function(obj) {
-                    ex.e60.avgResponse = obj.avgResponse;
-                    ex.e60.tickets = _.size(ex.e60.tickets);
-                    ex.e60.closedTickets = _.size(ex.e60.closedTickets);
-                    c();
-                });
-            });
-        },
-        e90: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e90.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e90.toDate());
-            });
+                        buildAvgResponse(ex.e60.tickets, function(obj) {
+                            ex.e60.avgResponse = obj.avgResponse;
+                            ex.e60.tickets = _.size(ex.e60.tickets);
+                            ex.e60.closedTickets = _.size(ex.e60.closedTickets);
+                            return c();
+                        });
+                    });
+                },
+                e90: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e90.tickets = _.filter($tickets, function(v) {
+                        return (v.date < today.toDate() && v.date > e90.toDate());
+                    });
 
-            ex.e90.closedTickets = _.filter(ex.e90.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e90.closedTickets = _.filter(ex.e90.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            buildGraphData(ex.e90.tickets, 90, function(graphData) {
-                ex.e90.graphData = graphData;
+                    buildGraphData(ex.e90.tickets, 90, function(graphData) {
+                        ex.e90.graphData = graphData;
 
-                buildAvgResponse(ex.e90.tickets, function(obj) {
-                    ex.e90.avgResponse = obj.avgResponse;
-                    ex.e90.tickets = _.size(ex.e90.tickets);
-                    ex.e90.closedTickets = _.size(ex.e90.closedTickets);
-                    c();
-                });
-            });
-        },
-        e180: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e180.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e180.toDate());
-            });
+                        buildAvgResponse(ex.e90.tickets, function(obj) {
+                            ex.e90.avgResponse = obj.avgResponse;
+                            ex.e90.tickets = _.size(ex.e90.tickets);
+                            ex.e90.closedTickets = _.size(ex.e90.closedTickets);
+                            c();
+                        });
+                    });
+                },
+                e180: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e180.tickets = _.filter($tickets, function(v) {
+                        return (v.date < today.toDate() && v.date > e180.toDate());
+                    });
 
-            ex.e180.closedTickets = _.filter(ex.e180.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e180.closedTickets = _.filter(ex.e180.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            buildGraphData(ex.e180.tickets, 180, function(graphData) {
-                ex.e180.graphData = graphData;
+                    buildGraphData(ex.e180.tickets, 180, function(graphData) {
+                        ex.e180.graphData = graphData;
 
-                buildAvgResponse(ex.e180.tickets, function(obj) {
-                    ex.e180.avgResponse = obj.avgResponse;
-                    ex.e180.tickets = _.size(ex.e180.tickets);
-                    ex.e180.closedTickets = _.size(ex.e180.closedTickets);
-                    c();
-                });
-            });
-        },
-        e365: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e365.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e365.toDate());
-            });
+                        buildAvgResponse(ex.e180.tickets, function(obj) {
+                            ex.e180.avgResponse = obj.avgResponse;
+                            ex.e180.tickets = _.size(ex.e180.tickets);
+                            ex.e180.closedTickets = _.size(ex.e180.closedTickets);
+                            c();
+                        });
+                    });
+                },
+                e365: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e365.tickets = _.filter($tickets, function(v) {
+                        return (v.date < today.toDate() && v.date > e365.toDate());
+                    });
 
-            ex.e365.closedTickets = _.filter(ex.e365.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e365.closedTickets = _.filter(ex.e365.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            buildGraphData(ex.e365.tickets, 365, function(graphData) {
-                ex.e365.graphData = graphData;
+                    buildGraphData(ex.e365.tickets, 365, function(graphData) {
+                        ex.e365.graphData = graphData;
 
-                //Get average Response
-                buildAvgResponse(ex.e365.tickets, function(obj) {
-                    ex.e365.avgResponse = obj.avgResponse;
-                    ex.e365.tickets = _.size(ex.e365.tickets);
-                    ex.e365.closedTickets = _.size(ex.e365.closedTickets);
+                        //Get average Response
+                        buildAvgResponse(ex.e365.tickets, function(obj) {
+                            ex.e365.avgResponse = obj.avgResponse;
+                            ex.e365.tickets = _.size(ex.e365.tickets);
+                            ex.e365.closedTickets = _.size(ex.e365.closedTickets);
 
-                    c();
-                });
-            });
-        },
-        lifetime: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.lifetime.tickets = _.sortBy($tickets, 'uid');
+                            c();
+                        });
+                    });
+                },
+                lifetime: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.lifetime.tickets = _.sortBy($tickets, 'uid');
 
-            ex.lifetime.closedTickets = _.filter(ex.lifetime.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.lifetime.closedTickets = _.filter(ex.lifetime.tickets, function(v) {
+                        return v.status === 3;
+                    });
 
-            var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(30, 'd');
-            var diffDays = today.diff(firstDate, 'days');
+                    var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(30, 'd');
+                    var diffDays = today.diff(firstDate, 'days');
 
-            buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
-                ex.lifetime.graphData = graphData;
+                    buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
+                        ex.lifetime.graphData = graphData;
 
-                //Get average Response
-                buildAvgResponse(ex.lifetime.tickets, function(obj) {
-                    ex.lifetime.avgResponse = obj.avgResponse;
-                    ex.lifetime.tickets = _.size(ex.lifetime.tickets);
-                    ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
+                        //Get average Response
+                        buildAvgResponse(ex.lifetime.tickets, function(obj) {
+                            ex.lifetime.avgResponse = obj.avgResponse;
+                            ex.lifetime.tickets = _.size(ex.lifetime.tickets);
+                            ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
 
-                    c();
-                });
+                            c();
+                        });
+                    });
+                }
+            }, function(err) {
+                return done(err);
             });
         }
-    }, function(err) {
-        $tickets = null; //Clear it
-        callback(err, ex);
+    ], function(err) {
+        $tickets = null;
+        return callback(err, ex)
     });
 };
 
@@ -212,11 +219,11 @@ function buildGraphData(arr, days, callback) {
         graphData.push(obj);
 
         async.setImmediate(function() {
-            next();
+            return next();
         });
 
     }, function() {
-         callback(graphData);
+         return callback(graphData);
     });
 }
 
@@ -233,14 +240,10 @@ function buildAvgResponse(ticketArray, callback) {
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
 
-        //Next Event Loop - async@2.0
-        // async.setImmediate(function() {
-        //     return callback();
-        // });
-
+        ticket = null;
     }
 
-    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+    var ticketAvgTotal = _.reduce($ticketAvg, function (m, x) {
         return m + x;
     }, 0);
 

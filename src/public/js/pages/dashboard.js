@@ -74,10 +74,6 @@ define('pages/dashboard', [
                             MG.data_graphic(parms);
                         }
 
-                        // var tCount = _(_data.data).reduce(function (m, x) {
-                        //     return m + x.value;
-                        // }, 0);
-
                         var tCount = _data.ticketCount;
 
                         var ticketCount = $('#ticketCount');

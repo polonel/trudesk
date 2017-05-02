@@ -494,14 +494,14 @@ ticketSchema.statics.getAll = function(callback) {
 ticketSchema.statics.getAllForCache = function(callback) {
     var self = this;
     var q = self.model(COLLECTION).find({deleted: false})
-        .select('_id uid date closedDate status history comments assignee owner tags group');
+        .select('_id uid date closedDate status history comments assignee owner tags group').lean();
 
     return q.exec(callback);
 };
 
 ticketSchema.statics.getAllNoPopulate = function(callback) {
     var self = this;
-    var q = self.model(COLLECTION).find({deleted: false}).sort({'status': 1});
+    var q = self.model(COLLECTION).find({deleted: false}).sort({'status': 1}).lean();
 
     return q.exec(callback);
 };
