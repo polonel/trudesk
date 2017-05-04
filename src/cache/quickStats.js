@@ -35,16 +35,16 @@ var init = function(tickets, callback) {
     async.series([
         function(done) {
             if (tickets) {
-                ticketSchema.populate(tickets, {path: 'owner comments comments.owner assignee'}, function(err, _tickets) {
+                ticketSchema.populate(tickets, {path: 'owner comments.owner assignee'}, function(err, _tickets) {
                     $tickets = _tickets;
 
                     return done();
                 });
             } else {
-                ticketSchema.getAllNoPopulate(function(err, tickets) {
+                ticketSchema.getForCache(function(err, tickets) {
                     if (err) return done(err);
 
-                    ticketSchema.populate(tickets, {path: 'owner comments comments.owner assignee'}, function(err, _tickets) {
+                    ticketSchema.populate(tickets, {path: 'owner comments.owner assignee'}, function(err, _tickets) {
                         if (err) return done(err);
 
                         $tickets = _tickets;

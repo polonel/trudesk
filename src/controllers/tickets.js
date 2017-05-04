@@ -319,8 +319,8 @@ ticketsController.processor = function(req, res) {
         };
 
         //Get Pagination
-        //ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
-            //if (err) return handleError(res, err);
+        ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
+            if (err) return handleError(res, err);
 
             self.content.data.pagination = {};
             self.content.data.pagination.type = processor.pagetype;
@@ -339,7 +339,7 @@ ticketsController.processor = function(req, res) {
             self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
 
             res.render(processor.renderpage, self.content);
-        //});
+        });
     });
 };
 

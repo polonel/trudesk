@@ -65,7 +65,7 @@ define('pages/dashboard', [
                     success: function (_data) {
                         var lastUpdated = $('#lastUpdated').find('span');
                         lastUpdated.text(_data.lastUpdated);
-
+                        console.log(_data);
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
@@ -79,8 +79,8 @@ define('pages/dashboard', [
                         var ticketCount = $('#ticketCount');
                         var oldTicketCount = ticketCount.text() == '--' ? 0 : ticketCount.text();
                         var totalTicketText = 'Total Tickets (last ' + timespan + 'd)';
-                        if (timespan == 0)
-                            totalTicketText = 'Total Tickets (lifetime)';
+                        // if (timespan == 0)
+                        //     totalTicketText = 'Total Tickets (lifetime)';
                         ticketCount.parents('.tru-card-content').find('span.uk-text-small').text(totalTicketText);
                         var theAnimation = new CountUp('ticketCount', parseInt(oldTicketCount), tCount, 0, 1.5);
                         theAnimation.start();
@@ -112,9 +112,17 @@ define('pages/dashboard', [
                         var mostRequester = $('#mostRequester');
                         mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
                         var mostCommenter = $('#mostCommenter');
-                        mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
+                        if (_data.mostCommenter != null)
+                            mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
+                        else
+                            mostCommenter.text('--');
+
                         var mostAssignee = $('#mostAssignee');
-                        mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
+                        if (_data.mostAssignee != null)
+                            mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
+                        else
+                            mostAssignee.text('--');
+
                         var mostActiveTicket = $('#mostActiveTicket');
                         mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
                     },

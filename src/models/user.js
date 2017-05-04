@@ -87,7 +87,7 @@ userSchema.pre('save', function(next) {
             user.password = hash;
             return next();
         });
-    })
+    });
 });
 
 userSchema.methods.addAccessToken = function(callback) {
