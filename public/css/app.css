@@ -6176,6 +6176,36 @@ a.waves-effect .waves-ripple {
   80%, 90% {
     stroke: #eee; } }
 
+.card-spinner {
+  position: absolute;
+  background: #fff;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  z-index: 999; }
+  .card-spinner .spinner {
+    width: 40px;
+    height: 40px;
+    border: -10px solid #f3f3f3;
+    border-top: 2px solid #f25a41;
+    border-radius: 100%;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: auto;
+    animation: spin .7s infinite linear; }
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg); }
+  to {
+    transform: rotate(360deg); } }
+
 #loader-wrapper {
   background: #ddd;
   position: absolute;

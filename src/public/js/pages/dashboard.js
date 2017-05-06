@@ -65,7 +65,7 @@ define('pages/dashboard', [
                     success: function (_data) {
                         var lastUpdated = $('#lastUpdated').find('span');
                         lastUpdated.text(_data.lastUpdated);
-                        console.log(_data);
+
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
@@ -132,6 +132,7 @@ define('pages/dashboard', [
                     }
                 });
 
+                $('#topTenTags').parents('.panel').find('.card-spinner').css({display: 'block', opacity: 1});
                 $.ajax({
                     url: '/api/v1/tickets/count/tags/' + timespan,
                     method: 'GET',
@@ -185,11 +186,15 @@ define('pages/dashboard', [
                                 }
                             }
                         });
+
+                        $('#topTenTags').parents('.panel').find('.card-spinner').animate({opacity: 0}, 600, function() {
+                            $(this).hide();
+                        });
                     }
                 });
 
 
-
+                $('#pieChart').parent().find('.card-spinner').css({display: 'block', opacity: 1});
                 $.ajax({
                     url: '/api/v1/tickets/count/topgroups/' + timespan + '/5',
                     method: 'GET',
@@ -242,6 +247,10 @@ define('pages/dashboard', [
                                     }
                                 }
                             }
+                        });
+
+                        $('#pieChart').parent().find('.card-spinner').animate({opacity: 0}, 600, function() {
+                            $(this).hide();
                         });
                     }
                 });
