@@ -108,6 +108,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
+    router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
     router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);

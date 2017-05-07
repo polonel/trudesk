@@ -70,7 +70,8 @@ var api_tickets = {};
  *
  */
 api_tickets.get = function(req, res) {
-    var limit = parseInt(req.query.limit);
+    var l = (req.query.limit ? req.query.limit : 10);
+    var limit = parseInt(l);
     var page = parseInt(req.query.page);
     var assignedSelf = req.query.assignedself;
     var status = req.query.status;
@@ -751,12 +752,12 @@ api_tickets.getTicketStats = function(req, res) {
             obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
             obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
             break;
-        case 0:
-            obj.data = cache.get('tickets:overview:lifetime:graphData');
-            obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
-            obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
-            obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
-            break;
+        // case 0:
+        //     obj.data = cache.get('tickets:overview:lifetime:graphData');
+        //     obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
+        //     obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
+        //     obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
+        //     break;
     }
 
     obj.mostRequester = cache.get('quickstats:mostRequester');
@@ -1086,7 +1087,7 @@ api_tickets.getTopTicketGroups = function(req, res) {
     var timespan = req.params.timespan;
 
     ticketModel.getTopTicketGroups(timespan, top, function(err, items) {
-        if (err) return res.status(400).json({error: 'Invalid Request', fullError: err});
+        if (err) return res.status(400).json({error: 'Invalid Request'});
 
         return res.json({items: items});
     });
@@ -1345,6 +1346,45 @@ api_tickets.deleteTag = function(req, res) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         return res.json({success: true});
+    });
+};
+
+/**
+ * @api {get} /api/v1/tickets/overdue Get Overdue Tickets
+ * @apiName getOverdue
+ * @apiDescription Gets current overdue tickets
+ * @apiVersion 0.1.9
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/overdue
+ *
+ * @apiSuccess {boolean} success Successfully?
+ *
+ */
+api_tickets.getOverdue = function(req, res) {
+    var settingSchema = require('../../../models/setting');
+    settingSchema.getSettingByName('showOverdueTickets:enable', function(err, setting) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (setting != null && setting.value === false) {
+            return res.json({success: true, error: 'Show Overdue currently disabled.'});
+        } else {
+            var ticketSchema = require('../../../models/ticket');
+            var groupSchema = require('../../../models/group');
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+                if (err) return res.status(400).json({success: false, error: err.message});
+                grps = grps.map(function(g){ return g._id.toString(); });
+                ticketSchema.getOverdue(grps, function (err, objs) {
+                    if (err) return res.status(400).json({success: false, error: err.message});
+
+                    var sorted = _.sortBy(objs, 'updated').reverse();
+
+                    return res.json({success: true, tickets: sorted});
+                });
+            });
+        }
     });
 };
 

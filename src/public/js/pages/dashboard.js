@@ -18,12 +18,13 @@ define('pages/dashboard', [
     'modules/helpers',
     'countup',
     'c3',
+    'moment',
     'd3pie',
     'metricsgraphics',
     'peity',
     'history'
 
-], function($, _, helpers, CountUp, c3) {
+], function($, _, helpers, CountUp, c3, moment) {
     var dashboardPage = {};
 
     dashboardPage.init = function(callback) {
@@ -50,6 +51,39 @@ define('pages/dashboard', [
                 transition_on_update: false,
                 colors: ['#2196f3', 'red']
             };
+
+            var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
+            console.log(showOverdue);
+            if (showOverdue) {
+                $.ajax({
+                    url: '/api/v1/tickets/overdue',
+                    method: 'GET',
+                    success: function(_data) {
+                        console.log(_data);
+                        var overdueCard = $('#overdue_tickets');
+                        var overdueSpinner = overdueCard.find('.card-spinner');
+                        var html = '';
+                        _.each(_data.tickets, function(ticket) {
+                            html += '<tr class="uk-table-middle">';
+                            html += '<td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/'+ ticket.uid + '">T#' + ticket.uid + '</a></td>';
+                            html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>';
+                            html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
+                            html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                            html += '</tr>';
+                        });
+
+                        overdueCard.find('table.uk-table > tbody').append(html);
+
+                        overdueSpinner.animate({opacity: 0}, 600, function() {
+                            $(this).hide();
+                        });
+                    },
+                    error: function(err) {
+                        console.log('[trudesk:dashboard:loadOverdue] Error - ' + err.responseText);
+                        helpers.UI.showSnackbar(err.responseText, true);
+                    }
+                });
+            }
 
             getData(30);
 

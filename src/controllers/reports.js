@@ -41,34 +41,8 @@ reportsController.overview = function(req, res) {
     self.content.data.groups = {};
 
     self.content.data.reports = {};
-    async.parallel([
-            function(callback) {
-                reports.getReportByStatus(2, function(err, objs) {
-                    self.content.data.reports.items = objs;
-                    self.content.data.reports.count = _.size(objs);
-                    callback(err, objs);
-                });
-            },
-            function(callback) {
-                var groupSchema = require('../models/group');
-                groupSchema.getAllGroupsOfUser(user._id, function(err, grps) {
-                    if (err) return callback(err);
-                    ticketSchema.getOverdue(grps, function(err, objs) {
-                        if (err) return callback(err);
 
-                        var sorted = _.sortBy(objs, 'updated').reverse();
-
-                        self.content.data.reports.overdue = _.first(sorted, 5);
-                        callback(null, objs);
-                    });
-                });
-            }
-        ],
-        function(err) {
-            if (err) return handleError(res, err);
-
-            return res.render('subviews/reports/overview', self.content);
-        });
+    return res.render('subviews/reports/overview', self.content);
 };
 
 reportsController.generate = function(req, res) {

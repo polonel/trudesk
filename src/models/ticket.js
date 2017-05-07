@@ -62,9 +62,9 @@ var COLLECTION = 'tickets';
  * @property {Array} subscribers An array of user _ids that receive notifications on ticket changes.
  */
 var ticketSchema = mongoose.Schema({
-    uid:        { type: Number, unique: true},
+    uid:        { type: Number, unique: true, index: true},
     owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
-    group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups' },
+    group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups', index: true },
     assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
     date:       { type: Date, default: Date.now, required: true, index: true},
     updated:    { type: Date},
@@ -82,6 +82,8 @@ var ticketSchema = mongoose.Schema({
     history:    [historySchema],
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
+
+ticketSchema.index({deleted: -1}, {group: 1});
 
 ticketSchema.plugin(deepPopulate);
 
@@ -877,20 +879,60 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
     if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetOverdue()", null);
 
     var self = this;
+    var grpHash = hash(grpId);
 
-    var now = moment();
-    var timeout = now.clone().add(2, 'd').toDate();
+    var cache = global.cache;
+    if (cache) {
+        var overdue = cache.get('tickets:overdue:' + grpHash);
+        if (overdue) {
+            return callback(null, overdue);
+        }
+    }
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
         .$where(function() {
             var now = new Date();
             var updated = new Date(this.updated);
-            timeout = new Date(updated);
+            var timeout = new Date(updated);
             timeout.setDate(timeout.getDate() + 2);
             return now > timeout;
-        });
+        }).select('_id uid subject updated');
 
-    return q.exec(callback);
+    q.lean().exec(function(err, results) {
+        if (err) return callback(err, null);
+        if (cache) cache.set('tickets:overdue:' + grpHash, results, 600); //10min
+
+        return callback(null, results);
+    });
+
+    //TODO: Turn on when REDIS is impl
+    // This will be pres through server reload
+    // redisCache.getCache('$trudesk:tickets:overdue' + grpHash, function(err, value) {
+    //     if (err) return callback(err, null);
+    //     if (value) {
+    //         console.log('served from redis');
+    //         return callback(null, JSON.parse(value.data));
+    //     } else {
+    //         var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
+    //             .$where(function() {
+    //                 var now = new Date();
+    //                 var updated = new Date(this.updated);
+    //                 var timeout = new Date(updated);
+    //                 timeout.setDate(timeout.getDate() + 2);
+    //                 return now > timeout;
+    //             }).select('_id uid subject updated');
+    //
+    //         return q.lean().exec(function(err, results) {
+    //             if (err) return callback(err, null);
+    //             if (cache) {
+    //                 cache.set('tickets:overdue:' + grpHash, results, 600);
+    //             }
+    //             redisCache.setCache('tickets:' + grpHash, results, function(err) {
+    //                 return callback(err, results);
+    //             }, 600);
+    //         });
+    //     }
+    // });
 };
 
 /**
