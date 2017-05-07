@@ -102,7 +102,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                     }).error(function(e) {
                         $log.log('[trudesk:profile:generateApiKey] - ' + e);
                         //helpers.showFlash('Error: ' + e, true);
-                        helpers.UI.showSnackbar('Error: ' + e, true);
+                        helpers.UI.showSnackbar('Error: Unable to generate API Key!', true);
                     });
 
             };
@@ -121,8 +121,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                         $('.removeApiButton').addClass('hide');
                         helpers.UI.showSnackbar('API Key Successfully Revoked', false);
                     }).error(function(e) {
-                        $log.log('[trudesk:profile:removeApiKey] - ' + e);
-                        helpers.UI.showSnackbar('Error: ' + e, true);
+                        $log.log('[trudesk:profile:removeApiKey]', e);
+                        helpers.UI.showSnackbar('Error: Unable to remove API Key!', true);
                     });
             };
 

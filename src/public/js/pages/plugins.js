@@ -21,7 +21,7 @@ define('pages/plugins', [
 ], function($, helpers, Tether) {
     var pluginsPage = {};
 
-    pluginsPage.init = function() {
+    pluginsPage.init = function(callback) {
         $(document).ready(function() {
             var $searchPluginList = $('#search_plugin_list');
             $searchPluginList.off('keyup');
@@ -42,6 +42,9 @@ define('pages/plugins', [
                     offset: '0 -20px'
                 });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

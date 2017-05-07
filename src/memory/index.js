@@ -5,7 +5,7 @@ memwatch.on('leak', function(info) {
     winston.warn(info);
 });
 
-var filename = 'memstats';
+var filename = 'memstats.csv';
 var firstLine = true;
 
 memwatch.on("stats", function(stats) {

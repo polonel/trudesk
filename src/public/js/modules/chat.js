@@ -169,13 +169,14 @@ define('modules/chat',[
             isTypingDiv.removeClass('hide');
             var scroller = chatBox.find('.chat-box-messages');
             if (scroller.length > 0)
-                if (scroller.scrollTop() == scroller[0].scrollHeight)
+                // Only scroll if the scroller is on bottom
+                if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight)
                     helpers.scrollToBottom(scroller);
 
             scroller = $('#message-content');
             if (scroller.length > 0) {
                 // Only scroll if the scroller is on bottom
-                if (scroller.scrollTop() == scroller[0].scrollHeight)
+                if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight)
                     helpers.scrollToBottom(scroller);
             }
         });

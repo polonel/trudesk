@@ -21,10 +21,13 @@ define('pages/createNotice', [
 ], function($) {
     var createNotice = {};
 
-    createNotice.init = function() {
+    createNotice.init = function(callback) {
         $(document).ready(function() {
             $('select[name="nColor"]').simplecolorpicker({theme: 'fontawesome'});
             $('select[name="nFontColor"]').simplecolorpicker({theme: 'fontawesome'});
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

@@ -18,18 +18,24 @@ define('pages/dashboard', [
     'modules/helpers',
     'countup',
     'c3',
+    'moment',
     'd3pie',
     'metricsgraphics',
     'peity',
     'history'
 
-], function($, _, helpers, CountUp, c3) {
+], function($, _, helpers, CountUp, c3, moment) {
     var dashboardPage = {};
 
-    dashboardPage.init = function() {
+    dashboardPage.init = function(callback) {
         $(document).ready(function() {
             var testPage = $('#page-content').find('.dashboard');
-            if (testPage.length < 1) return;
+            if (testPage.length < 1) {
+                if (typeof callback === 'function')
+                    return callback();
+
+                return;
+            }
 
             helpers.resizeAll();
 
@@ -45,6 +51,39 @@ define('pages/dashboard', [
                 transition_on_update: false,
                 colors: ['#2196f3', 'red']
             };
+
+            var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
+            console.log(showOverdue);
+            if (showOverdue) {
+                $.ajax({
+                    url: '/api/v1/tickets/overdue',
+                    method: 'GET',
+                    success: function(_data) {
+                        console.log(_data);
+                        var overdueCard = $('#overdue_tickets');
+                        var overdueSpinner = overdueCard.find('.card-spinner');
+                        var html = '';
+                        _.each(_data.tickets, function(ticket) {
+                            html += '<tr class="uk-table-middle">';
+                            html += '<td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/'+ ticket.uid + '">T#' + ticket.uid + '</a></td>';
+                            html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>';
+                            html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
+                            html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                            html += '</tr>';
+                        });
+
+                        overdueCard.find('table.uk-table > tbody').append(html);
+
+                        overdueSpinner.animate({opacity: 0}, 600, function() {
+                            $(this).hide();
+                        });
+                    },
+                    error: function(err) {
+                        console.log('[trudesk:dashboard:loadOverdue] Error - ' + err.responseText);
+                        helpers.UI.showSnackbar(err.responseText, true);
+                    }
+                });
+            }
 
             getData(30);
 
@@ -69,17 +108,13 @@ define('pages/dashboard', [
                             MG.data_graphic(parms);
                         }
 
-                        // var tCount = _(_data.data).reduce(function (m, x) {
-                        //     return m + x.value;
-                        // }, 0);
-
                         var tCount = _data.ticketCount;
 
                         var ticketCount = $('#ticketCount');
                         var oldTicketCount = ticketCount.text() == '--' ? 0 : ticketCount.text();
                         var totalTicketText = 'Total Tickets (last ' + timespan + 'd)';
-                        if (timespan == 0)
-                            totalTicketText = 'Total Tickets (lifetime)';
+                        // if (timespan == 0)
+                        //     totalTicketText = 'Total Tickets (lifetime)';
                         ticketCount.parents('.tru-card-content').find('span.uk-text-small').text(totalTicketText);
                         var theAnimation = new CountUp('ticketCount', parseInt(oldTicketCount), tCount, 0, 1.5);
                         theAnimation.start();
@@ -111,9 +146,17 @@ define('pages/dashboard', [
                         var mostRequester = $('#mostRequester');
                         mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
                         var mostCommenter = $('#mostCommenter');
-                        mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
+                        if (_data.mostCommenter != null)
+                            mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
+                        else
+                            mostCommenter.text('--');
+
                         var mostAssignee = $('#mostAssignee');
-                        mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
+                        if (_data.mostAssignee != null)
+                            mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
+                        else
+                            mostAssignee.text('--');
+
                         var mostActiveTicket = $('#mostActiveTicket');
                         mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
                     },
@@ -123,6 +166,7 @@ define('pages/dashboard', [
                     }
                 });
 
+                $('#topTenTags').parents('.panel').find('.card-spinner').css({display: 'block', opacity: 1});
                 $.ajax({
                     url: '/api/v1/tickets/count/tags/' + timespan,
                     method: 'GET',
@@ -176,11 +220,15 @@ define('pages/dashboard', [
                                 }
                             }
                         });
+
+                        $('#topTenTags').parents('.panel').find('.card-spinner').animate({opacity: 0}, 600, function() {
+                            $(this).hide();
+                        });
                     }
                 });
 
 
-
+                $('#pieChart').parent().find('.card-spinner').css({display: 'block', opacity: 1});
                 $.ajax({
                     url: '/api/v1/tickets/count/topgroups/' + timespan + '/5',
                     method: 'GET',
@@ -234,9 +282,16 @@ define('pages/dashboard', [
                                 }
                             }
                         });
+
+                        $('#pieChart').parent().find('.card-spinner').animate({opacity: 0}, 600, function() {
+                            $(this).hide();
+                        });
                     }
                 });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

@@ -35,7 +35,7 @@ define('pages/accounts', [
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
 
-    accountsPage.init = function() {
+    accountsPage.init = function(callback) {
         $(document).ready(function() {
             var $account_list   = $('#account_list'),
                 $scroller       = $account_list.parents('.scrollable'),
@@ -170,6 +170,9 @@ define('pages/accounts', [
                     $loading = false;
                 });
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

@@ -26,7 +26,7 @@ define('pages/notices', [
 ], function($, helpers) {
     var noticesPage = {};
 
-    noticesPage.init = function() {
+    noticesPage.init = function(callback) {
         $(document).ready(function() {
             var table = $('#noticesTable');
             table.dataTable({
@@ -57,6 +57,9 @@ define('pages/notices', [
 //            });
 
             helpers.resizeDataTables('.noticesList');
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

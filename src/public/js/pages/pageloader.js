@@ -15,10 +15,10 @@
 
  **/
 
-define('pages/pageloader', function() {
+define('pages/pageloader', ['async'], function(async) {
     var pageLoader = {};
 
-    pageLoader.init = function() {
+    pageLoader.init = function(callback) {
         require([
             'pages/dashboard',
             'pages/messages',
@@ -39,23 +39,32 @@ define('pages/pageloader', function() {
             'modules/ajaximgupload',
             'modules/attachmentUpload'
         ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) {
-            a.init();
-            b.init();
-            c.init();
-            d.init();
-            e.init();
-            f.init();
-            g.init();
-            h.init();
-            i.init();
-            j.init();
-            k.init();
-            l.init();
-            m.init();
-            n.init();
-            o.init();
-            p.init();
-            q.init();
+            async.parallel([
+                function(done) { a.init(done); },
+                function(done) { b.init(done); },
+                function(done) { c.init(done); },
+                function(done) { d.init(done); },
+                function(done) { e.init(done); },
+                function(done) { f.init(done); },
+                function(done) { g.init(done); },
+                function(done) { h.init(done); },
+                function(done) { i.init(done); },
+                function(done) { j.init(done); },
+                function(done) { k.init(done); },
+                function(done) { l.init(done); },
+                function(done) { m.init(done); },
+                function(done) { n.init(done); },
+                function(done) { o.init(done); },
+                function(done) {
+                    p.init();
+                    q.init();
+
+                    done();
+                }
+            ], function() {
+                if (typeof callback === 'function')
+                    return callback();
+            });
         });
     };
 

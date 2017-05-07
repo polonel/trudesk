@@ -16,7 +16,7 @@ var async   = require('async'),
     nconf = require('nconf'),
     pkg     = require('./package.json'),
     ws = require('./src/webserver');
-    //var memory = require('./src/memory');
+    //`var memory = require('./src/memory');
 
 
 global.forks = [];
@@ -213,10 +213,12 @@ function dbCallback(err, db) {
                         //});
 
                         var fork = require('child_process').fork;
-                        var n = fork(path.join(__dirname, '/src/cache/index.js'), { env: {
-                            FORK: 1, NODE_ENV: global.env,
-                            MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
-                            MONGODB_PORT_27017_TCP_ADDR: process.env.MONGODB_PORT_27017_TCP_ADDR
+                        var n = fork(path.join(__dirname, '/src/cache/index.js'), {
+                            execArgv: ['--max-old-space-size=4096'],
+                            env: {
+                                FORK: 1, NODE_ENV: global.env,
+                                MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
+                                MONGODB_PORT_27017_TCP_ADDR: process.env.MONGODB_PORT_27017_TCP_ADDR
                         } } );
 
                         global.forks.push({name: 'cache', fork: n});
@@ -231,7 +233,7 @@ function dbCallback(err, db) {
                             }
                         });
 
-                        next();
+                return next();
                     }
                 ], function() {
                     winston.info("TruDesk Ready");

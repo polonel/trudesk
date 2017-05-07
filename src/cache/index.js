@@ -37,7 +37,6 @@ winston.add(winston.transports.Console, {
 });
 
 var refreshTimer;
-var now = moment();
 var lastUpdated = moment();
 
 truCache.init = function(callback) {
@@ -70,8 +69,9 @@ truCache.refreshCache = function(callback) {
     async.waterfall([
         function(done) {
             var ticketSchema = require('../models/ticket');
-            ticketSchema.getAllForCache(function(err, tickets) {
-                if (err) return done(err);
+            ticketSchema.getForCache(function(e, tickets) {
+                if (e) return done(e);
+                winston.debug('Pulled ' + tickets.length);
 
                 return done(null, tickets);
             });
@@ -81,7 +81,9 @@ truCache.refreshCache = function(callback) {
             async.parallel([
                 function(done) {
                     var ticketStats = require('./ticketStats');
+                    // console.time('test');
                     ticketStats(tickets, function(err, stats) {
+                        // console.timeEnd('test');
                         if (err) return done(err);
                         var expire = 3600; // 1 hour
                         cache.set('tickets:overview:lastUpdated', stats.lastUpdated, expire);
@@ -111,10 +113,10 @@ truCache.refreshCache = function(callback) {
                         cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, expire);
                         cache.set('tickets:overview:e365:graphData', stats.e365.graphData, expire);
 
-                        cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, expire);
-                        cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, expire);
-                        cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, expire);
-                        cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, expire);
+                        // cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, expire);
+                        // cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, expire);
+                        // cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, expire);
+                        // cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, expire);
 
                         return done();
                     });
@@ -203,32 +205,8 @@ truCache.refreshCache = function(callback) {
         //Send to parent
         process.send({cache: cache});
 
-        //var pm2 = require('pm2');
-        //pm2.connect(function(err) {
-        //    if (err) throw err;
-        //
-        //    pm2.list(function(err, list) {
-        //        list.forEach(function(item) {
-        //            if (item.name === 'trudesk') {
-        //                pm2.sendDataToProcessId(item.pm_id, {
-        //                     type: 'process:msg',
-        //                     data: {
-        //                         cache: cache
-        //                     },
-        //                     topic: 'trudesk'
-        //                 }, function(err, res) {
-        //                     console.log(err);
-        //                 });
-        //
-        //                 pm2.disconnect();
-        //             }
-        //        });
-        //
-        //    });
-        //});
-
-        if (!_.isUndefined(callback) && _.isFunction(callback))
-            callback(err);
+        if (_.isFunction(callback))
+            return callback(err);
     });
 };
 
@@ -254,7 +232,7 @@ truCache.refreshCache = function(callback) {
 
     //loadConfig();
     var db = require('../database');
-    db.init(function(err, db) {
+    db.init(function(err) {
         if (err) {
             winston.warn(err);
             return winston.error(err);

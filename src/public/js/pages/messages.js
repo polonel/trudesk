@@ -27,7 +27,7 @@ define('pages/messages', [
     var ui = socketClient.ui;
     var messagesPage = {};
 
-    messagesPage.init = function() {
+    messagesPage.init = function(callback) {
         $(document).ready(function() {
             var $messageScroller    = $('#message-content.scrollable'),
                 $messagesWrapper    = $('#messages'),
@@ -303,6 +303,9 @@ define('pages/messages', [
 
                 return html;
             }
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

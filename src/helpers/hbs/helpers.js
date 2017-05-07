@@ -464,6 +464,10 @@ var helpers = {
         return buffer;
     },
 
+    formatNumber: function(num) {
+          return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    },
+
     now: function() {
         return new moment();
     },

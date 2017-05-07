@@ -46,3 +46,4 @@ private/
 config.json
 /coverage/
 /plugins/
+config.local.json

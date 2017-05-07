@@ -70,7 +70,8 @@ var api_tickets = {};
  *
  */
 api_tickets.get = function(req, res) {
-    var limit = parseInt(req.query.limit);
+    var l = (req.query.limit ? req.query.limit : 10);
+    var limit = parseInt(l);
     var page = parseInt(req.query.page);
     var assignedSelf = req.query.assignedself;
     var status = req.query.status;
@@ -103,12 +104,14 @@ api_tickets.get = function(req, res) {
 
                     return callback(null, grps);
                 });
+            } else {
+                return callback(null, grps);
             }
         },
         function(grps, callback) {
             ticketModel.getTicketsWithObject(grps, object, function(err, results) {
 
-                callback(err, results);
+                return callback(err, results);
             });
         }
     ], function(err, results) {
@@ -161,6 +164,8 @@ api_tickets.search = function(req, res) {
 
                     return callback(null, grps);
                 });
+            } else {
+                return callback(null, grps);
             }
         },
         function(grps, callback) {
@@ -707,7 +712,7 @@ api_tickets.getTypes = function(req, res) {
 api_tickets.getTicketStats = function(req, res) {
     var timespan = 30;
     if (req.params.timespan)
-        timespan = req.params.timespan;
+        timespan = parseInt(req.params.timespan);
 
     var cache = global.cache;
 
@@ -715,36 +720,44 @@ api_tickets.getTicketStats = function(req, res) {
         return res.status(400).send('Ticket stats are still loading...');
 
     var obj = {};
-    if (timespan == 30) {
-        obj.data = cache.get('tickets:overview:e30:graphData');
-        obj.ticketCount = cache.get('tickets:overview:e30:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
-    } else if (timespan == 60) {
-        obj.data = cache.get('tickets:overview:e60:graphData');
-        obj.ticketCount = cache.get('tickets:overview:e60:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
-    } else if (timespan == 90) {
-        obj.data = cache.get('tickets:overview:e90:graphData');
-        obj.ticketCount = cache.get('tickets:overview:e90:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
-    } else if (timespan == 180) {
-        obj.data = cache.get('tickets:overview:e180:graphData');
-        obj.ticketCount = cache.get('tickets:overview:e180:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
-    } else if (timespan == 365) {
-        obj.data = cache.get('tickets:overview:e365:graphData');
-        obj.ticketCount = cache.get('tickets:overview:e365:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
-    } else if (timespan == 0) {
-        obj.data = cache.get('tickets:overview:lifetime:graphData');
-        obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
-        obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
-        obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
+
+    switch(timespan) {
+        case 30:
+            obj.data = cache.get('tickets:overview:e30:graphData');
+            obj.ticketCount = cache.get('tickets:overview:e30:ticketCount');
+            obj.closedCount = cache.get('tickets:overview:e30:closedTickets');
+            obj.ticketAvg = cache.get('tickets:overview:e30:responseTime');
+            break;
+        case 60:
+            obj.data = cache.get('tickets:overview:e60:graphData');
+            obj.ticketCount = cache.get('tickets:overview:e60:ticketCount');
+            obj.closedCount = cache.get('tickets:overview:e60:closedTickets');
+            obj.ticketAvg = cache.get('tickets:overview:e60:responseTime');
+            break;
+        case 90:
+            obj.data = cache.get('tickets:overview:e90:graphData');
+            obj.ticketCount = cache.get('tickets:overview:e90:ticketCount');
+            obj.closedCount = cache.get('tickets:overview:e90:closedTickets');
+            obj.ticketAvg = cache.get('tickets:overview:e90:responseTime');
+            break;
+        case 180:
+            obj.data = cache.get('tickets:overview:e180:graphData');
+            obj.ticketCount = cache.get('tickets:overview:e180:ticketCount');
+            obj.closedCount = cache.get('tickets:overview:e180:closedTickets');
+            obj.ticketAvg = cache.get('tickets:overview:e180:responseTime');
+            break;
+        case 365:
+            obj.data = cache.get('tickets:overview:e365:graphData');
+            obj.ticketCount = cache.get('tickets:overview:e365:ticketCount');
+            obj.closedCount = cache.get('tickets:overview:e365:closedTickets');
+            obj.ticketAvg = cache.get('tickets:overview:e365:responseTime');
+            break;
+        // case 0:
+        //     obj.data = cache.get('tickets:overview:lifetime:graphData');
+        //     obj.ticketCount = cache.get('tickets:overview:lifetime:ticketCount');
+        //     obj.closedCount = cache.get('tickets:overview:lifetime:closedTickets');
+        //     obj.ticketAvg = cache.get('tickets:overview:lifetime:responseTime');
+        //     break;
     }
 
     obj.mostRequester = cache.get('quickstats:mostRequester');
@@ -754,7 +767,7 @@ api_tickets.getTicketStats = function(req, res) {
 
     obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
 
-    res.send(obj);
+    return res.send(obj);
 };
 
 /**
@@ -1048,103 +1061,6 @@ api_tickets.getTagCount = function(req, res) {
     res.json({success: true, tags: tags});
 };
 
-
-
-// Removed 4/12/2016 -- v0.1.7
-//
-//api_tickets.getMonthData = function(req, res) {
-//    var ticketModel = require('../../../models/ticket');
-//    var data = [];
-//    var newData = [];
-//    var closedData = [];
-//
-//    //var dates = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11];
-//    var dates = [];
-//    for (var i = 0; i < 12; i++) {
-//        var _d = new Date();
-//        _d.setMonth(_d.getMonth() - i);
-//        _d.setDate(1);
-//        dates.push(_d);
-//    }
-//
-//    async.series({
-//        total: function(cb) {
-//            async.forEachSeries(dates, function(value, next) {
-//                var d = [];
-//                var date = new Date(value);
-//                d.push(date);
-//                ticketModel.getMonthCount(date, -1, function(err, count) {
-//                    if (err) return next(err);
-//
-//                    d.push(Math.round(count));
-//                    var moment = require('moment');
-//                    newData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-//                    next();
-//                });
-//            }, function(err) {
-//                if (err) return cb(err);
-//
-//                cb();
-//            });
-//        },
-//        closed: function(cb) {
-//            async.forEachSeries(dates, function(value, next) {
-//                var d = [];
-//                var date = new Date(value);
-//                d.push(date);
-//                ticketModel.getMonthCount(value, 3, function(err, count) {
-//                    if (err) return next(err);
-//
-//                    d.push(Math.round(count));
-//                    var moment = require('moment');
-//                    closedData.push({'date': moment(date).format('YYYY-MM-DD'), 'value': Number(Math.round(count))});
-//                    next();
-//                });
-//            }, function(err) {
-//                if (err) return cb(err);
-//
-//                cb();
-//            });
-//        }
-//    }, function(err, done) {
-//        if (err) return res.status(400).send(err);
-//
-//        data.push(newData);
-//        data.push(closedData);
-//        res.json(data);
-//    });
-//};
-
-//api_tickets.getYearData = function(req, res) {
-//    var ticketModel = require('../../../models/ticket');
-//    var year = req.params.year;
-//
-//    var returnData = {};
-//
-//    async.parallel({
-//        totalCount: function(next) {
-//            ticketModel.getYearCount(year, -1, function(err, count) {
-//                if (err) return next(err);
-//
-//                next(null, count);
-//            });
-//        },
-//
-//        closedCount: function(next) {
-//            ticketModel.getYearCount(year, 3, function(err, count) {
-//                if (err) return next(err);
-//
-//                next(null, count);
-//            });
-//        }
-//    }, function(err, done) {
-//        returnData.totalCount = done.totalCount;
-//        returnData.closedCount = done.closedCount;
-//
-//        res.json(returnData);
-//    });
-//};
-
 /**
  * @api {get} /api/v1/tickets/count/topgroups/:timespan/:topNum Top Groups Count
  * @apiName getTopTicketGroups
@@ -1430,6 +1346,45 @@ api_tickets.deleteTag = function(req, res) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         return res.json({success: true});
+    });
+};
+
+/**
+ * @api {get} /api/v1/tickets/overdue Get Overdue Tickets
+ * @apiName getOverdue
+ * @apiDescription Gets current overdue tickets
+ * @apiVersion 0.1.9
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/overdue
+ *
+ * @apiSuccess {boolean} success Successfully?
+ *
+ */
+api_tickets.getOverdue = function(req, res) {
+    var settingSchema = require('../../../models/setting');
+    settingSchema.getSettingByName('showOverdueTickets:enable', function(err, setting) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (setting != null && setting.value === false) {
+            return res.json({success: true, error: 'Show Overdue currently disabled.'});
+        } else {
+            var ticketSchema = require('../../../models/ticket');
+            var groupSchema = require('../../../models/group');
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+                if (err) return res.status(400).json({success: false, error: err.message});
+                grps = grps.map(function(g){ return g._id.toString(); });
+                ticketSchema.getOverdue(grps, function (err, objs) {
+                    if (err) return res.status(400).json({success: false, error: err.message});
+
+                    var sorted = _.sortBy(objs, 'updated').reverse();
+
+                    return res.json({success: true, tickets: sorted});
+                });
+            });
+        }
     });
 };
 

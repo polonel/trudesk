@@ -87,7 +87,7 @@ userSchema.pre('save', function(next) {
             user.password = hash;
             return next();
         });
-    })
+    });
 });
 
 userSchema.methods.addAccessToken = function(callback) {
@@ -105,7 +105,7 @@ userSchema.methods.removeAccessToken = function(callback) {
     var user = this;
     if (!user.accessToken) return callback();
 
-    user.accessToken = null;
+    user.accessToken = undefined;
     user.save(function(err) {
         if (err) return callback(err, null);
 
@@ -115,7 +115,6 @@ userSchema.methods.removeAccessToken = function(callback) {
 
 userSchema.methods.generateL2Auth = function(callback) {
     var user = this;
-    console.log(user.tOTPKey);
     if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
         var chance = new Chance();
         var base32 = require('thirty-two');

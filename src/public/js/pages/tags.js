@@ -24,7 +24,7 @@ define('pages/tags', [
 ], function($, helpers) {
     var tagsPage = {};
 
-    tagsPage.init = function() {
+    tagsPage.init = function(callback) {
         $(document).ready(function() {
             helpers.init();
             var table = $('#tagsTable');
@@ -47,6 +47,9 @@ define('pages/tags', [
             });
 
             helpers.resizeDataTables('.tagsList');
+
+            if (typeof callback === 'function')
+                return callback();
         });
     };
 

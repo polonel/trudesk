@@ -21,8 +21,11 @@ define('pages/settings', [
 ], function($) {
     var settingsPage = {};
 
-    settingsPage.init = function() {
+    settingsPage.init = function(callback) {
         $(document).ready(function() {
+
+            if (typeof callback === 'function')
+                return callback();
 
         });
     };

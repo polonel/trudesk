@@ -12,17 +12,16 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var async           = require('async');
 var moment          = require('moment');
+var winston         = require('winston');
 
-var userSchema      = require('../models/user');
 var ticketSchema    = require('../models/ticket');
 
 var ex = {};
 
 var init = function(tickets, callback) {
-    var ticketAvg   = {};
     var $tickets    = [];
     ex.e30          = {};
     ex.e60          = {};
@@ -35,159 +34,192 @@ var init = function(tickets, callback) {
     var e30 = today.clone().subtract(30, 'd'),
         e60 = today.clone().subtract(60, 'd'),
         e90 = today.clone().subtract(90, 'd'),
-        e180 = today.clone().subtract(180, 'd'),
-        e365 = today.clone().subtract(365, 'd');
+        e180 = today.clone().subtract(180, 'd');
+        // e365 = today.clone().subtract(365, 'd');
 
-    async.series({
-        allTickets: function(c) {
+
+    async.series([
+        function(done) {
             if (tickets) {
-                $tickets = tickets;
+                $tickets = _.cloneDeep(tickets);
 
-                c();
+                return done();
             } else {
-                ticketSchema.getAllNoPopulate(function(err, tickets) {
-                    if (err) return c(err);
+                winston.debug('No Tickets sent to cache (Pulling...)');
+                ticketSchema.getForCache(function(err, tickets) {
+                    if (err) return done(err);
 
                     $tickets = tickets;
 
-                    c();
+                    return done();
                 });
             }
         },
-        e30: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e30.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e30.toDate());
-            });
+        function(done) {
+            async.series({
+                //Removed 05-04-2017 - Due to performance issues
+                // lifetime: function(c) {
+                //     if (_.size($tickets) < 1) return c();
+                //     ex.lifetime.tickets = _.sortBy($tickets, 'date');
+                //
+                //     ex.lifetime.closedTickets = _.chain(ex.lifetime.tickets).map('status').filter(function(v) {
+                //         return v === 3;
+                //     }).value();
+                //
+                //     var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(1, 'd');
+                //     var diffDays = today.diff(firstDate, 'days');
+                //
+                //     buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
+                //         ex.lifetime.graphData = graphData;
+                //
+                //         //Get average Response
+                //         buildAvgResponse(ex.lifetime.tickets, function(obj) {
+                //             ex.lifetime.avgResponse = obj.avgResponse;
+                //             ex.lifetime.tickets = _.size(ex.lifetime.tickets);
+                //             ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
+                //
+                //             //Remove all tickets more than 365 days
+                //             var t365 = e365.toDate().getTime();
+                //             $tickets = _.filter($tickets, function(t) {
+                //                 return (t.date > t365);
+                //             });
+                //
+                //             return c();
+                //         });
+                //     });
+                // },
+                e365: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e365.tickets = $tickets;
 
-            ex.e30.closedTickets = _.filter(ex.e30.tickets, function(v) {
-                return v.status === 3;
-            });
+                    ex.e365.closedTickets = _.chain(ex.e365.tickets).map('status').filter(function(v) {
+                        return v === 3;
+                    }).value();
 
-            buildGraphData(ex.e30.tickets, 30, function(graphData) {
-                ex.e30.graphData = graphData;
+                    buildGraphData(ex.e365.tickets, 365, function(graphData) {
+                        ex.e365.graphData = graphData;
 
-                buildAvgResponse(ex.e30.tickets, function(obj) {
-                    ex.e30.avgResponse = obj.avgResponse;
-                    ex.e30.tickets = _.size(ex.e30.tickets);
-                    ex.e30.closedTickets = _.size(ex.e30.closedTickets);
-                    c();
-                });
-            });
-        },
-        e60: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e60.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e60.toDate());
-            });
+                        //Get average Response
+                        buildAvgResponse(ex.e365.tickets, function(obj) {
+                            ex.e365.avgResponse = obj.avgResponse;
+                            ex.e365.tickets = _.size(ex.e365.tickets);
+                            ex.e365.closedTickets = _.size(ex.e365.closedTickets);
 
-            ex.e60.closedTickets = _.filter(ex.e60.tickets, function(v) {
-                return v.status === 3;
-            });
+                            //Remove all tickets more than 180 days
+                            var t180 = e180.toDate().getTime();
+                            $tickets = _.filter($tickets, function(t) {
+                                return (t.date > t180);
+                            });
 
-            buildGraphData(ex.e60.tickets, 60, function(graphData) {
-                ex.e60.graphData = graphData;
+                            return c();
+                        });
+                    });
+                },
+                e180: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e180.tickets = $tickets;
 
-                buildAvgResponse(ex.e60.tickets, function(obj) {
-                    ex.e60.avgResponse = obj.avgResponse;
-                    ex.e60.tickets = _.size(ex.e60.tickets);
-                    ex.e60.closedTickets = _.size(ex.e60.closedTickets);
-                    c();
-                });
-            });
-        },
-        e90: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e90.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e90.toDate());
-            });
+                    ex.e180.closedTickets = _.chain(ex.e180.tickets).map('status').filter(function(v) {
+                        return v === 3;
+                    }).value();
 
-            ex.e90.closedTickets = _.filter(ex.e90.tickets, function(v) {
-                return v.status === 3;
-            });
+                    buildGraphData(ex.e180.tickets, 180, function(graphData) {
+                        ex.e180.graphData = graphData;
 
-            buildGraphData(ex.e90.tickets, 90, function(graphData) {
-                ex.e90.graphData = graphData;
+                        buildAvgResponse(ex.e180.tickets, function(obj) {
+                            ex.e180.avgResponse = obj.avgResponse;
+                            ex.e180.tickets = _.size(ex.e180.tickets);
+                            ex.e180.closedTickets = _.size(ex.e180.closedTickets);
 
-                buildAvgResponse(ex.e90.tickets, function(obj) {
-                    ex.e90.avgResponse = obj.avgResponse;
-                    ex.e90.tickets = _.size(ex.e90.tickets);
-                    ex.e90.closedTickets = _.size(ex.e90.closedTickets);
-                    c();
-                });
-            });
-        },
-        e180: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e180.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e180.toDate());
-            });
+                            //Remove all tickets more than 90 days
+                            var t90 = e90.toDate().getTime();
+                            $tickets = _.filter($tickets, function(t) {
+                                return (t.date > t90);
+                            });
 
-            ex.e180.closedTickets = _.filter(ex.e180.tickets, function(v) {
-                return v.status === 3;
-            });
+                            return c();
+                        });
+                    });
+                },
+                e90: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e90.tickets = $tickets;
 
-            buildGraphData(ex.e180.tickets, 180, function(graphData) {
-                ex.e180.graphData = graphData;
+                    ex.e90.closedTickets = _.chain(ex.e90.tickets).map('status').filter(function(v) {
+                        return v === 3;
+                    }).value();
 
-                buildAvgResponse(ex.e180.tickets, function(obj) {
-                    ex.e180.avgResponse = obj.avgResponse;
-                    ex.e180.tickets = _.size(ex.e180.tickets);
-                    ex.e180.closedTickets = _.size(ex.e180.closedTickets);
-                    c();
-                });
-            });
-        },
-        e365: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.e365.tickets = _.filter($tickets, function(v) {
-                return (v.date < today.toDate() && v.date > e365.toDate());
-            });
+                    buildGraphData(ex.e90.tickets, 90, function(graphData) {
+                        ex.e90.graphData = graphData;
 
-            ex.e365.closedTickets = _.filter(ex.e365.tickets, function(v) {
-                return v.status === 3;
-            });
+                        buildAvgResponse(ex.e90.tickets, function(obj) {
+                            ex.e90.avgResponse = obj.avgResponse;
+                            ex.e90.tickets = _.size(ex.e90.tickets);
+                            ex.e90.closedTickets = _.size(ex.e90.closedTickets);
 
-            buildGraphData(ex.e365.tickets, 365, function(graphData) {
-                ex.e365.graphData = graphData;
+                            //Remove all tickets more than 60 days
+                            var t60 = e60.toDate().getTime();
+                            $tickets = _.filter($tickets, function(t) {
+                                return (t.date > t60);
+                            });
 
-                //Get average Response
-                buildAvgResponse(ex.e365.tickets, function(obj) {
-                    ex.e365.avgResponse = obj.avgResponse;
-                    ex.e365.tickets = _.size(ex.e365.tickets);
-                    ex.e365.closedTickets = _.size(ex.e365.closedTickets);
+                            return c();
+                        });
+                    });
+                },
+                e60: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e60.tickets = $tickets;
 
-                    c();
-                });
-            });
-        },
-        lifetime: function(c) {
-            if (_.size($tickets) < 1) return c();
-            ex.lifetime.tickets = _.sortBy($tickets, 'uid');
+                    ex.e60.closedTickets = _.chain(ex.e60.tickets).map('status').filter(function(v) {
+                        return v === 3;
+                    }).value();
 
-            ex.lifetime.closedTickets = _.filter(ex.lifetime.tickets, function(v) {
-                return v.status === 3;
-            });
+                    buildGraphData(ex.e60.tickets, 60, function(graphData) {
+                        ex.e60.graphData = graphData;
 
-            var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(30, 'd');
-            var diffDays = today.diff(firstDate, 'days');
+                        buildAvgResponse(ex.e60.tickets, function(obj) {
+                            ex.e60.avgResponse = obj.avgResponse;
+                            ex.e60.tickets = _.size(ex.e60.tickets);
+                            ex.e60.closedTickets = _.size(ex.e60.closedTickets);
 
-            buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
-                ex.lifetime.graphData = graphData;
+                            //Remove all tickets more than 30 days
+                            var t30 = e30.toDate().getTime();
+                            $tickets = _.filter($tickets, function(t) {
+                                return (t.date > t30);
+                            });
 
-                //Get average Response
-                buildAvgResponse(ex.lifetime.tickets, function(obj) {
-                    ex.lifetime.avgResponse = obj.avgResponse;
-                    ex.lifetime.tickets = _.size(ex.lifetime.tickets);
-                    ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
+                            return c();
+                        });
+                    });
+                },
+                e30: function(c) {
+                    if (_.size($tickets) < 1) return c();
+                    ex.e30.tickets = $tickets;
 
-                    c();
-                });
+                    ex.e30.closedTickets = _.chain(ex.e30.tickets).map('status').filter(function(v) {
+                        return v === 3;
+                    }).value();
+
+                    buildGraphData(ex.e30.tickets, 30, function(graphData) {
+                        ex.e30.graphData = graphData;
+
+                        buildAvgResponse(ex.e30.tickets, function(obj) {
+                            ex.e30.avgResponse = obj.avgResponse;
+                            ex.e30.tickets = _.size(ex.e30.tickets);
+                            ex.e30.closedTickets = _.size(ex.e30.closedTickets);
+
+                            return c();
+                        });
+                    });
+                }
+            }, function(err) {
+                return done(err);
             });
         }
-    }, function(err) {
-        $tickets = null; //Clear it
-        callback(err, ex);
+    ], function(err) {
+        $tickets = null;
+        return callback(err, ex)
     });
 };
 
@@ -198,26 +230,24 @@ function buildGraphData(arr, days, callback) {
     for (var i=days;i--;) {
         timespanArray.push(i);
     }
-    async.eachSeries(timespanArray, function(day, next) {
+
+    arr = _.map(arr, function(i) {
+        return moment(i.date).format('YYYY-MM-DD');
+    });
+
+    var counted = _.countBy(arr);
+
+    for (var k = 0; k < timespanArray.length; k++) {
         var obj = {};
+        var day = timespanArray[k];
         var d = today.clone().subtract(day, 'd');
         obj.date = d.format('YYYY-MM-DD');
 
-        var $dateCount = _.filter(arr, function(v) {
-            return (v.date <= d.toDate() && v.date >= d.clone().subtract(1, 'd').toDate())
-        });
-
-        $dateCount = _.size($dateCount);
-        obj.value = $dateCount;
+        obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date];
         graphData.push(obj);
+    }
 
-        async.setImmediate(function() {
-            next();
-        });
-
-    }, function() {
-         callback(graphData);
-    });
+    return callback(graphData);
 }
 
 function buildAvgResponse(ticketArray, callback) {
@@ -225,7 +255,7 @@ function buildAvgResponse(ticketArray, callback) {
     var $ticketAvg = [];
     for (var i = 0; i < ticketArray.length; i++) {
         var ticket = ticketArray[i];
-        if (ticket.comments.length < 1) continue;
+        if (ticket.comments === undefined || ticket.comments.length < 1) continue;
 
         var ticketDate = moment(ticket.date);
         var firstCommentDate = moment(ticket.comments[0].date);
@@ -233,14 +263,10 @@ function buildAvgResponse(ticketArray, callback) {
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
 
-        //Next Event Loop - async@2.0
-        // async.setImmediate(function() {
-        //     return callback();
-        // });
-
+        ticket = null;
     }
 
-    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+    var ticketAvgTotal = _.reduce($ticketAvg, function (m, x) {
         return m + x;
     }, 0);
 

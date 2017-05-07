@@ -97,6 +97,7 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
 
                 switch (type.toLowerCase()) {
                     case 'group':
+                        showLoader();
                         groups = form.find('select#groups').val();
                         $http({
                             method: 'POST',
@@ -112,9 +113,12 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
 
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     case 'priorities':
+                        showLoader();
                         var priorities = form.find('select#priorities').val();
                         groups = form.find('select#groups').val();
                         $http({
@@ -131,9 +135,12 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             downloadReport(response, 'report_tickets_by_priorities__' + data['filterDate_Start']);
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     case 'status':
+                        showLoader();
                         var status = form.find('select#status').val();
                         groups = form.find('select#groups').val();
                         $http({
@@ -150,9 +157,12 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             downloadReport(response, 'report_tickets_by_status__' + data['filterDate_Start']);
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     case 'tags':
+                        showLoader();
                         var tags = form.find('select#tags').val();
                         groups = form.find('select#groups').val();
                         $http({
@@ -169,9 +179,12 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             downloadReport(response, 'report_tickets_by_tags__' + data['filterDate_Start']);
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     case 'types':
+                        showLoader();
                         var types = form.find('select#types').val();
                         groups = form.find('select#groups').val();
                         $http({
@@ -188,9 +201,12 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             downloadReport(response, 'report_tickets_by_types__' + data['filterDate_Start']);
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     case 'users':
+                        showLoader();
                         var users = form.find('select#users').val();
                         groups = form.find('select#groups').val();
                         $http({
@@ -207,12 +223,27 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             downloadReport(response, 'report_tickets_by_users__' + data['filterDate_Start']);
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
+                        }).then(function() {
+                            hideLoader();
                         });
                         break;
                     default:
                         break;
                 }
             };
+
+            function showLoader() {
+                var $loader = $('#loader-wrapper');
+                $loader.css({opacity: 0, display: 'block'});
+                $loader.animate({'opacity': 0.8}, 600);
+            }
+
+            function hideLoader() {
+                var $loader = $('#loader-wrapper');
+                $loader.animate({'opacity': 0}, 200, function() {
+                    $loader.hide();
+                });
+            }
 
             function downloadReport(response, filename) {
                 var headers = response.headers();

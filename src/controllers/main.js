@@ -18,6 +18,7 @@ var async           = require('async'),
     _mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
     ticketSchema    = require('../models/ticket'),
+    settingSchema   = require('../models/setting'),
     nconf           = require('nconf'),
     winston         = require('winston');
 
@@ -81,26 +82,7 @@ mainController.dashboard = function(req, res) {
     self.content.data.user = req.user;
     self.content.data.common = req.viewdata;
 
-    async.parallel({
-        overdueTickets: function(callback) {
-            var groupSchema = require('../models/group');
-            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
-                if (err) return callback(err);
-                ticketSchema.getOverdue(grps, function (err, objs) {
-                    if (err) return callback(err);
-
-                    var sorted = _.sortBy(objs, 'updated').reverse();
-
-                    return callback(null, sorted);
-                });
-            });
-        }
-    }, function(err, results) {
-        self.content.data.tickets = {};
-        self.content.data.tickets.overdue = results.overdueTickets;
-
-        return res.render('dashboard', self.content);
-    });
+    return res.render('dashboard', self.content);
 };
 
 mainController.loginPost = function(req, res, next) {
