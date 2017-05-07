@@ -768,7 +768,6 @@ api_users.generateL2Auth = function(req, res) {
         user.generateL2Auth(function(err, generatedKey) {
             if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
-            console.log(generatedKey);
             return res.json({success: true, generatedKey: generatedKey});
         });
     });

@@ -46,3 +46,4 @@ private/
 .sass-cache/
 /coverage/
 /plugins/
+config.local.json
