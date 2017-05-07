@@ -17,6 +17,8 @@ var mongoose            = require('mongoose');
 var _                   = require('underscore');
 var deepPopulate        = require('mongoose-deep-populate')(mongoose);
 var moment              = require('moment');
+var hash                = require('object-hash');
+// var redisCache          = require('../cache/rediscache');
 
 //Needed - Even if unused!
 var groupSchema         = require('./group');
@@ -28,6 +30,7 @@ var historySchema       = require('./history');
 var tagSchema           = require('./tag');
 
 var COLLECTION = 'tickets';
+
 
 /**
  * Ticket Schema
@@ -488,17 +491,20 @@ ticketSchema.statics.getAll = function(callback) {
         .populate('type')
         .populate('tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
-        .sort({'status': 1});
+        .sort({'status': 1})
+        .lean();
 
     return q.exec(callback);
 };
 
-ticketSchema.statics.getAllForCache = function(callback) {
+ticketSchema.statics.getForCache = function(callback) {
     var self = this;
-    var q = self.model(COLLECTION).find({deleted: false})
-        .select('_id uid date closedDate status history comments assignee owner tags group').lean();
-
-    return q.exec(callback);
+    var t365 = moment().hour(23).minute(59).second(59).subtract(365, 'd').toDate();
+    self.model(COLLECTION).find({date: {$gte: t365}, deleted: false})
+        .select('_id uid date status history comments assignee owner tags')
+        .sort('date')
+        .lean()
+        .exec(callback);
 };
 
 ticketSchema.statics.getAllNoPopulate = function(callback) {
@@ -519,7 +525,8 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
         .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type tags')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
-        .sort({'status': 1});
+        .sort({'status': 1})
+        .lean();
 
     return q.exec(callback);
 };
@@ -658,49 +665,84 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     return q.exec(callback);
 };
 
-// ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
-//     if (_.isUndefined(grpId)) {
-//         return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-//     }
-//
-//     if (!_.isArray(grpId)) {
-//         return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
-//     }
-//
-//     if (!_.isObject(object)) {
-//         return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
-//     }
-//
-//     var self = this;
-//
-//     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
-//         var g = _.pluck(grpId, '_id').map(String);
-//         grpId = _.intersection(object.filter.groups, g);
-//     }
-//
-//     var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
-//
-//     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
-//         var status = object.status.map(Number);
-//         q.where({status: {$in: status} });
-//     }
-//
-//     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
-//         q.where({assignee: {$in: object.filter.assignee}});
-//     }
-//
-//     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
-//         q.where({type: {$in: object.filter.types}});
-//     }
-//
-//     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
-//
-//     if (!_.isUndefined(object.assignedSelf) && object.assignedSelf == true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
-//         q.where('assignee', object.assignedUserId);
-//     }
-//
-//     return q.exec(callback)
-// };
+ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    if (!_.isObject(object)) {
+        return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
+    }
+
+    var self = this;
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
+        var g = _.pluck(grpId, '_id').map(String);
+        grpId = _.intersection(object.filter.groups, g);
+    }
+
+    var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
+
+    if (!_.isUndefined(object.status) && _.isArray(object.status)) {
+        var status = object.status.map(Number);
+        q.where({status: {$in: status} });
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
+        q.where({assignee: {$in: object.filter.assignee}});
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
+        q.where({type: {$in: object.filter.types}});
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+
+    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf == true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+        q.where('assignee', object.assignedUserId);
+    }
+
+    return q.lean().exec(callback)
+};
+
+/**
+ * Gets Tickets with a limit on given group id. <br/><br/>
+ * *Sorts on UID Desc -> STATUS Asc*
+ * @memberof Ticket
+ * @static
+ * @method getTicketsWithLimit
+ *
+ * @param {Object} grpId Group Id to retrieve tickets for.
+ * @param {Number} limit Number of tickets to return
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
+    if (_.isUndefined(grpId)) {
+        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
+    }
+
+    if (!_.isArray(grpId)) {
+        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
+    }
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
+        .populate('owner')
+        .populate('assignee')
+        .populate('type')
+        .populate('tags')
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .sort({'uid': -1})
+        .sort({'status': 1})
+        .limit(limit);
+
+    return q.exec(callback);
+};
 
 /**
  * Gets Tickets for status in given group. <br/><br/>
@@ -1023,7 +1065,8 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 
     var q = self.model(COLLECTION).find(query)
         .select('group')
-        .populate('group');
+        .populate('group', 'name')
+        .lean();
 
     var topCount = [];
     var ticketsDb = [];

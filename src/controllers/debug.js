@@ -71,7 +71,7 @@ debugController.populatedatabase = function(req, res) {
                 groupSchema.getAllGroups(function(err, groups) {
                     ticketTypeSchema.getTypes(function(err, types) {
                         var tickets = [];
-                        for (var i = 0; i < 10001; i++) { // 10000 Tickets
+                        for (var i = 0; i < 100001; i++) { // 10000 Tickets
                             var user = users[Math.floor(Math.random()*users.length)];
                             var group = groups[Math.floor(Math.random()*groups.length)];
                             var type = types[Math.floor(Math.random()*types.length)];

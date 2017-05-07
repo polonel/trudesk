@@ -79,8 +79,9 @@ truCache.refreshCache = function(callback) {
     async.waterfall([
         function(done) {
             var ticketSchema = require('../models/ticket');
-            ticketSchema.getAllForCache(function(err, tickets) {
-                if (err) return done(err);
+            ticketSchema.getForCache(function(e, tickets) {
+                if (e) return done(e);
+                winston.debug('Pulled ' + tickets.length);
 
                 return done(null, tickets);
             });
@@ -90,7 +91,9 @@ truCache.refreshCache = function(callback) {
             async.parallel([
                 function(done) {
                     var ticketStats = require('./ticketStats');
+                    // console.time('test');
                     ticketStats(tickets, function(err, stats) {
+                        // console.timeEnd('test');
                         if (err) return done(err);
                         var expire = 3600; // 1 hour
                         cache.set('tickets:overview:lastUpdated', stats.lastUpdated, expire);
@@ -120,10 +123,10 @@ truCache.refreshCache = function(callback) {
                         cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, expire);
                         cache.set('tickets:overview:e365:graphData', stats.e365.graphData, expire);
 
-                        cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, expire);
-                        cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, expire);
-                        cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, expire);
-                        cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, expire);
+                        // cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, expire);
+                        // cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, expire);
+                        // cache.set('tickets:overview:lifetime:responseTime', stats.lifetime.avgResponse, expire);
+                        // cache.set('tickets:overview:lifetime:graphData', stats.lifetime.graphData, expire);
 
                         return done();
                     });

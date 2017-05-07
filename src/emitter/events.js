@@ -136,7 +136,6 @@ var notifications       = require('../notifications'); // Load Push Events
 
     emitter.on('ticket:deleted', function(oId) {
         io.sockets.emit('ticket:delete', oId);
-        //winston.warn('ticket deleted: ' + oId);
     });
 
     emitter.on('ticket:subscriber:update', function(data) {

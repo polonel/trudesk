@@ -68,6 +68,7 @@
     "node-sass": "3.8.0",
     "nodemailer": "2.5.0",
     "notp": "2.0.3",
+    "object-hash": "^1.1.8",
     "passport": "0.3.2",
     "passport-http": "0.3.0",
     "passport-local": "1.0.0",

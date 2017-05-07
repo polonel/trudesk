@@ -5,7 +5,7 @@
             <div class="uk-float-right">
                 <div class="autorefresh uk-float-left uk-clearfix"></div>
                 <div class="pagination uk-float-left uk-clearfix">
-                    <span class="pagination-info">{{data.pagination.start}} - {{data.pagination.end}} of {{data.pagination.total}}</span>
+                    <span class="pagination-info">{{formatNumber data.pagination.start}} - {{formatNumber data.pagination.end}} of {{formatNumber data.pagination.total}}</span>
                     <ul class="button-group">
                         {{#is data.pagination.prevEnabled true}}
 

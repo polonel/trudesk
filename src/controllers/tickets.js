@@ -75,7 +75,7 @@ ticketsController.pubNewIssue = function(req, res) {
  * Get Ticket View based on ticket status
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @param {callback} next Sends the ```req.processor``` object to the processor
+ * @param {function} next Sends the ```req.processor``` object to the processor
  * @see Ticket
  */
 ticketsController.getByStatus = function(req, res, next) {
@@ -125,14 +125,14 @@ ticketsController.getByStatus = function(req, res, next) {
     self.processor.object.status.push(s);
 
     req.processor = self.processor;
-    next();
+    return next();
 };
 
 /**
  * Get Ticket View based on ticket active tickets
  * @param {object} req Express Request
  * @param {object} res Express Response
- * @param {callback} next Sends the ```req.processor``` object to the processor
+ * @param {function} next Sends the ```req.processor``` object to the processor
  * @see Ticket
  */
 ticketsController.getActive = function(req, res, next) {
@@ -154,7 +154,7 @@ ticketsController.getActive = function(req, res, next) {
 
     req.processor = self.processor;
 
-    next();
+    return next();
 };
 
 /**
@@ -247,7 +247,7 @@ ticketsController.filter = function(req, res, next) {
 
     req.processor = self.processor;
 
-    next();
+    return next();
 };
 
 /**
