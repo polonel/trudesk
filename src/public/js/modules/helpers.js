@@ -891,6 +891,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         });
     };
 
+    helpers.showLoader = function(opacity) {
+        if (_.isUndefined(opacity) || _.isNull(opacity))
+            opacity = 1;
+
+        var $loader = $('#loader-wrapper');
+        $loader.css({opacity: 0, display: 'block'});
+        $loader.animate({'opacity': opacity}, 500);
+    };
+
     helpers.ajaxFormSubmit = function() {
         // Bind to forms
         $('form.ajaxSubmit').each(function() {

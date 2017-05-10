@@ -177,11 +177,11 @@ define('modules/tour', [
     });
 
 
-    tour.addStep('profileButton', {
-        title: 'Profile',
-        text: 'Clicking your profile picture will open up your profile dropdown.',
-        attachTo: 'img#profileImage bottom'
-    });
+    // tour.addStep('profileButton', {
+    //     title: 'Profile',
+    //     text: 'Clicking your profile picture will open up your profile dropdown.',
+    //     attachTo: 'img#profileImage bottom'
+    // });
 
     tour.addStep('sidebar_tickets', {
         title: 'Tickets',
@@ -258,7 +258,7 @@ define('modules/tour', [
 
 
     tour.on('complete', function() {
-        console.log('Tour Done!');
+
     });
 
 
