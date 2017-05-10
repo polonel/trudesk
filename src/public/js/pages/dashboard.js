@@ -59,7 +59,6 @@ define('pages/dashboard', [
                     url: '/api/v1/tickets/overdue',
                     method: 'GET',
                     success: function(_data) {
-                        console.log(_data);
                         var overdueCard = $('#overdue_tickets');
                         var overdueSpinner = overdueCard.find('.card-spinner');
                         var html = '';
