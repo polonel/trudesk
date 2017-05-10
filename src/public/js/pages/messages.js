@@ -60,7 +60,7 @@ define('pages/messages', [
                             labels: {
                                 'Ok': 'YES'
                             },
-                            confirmButtonClass: 'confirm-delete-button'
+                            confirmButtonClass: 'md-btn-danger'
                         });
                 }
             });
