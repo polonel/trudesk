@@ -398,7 +398,7 @@ api_tickets.createPublicTicket = function(req, res) {
                 ticket.save(function(err, t) {
                     if (err) return next(err);
 
-                    emitter.emit('ticket:created', {socketId: null, ticket: t});
+                    emitter.emit('ticket:created', {socketId: '', ticket: t});
 
                     return next(null, {user: savedUser, group: group, ticket: t});
                 });

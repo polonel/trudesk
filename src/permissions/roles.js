@@ -17,19 +17,22 @@
  Permissions for TruDesk. Define Roles / Groups.
  --- group:action action action
 
- *                       = all permissions for grp
- create                  = create permission for grp
- delete                  = delete permission for grp
- edit                    = edit permission for grp
- editSelf                = edit Self Created Items
- assignee                = allowed to be assigned to a ticket
- view                    = view permission for grp
- ticket:attachment       = can add attachment
- ticket:removeAttachment = can remove attachment
- ticket:viewHistory      = can view ticket history on single page
- ticket:setAssignee      = can set ticket Assignee
- ticket:public           = can view public created tickets
- plugins:manage          = user can add/remove Plugins
+ *                              = all permissions for grp
+ create                         = create permission for grp
+ delete                         = delete permission for grp
+ edit                            = edit permission for grp
+ editSelf                       = edit Self Created Items
+ assignee                       = allowed to be assigned to a ticket
+ view                           = view permission for grp
+
+ ticket:attachment              = can add attachment
+ ticket:removeAttachment        = can remove attachment
+ ticket:viewHistory             = can view ticket history on single page
+ ticket:setAssignee             = can set ticket Assignee
+ ticket:public                  = can view public created tickets
+ ticket:notifications_create    = send notification on ticket created
+
+ plugins:manage                 = user can add/remove Plugins
  */
 var roles = {
     admin: {

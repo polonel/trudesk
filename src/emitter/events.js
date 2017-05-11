@@ -23,6 +23,7 @@ var userSchema          = require('../models/user');
 var notificationSchema  = require('../models/notification');
 var emailTemplates      = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
+var permissions         = require('../permissions');
 
 var notifications       = require('../notifications'); // Load Push Events
 
@@ -89,10 +90,43 @@ var notifications       = require('../notifications'); // Load Push Events
                      });
                  },
                  function (c) {
+                     if (!ticket.group.public) return c();
+                     var rolesWithPublic = permissions.getRoles('ticket:public');
+                     rolesWithPublic = _.map(rolesWithPublic, 'id');
+                     userSchema.getUsersByRoles(rolesWithPublic, function(err, users) {
+                         if (err) return c();
+                         async.each(users, function(user, cb) {
+                             if (!permissions.canThis(user.role, 'ticket:notifications_create')) return cb();
+
+                             var notification = new notificationSchema({
+                                 owner: user,
+                                 title: 'Ticket #' + ticket.uid + ' Created',
+                                 message: ticket.subject,
+                                 type: 0,
+                                 data: {ticket: ticket},
+                                 unread: true
+                             });
+
+                             notification.save(function(err, data) {
+                                 if (err) return cb(err);
+
+                                 notifications.pushNotification(data);
+
+                                 return cb(null, data);
+                             });
+
+                         }, function(err) {
+                             return c(err);
+                         });
+                     });
+                 },
+                 function (c) {
+                     // Public Ticket Notification is handled above.
+                     if (ticket.group.public) return c();
                      async.each(ticket.group.members, function(member, cb) {
                          if (_.isUndefined(member)) return cb();
 
-                         if (member.role != 'mod' && member.role != 'admin') return cb(null);
+                         if (!permissions.canThis(member.role, 'ticket:notifications_create')) return cb();
 
                          var notification = new notificationSchema({
                              owner: member,
