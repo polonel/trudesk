@@ -519,7 +519,7 @@ ticketsController.postcomment = function(req, res, next) {
         }, function(err, T) {
             if (err) return handleError(res, err);
 
-            ticketSchema.populate(T.save, 'comments.owner', function(err) {
+            ticketSchema.populate(T.save, 'subscribers comments.owner', function(err) {
                 emitter.emit('ticket:comment:added', T.save, Comment);
 
                 return res.send(T);

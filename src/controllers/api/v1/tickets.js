@@ -661,7 +661,7 @@ api_tickets.postComment = function(req, res) {
         t.save(function(err, tt) {
             if (err) return res.send(err.message);
 
-            ticketModel.populate(tt, 'comments.owner', function(err) {
+            ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
                 if (err) return true;
 
                 emitter.emit('ticket:comment:added', tt, Comment);
