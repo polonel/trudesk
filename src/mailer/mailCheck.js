@@ -15,11 +15,9 @@
 var _           = require('underscore');
 var async       = require('async');
 var Imap        = require('imap');
-//var inspect     = require('util').inspect;
-//var MailParser  = require('mailparser').MailParser;
 var winston     = require('winston');
-var nconf       = require('nconf');
 var marked      = require('marked');
+var simpleParser = require('mailparser').simpleParser;
 
 var emitter     = require('../emitter');
 var userSchema  = require('../models/user');
@@ -27,33 +25,48 @@ var groupSchema = require('../models/group');
 var ticketTypeSchema = require('../models/tickettype');
 var Ticket      = require('../models/ticket');
 
-var MAILERCHECK_ENABLED = nconf.get('mailer:check:enable');
-var MAILERCHECK_USER = nconf.get('mailer:check:user') ? nconf.get('mailer:check:user') : MAILERCHECK_ENABLED = false;
-var MAILERCHECK_PASS = nconf.get('mailer:check:pass') ? nconf.get('mailer:check:pass') : MAILERCHECK_ENABLED = false;
-var MAILERCHECK_HOST = nconf.get('mailer:check:host') ? nconf.get('mailer:check:host') : MAILERCHECK_ENABLED = false;
-var POLLING_INTERVAL = nconf.get('mailer:check:polling') ? nconf.get('mailer:check:polling') : 600000; //10 min
-var DEFAULT_TICKET_TYPE = nconf.get('mailer:check:defaultTicketType') ? nconf.get('mailer:check:defaultTicketType') : 'Issue';
-
 var mailCheck = {};
-mailCheck.Imap = new Imap({
-    user: MAILERCHECK_USER,
-    password: MAILERCHECK_PASS,
-    host: MAILERCHECK_HOST,
-    port: 143
-});
-
 mailCheck.inbox = [];
 
-mailCheck.init = function() {
+mailCheck.init = function(settings) {
+    var s = {};
+    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
+    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
+    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
+    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
+    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
+    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
+
+    s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
+    s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
+    s.mailerCheckPort = (s.mailerCheckPort === undefined) ? {value: 143} : s.mailerCheckPort;
+    s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
+    s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
+    s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: 'Issue'} : s.mailerCheckTicketType;
+
+    var MAILERCHECK_ENABLED = s.mailerCheckEnabled.value;
+    var MAILERCHECK_HOST = s.mailerCheckHost.value;
+    var MAILERCHECK_USER = s.mailerCheckUsername.value;
+    var MAILERCHECK_PASS = s.mailerCheckPassword.value;
+    var POLLING_INTERVAL = 600000; //10 min
+    var DEFAULT_TICKET_TYPE = s.mailerCheckTicketType.value;
+
     if (!MAILERCHECK_ENABLED) return true;
 
-    mailCheck.fetchMail();
+    mailCheck.Imap = new Imap({
+        user: MAILERCHECK_USER,
+        password: MAILERCHECK_PASS,
+        host: MAILERCHECK_HOST,
+        port: 143
+    });
+
+    mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
     setInterval(function() {
-        mailCheck.fetchMail();
+        mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
     }, POLLING_INTERVAL);
 };
 
-mailCheck.fetchMail = function() {
+mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
     mailCheck.Imap.connect();
     mailCheck.Imap.once('error', function(err) {
         winston.warn(err);
@@ -83,7 +96,8 @@ mailCheck.fetchMail = function() {
 
                     var f = mailCheck.Imap.fetch(results, {
                         //markSeen: true,
-                        bodies: ['HEADER.FIELDS (FROM SUBJECT)','TEXT']
+                       // bodies: ['HEADER.FIELDS (FROM SUBJECT CONTENT-TYPE)','TEXT']
+                        bodies: ''
                     });
 
                     f.on('message', function(msg, seqno) {
@@ -93,17 +107,36 @@ mailCheck.fetchMail = function() {
                                 count += chunk.length;
                                 buffer += chunk.toString('utf8');
                             });
+
                             stream.once('end', function() {
-                                if (info.which !== 'TEXT') {
-                                    var header = Imap.parseHeader(buffer);
-                                    if (_.isArray(header.subject) && _.size(header.subject) > 0)
-                                        message.subject = header.subject[0];
-                                    if (_.isArray(header.from) && _.size(header.from) > 0)
-                                        message.from = parseEmail(header.from[0]);
-                                } else
-                                    message.body = buffer;
+                                simpleParser(buffer, function(err, mail) {
+                                    if (err) winston.warn(err);
+
+                                    if (mail.headers.has('from')) {
+                                        message.from = mail.headers.get('from').value[0].address;
+                                    }
+                                    if (mail.subject) {
+                                        message.subject = mail.subject;
+                                    } else {
+                                        message.subject = message.from;
+                                    }
+
+                                    message.body = mail.textAsHtml;
+                                });
+
+                                // if (info.which !== 'TEXT') {
+                                //     var header = Imap.parseHeader(buffer);
+                                //     if (_.isArray(header.subject) && _.size(header.subject) > 0)
+                                //         message.subject = header.subject[0];
+                                //     if (_.isArray(header.from) && _.size(header.from) > 0)
+                                //         message.from = parseEmail(header.from[0]);
+                                //     if (_.isArray(header['content-type']) && _.size(header['content-type']) > 0)
+                                //         message.contentType = header['content-type'][0];
+                                // } else
+                                //     message.body = buffer;
                             });
                         });
+
                         async.series([
                             function(cb) {
                                 msg.once('end', function() {
@@ -122,8 +155,25 @@ mailCheck.fetchMail = function() {
 
                                                         if (_.size(group) < 1) return cb();
 
-                                                        ticketTypeSchema.getTypeByName(DEFAULT_TICKET_TYPE, function(err, type) {
-                                                            if (err) return cb(err);
+                                                        async.waterfall([
+                                                            function(d) {
+                                                                if (DEFAULT_TICKET_TYPE !== 'Issue') return d(null, null);
+                                                                ticketTypeSchema.getTypeByName(DEFAULT_TICKET_TYPE, function(err, t) {
+                                                                    if (err) return d(err);
+
+                                                                    return d(null, t);
+                                                                });
+                                                            },
+                                                            function(type, d) {
+                                                                if (type !== null) return d(null, type);
+                                                                ticketTypeSchema.getType(DEFAULT_TICKET_TYPE, function(err, t) {
+                                                                    if (err) return d(err);
+
+                                                                    return d(null, t);
+                                                                });
+                                                            }
+                                                        ], function(err, type) {
+                                                            if (err || type == null) return cb(err);
 
                                                             var HistoryItem = {
                                                                 action: 'ticket:created',
@@ -139,7 +189,7 @@ mailCheck.fetchMail = function() {
                                                                 status: 0,
                                                                 priority: 1,
                                                                 subject: message.subject,
-                                                                issue: parseBody(message.body),
+                                                                issue: message.body,
                                                                 history: [HistoryItem]
                                                             }, function(err, t) {
                                                                 if (err) {
@@ -149,19 +199,19 @@ mailCheck.fetchMail = function() {
 
                                                                 emitter.emit('ticket:created', {socketId: '', ticket: t});
 
-                                                                cb();
+                                                                return cb();
                                                             });
                                                         });
                                                     });
 
                                                 } else
-                                                    cb();
+                                                    return cb();
 
                                             } else {
                                                 mailCheck.Imap.seq.addFlags(seqno, '\\Deleted', function(err) {
                                                     if (err) winston.warn(err);
 
-                                                    cb();
+                                                    return cb();
                                                 });
                                             }
                                         });
@@ -173,11 +223,11 @@ mailCheck.fetchMail = function() {
 
                             f.once('error', function(err) {
                                 winston.error('Fetch error: ' + err);
-                                next(err);
+                                return next(err);
                             });
 
                             f.once('end', function() {
-                                next();
+                                return next();
                             });
                         });
                     });
@@ -185,7 +235,7 @@ mailCheck.fetchMail = function() {
             ], function(err) {
                 if (err) winston.warn(err);
                 mailCheck.Imap.closeBox(true, function(err) {
-                    winston.debug(err);
+                    if (err) winston.debug(err);
                     mailCheck.Imap.end();
                 });
             });

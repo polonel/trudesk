@@ -27,6 +27,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                 s.addClass('md-input-filled');
                         }
                     });
+
+                    if ($scope.mailerCheckTicketType !== '') {
+                        var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                        $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
+                        var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
+                        $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
+                        $selectizeTicketType.refreshItems();
+                    }
                 }, 0);
             };
 
@@ -118,6 +126,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('input#mailerCheckUsername').attr('disabled', !newVal);
                 $('input#mailerCheckPassword').attr('disabled', !newVal);
                 $('button#mailerCheckSubmit').attr('disabled', !newVal);
+                if (!newVal == true)
+                    $('select#mailerCheckTicketType').selectize()[0].selectize.disable();
+                else
+                    $('select#mailerCheckTicketType').selectize()[0].selectize.enable();
             });
 
             $scope.mailerCheckEnabledChange = function() {
@@ -140,12 +152,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             $scope.mailerCheckFormSubmit = function($event) {
                 $event.preventDefault();
-
+                var mailerCheckTicketTypeValue = $('#mailerCheckTicketType option[selected]').val();
                 $http.put('/api/v1/settings', [
                     {name: 'mailer:check:host', value: $scope.mailerCheckHost},
                     {name: 'mailer:check:port', value: $scope.mailerCheckPort},
                     {name: 'mailer:check:username', value: $scope.mailerCheckUsername},
-                    {name: 'mailer:check:password', value: $scope.mailerCheckPassword}
+                    {name: 'mailer:check:password', value: $scope.mailerCheckPassword},
+                    {name: 'mailer:check:ticketype', value: mailerCheckTicketTypeValue}
 
                 ], {
                     headers: {
@@ -153,8 +166,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }
                 }).then(function successCallback() {
                     helpers.UI.showSnackbar('Mail Check Settings Saved', false);
+
                 }, function errorCallback(err) {
-                    helpers.UI.showSnackbar(err, true);
+                    helpers.UI.showSnackbar(err.data.error, true);
+                    $log.error(err);
                 });
             };
 

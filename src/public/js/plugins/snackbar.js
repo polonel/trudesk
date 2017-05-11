@@ -49,7 +49,7 @@
     };
 
     Snackbar.show = function ($options) {
-        var options = Extend(true, $defaults, $options);
+        var options = extend(true, $defaults, $options);
 
         if (Snackbar.current) {
             Snackbar.current.style.opacity = 0;
@@ -131,7 +131,7 @@
 
     // Pure JS Extend
     // http://gomakethings.com/vanilla-javascript-version-of-jquery-extend/
-    var Extend = function () {
+    var extend = function () {
 
         var extended = {};
         var deep = false;

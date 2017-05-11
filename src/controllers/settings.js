@@ -62,12 +62,14 @@ settingsController.get = function(req, res) {
         s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
         s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
         s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
+        s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
 
         s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
         s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
         s.mailerCheckPort = (s.mailerCheckPort === undefined) ? {value: 143} : s.mailerCheckPort;
         s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
         s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
+        s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: ''} : s.mailerCheckTicketType;
 
         s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable' });
         s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;

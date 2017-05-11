@@ -55,7 +55,7 @@
     "kerberos": "0.0.21",
     "lodash": "^4.17.4",
     "logrotate-stream": "0.2.5",
-    "mailparser": "0.6.1",
+    "mailparser": "^2.0.5",
     "marked": "0.3.5",
     "matchdep": "1.0.1",
     "moment": "2.10.2",
