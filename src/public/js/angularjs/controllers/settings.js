@@ -167,6 +167,22 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }).then(function successCallback() {
                     helpers.UI.showSnackbar('Mail Check Settings Saved', false);
 
+                    UIkit.modal.confirm(
+                        'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
+                        , function() {
+                            $http.get(
+                                '/api/v1/admin/restart'
+                            )
+                                .success(function() {
+                                })
+                                .error(function(err) {
+                                    helpers.hideLoader();
+                                    $log.log('[trudesk:settings:mailerCheckSubmit] - Error: ' + err.error);
+                                    $log.error(err);
+                                });
+                        }, {
+                            labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-primary'
+                        });
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err.data.error, true);
                     $log.error(err);
