@@ -85,7 +85,7 @@ middleware.checkUserHasL2Auth = function(req, res, next) {
 };
 
 middleware.ensurel2Auth = function(req, res, next) {
-    if (req.session.l2auth == 'totp') {
+    if (req.session.l2auth === 'totp') {
         if (req.user)
             return res.redirect('/dashboard');
         else
@@ -100,7 +100,7 @@ middleware.loadCommonData = function(req, res, next) {
     viewdata.getData(req, function(data) {
         req.viewdata = data;
 
-        next();
+        return next();
     });
 };
 
@@ -110,6 +110,23 @@ middleware.cache = function(seconds) {
 
         next();
     }
+};
+
+middleware.checkCaptcha = function(req, res, next) {
+    var postData = req.body;
+    var captcha = postData.captcha;
+    if (postData === undefined) {
+        return res.status(400).json({success: false, error: 'Invalid Captcha'});
+    }
+    var captchaValue = req.session.captcha;
+    if (captchaValue === undefined) {
+        return res.status(400).json({success: false, error: 'Invalid Captcha'});
+    }
+
+    if (captchaValue.toString().toLowerCase() !== captcha.toString().toLowerCase())
+        return res.status(400).json({success: false, error: 'Invalid Captcha'});
+
+    return next();
 };
 
 //API
