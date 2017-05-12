@@ -30,9 +30,7 @@ var notifications       = require('../notifications'); // Load Push Events
 (function() {
     notifications.init(emitter);
 
-    //winston.info('Binding to Events');
     emitter.on('ticket:created', function(data) {
-         var socketId = data.socketId;
          var ticketObj = data.ticket;
          ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
              if (err) return true;
@@ -42,13 +40,12 @@ var notifications       = require('../notifications'); // Load Push Events
                      var mailer = require('../mailer');
                      var emails = [];
                      async.each(ticket.group.sendMailTo, function(member, cb) {
-                         //winston.debug('Sending Mail To: ' + member.email);
                          if (_.isUndefined(member.email)) return cb();
                          if (member.deleted) return cb();
 
                          emails.push(member.email);
 
-                         cb();
+                         return cb();
                      }, function(err) {
                          if (err) return c(err);
 
@@ -155,7 +152,6 @@ var notifications       = require('../notifications'); // Load Push Events
                     }
 
                  //Send Ticket..
-                 //util.sendToAllExcept(io, socketId, 'ticket:created', ticket);
                  util.sendToAllConnectedClients(io, 'ticket:created', ticket);
              });
          });
@@ -285,7 +281,7 @@ var notifications       = require('../notifications'); // Load Push Events
                     });
                 });
             }
-        ], function(err, result) {
+        ], function(err) {
             //Blank
         });
     });

@@ -9,14 +9,14 @@
  ========================================================================
  **/
 
-var _       = require('underscore'),
-    async   = require('async'),
-    path    = require('path'),
-    fs      = require('fs'),
-    winston = require('winston'),
-    nconf = require('nconf'),
-    pkg     = require('./package.json'),
-    ws = require('./src/webserver');
+var _           = require('underscore'),
+    async       = require('async'),
+    path        = require('path'),
+    fs          = require('fs'),
+    winston     = require('winston'),
+    nconf       = require('nconf'),
+    pkg         = require('./package.json'),
+    ws          = require('./src/webserver');
     //`var memory = require('./src/memory');
 
 
@@ -179,12 +179,6 @@ function dbCallback(err, db) {
         async.series([
             function(next) {
                 require('./src/socketserver')(ws);
-                return next();
-            },
-            function(next) {
-                //Start Mailer
-                var mailQueue = require('./src/mailer');
-                mailQueue.queue();
                 return next();
             },
             function(next) {

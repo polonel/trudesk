@@ -243,26 +243,26 @@ mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
     });
 };
 
-function parseEmail(email) {
-    var strArray1 = email.split('<');
-    var strArray2 = strArray1[1].split('>');
-    var actualEmail = strArray2[0];
+// function parseEmail(email) {
+//     var strArray1 = email.split('<');
+//     var strArray2 = strArray1[1].split('>');
+//     var actualEmail = strArray2[0];
+//
+//     if (validateEmail(actualEmail))
+//         return actualEmail;
+//     else
+//         return '';
+// }
+//
+// function parseBody(body) {
+//     body = body.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+//     return marked(body);
+// }
 
-    if (validateEmail(actualEmail))
-        return actualEmail;
-    else
-        return '';
-}
-
-function parseBody(body) {
-    body = body.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-    return marked(body);
-}
-
-function validateEmail(email) {
-    var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-    return re.test(email);
-}
+// function validateEmail(email) {
+//     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
+//     return re.test(email);
+// }
 
 function openInbox(cb) {
     mailCheck.Imap.openBox('INBOX', false, cb);

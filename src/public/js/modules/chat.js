@@ -38,8 +38,6 @@ define('modules/chat',[
 
         });
 
-        //TODO: This is called often. Even on 5sec loop. This needs to be optimized. JANK!
-        // This should not be on loop. Maybe have the UI update based on Connect/Disconnect
         socket.removeAllListeners('updateUsers');
         socket.on('updateUsers', function(data) {
             var html = '';

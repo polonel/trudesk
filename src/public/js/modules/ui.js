@@ -17,13 +17,12 @@ define('modules/ui', [
     'underscore',
     'modules/helpers',
     'modules/navigation',
-    'modules/socket.io/messagesUI',
     'modules/socket.io/noticeUI',
     'modules/socket.io/ticketsUI',
     'modules/socket.io/logs.io',
     'history'
 
-], function($, _, helpers, nav, msgUI, noticeUI, ticketsUI, logsIO) {
+], function($, _, helpers, nav, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
         socket;
 

@@ -51,7 +51,6 @@ module.exports = function(app, db, callback) {
     app.use(cookieParser());
 
     app.use(function(req, res, next) {
-        //todo: Set reconnection here
         if (mongoose.connection.readyState !== 1) {
             var err = new Error('MongoDb Error');
             err.status = 503;
@@ -59,7 +58,7 @@ module.exports = function(app, db, callback) {
             return;
         }
 
-        next();
+        return next();
     });
 
     var cookie = {

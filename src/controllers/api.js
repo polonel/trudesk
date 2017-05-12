@@ -17,7 +17,6 @@ var async = require('async'),
     _s = require('underscore.string'),
     winston = require('winston'),
     permissions = require('../permissions'),
-    emitter = require('../emitter'),
 
     userSchema = require('../models/user'),
 

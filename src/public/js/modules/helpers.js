@@ -285,7 +285,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     helpers.UI.selectize = function(parent) {
         // selectize plugins
         if(typeof $.fn.selectize != 'undefined') {
-            Selectize.define('dropdown_after', function (options) {
+            Selectize.define('dropdown_after', function () {
                 var self = this;
                 self.positionDropdown = (function () {
                     var $control = this.$control,
@@ -550,7 +550,6 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.bindKeys = function() {
-        var self = this;
         var commentReply = $('#commentReply');
         if (commentReply.length > 0) {
             commentReply.off('keydown');
@@ -776,7 +775,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     scaleColor: false,
                     barColor: trackColor,
                     trackColor: '#e3e5e8',
-                    onStart: function(value, to) {
+                    onStart: function(value) {
                         $(this.el).find('.chart-value').text(value);
                     },
                     onStop: function(value, to) {
@@ -909,7 +908,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     type: self.attr('method'),
                     url: self.attr('action'),
                     data: self.serialize(),
-                    success: function(data) {
+                    success: function() {
                         //send socket to add reply.
                         self.find('*[data-clearOnSubmit="true"]').each(function() {
                             $(this).val('');

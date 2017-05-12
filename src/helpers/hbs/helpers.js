@@ -24,8 +24,6 @@
 var _       = require('underscore');
 var moment  = require('moment');
 
-var conf = require('nconf');
-
 // The module to be exported
 var helpers = {
 
@@ -691,8 +689,7 @@ helpers.inArray    = helpers.hasGroup;
 
 // Export helpers
 module.exports.helpers = helpers;
-module.exports.register = function (Handlebars, options) {
-    options = options || {};
+module.exports.register = function (Handlebars) {
 
     for (var helper in helpers) {
         if (helpers.hasOwnProperty(helper)) {

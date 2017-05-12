@@ -12,16 +12,12 @@
 
  **/
 
-var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
-    winston = require('winston'),
-    permissions = require('../../../permissions'),
-    emitter = require('../../../emitter'),
+var _               = require('underscore'),
+    async           = require('async'),
+    winston         = require('winston'),
 
-    userSchema = require('../../../models/user'),
-    groupSchema = require('../../../models/group'),
-    ticketSchema = require('../../../models/ticket');
+    groupSchema     = require('../../../models/group'),
+    ticketSchema    = require('../../../models/ticket');
 
 var api_groups = {};
 

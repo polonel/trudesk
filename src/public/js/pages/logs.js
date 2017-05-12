@@ -15,10 +15,9 @@
 define('pages/logs', [
     'jquery',
     'modules/socket',
-    'modules/helpers',
     'history'
 
-], function($, socket, helpers) {
+], function($, socket) {
     var logsPage = {};
 
     logsPage.init = function(callback) {
