@@ -8,7 +8,6 @@ powered-test
 docs
 doc
 website
-assets
 
 # examples
 example
@@ -33,8 +32,6 @@ Gruntfile.js
 .flowconfig
 .documentup.json
 .yarn-metadata.json
-.*.yml
-*.yml
 
 # misc
 *.gz

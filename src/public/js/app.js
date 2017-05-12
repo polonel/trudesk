@@ -12,8 +12,8 @@
 
  **/
 
-//http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
-//window.name = "NG_DEFER_BOOTSTRAP!";
+//Load SASS (Webpack)
+require('../../sass/app.sass');
 
 require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, helpers, angular) {
     helpers.init();

@@ -1,8 +1,10 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     //context: path.resolve(__dirname, 'public/js'),
+    target: 'web',
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
@@ -76,7 +78,12 @@ module.exports = {
     module: {
         rules: [
             { test: /angular\.min\.js/, use: 'exports-loader?angular' },
-            { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' }
+            { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
+            { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'), use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [{loader: 'css-loader', options: {minimize: true}}, 'sass-loader'],
+                publicPath: '/public/css'
+            })}
         ]
     },
     plugins: [
@@ -100,6 +107,10 @@ module.exports = {
         new webpack.optimize.UglifyJsPlugin({
             mangle: false,
             sourceMap:false
+        }),
+        new ExtractTextPlugin({
+            filename: '../css/app.css',
+            allChunks: true
         })
     ],
     performance: {
