@@ -292,6 +292,11 @@
                     <label for="user-email">Email</label>
                     <input id="user-email" name="user-email" class="md-input" type="email" required />
                 </div>
+                <div class="uk-margin-medium-bottom">
+                    <div id="captchaImage" style="margin-bottom: 10px;"></div>
+                    <label for="captcha">Please enter the letters you see above.</label>
+                    <input id="captcha" name="captcha" class="md-input" type="text" required />
+                </div>
                 <div style="width: 25%; float: left;">
                     <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
                 </div>
@@ -405,12 +410,13 @@
         window.Snackbar = loadedModules[1];
 
         $(document).ready(function() {
+            getCaptcha();
             var $slides = $('.slides > .slide');
             var totalSlides = 0;
             var activeSlide = 0;
             $slides.each(function(idx) {
                 $(this).addClass('slide-' + idx);
-                if (idx == 0)
+                if (idx === 0)
                     $(this).addClass('activeSlide');
                 else
                     $(this).addClass('hide');
@@ -418,6 +424,20 @@
                 totalSlides++;
             });
 
+
+            function getCaptcha() {
+                $.ajax({
+                    method: 'GET',
+                    url: '/captcha',
+                    success: function(response) {
+                        var svg = $(response).find('svg');
+                        $('#captchaImage').append(svg);
+                    },
+                    error: function(err) {
+                        console.error(err);
+                    }
+                });
+            }
 
             function isDoubleClicked(element) {
                 //if already clicked return TRUE to indicate this click is not allowed
@@ -435,21 +455,7 @@
 
             $('button[data-next]').click(function() {
                 if (isDoubleClicked($(this))) return;
-                //return showTicketCreated();
                 advanceSlide();
-//            var nextSlideIdx = activeSlide + 1;
-//            var nextSlide = $('.slide-' + nextSlideIdx);
-//            if (nextSlide.length > 0) {
-//
-//                $(this).parents('.slide').fadeOut(300, function() {
-//                    nextSlide.css({display: 'none'}).removeClass('hide');
-//                    $(this).addClass('hide').removeClass('activeSlide');
-//                    nextSlide.fadeIn(300, function() {
-//                        nextSlide.addClass('activeSlide');
-//                    });
-//                });
-//                activeSlide++;
-//            }
             });
 
             $('button[data-prev]').click(function() {
@@ -515,7 +521,8 @@
                     method: 'POST',
                     url: '/api/v1/public/users/checkemail',
                     data: {
-                        email: userInfoFormData['user-email']
+                        email: userInfoFormData['user-email'],
+                        captcha: $('#captcha').val()
                     },
                     error: function(e) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
@@ -524,7 +531,7 @@
                             actionTextColor: 'red'
                         });
 
-                        console.log(e);
+                        console.error(e);
                     },
                     success: function(data) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
@@ -667,7 +674,8 @@
             function sendIssue() {
                 var d = {
                     user: userInfo,
-                    ticket: ticket
+                    ticket: ticket,
+                    captcha: $('#captcha').val()
                 };
                 $.ajax({
                     method: 'POST',

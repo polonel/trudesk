@@ -109,7 +109,7 @@ module.exports = {
             sourceMap:false
         }),
         new ExtractTextPlugin({
-            filename: '../css/app.css',
+            filename: '../css/app.min.css',
             allChunks: true
         })
     ],

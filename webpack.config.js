@@ -105,7 +105,7 @@ module.exports = {
         new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new ExtractTextPlugin({
-            filename: '../css/app.css',
+            filename: '../css/app.min.css',
             allChunks: true
         })
     ],
