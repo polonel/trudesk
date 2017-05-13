@@ -25,6 +25,7 @@ var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var userSchema          = require('./user');
 var commentSchema       = require('./comment');
+var noteSchema          = require('./note');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
 var tagSchema           = require('./tag');
@@ -80,7 +81,7 @@ var ticketSchema = mongoose.Schema({
     issue:      { type: String, required: true },
     closedDate: { type: Date },
     comments:   [commentSchema],
-    notes:      [commentSchema],
+    notes:      [noteSchema],
     attachments:[attachmentSchema],
     history:    [historySchema],
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]

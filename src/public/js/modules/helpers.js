@@ -1105,6 +1105,40 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     };
 
+    helpers.setupTruTabs = function(tabs) {
+        var toggleTab = function(element) {
+            $(element).off('click');
+            $(element).on('click', function() {
+                $(this).parent().find('.tru-tab-selector').each(function() {
+                    $(this).removeClass('active');
+                });
+
+                $(this).addClass('active');
+
+                var tabId = $(this).attr('data-tabid');
+
+                $('.tru-tab-section').each(function() {
+                    $(this).removeClass('visible').addClass('hidden');
+                });
+
+                var idx = $(this).index('.tru-tab-selector');
+                var highlighterPos = idx*100 + 'px';
+                $(this).parent().find('.tru-tab-highlighter').css('transform', 'translateX(' + highlighterPos + ')');
+
+                setTimeout(function() {
+                    $('.tru-tab-section').each(function() {
+                        $(this).css('display', 'none');
+                    });
+                    $('.tru-tab-section[data-tabid="' + tabId + '"]').css('display', 'block').removeClass('hidden').addClass('visible');
+                }, 200);
+            });
+        };
+
+        _.each(tabs, function(i) {
+            toggleTab(i);
+        });
+    };
+
     function stringStartsWith(string, prefix) {
         return string.slice(0, prefix.length) == prefix;
     }

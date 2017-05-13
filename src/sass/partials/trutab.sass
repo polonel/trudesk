@@ -1,0 +1,71 @@
+$size: 16px
+
+.tru-tabs
+  display: block
+  padding: $size
+  padding-top: 0
+  width: 100%
+  position: relative
+
+  .visible
+    position: relative
+    opacity: 1
+    width: 100%
+    height: auto
+    transition: opacity .35s ease
+    z-index: 3
+
+  .hidden
+    opacity: 0
+    z-index: 0
+    -webkit-transition: opacity 0.4s ease
+    -moz-transition: opacity 0.4s ease
+    -o-transition: opacity 0.4s ease
+    transition: opacity 0.4s ease
+
+  [class*="tru-tab"]
+    float: left
+    color: #222
+
+  .tru-tab-selectors
+    position: relative
+    height: $size*2+4
+    top: -$size*.55
+    left: 0
+    padding: 0
+    margin: 0
+    width: 100%
+    float: left
+
+    [class*='tru-tab-selector']
+      float: left
+      display: block
+      height: $size*2
+      line-height: $size*2
+      width: 100px
+      text-align: center
+      font-weight: 500
+      text-decoration: none
+      color: #222
+      font-size: 13px
+      margin: 0
+      padding: 0
+
+      &.active
+        color: $accent_color
+
+  .tru-tab-highlighter
+    position: absolute
+    z-index: 10
+    bottom: 0
+    height: 2px
+    background: $accent_color
+    max-width: 100px
+    width: 100%
+    transform: translateX(0)
+    display: block
+    left: 0
+    transition: transform .23s ease
+
+  [class*='tru-tab-section']
+    width: 100%

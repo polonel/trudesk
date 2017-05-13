@@ -24,6 +24,8 @@ define('pages/singleTicket', [
         $(document).ready(function() {
             socketClient.chat.updateOnlineBubbles();
 
+            helpers.setupTruTabs($('.tru-tab-selector'))
+
             $('.remove-attachment').each(function() {
                 var self = $(this);
                 self.off('click', onRemoveAttachmentClick);
