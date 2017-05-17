@@ -634,12 +634,12 @@ api_tickets.postComment = function(req, res) {
     var owner = commentJson.ownerId;
     var ticketId = commentJson._id;
 
-    if (_.isUndefined(ticketId)) return res.status(400).json({error: "Invalid Post Data"});
+    if (_.isUndefined(ticketId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
     var ticketModel = require('../../../models/ticket');
     ticketModel.getTicketById(ticketId, function(err, t) {
-        if (err) return res.status(400).json({error: "Invalid Post Data"});
+        if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
-        if (_.isUndefined(comment)) return res.status(400).json({error: "Invalid Post Data"});
+        if (_.isUndefined(comment)) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
         var marked = require('marked');
         comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
@@ -659,16 +659,88 @@ api_tickets.postComment = function(req, res) {
         t.history.push(HistoryItem);
 
         t.save(function(err, tt) {
-            if (err) return res.send(err.message);
+            if (err) return res.status(400).json({success: false, error: err.message})
 
             ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
-                if (err) return true;
+                if (err) return res.json({success: true, error: null, ticket: tt});
 
                 emitter.emit('ticket:comment:added', tt, Comment);
 
-                res.json({success: true, error: null, ticket: tt});
+                return res.json({success: true, error: null, ticket: tt});
             });
         });
+    });
+};
+
+/**
+ * @api {post} /api/v1/tickets/addnote Add Note
+ * @apiName addInternalNote
+ * @apiDescription Adds a note to the given Ticket Id
+ * @apiVersion 0.1.10
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -X POST
+ *      -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"note\":\"{note}\",\"owner\":{ownerId}, ticketId: \"{ticketId}\"}"
+ *      -l http://localhost/api/v1/tickets/addnote
+ *
+ * @apiParamExample {json} Request:
+ * {
+ *      "note": "Note Text",
+ *      "owner": {OwnerId},
+ *      "ticketid": {TicketId}
+ * }
+ *
+ * @apiSuccess {boolean} success Successful
+ * @apiSuccess {string} error Error if occurrred
+ * @apiSuccess {object} ticket Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_tickets.postInternalNote = function(req, res) {
+    var payload = req.body;
+    if (_.isUndefined(payload.ticketid)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(payload.ticketid, function(err, ticket) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (_.isUndefined(payload.note)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+        var marked = require('marked');
+        var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        var Note = {
+            owner: payload.owner,
+            date: new Date(),
+            note: marked(note)
+        };
+
+        ticket.updated = Date.now();
+        ticket.notes.push(Note);
+        var HistoryItem = {
+            action: 'ticket:note:added',
+            description: 'Internal note was added',
+            owner: payload.owner
+        };
+        ticket.history.push(HistoryItem);
+
+        ticket.save(function(err, savedTicket) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            ticketModel.populate(savedTicket, 'subscribers notes.owner', function(err) {
+                if (err) return res.json({success: true, ticket: savedTicket});
+
+                emitter.emit('ticket:note:added', savedTicket, Note);
+
+                return res.json({success: true, ticket: savedTicket});
+            })
+        })
     });
 };
 

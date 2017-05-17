@@ -493,7 +493,32 @@ module.exports = function(ws) {
                     });
                 });
             });
+        });
 
+        socket.on('$trudesk:tickets:removeNote', function(data) {
+            var ownerId = socket.request.user._id;
+            var ticketId = data.ticketId;
+            var noteId = data.noteId;
+            if (_.isUndefined(ticketId) || _.isUndefined(noteId)) return true;
+
+            var ticketSchema = require('./models/ticket');
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.removeNote(ownerId, noteId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        ticketSchema.populate(tt, 'notes.owner', function(err) {
+                            if (err) return true;
+
+                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
+                        });
+                    });
+                });
+            });
         });
 
         socket.on('refreshTicketAttachments', function(data) {

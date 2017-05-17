@@ -280,6 +280,26 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 });
             };
 
+            $scope.submitInternalNote = function(event) {
+                event.preventDefault();
+                var id = $('#__ticketId').text();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var noteField = form.find('#ticket-note');
+                if (noteField.length < 1) return;
+                $http.post('/api/v1/tickets/addnote', {
+                    "note": noteField.val(),
+                    "ticketid": id,
+                    "owner": $('#__loggedInAccount__id').text()
+                }).success(function(data) {
+                   noteField.val('');
+                }).error(function(e) {
+                    console.error('[trudesk:singleTicket:submitInternalNote]');
+                    console.error(e);
+                    helpers.UI.showSnackbar('Error: ' + e.error, true);
+                });
+            };
+
             $scope.closeAddTagModal = function() {
                 UIkit.modal('#addTagModal').hide();
             };

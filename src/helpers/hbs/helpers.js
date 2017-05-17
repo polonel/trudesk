@@ -59,10 +59,10 @@ var helpers = {
     },
 
     is: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value == test) {
+        if (value === test) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -70,10 +70,10 @@ var helpers = {
     },
 
     isAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() == test.toString()) {
+        if (value.toString() === test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -89,10 +89,10 @@ var helpers = {
     },
 
     isNotAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() != test.toString()) {
+        if (value.toString() !== test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -628,6 +628,10 @@ var helpers = {
 
     size: function(arr) {
         return _.size(arr);
+    },
+
+    add: function(num1, num2) {
+        return num1+num2;
     },
 
     overdue: function(showOverdue, updated, options) {

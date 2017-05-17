@@ -8,20 +8,14 @@ $size: 16px
   position: relative
 
   .visible
+    display: block
     position: relative
-    opacity: 1
     width: 100%
     height: auto
-    transition: opacity .35s ease
     z-index: 3
 
   .hidden
-    opacity: 0
-    z-index: 0
-    -webkit-transition: opacity 0.4s ease
-    -moz-transition: opacity 0.4s ease
-    -o-transition: opacity 0.4s ease
-    transition: opacity 0.4s ease
+    display: none
 
   [class*="tru-tab"]
     float: left
@@ -30,7 +24,7 @@ $size: 16px
   .tru-tab-selectors
     position: relative
     height: $size*2+4
-    top: -$size*.55
+    top: 0
     left: 0
     padding: 0
     margin: 0
@@ -42,17 +36,23 @@ $size: 16px
       display: block
       height: $size*2
       line-height: $size*2
-      width: 100px
+      //width: 100px
+      min-width: 100px
+      max-width: 150px
       text-align: center
       font-weight: 500
       text-decoration: none
-      color: #222
       font-size: 13px
       margin: 0
-      padding: 0
+      padding: 0 20px
+      color: lighten(#222, 50%)
 
       &.active
         color: $accent_color
+        background: #fff
+
+        .uk-badge
+          background: $accent_color !important
 
   .tru-tab-highlighter
     position: absolute
@@ -60,12 +60,26 @@ $size: 16px
     bottom: 0
     height: 2px
     background: $accent_color
-    max-width: 100px
+    //max-width: 100px
+    max-width: 150px
     width: 100%
     transform: translateX(0)
     display: block
     left: 0
     transition: transform .23s ease
+
+  .tru-tab-hr
+    position: absolute
+    z-index: 9
+    bottom: 0
+    height: 1px
+    background: $page_content_title_border_color
+    max-width: 100%
+    width: 100%
+    display: block
+    left: 0
+    &.tru-tab-hr-lighten
+      background: lighten($page_content_title_border_color, 6%)
 
   [class*='tru-tab-section']
     width: 100%

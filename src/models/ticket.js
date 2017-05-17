@@ -154,6 +154,15 @@ ticketSchema.virtual('priorityFormatted').get(function() {
     return formatted;
 });
 
+ticketSchema.virtual('commentsAndNotes').get(function() {
+    _.each(this.comments, function(i) { i.isComment = true; });
+    _.each(this.notes, function(i) { i.isNote = true; });
+    var combined = _.union(this.comments, this.notes);
+    combined = _.sortBy(combined, 'date');
+
+    return combined;
+});
+
 /**
  * Set Status on Instanced Ticket
  * @instance
@@ -283,7 +292,7 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isNaN(priority)) return callback('Priority must be a number.');
+    if (_.isNaN(priority)) return callback('Priority must be a number.', null);
 
     var self = this;
     self.priority = priority;
@@ -377,8 +386,8 @@ ticketSchema.methods.setIssue = function(ownerId, issue, callback) {
  */
 ticketSchema.methods.updateComment = function(ownerId, commentId, commentText, callback) {
     var self = this;
-    var comment = _.find(self.comments, function(c){return c._id.toString() == commentId.toString()});
-    if (_.isUndefined(comment)) return callback("Invalid Comment");
+    var comment = _.find(self.comments, function(c){return c._id.toString() === commentId.toString()});
+    if (_.isUndefined(comment)) return callback("Invalid Comment", null);
 
     comment.comment = commentText;
 
@@ -404,7 +413,7 @@ ticketSchema.methods.updateComment = function(ownerId, commentId, commentText, c
  */
 ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     var self = this;
-    self.comments = _.reject(self.comments, function(o) { return o._id == commentId; });
+    self.comments = _.reject(self.comments, function(o) { return o._id.toString() === commentId.toString(); });
 
     var historyItem = {
         action: 'ticket:delete:comment',
@@ -416,17 +425,41 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
     return callback(null, self);
 };
 
+/**
+ * Removes a note from the note array on this ticket.
+ * @instance
+ * @method removeNote
+ * @memberof Ticket
+ *
+ * @param {Object} ownerId Account ID preforming this action
+ * @param {Object} noteId Comment ID to remove
+ * @param {TicketCallback} callback Callback with the updated ticket.
+ */
+ticketSchema.methods.removeNote = function(ownerId, noteId, callback) {
+    var self = this;
+    self.notes = _.reject(self.notes, function(o) { return o._id.toString() === noteId.toString(); });
+
+    var historyItem = {
+        action: 'ticket:delete:note',
+        description: 'Note was deleted: ' + noteId,
+        owner: ownerId
+    };
+    self.history.push(historyItem);
+
+    return callback(null, self);
+};
+
 ticketSchema.methods.getAttachment = function(attachmentId, callback) {
     var self = this;
-    var attachment = _.find(self.attachments, function(o){return o._id == attachmentId; });
+    var attachment = _.find(self.attachments, function(o){return o._id.toString() === attachmentId.toString(); });
 
     return callback(attachment);
 };
 
 ticketSchema.methods.removeAttachment = function(ownerId, attachmentId, callback) {
     var self = this;
-    var attachment = _.find(self.attachments, function(o) { return o._id == attachmentId; });
-    self.attachments = _.reject(self.attachments, function(o) { return o._id == attachmentId; });
+    var attachment = _.find(self.attachments, function(o) { return o._id.toString() === attachmentId.toString(); });
+    self.attachments = _.reject(self.attachments, function(o) { return o._id.toString() === attachmentId.toString(); });
 
     if (_.isUndefined(attachment))
         return callback(null, self);
@@ -446,7 +479,7 @@ ticketSchema.methods.addSubscriber = function(userId, callback) {
     var self = this;
 
     var hasSub = _.some(self.subscribers, function(i) {
-        return i._id.toString() == userId.toString();
+        return i._id.toString() === userId.toString();
     });
 
     if (!hasSub)
@@ -458,11 +491,11 @@ ticketSchema.methods.addSubscriber = function(userId, callback) {
 ticketSchema.methods.removeSubscriber = function(userId, callback) {
     var self = this;
 
-    var user = _.find(self.subscribers, function(i) { return i._id.toString() == userId.toString(); });
+    var user = _.find(self.subscribers, function(i) { return i._id.toString() === userId.toString(); });
 
     if (_.isUndefined(user) || _.isEmpty(user) || _.isNull(user)) return callback(null, self);
 
-    self.subscribers = _.reject(self.subscribers, function(i) { return i._id.toString() == userId.toString(); });
+    self.subscribers = _.reject(self.subscribers, function(i) { return i._id.toString() === userId.toString(); });
 
     return callback(null, self);
 };
@@ -491,7 +524,7 @@ ticketSchema.statics.getAll = function(callback) {
         .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1})
         .lean();
 
@@ -525,7 +558,7 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
         .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1})
         .lean();
 
@@ -557,7 +590,7 @@ ticketSchema.statics.getTickets = function(grpIds, callback) {
         .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
         .sort({'status': 1});
 
     return q.exec(callback);
@@ -612,11 +645,11 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .populate('group')
         .populate('group.members', 'username fullname email role image title')
         .populate('group.sendMailTo', 'username fullname email role image title')
         .populate('subscribers', 'username fullname email role image title')
-        .populate('comments').populate('comments.owner', 'username fullname email role image title')
+        .populate('comments.owner', 'username fullname email role image title')
+        .populate('notes.owner', 'username fullname email role image title')
         .populate('history.owner', 'username fullname email role image title')
         .sort('-uid');
         //.sort({'status': 1})
@@ -737,6 +770,7 @@ ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
         .populate('assignee')
         .populate('type')
         .populate('tags')
+        .populate('notes.owner', 'username fullname email role image title')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1})
         .sort({'status': 1})
@@ -772,6 +806,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
+        .populate('notes.owner', 'username fullname email role image title')
         .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
         .sort({'uid': -1});
 
@@ -798,6 +833,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('subscribers', 'username fullname email role image title')
         .populate('history.owner', 'username fullname email role image title')
         .populate('comments.owner', 'username fullname email role image title')
+        .populate('notes.owner', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
         .deepPopulate(['group']);
@@ -824,7 +860,7 @@ ticketSchema.statics.getTicketById = function(id, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };
@@ -848,7 +884,7 @@ ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };
@@ -866,7 +902,7 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
                 .populate('owner', 'username fullname email role image title')
                 .populate('assignee', 'username fullname email role image title')
                 .populate('type tags')
-                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -892,7 +928,7 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
                 .populate('owner', 'username fullname email role image title')
                 .populate('assignee', 'username fullname email role image title')
                 .populate('type tags')
-                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -1028,7 +1064,7 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
 
     return q.exec(callback);
 };

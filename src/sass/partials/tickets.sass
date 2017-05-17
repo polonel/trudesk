@@ -262,12 +262,15 @@ div#accountsTable_wrapper
     margin-bottom: 15px
 
 .history-items
-  height: 185px
+  //height: 185px
+  height: 214px
   width: 100%
 
   .history-item
     border-bottom: 1px solid #ddd
     margin-bottom: 10px
+    &:last-child
+      border-bottom: none
 
     time
       font-size: 11px
@@ -300,9 +303,10 @@ div#accountsTable_wrapper
 .comments-wrapper
   .initial-issue,
   .ticket-comment,
+  .ticket-note,
   .ticket-reply
     padding: 20px 20px 15px 25px
-    border-bottom: 1px solid #dfe4ef
+    border-bottom: 1px solid $page_content_title_border_color
     img
       display: block
       float: left
@@ -373,6 +377,7 @@ div#accountsTable_wrapper
       line-height: 20px
 
   .ticket-comment,
+  .ticket-note,
   .initial-issue
     position: relative
     .comment-actions,
@@ -401,6 +406,7 @@ div#accountsTable_wrapper
 
   .ticket-reply,
   .ticket-comment,
+  .ticket-note,
   .initial-issue
     border-bottom: none
     .comment-box,
@@ -431,6 +437,9 @@ div#accountsTable_wrapper
         &.uk-form-danger
           border-color: $accent_danger !important
           background: none !important
+        &.comment-textarea
+          border: 1px solid rgba(0,0,0,0.1)
+          border-width: 1px 1px 1px 1px!important
     button[type=submit],
     button[type=reset]
       font-family: $fontFamily
@@ -440,6 +449,10 @@ div#accountsTable_wrapper
       background: $accent_color
       +borderRadius(3px)
       font-weight: 400
+      &.success
+        background: $accent_success
+        &:hover
+          background: darken($accent_success, 5%)
 
       &:hover
         background: darken($accent_color, 5%)
@@ -458,8 +471,9 @@ span.uk-form-danger
   font-weight: 600
 
 .ticket-comment,
+.ticket-note,
 .initial-issue
-  border-bottom: 1px solid #dfe4ef !important
+  border-bottom: 1px solid $page_content_title_border_color !important
 
 //Ticket Form
 form.ticket-form,

@@ -36,6 +36,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.setupChosen();
         self.bindNewMessageSubmit();
 
+        self.UI.expandSidebar();
+
         self.UI.fabToolbar();
         self.UI.inputs();
         self.UI.cardOverlay();
@@ -61,6 +63,29 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.expandSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.off('mouseover');
+        $sidebar.on('mouseover', function() {
+            $(this).addClass('expand');
+        });
+
+        $sidebar.off('mouseout');
+        $sidebar.on('mouseout', function() {
+            $(this).removeClass('expand');
+        });
+    };
+
+    helpers.UI.openSidebar = function() {
+        $('.sidebar').addClass('expand');
+    };
+
+    helpers.UI.setNavItem = function(id) {
+        var $sidebar = $('.sidebar');
+        $sidebar.find('li.active').removeClass('active');
+        $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active');
+    };
 
     helpers.UI.onlineUserSearch = function() {
         var $searchBox = $('.online-list-search-box').find('input');
@@ -1107,30 +1132,33 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     helpers.setupTruTabs = function(tabs) {
         var toggleTab = function(element) {
+            if ($(element).hasClass('active')) {
+                $(element).parent().find('.tru-tab-highlighter').css({width: $(element).outerWidth()});
+            }
             $(element).off('click');
-            $(element).on('click', function() {
+            $(element).on('click', function(event) {
+                event.preventDefault();
+                if ($(this).hasClass('active')) return true;
+
+                var $highlighter = $(this).parent().find('.tru-tab-highlighter');
                 $(this).parent().find('.tru-tab-selector').each(function() {
                     $(this).removeClass('active');
                 });
 
                 $(this).addClass('active');
+                $highlighter.css({width: $(this).outerWidth()});
 
                 var tabId = $(this).attr('data-tabid');
 
-                $('.tru-tab-section').each(function() {
+                $(this).parents('.tru-tabs').find('.tru-tab-section').each(function() {
                     $(this).removeClass('visible').addClass('hidden');
                 });
 
-                var idx = $(this).index('.tru-tab-selector');
-                var highlighterPos = idx*100 + 'px';
-                $(this).parent().find('.tru-tab-highlighter').css('transform', 'translateX(' + highlighterPos + ')');
+                $(this).parents('.tru-tabs').find('.tru-tab-section[data-tabid="' + tabId + '"]').addClass('visible').removeClass('hidden');
 
-                setTimeout(function() {
-                    $('.tru-tab-section').each(function() {
-                        $(this).css('display', 'none');
-                    });
-                    $('.tru-tab-section[data-tabid="' + tabId + '"]').css('display', 'block').removeClass('hidden').addClass('visible');
-                }, 200);
+                var highlighterPos = $(this).position().left + 'px';
+                $highlighter.css('transform', 'translateX(' + highlighterPos + ')');
+
             });
         };
 
