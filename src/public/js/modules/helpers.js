@@ -1041,7 +1041,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     }
 
     helpers.canUser = function(a) {
-        var role = $('div#__loggedInAccount_role').text();
+        var role = window.trudeskSessionService.getUser().role;
         if (_.isUndefined(role)) return false;
 
         var rolePerm = _.find(ROLES, {'id': role});
@@ -1074,10 +1074,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.canUserEditSelf = function(ownerId, perm) {
-        var id = $('div#__loggedInAccount__id').text();
+        var id = window.trudeskSessionService.getUser()._id;
 
         if (helpers.canUser(perm + ':editSelf')) {
-            return id.toString() == ownerId.toString();
+            return id.toString() === ownerId.toString();
         } else {
             return false;
         }

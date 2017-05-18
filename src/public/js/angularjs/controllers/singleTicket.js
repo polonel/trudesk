@@ -17,7 +17,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
         .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q) {
 
-            console.log(SessionService.getUser());
+            $scope.loggedInAccount = SessionService.getUser();
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();
@@ -293,7 +293,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 $http.post('/api/v1/tickets/addnote', {
                     "note": noteField.val(),
                     "ticketid": id,
-                    "owner": $('#__loggedInAccount__id').text()
+                    "owner": $scope.loggedInAccount._id
                 }).success(function(data) {
                    noteField.val('');
                 }).error(function(e) {

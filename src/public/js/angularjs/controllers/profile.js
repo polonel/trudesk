@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode', 'history'], function(angular, _, $, helpers, UIKit) {
-    return angular.module('trudesk.controllers.profile', [])
-        .controller('profileCtrl', function($scope, $window, $http, $log , $timeout) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, UIKit) {
+    return angular.module('trudesk.controllers.profile', ['trudesk.services.session'])
+        .controller('profileCtrl', function(SessionService, $scope, $window, $http, $log , $timeout) {
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 fixInputLabels();
@@ -65,7 +65,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
             };
 
             $scope.showTour = function() {
-                var username = $('#__loggedInAccount_username').text();
+                var username = SessionService.getUser().username;
                 $http.put(
                     '/api/v1/users/' + username + '/updatepreferences',
                     {
@@ -163,7 +163,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                             }, 0);
 
                             var host = $('div[data-host]').attr('data-host');
-                            var username = $('#__loggedInAccount_username').text();
+                            var username = SessionService.getUser().username;
                             var qrKey = 'otpauth://totp/' + host + '-' + username + ':' + host + '-' + username + '?secret=' + key + '&issuer=Trudesk';
                             $qrCode.qrcode({width: 242, height: 242, text: qrKey});
                             $tOTPKey.val(key);
@@ -179,7 +179,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
             };
 
             function generateL2Auth(completed) {
-                var id = $('#__loggedInAccount__id').text();
+                var id = SessionService.getUser()._id;
                 if (_.isUndefined(id))
                     return helpers.UI.showSnackbar('Unable to get user ID.', true);
 
@@ -205,7 +205,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
             }
 
             function removeL2Auth(completed) {
-                var id = $('#__loggedInAccount__id').text();
+                var id = SessionService.getUser()._id;
                 if (_.isUndefined(id)) {
                     return helpers.UI.showSnackbar('Unable to get user ID.', true);
                 }

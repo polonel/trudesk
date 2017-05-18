@@ -475,7 +475,7 @@ var helpers = {
     },
 
     calendarDate: function(date) {
-        moment.locale('en', {
+        moment.updateLocale('en', {
             calendar: {
                 sameDay: '[Today at] LT',
                 lastDay: '[Yesterday at] LT',
@@ -491,7 +491,7 @@ var helpers = {
     fromNow: function(date) {
         if (date == undefined)
             return 'Never';
-        moment.locale('en', {
+        moment.updateLocale('en', {
             relativeTime : {
                 future: "in %s",
                 past:   "%s ago",

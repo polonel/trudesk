@@ -233,7 +233,6 @@ apiController.login = function(req, res) {
 };
 
 apiController.getLoggedInUser = function(req, res) {
-    console.log('here');
     if (!req.user) {
         //Could be API
         return res.status(400).json({success: false, error: 'Invalid Auth'});
