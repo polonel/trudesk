@@ -19,13 +19,20 @@ require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, 
     helpers.init();
 
     angular.element(document).ready(function() {
-        //Static Bootstraps
-        angular.bootstrap($('.top-bar'), ['trudesk']);
-        angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
-        angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
+        // Call the Session service before bootstrapping.
+        // Allowing the SessionUser to be populated before the controllers have access.
+        angular.injector(['ng', 'trudesk']).get('SessionService').init(function(err) {
+            if (err)
+                console.error(err);
 
-        //Dynamic Bootstrap
-        angular.bootstrap($('#page-content'), ['trudesk']);
+            //Static Bootstraps
+            angular.bootstrap($('.top-bar'), ['trudesk']);
+            angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
+            angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
+
+            //Dynamic Bootstrap
+            angular.bootstrap($('#page-content'), ['trudesk']);
+        });
     });
 
     require([

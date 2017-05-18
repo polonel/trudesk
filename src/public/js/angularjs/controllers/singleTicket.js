@@ -12,9 +12,12 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, UIkit, socket, nav, md, helpers) {
-    return angular.module('trudesk.controllers.singleTicket', [])
-        .controller('singleTicket', function($scope, $http, $q) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
+    function(angular, _, $, UIkit, socket, nav, md, helpers) {
+    return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q) {
+
+            console.log(SessionService.getUser());
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();

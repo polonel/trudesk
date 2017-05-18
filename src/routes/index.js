@@ -107,6 +107,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api', controllers.api.index);
     router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.post('/api/v1/login', controllers.api.login);
+    router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
 

@@ -136,7 +136,7 @@ middleware.api = function(req, res, next) {
         var user = req.user;
         if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
 
-        next();
+        return next();
     } else {
         var userSchema = require('../models/user');
         userSchema.getUserByAccessToken(accessToken, function(err, user) {
@@ -145,7 +145,7 @@ middleware.api = function(req, res, next) {
 
             req.user = user;
 
-            next();
+            return next();
         });
     }
 };

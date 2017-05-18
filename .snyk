@@ -1,0 +1,51 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.7.1
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:ms:20170412':
+    - express-session > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - morgan > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - body-parser > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - mongoose > mquery > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - pm2 > pm2-axon > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - mongoose > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - socket.io > socket.io-adapter > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.703Z'
+    - socket.io-client > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.704Z'
+    - socket.io > socket.io-client > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.704Z'
+    - socket.io-client > engine.io-client > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.704Z'
+    - socket.io > socket.io-client > engine.io-client > debug > ms:
+        reason: None given
+        expires: '2017-06-16T22:52:26.704Z'
+  'npm:shelljs:20140723':
+    - pm2 > shelljs:
+        reason: None given
+        expires: '2017-06-16T22:52:26.705Z'
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  'npm:marked:20170112':
+    - jsdoc > marked:
+        patched: '2017-05-17T22:49:53.552Z'
+    - marked:
+        patched: '2017-05-17T22:49:53.552Z'
+    - grunt-jsdoc > jsdoc > marked:
+        patched: '2017-05-17T22:49:53.552Z'
