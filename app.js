@@ -9,13 +9,14 @@
  ========================================================================
  **/
 
-var async   = require('async'),
-    path    = require('path'),
-    fs      = require('fs'),
-    winston = require('winston'),
-    nconf = require('nconf'),
-    pkg     = require('./package.json'),
-    ws = require('./src/webserver');
+var _           = require('underscore'),
+    async       = require('async'),
+    path        = require('path'),
+    fs          = require('fs'),
+    winston     = require('winston'),
+    nconf       = require('nconf'),
+    pkg         = require('./package.json'),
+    ws          = require('./src/webserver');
     //`var memory = require('./src/memory');
 
 
@@ -158,28 +159,32 @@ function dbCallback(err, db) {
                 async.series([
                     function(next) {
                         require('./src/socketserver')(ws);
-                        next();
-                    },
-                    function(next) {
-                        //Start Mailer
-                        var mailQueue = require('./src/mailer');
-                        mailQueue.queue();
-                        next();
+                return next();
                     },
                     function(next) {
                         //Start Check Mail
-                        var mailerEnabled = nconf.get('mailer:enable');
-                        if (mailerEnabled) {
-                            var mailCheck = require('./src/mailer/mailCheck');
-                            mailCheck.init();
-                        }
+                var settingSchema = require('./src/models/setting');
+                settingSchema.getSettings(function(err, settings) {
+                   if (err) {
+                       winston.warn(err);
+                       return next();
+                   }
 
-                        next();
+                    var mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
+                    mailerCheckEnabled = (mailerCheckEnabled === undefined) ? {value: false} : mailerCheckEnabled;
+                    if (mailerCheckEnabled.value) {
+                        var mailCheck = require('./src/mailer/mailCheck');
+                        winston.debug('Starting MailCheck...');
+                        mailCheck.init(settings);
+                    }
+
+                    return next();
+                });
                     },
                     function(next) {
                         //Start Task Runners
                         require('./src/taskrunner');
-                        next();
+                return next();
                     },
                     function(next) {
                         //var pm2 = require('pm2');

@@ -14,7 +14,6 @@
 
 var _               = require('underscore');
 var mongoose        = require('mongoose');
-var accountsSchema  = require('./user');
 
 var COLLECTION = 'groups';
 

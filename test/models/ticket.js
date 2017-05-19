@@ -222,6 +222,67 @@ describe('ticket.js', function() {
         });
     });
 
+    it('should add Note and Save', function(done) {
+        ticketSchema.getTicketByUid(1000, function(err, ticket) {
+            expect(err).to.not.exist;
+            expect(ticket).to.be.a('object');
+
+            var note = {
+                owner: m.Types.ObjectId(),
+                date: new Date(),
+                note: 'This is a note'
+            };
+
+            ticket.notes.push(note);
+
+            //Fake populate required Fields
+            ticket.group = m.Types.ObjectId();
+            ticket.owner = m.Types.ObjectId();
+            ticket.type = m.Types.ObjectId();
+
+            ticket.save(function(err, ticket) {
+                expect(err).to.not.exist;
+                expect(ticket.notes).to.have.length(1);
+
+                done();
+            });
+        });
+    });
+
+    it('should update note', function(done) {
+        ticketSchema.getTicketByUid(1000, function(err, ticket) {
+            expect(err).to.not.exist;
+            expect(ticket).to.be.a('object');
+
+            var noteId = ticket.notes[0]._id;
+            expect(noteId).to.exist;
+
+            ticket.updateNote(m.Types.ObjectId(), noteId, 'This is the new note text', function(err, ticket) {
+                expect(err).to.not.exist;
+                expect(ticket.notes[0].note).to.equal('This is the new note text');
+
+                done();
+            });
+        });
+    });
+
+    it('should remove note', function(done) {
+        ticketSchema.getTicketByUid(1000, function(err, ticket) {
+            expect(err).to.not.exist;
+            expect(ticket).to.be.a('object');
+
+            var noteId = ticket.notes[0]._id;
+            expect(noteId).to.exist;
+
+            ticket.removeNote(m.Types.ObjectId(), noteId, function(err, ticket) {
+                expect(err).to.not.exist;
+                expect(ticket.notes).to.have.length(0);
+
+                done();
+            });
+        });
+    });
+
     it('should set ticket issue', function(done) {
         ticketSchema.getTicketByUid(1000, function(err, ticket) {
             expect(err).to.not.exist;

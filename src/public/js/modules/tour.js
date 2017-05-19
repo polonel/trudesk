@@ -52,7 +52,7 @@ define('modules/tour', [
                 text: 'Skip',
                 classes: 'uk-float-left',
                 action: function() {
-                    var username = $('#__loggedInAccount_username').text();
+                    var username = window.trudeskSessionService.getUser().username;
                     $.ajax({
                         url: '/api/v1/users/' + username + '/updatepreferences',
                         method: 'PUT',
@@ -177,11 +177,11 @@ define('modules/tour', [
     });
 
 
-    tour.addStep('profileButton', {
-        title: 'Profile',
-        text: 'Clicking your profile picture will open up your profile dropdown.',
-        attachTo: 'img#profileImage bottom'
-    });
+    // tour.addStep('profileButton', {
+    //     title: 'Profile',
+    //     text: 'Clicking your profile picture will open up your profile dropdown.',
+    //     attachTo: 'img#profileImage bottom'
+    // });
 
     tour.addStep('sidebar_tickets', {
         title: 'Tickets',
@@ -258,7 +258,7 @@ define('modules/tour', [
 
 
     tour.on('complete', function() {
-        console.log('Tour Done!');
+
     });
 
 

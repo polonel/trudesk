@@ -405,6 +405,26 @@ userSchema.statics.getAssigneeUsers = function(callback) {
 };
 
 /**
+ * Gets users based on roles
+ *
+ * @memberof User
+ * @static
+ * @method getUsersByRoles
+ *
+ * @param {Array} roles Array of role ids
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+userSchema.statics.getUsersByRoles = function(roles, callback) {
+    if (_.isUndefined(roles)) return callback('Invalid roles array', null);
+    if (!_.isArray(roles))
+        roles = [roles];
+
+    var q = this.model(COLLECTION).find({role: {$in: roles}, deleted: false});
+
+    return q.exec(callback);
+};
+
+/**
  * Creates a user with the given data object
  *
  * @memberof User

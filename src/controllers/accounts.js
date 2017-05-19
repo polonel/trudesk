@@ -12,21 +12,22 @@
 
  **/
 
+var RELPATH         = '../';
+
 var async           = require('async');
 var _               = require('underscore');
-var _s              = require('underscore.string');
 var winston         = require('winston');
-var userSchema      = require('../models/user');
-var groupSchema     = require('../models/group');
-var permissions     = require('../permissions');
-var emitter         = require('../emitter');
+var userSchema      = require(RELPATH + 'models/user');
+var groupSchema     = require(RELPATH + 'models/group');
+var permissions     = require(RELPATH + 'permissions');
+var emitter         = require(RELPATH + 'emitter');
 
 var accountsController = {};
 
 accountsController.content = {};
 
 accountsController.signup = function(req, res) {
-    var settings = require('../models/setting');
+    var settings = require(RELPATH + 'models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) return handleError(res, err);
         if (setting && setting.value === true) {
@@ -96,7 +97,7 @@ accountsController.get = function(req, res) {
                         var groups = _.filter(grps, function(g) {
                             return _.any(g.members, function(m) {
                                 if (m)
-                                    return m._id.toString() == user._id.toString();
+                                    return m._id.toString() === user._id.toString();
                             });
                         });
 
@@ -181,7 +182,7 @@ accountsController.uploadImage = function(req, res) {
     });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        if (mimetype.indexOf('image/') == -1) {
+        if (mimetype.indexOf('image/') === -1) {
             error = {
                 status: 500,
                 message: 'Invalid File Type'

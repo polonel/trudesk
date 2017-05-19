@@ -41,7 +41,7 @@ define('pages/messages', [
                 //$inview             = null,
                 $recentMessages     = {},
                 $convoId            = $('#message-content[data-conversation-id]').attr('data-conversation-id'),
-                $loggedInAccountId  = $('#__loggedInAccount__id').text();
+                $loggedInAccountId  = window.trudeskSessionService.getUser()._id;
 
             //Setup Context Menu
             helpers.setupContextMenu('#convo-list > ul > li', function(action, target) {
@@ -60,7 +60,7 @@ define('pages/messages', [
                             labels: {
                                 'Ok': 'YES'
                             },
-                            confirmButtonClass: 'confirm-delete-button'
+                            confirmButtonClass: 'md-btn-danger'
                         });
                 }
             });
@@ -178,13 +178,13 @@ define('pages/messages', [
 
             function buildMessageHTML(message) {
                 var html = '';
-                var loggedInAccountId = $('#__loggedInAccount__id').text();
-                if (loggedInAccountId == undefined) return false;
+                var loggedInAccountId = window.trudeskSessionService.getUser()._id;
+                if (loggedInAccountId === undefined) return false;
                 var left = true;
                 if (message.owner._id.toString() === loggedInAccountId.toString())
                     left = false;
 
-                var image = (message.owner.image == undefined ? 'defaultProfile.jpg' : message.owner.image);
+                var image = (message.owner.image === undefined ? 'defaultProfile.jpg' : message.owner.image);
 
                 if (left) {
                     html    += '<div class="message message-left">';

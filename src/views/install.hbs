@@ -198,7 +198,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
 <svg version="1.1" id="logosvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -379,11 +378,13 @@
 </div>
 
 <script type="text/javascript">
-    window.truRequire(['jquery', 'snackbar'], function(loadedModules) {
+    window.truRequire(['jquery', 'snackbar', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
         window.Snackbar = loadedModules[1];
+        var helpers = loadedModules[2];
 
         $(document).ready(function() {
+            helpers.init();
             var $slides = $('.slides > .slide');
             var totalSlides = 0;
             var activeSlide = 0;

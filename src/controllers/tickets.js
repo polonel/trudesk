@@ -19,6 +19,7 @@ var winston         = require('winston');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
 var emitter         = require('../emitter');
+var permissions     = require('../permissions');
 
 /**
  * @since 1.0
@@ -283,9 +284,8 @@ ticketsController.processor = function(req, res) {
         function(callback) {
             groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 if (err) return callback(err);
-                var p = require('../permissions');
                 userGroups = grps;
-                if (p.canThis(req.user.role, 'ticket:public')) {
+                if (permissions.canThis(req.user.role, 'ticket:public')) {
                     groupSchema.getAllPublicGroups(function(err, groups) {
                         if (err) return callback(err);
                         userGroups = groups.concat(grps);
@@ -299,6 +299,12 @@ ticketsController.processor = function(req, res) {
         function(grps, callback) {
             ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
+
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 return callback(null, results);
             });
@@ -368,7 +374,7 @@ ticketsController.print = function(req, res) {
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
-        var permissions = require('../permissions');
+
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
@@ -379,6 +385,9 @@ ticketsController.print = function(req, res) {
                 return res.redirect('/tickets');
             }
         }
+
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
 
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
@@ -431,7 +440,6 @@ ticketsController.single = function(req, res) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
-        var permissions = require('../permissions');
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
@@ -443,10 +451,11 @@ ticketsController.single = function(req, res) {
             }
         }
 
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
+
         self.content.data.ticket = ticket;
-        self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
-        //self.content.data.ticket.tagsArray = ticket.tags;
-        self.content.data.ticket.commentCount = _.size(ticket.comments);
+        self.content.data.ticket.priorityname = ticket.priorityFormatted;
 
         return res.render('subviews/singleticket', self.content);
     });
@@ -519,7 +528,7 @@ ticketsController.postcomment = function(req, res, next) {
         }, function(err, T) {
             if (err) return handleError(res, err);
 
-            ticketSchema.populate(T.save, 'comments.owner', function(err) {
+            ticketSchema.populate(T.save, 'subscribers comments.owner', function(err) {
                 emitter.emit('ticket:comment:added', T.save, Comment);
 
                 return res.send(T);

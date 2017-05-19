@@ -276,10 +276,4 @@ debugController.uploadPlugin = function(req, res) {
     req.pipe(busboy);
 };
 
-function handleError(res, err) {
-    if (err) {
-        return res.render('error', {layout: false, error: err, message: err.message});
-    }
-}
-
 module.exports = debugController;

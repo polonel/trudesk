@@ -47,3 +47,4 @@ config.json
 /coverage/
 /plugins/
 config.local.json
+public/css/app.min.css

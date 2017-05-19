@@ -73,7 +73,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     data: apiData,
                     headers: { 'Content-Type': 'application/json' }
                 })
-                    .success(function(data) {
+                    .success(function() {
                         helpers.UI.showSnackbar('Group Saved Successfully', false);
                         UIkit.modal('#groupEditModal').hide();
                         //Refresh Grid
@@ -99,7 +99,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     data: apiData,
                     headers: { 'Content-Type': 'application/json' }
                 })
-                    .success(function(data) {
+                    .success(function() {
                         helpers.UI.showSnackbar('Group Created Successfully', false);
                         UIkit.modal("#groupCreateModal").hide();
                         //Refresh Grid
@@ -119,26 +119,36 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 var groupID = self.attr('data-group-id');
                 var card = self.parents('.tru-card-wrapper');
                 if (groupID) {
-                    $http.delete(
-                        '/api/v1/groups/' + groupID
-                    )
-                        .success(function(data) {
-                            helpers.UI.showSnackbar('Group Successfully Deleted', false);
+                    UIkit.modal.confirm(
+                    'Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>'
+                    , function() {
+                            helpers.showLoader(0.8);
+                            $http.delete(
+                            '/api/v1/groups/' + groupID
+                        )
+                            .success(function() {
+                                helpers.hideLoader();
+                                helpers.UI.showSnackbar('Group Successfully Deleted', false);
 
-                            card.remove();
-                            UIkit.$html.trigger('changed.uk.dom');
-                        })
-                        .error(function(err) {
-                            $log.log('[trudesk:groups:deleteGroup] - Error: ' + err.error);
-                            helpers.UI.showSnackbar(err.error, true);
-                        });
+                                card.remove();
+                                UIkit.$html.trigger('changed.uk.dom');
+                            })
+                            .error(function(err) {
+                                helpers.hideLoader();
+                                $log.log('[trudesk:groups:deleteGroup] - Error: ' + err.error);
+                                helpers.UI.showSnackbar(err.error, true);
+                            });
+                    }, {
+                        labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
+                    });
                 }
             };
 
             function refreshGrid() {
                 var $cards = $('#group_list').find('.tru-card-wrapper');
                 $cards.each(function() {
-                    var self = $(this);
+                    var vm = this;
+                    var self = $(vm);
                     self.remove();
                 });
 

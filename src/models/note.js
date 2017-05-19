@@ -1,4 +1,4 @@
-/**
+/*
       .                              .o8                     oooo
    .o8                             "888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
@@ -7,30 +7,18 @@
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
- Created:    02/10/2015
+ Created:    05/12/2017
  Author:     Chris Brame
 
  **/
 
-define('pages/logs', [
-    'jquery',
-    'modules/socket',
-    'history'
+var mongoose            = require('mongoose');
 
-], function($, socket) {
-    var logsPage = {};
-
-    logsPage.init = function(callback) {
-        $(document).ready(function() {
-            socket.ui.fetchServerLogs();
-            var $sLogs = $('#serverlogs');
-            if ($sLogs.length > 0)
-                $sLogs.scrollTop(99999999999999 * 999999999999999);
-
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return logsPage;
+var noteSchema = mongoose.Schema({
+    owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},
+    date:       { type: Date, required: true },
+    note:       { type: String, required: true },
+    deleted:    { type: Boolean, default: false, required: true }
 });
+
+module.exports = noteSchema;

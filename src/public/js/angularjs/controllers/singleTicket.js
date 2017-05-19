@@ -12,9 +12,12 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, UIkit, socket, nav, md, helpers) {
-    return angular.module('trudesk.controllers.singleTicket', [])
-        .controller('singleTicket', function($scope, $http, $q) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
+    function(angular, _, $, UIkit, socket, nav, md, helpers) {
+    return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q) {
+
+            $scope.loggedInAccount = SessionService.getUser();
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();
@@ -278,6 +281,50 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     helpers.UI.showSnackbar('Error: ' + e.message, true);
                     UIkit.modal('#addTagModal').hide();
                 });
+            };
+
+            $scope.submitComment = function(event) {
+                event.preventDefault();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var id = form.find('input[name="ticketId"]');
+                var commentField = form.find('#commentReply');
+                if (commentField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addcomment', {
+                        "comment": commentField.val(),
+                        "_id": id.val().toString(),
+                        "ownerId": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        commentField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitComment]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
+            };
+
+            $scope.submitInternalNote = function(event) {
+                event.preventDefault();
+                var id = $('#__ticketId').text();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var noteField = form.find('#ticket-note');
+                if (noteField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addnote', {
+                        "note": noteField.val(),
+                        "ticketid": id,
+                        "owner": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        noteField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitInternalNote]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
             };
 
             $scope.closeAddTagModal = function() {

@@ -13,34 +13,12 @@
  **/
 
 var _           = require('underscore');
-var async       = require('async');
 var nodeMailer  = require('nodemailer');
 var winston     = require('winston');
-var nconf       = require('nconf');
 
 var settings    = require('../models/setting');
 
-//var MAILER_ENABLED = nconf.get('mailer:enable');
-//var POLLING_INTERVAL = nconf.get('mailer:polling') ? nconf.get('mailer:polling') : 3600000; //1hour
-//var transporter = nodeMailer.createTransport({
-//    host:   'smtp.zoho.com',
-//    port:   465,
-//    secure: true,
-//    auth: {
-//        user: 'no-reply@trudesk.io',
-//        pass: '#TruDesk$'
-//    }
-//});
-
 var mailer = {};
-
-mailer.queue = function() {
-    //checkQueue(handleQueue);
-    //
-    //setInterval(function() {
-    //    checkQueue(handleQueue);
-    //}, POLLING_INTERVAL); //1hour
-};
 
 mailer.sendMail = function(data, callback) {
     createTransporter(function(err, mailSettings) {
@@ -61,7 +39,7 @@ mailer.verify = function(callback) {
 
         if (!mailSettings.enabled) return callback({code: 'Mail Disabled'});
 
-        mailSettings.transporter.verify(function(err, success) {
+        mailSettings.transporter.verify(function(err) {
             if (err) return callback(err);
 
             return callback();
@@ -98,29 +76,8 @@ function createTransporter(callback) {
           }
       });
 
-      callback(null, mailSettings);
+      return callback(null, mailSettings);
   });
-}
-
-function handleQueue(err, size) {
-    if (err) {
-        return winston.warn(err.message);
-    }
-
-    //Todo: Handle processing of mailqueue here
-
-    winston.debug('Number of Queued Mail Items: ' + size);
-}
-
-function checkQueue(callback) {
-    var mailqueue = require('./mailqueue');
-    mailqueue.getQueue(function(err, items) {
-        if (err) return callback(err, null);
-
-        var size = _.size(items);
-
-        callback(null, size);
-    });
 }
 
 module.exports = mailer;

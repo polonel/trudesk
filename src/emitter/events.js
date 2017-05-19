@@ -23,15 +23,14 @@ var userSchema          = require('../models/user');
 var notificationSchema  = require('../models/notification');
 var emailTemplates      = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
+var permissions         = require('../permissions');
 
 var notifications       = require('../notifications'); // Load Push Events
 
 (function() {
     notifications.init(emitter);
 
-    //winston.info('Binding to Events');
     emitter.on('ticket:created', function(data) {
-         var socketId = data.socketId;
          var ticketObj = data.ticket;
          ticketSchema.getTicketById(ticketObj._id, function(err, ticket) {
              if (err) return true;
@@ -41,13 +40,12 @@ var notifications       = require('../notifications'); // Load Push Events
                      var mailer = require('../mailer');
                      var emails = [];
                      async.each(ticket.group.sendMailTo, function(member, cb) {
-                         //winston.debug('Sending Mail To: ' + member.email);
                          if (_.isUndefined(member.email)) return cb();
                          if (member.deleted) return cb();
 
                          emails.push(member.email);
 
-                         cb();
+                         return cb();
                      }, function(err) {
                          if (err) return c(err);
 
@@ -89,10 +87,43 @@ var notifications       = require('../notifications'); // Load Push Events
                      });
                  },
                  function (c) {
+                     if (!ticket.group.public) return c();
+                     var rolesWithPublic = permissions.getRoles('ticket:public');
+                     rolesWithPublic = _.map(rolesWithPublic, 'id');
+                     userSchema.getUsersByRoles(rolesWithPublic, function(err, users) {
+                         if (err) return c();
+                         async.each(users, function(user, cb) {
+                             if (!permissions.canThis(user.role, 'ticket:notifications_create')) return cb();
+
+                             var notification = new notificationSchema({
+                                 owner: user,
+                                 title: 'Ticket #' + ticket.uid + ' Created',
+                                 message: ticket.subject,
+                                 type: 0,
+                                 data: {ticket: ticket},
+                                 unread: true
+                             });
+
+                             notification.save(function(err, data) {
+                                 if (err) return cb(err);
+
+                                 notifications.pushNotification(data);
+
+                                 return cb(null, data);
+                             });
+
+                         }, function(err) {
+                             return c(err);
+                         });
+                     });
+                 },
+                 function (c) {
+                     // Public Ticket Notification is handled above.
+                     if (ticket.group.public) return c();
                      async.each(ticket.group.members, function(member, cb) {
                          if (_.isUndefined(member)) return cb();
 
-                         if (member.role != 'mod' && member.role != 'admin') return cb(null);
+                         if (!permissions.canThis(member.role, 'ticket:notifications_create')) return cb();
 
                          var notification = new notificationSchema({
                              owner: member,
@@ -121,7 +152,6 @@ var notifications       = require('../notifications'); // Load Push Events
                     }
 
                  //Send Ticket..
-                 //util.sendToAllExcept(io, socketId, 'ticket:created', ticket);
                  util.sendToAllConnectedClients(io, 'ticket:created', ticket);
              });
          });
@@ -146,8 +176,8 @@ var notifications       = require('../notifications'); // Load Push Events
         //Goes to client
         io.sockets.emit('updateComments', ticket);
 
-        if (ticket.owner._id.toString() == comment.owner.toString()) return;
-        if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() == comment.owner.toString()) return;
+        if (ticket.owner._id.toString() === comment.owner.toString()) return;
+        if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString()) return;
 
         async.parallel([
             function(cb) {
@@ -170,7 +200,7 @@ var notifications       = require('../notifications'); // Load Push Events
             },
             function(cb) {
                 if (_.isUndefined(ticket.assignee)) return cb();
-                if (ticket.owner._id.toString() == ticket.assignee._id.toString()) return cb();
+                if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb();
 
                 var notification = new notificationSchema({
                     owner: ticket.assignee,
@@ -195,7 +225,7 @@ var notifications       = require('../notifications'); // Load Push Events
                 var emails = [];
                 async.each(ticket.subscribers, function(member, cb) {
                     if (_.isUndefined(member) || _.isUndefined(member.email)) return cb();
-                    if (member._id.toString() == comment.owner.toString()) return cb();
+                    if (member._id.toString() === comment.owner.toString()) return cb();
                     if (member.deleted) return cb();
 
                     emails.push(member.email);
@@ -251,9 +281,14 @@ var notifications       = require('../notifications'); // Load Push Events
                     });
                 });
             }
-        ], function(err, result) {
+        ], function(err) {
             //Blank
         });
+    });
+
+    emitter.on('ticket:note:added', function(ticket, note) {
+        //Goes to client
+        io.sockets.emit('updateComments', ticket);
     });
 
     emitter.on('trudesk:profileImageUpdate', function(data) {

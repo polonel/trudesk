@@ -1,7 +1,18 @@
 <div class="sidebar nopadding scrollable-dark" style="{{#if data.common.notice}}top: 105px;{{/if}}" data-scroll-opacitymax="0.1">
     <ul class="side-nav">
-        <li {{#is nav 'dashboard'}} class='active' {{/is}}><a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a></li>
-        <li {{#is nav 'tickets'}} class='active' {{/is}}><a class="navTickets" href="/tickets"><i class="material-icons">assignment</i>Tickets</a>
+        <!--<div>-->
+            <!--<div class="logo">-->
+                <!--<svg style="width: 140px; height: 75px;" viewBox="0 0 288.9 70.1">-->
+                    <!--<path d="M28.5,28.4c-0.1,1.6-0.7,3.4-1.6,5.4c-2.4-0.3-4.6-0.4-6.8-0.4h-1.7c-2.9,13.9-4.3,22.6-4.3,26.1 c0,1.8,0.4,2.7,1.2,2.7c0.8,0,2.9-0.8,6.2-2.3l1.7,3.1C17.7,67.7,12.5,70,7.8,70c-2.2,0-4-0.7-5.4-2.1c-1.4-1.4-2.1-3.2-2.1-5.5	c0-2.3,0.3-4.9,0.8-7.7c0.5-2.9,1.3-6.4,2.2-10.6c0.9-4.2,1.6-7.5,2.1-10.1c-2.3,0.2-4,0.4-5.2,0.6c-0.1-0.8-0.2-1.8-0.2-3	c0-1.3,0.1-2.3,0.3-3.1h5.9c0.5-3.4,0.8-6.6,0.8-9.6L6.8,16v-0.3c4.9-1.7,9.5-2.5,13.8-2.5c0.2,1.3,0.4,2.8,0.4,4.7	c0,1.9-0.5,5.4-1.6,10.6H28.5z"/>-->
+                    <!--<circle cx="284.9" cy="64.7" r="4"/>-->
+                <!--</svg>-->
+            <!--</div>-->
+        <!--</div>-->
+        <li {{#is nav 'dashboard'}} class='active' {{/is}}>
+            <a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a>
+        </li>
+        <li {{#is nav 'tickets'}} class='active' {{/is}} data-nav-id="tickets">
+            <a class="navTickets" href="/tickets"><i class="material-icons">assignment</i>Tickets</a>
             <ul id="side-nav-sub-tickets" class="side-nav-sub {{#is nav 'tickets'}} subMenuOpen {{/is}}">
                 <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><i class="material-icons fa-sub-icon">timer</i>Active</a></li>
                 <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}>

@@ -36,6 +36,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.setupChosen();
         self.bindNewMessageSubmit();
 
+        self.UI.expandSidebar();
+
         self.UI.fabToolbar();
         self.UI.inputs();
         self.UI.cardOverlay();
@@ -61,6 +63,29 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.UI = {};
+
+    helpers.UI.expandSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.off('mouseover');
+        $sidebar.on('mouseover', function() {
+            $(this).addClass('expand');
+        });
+
+        $sidebar.off('mouseout');
+        $sidebar.on('mouseout', function() {
+            $(this).removeClass('expand');
+        });
+    };
+
+    helpers.UI.openSidebar = function() {
+        $('.sidebar').addClass('expand');
+    };
+
+    helpers.UI.setNavItem = function(id) {
+        var $sidebar = $('.sidebar');
+        $sidebar.find('li.active').removeClass('active');
+        $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active');
+    };
 
     helpers.UI.onlineUserSearch = function() {
         var $searchBox = $('.online-list-search-box').find('input');
@@ -285,7 +310,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     helpers.UI.selectize = function(parent) {
         // selectize plugins
         if(typeof $.fn.selectize != 'undefined') {
-            Selectize.define('dropdown_after', function (options) {
+            Selectize.define('dropdown_after', function () {
                 var self = this;
                 self.positionDropdown = (function () {
                     var $control = this.$control,
@@ -550,17 +575,16 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.bindKeys = function() {
-        var self = this;
-        var commentReply = $('#commentReply');
-        if (commentReply.length > 0) {
-            commentReply.off('keydown');
-            commentReply.on('keydown', function(e) {
-                var keyCode = (e.which ? e.which : e.keyCode);
-                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
-                    $('#comment-reply').find('button[type="submit"]').trigger('click');
-                }
-            });
-        }
+        // var commentReply = $('#commentReply');
+        // if (commentReply.length > 0) {
+        //     commentReply.off('keydown');
+        //     commentReply.on('keydown', function(e) {
+        //         var keyCode = (e.which ? e.which : e.keyCode);
+        //         if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+        //             $('#comment-reply').find('button[type="submit"]').trigger('click');
+        //         }
+        //     });
+        // }
 
         var ticketIssue = $('#createTicketForm').find('textarea#issue');
         if (ticketIssue.length > 0) {
@@ -776,7 +800,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     scaleColor: false,
                     barColor: trackColor,
                     trackColor: '#e3e5e8',
-                    onStart: function(value, to) {
+                    onStart: function(value) {
                         $(this.el).find('.chart-value').text(value);
                     },
                     onStop: function(value, to) {
@@ -856,7 +880,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                         var target = $(targetScroll);
                         if (target.length !== 0) {
                             self.click(function(e) {
-                                target.animate({scrollTop: target[0].scrollHeight}, 1000);
+                                var animation = self.attr('data-action-animation');
+                                if (!_.isUndefined(animation) && animation.toLowerCase() === "false")
+                                    target.animate({scrollTop: target[0].scrollHeight}, 0);
+                                else
+                                    target.animate({scrollTop: target[0].scrollHeight}, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
                                 if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
@@ -891,6 +919,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         });
     };
 
+    helpers.showLoader = function(opacity) {
+        if (_.isUndefined(opacity) || _.isNull(opacity))
+            opacity = 1;
+
+        var $loader = $('#loader-wrapper');
+        $loader.css({opacity: 0, display: 'block'});
+        $loader.animate({'opacity': opacity}, 500);
+    };
+
     helpers.ajaxFormSubmit = function() {
         // Bind to forms
         $('form.ajaxSubmit').each(function() {
@@ -900,7 +937,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     type: self.attr('method'),
                     url: self.attr('action'),
                     data: self.serialize(),
-                    success: function(data) {
+                    success: function() {
                         //send socket to add reply.
                         self.find('*[data-clearOnSubmit="true"]').each(function() {
                             $(this).val('');
@@ -1008,7 +1045,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     }
 
     helpers.canUser = function(a) {
-        var role = $('div#__loggedInAccount_role').text();
+        var role = window.trudeskSessionService.getUser().role;
         if (_.isUndefined(role)) return false;
 
         var rolePerm = _.find(ROLES, {'id': role});
@@ -1041,10 +1078,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.canUserEditSelf = function(ownerId, perm) {
-        var id = $('div#__loggedInAccount__id').text();
+        var id = window.trudeskSessionService.getUser()._id;
 
         if (helpers.canUser(perm + ':editSelf')) {
-            return id.toString() == ownerId.toString();
+            return id.toString() === ownerId.toString();
         } else {
             return false;
         }
@@ -1095,6 +1132,43 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
             });
         });
 
+    };
+
+    helpers.setupTruTabs = function(tabs) {
+        var toggleTab = function(element) {
+            if ($(element).hasClass('active')) {
+                $(element).parent().find('.tru-tab-highlighter').css({width: $(element).outerWidth()});
+            }
+            $(element).off('click');
+            $(element).on('click', function(event) {
+                event.preventDefault();
+                if ($(this).hasClass('active')) return true;
+
+                var $highlighter = $(this).parent().find('.tru-tab-highlighter');
+                $(this).parent().find('.tru-tab-selector').each(function() {
+                    $(this).removeClass('active');
+                });
+
+                $(this).addClass('active');
+                $highlighter.css({width: $(this).outerWidth()});
+
+                var tabId = $(this).attr('data-tabid');
+
+                $(this).parents('.tru-tabs').find('.tru-tab-section').each(function() {
+                    $(this).removeClass('visible').addClass('hidden');
+                });
+
+                $(this).parents('.tru-tabs').find('.tru-tab-section[data-tabid="' + tabId + '"]').addClass('visible').removeClass('hidden');
+
+                var highlighterPos = $(this).position().left + 'px';
+                $highlighter.css('transform', 'translateX(' + highlighterPos + ')');
+
+            });
+        };
+
+        _.each(tabs, function(i) {
+            toggleTab(i);
+        });
     };
 
     function stringStartsWith(string, prefix) {
