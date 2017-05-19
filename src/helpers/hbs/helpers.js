@@ -59,10 +59,10 @@ var helpers = {
     },
 
     is: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value == test) {
+        if (value === test) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -70,10 +70,10 @@ var helpers = {
     },
 
     isAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() == test.toString()) {
+        if (value.toString() === test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -89,10 +89,10 @@ var helpers = {
     },
 
     isNotAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() != test.toString()) {
+        if (value.toString() !== test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -475,7 +475,7 @@ var helpers = {
     },
 
     calendarDate: function(date) {
-        moment.locale('en', {
+        moment.updateLocale('en', {
             calendar: {
                 sameDay: '[Today at] LT',
                 lastDay: '[Yesterday at] LT',
@@ -491,7 +491,7 @@ var helpers = {
     fromNow: function(date) {
         if (date == undefined)
             return 'Never';
-        moment.locale('en', {
+        moment.updateLocale('en', {
             relativeTime : {
                 future: "in %s",
                 past:   "%s ago",
@@ -628,6 +628,10 @@ var helpers = {
 
     size: function(arr) {
         return _.size(arr);
+    },
+
+    add: function(num1, num2) {
+        return num1+num2;
     },
 
     overdue: function(showOverdue, updated, options) {

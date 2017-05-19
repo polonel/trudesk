@@ -16,7 +16,7 @@ var async           = require('async'),
     _               = require('underscore'),
     moment          = require('moment'),
     winston         = require('winston'),
-    //permissions     = require('../../../permissions'),
+    permissions     = require('../../../permissions'),
     emitter         = require('../../../emitter');
 
 var api_tickets = {};
@@ -95,8 +95,7 @@ api_tickets.get = function(req, res) {
             })
         },
         function(grps, callback) {
-            var p = require('../../../permissions');
-            if (p.canThis(user.role, 'ticket:public')) {
+            if (permissions.canThis(user.role, 'ticket:public')) {
                 groupModel.getAllPublicGroups(function(err, publicGroups) {
                     if (err) return callback(err);
 
@@ -110,6 +109,11 @@ api_tickets.get = function(req, res) {
         },
         function(grps, callback) {
             ticketModel.getTicketsWithObject(grps, object, function(err, results) {
+                if (!permissions.canThis(user.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 return callback(err, results);
             });
@@ -155,8 +159,7 @@ api_tickets.search = function(req, res) {
             });
         },
         function(grps, callback) {
-            var p = require('../../../permissions');
-            if (p.canThis(req.user.role, 'ticket:public')) {
+            if (permissions.canThis(req.user.role, 'ticket:public')) {
                 groupModel.getAllPublicGroups(function(err, publicGroups) {
                     if (err) return callback(err);
 
@@ -170,7 +173,14 @@ api_tickets.search = function(req, res) {
         },
         function(grps, callback) {
             ticketModel.getTicketsWithSearchString(grps, searchString, function(err, results) {
-                callback(err, results);
+
+                if (!permissions.canThis(req.user.role.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
+
+                return callback(err, results);
             });
         }
     ], function(err, results) {
@@ -225,21 +235,6 @@ api_tickets.create = function(req, res) {
     if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
-    //var tagSchema = require('../../../models/tag');
-    //var tags = [];
-    //if (!_.isUndefined(postData.tags)) {
-    //    var t = _s.clean(postData.tags);
-    //    tags = _.compact(t.split(','));
-    //}
-    //
-    //postData.tags = [];
-    //_.each(tags, function(tag) {
-    //    var Tag = new tagSchema({
-    //        name: tag
-    //    });
-    //
-    //    postData.tags.push(Tag);
-    //});
 
     if (_.isUndefined(postData.tags) || _.isNull(postData.tags)) {
         postData.tags = [];
@@ -450,6 +445,11 @@ api_tickets.single = function(req, res) {
             || _.isNull(ticket))
             return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
 
+        ticket = _.clone(ticket._doc);
+        if (!permissions.canThis(req.user.role, 'notes:view')) {
+            delete ticket.notes;
+        }
+
         return res.json({'success': true, 'ticket': ticket});
     });
 };
@@ -543,6 +543,9 @@ api_tickets.update = function(req, res) {
                 ticket.save(function(err, t) {
                     if (err) return res.send(err.message);
 
+                    if (!permissions.canThis(user.role, 'notes:view'))
+                        t.notes = [];
+
                     emitter.emit('ticket:updated', t);
 
                     return res.json({
@@ -634,12 +637,12 @@ api_tickets.postComment = function(req, res) {
     var owner = commentJson.ownerId;
     var ticketId = commentJson._id;
 
-    if (_.isUndefined(ticketId)) return res.status(400).json({error: "Invalid Post Data"});
+    if (_.isUndefined(ticketId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
     var ticketModel = require('../../../models/ticket');
     ticketModel.getTicketById(ticketId, function(err, t) {
-        if (err) return res.status(400).json({error: "Invalid Post Data"});
+        if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
-        if (_.isUndefined(comment)) return res.status(400).json({error: "Invalid Post Data"});
+        if (_.isUndefined(comment)) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
         var marked = require('marked');
         comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
@@ -659,16 +662,91 @@ api_tickets.postComment = function(req, res) {
         t.history.push(HistoryItem);
 
         t.save(function(err, tt) {
-            if (err) return res.send(err.message);
+            if (err) return res.status(400).json({success: false, error: err.message})
+
+            if (!permissions.canThis(req.user.role, 'notes:view'))
+                tt.notes = [];
 
             ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
-                if (err) return true;
+                if (err) return res.json({success: true, error: null, ticket: tt});
 
                 emitter.emit('ticket:comment:added', tt, Comment);
 
-                res.json({success: true, error: null, ticket: tt});
+                return res.json({success: true, error: null, ticket: tt});
             });
         });
+    });
+};
+
+/**
+ * @api {post} /api/v1/tickets/addnote Add Note
+ * @apiName addInternalNote
+ * @apiDescription Adds a note to the given Ticket Id
+ * @apiVersion 0.1.10
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ * @apiExample Example usage:
+ * curl -X POST
+ *      -H "Content-Type: application/json"
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"note\":\"{note}\",\"owner\":{ownerId}, ticketId: \"{ticketId}\"}"
+ *      -l http://localhost/api/v1/tickets/addnote
+ *
+ * @apiParamExample {json} Request:
+ * {
+ *      "note": "Note Text",
+ *      "owner": {OwnerId},
+ *      "ticketid": {TicketId}
+ * }
+ *
+ * @apiSuccess {boolean} success Successful
+ * @apiSuccess {string} error Error if occurrred
+ * @apiSuccess {object} ticket Ticket Object
+ *
+ * @apiError InvalidPostData The data was invalid
+ * @apiErrorExample
+ *      HTTP/1.1 400 Bad Request
+ {
+     "error": "Invalid Post Data"
+ }
+ */
+api_tickets.postInternalNote = function(req, res) {
+    var payload = req.body;
+    if (_.isUndefined(payload.ticketid)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+    var ticketModel = require('../../../models/ticket');
+    ticketModel.getTicketById(payload.ticketid, function(err, ticket) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (_.isUndefined(payload.note)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+        var marked = require('marked');
+        var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        var Note = {
+            owner: payload.owner,
+            date: new Date(),
+            note: marked(note)
+        };
+
+        ticket.updated = Date.now();
+        ticket.notes.push(Note);
+        var HistoryItem = {
+            action: 'ticket:note:added',
+            description: 'Internal note was added',
+            owner: payload.owner
+        };
+        ticket.history.push(HistoryItem);
+
+        ticket.save(function(err, savedTicket) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            ticketModel.populate(savedTicket, 'subscribers notes.owner', function(err) {
+                if (err) return res.json({success: true, ticket: savedTicket});
+
+                emitter.emit('ticket:note:added', savedTicket, Note);
+
+                return res.json({success: true, ticket: savedTicket});
+            })
+        })
     });
 };
 
@@ -786,7 +864,7 @@ api_tickets.getTicketStats = function(req, res) {
  */
 api_tickets.getTicketStatsForGroup = function(req, res) {
     var groupId = req.params.group;
-    if (groupId == 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
+    if (groupId === 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
     if (_.isUndefined(groupId)) return res.status(400).json({success: false, error: 'Invalid Group Id.'});
 
     var ticketModel = require('../../../models/ticket');
@@ -798,6 +876,12 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                 if (err) return callback(err);
                 if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
+
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(tickets, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 async.each(tickets, function(ticket, cb) {
                     _.each(ticket.tags, function(tag) {
@@ -888,7 +972,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
  */
 api_tickets.getTicketStatsForUser = function(req, res) {
     var userId = req.params.user;
-    if (userId == 0) return res.status(200).json({success: false, error: 'Please Select User.'});
+    if (userId === 0) return res.status(200).json({success: false, error: 'Please Select User.'});
     if (_.isUndefined(userId)) return res.status(400).json({success: false, error: 'Invalid User Id.'});
 
     var ticketModel = require('../../../models/ticket');
@@ -900,6 +984,12 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                 if (err) return callback(err);
                 if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
+
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(tickets, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 async.each(tickets, function(ticket, cb) {
                     _.each(ticket.tags, function(tag) {

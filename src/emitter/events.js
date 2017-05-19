@@ -176,8 +176,8 @@ var notifications       = require('../notifications'); // Load Push Events
         //Goes to client
         io.sockets.emit('updateComments', ticket);
 
-        if (ticket.owner._id.toString() == comment.owner.toString()) return;
-        if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() == comment.owner.toString()) return;
+        if (ticket.owner._id.toString() === comment.owner.toString()) return;
+        if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString()) return;
 
         async.parallel([
             function(cb) {
@@ -200,7 +200,7 @@ var notifications       = require('../notifications'); // Load Push Events
             },
             function(cb) {
                 if (_.isUndefined(ticket.assignee)) return cb();
-                if (ticket.owner._id.toString() == ticket.assignee._id.toString()) return cb();
+                if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb();
 
                 var notification = new notificationSchema({
                     owner: ticket.assignee,
@@ -225,7 +225,7 @@ var notifications       = require('../notifications'); // Load Push Events
                 var emails = [];
                 async.each(ticket.subscribers, function(member, cb) {
                     if (_.isUndefined(member) || _.isUndefined(member.email)) return cb();
-                    if (member._id.toString() == comment.owner.toString()) return cb();
+                    if (member._id.toString() === comment.owner.toString()) return cb();
                     if (member.deleted) return cb();
 
                     emails.push(member.email);
@@ -284,6 +284,11 @@ var notifications       = require('../notifications'); // Load Push Events
         ], function(err) {
             //Blank
         });
+    });
+
+    emitter.on('ticket:note:added', function(ticket, note) {
+        //Goes to client
+        io.sockets.emit('updateComments', ticket);
     });
 
     emitter.on('trudesk:profileImageUpdate', function(data) {

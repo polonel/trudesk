@@ -34,6 +34,7 @@ var middleware = {};
 
 module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
+    app.disable('x-powered-by');
 
     app.set('views', path.join(__dirname, '../views/'));
     global.HandleBars = HandleBars;
@@ -62,6 +63,7 @@ module.exports = function(app, db, callback) {
     });
 
     var cookie = {
+        httpOnly: true,
         maxAge: (1000 * 60 * 60 * 24) * 365 // 1 year
     };
 

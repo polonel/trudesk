@@ -6,8 +6,8 @@
     user='{{data.common.loggedInAccount._id}}';">
 
     <div ng-controller="singleTicket">
-        <div class="uk-grid uk-grid-collapse page-right-content">
-            <div class="uk-width-3-10 page-title page-title-small noshadow nopadding relative">
+        <div class="page-right-content">
+            <div class="uk-float-left page-title page-title-small noshadow nopadding relative" style="width: 360px; max-width: 360px; min-width: 360px;">
                 <div class="page-title-border-right relative" style="padding: 0 30px">
                     <p>Ticket #{{data.ticket.uid}}</p>
                     <div id="__ticketId" class="hide">{{data.ticket._id}}</div>
@@ -95,7 +95,12 @@
                                 </div>
                             {{/if}}
 
-                            <div id="assigneeDropdown" data-scroll="assigneeDropdown-content" data-override="true" data-left-offset="35" data-top-offset="200" class="notifications p-dropdown p-dropdown-left" style="display: block !important;">
+                            <div id="assigneeDropdown" data-scroll="assigneeDropdown-content"
+                                 data-override="true"
+                                 data-left-offset="35"
+                                 data-top-offset="200"
+                                 class="notifications p-dropdown p-dropdown-left"
+                                 style="display: block !important;">
                                 <div class="actions"><strong>Select Assignee</strong><div class="right"><a role="button" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
                                 <div id="assigneeDropdown-content" class="" style="height: 215px;">
                                     <ul>
@@ -180,10 +185,10 @@
                         </div>
                         {{#canUser data.user "ticket:viewHistory"}}
                             <div class="uk-width-1-1 padding-left-right-15">
-                                <div class="tru-card ticket-details" style="background: #fff;height: 250px;">
+                                <div class="tru-card ticket-details" style="background: #fff;height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
                                     Ticket History
-                                    <hr style="padding: 0; margin: 0 0 12px 0;"/>
-                                    <div class="history-items scrollable">
+                                    <hr style="padding: 0; margin: 0;"/>
+                                    <div class="history-items scrollable" style="padding-top: 12px;">
                                         {{#each data.ticket.history}}
                                             <div class="history-item">
                                                 <time datetime="{{formatDate date "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
@@ -198,11 +203,14 @@
                     </div>
                 </div>
             </div>
-            <div class="uk-width-7-10 page-message nopadding">
+            <div class="page-message nopadding" style="margin-left: 360px;">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        <a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
-                            {{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}
+                        <!--<a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">-->
+                            <!--{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}-->
+                        <!--</a>-->
+                        <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
+                            Add Comment
                         </a>
                     </div>
                     <div class="onoffswitch subscribeSwitch uk-float-right" style="margin-right: 10px; position: relative; top: 18px;">
@@ -300,105 +308,396 @@
                                 <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
                             </form>
                         </div>
-                        <div class="comments" data-ticketId="{{data.ticket._id}}">
-                            {{#foreach data.ticket.comments}}
-                                <div class="ticket-comment" data-commentId="{{_id}}">
-                                    <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
-                                        {{#if owner.image}}
-                                            <img src="/uploads/users/{{owner.image}}" alt=""/>
-                                        {{else}}
-                                            <img src="/uploads/users/defaultProfile.jpg" alt="" />
-                                        {{/if}}
-                                        <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
-                                    </div>
-                                    <div class="issue-text">
-                                        <h3>Re: {{../data.ticket.subject}}</h3>
-                                        <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                                        <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                        <div class="comment-body">
-                                            <p>{{{comment}}}</p>
-                                        </div>
-                                    </div>
-                                    {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                        <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                            <form data-commentid="{{_id}}" data-abide>
-                                                <div class="edit-comment-box">
+                        <div class="tru-tabs comments-notes-tab uk-clearfix {{#compare (size data.ticket.commentsAndNotes) '<' 1}} hide {{/compare}}" style="padding: 20px 0 !important;" data-ticketId="{{data.ticket._id}}">
+                            <div class="tru-tab-selectors" style="margin-left: 110px;">
+                                <a id="tab-all-comments" href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0" data-ticketid="{{data.ticket._id}}">All
+                                    <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.commentsAndNotes}}</span>
+                                </a>
+                                <a id="tab-public-comments" href="#" class="tru-tab-selector no-ajaxy" data-tabid="1" data-ticketid="{{data.ticket._id}}">Comments
+                                    <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.comments}}</span>
+                                </a>
+                                <a id="tab-internal-notes" href="#" class="tru-tab-selector no-ajaxy" data-tabid="2" data-ticketid="{{data.ticket._id}}">Notes
+                                    <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.notes}}</span>
+                                </a>
+
+                                <span class="tru-tab-highlighter"></span>
+                                <span class="tru-tab-hr tru-tab-hr-lighten"></span>
+                            </div>
+
+                            <!-- All -->
+                            <div class="tru-tab-section" data-tabid="0" style="padding-top: 20px;">
+                                <div class="all-comments" data-ticketId="{{data.ticket._id}}">
+                                    {{#foreach data.ticket.commentsAndNotes}}
+                                        {{#is isComment true}}
+                                            <div class="ticket-comment" data-commentId="{{_id}}">
+                                                <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
+                                                    {{#if owner.image}}
+                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    {{else}}
+                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    {{/if}}
+                                                    <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
+                                                </div>
+                                                <div class="issue-text">
+                                                    <h3>Re: {{../data.ticket.subject}}</h3>
+                                                    <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                    {{#is isNote true}}
+                                                        <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                    {{/is}}
+                                                    <div class="comment-body">
+                                                        {{#is isNote true}}
+                                                            <p>{{{note}}}</p>
+                                                        {{else}}
+                                                            <p>{{{comment}}}</p>
+                                                        {{/is}}
+                                                    </div>
+                                                </div>
+                                                {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                        <form data-commentid="{{_id}}" data-abide>
+                                                            <div class="edit-comment-box">
                                                     <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                               data-validation="length"
                                                               data-validation-length="min5"
                                                               data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
                                                     ></textarea>
-                                                </div>
-                                                <div class="right">
-                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    {{else}}
-                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                            <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                <form data-commentid="{{_id}}" data-abide>
-                                                    <div class="edit-comment-box">
+                                                            </div>
+                                                            <div class="right">
+                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                        <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                            <form data-commentid="{{_id}}" data-abide>
+                                                                <div class="edit-comment-box">
                                                         <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                                   data-validation="length"
                                                                   data-validation-length="min5"
                                                                   data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
                                                         ></textarea>
-                                                    </div>
-                                                    <div class="right">
-                                                        <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                        <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                    </div>
-                                                </form>
+                                                                </div>
+                                                                <div class="right">
+                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                                <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
+                                                    {{#canUser ../data.common.loggedInAccount "comment:delete"}}
+                                                        <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                    {{else}}
+                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                        {{/canEditSelf}}
+                                                    {{/canUser}}
+                                                    {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    {{else}}
+                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        {{/canEditSelf}}
+                                                    {{/canUser}}
+                                                </div>
                                             </div>
-                                        {{/canEditSelf}}
-                                    {{/canUser}}
-                                    <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
-                                        {{#canUser ../data.common.loggedInAccount "comment:delete"}}
-                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                        {{else}}
-                                            {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                            {{/canEditSelf}}
-                                        {{/canUser}}
-                                        {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
-                                        {{else}}
-                                            {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
-                                            {{/canEditSelf}}
-                                        {{/canUser}}
-                                    </div>
+                                        {{/is}}
+                                        {{#is isNote true}}
+                                            <div class="ticket-note" data-noteid="{{_id}}">
+                                                <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
+                                                    {{#if owner.image}}
+                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    {{else}}
+                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    {{/if}}
+                                                    <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
+                                                </div>
+                                                <div class="issue-text">
+                                                    <h3>Re: {{../data.ticket.subject}}</h3>
+                                                    <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                    <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                    <div class="comment-body">
+                                                        <p>{{{note}}}</p>
+                                                    </div>
+                                                </div>
+                                                {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                    <div class="edit-note-form uk-clearfix hide" data-noteid="{{_id}}" style="margin-bottom: 15px;">
+                                                        <form data-noteid="{{_id}}" data-abide>
+                                                            <div class="edit-comment-box">
+                                                    <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                              data-validation="length"
+                                                              data-validation-length="min5"
+                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
+                                                    </textarea>
+                                                            </div>
+                                                            <div class="right">
+                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                        <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                            <form data-noteid="{{_id}}" data-abide>
+                                                                <div class="edit-comment-box">
+                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                                  data-validation="length"
+                                                                  data-validation-length="min5"
+                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
+                                                        ></textarea>
+                                                                </div>
+                                                                <div class="right">
+                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                                <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
+                                                    {{#canUser ../data.common.loggedInAccount "note:delete"}}
+                                                        <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                    {{else}}
+                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                            <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                        {{/canEditSelf}}
+                                                    {{/canUser}}
+                                                    {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                        <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    {{else}}
+                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                            <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        {{/canEditSelf}}
+                                                    {{/canUser}}
+                                                </div>
+                                            </div>
+                                        {{/is}}
+                                    {{/foreach}}
                                 </div>
-                            {{/foreach}}
+                            </div>
+                            <!-- Comments -->
+                            <div class="tru-tab-section hidden" data-tabid="1" style="padding-top: 20px;">
+                                <div class="comments" data-ticketId="{{data.ticket._id}}">
+                                    {{#foreach data.ticket.comments}}
+                                        <div class="ticket-comment" data-commentId="{{_id}}">
+                                            <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
+                                                {{#if owner.image}}
+                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                {{else}}
+                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                {{/if}}
+                                                <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
+                                            </div>
+                                            <div class="issue-text">
+                                                <h3>Re: {{../data.ticket.subject}}</h3>
+                                                <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                                <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                <div class="comment-body">
+                                                        <p>{{{comment}}}</p>
+                                                </div>
+                                            </div>
+                                            {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                    <form data-commentid="{{_id}}" data-abide>
+                                                        <div class="edit-comment-box">
+                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                              data-validation="length"
+                                                              data-validation-length="min5"
+                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                    ></textarea>
+                                                        </div>
+                                                        <div class="right">
+                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            {{else}}
+                                                {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                        <form data-commentid="{{_id}}" data-abide>
+                                                            <div class="edit-comment-box">
+                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                                  data-validation="length"
+                                                                  data-validation-length="min5"
+                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                        ></textarea>
+                                                            </div>
+                                                            <div class="right">
+                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {{/canEditSelf}}
+                                            {{/canUser}}
+                                            <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
+                                                {{#canUser ../data.common.loggedInAccount "comment:delete"}}
+                                                    <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                        <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                                {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                    <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
+                                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                            </div>
+                                        </div>
+                                    {{/foreach}}
+                                </div>
+                            </div>
+
+                            <!-- Notes -->
+                            <div class="tru-tab-section hidden" data-tabid="2" style="padding-top: 20px;">
+                                <div class="notes" data-ticketId="{{data.ticket._id}}">
+                                    {{#foreach data.ticket.notes}}
+                                        <div class="ticket-note" data-noteid="{{_id}}">
+                                            <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
+                                                {{#if owner.image}}
+                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                {{else}}
+                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                {{/if}}
+                                                <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
+                                            </div>
+                                            <div class="issue-text">
+                                                <h3>Re: {{../data.ticket.subject}}</h3>
+                                                <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
+                                                <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                <div class="comment-body">
+                                                    <p>{{{note}}}</p>
+                                                </div>
+                                            </div>
+                                            {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                <div class="edit-note-form uk-clearfix hide" data-noteid="{{_id}}" style="margin-bottom: 15px;">
+                                                    <form data-noteid="{{_id}}" data-abide>
+                                                        <div class="edit-comment-box">
+                                                    <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                              data-validation="length"
+                                                              data-validation-length="min5"
+                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
+                                                    </textarea>
+                                                        </div>
+                                                        <div class="right">
+                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            {{else}}
+                                                {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
+                                                        <form data-noteid="{{_id}}" data-abide>
+                                                            <div class="edit-comment-box">
+                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
+                                                                  data-validation="length"
+                                                                  data-validation-length="min5"
+                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
+                                                        ></textarea>
+                                                            </div>
+                                                            <div class="right">
+                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                {{/canEditSelf}}
+                                            {{/canUser}}
+                                            <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
+                                                {{#canUser ../data.common.loggedInAccount "note:delete"}}
+                                                    <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                        <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                                {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                    <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                {{else}}
+                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
+                                                        <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    {{/canEditSelf}}
+                                                {{/canUser}}
+                                            </div>
+                                        </div>
+                                    {{/foreach}}
+                                </div>
+                            </div>
                         </div>
+
+                        <!-- Comments / Notes Form -->
                         <div class="uk-width-1-1 ticket-reply uk-clearfix {{#is data.ticket.status 3}}hide{{/is}}">
                             {{#if data.common.loggedInAccount.image}}
                                 <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
                             {{else}}
                                 <img src="/uploads/users/defaultProfile.jpg" alt="" />
                             {{/if}}
-                            <!--<ul class="reply-type">-->
+                            <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
+                                <div class="tru-tab-selectors">
+                                    <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">Comment</a>
+                                    {{#canUser data.common.loggedInAccount 'notes:create'}}
+                                        <a href="#" class="tru-tab-selector no-ajaxy" data-tabid="1">Internal Note</a>
+                                    {{/canUser}}
 
-                            <!--</ul>-->
-                            <form id="comment-reply" action="/tickets/postcomment" method="post" class="uk-form-stacked">
-                                <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
-                                <div class="comment-box">
-                                    <label for="commentReply" class="uk-form-label">Comment</label>
-                                    <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="md-input"
-                                              data-validation="length"
-                                              data-validation-length="min5"
-                                              data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
-                                              style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
+                                    <span class="tru-tab-highlighter"></span>
                                 </div>
-                                <div class="uk-float-right">
-                                    <button type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
-                                            data-action="scrolltobottom"
-                                            data-targetScroll=".page-content"
-                                            data-preventDefault="false">Post Comment</button>
+
+                                <div class="tru-tab-section" data-tabid="0">
+                                    <form id="comment-reply" action="#" method="post" class="uk-form-stacked" ng-submit="submitComment($event);">
+                                        <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                                        <div class="comment-box" style="padding: 0; width: 100%;">
+                                            <!--<label for="commentReply" class="uk-form-label">Comment</label>-->
+                                            <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="comment-textarea"
+                                                      data-keyBindSubmit="#comment-reply-submit-button"
+                                                      data-validation="length"
+                                                      data-validation-length="min5"
+                                                      data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
+                                                      style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
+                                        </div>
+                                        <div class="uk-float-right">
+                                            <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
+                                                    data-action="scrolltobottom"
+                                                    data-targetScroll=".page-content-right"
+                                                    data-preventDefault="false">Post Comment</button>
+                                        </div>
+                                    </form>
                                 </div>
-                            </form>
+
+                                {{#canUser data.common.loggedInAccount 'notes:create'}}
+                                    <div class="tru-tab-section hidden" data-tabid="1">
+                                        <form id="internal-note" action="#" method="post" class="uk-form-stacked" ng-submit="submitInternalNote($event);">
+                                            <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                                            <div class="comment-box" style="padding: 0; width: 100%;">
+                                                <!--<label for="ticket-note" class="uk-form-label">Internal Note</label>-->
+                                                <textarea name="ticket-note" id="ticket-note" cols="2" rows="5" data-clearOnSubmit="true" class="comment-textarea"
+                                                          data-keyBindSubmit="#internal-note-submit-button"
+                                                          data-validation="length"
+                                                          data-validation-length="min5"
+                                                          data-validation-error-msg="Please enter a valid note. Notes must contain at least 5 characters."
+                                                          style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
+                                            </div>
+                                            <div class="uk-float-right">
+                                                <button id="internal-note-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
+                                                        data-action="scrolltobottom"
+                                                        data-targetScroll=".page-content-right"
+                                                        data-preventDefault="false">Save Note</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                {{/canUser}}
+                            </div>
                         </div>
                     </div>
                 </div>

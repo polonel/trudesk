@@ -24,9 +24,11 @@ define('modules/ui', [
 
 ], function($, _, helpers, nav, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
-        socket;
+        socket,
+        loggedInAccount;
 
     socketUi.init = function(sock) {
+        loggedInAccount = window.trudeskSessionService.getUser();
         socketUi.socket = (socket = sock);
 
         this.onReconnect();
@@ -318,7 +320,9 @@ define('modules/ui', [
             });
 
             var assigneeListDrop = $('#assigneeDropdown-content > ul');
+            $('#assigneeDropdown-content').addClass('uk-clearfix').css({'height': 'auto', 'max-height': '372px', 'overflow-y': 'auto', 'overflow-x': 'hidden'});
             if (assigneeListDrop.length > 0) {
+                assigneeListDrop.css({'height': '100%'});
                 assigneeListDrop.html(wrapper);
 
                 $.each(assigneeListDrop.find('li[data-setAssignee]'), function() {
@@ -389,6 +393,8 @@ define('modules/ui', [
                     }
                 }
             }
+
+            socket.emit('$trudesk:chat:updateOnlineBubbles');
 
             $('#assigneeDropdown').removeClass('pDropOpen');
         });
@@ -517,9 +523,27 @@ define('modules/ui', [
             commentId: commentId
         };
 
-
         socket.emit('removeComment', payload);
     };
+
+    socketUi.setNoteText = function(ticketId, noteId, noteText) {
+        var payload = {
+            ticketId: ticketId,
+            noteId: noteId,
+            noteText: noteText
+        };
+
+        socket.emit('$trudesk:tickets:setNoteText', payload);
+    }
+
+    socketUi.removeNote = function(ticketId, noteId) {
+        var payload = {
+            ticketId: ticketId,
+            noteId: noteId
+        };
+
+        socket.emit('$trudesk:tickets:removeNote', payload);
+    }
 
     socketUi.refreshTicketAttachments = function(ticketId) {
         var payload = {
@@ -631,56 +655,128 @@ define('modules/ui', [
     }
 
     socketUi.updateComments = function() {
-        $(document).ready(function() {
-            var $commentForm = $('form#comment-reply');
-            if ($commentForm.length > 0) {
-                $commentForm.on("submit", function (e) {
-                    var self = $(this);
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if ($commentForm.isValid(null, null, false)) {
-                        $.ajax({
-                            type: self.attr('method'),
-                            url: self.attr('action'),
-                            data: self.serialize(),
-                            success: function () {
-                                //send socket to add reply.
-                                $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function () {
-                                    $(this).val('');
-                                });
-
-                                var tId = $('input[name="ticketId"]').val();
-
-                                var obj = $('.comments').parents('.page-content');
-                                helpers.resizeFullHeight();
-                                helpers.scrollToBottom(obj);
-                            }
-                        });
-                    }
-                });
-            }
-
-            return false;
-        });
-
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
             var ticket = data;
+            var canViewNotes = helpers.canUser('notes:view');
+            _.each(ticket.comments, function(i) { i.isComment = true; });
+
+            var combined = ticket.comments;
+            var allCount = ticket.comments.length;
+            if (canViewNotes) {
+                _.each(ticket.notes, function(i) { i.isNote = true; });
+                combined = _.union(ticket.comments, ticket.notes);
+                allCount = ticket.comments.length + ticket.notes.length;
+            } else {
+                $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').addClass('hide');
+            }
+
+            ticket.commentsAndNotes = _.sortBy(combined, 'date');
+
+            var commentsNotesTab = $('.comments-notes-tab[data-ticketid="' + ticket._id + '"]');
+
+            if (ticket.commentsAndNotes.length > 0)
+                commentsNotesTab.removeClass('hide');
+            else {
+                commentsNotesTab.addClass('hide');
+                return true;
+            }
+
+            var allCommentsContainer = $('.all-comments[data-ticketId="' + ticket._id + '"]');
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');
-            //var comment = $(ticket.comments).get(-1);
+            var notesContainer = $('.notes[data-ticketId="' + ticket._id + '"]');
 
-            var commentText = 'Comments';
-            //if (_.isUndefined(ticket.comments)) return;
-            if(_.size(ticket.comments) === 1) commentText = 'Comment';
+            //Update Comments Tab Badge
 
-            $('.page-top-comments > a[data-ticketId="' + ticket._id + '"]').html(ticket.comments.length + ' ' + commentText);
+            $('#tab-all-comments[data-ticketid="' + ticket._id + '"]').find('span').html(allCount);
+            $('#tab-public-comments[data-ticketid="' + ticket._id + '"]').find('span').html(ticket.comments.length);
+            $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').find('span').html(ticket.notes.length);
 
-            var html = '';
+            var allCommentsHtml = '',
+                commentsHtml = '',
+                notesHtml = '';
+
+            //Build All Comments / Notes Section
+            _.each(ticket.commentsAndNotes, function(item) {
+                var image = item.owner.image;
+                if (_.isUndefined(image)) image = 'defaultProfile.jpg';
+
+                if (item.isComment) {
+                    //Comment
+                    allCommentsHtml +=  '<div class="ticket-comment" data-commentid="' + item._id + '">' +
+                        '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
+                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<span class="uk-border-circle user-offline" data-user-status-id="' + item.owner._id + '"></span>' +
+                        '</div>' +
+                        '<div class="issue-text">' +
+                        '<h3>Re: ' + ticket.subject + '</h3>' +
+                        '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
+                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, "MMM DD, h:mma") + '</time>' +
+                        '<div class="comment-body"><p>' + item.comment + '</p></div>' +
+                        '</div>' +
+                        '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + item._id + '" style="margin-bottom: 15px;">' +
+                        '<form data-commentid="' + item._id + '" data-abide>' +
+                        '<div class="edit-comment-box">' +
+                        '<textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required data-validation="length" data-validation-length="min5" data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."></textarea>' +
+                        '</div>' +
+                        '<div class="right">' +
+                        '<button class="uk-button resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                        '<button class="uk-button" type="submit" data-preventDefault="false">Save</button>' +
+                        '</div>' +
+                        '</form>' +
+                        '</div>' +
+                        '<div class="comment-actions">';
+                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+                        allCommentsHtml += '<div class="remove-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>';
+                    }
+                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+                        allCommentsHtml += '<div class="edit-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE254;</i></div>';
+                    }
+
+                    allCommentsHtml += '</div>' +
+                                        '</div>';
+                } else if (item.isNote) {
+                    allCommentsHtml +=  '<div class="ticket-note" data-noteid="' + item._id + '">' +
+                        '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
+                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<span class="uk-border-circle user-offline" data-user-status-id="' + item.owner._id + '"></span>' +
+                        '</div>' +
+                        '<div class="issue-text">' +
+                        '<h3>Re: ' + ticket.subject + '</h3>' +
+                        '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
+                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, "MMM DD, h:mma") + '</time>' +
+                        '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
+                        '<div class="comment-body"><p>' + item.note + '</p></div>' +
+                        '</div>' +
+                        '<div class="edit-note-form uk-clearfix hide" data-noteid="' + item._id + '" style="margin-bottom: 15px;">' +
+                        '<form data-noteid="' + item._id + '" data-abide>' +
+                        '<div class="edit-comment-box">' +
+                        '<textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required data-validation="length" data-validation-length="min5" data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."></textarea>' +
+                        '</div>' +
+                        '<div class="right">' +
+                        '<button class="uk-button resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                        '<button class="uk-button" type="submit" data-preventDefault="false">Save</button>' +
+                        '</div>' +
+                        '</form>' +
+                        '</div>' +
+                        '<div class="comment-actions">';
+                    if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+                        allCommentsHtml += '<div class="remove-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>';
+                    }
+                    if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+                        allCommentsHtml += '<div class="edit-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE254;</i></div>';
+                    }
+
+                    allCommentsHtml += '</div>' +
+                        '</div>';
+                }
+            });
+
             _.each(ticket.comments, function(comment) {
                 var image = comment.owner.image;
                 if (_.isUndefined(image)) image = 'defaultProfile.jpg';
 
-                html +=  '<div class="ticket-comment" data-commentid="' + comment._id + '">' +
+                commentsHtml +=  '<div class="ticket-comment" data-commentid="' + comment._id + '">' +
                     '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
                         '<img src="/uploads/users/' + image + '" alt=""/>' +
                         '<span class="uk-border-circle user-offline" data-user-status-id="' + comment.owner._id + '"></span>' +
@@ -704,17 +800,59 @@ define('modules/ui', [
                     '</div>' +
                     '<div class="comment-actions">';
                     if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE5CD;</i></div>';
+                        commentsHtml += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE5CD;</i></div>';
                     }
                     if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
-                        html += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE254;</i></div>';
+                        commentsHtml += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE254;</i></div>';
                     }
 
-                    html += '</div>' +
-                        '</div>';
+                commentsHtml += '</div>' +
+                                '</div>';
             });
 
-            commentContainer.html(html);
+            _.each(ticket.notes, function(note) {
+                var image = note.owner.image;
+                if (_.isUndefined(image)) image = 'defaultProfile.jpg';
+
+                notesHtml +=  '<div class="ticket-note" data-noteid="' + note._id + '">' +
+                    '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
+                    '<img src="/uploads/users/' + image + '" alt=""/>' +
+                    '<span class="uk-border-circle user-offline" data-user-status-id="' + note.owner._id + '"></span>' +
+                    '</div>' +
+                    '<div class="issue-text">' +
+                    '<h3>Re: ' + ticket.subject + '</h3>' +
+                    '<a class="comment-email-link" href="mailto:' + note.owner.email + '">' + note.owner.fullname + ' &lt;' + note.owner.email + '&gt;</a>' +
+                    '<time datetime="' + note.date + '">' + helpers.formatDate(note.date, "MMM DD, h:mma") + '</time>' +
+                    '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
+                    '<div class="comment-body"><p>' + note.note + '</p></div>' +
+                    '</div>' +
+                    '<div class="edit-note-form uk-clearfix hide" data-noteid="' + note._id + '" style="margin-bottom: 15px;">' +
+                    '<form data-noteid="' + note._id + '" data-abide>' +
+                    '<div class="edit-comment-box">' +
+                    '<textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required data-validation="length" data-validation-length="min5" data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."></textarea>' +
+                    '</div>' +
+                    '<div class="right">' +
+                    '<button class="uk-button resetForm" type="reset" style="margin-right: 5px;">Cancel</button>' +
+                    '<button class="uk-button" type="submit" data-preventDefault="false">Save</button>' +
+                    '</div>' +
+                    '</form>' +
+                    '</div>' +
+                    '<div class="comment-actions">';
+                if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+                    notesHtml += '<div class="remove-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE5CD;</i></div>';
+                }
+                if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+                    notesHtml += '<div class="edit-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE254;</i></div>';
+                }
+
+                notesHtml += '</div>' +
+                    '</div>';
+            });
+
+            allCommentsContainer.html(allCommentsHtml);
+            commentContainer.html(commentsHtml);
+            if (canViewNotes)
+                notesContainer.html(notesHtml);
             helpers.resizeAll();
 
             require(['pages/singleTicket'], function(st) {

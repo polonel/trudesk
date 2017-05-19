@@ -110,7 +110,7 @@ input
 textarea.md-input
   min-height: 80px
   resize: none
-  overflow: hidden
+  //overflow: hidden
   -webkit-transition: height 200ms ease-out
   transition: height 200ms ease-out
   line-height: 24px
@@ -261,6 +261,7 @@ label.md-label
   font-size: 11px
   line-height: 15px
   font-weight: 400
+  margin-left: 5px
   &.uk-badge-blue
     background: $accent_blue
   &.uk-badge-success
@@ -269,6 +270,13 @@ label.md-label
     background: #ffa000
   &.uk-badge-danger
     background: #e53935
+  &.uk-badge-grey
+    background: #ccc
+  &.uk-badge-small
+    font-size: 10px
+    padding: 2px 4px
+    +borderRadius(2px)
+    line-height: 12px
 
 .uk-progress
   background: white

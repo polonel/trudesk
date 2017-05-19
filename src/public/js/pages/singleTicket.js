@@ -24,6 +24,8 @@ define('pages/singleTicket', [
         $(document).ready(function() {
             socketClient.chat.updateOnlineBubbles();
 
+            helpers.setupTruTabs($('.tru-tab-selectors').find('.tru-tab-selector'));
+
             $('.remove-attachment').each(function() {
                 var self = $(this);
                 self.off('click', onRemoveAttachmentClick);
@@ -39,6 +41,16 @@ define('pages/singleTicket', [
                 self.off('click', onEditCommentClick);
                 self.on('click', onEditCommentClick);
             });
+            $('.remove-note').each(function() {
+                var self = $(this);
+                self.off('click', onRemoveNoteClick);
+                self.on('click', onRemoveNoteClick);
+            });
+            $('.edit-note').each(function() {
+                var self = $(this);
+                self.off('click', onEditNoteClick);
+                self.on('click', onEditNoteClick);
+            });
             $('.edit-issue').each(function() {
                 var self = $(this);
                 self.off('click', onEditIssueClick);
@@ -48,15 +60,14 @@ define('pages/singleTicket', [
             //Setup Text
             var issueText = $('.issue-text').find('div.issue-body').html();
             if (!_.isUndefined(issueText)) {
-                //issueText = issueText.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-                //issueText = issueText.replace(/(<([^>]+)>)/ig,"");
                 issueText = md(issueText);
                 issueText = issueText.trim();
                 $('#issueText').val(issueText);
             }
 
             // Set Comment Editing
-            $('div.edit-comment-form').find('form').each(function(idx, f) {
+            var editCommentForm = $('div.edit-comment-form');
+            editCommentForm.find('form').each(function(idx, f) {
                 var form = $(f);
                 form.unbind('submit');
                 form.submit(function($event) {
@@ -73,7 +84,7 @@ define('pages/singleTicket', [
                 });
             });
 
-            $('div.edit-comment-form').find('.resetForm').each(function(idx, item) {
+            editCommentForm.find('.resetForm').each(function(idx, item) {
                 var button = $(item);
                 button.off('click');
                 button.on('click', function($event) {
@@ -85,6 +96,41 @@ define('pages/singleTicket', [
                     if (grandParent.length > 0) {
                         grandParent.addClass('hide');
                         comment.removeClass('hide');
+                    }
+                });
+            });
+
+            //Setup Internal Note Editing
+            var editNoteForm = $('div.edit-note-form');
+            editNoteForm.find('form').each(function(idx, f) {
+                var form = $(f);
+                form.off('submit');
+                form.on('submit', function($event) {
+                    $event.preventDefault();
+                    if (!form.isValid(null, null, false)) return true;
+                    var id = $('#__ticketId').text();
+                    if (id.length > 0) {
+                        var note = $($event.currentTarget).find('textarea#noteText').val();
+                        var noteId = $($event.currentTarget).attr('data-noteId');
+                        note = '<p>' + note + '</p>';
+
+                        socketClient.ui.setNoteText(id, noteId, note);
+                    }
+                });
+            });
+
+            editNoteForm.find('.resetForm').each(function(idx, item) {
+                var button = $(item);
+                button.off('click');
+                button.on('click', function($event) {
+                    $event.preventDefault();
+
+                    var grandParent = button.parents('div.edit-note-form');
+                    var note = button.parents('div.ticket-note').find('.comment-body');
+
+                    if (grandParent.length > 0) {
+                        grandParent.addClass('hide');
+                        note.removeClass('hide');
                     }
                 });
             });
@@ -153,6 +199,42 @@ define('pages/singleTicket', [
 
             commentText.addClass('hide');
             commentForm.removeClass('hide');
+        }
+    }
+
+    function onEditNoteClick(e) {
+        var self = $(e.currentTarget);
+        if (_.isUndefined(self))
+            return true;
+
+        var noteId = self.attr('data-noteId');
+        if (noteId.length > 0) {
+            var noteForm = $('.edit-note-form[data-noteid="' + noteId + '"]');
+            if (noteForm.length < 1) return true;
+            var noteText = $('.ticket-note[data-noteid="' + noteId + '"]').find('.issue-text').find('.comment-body');
+
+            //Setup Text
+            var noteHtml = noteText.html();
+            if (!_.isUndefined(noteHtml)) {
+                noteHtml = noteHtml.trim();
+                noteHtml = md(noteHtml);
+                noteForm.find('textarea').val(noteHtml);
+            }
+
+            noteText.addClass('hide');
+            noteForm.removeClass('hide');
+        }
+    }
+
+    function onRemoveNoteClick(e) {
+        var self = $(e.currentTarget);
+        if (_.isUndefined(self))
+            return true;
+
+        var ticketId = $('#__ticketId').html();
+        var noteId = self.attr('data-noteid');
+        if (noteId.length > 0 && ticketId.length > 0) {
+            socketClient.ui.removeNote(ticketId, noteId);
         }
     }
 
