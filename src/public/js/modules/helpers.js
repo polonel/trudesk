@@ -575,16 +575,16 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.bindKeys = function() {
-        var commentReply = $('#commentReply');
-        if (commentReply.length > 0) {
-            commentReply.off('keydown');
-            commentReply.on('keydown', function(e) {
-                var keyCode = (e.which ? e.which : e.keyCode);
-                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
-                    $('#comment-reply').find('button[type="submit"]').trigger('click');
-                }
-            });
-        }
+        // var commentReply = $('#commentReply');
+        // if (commentReply.length > 0) {
+        //     commentReply.off('keydown');
+        //     commentReply.on('keydown', function(e) {
+        //         var keyCode = (e.which ? e.which : e.keyCode);
+        //         if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+        //             $('#comment-reply').find('button[type="submit"]').trigger('click');
+        //         }
+        //     });
+        // }
 
         var ticketIssue = $('#createTicketForm').find('textarea#issue');
         if (ticketIssue.length > 0) {
@@ -880,7 +880,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                         var target = $(targetScroll);
                         if (target.length !== 0) {
                             self.click(function(e) {
-                                target.animate({scrollTop: target[0].scrollHeight}, 1000);
+                                var animation = self.attr('data-action-animation');
+                                if (!_.isUndefined(animation) && animation.toLowerCase() === "false")
+                                    target.animate({scrollTop: target[0].scrollHeight}, 0);
+                                else
+                                    target.animate({scrollTop: target[0].scrollHeight}, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
                                 if (_.isUndefined(preventDefault) || preventDefault.length < 1) {

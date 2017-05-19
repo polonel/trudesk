@@ -283,24 +283,48 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 });
             };
 
+            $scope.submitComment = function(event) {
+                event.preventDefault();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var id = form.find('input[name="ticketId"]');
+                var commentField = form.find('#commentReply');
+                if (commentField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addcomment', {
+                        "comment": commentField.val(),
+                        "_id": id.val().toString(),
+                        "ownerId": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        commentField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitComment]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
+            };
+
             $scope.submitInternalNote = function(event) {
                 event.preventDefault();
                 var id = $('#__ticketId').text();
                 var form = $(event.target);
                 if (form.length < 1) return;
                 var noteField = form.find('#ticket-note');
-                if (noteField.length < 1) return;
-                $http.post('/api/v1/tickets/addnote', {
-                    "note": noteField.val(),
-                    "ticketid": id,
-                    "owner": $scope.loggedInAccount._id
-                }).success(function(data) {
-                   noteField.val('');
-                }).error(function(e) {
-                    console.error('[trudesk:singleTicket:submitInternalNote]');
-                    console.error(e);
-                    helpers.UI.showSnackbar('Error: ' + e.error, true);
-                });
+                if (noteField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addnote', {
+                        "note": noteField.val(),
+                        "ticketid": id,
+                        "owner": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        noteField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitInternalNote]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
             };
 
             $scope.closeAddTagModal = function() {

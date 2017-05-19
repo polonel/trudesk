@@ -655,38 +655,6 @@ define('modules/ui', [
     }
 
     socketUi.updateComments = function() {
-        $(document).ready(function() {
-            var $commentForm = $('form#comment-reply');
-            if ($commentForm.length > 0) {
-                $commentForm.on("submit", function (e) {
-                    var self = $(this);
-                    e.stopPropagation();
-                    e.preventDefault();
-                    if ($commentForm.isValid(null, null, false)) {
-                        $.ajax({
-                            type: self.attr('method'),
-                            url: self.attr('action'),
-                            data: self.serialize(),
-                            success: function () {
-                                //send socket to add reply.
-                                $('form#comment-reply').find('*[data-clearOnSubmit="true"]').each(function () {
-                                    $(this).val('');
-                                });
-
-                                var tId = $('input[name="ticketId"]').val();
-
-                                var obj = $('.comments').parents('.page-content');
-                                helpers.resizeFullHeight();
-                                helpers.scrollToBottom(obj);
-                            }
-                        });
-                    }
-                });
-            }
-
-            return false;
-        });
-
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
             var ticket = data;
