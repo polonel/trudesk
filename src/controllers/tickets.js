@@ -19,6 +19,7 @@ var winston         = require('winston');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
 var emitter         = require('../emitter');
+var permissions     = require('../permissions');
 
 /**
  * @since 1.0
@@ -283,9 +284,8 @@ ticketsController.processor = function(req, res) {
         function(callback) {
             groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 if (err) return callback(err);
-                var p = require('../permissions');
                 userGroups = grps;
-                if (p.canThis(req.user.role, 'ticket:public')) {
+                if (permissions.canThis(req.user.role, 'ticket:public')) {
                     groupSchema.getAllPublicGroups(function(err, groups) {
                         if (err) return callback(err);
                         userGroups = groups.concat(grps);
@@ -374,7 +374,7 @@ ticketsController.print = function(req, res) {
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
-        var permissions = require('../permissions');
+
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
@@ -440,7 +440,6 @@ ticketsController.single = function(req, res) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
-        var permissions = require('../permissions');
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
