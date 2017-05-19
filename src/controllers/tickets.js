@@ -300,6 +300,12 @@ ticketsController.processor = function(req, res) {
             ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
+                if (!permissions.canThis(user.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
+
                 return callback(null, results);
             });
         }
@@ -379,6 +385,9 @@ ticketsController.print = function(req, res) {
                 return res.redirect('/tickets');
             }
         }
+
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
 
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = getPriorityName(ticket.priority);

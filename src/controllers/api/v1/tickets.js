@@ -95,8 +95,7 @@ api_tickets.get = function(req, res) {
             })
         },
         function(grps, callback) {
-            var p = require('../../../permissions');
-            if (p.canThis(user.role, 'ticket:public')) {
+            if (permissions.canThis(user.role, 'ticket:public')) {
                 groupModel.getAllPublicGroups(function(err, publicGroups) {
                     if (err) return callback(err);
 
@@ -110,6 +109,11 @@ api_tickets.get = function(req, res) {
         },
         function(grps, callback) {
             ticketModel.getTicketsWithObject(grps, object, function(err, results) {
+                if (!permissions.canThis(user.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 return callback(err, results);
             });
@@ -155,8 +159,7 @@ api_tickets.search = function(req, res) {
             });
         },
         function(grps, callback) {
-            var p = require('../../../permissions');
-            if (p.canThis(req.user.role, 'ticket:public')) {
+            if (permissions.canThis(req.user.role, 'ticket:public')) {
                 groupModel.getAllPublicGroups(function(err, publicGroups) {
                     if (err) return callback(err);
 
@@ -170,7 +173,14 @@ api_tickets.search = function(req, res) {
         },
         function(grps, callback) {
             ticketModel.getTicketsWithSearchString(grps, searchString, function(err, results) {
-                callback(err, results);
+
+                if (!permissions.canThis(req.user.role.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
+
+                return callback(err, results);
             });
         }
     ], function(err, results) {
@@ -225,21 +235,6 @@ api_tickets.create = function(req, res) {
     if (!_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId;
-    //var tagSchema = require('../../../models/tag');
-    //var tags = [];
-    //if (!_.isUndefined(postData.tags)) {
-    //    var t = _s.clean(postData.tags);
-    //    tags = _.compact(t.split(','));
-    //}
-    //
-    //postData.tags = [];
-    //_.each(tags, function(tag) {
-    //    var Tag = new tagSchema({
-    //        name: tag
-    //    });
-    //
-    //    postData.tags.push(Tag);
-    //});
 
     if (_.isUndefined(postData.tags) || _.isNull(postData.tags)) {
         postData.tags = [];
@@ -548,6 +543,9 @@ api_tickets.update = function(req, res) {
                 ticket.save(function(err, t) {
                     if (err) return res.send(err.message);
 
+                    if (!permissions.canThis(user.role, 'notes:view'))
+                        t.notes = [];
+
                     emitter.emit('ticket:updated', t);
 
                     return res.json({
@@ -665,6 +663,9 @@ api_tickets.postComment = function(req, res) {
 
         t.save(function(err, tt) {
             if (err) return res.status(400).json({success: false, error: err.message})
+
+            if (!permissions.canThis(req.user.role, 'notes:view'))
+                tt.notes = [];
 
             ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
                 if (err) return res.json({success: true, error: null, ticket: tt});
@@ -863,7 +864,7 @@ api_tickets.getTicketStats = function(req, res) {
  */
 api_tickets.getTicketStatsForGroup = function(req, res) {
     var groupId = req.params.group;
-    if (groupId == 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
+    if (groupId === 0) return res.status(200).json({success: false, error: 'Please Select Group.'});
     if (_.isUndefined(groupId)) return res.status(400).json({success: false, error: 'Invalid Group Id.'});
 
     var ticketModel = require('../../../models/ticket');
@@ -875,6 +876,12 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                 if (err) return callback(err);
                 if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
+
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(tickets, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 async.each(tickets, function(ticket, cb) {
                     _.each(ticket.tags, function(tag) {
@@ -965,7 +972,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
  */
 api_tickets.getTicketStatsForUser = function(req, res) {
     var userId = req.params.user;
-    if (userId == 0) return res.status(200).json({success: false, error: 'Please Select User.'});
+    if (userId === 0) return res.status(200).json({success: false, error: 'Please Select User.'});
     if (_.isUndefined(userId)) return res.status(400).json({success: false, error: 'Invalid User Id.'});
 
     var ticketModel = require('../../../models/ticket');
@@ -977,6 +984,12 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                 if (err) return callback(err);
                 if (_.isEmpty(tickets)) return callback(null, tickets);
                 var t = [];
+
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(tickets, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
 
                 async.each(tickets, function(ticket, cb) {
                     _.each(ticket.tags, function(tag) {
