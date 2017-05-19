@@ -443,6 +443,9 @@ ticketsController.single = function(req, res) {
             }
         }
 
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
+
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = ticket.priorityFormatted;
 

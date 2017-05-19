@@ -16,7 +16,7 @@ var async           = require('async'),
     _               = require('underscore'),
     moment          = require('moment'),
     winston         = require('winston'),
-    //permissions     = require('../../../permissions'),
+    permissions     = require('../../../permissions'),
     emitter         = require('../../../emitter');
 
 var api_tickets = {};
@@ -449,6 +449,11 @@ api_tickets.single = function(req, res) {
         if (_.isUndefined(ticket)
             || _.isNull(ticket))
             return res.status(200).json({'success': false, 'error': 'Invalid Ticket'});
+
+        ticket = _.clone(ticket._doc);
+        if (!permissions.canThis(req.user.role, 'notes:view')) {
+            delete ticket.notes;
+        }
 
         return res.json({'success': true, 'ticket': ticket});
     });

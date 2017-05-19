@@ -24,9 +24,11 @@ define('modules/ui', [
 
 ], function($, _, helpers, nav, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
-        socket;
+        socket,
+        loggedInAccount;
 
     socketUi.init = function(sock) {
+        loggedInAccount = window.trudeskSessionService.getUser();
         socketUi.socket = (socket = sock);
 
         this.onReconnect();
@@ -678,9 +680,19 @@ define('modules/ui', [
         socket.removeAllListeners('updateComments');
         socket.on('updateComments', function(data) {
             var ticket = data;
+            var canViewNotes = helpers.canUser('notes:view');
             _.each(ticket.comments, function(i) { i.isComment = true; });
-            _.each(ticket.notes, function(i) { i.isNote = true; });
-            var combined = _.union(ticket.comments, ticket.notes);
+
+            var combined = ticket.comments;
+            var allCount = ticket.comments.length;
+            if (canViewNotes) {
+                _.each(ticket.notes, function(i) { i.isNote = true; });
+                combined = _.union(ticket.comments, ticket.notes);
+                allCount = ticket.comments.length + ticket.notes.length;
+            } else {
+                $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').addClass('hide');
+            }
+
             ticket.commentsAndNotes = _.sortBy(combined, 'date');
 
             var commentsNotesTab = $('.comments-notes-tab[data-ticketid="' + ticket._id + '"]');
@@ -697,7 +709,8 @@ define('modules/ui', [
             var notesContainer = $('.notes[data-ticketId="' + ticket._id + '"]');
 
             //Update Comments Tab Badge
-            $('#tab-all-comments[data-ticketid="' + ticket._id + '"]').find('span').html(ticket.comments.length + ticket.notes.length);
+
+            $('#tab-all-comments[data-ticketid="' + ticket._id + '"]').find('span').html(allCount);
             $('#tab-public-comments[data-ticketid="' + ticket._id + '"]').find('span').html(ticket.comments.length);
             $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').find('span').html(ticket.notes.length);
 
@@ -860,7 +873,8 @@ define('modules/ui', [
 
             allCommentsContainer.html(allCommentsHtml);
             commentContainer.html(commentsHtml);
-            notesContainer.html(notesHtml);
+            if (canViewNotes)
+                notesContainer.html(notesHtml);
             helpers.resizeAll();
 
             require(['pages/singleTicket'], function(st) {
