@@ -300,7 +300,7 @@ ticketsController.processor = function(req, res) {
             ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
-                if (!permissions.canThis(user.role, 'notes:view')) {
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
                     _.each(results, function(ticket) {
                         ticket.notes = [];
                     });
