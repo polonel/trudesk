@@ -426,6 +426,42 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
 };
 
 /**
+ * Updates a given Note inside the note array on this ticket
+ * @instance
+ * @method updateNote
+ * @memberof Ticket
+ *
+ * @param {Object} ownerId Account ID preforming this action
+ * @param {Object} noteId Note ID to update
+ * @param {String} noteText Text to update the note to
+ * @param {TicketCallback} callback Callback with the updated ticket.
+ * @example
+ * ticket.updateNote({ownerId}, {noteId} 'This is the new note string.', function(err, t) {
+ *    if (err) throw err;
+ *
+ *    ticket.save(function(err, t) {
+ *       if (err) throw err;
+ *    });
+ * });
+ */
+ticketSchema.methods.updateNote = function(ownerId, noteId, noteText, callback) {
+    var self = this;
+    var note = _.find(self.notes, function(c){return c._id.toString() === noteId.toString()});
+    if (_.isUndefined(note)) return callback("Invalid Note", null);
+
+    note.note = noteText;
+
+    var historyItem = {
+        action: 'ticket:note:updated',
+        description: 'Note was updated: ' + noteId,
+        owner: ownerId
+    };
+    self.history.push(historyItem);
+
+    return callback(null, self);
+};
+
+/**
  * Removes a note from the note array on this ticket.
  * @instance
  * @method removeNote

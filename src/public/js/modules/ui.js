@@ -526,6 +526,16 @@ define('modules/ui', [
         socket.emit('removeComment', payload);
     };
 
+    socketUi.setNoteText = function(ticketId, noteId, noteText) {
+        var payload = {
+            ticketId: ticketId,
+            noteId: noteId,
+            noteText: noteText
+        };
+
+        socket.emit('$trudesk:tickets:setNoteText', payload);
+    }
+
     socketUi.removeNote = function(ticketId, noteId) {
         var payload = {
             ticketId: ticketId,
