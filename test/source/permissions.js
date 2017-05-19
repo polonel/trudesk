@@ -21,4 +21,12 @@ describe('premissions.js', function() {
 
         done();
     });
+
+    it('show allow note creation', function(done) {
+        var result = permissions.canThis('support', 'notes:create');
+
+        expect(result).to.be.true;
+
+        done();
+    })
 });
