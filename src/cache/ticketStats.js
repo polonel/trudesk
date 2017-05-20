@@ -59,7 +59,6 @@ var init = function(tickets, callback) {
             async.series({
                 //Removed 05-04-2017 - Due to performance issues
                 // lifetime: function(c) {
-                //     if (_.size($tickets) < 1) return c();
                 //     ex.lifetime.tickets = _.sortBy($tickets, 'date');
                 //
                 //     ex.lifetime.closedTickets = _.chain(ex.lifetime.tickets).map('status').filter(function(v) {
@@ -89,7 +88,6 @@ var init = function(tickets, callback) {
                 //     });
                 // },
                 e365: function(c) {
-                    if (_.size($tickets) < 1) return c();
                     ex.e365.tickets = $tickets;
 
                     ex.e365.closedTickets = _.chain(ex.e365.tickets).map('status').filter(function(v) {
@@ -116,7 +114,6 @@ var init = function(tickets, callback) {
                     });
                 },
                 e180: function(c) {
-                    if (_.size($tickets) < 1) return c();
                     ex.e180.tickets = $tickets;
 
                     ex.e180.closedTickets = _.chain(ex.e180.tickets).map('status').filter(function(v) {
@@ -142,7 +139,6 @@ var init = function(tickets, callback) {
                     });
                 },
                 e90: function(c) {
-                    if (_.size($tickets) < 1) return c();
                     ex.e90.tickets = $tickets;
 
                     ex.e90.closedTickets = _.chain(ex.e90.tickets).map('status').filter(function(v) {
@@ -168,7 +164,6 @@ var init = function(tickets, callback) {
                     });
                 },
                 e60: function(c) {
-                    if (_.size($tickets) < 1) return c();
                     ex.e60.tickets = $tickets;
 
                     ex.e60.closedTickets = _.chain(ex.e60.tickets).map('status').filter(function(v) {
@@ -194,7 +189,6 @@ var init = function(tickets, callback) {
                     });
                 },
                 e30: function(c) {
-                    if (_.size($tickets) < 1) return c();
                     ex.e30.tickets = $tickets;
 
                     ex.e30.closedTickets = _.chain(ex.e30.tickets).map('status').filter(function(v) {

@@ -130,7 +130,7 @@ installController.install = function(req, res) {
     async.waterfall([
         function(next) {
             db.init(function(err, database) {
-                return next(err, database);
+                return next(err);
             }, conuri);
         },
         function(next) {
