@@ -225,6 +225,8 @@ var init = function(tickets, callback) {
 
 function buildGraphData(arr, days, callback) {
     var graphData = [];
+    if (arr.length < 1)
+        return callback(graphData);
     var today = moment().hour(23).minute(59).second(59);
     var timespanArray = [];
     for (var i=days;i--;) {
