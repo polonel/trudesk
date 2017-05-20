@@ -143,9 +143,6 @@ ul.side-nav-sub
         border: none
         border-right: 1px solid rgba(0,0,0,0.1)
 
-        //&:after
-        //  content: none
-
         &:hover
           background: $sidebar_subnav_item_hover !important
           &:after
@@ -174,10 +171,15 @@ ul.side-nav-sub
   a
     border: none
     font-weight: 300
-    padding-left: 62px !important
+    padding-left: 0 !important
     line-height: 30px
     height: 30px !important
     color: $sidebar_subnav_text
+    span
+      display: inline-block
+      position: absolute
+      top: 1px
+      left: 62px
     i,svg
       color: $sidebar_subnav_text !important
       fill: $sidebar_subnav_text !important
