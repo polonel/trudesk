@@ -99,7 +99,7 @@ define('pages/dashboard', [
                     success: function (_data) {
                         var lastUpdated = $('#lastUpdated').find('span');
                         lastUpdated.text(_data.lastUpdated);
-                        console.log(_data);
+
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
