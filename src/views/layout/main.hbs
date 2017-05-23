@@ -78,7 +78,8 @@
     z-index: 99999999;
     background: #f6f6f6;
 ">
-<div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 32px; font-weight: 300;">Currently No Mobile Support.</div>
+<div style="position: absolute; top: 50%; left: 0; width: 100%;text-align: center;font-size: 28px; font-weight: 300;"><a
+        href="/mobile">View Mobile Site...</a></div>
 </div>
 
 <div class="disconnected loader-wrapper" style="display: none; opacity: 0; z-index: 999997;">
@@ -146,6 +147,11 @@
 {{#block "js-plugins"}}
 
 {{/block}}
+<script type="text/javascript">
+    if (screen.width <= 800) {
+        document.location = '/mobile';
+    }
+</script>
 </body>
 
 </html>
