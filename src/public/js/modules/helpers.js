@@ -14,8 +14,8 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'tether', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES) {
 
     var helpers = {};
 
@@ -36,7 +36,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.setupChosen();
         self.bindNewMessageSubmit();
 
-        self.UI.expandSidebar();
+        //self.UI.expandSidebar();
+        //self.UI.tooltipSidebar();
+        self.UI.setupSidebarTether();
 
         self.UI.fabToolbar();
         self.UI.inputs();
@@ -79,6 +81,58 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     helpers.UI.openSidebar = function() {
         $('.sidebar').addClass('expand');
+    };
+
+    helpers.UI.tooltipSidebar = function() {
+        $('.sidebar').find('a[data-uk-tooltip]').each(function() {
+            $(this).attr('style', 'padding: 0 !important; font-size: 0 !important;');
+        });
+    };
+
+    helpers.UI.setupSidebarTether = function() {
+        var sidebarElements = [
+            {element: "#side-nav-sub-tickets", target: 'tickets'},
+            {element: "#side-nav-sub-reports", target: 'reports'},
+            {element: "#side-nav-sub-settings", target: 'settings'}
+        ];
+
+        _.each(sidebarElements, function(item) {
+            console.log(item);
+            var element = $('.sidebar-to-right').find(item.element);
+            var target = $('.sidebar').find('li[data-nav-id="' + item.target + '"]');
+            helpers.UI.sidebarTether(element, target);
+            var isInside = false;
+            target.on('mouseover',function() {
+                element.addClass('sub-menu-right-open');
+                isInside = true;
+            });
+            target.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside) {
+                        element.removeClass('sub-menu-right-open');
+                    }
+                }, 200);
+            });
+            element.on('mouseover', function() { isInside = true; });
+            element.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside)
+                        element.removeClass('sub-menu-right-open');
+                }, 200);
+            });
+        });
+    };
+
+    helpers.UI.sidebarTether = function(element, target) {
+        new Tether({
+            element: element,
+            target: target,
+            attachment: 'top left',
+            targetAttachment: 'top right',
+            offset: '0 -5px'
+        });
     };
 
     helpers.UI.setNavItem = function(id) {

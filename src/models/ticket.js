@@ -772,7 +772,7 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
 
-    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf == true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf === true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
         q.where('assignee', object.assignedUserId);
     }
 

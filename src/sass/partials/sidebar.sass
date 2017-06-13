@@ -126,6 +126,34 @@ ul.side-nav-sub
   display: none
   &.subMenuOpen
     display: block
+  &.side-nav-floating
+    position: absolute
+    top: 0
+    left: 0
+    -webkit-transition: all .3s cubic-bezier(.215,.61,.355,1)
+    -moz-transition: all .3s cubic-bezier(.215,.61,.355,1)
+    transition: all .3s cubic-bezier(.215,.61,.355,1)
+    z-index: 9999
+    min-width: 145px
+    border: 1px solid rgba(0,0,0,0.05)
+    padding-top: 2px
+    padding-bottom: 2px
+    +boxShadow(none)
+    +borderRadius(1px)
+    opacity: 0
+    display: block
+    visibility: hidden
+    &.sub-menu-right-open
+      visibility: visible
+      opacity: 1
+    li.active>a, a
+      border-right: none
+      span
+        left: 15px
+      svg,i
+        display: none
+    hr
+      margin: 5px 0
   hr
     margin: 15px 20px
     border: none
