@@ -67,8 +67,8 @@ var COLLECTION = 'tickets';
  */
 var ticketSchema = mongoose.Schema({
     uid:        { type: Number, unique: true, index: true},
-    owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts' },
-    group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups', index: true },
+    owner:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'accounts'},
+    group:      { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'groups'},
     assignee:   { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
     date:       { type: Date, default: Date.now, required: true, index: true},
     updated:    { type: Date},
@@ -87,7 +87,7 @@ var ticketSchema = mongoose.Schema({
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
 
-ticketSchema.index({deleted: -1}, {group: 1});
+ticketSchema.index({deleted: -1}, {group: 1}, {status: 1});
 
 ticketSchema.plugin(deepPopulate);
 
@@ -756,7 +756,6 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
     }
 
     var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
-
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
         var status = object.status.map(Number);
         q.where({status: {$in: status} });
