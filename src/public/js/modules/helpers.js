@@ -21,8 +21,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
     var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
+    helpers.loaded = false;
+
     helpers.init = function() {
         var self = this;
+        if (self.loaded) {
+            console.warn('Helpers already loaded. Possible double load.');
+        }
 
         self.resizeFullHeight();
         self.setupScrollers();
@@ -38,7 +43,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
         //self.UI.expandSidebar();
         //self.UI.tooltipSidebar();
+        self.UI.bindExpand();
         self.UI.setupSidebarTether();
+        self.UI.bindAccordion();
 
         self.UI.fabToolbar();
         self.UI.inputs();
@@ -53,6 +60,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
         //Initial Call to Load Layout
         layout();
         $(window).resize(layout);
+
+        self.loaded = true;
     };
 
     helpers.countUpMe = function() {
@@ -65,6 +74,23 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
     };
 
     helpers.UI = {};
+
+    helpers.UI.bindAccordion = function() {
+        $('li[data-nav-accordion]').each(function() {
+            var $this = $(this).find('a');
+            $(this).off('click');
+            $this.on('click', function(e) {
+                e.preventDefault();
+                if (!$(this).parents('.sidebar').hasClass('expand')) return;
+                var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'));
+
+                if ($target.length > 0) {
+                    $target.toggleClass('subMenuOpen');
+                    $(this).parent('li.hasSubMenu').toggleClass('hasSubMenuOpen');
+                }
+            });
+        });
+    };
 
     helpers.UI.expandSidebar = function() {
         var $sidebar = $('.sidebar');
@@ -79,8 +105,23 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
         });
     };
 
-    helpers.UI.openSidebar = function() {
-        $('.sidebar').addClass('expand');
+    helpers.UI.toggleSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.toggleClass('expand');
+        $sidebar.find('.subMenuOpen').each(function() { $(this).removeClass('subMenuOpen'); });
+        $('#page-content').toggleClass('expanded-sidebar');
+        setTimeout(function() { Tether.position(); }, 500);
+    };
+
+    helpers.UI.bindExpand = function() {
+        var menuButton = $('#expand-menu');
+        if (menuButton.length > 0) {
+            menuButton.off('click');
+            menuButton.on('click', function(e) {
+                e.preventDefault();
+                helpers.UI.toggleSidebar();
+            });
+        }
     };
 
     helpers.UI.tooltipSidebar = function() {
@@ -97,14 +138,19 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
         ];
 
         _.each(sidebarElements, function(item) {
-            console.log(item);
             var element = $('.sidebar-to-right').find(item.element);
-            var target = $('.sidebar').find('li[data-nav-id="' + item.target + '"]');
+            var sidebar = $('.sidebar');
+            var target = sidebar.find('li[data-nav-id="' + item.target + '"]');
             helpers.UI.sidebarTether(element, target);
             var isInside = false;
             target.on('mouseover',function() {
-                element.addClass('sub-menu-right-open');
-                isInside = true;
+                if (sidebar.hasClass('expand')) {
+                    element.removeClass('sub-menu-right-open');
+                    isInside = false;
+                } else {
+                    element.addClass('sub-menu-right-open');
+                    isInside = true;
+                }
             });
             target.on('mouseleave', function() {
                 isInside = false;
@@ -112,7 +158,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
                     if (!isInside) {
                         element.removeClass('sub-menu-right-open');
                     }
-                }, 200);
+                }, 100);
             });
             element.on('mouseover', function() { isInside = true; });
             element.on('mouseleave', function() {
@@ -120,7 +166,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
                 setTimeout(function() {
                     if (!isInside)
                         element.removeClass('sub-menu-right-open');
-                }, 200);
+                }, 100);
             });
         });
     };
@@ -131,7 +177,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
             target: target,
             attachment: 'top left',
             targetAttachment: 'top right',
-            offset: '0 -5px'
+            offset: '0 -3px'
         });
     };
 
@@ -676,6 +722,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
     helpers.onWindowResize = function() {
         var self = this;
         return _.debounce(function() {
+            $('body > .side-nav-sub.tether-element').each(function() {
+                $(this).remove();
+            });
+
             self.resizeFullHeight();
             self.hideAllpDropDowns();
 

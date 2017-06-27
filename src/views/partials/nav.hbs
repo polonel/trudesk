@@ -8,11 +8,28 @@
                 <!--</svg>-->
             <!--</div>-->
         <!--</div>-->
-        <li {{#is nav 'dashboard'}} class='active' {{/is}} data-uk-tooltip="{pos: 'left'}" title="Dashboard">
+        <li {{#is nav 'dashboard'}} class='active' {{/is}}>
             <a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a>
         </li>
-        <li {{#is nav 'tickets'}} class='active' {{/is}} data-nav-id="tickets">
-            <a class="navTickets" href="/tickets"><i class="material-icons">assignment</i>Tickets</a>
+        <li class="hasSubMenu {{#is nav 'tickets'}} active {{/is}}" data-nav-id="tickets" style="position: relative;" data-nav-accordion data-nav-accordion-target="side-nav-accordion-tickets">
+            <a class="navTickets" href="#"><i class="material-icons">assignment</i>Tickets</a>
+
+            <ul id="side-nav-accordion-tickets" class="side-nav-sub side-nav-accordion {{#is nav 'tickets'}} subMenuOpen {{/is}}">
+                <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><i class="material-icons fa-sub-icon">timer</i>Active</a></li>
+                <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}>
+                    <a href="/tickets/assigned">
+                        <svg style="width:24px;height:24px" viewBox="0 0 24 24">
+                            <path d="M18,16H6V15.1C6,13.1 10,12 12,12C14,12 18,13.1 18,15.1M12,5.3C13.5,5.3 14.7,6.5 14.7,8C14.7,9.5 13.5,10.7 12,10.7C10.5,10.7 9.3,9.5 9.3,8C9.3,6.5 10.5,5.3 12,5.3M19,2H5C3.89,2 3,2.89 3,4V18A2,2 0 0,0 5,20H9L12,23L15,20H19A2,2 0 0,0 21,18V4C21,2.89 20.1,2 19,2Z" />
+                        </svg>
+                        Assigned
+                    </a>
+                </li>
+                <hr/>
+                <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="material-icons fa-sub-icon">&#xE24D;</i>New</a></li>
+                <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="material-icons fa-sub-icon">&#xE629;</i>Pending</a></li>
+                <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="material-icons fa-sub-icon">&#xE2C8;</i>Open</a></li>
+                <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><i class="material-icons fa-sub-icon">&#xE2C7;</i>Closed</a></li>
+            </ul>
         </li>
         <li {{#is nav 'messages'}} class='active' {{/is}}>
             <a href="/messages" class="navMessages ajaxify" data-url="/messages" data-sub-menu="side-nav-sub-messages"><i class="material-icons">chat</i>Messages</a>
@@ -41,7 +58,7 @@
             </li>
         {{/canUser}}
 
-        <li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}}>
+        <li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}} >
             <a href="/plugins"><i class="material-icons">select_all</i>Plugins</a>
             <ul id="side-nav-sub-plugins" class="side-nav-sub {{#is nav 'plugins'}} subMenuOpen {{/is}}">
                 {{#each data.common.plugins}}
@@ -82,11 +99,13 @@
             <li {{#is nav 'settings'}} class="active" {{/is}} data-nav-id="settings"><a href="/settings"><i class="material-icons">settings</i>Settings</a>
             </li>
         {{/canUser}}
-            <li {{#is nav 'about'}} class="active" {{/is}}><a href="/about"><i class="material-icons">help</i>About</a></li>
+            <li {{#is nav 'about'}} class="active" {{/is}}><a href="/about" ><i class="material-icons">help</i>About</a></li>
         <!--<hr>-->
             <!--<li {{#is nav 'bugreport'}} class="active" {{/is}}><a href="/bugreport"><i class="material-icons">bug_report</i>Bug Report</a></li>-->
-
     </ul>
+    <div class="side-nav-bottom-panel" style="position: absolute; bottom: 0; left: 0;">
+        <a id="expand-menu" href="#"><i class="material-icons">menu</i>Collapse Menu</a>
+    </div>
 </div>
 <div class="sidebar-to-right">
     <ul id="side-nav-sub-tickets" class="side-nav-sub side-nav-floating">
