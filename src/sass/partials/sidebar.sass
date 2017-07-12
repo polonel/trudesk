@@ -45,11 +45,6 @@ body > .side-nav-sub.tether-element
     ul.side-nav
       li.hasSubMenu:after
         opacity: 1
-      li.active
-        ul.side-nav-accordion
-          display: block !important
-  ul.side-nav-accordion
-    display: none !important
 
 .side-nav-bottom-panel
   width: 100%
@@ -161,7 +156,9 @@ ul.side-nav
         transition: transform .3s ease, opacity .15s ease
         content: 'expand_less'
         pointer-events: none
-
+      &.active
+        &:after
+          color: #fff
 
     &.active > a
       font-family: "Roboto", sans-serif !important
@@ -243,18 +240,22 @@ ul.side-nav-sub
   box-shadow: $sidebar_subnav_box_shadow
   +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
   margin: 0
-  padding: 10px 0
   overflow: hidden
-  display: none
+  max-height: 0
+  padding: 0
+  transition: all .3s cubic-bezier(.215,.61,.355,1)
+  -webkit-transition: all .3s cubic-bezier(.215,.61,.355,1)
+  -moz-transition: all .3s cubic-bezier(.215,.61,.355,1)
+
   &.subMenuOpen
-    display: block !important
-    a
-      padding: 0 60px !important
+    max-height: 500px
+
   &.side-nav-floating
     width: 150px
     position: absolute
     top: 0
     left: 0
+    max-height: none !important
     -webkit-transition: all .3s cubic-bezier(.215,.61,.355,1)
     -moz-transition: all .3s cubic-bezier(.215,.61,.355,1)
     transition: all .3s cubic-bezier(.215,.61,.355,1)
@@ -324,7 +325,7 @@ ul.side-nav-sub
   a
     border: none
     font-weight: 300
-    padding-left: 0 !important
+    padding-left: 60px !important
     line-height: 30px
     height: 30px !important
     color: $sidebar_subnav_text

@@ -11,10 +11,10 @@
         <li {{#is nav 'dashboard'}} class='active' {{/is}}>
             <a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a>
         </li>
-        <li class="hasSubMenu {{#is nav 'tickets'}} active {{/is}}" data-nav-id="tickets" style="position: relative;" data-nav-accordion data-nav-accordion-target="side-nav-accordion-tickets">
-            <a class="navTickets" href="#"><i class="material-icons">assignment</i>Tickets</a>
+        <li class="hasSubMenu{{#is nav 'tickets'}} active {{/is}}" data-nav-id="tickets" style="position: relative;" data-nav-accordion data-nav-accordion-target="side-nav-accordion-tickets">
+            <a class="navTickets no-ajaxy" href="#"><i class="material-icons">assignment</i>Tickets</a>
 
-            <ul id="side-nav-accordion-tickets" class="side-nav-sub side-nav-accordion {{#is nav 'tickets'}} subMenuOpen {{/is}}">
+            <ul id="side-nav-accordion-tickets" class="side-nav-sub side-nav-accordion">
                 <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><i class="material-icons fa-sub-icon">timer</i>Active</a></li>
                 <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}>
                     <a href="/tickets/assigned">
@@ -48,13 +48,25 @@
         <!--<li {{#is nav 'chat'}} class='active' {{/is}}><a href="/chat"><i class="fa fa-comments-o fa-large"></i>Chat</a></li>-->
         <!--<li {{#is nav 'invoices'}} class='active' {{/is}}><a href="/invoices"><i class="material-icons">payment</i>Invoices</a></li>-->
         {{#canUser data.user "reports:view"}}
-            <li {{#is nav 'reports'}} class='active' {{/is}} data-nav-id="reports">
-                <a href="/reports">
+            <li class="hasSubMenu {{#is nav 'reports'}}active{{/is}}" data-nav-id="reports" data-nav-accordion data-nav-accordion-target="side-nav-accordion-reports">
+                <a class="no-ajaxy" href="#">
                     <svg style="width:24px;height:24px" viewBox="0 0 24 24">
                         <path d="M17.45,15.18L22,7.31V19L22,21H2V3H4V15.54L9.5,6L16,9.78L20.24,2.45L21.97,3.45L16.74,12.5L10.23,8.75L4.31,19H6.57L10.96,11.44L17.45,15.18Z" />
                     </svg>
                     Reports
                 </a>
+
+                <ul id="side-nav-accordion-reports" class="side-nav-sub side-nav-accordion">
+                    <li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i><span>Overview</span></a></li>
+                    <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i><span>Generate</span></a></li>
+                    <hr/>
+                    <!--<li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown">< i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>-->
+                    <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i><span>Group Breakdown</span></a></li>
+                    <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i><span>User Breakdown</span></a></li>
+                    <!--<li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>-->
+                    <!--<li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>-->
+                    <!--<li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>-->
+                </ul>
             </li>
         {{/canUser}}
 
@@ -104,7 +116,7 @@
             <!--<li {{#is nav 'bugreport'}} class="active" {{/is}}><a href="/bugreport"><i class="material-icons">bug_report</i>Bug Report</a></li>-->
     </ul>
     <div class="side-nav-bottom-panel" style="position: absolute; bottom: 0; left: 0;">
-        <a id="expand-menu" href="#"><i class="material-icons">menu</i>Collapse Menu</a>
+        <a id="expand-menu" class="no-ajaxy" href="#"><i class="material-icons">menu</i>Collapse Menu</a>
     </div>
 </div>
 <div class="sidebar-to-right">

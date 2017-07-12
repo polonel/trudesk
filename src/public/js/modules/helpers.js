@@ -77,11 +77,25 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
     helpers.UI.bindAccordion = function() {
         $('li[data-nav-accordion]').each(function() {
-            var $this = $(this).find('a');
-            $(this).off('click');
+            if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
+                $(this).addClass('hasSubMenuOpen');
+                var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
+                if (subMenu.length > 0) subMenu.addClass('subMenuOpen');
+            }
+            var $this = $(this).find('> a');
+            $this.off('click');
             $this.on('click', function(e) {
                 e.preventDefault();
+                e.stopPropagation();
                 if (!$(this).parents('.sidebar').hasClass('expand')) return;
+
+                //Shut all other sidebars...
+                $('li[data-nav-accordion].hasSubMenuOpen').each(function() {
+                    var $tTarget = $('#' + $(this).attr('data-nav-accordion-target'));
+                    $tTarget.removeClass('subMenuOpen');
+                    $(this).removeClass('hasSubMenuOpen');
+                });
+
                 var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'));
 
                 if ($target.length > 0) {
@@ -108,9 +122,17 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
     helpers.UI.toggleSidebar = function() {
         var $sidebar = $('.sidebar');
         $sidebar.toggleClass('expand');
-        $sidebar.find('.subMenuOpen').each(function() { $(this).removeClass('subMenuOpen'); });
         $('#page-content').toggleClass('expanded-sidebar');
-        setTimeout(function() { Tether.position(); }, 500);
+        if ($sidebar.hasClass('expand')) {
+            $('.sidebar').find('.tether-element.tether-enabled').hide();
+            $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen');
+            $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen');
+        } else {
+            setTimeout(function() { Tether.position(); $('.sidebar').find('.tether-element.tether-enabled').show();}, 500);
+            $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen');
+            $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen');
+        }
+
     };
 
     helpers.UI.bindExpand = function() {
