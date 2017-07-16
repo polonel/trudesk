@@ -45,20 +45,32 @@ body > .side-nav-sub.tether-element
     ul.side-nav
       li.hasSubMenu:after
         opacity: 1
+    .side-nav-bottom-panel
+      width: 215px
+      a
+        width: 215px
+        padding: 0 0 0 60px !important
+        font-size: 100%
+
 
 .side-nav-bottom-panel
-  width: 100%
+  //width: 100%
   background: $sidebar_bg
   display: block
   margin: 0
   padding: 0
+  width: 57px
+  transition: all .2s ease
   +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
   a
-    padding: 0 0.875rem !important
+    transition: all .2s ease
+    //padding: 0 0.875rem !important
+    padding: 0 !important
+    font-size: 0
     color: $sidebar_text !important
     //border-left: 2px solid $sidebar_bg
     position: relative
-    padding-left: 60px !important
+    //padding-left: 60px !important
     line-height: 48px
     height: 48px
 
