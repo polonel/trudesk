@@ -40,7 +40,7 @@ define('modules/ajaxify', [
             $(this).remove();
         });
 
-        helpers.init();
+        helpers.init(true);
         helpers.hideAllUiKitDropdowns();
         // helpers.UI.setNavItem($('#__sidebar_route').text().toLowerCase());
 

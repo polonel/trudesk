@@ -14,17 +14,17 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'tether', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'tether', 'roles', 'jscookie', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES, Cookies) {
 
     var helpers = {};
 
     var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
     helpers.loaded = false;
-
-    helpers.init = function() {
+    helpers.init = function(reload) {
         var self = this;
+        if (reload) self.loaded = false;
         if (self.loaded) {
             console.warn('Helpers already loaded. Possible double load.');
         }
@@ -43,6 +43,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
         //self.UI.expandSidebar();
         //self.UI.tooltipSidebar();
+
+        self.UI.initSidebar();
         self.UI.bindExpand();
         self.UI.setupSidebarTether();
         self.UI.bindAccordion();
@@ -108,15 +110,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
     helpers.UI.expandSidebar = function() {
         var $sidebar = $('.sidebar');
-        $sidebar.off('mouseover');
-        $sidebar.on('mouseover', function() {
-            $(this).addClass('expand');
-        });
-
-        $sidebar.off('mouseout');
-        $sidebar.on('mouseout', function() {
-            $(this).removeClass('expand');
-        });
+        // $sidebar.css('transition', 'none');
+        $sidebar.addClass('no-animation expand');
+        $('#page-content').addClass('no-animation expanded-sidebar');
+        setTimeout(function() {
+            $sidebar.removeClass('no-animation');
+            $('#page-content').removeClass('no-animation');
+        }, 1000);
     };
 
     helpers.UI.toggleSidebar = function() {
@@ -142,8 +142,18 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
             menuButton.on('click', function(e) {
                 e.preventDefault();
                 helpers.UI.toggleSidebar();
+                if ($('.sidebar').hasClass('expand')) {
+                    Cookies.set('$trudesk:sidebar:expanded', true, { expires: 999 });
+                } else {
+                    Cookies.set('$trudesk:sidebar:expanded', false, { expires: 999 });
+                }
             });
         }
+    };
+
+    helpers.UI.initSidebar = function() {
+        if (Cookies.get('$trudesk:sidebar:expanded') === 'true')
+            helpers.UI.expandSidebar();
     };
 
     helpers.UI.tooltipSidebar = function() {
