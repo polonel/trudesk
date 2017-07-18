@@ -342,6 +342,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
     font-size: 24px
 
 .search-box
+  position: relative
   padding: 10px
   border-top: 1px solid #ddd
   border-right: $sidebar_border_right
@@ -354,3 +355,14 @@ input[type="checkbox"]:checked.poloCheckbox + label
     font-size: 13px
     font-weight: 300
     +borderRadius(15px)
+  &.withSeperator
+    padding-left: 33px
+    &::before
+      content: "\E5D4"
+      font-family: "Material Icons"
+      font-style: normal
+      color: #595f69
+      font-size: 30px
+      position: absolute
+      top: 13px
+      left: 0
