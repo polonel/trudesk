@@ -14,8 +14,8 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'tether', 'roles', 'jscookie', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES, Cookies) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'jscookie', 'tether', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
     var helpers = {};
 
@@ -110,13 +110,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
     helpers.UI.expandSidebar = function() {
         var $sidebar = $('.sidebar');
-        // $sidebar.css('transition', 'none');
         $sidebar.addClass('no-animation expand');
         $('#page-content').addClass('no-animation expanded-sidebar');
         setTimeout(function() {
             $sidebar.removeClass('no-animation');
             $('#page-content').removeClass('no-animation');
-        }, 1000);
+        }, 500);
     };
 
     helpers.UI.toggleSidebar = function() {
@@ -171,8 +170,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
 
         _.each(sidebarElements, function(item) {
             var element = $('.sidebar-to-right').find(item.element);
+            if (element.length < 1) return;
             var sidebar = $('.sidebar');
             var target = sidebar.find('li[data-nav-id="' + item.target + '"]');
+            if (target.length < 1) return;
             helpers.UI.sidebarTether(element, target);
             var isInside = false;
             target.on('mouseover',function() {
@@ -204,6 +205,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Tether, ROLES
     };
 
     helpers.UI.sidebarTether = function(element, target) {
+        if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1)
+            return;
+
         new Tether({
             element: element,
             target: target,

@@ -92,6 +92,8 @@ module.exports = {
             $: 'jquery',
             jQuery: 'jquery',
             Cookies: 'jscookie',
+            Tether: 'tether',
+            "window.Tether": 'tether',
             "window.jQuery": 'jquery',
             "window.$": 'jquery',
             Modernizr: 'modernizr',
