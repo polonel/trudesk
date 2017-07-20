@@ -22,7 +22,7 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 3. Start the server: ```npm start```
 4. Navigate to: ```http://localhost:8118```
 
-####Ubuntu 16.04 Install Script
+#### Ubuntu 16.04 Install Script
 ```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
 
 ### Documentation
