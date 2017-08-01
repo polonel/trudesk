@@ -1206,6 +1206,16 @@ ticketSchema.statics.getTagCount = function(tagId, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getTypeCount = function(typeId, callback) {
+    if (_.isUndefined(typeId)) return callback("Invalid Type Id - TicketSchema.GetTypeCount()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).count({type: typeId, deleted: false});
+
+    return q.exec(callback);
+};
+
 /**
  * Mark a ticket as deleted in MongoDb <br/><br/>
  * *Ticket has its ```deleted``` flag set to true*

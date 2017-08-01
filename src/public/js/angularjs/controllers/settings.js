@@ -121,15 +121,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
+                var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
                 $('input#mailerCheckPort').attr('disabled', !newVal);
                 $('input#mailerCheckUsername').attr('disabled', !newVal);
                 $('input#mailerCheckPassword').attr('disabled', !newVal);
                 $('button#mailerCheckSubmit').attr('disabled', !newVal);
-                if (!newVal == true)
-                    $('select#mailerCheckTicketType').selectize()[0].selectize.disable();
-                else
-                    $('select#mailerCheckTicketType').selectize()[0].selectize.enable();
+                if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
+                    if (!newVal === true)
+                        $mailerCheckTicketTypeSelectize.selectize.disable();
+                    else
+                        $mailerCheckTicketTypeSelectize.selectize.enable();
+                }
             });
 
             $scope.mailerCheckEnabledChange = function() {

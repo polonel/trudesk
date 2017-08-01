@@ -12,13 +12,14 @@
 
  **/
 
-var async           = require('async');
-var _               = require('underscore');
-var winston         = require('winston');
-var jsStringEscape  = require('js-string-escape');
-var settingSchema   = require('../models/setting');
-var tagSchema       = require('../models/tag');
-var permissions     = require('../permissions');
+var async               = require('async');
+var _                   = require('underscore');
+var winston             = require('winston');
+var jsStringEscape      = require('js-string-escape');
+var settingSchema       = require('../models/setting');
+var tagSchema           = require('../models/tag');
+var ticketTypeSchema    = require('../models/tickettype');
+var permissions         = require('../permissions');
 
 var settingsController = {};
 
@@ -258,6 +259,49 @@ settingsController.editTag = function(req, res) {
     ], function(err) {
         if (err) return handleError(res, err);
         return res.render('subviews/editTag', self.content);
+    });
+};
+
+settingsController.ticketTypes = function(req, res) {
+    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Ticket Types";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-tickettypes';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    var resultTypes = [];
+    async.waterfall([
+        function(next) {
+            ticketTypeSchema.getTypes(function(err, types) {
+                if (err) return handleError(res, err);
+
+                return next(null, types);
+            });
+        },
+        function(types, next) {
+            var ts = require('../models/ticket');
+            async.each(types, function(type, cb) {
+                ts.getTypeCount(type._id, function(err, count) {
+                    if (err) return cb(err);
+
+                    resultTypes.push({type: type, count: count});
+
+                    cb();
+                });
+            }, function(err) {
+                return next(err);
+            });
+        }
+    ], function() {
+        self.content.data.types = _.sortBy(resultTypes, function(o){ return o.type.name; });
+
+        return res.render('settings_ticketTypes', self.content)
     });
 };
 

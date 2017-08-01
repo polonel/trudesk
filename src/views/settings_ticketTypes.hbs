@@ -10,7 +10,7 @@
                             <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                 <ul class="uk-nav">
                                     <li>
-                                        <a href="#" role="button" ng-click="createTag($event)">Create</a>
+                                        <a href="#" role="button" ng-click="createTicketType($event)">Create</a>
                                     </li>
                                 </ul>
                             </div>
@@ -22,8 +22,8 @@
     </div>
 
     <div class="full-height page-content no-border-top" style="position: relative;">
-        <div class="tagsList full-height">
-            <table id="tagsTable" class="pDataTable stripe">
+        <div class="ticketTypeList full-height">
+            <table id="ticketTypesTable" class="pDataTable stripe">
                 <thead>
                 <tr>
                     <th></th>
@@ -32,13 +32,13 @@
                 </tr>
                 </thead>
                 <tbody>
-                {{#each data.tags}}
-                    <tr ng-click="editTag($event)" data-tagOId="{{tag._id}}">
+                {{#each data.types}}
+                    <tr ng-click="editType($event)" data-tagOId="{{type._id}}">
                         <td>
-                            <input id="c_{{tag._id}}" type="checkbox" class="poloCheckbox"/>
-                            <label for="c_{{tag._id}}"></label>
+                            <input id="c_{{type._id}}" type="checkbox" class="poloCheckbox"/>
+                            <label for="c_{{type._id}}"></label>
                         </td>
-                        <td>{{tag.name}}</td>
+                        <td>{{type.name}}</td>
                         <td style="text-align: right; padding-right: 25px;">{{count}}</td>
                     </tr>
                 {{/each}}
