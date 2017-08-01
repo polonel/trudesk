@@ -187,7 +187,7 @@ ticketsController.getAssigned = function(req, res, next) {
 
     req.processor = self.processor;
 
-    next();
+    return next();
 };
 
 ticketsController.filter = function(req, res, next) {
@@ -278,7 +278,6 @@ ticketsController.processor = function(req, res) {
     self.content.data.filter = object.filter;
 
     var userGroups = [];
-    var totalCount = 0;
 
     async.waterfall([
         function(callback) {
@@ -313,9 +312,7 @@ ticketsController.processor = function(req, res) {
         if (err) return handleError(res, err);
 
         //Ticket Data
-        self.content.data.totalCount = 0;
         self.content.data.tickets = results;
-        totalCount = results.length;
 
         var countObject = {
             status: object.status,
@@ -331,16 +328,16 @@ ticketsController.processor = function(req, res) {
             self.content.data.pagination = {};
             self.content.data.pagination.type = processor.pagetype;
             self.content.data.pagination.currentpage = object.page;
-            self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
-            self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+            self.content.data.pagination.start = (object.page === 0) ? 1 : object.page * object.limit;
+            self.content.data.pagination.end = (object.page === 0) ? object.limit : (object.page*object.limit)+object.limit;
             self.content.data.pagination.enabled = false;
 
             self.content.data.pagination.total = totalCount;
             if (self.content.data.pagination.total > object.limit)
                 self.content.data.pagination.enabled = true;
 
-            self.content.data.pagination.prevpage = (object.page == 0) ? 0 : Number(object.page) - 1;
-            self.content.data.pagination.prevEnabled = (object.page != 0);
+            self.content.data.pagination.prevpage = (object.page === 0) ? 0 : Number(object.page) - 1;
+            self.content.data.pagination.prevEnabled = (object.page !== 0);
             self.content.data.pagination.nextpage = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total) ? Number(object.page) + 1 : object.page;
             self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
 

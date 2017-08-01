@@ -25,15 +25,15 @@ define(['angular'], function(angular) {
                 };
 
                 SessionService.prototype.init = function(callback) {
-                    if (sessionUser === null || typeof(sessionUser) === 'undefined') {
+                    if (sessionUser === null || angular.isUndefined(sessionUser)) {
                         $http.get('/api/v1/login')
                             .success(function(data) {
                                 sessionUser = data.user;
 
-                                if (typeof(callback) === 'function')
+                                if (angular.isFunction(callback))
                                     return callback(null, sessionUser);
                             }).error(function(error) {
-                                if (typeof(callback) === 'function')
+                                if (angular.isFunction(callback))
                                     return callback(error, null);
                         });
                     }
@@ -44,7 +44,7 @@ define(['angular'], function(angular) {
                 return SessionService;
             })();
 
-            if (typeof($window.trudeskSessionService) === 'undefined' || $window.trudeskSessionService === null) {
+            if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) {
                 $window.trudeskSessionService = new SessionService();
             }
 

@@ -99,6 +99,9 @@ module.exports = function(app, db, callback) {
             app.use(allowCrossDomain);
             app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
 
+            //Mobile
+            app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')));
+
             app.use(express.static(path.join(__dirname, '../../', 'public')));
 
             //Remove to enable plugins
@@ -108,7 +111,7 @@ module.exports = function(app, db, callback) {
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
                if (err) throw err;
                var plugin = require(path.join(dir, 'plugin.json'));
-               if (_.findWhere(global.plugins, {'name': plugin.name}) != undefined)
+               if (_.findWhere(global.plugins, {'name': plugin.name}) !== undefined)
                    throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
 
                global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});

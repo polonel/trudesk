@@ -14,15 +14,20 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'jscookie', 'tether', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
     var helpers = {};
 
     var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
-    helpers.init = function() {
+    helpers.loaded = false;
+    helpers.init = function(reload) {
         var self = this;
+        if (reload) self.loaded = false;
+        if (self.loaded) {
+            console.warn('Helpers already loaded. Possible double load.');
+        }
 
         self.resizeFullHeight();
         self.setupScrollers();
@@ -36,7 +41,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.setupChosen();
         self.bindNewMessageSubmit();
 
-        self.UI.expandSidebar();
+        //self.UI.expandSidebar();
+        //self.UI.tooltipSidebar();
+
+        self.UI.initSidebar();
+        self.UI.bindExpand();
+        self.UI.setupSidebarTether();
+        self.UI.bindAccordion();
 
         self.UI.fabToolbar();
         self.UI.inputs();
@@ -51,6 +62,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         //Initial Call to Load Layout
         layout();
         $(window).resize(layout);
+
+        self.loaded = true;
     };
 
     helpers.countUpMe = function() {
@@ -64,21 +77,144 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     helpers.UI = {};
 
-    helpers.UI.expandSidebar = function() {
-        var $sidebar = $('.sidebar');
-        $sidebar.off('mouseover');
-        $sidebar.on('mouseover', function() {
-            $(this).addClass('expand');
-        });
+    helpers.UI.bindAccordion = function() {
+        $('li[data-nav-accordion]').each(function() {
+            if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
+                $(this).addClass('hasSubMenuOpen');
+                var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
+                if (subMenu.length > 0) subMenu.addClass('subMenuOpen');
+            }
+            var $this = $(this).find('> a');
+            $this.off('click');
+            $this.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!$(this).parents('.sidebar').hasClass('expand')) return;
 
-        $sidebar.off('mouseout');
-        $sidebar.on('mouseout', function() {
-            $(this).removeClass('expand');
+                //Shut all other sidebars...
+                $('li[data-nav-accordion].hasSubMenuOpen').each(function() {
+                    var $tTarget = $('#' + $(this).attr('data-nav-accordion-target'));
+                    $tTarget.removeClass('subMenuOpen');
+                    $(this).removeClass('hasSubMenuOpen');
+                });
+
+                var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'));
+
+                if ($target.length > 0) {
+                    $target.toggleClass('subMenuOpen');
+                    $(this).parent('li.hasSubMenu').toggleClass('hasSubMenuOpen');
+                }
+            });
         });
     };
 
-    helpers.UI.openSidebar = function() {
-        $('.sidebar').addClass('expand');
+    helpers.UI.expandSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.addClass('no-animation expand');
+        $('#page-content').addClass('no-animation expanded-sidebar');
+        setTimeout(function() {
+            $sidebar.removeClass('no-animation');
+            $('#page-content').removeClass('no-animation');
+        }, 500);
+    };
+
+    helpers.UI.toggleSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.toggleClass('expand');
+        $('#page-content').toggleClass('expanded-sidebar');
+        if ($sidebar.hasClass('expand')) {
+            $('.sidebar').find('.tether-element.tether-enabled').hide();
+            $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen');
+            $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen');
+        } else {
+            setTimeout(function() { Tether.position(); $('.sidebar').find('.tether-element.tether-enabled').show();}, 500);
+            $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen');
+            $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen');
+        }
+
+    };
+
+    helpers.UI.bindExpand = function() {
+        var menuButton = $('#expand-menu');
+        if (menuButton.length > 0) {
+            menuButton.off('click');
+            menuButton.on('click', function(e) {
+                e.preventDefault();
+                helpers.UI.toggleSidebar();
+                if ($('.sidebar').hasClass('expand')) {
+                    Cookies.set('$trudesk:sidebar:expanded', true, { expires: 999 });
+                } else {
+                    Cookies.set('$trudesk:sidebar:expanded', false, { expires: 999 });
+                }
+            });
+        }
+    };
+
+    helpers.UI.initSidebar = function() {
+        if (Cookies.get('$trudesk:sidebar:expanded') === 'true')
+            helpers.UI.expandSidebar();
+    };
+
+    helpers.UI.tooltipSidebar = function() {
+        $('.sidebar').find('a[data-uk-tooltip]').each(function() {
+            $(this).attr('style', 'padding: 0 !important; font-size: 0 !important;');
+        });
+    };
+
+    helpers.UI.setupSidebarTether = function() {
+        var sidebarElements = [
+            {element: "#side-nav-sub-tickets", target: 'tickets'},
+            {element: "#side-nav-sub-reports", target: 'reports'},
+            {element: "#side-nav-sub-settings", target: 'settings'}
+        ];
+
+        _.each(sidebarElements, function(item) {
+            var element = $('.sidebar-to-right').find(item.element);
+            if (element.length < 1) return;
+            var sidebar = $('.sidebar');
+            var target = sidebar.find('li[data-nav-id="' + item.target + '"]');
+            if (target.length < 1) return;
+            helpers.UI.sidebarTether(element, target);
+            var isInside = false;
+            target.on('mouseover',function() {
+                if (sidebar.hasClass('expand')) {
+                    element.removeClass('sub-menu-right-open');
+                    isInside = false;
+                } else {
+                    element.addClass('sub-menu-right-open');
+                    isInside = true;
+                }
+            });
+            target.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside) {
+                        element.removeClass('sub-menu-right-open');
+                    }
+                }, 100);
+            });
+            element.on('mouseover', function() { isInside = true; });
+            element.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside)
+                        element.removeClass('sub-menu-right-open');
+                }, 100);
+            });
+        });
+    };
+
+    helpers.UI.sidebarTether = function(element, target) {
+        if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1)
+            return;
+
+        new Tether({
+            element: element,
+            target: target,
+            attachment: 'top left',
+            targetAttachment: 'top right',
+            offset: '0 -3px'
+        });
     };
 
     helpers.UI.setNavItem = function(id) {
@@ -622,6 +758,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     helpers.onWindowResize = function() {
         var self = this;
         return _.debounce(function() {
+            $('body > .side-nav-sub.tether-element').each(function() {
+                $(this).remove();
+            });
+
             self.resizeFullHeight();
             self.hideAllpDropDowns();
 

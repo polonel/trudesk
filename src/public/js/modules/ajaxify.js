@@ -35,7 +35,12 @@ define('modules/ajaxify', [
         socketClient.chat.getOpenWindows();
         socketClient.chat.updateOnlineBubbles();
 
-        helpers.init();
+        //Remove Rogue Tethers
+        $('body > .side-nav-sub.tether-element').each(function() {
+            $(this).remove();
+        });
+
+        helpers.init(true);
         helpers.hideAllUiKitDropdowns();
         // helpers.UI.setNavItem($('#__sidebar_route').text().toLowerCase());
 

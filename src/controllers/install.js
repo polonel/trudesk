@@ -37,6 +37,11 @@ installController.mongotest = function(req, res) {
     if (req.secure) host = 'https://' + host;
     if (!req.secure) host = 'http://' + host;
 
+    //Firefox Hack - Firefox Bug 1341689
+    //Trudesk Bug #26
+    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
+    if (!origin) origin = host;
+
     if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
 
     var data = req.body;
@@ -57,6 +62,11 @@ installController.existingdb = function(req, res) {
     var shost = req.headers.host;
     if (req.secure) shost = 'https://' + shost;
     if (!req.secure) shost = 'http://' + shost;
+
+    //Firefox Hack - Firefox Bug 1341689
+    //Trudesk Bug #26
+    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
+    if (!origin) origin = shost;
 
     if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
 
@@ -98,6 +108,11 @@ installController.install = function(req, res) {
     var shost = req.headers.host;
     if (req.secure) shost = 'https://' + shost;
     if (!req.secure) shost = 'http://' + shost;
+
+    //Firefox Hack - Firefox Bug 1341689
+    //Trudesk Bug #26
+    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
+    if (!origin) origin = shost;
 
     if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
 
@@ -295,6 +310,11 @@ installController.restart = function(req, res) {
     var host = req.headers.host;
     if (req.secure) host = 'https://' + host;
     if (!req.secure) host = 'http://' + host;
+
+    //Firefox Hack - Firefox Bug 1341689
+    //Trudesk Bug #26
+    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
+    if (!origin) origin = host;
 
     if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
 

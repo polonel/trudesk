@@ -24,6 +24,7 @@ module.exports = {
             //client side
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
+            jscookie:       'vendor/jscookie/js.cookie.js',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -65,7 +66,7 @@ module.exports = {
             jquery_docsize: 'plugins/jquery.documentsize',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
-            tether:         'vendor/tether/tether.min',
+            tether:         'vendor/tether/tether',
             shepherd:       'vendor/shepherd/js/shepherd.min',
             snackbar:       'plugins/snackbar'
         }
@@ -90,6 +91,9 @@ module.exports = {
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
+            Cookies: 'jscookie',
+            Tether: 'tether',
+            "window.Tether": 'tether',
             "window.jQuery": 'jquery',
             "window.$": 'jquery',
             Modernizr: 'modernizr',

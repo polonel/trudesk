@@ -254,7 +254,8 @@
     window.truRequire(['jquery', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
         var helpers = loadedModules[1];
-        helpers.init();
+        helpers.UI.inputs();
+        helpers.UI.waves();
 
         $('#forgotPass').click(function(e) {
             e.preventDefault();
