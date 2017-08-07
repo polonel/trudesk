@@ -667,8 +667,8 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     var self = this;
 
-    var limit = (object.limit == null ? 10 : object.limit);
-    var page = (object.page == null ? 0 : object.page);
+    var limit = (object.limit === null ? 10 : object.limit);
+    var page = (object.page === null ? 0 : object.page);
     var _status = object.status;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
@@ -689,8 +689,14 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('history.owner', 'username fullname email role image title')
         .sort('-uid');
         //.sort({'status': 1})
-    if (limit != -1) {
+    if (limit !== -1) {
         q.skip(page*limit).limit(limit);
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.uid)) {
+        object.filter.uid = parseInt(object.filter.uid);
+        if (!_.isNaN(object.filter.uid))
+            q.or([{uid: object.filter.uid}]);
     }
 
     if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
@@ -717,7 +723,8 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({owner: {$in: object.filter.owner}});
     }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.or([{subject: new RegExp(object.filter.subject, "i")}]);
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, "i")}]);
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
 

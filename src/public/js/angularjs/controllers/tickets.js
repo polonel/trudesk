@@ -60,6 +60,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }
             };
 
+            $scope.searchBarSubmit = function(event) {
+                if (!_.isUndefined(event.keyCode) && event.keyCode === 13) {
+                    var searchBoxText = $('#tickets_Search').val();
+                    if (searchBoxText.length < 3) return true;
+
+                    var queryString = "?uid={0}&fs={0}&it={0}".formatUnicorn(searchBoxText);
+
+                    History.pushState(null, null, '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+                }
+            };
+
             $scope.showTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#addTagModal');

@@ -88,9 +88,11 @@
                         </li>
                     </ul>
                 </div>
-                <!--<div class="search-box" style="float: left; border: none; margin-top: 9px; padding-left: 0;">-->
-                    <!--<input type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;">-->
-                <!--</div>-->
+                <div class="search-box" style="float: left; border: none; margin-top: 9px; padding-left: 0;">
+                    <input id="tickets_Search" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                           ng-keypress="searchBarSubmit($event)"
+                           value="{{data.filter.subject}}">
+                </div>
             </div>
         </div>
 
