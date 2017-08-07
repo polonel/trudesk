@@ -1,6 +1,4 @@
 <div class="uk-grid uk-grid-collapse" ng-controller="settingsCtrl">
-<div id="__editTag_TagId" class="hide uk-hidden">{{data.tag._id}}</div>
-<div id="__editTag_TagName" class="hide uk-hidden">{{data.tag.name}}</div>
     <div class="uk-width-3-10 message-list">
         <div class="page-title noshadow nopadding-right" style="padding-left: 20px;">
             <div class="page-title-border-right">
@@ -15,13 +13,13 @@
                     <div class="tru-card" style="background: #fff;min-height: 150px; margin: 0; padding: 15px;">
                         <div class="scrollable">
                             <div class="uk-margin-small-top uk-margin-medium-bottom">
-                                <label for="editTag_Name">Name</label>
-                                <input id="editTag_Name" name="editTag_Name" type="text" class="md-input" value="{{data.tag.name}}" />
+                                <label for="editType_Name">Name</label>
+                                <input id="editType_Name" name="editType_Name" type="text" class="md-input" value="{{data.tickettype.name}}" />
                             </div>
 
-                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-success" ng-click="updateTag()">Update Tag</button>
+                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-success" ng-click="updateTicketType('{{data.tickettype._id}}')">Update</button>
                             <hr />
-                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-danger uk-margin-medium-bottom" ng-click="showDeleteTagConfirm()">Delete Tag</button>
+                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-danger uk-margin-medium-bottom" ng-click="showDeleteTicketType('{{data.tickettype._id}}', {{data.hasTickets}})">Delete</button>
                         </div>
                     </div>
                 </div>
@@ -47,7 +45,7 @@
                                                 <th class="uk-text-nowrap">Ticket</th>
                                                 <th class="uk-text-nowrap">Status</th>
                                                 <th class="uk-text-nowrap">Subject</th>
-                                                <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                                <th class="uk-text-nowrap uk-text-right">Created</th>
                                             </tr>
                                             </thead>
                                             <tbody>
@@ -61,7 +59,7 @@
                                                         {{subject}}
                                                     </td>
                                                     <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
-                                                        {{{formatDate updated "MM.DD.YYYY"}}}
+                                                        {{{formatDate date "MM.DD.YYYY"}}}
                                                     </td>
                                                 </tr>
                                             {{/each}}
@@ -77,6 +75,8 @@
     </div>
 
 </div>
+
+{{> deleteTicketTypeWindow}}
 
 {{#contentFor 'js-plugins'}}
 

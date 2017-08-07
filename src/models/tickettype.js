@@ -55,7 +55,7 @@ ticketTypeSchema.statics.getTypes = function(callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketTypeSchema.statics.getType = function(id, callback) {
-    var q = this.model(COLLECTION).findOne({_id: id}).lean();
+    var q = this.model(COLLECTION).findOne({_id: id});
 
     return q.exec(callback);
 };
