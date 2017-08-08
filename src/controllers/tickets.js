@@ -197,7 +197,9 @@ ticketsController.filter = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var queryString = req.query;
+    var uid = queryString.uid;
     var subject = queryString.fs;
+    var issue = queryString.it;
     var dateStart = queryString.ds;
     var dateEnd = queryString.de;
     var status = queryString.st;
@@ -218,7 +220,9 @@ ticketsController.filter = function(req, res, next) {
     if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee];
 
     var filter = {
+        uid: uid,
         subject: subject,
+        issue: issue,
         date: {
             start: dateStart,
             end: dateEnd

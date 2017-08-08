@@ -29,6 +29,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             console.warn('Helpers already loaded. Possible double load.');
         }
 
+        self.prototypes();
+
         self.resizeFullHeight();
         self.setupScrollers();
         self.formvalidator();
@@ -224,12 +226,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI.onlineUserSearch = function() {
-        var $searchBox = $('.online-list-search-box').find('input');
-        $searchBox.off('keyup', onSearchKeyUp);
-        $searchBox.on('keyup', onSearchKeyUp);
+        $(document).off('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+        $(document).on('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+
 
         function onSearchKeyUp() {
+            var $searchBox = $('.online-list-search-box').find('input');
             var searchTerm = $searchBox.val().toLowerCase();
+            
             $('.user-list li').each(function() {
                 if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
                     $(this).show();
@@ -1314,6 +1318,27 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     function stringStartsWith(string, prefix) {
         return string.slice(0, prefix.length) == prefix;
     }
+
+    helpers.prototypes = function() {
+        String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+            function () {
+                "use strict";
+                var str = this.toString();
+                if (arguments.length) {
+                    var t = typeof arguments[0];
+                    var key;
+                    var args = ("string" === t || "number" === t) ?
+                        Array.prototype.slice.call(arguments)
+                        : arguments[0];
+
+                    for (key in args) {
+                        str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+                    }
+                }
+
+                return str;
+            };
+    };
 
     return helpers;
 });
