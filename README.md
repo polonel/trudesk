@@ -26,7 +26,8 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 ```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
 
 #### Trudesk Virtual Appliance
-[Appliance version 0.1.10](http://www.trudesk.io/install/Trudesk-v0.1.10-Appliance.zip)
+The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as VMWare. Visit the appliance documentation for more information.
+[Trudesk Virtual Appliance Documentation](http://www.trudesk.io/docs/install_virtual_appliance.html)
 
 ### Documentation
 To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
