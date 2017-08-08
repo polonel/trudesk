@@ -25,6 +25,9 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 #### Ubuntu 16.04 Install Script
 ```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
 
+#### Trudesk Virtual Appliance
+[Appliance version 0.1.10](http://www.trudesk.io/install/Trudesk-v0.1.10-Appliance.zip)
+
 ### Documentation
 To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
 
