@@ -226,12 +226,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI.onlineUserSearch = function() {
-        var $searchBox = $('.online-list-search-box').find('input');
-        $searchBox.off('keyup', onSearchKeyUp);
-        $searchBox.on('keyup', onSearchKeyUp);
+        $(document).off('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+        $(document).on('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+
 
         function onSearchKeyUp() {
+            var $searchBox = $('.online-list-search-box').find('input');
             var searchTerm = $searchBox.val().toLowerCase();
+            
             $('.user-list li').each(function() {
                 if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
                     $(this).show();

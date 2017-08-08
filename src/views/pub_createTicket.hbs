@@ -408,9 +408,9 @@
         var $ = loadedModules[0];
         window.Snackbar = loadedModules[1];
         var helpers = loadedModules[2];
-        helpers.init();
 
         $(document).ready(function() {
+            helpers.init();
             getCaptcha();
             var $slides = $('.slides > .slide');
             var totalSlides = 0;
