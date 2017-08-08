@@ -3,7 +3,6 @@
 <br/><br/>
 
 [![Build Status](https://travis-ci.org/polonel/trudesk.svg?branch=master)](https://travis-ci.org/polonel/trudesk)
-[![Coverage Status](https://coveralls.io/repos/polonel/trudesk/badge.svg?branch=master&service=github)](https://coveralls.io/github/polonel/trudesk?branch=develop)
 
 [http://trudesk.io](http://trudesk.io/)
 
