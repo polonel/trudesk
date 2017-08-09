@@ -91,7 +91,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             $this.on('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
-                if (!$(this).parents('.sidebar').hasClass('expand')) return;
+                if (!$(this).parents('.sidebar').hasClass('expand')) {
+                    var href = $(this).attr('href');
+                    if (href !== '#')
+                        History.pushState(null, null, href);
+                    return true;
+                }
 
                 //Shut all other sidebars...
                 $('li[data-nav-accordion].hasSubMenuOpen').each(function() {
