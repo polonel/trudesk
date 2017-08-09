@@ -112,14 +112,6 @@ module.exports = function(grunt) {
             }
         },
 
-        sass: {
-            dist: {
-                files: {
-                    'public/css/app.css': 'src/sass/app.sass'
-                }
-            }
-        },
-
         apidoc: {
             trudesk: {
                 src: 'src/controllers/api/',

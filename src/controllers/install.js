@@ -144,7 +144,7 @@ installController.install = function(req, res) {
 
     async.waterfall([
         function(next) {
-            db.init(function(err, database) {
+            db.init(function(err) {
                 return next(err);
             });
         },

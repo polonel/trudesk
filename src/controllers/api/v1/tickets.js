@@ -774,6 +774,128 @@ api_tickets.getTypes = function(req, res) {
 };
 
 /**
+ * @api {post} /api/v1/tickets/types/create Create Ticket Type
+ * @apiName createType
+ * @apiDescription Creates a new ticket type
+ * @apiVersion 0.1.10
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -X POST
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"name\": \"TypeName\"}"
+ *      -l http://localhost/api/v1/tickets/types/create
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {Object} tickettype Returns the newly create ticket type
+ *
+ */
+api_tickets.createType = function(req, res) {
+    var typeName = req.body.name;
+    if (_.isUndefined(typeName) || typeName.length < 3) return res.status(400).json({success: false, error: 'Invalid Type Name!'});
+
+    var ticketTypeSchema = require('../../../models/tickettype');
+    ticketTypeSchema.create({name: typeName}, function(err, ticketType) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true, tickettype: ticketType});
+    })
+};
+
+/**
+ * @api {put} /api/v1/tickets/types/:id Update Ticket Type
+ * @apiName updateType
+ * @apiDescription Updates given ticket type
+ * @apiVersion 0.1.10
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -X PUT -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/types/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {object} tag Updated Ticket Type
+ *
+ */
+api_tickets.updateType = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
+        return res.status(400).json({success: false, error: 'Invalid Put Data'});
+
+    var ticketTypeSchema = require('../../../models/tickettype');
+    ticketTypeSchema.getType(id, function(err, type) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        type.name = data.name;
+
+        type.save(function(err, t) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            return res.json({success: true, type: t});
+        });
+    });
+};
+
+/**
+ * @api {delete} /api/v1/tickets/types/:id Delete Ticket Type
+ * @apiName deleteType
+ * @apiDescription Deletes given ticket type
+ * @apiVersion 0.1.10
+ * @apiGroup Ticket
+ * @apiHeader {string} accesstoken The access token for the logged in user
+ *
+ * @apiExample Example usage:
+ * curl -X DELETE
+ *      -H "accesstoken: {accesstoken}"
+ *      -d "{\"newTypeId\": \"{ObjectId}\"}"
+ *      -l http://localhost/api/v1/tickets/types/:id
+ *
+ * @apiSuccess {boolean} success Successfully?
+ * @apiSuccess {number} updated Count of Tickets updated to new type
+ *
+ */
+api_tickets.deleteType = function(req, res) {
+    var newTypeId = req.body.newTypeId;
+    var delTypeId = req.params.id;
+
+    if (_.isUndefined(newTypeId) || _.isUndefined(delTypeId))
+        return res.status(400).json({success: false, error: 'Invalid POST data.'});
+
+    var ticketTypeSchema = require('../../../models/tickettype');
+    var ticketSchema = require('../../../models/ticket');
+    var settingsSchema = require('../../../models/setting');
+    async.waterfall([
+        function(next) {
+            settingsSchema.getSettingByName('mailer:check:ticketype', function(err, setting) {
+                if (err) return next(err);
+                if (setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
+                    return next({custom: true, message: 'Type currently "Default Ticket Type" for mailer check.'});
+
+                return next(null);
+            });
+        },
+        function(next) {
+            ticketSchema.updateType(delTypeId, newTypeId, next);
+        },
+        function(result, next) {
+            ticketTypeSchema.getType(delTypeId, function(err, type) {
+                if (err) return next(err);
+
+                type.remove(function(err) {
+                    if (err) return next(err);
+                    return next(null, result);
+                });
+            });
+        }
+    ], function(err, result) {
+        if (err) return res.status(400).json({success: false, error: err});
+        return res.json({success: true, updated: result.nModified});
+    });
+};
+
+/**
  * @api {get} /api/v1/tickets/stats Get Ticket Stats
  * @apiName getTicketStats
  * @apiDescription Gets cached ticket stats
@@ -1365,7 +1487,7 @@ api_tickets.getTags = function(req, res) {
  * curl -H "accesstoken: {accesstoken}" -l http://localhost/api/v1/tickets/tags/:id
  *
  * @apiSuccess {boolean} success Successfully?
- * @apiSuccess {boolean} tag Updated Tag
+ * @apiSuccess {object} tag Updated Tag
  *
  */
 api_tickets.updateTag = function(req, res) {

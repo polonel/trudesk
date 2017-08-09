@@ -63,16 +63,16 @@
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
                                         {{#canUser data.user "ticket:Edit"}}
-                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="openTickets()">Set Open</a></li>
-                                            <li><a href="#" class="no-ajaxify" role="button">Set Pending</a></li>
-                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="closeTickets()">Set Closed</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="setOpenTickets()">Set Open</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="setPendingTickets()">Set Pending</a></li>
+                                            <li><a href="#" class="no-ajaxify" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
 
                                             <li><hr style="margin: 5px 0;"></li>
                                         {{else}}
                                             {{#canUser data.user "ticket:editSelf"}}
-                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="openTickets()">Set Open</a></li>
-                                                <li><a href="#" class="no-ajaxify" role="button">Set Pending</a></li>
-                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="closeTickets()">Set Closed</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="setOpenTickets()">Set Open</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="setPendingTickets()">Set Pending</a></li>
+                                                <li><a href="#" class="no-ajaxify" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
 
                                                 <li><hr style="margin: 5px 0;"></li>
                                             {{/canUser}}
@@ -89,7 +89,9 @@
                     </ul>
                 </div>
                 <div class="search-box" style="float: left; border: none; margin-top: 9px; padding-left: 0;">
-                    <input type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;">
+                    <input id="tickets_Search" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                           ng-keypress="searchBarSubmit($event)"
+                           value="{{data.filter.subject}}">
                 </div>
             </div>
         </div>

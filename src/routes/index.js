@@ -99,6 +99,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
+    router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);
+    router.get('/settings/tickettypes/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTicketType);
 
     //Plugins
     router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
@@ -115,6 +117,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType);
+    router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType);
+    router.delete('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.deleteType);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);

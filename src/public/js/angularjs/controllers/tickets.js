@@ -60,6 +60,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }
             };
 
+            $scope.searchBarSubmit = function(event) {
+                if (!_.isUndefined(event.keyCode) && event.keyCode === 13) {
+                    var searchBoxText = $('#tickets_Search').val();
+                    if (searchBoxText.length < 3) return true;
+
+                    var queryString = "?uid={0}&fs={0}&it={0}".formatUnicorn(searchBoxText);
+
+                    History.pushState(null, null, '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+                }
+            };
+
             $scope.showTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
@@ -118,7 +129,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 helpers.hideAllpDropDowns();
             };
 
-            $scope.openTickets = function() {
+            $scope.setOpenTickets = function() {
                 var $ids = getChecked();
 
                 _.each($ids, function(id) {
@@ -130,13 +141,31 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ).success(function() {
                         helpers.UI.showSnackbar({text: 'Ticket status set to open'});
                     }).error(function(e) {
-                        $log.error('[trudesk:tickets:openTickets] - Error: ' + e);
-                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                        $log.error('[trudesk:tickets:openTickets] - Error: ', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
                     });
                 });
             };
 
-            $scope.closeTickets = function() {
+            $scope.setPendingTickets = function() {
+                var $ids = getChecked();
+
+                _.each($ids, function(id) {
+                    $http.put(
+                        '/api/v1/tickets/' + id,
+                        {
+                            "status": 2
+                        }
+                    ).success(function() {
+                        helpers.UI.showSnackbar('Ticket status set to pending', false);
+                    }).error(function(e) {
+                        $log.error('[trudes:tickets:setPendingTickets] - Error ', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
+                    });
+                })
+            };
+
+            $scope.setClosedTickets = function() {
                 var $ids = getChecked();
 
                 _.each($ids, function(id) {
@@ -146,10 +175,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             "status": 3
                         }
                     ).success(function() {
-
+                        helpers.UI.showSnackbar('Ticket status set to closed', false);
                     }).error(function(e) {
-                        $log.error('[trudesk:tickets:closeTickets] - ' + e);
-                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                        $log.error('[trudesk:tickets:closeTickets] - Error', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
                     });
                 });
 

@@ -121,15 +121,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
+                var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
                 $('input#mailerCheckPort').attr('disabled', !newVal);
                 $('input#mailerCheckUsername').attr('disabled', !newVal);
                 $('input#mailerCheckPassword').attr('disabled', !newVal);
                 $('button#mailerCheckSubmit').attr('disabled', !newVal);
-                if (!newVal == true)
-                    $('select#mailerCheckTicketType').selectize()[0].selectize.disable();
-                else
-                    $('select#mailerCheckTicketType').selectize()[0].selectize.enable();
+                if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
+                    if (!newVal === true)
+                        $mailerCheckTicketTypeSelectize.selectize.disable();
+                    else
+                        $mailerCheckTicketTypeSelectize.selectize.enable();
+                }
             });
 
             $scope.mailerCheckEnabledChange = function() {
@@ -277,6 +280,128 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.showCreateTicketTypeWindow = function($event) {
+                $event.preventDefault();
+                var createTicketTypeModal = $('#createTicketTypeModal');
+                if (createTicketTypeModal.length > 0) {
+                    UIkit.modal(createTicketTypeModal, {bgclose: false}).show();
+                }
+            };
+
+            $scope.createTicketType = function(event) {
+                event.preventDefault();
+                var form = $('#createTicketTypeForm');
+                if (!form.isValid(null, null, false)) {
+                    return true;
+                } else {
+                    var typeName = form.find('input[name="typeName"]').val();
+                    if (!typeName || typeName.length < 3) return true;
+
+                    $http.post('/api/v1/tickets/types/create', {
+                        name: typeName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
+
+                        History.pushState(null, null, '/settings/tickettypes');
+
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);
+                        $log.error(err);
+                    });
+                }
+            };
+
+            $scope.editTicketType = function($event) {
+                if (_.isNull($event.target) || _.isUndefined($event.target) ||
+                    $event.target.tagName.toLowerCase() === 'label' ||
+                    $event.target.tagName.toLowerCase() === 'input')
+                    return true;
+
+                var ticketTypeId = $event.currentTarget.dataset.tickettypeoid;
+                if (!ticketTypeId) return true;
+
+                History.pushState(null, null, '/settings/tickettypes/' + ticketTypeId);
+            };
+
+            $scope.updateTicketType = function(typeId) {
+                if (!typeId || typeId.length < 1) {
+                    helpers.UI.showSnackbar('Unable to get type id', true);
+                    return true;
+                }
+
+                var typeName = $('#editType_Name').val();
+
+                $http.put('/api/v1/tickets/types/' + typeId, {
+                    name: typeName
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Type: ' + typeName + ' updated successfully', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                });
+            };
+
+            $scope.showDeleteTicketType = function(typeId, hasTickets) {
+                event.preventDefault();
+                if (hasTickets) {
+                    var delTicketTypeModal = $('#deleteTicketTypeModal');
+                    if (delTicketTypeModal.length > 0) {
+                        UIkit.modal(delTicketTypeModal, {bgclose: false}).show();
+                    }
+                } else {
+                    $scope.submitDeleteTicketType(typeId, undefined);
+                }
+            };
+
+            $scope.submitDeleteTicketType = function(typeId, event) {
+                if (event) event.preventDefault();
+
+                if (_.isUndefined(typeId) || typeId.length < 1) {
+                    helpers.UI.showSnackbar('Unable to get tag ID', true);
+                    return true;
+                }
+
+                var typeName = $('input#del_type_name').val();
+                var newTypeId = $('form#deleteTicketTypeForm select[name="type"]').val();
+
+                if (!newTypeId || newTypeId.length < 1) {
+                    helpers.UI.showSnackbar('Unable to get new ticket type. Aborting...', true);
+                    return true;
+                }
+
+                $http({
+                    method: 'DELETE',
+                    url: '/api/v1/tickets/types/' + typeId,
+                    data: {
+                        newTypeId: newTypeId
+                    },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(response) {
+                    if (response.data.success) {
+                        helpers.UI.showSnackbar('Successfully removed ticket type: ' + typeName, false);
+
+                        return History.pushState(null, null, '/settings/tickettypes/');
+                    }
+                }, function errorCallback(response) {
+                    if (!_.isUndefined(response.data.error.custom)) {
+                        $log.error('[trudesk:settings:submitDeleteTicketType] Error -', response.data.error);
+                        helpers.UI.showSnackbar(response.data.error.message, true);
+                    } else {
+                        $log.error('[trudesk:settings:submitDeleteTicketType] Error -', response.data.error);
+                        helpers.UI.showSnackbar('Unable to remove ticket type. Check console.', true);
+                    }
+                });
+            };
+
             $scope.editTag = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||
                     $event.target.tagName.toLowerCase() === 'label' ||
@@ -315,7 +440,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
-            $scope.showDeleteConfirm = function() {
+            $scope.showDeleteTagConfirm = function() {
                 var tagName = $('#__editTag_TagName').text();
                 UIkit.modal.confirm("Really delete tag " + tagName + '<br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
                     return $scope.deleteTag();

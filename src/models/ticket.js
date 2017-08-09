@@ -667,8 +667,8 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
 
     var self = this;
 
-    var limit = (object.limit == null ? 10 : object.limit);
-    var page = (object.page == null ? 0 : object.page);
+    var limit = (object.limit === null ? 10 : object.limit);
+    var page = (object.page === null ? 0 : object.page);
     var _status = object.status;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
@@ -689,8 +689,14 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('history.owner', 'username fullname email role image title')
         .sort('-uid');
         //.sort({'status': 1})
-    if (limit != -1) {
+    if (limit !== -1) {
         q.skip(page*limit).limit(limit);
+    }
+
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.uid)) {
+        object.filter.uid = parseInt(object.filter.uid);
+        if (!_.isNaN(object.filter.uid))
+            q.or([{uid: object.filter.uid}]);
     }
 
     if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
@@ -717,7 +723,8 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({owner: {$in: object.filter.owner}});
     }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.or([{subject: new RegExp(object.filter.subject, "i")}]);
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, "i")}]);
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
 
@@ -1060,8 +1067,8 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByTag = function(grpId, tagId, callback) {
-    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetTicketByTag()", null);
-    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTicketByTag()", null);
+    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetTicketsByTag()", null);
+    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTicketsByTag()", null);
 
     var self = this;
 
@@ -1080,13 +1087,63 @@ ticketSchema.statics.getTicketsByTag = function(grpId, tagId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getAllTicketsByTag = function(tagId, callback) {
-    if (_.isUndefined(tagId)) return callback("Invalid Group Ids - TicketSchema.GetAllTicketsByTag()", null);
+    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetAllTicketsByTag()", null);
 
     var self = this;
 
     var q = self.model(COLLECTION).find({tags: tagId, deleted: false});
 
-    return q.exec(callback);
+    return q.lean().exec(callback);
+};
+
+/**
+ * Gets tickets via type id
+ * @memberof Ticket
+ * @static
+ * @method getTicketsByType
+ *
+ * @param {Array} grpId Group Array of User
+ * @param {string} typeId Type Id
+ * @param {QueryCallback} callback MongoDB Query Callback
+ * @param {Boolean} limit Should Limit results?
+ */
+ticketSchema.statics.getTicketsByType = function(grpId, typeId, callback, limit) {
+    if (_.isUndefined(grpId)) return callback("Invalid Group Ids = TicketSchema.GetTicketsByType()", null);
+    if (_.isUndefined(typeId)) return callback("Invalid Ticket Type Id - TicketSchema.GetTicketsByType()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).find({group: {$in: grpId}, type: typeId, deleted: false});
+    if (limit)
+        q.limit(1000);
+
+    return q.lean().exec(callback);
+};
+
+/**
+ * Gets all tickets via type id
+ * @memberof Ticket
+ * @static
+ * @method getAllTicketsByType
+ *
+ * @param {string} typeId Type Id
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketSchema.statics.getAllTicketsByType = function(typeId, callback) {
+    if (_.isUndefined(typeId)) return callback("Invalid Ticket Type Id - TicketSchema.GetAllTicketsByType()", null);
+
+    var self = this;
+    var q = self.model(COLLECTION).find({type: typeId});
+
+    return q.lean().exec(callback);
+};
+
+ticketSchema.statics.updateType = function(oldTypeId, newTypeId, callback) {
+    if (_.isUndefined(oldTypeId) || _.isUndefined(newTypeId))
+        return callback("Invalid IDs - TicketSchema.UpdateType()", null);
+
+    var self = this;
+    return self.model(COLLECTION).update({type: oldTypeId}, {$set: {type: newTypeId}}, {multi: true, new: false}, callback);
 };
 
 ticketSchema.statics.getAssigned = function(user_id, callback) {
@@ -1202,6 +1259,16 @@ ticketSchema.statics.getTagCount = function(tagId, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).count({tags: tagId, deleted: false});
+
+    return q.exec(callback);
+};
+
+ticketSchema.statics.getTypeCount = function(typeId, callback) {
+    if (_.isUndefined(typeId)) return callback("Invalid Type Id - TicketSchema.GetTypeCount()", null);
+
+    var self = this;
+
+    var q = self.model(COLLECTION).count({type: typeId, deleted: false});
 
     return q.exec(callback);
 };

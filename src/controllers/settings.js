@@ -12,13 +12,14 @@
 
  **/
 
-var async           = require('async');
-var _               = require('underscore');
-var winston         = require('winston');
-var jsStringEscape  = require('js-string-escape');
-var settingSchema   = require('../models/setting');
-var tagSchema       = require('../models/tag');
-var permissions     = require('../permissions');
+var async               = require('async');
+var _                   = require('underscore');
+var winston             = require('winston');
+var jsStringEscape      = require('js-string-escape');
+var settingSchema       = require('../models/setting');
+var tagSchema           = require('../models/tag');
+var ticketTypeSchema    = require('../models/tickettype');
+var permissions         = require('../permissions');
 
 var settingsController = {};
 
@@ -113,7 +114,7 @@ settingsController.legal = function(req, res) {
 
         self.content.data.settings = s;
 
-        return res.render('subviews/settings/settings-legal', self.content);
+        return res.render('subviews/settings/legal', self.content);
     });
 };
 
@@ -258,6 +259,106 @@ settingsController.editTag = function(req, res) {
     ], function(err) {
         if (err) return handleError(res, err);
         return res.render('subviews/editTag', self.content);
+    });
+};
+
+settingsController.ticketTypes = function(req, res) {
+    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Ticket Types";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-tickettypes';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    var resultTypes = [];
+    async.series([
+        function(next) {
+            ticketTypeSchema.getTypes(function(err, types) {
+                if (err) return handleError(res, err);
+                resultTypes = types;
+                return next(null, types);
+            });
+        }
+    ], function() {
+        self.content.data.types = _.sortBy(resultTypes, function(o){ return o.name; });
+
+        return res.render('subviews/settings/ticketTypes', self.content)
+    });
+};
+
+settingsController.editTicketType = function(req, res) {
+    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
+
+    var typeId = req.params.id;
+    if (_.isUndefined(typeId)) return res.redirect('/settings/tickettypes');
+
+    var self = this;
+    self.content = {};
+    self.content.title = "Edit Ticket Type";
+    self.content.nav = 'settings';
+    self.content.subnav = 'settings-tickettypes';
+
+    self.content.data = {};
+    self.content.data.user = req.user;
+    self.content.data.common = req.viewdata;
+
+    async.parallel([
+        function(cb) {
+            ticketTypeSchema.getType(typeId, function(err, type) {
+                if (err) return cb(err);
+
+                if (!type) {
+                    winston.debug('Invalid Type - ' + type);
+                    return res.redirect('/settings/tickettypes');
+                }
+
+                self.content.data.tickettype = type;
+
+                return cb();
+            });
+        },
+        function(cb) {
+            var ticketSchema = require('../models/ticket');
+            var groupSchema = require('../models/group');
+            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
+                if (err) return cb(err);
+
+                async.series([
+                    function(next) {
+                        var permissions = require('../permissions');
+                        if (permissions.canThis(req.user.role, 'ticket:public')) {
+                            groupSchema.getAllPublicGroups(function(err, publicGroups) {
+                                if (err) return next(err);
+
+                                grps = grps.concat(publicGroups);
+
+                                return next();
+                            });
+                        } else
+                            return next();
+                    }
+                ], function(err) {
+                    if (err) return cb(err);
+
+                    ticketSchema.getTicketsByType(grps, typeId, function(err, tickets) {
+                        if (err) return cb(err);
+
+                        self.content.data.tickets = tickets;
+                        self.content.data.hasTickets = _.size(tickets) > 0;
+
+                        return cb();
+                    }, true);
+                });
+            });
+        }
+    ], function(err) {
+        if (err) return handleError(res, err);
+        return res.render('subviews/settings/editTicketType', self.content);
     });
 };
 

@@ -3,7 +3,6 @@
 <br/><br/>
 
 [![Build Status](https://travis-ci.org/polonel/trudesk.svg?branch=master)](https://travis-ci.org/polonel/trudesk)
-[![Coverage Status](https://coveralls.io/repos/polonel/trudesk/badge.svg?branch=master&service=github)](https://coveralls.io/github/polonel/trudesk?branch=develop)
 
 [http://trudesk.io](http://trudesk.io/)
 
@@ -24,6 +23,10 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
 #### Ubuntu 16.04 Install Script
 ```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
+
+#### Trudesk Virtual Appliance
+The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as VMWare. Visit the appliance documentation for more information.
+[Trudesk Virtual Appliance Documentation](http://www.trudesk.io/docs/install_virtual_appliance.html)
 
 ### Documentation
 To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
