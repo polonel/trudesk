@@ -76,7 +76,7 @@ mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
         openInbox(function(err, box) {
             if (err) {
                 mailCheck.Imap.end();
-                winston.warn(err);
+                winston.debug(err);
                 //throw err;
             }
 
@@ -173,7 +173,7 @@ mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
                                                                 });
                                                             }
                                                         ], function(err, type) {
-                                                            if (err || type == null) return cb(err);
+                                                            if (err || type === null) return cb(err);
 
                                                             var HistoryItem = {
                                                                 action: 'ticket:created',

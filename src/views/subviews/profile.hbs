@@ -23,7 +23,7 @@
                         <input type="hidden" name="_id" value="{{data.account._id}}" />
                         <input type="hidden" name="username" value="{{data.account.username}}" />
                         <div class="largeProfilePic cursor-pointer hoverEffect" style="position: absolute; left: 35px; top: 0;" ng-click="accountEditPic()">
-                            <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" class="hide" />
+                            <input id="profileImageInput" name="aProfile_{{data.account.username}}" type="file" value="{{data.account.image}}" style="height: 0; width: 0; overflow: hidden; filter: 'alpha(opacity=0);'" />
                             {{#if data.account.image}}
                                 <img id="profileImage" data-userid="{{data.account._id}}" src="/uploads/users/{{data.account.image}}" alt="{{data.account.username}}"/>
                             {{else}}
@@ -54,7 +54,7 @@
                                 </label>
                             </div>
                         </div>
-                        <hr class="nomargin-top">
+                        <hr class="nomargin-top clear">
                         <div class="panel-body2" style="margin: 10px 7px 7px 7px;">
                             <div class="uk-margin-small-bottom">
                                 <label for="tOTPKey" style="color:#727272;">Shared Key</label>
@@ -73,7 +73,7 @@
                     <div style="margin-left: 285px;">
                         <div class="profile-item-wrap uk-margin-medium-bottom">
                             <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
-                                <div class="left">
+                                <div>
                                     <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">User Information</h6>
                                     <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
                                         Your profile information.
@@ -129,7 +129,7 @@
                                             ng-click="generateApiKey($event)">Generate Token
                                     </button>
                                 </div>
-                                <hr class="nomargin-top">
+                                <hr class="nomargin-top clear">
                                 <div class="panel-body2" style="padding: 20px 15px 15px 15px">
                                     <div class="uk-margin-medium-bottom">
                                         <label for="aApiKey" style="color: #727272;">API Token</label>
