@@ -232,7 +232,9 @@
             <hr>
             <a id="allowUserRegistration" href="/signup" class="no-ajaxy left">Create an Account.</a>
         {{/if}}
-        <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+        {{#if mailerEnabled}}
+            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+        {{/if}}
     </div>
 
     <div class="forgotPassForm" style="display: none;">
