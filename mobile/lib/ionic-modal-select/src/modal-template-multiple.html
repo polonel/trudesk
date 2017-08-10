@@ -1,0 +1,67 @@
+ <ion-modal-view class="ionic-select-modal" ng-class="::ui.modalClass">
+
+    <ion-header-bar ng-class="::ui.headerFooterClass">
+      <h1 class="title">{{::ui.modalTitle}}</h1>
+    </ion-header-bar>
+
+    <div class="bar bar-subheader item-input-inset" ng-class="::ui.subHeaderClass" ng-if="ui.hasSearch">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="{{::ui.searchPlaceholder}}" ng-model="ui.searchValue">
+      </label>
+      <button type="button" class="button button-clear" ng-click="clearSearch()">
+        {{ ui.cancelSearchButton }}
+      </button>
+    </div>
+
+    <ion-content class="has-header" ng-class="{'has-subheader':ui.hasSearch}">
+    <div class="text-center" ng-if="!ui.shortList && !showList" style="padding-top:40px;">
+        <h4 class="muted">{{::ui.loadListMessage}}</h4>
+        <p>
+            <ion-spinner></ion-spinner>
+        </p>
+    </div>
+
+    <div ng-if="showList">
+        <!--collection-repeat mode -->
+        <!-- not working right now -->
+        <!--
+        <div ng-if="!ui.shortList" >
+            <div class="list" class="animate-if" >
+                <div
+                    class="item item-checkbox" ng-class="ui.itemClass"
+                     collection-repeat="optionm in options track by $index">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="isChecked[optionm[0]]">
+                    </label>
+
+                    <div compile="inner" ng-init="option=optionm[1]" compile-once="false"></div>
+
+                </div>
+            </div>
+        </div>
+        -->
+
+        <!-- ng-repeat mode -->
+        <div ng-if="ui.shortList || true">
+            <div class="list">
+                <div
+                  class="item item-checkbox" ng-class="ui.itemClass"
+                  ng-repeat="optionm in options track by optionm[0]">
+                    <label class="checkbox">
+                        <input type="checkbox" ng-model="isChecked[optionm[0]]">
+                    </label>
+                    <div ng-init="option=optionm[1]" compile="inner" compile-once="true"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </ion-content>
+    <ion-footer-bar ng-class="::ui.headerFooterClass">
+        <button class="button button-stable" ng-click="closeModal()">{{ui.cancelButton}}</button>
+        <div class="title" style="padding-top:6px">
+            <button class="button button-navbar" ng-click="setValues()">OK</button>
+        </div>
+        <button ng-if="::!ui.hideReset" class="button button-stable" ng-click="unsetValues()">{{ui.resetButton}}</button>
+    </ion-footer-bar>
+</ion-modal-view>

@@ -1,0 +1,15 @@
+<ion-modal-view ng-controller="imgCrop">
+  <ion-header-bar class="bar-dark">
+    <div class="buttons">
+      <button class="button button-clear" style="color: white;" ng-click="close()">Cancel</button>
+
+    </div>
+    <h1 class="title">Crop &amp; Size Image</h1>
+    <div class="buttons">
+      <button class="button button-clear" style="color: white;" ng-click="save()">Save</button>
+    </div>
+  </ion-header-bar>
+  <ion-content style="text-align: center;" scroll="false">
+    <img ng-src="{{o}}" width="375" style="height: 100%;" ng-cropper ng-cropper-proxy="cropperProxy" ng-cropper-show="showEvent" ng-cropper-hide="hideEvent" ng-cropper-options="options">
+  </ion-content>
+</ion-modal-view>

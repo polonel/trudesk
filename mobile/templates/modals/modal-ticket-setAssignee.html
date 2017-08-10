@@ -1,0 +1,25 @@
+<ion-modal-view>
+  <ion-header-bar class="bar-dark">
+    <h1 class="title">Set Assignee</h1>
+    <div class="buttons">
+      <button class="button button-icon button-clear ion-ios-close-empty" style="color: white;" ng-click="closeSetAssigneeModal()"></button>
+    </div>
+  </ion-header-bar>
+  <ion-content>
+    <form ng-submit="setAssigneeFormSubmit()">
+      <div class="list">
+        <label class="item item-input item-select">
+          <div class="input-label">
+            Ticket Assignee
+          </div>
+          <select id="selectedAssignee" name="selectedAssignee" ng-model="selectedAssignee" ng-options="user._id as user.fullname for user in assignees" ng-change="setAssigneeChanged()"></select>
+        </label>
+      </div>
+
+      <div class="padding">
+        <button class="button button-full button-balanced" type="submit">Set Assignee</button>
+      </div>
+
+    </form>
+  </ion-content>
+</ion-modal-view>

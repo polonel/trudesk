@@ -177,7 +177,7 @@ api_messages.send = function(req, res) {
             // Updated conversation to save UpdatedAt field.
             conversationSchema.findOneAndUpdate({_id: cId}, {updatedAt: new Date()}, {new: false}, function(err, convo) {
                 if (err) return done(err);
-                if (convo == null || convo == undefined)
+                if (convo === null || convo === undefined)
                     return done('Invalid Conversation: ' + convo );
                 return done(null, convo);
             });
