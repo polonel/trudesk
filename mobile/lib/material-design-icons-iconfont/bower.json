@@ -1,0 +1,19 @@
+{
+  "name": "material-design-icons-iconfont",
+  "version": "2.0.4",
+  "author": "Material Design Authors",
+  "description": "Material Design icons by Google",
+  "keywords": [
+    "icons",
+    "material",
+    "material-design",
+    "material-design-icons",
+    "material-design-icons-build",
+    "material-design-icons-release",
+    "material-design-icons-dist",
+    "material-design-icons-iconfont",
+    "google"
+  ],
+  "license": "CC-BY-4.0",
+  "homepage": "http://google.com/design/spec"
+}

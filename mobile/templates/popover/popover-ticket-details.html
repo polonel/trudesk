@@ -1,0 +1,12 @@
+<ion-popover-view class="popover-autoheight">
+  <ion-content scroll="false">
+    <div class="list">
+      <a class="item" ng-click="showAddComment($event)">Add Comment</a>
+      <!-- <a class="item" ng-show="isSupport" ng-click="showAddNote($event)">Add Note</a> -->
+      <a class="item" ng-show="isSupport" ng-click="openSetAssigneeModal()">Set Assignee</a>
+      <a class="item" ng-show="isSupport" ng-click="showStatusActionSheet()">Set Status</a>
+      <a class="item" ng-click="showTicketDetails()">View Details</a>
+      <a class="item" ng-show="isSupport" ng-click="closeTicket()" style="color: #D32F2F;">Close Ticket</a>
+    </div>
+  </ion-content>
+</ion-popover-view>
