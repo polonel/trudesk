@@ -35,10 +35,12 @@ define('modules/chat',[
             // There seems to be a bug in Firefox that prevents
             // the socket from executing an emit right after the event.
             // Workaround is to delay the joining of the server for 100ms
-            var i = _.debounce(function() {
-                socket.emit('joinChatServer');
-            }, 100);
-            i();
+
+            //Socket joinChatServer was impl into the server and removed from client side. 8-9-2017
+            // var i = _.debounce(function() {
+            //     socket.emit('joinChatServer');
+            // }, 100);
+            // i();
         });
 
         socket.removeAllListeners('connectingToSocketServer');
