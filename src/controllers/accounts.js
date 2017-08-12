@@ -184,7 +184,7 @@ accountsController.uploadImage = function(req, res) {
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         if (mimetype.indexOf('image/') === -1) {
             error = {
-                status: 500,
+                status: 400,
                 message: 'Invalid File Type'
             };
 
@@ -200,7 +200,7 @@ accountsController.uploadImage = function(req, res) {
 
         file.on('limit', function() {
             error = {
-                status: 500,
+                status: 400,
                 message: 'File too large'
             };
 
@@ -224,11 +224,11 @@ accountsController.uploadImage = function(req, res) {
             _.isUndefined(object.filePath) ||
             _.isUndefined(object.filename)) {
 
-            return res.status(500).send('Invalid Form Data');
+            return res.status(400).send('Invalid Form Data');
         }
 
         // Everything Checks out lets make sure the file exists and then add it to the attachments array
-        if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');
+        if (!fs.existsSync(object.filePath)) return res.status(400).send('File Failed to Save to Disk');
 
         userSchema.getUser(object._id, function(err, user) {
             if (err) return handleError(res, err);
