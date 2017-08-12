@@ -42,8 +42,8 @@ define('modules/ajaximgupload', [
                         form.find('img').attr('src', data + '?' + timestamp);
                     },
                     error: function(err) {
-                        console.log('[trudesk:ajaximgupload:onChange] Error - ' + err);
-                        helpers.UI.showSnackbar({text: 'Error: ' + err.responseText, actionTextColor: '#B92929'});
+                        console.log('[trudesk:ajaximgupload:onChange] Error - ', err);
+                        helpers.UI.showSnackbar({text: 'An error occurred. Please check console.', actionTextColor: '#B92929'});
                     }
                 });
 

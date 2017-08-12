@@ -828,7 +828,7 @@ module.exports = function(ws) {
             var user = socket.request.user;
             if (!_.isUndefined(usersOnline[user.username])) {
                 var userSockets = usersOnline[user.username].sockets;
-                console.log(userSockets);
+
                 if (_.size(userSockets) < 2) {
                     console.log('Deleting ' + user.username + ' from online socket list...');
                     delete usersOnline[user.username];
