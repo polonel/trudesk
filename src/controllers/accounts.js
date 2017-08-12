@@ -214,7 +214,10 @@ accountsController.uploadImage = function(req, res) {
     });
 
     busboy.on('finish', function() {
-        if (error) return res.status(error.status).send(error.message);
+        if (error) {
+            winston.warn(error);
+            return res.status(error.status).send(error.message);
+        }
 
         if (_.isUndefined(object._id) ||
             _.isUndefined(object.username) ||
