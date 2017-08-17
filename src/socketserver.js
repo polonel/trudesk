@@ -830,7 +830,7 @@ module.exports = function(ws) {
                 var userSockets = usersOnline[user.username].sockets;
 
                 if (_.size(userSockets) < 2) {
-                    console.log('Deleting ' + user.username + ' from online socket list...');
+                    // console.log('Deleting ' + user.username + ' from online socket list...');
                     delete usersOnline[user.username];
                 } else {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
