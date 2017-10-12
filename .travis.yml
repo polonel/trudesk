@@ -1,8 +1,7 @@
 sudo: false
 language: node_js
 env:
-  global:
-    - CC_TEST_REPORTER_ID=1e78191cf38cb64268bbc71e74cae19f45fdb41084eaaf37d599ac06d718b272
+  - CC_TEST_REPORTER_ID=1e78191cf38cb64268bbc71e74cae19f45fdb41084eaaf37d599ac06d718b272
   - CXX=g++-4.8
 node_js:
   - 6
