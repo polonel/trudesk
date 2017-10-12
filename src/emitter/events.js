@@ -281,12 +281,12 @@ var notifications       = require('../notifications'); // Load Push Events
                     });
                 });
             }
-        ], function(err) {
+        ], function() {
             //Blank
         });
     });
 
-    emitter.on('ticket:note:added', function(ticket, note) {
+    emitter.on('ticket:note:added', function(ticket) {
         //Goes to client
         io.sockets.emit('updateComments', ticket);
     });

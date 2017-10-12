@@ -31,10 +31,10 @@ pluginsController.get = function(req, res) {
     res.render('plugins', self.content);
 };
 
-function handleError(res, err) {
-    if (err) {
-        return res.render('error', {layout: false, error: err, message: err.message});
-    }
-}
+// function handleError(res, err) {
+//     if (err) {
+//         return res.render('error', {layout: false, error: err, message: err.message});
+//     }
+// }
 
 module.exports = pluginsController;

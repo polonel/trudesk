@@ -12,21 +12,20 @@
 
  */
 
-var nconf = require('nconf'),
-    async = require('async'),
-    express = require('express'),
+var express = require('express'),
     WebServer = express(),
     winston = require('winston'),
     middleware = require('./middleware'),
     routes = require('./routes'),
     server = require('http').createServer(WebServer),
 
-    //Load Events
-    events = require('./emitter/events'),
     port = process.env.PORT || 8118;
 
 (function (app) {
     "use strict";
+
+    // Load Events
+    require('./emitter/events');
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {

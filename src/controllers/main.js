@@ -12,13 +12,9 @@
 
  **/
 
-var async           = require('async'),
+var _               = require('underscore'),
     path            = require('path'),
-    _               = require('underscore'),
-    _mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
-    ticketSchema    = require('../models/ticket'),
-    settingSchema   = require('../models/setting'),
     nconf           = require('nconf'),
     winston         = require('winston');
 

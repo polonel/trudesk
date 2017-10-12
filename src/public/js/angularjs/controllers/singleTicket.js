@@ -80,7 +80,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     console.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
-            $q.all([ticketTypes]).then(function(ret) {
+            $q.all([ticketTypes]).then(function() {
                 $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
             });
 

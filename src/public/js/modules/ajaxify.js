@@ -119,7 +119,7 @@ define('modules/ajaxify', [
             var result = String(html)
                     .replace(/<\!DOCTYPE[^>]*>/i, '')
                     .replace(/<(html|head|body|title|meta|script)([\s\>])/gi,'<div class="document-$1"$2')
-                    .replace(/<\/(html|head|body|title|meta|script)\>/gi,'</div>')
+                    .replace(/<\/(html|head|body|title|meta|script)>/gi,'</div>')
                 ;
 
             // Return
