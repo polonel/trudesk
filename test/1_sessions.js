@@ -17,7 +17,7 @@ describe('sessions', function() {
             .end(function(err, res) {
                 should.not.exist(err);
                 expect(res.status).to.equal(200);
-                //expect(res.user).to.exist;
+                // expect(res.user).to.exist;
 
                 done();
             });

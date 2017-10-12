@@ -8,6 +8,7 @@
     "heroku-postbuild": "npm run build",
     "test": "mocha --recursive",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive",
+    "codacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --recursive -R spec && cat ./coverage/lcov.info | ./node_modules/.bin/codacy-coverage && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch",
     "webpackdev": "webpack --config webpack.config.js",
     "webpackdist": "webpack --config webpack.config.dist.js"
@@ -96,6 +97,7 @@
   "devDependencies": {
     "apidoc": "0.17.5",
     "chai": "*",
+    "codacy-coverage": "^2.0.3",
     "coveralls": "2.11.11",
     "eslint": "3.14.0",
     "eslint-config-angular": "0.5.0",
@@ -108,7 +110,6 @@
     "istanbul": "0.4.4",
     "istanbul-coveralls": "1.0.3",
     "jsdoc": "3.4.3",
-    "memwatch-next": "0.3.0",
     "mocha": "2.5.3",
     "mocha-lcov-reporter": "1.2.0",
     "superagent": "2.0.0",

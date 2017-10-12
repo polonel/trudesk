@@ -1,7 +1,6 @@
 sudo: false
 language: node_js
 env:
-  - CC_TEST_REPORTER_ID=1e78191cf38cb64268bbc71e74cae19f45fdb41084eaaf37d599ac06d718b272
   - CXX=g++-4.8
 node_js:
   - 6
@@ -18,20 +17,12 @@ addons:
       - gcc-4.8
       - g++-4.8
 
-before_script:
-  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
-  - chmod +x ./cc-test-reporter
-  - ./cc-test-reporter before-build
-
 before_install:
   - npm install -g grunt
   - npm install -g grunt-cli
 
 script:
   - npm test
-
-after_script:
-  - ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT
 
 after_success:
   - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive && ./node_modules/.bin/istanbul-coveralls
