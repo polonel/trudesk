@@ -42,7 +42,7 @@ messagesController.get = function(req, res) {
         async.eachSeries(convos, function(convo, done) {
             var c = convo.toObject();
 
-            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == req.user._id.toString(); })];
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
             if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
                 return done();
             }
@@ -58,7 +58,7 @@ messagesController.get = function(req, res) {
                 rm = _.first(rm);
 
                 if (!_.isUndefined(rm)) {
-                    if (String(c.partner._id) == String(rm.owner._id)) {
+                    if (String(c.partner._id) === String(rm.owner._id)) {
                         c.recentMessage = c.partner.fullname + ': ' + rm.body;
                     } else {
                         c.recentMessage = 'You: ' + rm.body

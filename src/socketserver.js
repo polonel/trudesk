@@ -20,7 +20,7 @@ var winston             = require('winston'),
     emitter             = require('./emitter'),
     marked              = require('marked');
 
-module.exports = function(ws) {
+var socketServer = function(ws) {
     "use strict";
     var _ = require('lodash'),
         __ = require('underscore'),
@@ -160,27 +160,6 @@ module.exports = function(ws) {
                 });
             });
         }
-
-        // socket.on('authenticate', function(data) {
-        //     var userSchema = require('./models/user');
-        //     userSchema.getUserByAccessToken(data.token, function(err, user) {
-        //         if (!err && user) {
-        //             winston.debug('Authenticated socket ' + socket.id + ' - ' + user.username);
-        //             socket.request.user = user;
-        //             socket.auth = true;
-        //
-        //             joinChatServer();
-        //             winston.warn('Joining Server: ' + user.username);
-        //         }
-        //
-        //         setTimeout(function() {
-        //             if (!socket.auth) {
-        //                 winston.debug('Disconnecting socket ' + socket.id + ' - (did not auth)');
-        //                 socket.disconnect('unauthorized');
-        //             }
-        //         }, 100);
-        //     });
-        // });
 
         socket.on('updateConversationsNotifications', function() {
             updateConversationsNotifications();
@@ -870,3 +849,5 @@ function onAuthorizeSuccess(data, accept) {
 
     accept();
 }
+
+module.exports = socketServer;
