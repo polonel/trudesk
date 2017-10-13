@@ -6,7 +6,6 @@ var superagent  = require('superagent');
 
 describe('api/api.js', function() {
 
-    var server = global.server;
     var agent   = superagent.agent();
     var unauthAgent = superagent.agent();
     var user = { "login-username": 'trudesk', "login-password": '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW'};
