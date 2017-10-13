@@ -117,8 +117,8 @@ define('modules/ajaxify', [
         var documentHtml = function(html){
             // Prepare
             var result = String(html)
-                    .replace(/<\!DOCTYPE[^>]*>/i, '')
-                    .replace(/<(html|head|body|title|meta|script)([\s\>])/gi,'<div class="document-$1"$2')
+                    .replace(/<!DOCTYPE[^>]*>/i, '')
+                    .replace(/<(html|head|body|title|meta|script)([\s>])/gi,'<div class="document-$1"$2')
                     .replace(/<\/(html|head|body|title|meta|script)>/gi,'</div>')
                 ;
 
@@ -140,7 +140,7 @@ define('modules/ajaxify', [
                     title = $this.attr('title')||null;
 
                 // Continue as normal for cmd clicks etc
-                if ( event.which == 2 || event.metaKey ) { return true; }
+                if ( event.which === 2 || event.metaKey ) { return true; }
 
                 // Ajaxify this link
                 History.pushState(null,title,url);
