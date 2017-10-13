@@ -621,7 +621,6 @@ var socketServer = function(ws) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
 
-                    totalOnline = _.size(usersOnline);
                     sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
