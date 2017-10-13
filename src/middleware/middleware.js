@@ -171,8 +171,7 @@ middleware.isSupport = function(req, res, next) {
         return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
 };
 
-module.exports = function(server) {
-    var app = server;
+module.exports = function() {
 
     return middleware;
 };

@@ -229,7 +229,10 @@ define('modules/ajaxify', [
                         try {
                             document.getElementsByTagName('title')[0].innerHTML = document.title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ');
                         }
-                        catch ( Exception ) { }
+                        catch ( Exception ) {
+                            //Should be an empty block
+                            console.log('[AJAXIFY] ERROR: SHOULD HAVE NOT HAPPENED!')
+                        }
 
                         // Add the scripts
                         $scripts.each(function(){
