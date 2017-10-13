@@ -2,6 +2,7 @@
 
 <br/><br/>
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9)](https://www.codacy.com/app/polonel/trudesk?utm_source=github.com&utm_medium=referral&utm_content=polonel/trudesk&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/polonel/trudesk.svg?branch=master)](https://travis-ci.org/polonel/trudesk)
 [![Coverage Status](https://coveralls.io/repos/polonel/trudesk/badge.svg?branch=master&service=github)](https://coveralls.io/github/polonel/trudesk?branch=develop)
 
