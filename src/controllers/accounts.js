@@ -176,7 +176,7 @@ accountsController.uploadImage = function(req, res) {
 
     var object = {}, error;
 
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+    busboy.on('field', function(fieldname, val) {
         if (fieldname === '_id') object._id = val;
         if (fieldname === 'username') object.username = val;
     });

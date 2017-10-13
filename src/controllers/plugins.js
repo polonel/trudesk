@@ -12,7 +12,6 @@
 
  **/
 
-var _               = require('underscore');
 
 var pluginsController = {};
 

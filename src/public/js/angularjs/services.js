@@ -15,11 +15,10 @@
 define([
     'jquery',
     'angular',
-    'underscore',
 
     'angularjs/services/session'
 
-], function($, angular, _) {
+], function($, angular) {
 
     return angular.module('trudesk.services',
         [

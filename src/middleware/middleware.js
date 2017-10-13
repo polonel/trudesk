@@ -19,7 +19,7 @@ var db = require('../database');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
-var app, middleware = {};
+var middleware = {};
 
 middleware.db = function(req, res, next) {
     if (mongoose.connection.readyState !== 1) {

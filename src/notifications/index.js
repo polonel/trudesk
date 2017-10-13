@@ -69,7 +69,7 @@ module.exports.pushNotification = function(notification) {
             if (err)
                 winston.debug(err);
             else {
-                if (response.statusCode == 401)
+                if (response.statusCode === 401)
                     winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.');
             }
         });

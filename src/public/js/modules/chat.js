@@ -44,7 +44,7 @@ define('modules/chat',[
         });
 
         socket.removeAllListeners('connectingToSocketServer');
-        socket.on('connectingToSocketServer', function(data) {
+        socket.on('connectingToSocketServer', function() {
 
         });
 
@@ -408,7 +408,7 @@ define('modules/chat',[
         }
     }
 
-    function loadChatMessages(chatBox, messageArray, callback) {
+    function loadChatMessages(chatBox, messageArray) {
         var to = chatBox.attr('data-chat-userid'),
             chatMessage,
             chatMessageList,
@@ -561,7 +561,7 @@ define('modules/chat',[
         $('span[data-user-status-id]').each(function() {
             $(this).removeClass('user-online').addClass('user-offline');
         });
-        _.each(usersOnline, function(v, k) {
+        _.each(usersOnline, function(v) {
             var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
             $bubble.each(function() {
                 var self = $(this);

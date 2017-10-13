@@ -87,7 +87,7 @@ var socketServer = function(ws) {
     // }
 
     io.sockets.on('connection', function(socket) {
-        var totalOnline = _.size(usersOnline);
+        // var totalOnline = _.size(usersOnline);
 
         setInterval(function() {
             updateConversationsNotifications();

@@ -54,14 +54,15 @@ var express = require('express'),
     };
 
     module.exports.installServer = function(callback) {
-        var middleware      = require('./middleware/middleware')(app),
-            router          = express.Router(),
+        var router          = express.Router(),
             controllers     = require('./controllers/index.js'),
             path            = require('path'),
             hbs             = require('express-hbs'),
             hbsHelpers      = require('./helpers/hbs/helpers'),
             bodyParser      = require('body-parser'),
             favicon         = require('serve-favicon');
+
+        require('./middleware/middleware')(app);
 
         app.set('views', path.join(__dirname, './views/'));
         app.engine('hbs', hbs.express3({
@@ -88,7 +89,7 @@ var express = require('express'),
             return res.redirect('/install');
         });
 
-        var io = require('socket.io')(server);
+        require('socket.io')(server);
 
         server.listen(port, '0.0.0.0', function() {
             callback();

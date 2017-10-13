@@ -94,7 +94,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     console.log('[trudesk:singleTicket:groupHttpGet] - ' + e);
                                 });
 
-            $q.all([groupHttpGet]).then(function(ret) {
+            $q.all([groupHttpGet]).then(function() {
                 $scope.selected_group = _.findWhere($scope.groups, {_id: $scope.ticketGroup});
             });
 
@@ -251,7 +251,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     {
                         "tags": tagField.val()
 
-                    }).success(function(data) {
+                    }).success(function() {
                         helpers.UI.showSnackbar('Tags have been added.', false);
                         socket.ui.refreshTicketTags(id);
 
@@ -271,7 +271,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     {
                         "tags": []
                     }
-                ).success(function(data) {
+                ).success(function() {
                     socket.ui.refreshTicketTags(id);
                     $('#addTagModal').find('option').prop('selected', false);
                     $('#addTagModal').find('select').trigger('chosen:updated');
@@ -334,7 +334,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
         .directive('closeMouseUp', ['$document', function($document) {
             return {
                 restrict: 'A',
-                link: function(scope, element, attr) {
+                link: function(scope, element) {
                     $document.on('mouseup', mouseup);
 
                     scope.$on('$destroy', function() {
@@ -343,7 +343,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
                     element.on('$destroy', function() {
                         $document.off('mouseup', mouseup);
-                    })
+                    });
 
                     function mouseup($event) {
                         var target = $event.target.offsetParent;
