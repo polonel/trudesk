@@ -4,3 +4,4 @@ exclude_paths:
   - apidoc_template/**
   - docs/**
   - src/public/js/plugins/**
+  - test/**
