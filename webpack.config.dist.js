@@ -1,8 +1,10 @@
 var path = require('path');
 var webpack = require('webpack');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     //context: path.resolve(__dirname, 'public/js'),
+    target: 'web',
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
@@ -22,6 +24,7 @@ module.exports = {
             //client side
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
+            jscookie:       'vendor/jscookie/js.cookie.js',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -43,16 +46,11 @@ module.exports = {
             dt_grouping:    'vendor/datatables/dataTables.grouping',
             dt_scroller:    'vendor/datatables/dataTables.scroller',
             dt_ipaddress:   'vendor/datatables/dataTables.ipaddress',
-            flot:           'vendor/flot/jquery.flot',
-            flot_symbol:    'vendor/flot/jquery.flot.symbol',
-            flot_time:      'vendor/flot/jquery.flot.time',
-            flot_tooltip:   'vendor/flot/jquery.flot.tooltip',
             easypiechart:   'vendor/easypiechart/easypiechart',
             chosen:         'vendor/chosen/chosen.jquery.min',
             autogrow:       'plugins/autogrow',
             pace:           'vendor/pace/pace.min',
             tomarkdown:     'vendor/tomarkdown/tomarkdown',
-            enjoyhint:      'vendor/enjoyhint/enjoyhint.min',
             colorpicker:    'vendor/simplecolorpicker/jquery.simplecolorpicker',
             datepicker:     'vendor/datepicker/foundation-datepicker',
             d3:             'vendor/d3/d3.min',
@@ -81,13 +79,21 @@ module.exports = {
     module: {
         rules: [
             { test: /angular\.min\.js/, use: 'exports-loader?angular' },
-            { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' }
+            { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
+            { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'), use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [{loader: 'css-loader', options: {minimize: true}}, 'sass-loader'],
+                publicPath: '/public/css'
+            })}
         ]
     },
     plugins: [
         new webpack.ProvidePlugin({
             $: 'jquery',
             jQuery: 'jquery',
+            Cookies: 'jscookie',
+            Tether: 'tether',
+            "window.Tether": 'tether',
             "window.jQuery": 'jquery',
             "window.$": 'jquery',
             Modernizr: 'modernizr',
@@ -105,6 +111,10 @@ module.exports = {
         new webpack.optimize.UglifyJsPlugin({
             mangle: false,
             sourceMap:false
+        }),
+        new ExtractTextPlugin({
+            filename: '../css/app.min.css',
+            allChunks: true
         })
     ],
     performance: {

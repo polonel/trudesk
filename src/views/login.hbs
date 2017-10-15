@@ -151,11 +151,10 @@
             /*color: #222;*/
         }
     </style>
-
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
+    <!--<script src="/js/trudesk.min.js"></script>-->
 </head>
 <body>
 <div class="alert-message {{#if flash}} {{else}} hide {{/if}} {{#if flash.success}} green {{/if}}">
@@ -233,7 +232,9 @@
             <hr>
             <a id="allowUserRegistration" href="/signup" class="no-ajaxy left">Create an Account.</a>
         {{/if}}
-        <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+        {{#if mailerEnabled}}
+            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+        {{/if}}
     </div>
 
     <div class="forgotPassForm" style="display: none;">
@@ -252,8 +253,11 @@
 </div>
 
 <script type="text/javascript">
-    window.truRequire(['jquery'], function(loadedModules) {
+    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
+        var helpers = loadedModules[1];
+        helpers.UI.inputs();
+        helpers.UI.waves();
 
         $('#forgotPass').click(function(e) {
             e.preventDefault();

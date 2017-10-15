@@ -1,0 +1,32 @@
+{
+  "name": "ng-cropper",
+  "main": [
+    "dist/ngCropper.all.js",
+    "dist/ngCropper.all.css"
+  ],
+  "version": "0.4.1",
+  "homepage": "https://github.com/koorgoo/ngCropper",
+  "authors": [
+    "Dima Kurguzov <koorgoo@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "angular": "~1.4.1"
+  },
+  "devDependencies": {
+    "cropper": "~0.10.0",
+    "jquery": "~2.1.1",
+    "mocha": "~1.21.4",
+    "chai": "~1.9.2"
+  },
+  "_release": "0.4.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.4.1",
+    "commit": "90255970d28b42ee73870e97d951c096572c1194"
+  },
+  "_source": "https://github.com/koorgoo/ngCropper.git",
+  "_target": "^0.4.1",
+  "_originalSource": "ng-cropper",
+  "_direct": true
+}

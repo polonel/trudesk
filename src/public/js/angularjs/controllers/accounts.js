@@ -198,9 +198,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
             };
 
             $scope.accountEditPic = function() {
-                $timeout(function() {
-                    $('#profileImageInput').trigger('click');
-                }, 0);
+                throttledAccountPicClick();
             };
+
+            function throttledAccountPicClick() {
+                $timeout(function() {
+                    var $profileImageInput = $('#profileImageInput');
+                    $profileImageInput.on('click', function(event) {
+                        //This function is a firefox hack to stop it from spawning 100000 file dialogs
+                        event.stopPropagation();
+                    });
+
+                    $profileImageInput.trigger('click');
+                }, 0);
+            }
         });
 });

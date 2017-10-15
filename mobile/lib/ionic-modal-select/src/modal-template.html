@@ -1,0 +1,59 @@
+ <ion-modal-view class="ionic-select-modal" ng-class="::ui.modalClass">
+
+    <ion-header-bar ng-class="::ui.headerFooterClass">
+      <h1 class="title">{{::ui.modalTitle}}</h1>
+    </ion-header-bar>
+
+    <div class="bar bar-subheader item-input-inset" ng-class="::ui.subHeaderClass" ng-if="ui.hasSearch">
+      <label class="item-input-wrapper">
+        <i class="icon ion-ios-search placeholder-icon"></i>
+        <input type="search" placeholder="{{::ui.searchPlaceholder}}" ng-model="ui.searchValue">
+      </label>
+      <button type="button" class="button button-clear" ng-click="clearSearch()">
+        {{ ui.cancelSearchButton }}
+      </button>
+    </div>
+
+    <ion-content class="has-header" ng-class="{'has-subheader':ui.hasSearch}">
+        <div class="text-center" ng-if="!ui.shortList && !showList" style="padding-top:40px;">
+            <h4 class="muted">{{::ui.loadListMessage}}</h4>
+            <p>
+                <ion-spinner></ion-spinner>
+            </p>
+        </div>
+        <div ng-if="showList">
+            <div ng-if="!ui.shortList">
+                <div class="list" ng-if="showList" class="animate-if">
+                    <div
+                      ng-class="{ '{{::ui.itemClass}}' : true, '{{::ui.selectedClass}}': compareValues(getSelectedValue(option), ui.value) }"
+                      collection-repeat="option in options track by $index"
+                      ng-click="setOption(option)"
+                      ng-class="{'{{::ui.selectedClass}}': compareValues(getSelectedValue(option), ui.value) }">
+                        <div compile="inner" compile-once="true"></div>
+                    </div>
+                </div>
+            </div>
+            <div ng-if="ui.shortList">
+                <div class="list">
+                    <div
+                      ng-repeat="option in options track by $index"
+                      ng-click="setOption(option)"
+                      ng-class="{ '{{::ui.itemClass}}' : true, '{{::ui.selectedClass}}': compareValues(getSelectedValue(option), ui.value) }">
+                        <div compile="inner" compile-once="true"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div ng-if="notFound && options.length == 0">
+            <div compile="notFound" compile-once="true" ng-click="closeModal()"></div>
+        </div>
+
+    </ion-content>
+
+    <ion-footer-bar ng-class="::ui.headerFooterClass">
+        <button type="button" class="button button-stable modal-select-close-button" ng-click="closeModal()">{{ui.cancelButton}}</button>
+        <button type="button" ng-if="::!ui.hideReset" class="button button-stable" ng-click="unsetValue()">{{ui.resetButton}}</button>
+    </ion-footer-bar>
+
+</ion-modal-view>

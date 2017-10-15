@@ -24,8 +24,6 @@
 var _       = require('underscore');
 var moment  = require('moment');
 
-var conf = require('nconf');
-
 // The module to be exported
 var helpers = {
 
@@ -61,10 +59,10 @@ var helpers = {
     },
 
     is: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value == test) {
+        if (value === test) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -72,10 +70,10 @@ var helpers = {
     },
 
     isAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() == test.toString()) {
+        if (value.toString() === test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -91,10 +89,10 @@ var helpers = {
     },
 
     isNotAsString: function (value, test, options) {
-        if (value == null || value === 'undefined') {
+        if (value === null || value === 'undefined') {
             return options.inverse(this);
         }
-        if (value.toString() != test.toString()) {
+        if (value.toString() !== test.toString()) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -477,7 +475,7 @@ var helpers = {
     },
 
     calendarDate: function(date) {
-        moment.locale('en', {
+        moment.updateLocale('en', {
             calendar: {
                 sameDay: '[Today at] LT',
                 lastDay: '[Yesterday at] LT',
@@ -493,7 +491,7 @@ var helpers = {
     fromNow: function(date) {
         if (date == undefined)
             return 'Never';
-        moment.locale('en', {
+        moment.updateLocale('en', {
             relativeTime : {
                 future: "in %s",
                 past:   "%s ago",
@@ -632,6 +630,10 @@ var helpers = {
         return _.size(arr);
     },
 
+    add: function(num1, num2) {
+        return num1+num2;
+    },
+
     overdue: function(showOverdue, updated, options) {
         if (!showOverdue) return false;
         var now = moment();
@@ -691,8 +693,7 @@ helpers.inArray    = helpers.hasGroup;
 
 // Export helpers
 module.exports.helpers = helpers;
-module.exports.register = function (Handlebars, options) {
-    options = options || {};
+module.exports.register = function (Handlebars) {
 
     for (var helper in helpers) {
         if (helpers.hasOwnProperty(helper)) {

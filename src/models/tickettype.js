@@ -45,6 +45,22 @@ ticketTypeSchema.statics.getTypes = function(callback) {
 };
 
 /**
+ * Return Single Ticket Types
+ *
+ * @memberof TicketType
+ * @static
+ * @method getType
+ *
+ * @param {String} id Object Id of ticket type
+ * @param {QueryCallback} callback MongoDB Query Callback
+ */
+ticketTypeSchema.statics.getType = function(id, callback) {
+    var q = this.model(COLLECTION).findOne({_id: id});
+
+    return q.exec(callback);
+};
+
+/**
  * Return Single Ticket Type based on given type name
  *
  * @memberof TicketType

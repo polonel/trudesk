@@ -31,6 +31,13 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
 
+    router.get('/captcha', function(req, res) {
+        var svgCaptcha = require('svg-captcha');
+        var captcha = svgCaptcha.create();
+        req.session.captcha = captcha.text;
+        res.set('Content-Type', 'image/svg+xml');
+        res.send(captcha.data);
+    });
     router.get('/newissue', controllers.tickets.pubNewIssue);
     router.get('/signup', controllers.accounts.signup);
 
@@ -92,6 +99,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
+    router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);
+    router.get('/settings/tickettypes/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTicketType);
 
     //Plugins
     router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
@@ -100,6 +109,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api', controllers.api.index);
     router.get('/api/v1/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.post('/api/v1/login', controllers.api.login);
+    router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
     router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
 
@@ -107,8 +117,13 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
+    router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType);
+    router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType);
+    router.delete('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.deleteType);
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
+    router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
+    router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
     router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
     router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
@@ -127,7 +142,6 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update);
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
-    router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
 
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
@@ -183,9 +197,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
     router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
-    router.post('/api/v1/public/users/checkemail', controllers.api.users.checkEmail);
-    router.post('/api/v1/public/tickets/create', controllers.api.tickets.createPublicTicket);
-    router.post('/api/v1/public/account/create', controllers.api.users.createPublicAccount);
+    router.post('/api/v1/public/users/checkemail', middleware.checkCaptcha, controllers.api.users.checkEmail);
+    router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, controllers.api.tickets.createPublicTicket);
+    router.post('/api/v1/public/account/create', middleware.checkCaptcha, controllers.api.users.createPublicAccount);
 
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {

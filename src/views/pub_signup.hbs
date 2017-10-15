@@ -213,7 +213,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
 </head>
 <body>
 <svg version="1.1" id="logosvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
@@ -300,6 +299,11 @@
                     <label for="user-cPassword">Confirm Password</label>
                     <input id="user-cPassword" name="user-cPassword" class="md-input" type="password" required />
                 </div>
+                <div class="uk-margin-medium-bottom">
+                    <div id="captchaImage" style="margin-bottom: 10px;"></div>
+                    <label for="captcha">Please enter the letters you see above.</label>
+                    <input type="text" id="captcha" name="captcha" class="md-input" required />
+                </div>
                 <div style="width: 25%; float: left;">
                     <button class="btn md-btn md-btn-wave md-btn-primary1" type="button" data-prev>Back</button>
                 </div>
@@ -353,7 +357,7 @@
                 Your account has been created.
             </p>
             <p style="text-align: justify;">
-                Please follow the link below in order to login with your email (<span id="spanemail" style="color: #2196f3">[EMAIL]</span>).
+                Please click the button below in order to login with your email (<span id="spanemail" style="color: #2196f3">[EMAIL]</span>).
             </p>
             <div style="width: 100%; margin-top: 50px;">
                 <a href="/login" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
@@ -373,11 +377,14 @@
 
 
 <script type="text/javascript">
-    window.truRequire(['jquery', 'snackbar'], function(loadedModules) {
+    window.truRequire(['jquery', 'snackbar', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
         window.Snackbar = loadedModules[1];
+        var helpers = loadedModules[2];
 
         $(document).ready(function() {
+            helpers.init();
+            getCaptcha();
             var $slides = $('.slides > .slide');
             var totalSlides = 0;
             var activeSlide = 0;
@@ -504,7 +511,8 @@
                     method: 'POST',
                     url: '/api/v1/public/users/checkemail',
                     data: {
-                        email: userInfoFormData['user-email']
+                        email: userInfoFormData['user-email'],
+                        captcha: $('#captcha').val()
                     },
                     error: function(e) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
@@ -513,7 +521,7 @@
                             actionTextColor: 'red'
                         });
 
-                        console.log(e);
+                        console.error(e);
                     },
                     success: function(data) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
@@ -610,10 +618,24 @@
                 }
             });
 
+            function getCaptcha() {
+                $.ajax({
+                   method: 'GET',
+                    url: '/captcha',
+                    success: function(response) {
+                       var svg = $(response).find('svg');
+                       $('#captchaImage').append(svg);
+                    },
+                    error: function(err) {
+                       console.error(err);
+                    }
+                });
+            }
+
             function createAccount() {
-                console.log('here');
                 var data = {
-                    user: userInfo
+                    user: userInfo,
+                    captcha: $('#captcha').val()
                 };
                 $.ajax({
                     method: 'POST',
@@ -624,7 +646,6 @@
                         if (!response.success) {
                             //TODO: Show Error Slide
                         } else {
-                            console.log(response);
                             $('span#spanfullname').text(userInfo.fullname);
                             $('span#spanemail').text(userInfo.email);
 
@@ -632,7 +653,7 @@
                         }
                     },
                     error: function(err) {
-                        console.log(err);
+                        console.error(err);
                     }
                 })
             }

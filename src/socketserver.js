@@ -20,7 +20,7 @@ var winston             = require('winston'),
     emitter             = require('./emitter'),
     marked              = require('marked');
 
-module.exports = function(ws) {
+var socketServer = function(ws) {
     "use strict";
     var _ = require('lodash'),
         __ = require('underscore'),
@@ -87,7 +87,7 @@ module.exports = function(ws) {
     // }
 
     io.sockets.on('connection', function(socket) {
-        var totalOnline = _.size(usersOnline);
+        // var totalOnline = _.size(usersOnline);
 
         setInterval(function() {
             updateConversationsNotifications();
@@ -99,6 +99,11 @@ module.exports = function(ws) {
         socket.on('$trudesk:chat:updateOnlineBubbles', function() {
            updateOnlineBubbles();
         });
+
+        // socket.on('joinChatServer', joinChatServer);
+        if (socket.request.user.logged_in)
+            joinChatServer();
+
         function updateOnlineBubbles() {
             var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
             utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
@@ -119,7 +124,7 @@ module.exports = function(ws) {
                 async.eachSeries(conversations, function(convo, done) {
                     var c = convo.toObject();
 
-                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == userId.toString(); })];
+                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === userId.toString(); })];
                     if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
                         return done();
                     }
@@ -135,7 +140,7 @@ module.exports = function(ws) {
                         rm = _.first(rm);
 
                         if (!_.isUndefined(rm)) {
-                            if (String(c.partner._id) == String(rm.owner._id)) {
+                            if (String(c.partner._id) === String(rm.owner._id)) {
                                 c.recentMessage = c.partner.fullname + ': ' + rm.body;
                             } else {
                                 c.recentMessage = 'You: ' + rm.body
@@ -155,24 +160,6 @@ module.exports = function(ws) {
                 });
             });
         }
-
-        socket.on('authenticate', function(data) {
-            var userSchema = require('./models/user');
-            userSchema.getUserByAccessToken(data.token, function(err, user) {
-                if (!err && user) {
-                    winston.debug('Authenticated socket ' + socket.id + ' - ' + user.username);
-                    socket.request.user = user;
-                    socket.auth = true;
-                }
-
-                setTimeout(function() {
-                    if (!socket.auth) {
-                        winston.debug('Disconnecting socket ' + socket.id + ' - (did not auth)');
-                        socket.disconnect('unauthorized');
-                    }
-                }, 1000);
-            });
-        });
 
         socket.on('updateConversationsNotifications', function() {
             updateConversationsNotifications();
@@ -466,7 +453,6 @@ module.exports = function(ws) {
                      });
                 });
             });
-
         });
 
         socket.on('removeComment', function(data) {
@@ -493,7 +479,59 @@ module.exports = function(ws) {
                     });
                 });
             });
+        });
 
+        socket.on('$trudesk:tickets:setNoteText', function(data) {
+            var ownerId = socket.request.user._id;
+            var ticketId = data.ticketId;
+            var noteId = data.noteId;
+            var note = data.noteText;
+            var ticketSchema = require('./models/ticket');
+            if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note)) return true;
+            note = note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+            var markedNote = marked(note);
+
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return winston.error(err);
+
+                ticket.updateNote(ownerId, noteId, markedNote, function(err) {
+                    if (err) return winston.error(err);
+                    ticket.save(function(err, tt) {
+                        if (err) return winston.error(err);
+
+                        ticketSchema.populate(tt, 'notes.owner', function(err) {
+                            if (err) return winston.error(err);
+                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
+                        });
+                    });
+                });
+            });
+        });
+
+        socket.on('$trudesk:tickets:removeNote', function(data) {
+            var ownerId = socket.request.user._id;
+            var ticketId = data.ticketId;
+            var noteId = data.noteId;
+            if (_.isUndefined(ticketId) || _.isUndefined(noteId)) return true;
+
+            var ticketSchema = require('./models/ticket');
+            ticketSchema.getTicketById(ticketId, function(err, ticket) {
+                if (err) return true;
+
+                ticket.removeNote(ownerId, noteId, function(err, t) {
+                    if (err) return true;
+
+                    t.save(function(err, tt) {
+                        if (err) return true;
+
+                        ticketSchema.populate(tt, 'notes.owner', function(err) {
+                            if (err) return true;
+
+                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
+                        });
+                    });
+                });
+            });
         });
 
         socket.on('refreshTicketAttachments', function(data) {
@@ -571,13 +609,11 @@ module.exports = function(ws) {
             utils.sendToAllConnectedClients(io, 'updateClearNotice');
         });
 
-        socket.on('joinChatServer', function() {
+        function joinChatServer() {
             var user = socket.request.user;
             var exists = false;
-            _.find(usersOnline, function(v,k) {
-                if (k.toLowerCase() === user.username.toLowerCase())
-                    return exists === true;
-            });
+            if (usersOnline.hasOwnProperty(user.username.toLowerCase()))
+                exists = true;
 
             var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
 
@@ -585,7 +621,6 @@ module.exports = function(ws) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
 
-                    totalOnline = _.size(usersOnline);
                     sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
@@ -595,7 +630,6 @@ module.exports = function(ws) {
                 }
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
-
                 utils.sendToSelf(socket, 'joinSuccessfully');
                 sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
@@ -603,7 +637,7 @@ module.exports = function(ws) {
 
                 spawnOpenChatWindows(socket, user._id);
             }
-        });
+        }
 
         socket.on('getOpenChatWindows', function() {
             spawnOpenChatWindows(socket, socket.request.user._id);
@@ -772,7 +806,9 @@ module.exports = function(ws) {
             var user = socket.request.user;
             if (!_.isUndefined(usersOnline[user.username])) {
                 var userSockets = usersOnline[user.username].sockets;
+
                 if (_.size(userSockets) < 2) {
+                    // console.log('Deleting ' + user.username + ' from online socket list...');
                     delete usersOnline[user.username];
                 } else {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
@@ -812,3 +848,5 @@ function onAuthorizeSuccess(data, accept) {
 
     accept();
 }
+
+module.exports = socketServer;

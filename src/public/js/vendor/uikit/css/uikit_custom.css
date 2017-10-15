@@ -2143,7 +2143,7 @@ a.uk-datepicker-table-muted {
     max-width: 200px;
     padding: 5px 8px;
     /* 4 */
-    background: #333333;
+    background: #424242;
     color: rgba(255, 255, 255, 0.7);
     font-size: 12px;
     line-height: 18px;
@@ -2162,7 +2162,7 @@ a.uk-datepicker-table-muted {
     width: 0;
     height: 0;
     /* 1 */
-    border: 5px dashed #333333;
+    border: 5px dashed #424242;
 }
 /* Direction modifiers
  ========================================================================== */
@@ -2177,7 +2177,7 @@ a.uk-datepicker-table-muted {
     border-bottom: none;
     border-left-color: transparent;
     border-right-color: transparent;
-    border-top-color: #333333;
+    border-top-color: #424242;
 }
 /*
  * Bottom
@@ -2190,7 +2190,7 @@ a.uk-datepicker-table-muted {
     border-top: none;
     border-left-color: transparent;
     border-right-color: transparent;
-    border-bottom-color: #333333;
+    border-bottom-color: #424242;
 }
 /*
  * Top/Bottom center
@@ -2225,7 +2225,7 @@ a.uk-datepicker-table-muted {
     border-right: none;
     border-top-color: transparent;
     border-bottom-color: transparent;
-    border-left-color: #333333;
+    border-left-color: #424242;
 }
 /*
  * Right
@@ -2238,7 +2238,7 @@ a.uk-datepicker-table-muted {
     border-left: none;
     border-top-color: transparent;
     border-bottom-color: transparent;
-    border-right-color: #333333;
+    border-right-color: #424242;
 }
 .uk-tooltip {
     background: #424242;
@@ -2258,9 +2258,6 @@ a.uk-datepicker-table-muted {
     white-space: nowrap;
     overflow: hidden;
     width: 100%;
-}
-.uk-tooltip:after {
-    display: none !important;
 }
 .uk-tooltip.long-text {
     text-align: left;

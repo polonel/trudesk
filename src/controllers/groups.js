@@ -14,18 +14,15 @@
 
 var async           = require('async');
 var _               = require('underscore');
-var _s              = require('underscore.string');
-var flash           = require('connect-flash');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');
-var mongoose        = require('mongoose');
 
 var groupsController = {};
 
 groupsController.content = {};
 
-groupsController.get = function(req, res, next) {
+groupsController.get = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:view')) {
         req.flash('message', 'Permission Denied.');
@@ -58,7 +55,7 @@ groupsController.get = function(req, res, next) {
     });
 };
 
-groupsController.getCreate = function(req, res, next) {
+groupsController.getCreate = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:create')) {
         req.flash('message', 'Permission Denied.');
@@ -85,7 +82,7 @@ groupsController.getCreate = function(req, res, next) {
     });
 };
 
-groupsController.edit = function(req, res, next) {
+groupsController.edit = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'groups:edit')) {
         req.flash('message', 'Permission Denied.');

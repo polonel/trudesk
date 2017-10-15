@@ -12,21 +12,20 @@
 
  */
 
-var nconf = require('nconf'),
-    async = require('async'),
-    express = require('express'),
+var express = require('express'),
     WebServer = express(),
     winston = require('winston'),
     middleware = require('./middleware'),
     routes = require('./routes'),
     server = require('http').createServer(WebServer),
 
-    //Load Events
-    events = require('./emitter/events'),
     port = process.env.PORT || 8118;
 
 (function (app) {
     "use strict";
+
+    // Load Events
+    require('./emitter/events');
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {
@@ -55,14 +54,15 @@ var nconf = require('nconf'),
     };
 
     module.exports.installServer = function(callback) {
-        var middleware      = require('./middleware/middleware')(app),
-            router          = express.Router(),
+        var router          = express.Router(),
             controllers     = require('./controllers/index.js'),
             path            = require('path'),
             hbs             = require('express-hbs'),
             hbsHelpers      = require('./helpers/hbs/helpers'),
             bodyParser      = require('body-parser'),
             favicon         = require('serve-favicon');
+
+        require('./middleware/middleware')(app);
 
         app.set('views', path.join(__dirname, './views/'));
         app.engine('hbs', hbs.express3({
@@ -89,7 +89,7 @@ var nconf = require('nconf'),
             return res.redirect('/install');
         });
 
-        var io = require('socket.io')(server);
+        require('socket.io')(server);
 
         server.listen(port, '0.0.0.0', function() {
             callback();

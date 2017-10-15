@@ -52,7 +52,7 @@ define('modules/tour', [
                 text: 'Skip',
                 classes: 'uk-float-left',
                 action: function() {
-                    var username = $('#__loggedInAccount_username').text();
+                    var username = window.trudeskSessionService.getUser().username;
                     $.ajax({
                         url: '/api/v1/users/' + username + '/updatepreferences',
                         method: 'PUT',

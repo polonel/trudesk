@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history'], function(angular, _, $, helpers, socket, md, UIkit) {
-    return angular.module('trudesk.controllers.messages', [])
-        .controller('messagesCtrl', function($scope, $document, $http, $window, $cookies, $timeout, $log) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, socket, md, UIkit) {
+    return angular.module('trudesk.controllers.messages', ['trudesk.services.session'])
+        .controller('messagesCtrl', function(SessionService, $scope, $document, $http, $window, $cookies, $timeout, $log) {
 
             $scope.loadConversation = function(convoId) {
                 History.pushState(null, null, '/messages/' + convoId );
@@ -40,7 +40,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             };
 
             $scope.onKeyDown = function(cid, toUserId, $event) {
-                if ($event.keyCode != 13) {
+                if ($event.keyCode !== 13) {
                     socket.chat.startTyping(cid, toUserId);
                 }
             };
@@ -125,7 +125,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             }
 
             $scope.startNewConversation = function(userId) {
-                var $loggedInAccountId = $('#__loggedInAccount__id').text();
+                var $loggedInAccountId = SessionService.getUser()._id;
                 $http.post('/api/v1/messages/conversation/start', {
                     owner: $loggedInAccountId,
                     participants: [

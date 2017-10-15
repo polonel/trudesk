@@ -28,7 +28,7 @@
                 <tr>
                     <th></th>
                     <th>Name</th>
-                    <th>Ticket Count</th>
+                    <th style="text-align: right; padding-right: 25px;">Ticket Count</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,7 +39,7 @@
                             <label for="c_{{tag._id}}"></label>
                         </td>
                         <td>{{tag.name}}</td>
-                        <td style="text-align: center;">{{count}}</td>
+                        <td style="text-align: right; padding-right: 25px;">{{count}}</td>
                     </tr>
                 {{/each}}
                 </tbody>

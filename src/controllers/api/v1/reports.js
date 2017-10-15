@@ -451,7 +451,7 @@ function processReportData(tickets) {
 
         var tags = '';
         for (var k = 0; k < ticket.tags.length; k++) {
-            if (k == ticket.tags.length - 1)
+            if (k === ticket.tags.length - 1)
                 tags += ticket.tags[k].name;
             else
                 tags += ticket.tags[k].name + ';';
@@ -468,6 +468,7 @@ function processReportData(tickets) {
 function processResponse(res, input) {
     var headers = {
         uid: 'uid',
+        type: 'type',
         priority: 'priority',
         status: 'status',
         created: 'created',

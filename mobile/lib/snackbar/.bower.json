@@ -1,0 +1,41 @@
+{
+  "name": "snackbar",
+  "description": "Notifications insipired by Google Material Design",
+  "main": [
+    "dist/snackbar.min.js",
+    "dist/snackbar.min.css"
+  ],
+  "authors": [
+    "Chris Brame <polonel@gmail.com>"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "snackbar",
+    "matieral-design",
+    "toast",
+    "notifications"
+  ],
+  "homepage": "http://www.polonel.com/snackbar",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "version": "0.1.2",
+  "_release": "0.1.2",
+  "_resolution": {
+    "type": "version",
+    "tag": "0.1.2",
+    "commit": "8b706d3bb8399f7bf003402b5c4bd2aefe9c4798"
+  },
+  "_source": "https://github.com/polonel/SnackBar.git",
+  "_target": "^0.1.0",
+  "_originalSource": "snackbar"
+}

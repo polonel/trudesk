@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<link rel="stylesheet" href="live-example.css">
+
+	<script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+	<script src="../../dist/Autolinker.min.js"></script>  <!-- TODO: Make docs build process move this file into dir -->
+	<script src="live-example.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+	<h1>
+		<a class="title-link" href="https://github.com/gregjacobs/Autolinker.js" target="_top">Autolinker</a>
+		<small>v<script>document.write( Autolinker.version );</script> - Live Example</small>
+	</h1>
+
+	Type text on the left and see the output on the right. For full
+	match/options reference, see the
+	<a href="http://gregjacobs.github.io/Autolinker.js/docs/#!/api/Autolinker" target="_top">API Docs</a>
+
+	<div class="row pt10">
+		<div class="col-lg-4 col-sm-6">
+			<h4>Match Types:</h4>
+			<div id="option-urls-schemeMatches"></div>
+			<div id="option-urls-wwwMatches"></div>
+			<div id="option-urls-tldMatches"></div>
+			<div id="option-email"></div>
+			<div id="option-phone"></div>
+			<div id="option-mention"></div>
+			<div id="option-hashtag"></div>
+		</div>
+
+		<div class="col-lg-4 col-sm-6">
+			<h4>Other Options:</h4>
+			<div id="option-stripPrefix"></div>
+			<div id="option-newWindow"></div>
+			<br>
+			<div id="option-truncate-length"></div>
+			<div id="option-truncate-location"></div>
+			<br>
+			<div id="option-className"></div>
+		</div>
+
+		<div class="col-lg-4 col-sm-12">
+			<h4>Code Sample:</h4>
+			<pre id="options-output" class="code-sample"></pre>
+		</div>
+	</div>
+
+	<div class="row pt10">
+		<!-- Input -->
+		<div class="col-xs-6">
+			<textarea id="input" class="code-box">
+http://google.com
+www.google.com
+google.com
+google@google.com
+123-456-7890
+@MentionUser
+#HashTag</textarea>  <!-- Note: </textarea> tag intentionally directly against the end of the text to avoid an extra line -->
+		</div>
+
+		<!-- Output -->
+		<div class="col-xs-6">
+			<div id="output" class="full-height code-box"></div>
+		</div>
+	</div>
+</div>
+
+</body>
+
+</html>

@@ -51,7 +51,7 @@ define('pages/groups', [
 
                 if(sValue.length > 2) {
                     var filteredItems = '';
-                    for($i=0;$i<filterArray_length;$i++) {
+                    for(var $i=0;$i<filterArray_length;$i++) {
                         if(filterArray[$i].toLowerCase().indexOf(sValue) !== -1) {
                             filteredItems += (filteredItems.length > 1 ? ',' : '') + filterArray[$i];
                         }

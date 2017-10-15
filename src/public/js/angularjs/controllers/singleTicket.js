@@ -12,9 +12,12 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'history'], function(angular, _, $, UIkit, socket, nav, md, helpers) {
-    return angular.module('trudesk.controllers.singleTicket', [])
-        .controller('singleTicket', function($scope, $http, $q) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
+    function(angular, _, $, UIkit, socket, nav, md, helpers) {
+    return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q) {
+
+            $scope.loggedInAccount = SessionService.getUser();
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();
@@ -77,7 +80,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     console.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
-            $q.all([ticketTypes]).then(function(ret) {
+            $q.all([ticketTypes]).then(function() {
                 $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
             });
 
@@ -91,7 +94,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     console.log('[trudesk:singleTicket:groupHttpGet] - ' + e);
                                 });
 
-            $q.all([groupHttpGet]).then(function(ret) {
+            $q.all([groupHttpGet]).then(function() {
                 $scope.selected_group = _.findWhere($scope.groups, {_id: $scope.ticketGroup});
             });
 
@@ -248,7 +251,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     {
                         "tags": tagField.val()
 
-                    }).success(function(data) {
+                    }).success(function() {
                         helpers.UI.showSnackbar('Tags have been added.', false);
                         socket.ui.refreshTicketTags(id);
 
@@ -268,7 +271,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     {
                         "tags": []
                     }
-                ).success(function(data) {
+                ).success(function() {
                     socket.ui.refreshTicketTags(id);
                     $('#addTagModal').find('option').prop('selected', false);
                     $('#addTagModal').find('select').trigger('chosen:updated');
@@ -280,6 +283,50 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 });
             };
 
+            $scope.submitComment = function(event) {
+                event.preventDefault();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var id = form.find('input[name="ticketId"]');
+                var commentField = form.find('#commentReply');
+                if (commentField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addcomment', {
+                        "comment": commentField.val(),
+                        "_id": id.val().toString(),
+                        "ownerId": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        commentField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitComment]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
+            };
+
+            $scope.submitInternalNote = function(event) {
+                event.preventDefault();
+                var id = $('#__ticketId').text();
+                var form = $(event.target);
+                if (form.length < 1) return;
+                var noteField = form.find('#ticket-note');
+                if (noteField.length < 1 || id.length < 1) return;
+                if (form.isValid(null, null, false)) {
+                    $http.post('/api/v1/tickets/addnote', {
+                        "note": noteField.val(),
+                        "ticketid": id,
+                        "owner": $scope.loggedInAccount._id
+                    }).success(function(data) {
+                        noteField.val('');
+                    }).error(function(e) {
+                        console.error('[trudesk:singleTicket:submitInternalNote]');
+                        console.error(e);
+                        helpers.UI.showSnackbar('Error: ' + e.error, true);
+                    });
+                }
+            };
+
             $scope.closeAddTagModal = function() {
                 UIkit.modal('#addTagModal').hide();
             };
@@ -287,7 +334,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
         .directive('closeMouseUp', ['$document', function($document) {
             return {
                 restrict: 'A',
-                link: function(scope, element, attr) {
+                link: function(scope, element) {
                     $document.on('mouseup', mouseup);
 
                     scope.$on('$destroy', function() {
@@ -296,7 +343,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
                     element.on('$destroy', function() {
                         $document.off('mouseup', mouseup);
-                    })
+                    });
 
                     function mouseup($event) {
                         var target = $event.target.offsetParent;

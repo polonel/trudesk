@@ -12,10 +12,7 @@
 
  **/
 
-var async           = require('async');
 var _               = require('underscore');
-var ticketSchema    = require('../models/ticket');
-var reports         = require('../models/report');
 var permissions     = require('../permissions');
 
 var reportsController = {};
@@ -112,10 +109,10 @@ reportsController.breakdownUser = function(req, res) {
     return res.render('subviews/reports/breakdown_User', self.content);
 };
 
-function handleError(res, err) {
-    if (err) {
-        return res.render('error', {layout: false, error: err, message: err.message});
-    }
-}
+// function handleError(res, err) {
+//     if (err) {
+//         return res.render('error', {layout: false, error: err, message: err.message});
+//     }
+// }
 
 module.exports = reportsController;

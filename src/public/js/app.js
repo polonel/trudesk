@@ -12,52 +12,60 @@
 
  **/
 
-//http://code.angularjs.org/1.2.1/docs/guide/bootstrap#overview_deferred-bootstrap
-//window.name = "NG_DEFER_BOOTSTRAP!";
+//Load SASS (Webpack)
+require('../../sass/app.sass');
 
-require(['jquery', 'modules/helpers', 'angular', 'angularjs/main'], function($, helpers, angular) {
+require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, helpers, angular) {
     helpers.init();
 
     angular.element(document).ready(function() {
-        //Static Bootstraps
-        angular.bootstrap($('.top-bar'), ['trudesk']);
-        angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
-        angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
+        // Call the Session service before bootstrapping.
+        // Allowing the SessionUser to be populated before the controllers have access.
+        angular.injector(['ng', 'sessionLoader']).get('SessionService').init(function(err) {
+            if (err)
+                console.error(err);
 
-        //Dynamic Bootstrap
-        angular.bootstrap($('#page-content'), ['trudesk']);
-    });
+            require(['angularjs/main'], function() {
+                //Static Bootstraps
+                angular.bootstrap($('.top-bar'), ['trudesk']);
+                angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
+                angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
 
-    require([
-        'underscore',
-        'modules/navigation',
-        'modules/tour',
-        'uikit',
-        'modules/socket',
-        'modules/ajaxify',
-        'modernizr',
-        'fastclick',
-        'placeholder',
-        'pace',
-        'easypiechart'
+                //Dynamic Bootstrap
+                angular.bootstrap($('#page-content'), ['trudesk']);
 
-    ], function(_, nav, tour) {
-        //Page loading (init)
-        require(['pages/pageloader'], function(pl) {
-            pl.init(function() {
-                nav.init();
 
-                var $event = _.debounce(function() {
-                    helpers.hideLoader(1000);
-                    helpers.countUpMe();
-                    helpers.UI.cardShow();
+                require([
+                    'underscore',
+                    'modules/navigation',
+                    'uikit',
+                    'modules/socket',
+                    'modules/ajaxify',
+                    'modernizr',
+                    'fastclick',
+                    'placeholder',
+                    'pace',
+                    'easypiechart'
 
-                    $.event.trigger('$trudesk:ready', window);
-                    //tour.init();
+                ], function(_, nav) {
+                    //Page loading (init)
+                    require(['pages/pageloader'], function(pl) {
+                        pl.init(function() {
+                            nav.init();
 
-                }, 100);
+                            var $event = _.debounce(function() {
+                                helpers.hideLoader(1000);
+                                helpers.countUpMe();
+                                helpers.UI.cardShow();
 
-                $event();
+                                $.event.trigger('$trudesk:ready', window);
+
+                            }, 100);
+
+                            $event();
+                        });
+                    });
+                });
             });
         });
     });

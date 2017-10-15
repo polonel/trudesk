@@ -1,34 +1,66 @@
 <!doctype html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <title>Ticket #{{ticket.uid}}</title>
+    <link href="https://fonts.googleapis.com/css?family=Heebo:400,600,700" rel="stylesheet">
     <style>
+        body {
+            font-family: "Heebo", sans-serif;
+        }
         h1,h2,h3,h4,h5,h6 {
             margin-bottom: 2px;
+            font-weight: 400;
+        }
+        p {
+            font-weight: 300;
+            font-size: 14px;
+            line-height: 18px;
         }
         hr {
             display: block;
             margin: 0;
             padding: 0;
             width: 100%;
-            background: #ccc;
+            background: #ddd;
             height: 3px;
             border: none;
+        }
+        .strong {
+            font-weight: 600;
+        }
+        .logo {
+            height: 75px;
+            text-align: center;
+        }
+
+        .logo svg {
+            height: 75px;
+        }
+
+        .logo svg path {
+            fill: #222;
+        }
+
+        .logo svg circle {
+            fill: #E74C3C;
         }
     </style>
 </head>
 <body>
     <div>
+        <p>
+            A ticket has been submitted by {{ticket.owner.fullname}}. The ticket details are listed below.
+        </p>
+        <hr>
         <h2>{{{ticket.subject}}}</h2>
-        <h5>Ticket Group: {{ticket.group.name}}</h5>
-        <h5>Ticket Submitted by: {{ticket.owner.fullname}}</h5>
-        <h5>Submitted Date: {{ticket.date}}</h5>
-        <h5>Ticket Type: {{ticket.type.name}}</h5>
-        <h5>Ticket Priority: {{ticket.priority}}</h5>
-        <h5>Tags: {{ticket.tags}}</h5>
-
-        <br/><br/>
+        <h5><span class="strong">Ticket Group:</span> {{ticket.group.name}}</h5>
+        <h5><span class="strong">Ticket Submitted by:</span> {{ticket.owner.fullname}}</h5>
+        <h5><span class="strong">Submitted Date:</span> {{ticket.date}}</h5>
+        <h5><span class="strong">Ticket Type:</span> {{ticket.type.name}}</h5>
+        <h5><span class="strong">Ticket Priority:</span> {{ticket.priority}}</h5>
+        <h5><span class="strong">Tags:</span> {{ticket.tags}}</h5>
+        <br/>
         <h4>Ticket Issue</h4>
         <hr/>
         <p class="issue">{{{ticket.issue}}}</p>

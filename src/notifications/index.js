@@ -13,16 +13,11 @@
  **/
 
 var _                   = require('underscore'),
-    path                = require('path'),
-    fs                  = require('fs'),
     nconf               = require('nconf'),
     async               = require('async'),
     winston             = require('winston'),
     request             = require('request'),
-    notificationSchema  = require('../models/notification'),
-    groupSchema         = require('../models/group'),
-    userSchema          = require('../models/user'),
-    ticketSchema        = require('../models/ticket');
+    notificationSchema  = require('../models/notification');
 
 module.exports.pushNotification = function(notification) {
     var enabled = nconf.get('tps:enable') ? nconf.get('tps:enable') : false;
@@ -74,7 +69,7 @@ module.exports.pushNotification = function(notification) {
             if (err)
                 winston.debug(err);
             else {
-                if (response.statusCode == 401)
+                if (response.statusCode === 401)
                     winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.');
             }
         });
@@ -82,14 +77,14 @@ module.exports.pushNotification = function(notification) {
 };
 
 module.exports.init = function(emitter) {
-    emitter.on('ticket:created', onTicketCreate);
-    emitter.on('notification:count:update', onNotificationCountUpdate);
+    // emitter.on('ticket:created', onTicketCreate);
+    // emitter.on('notification:count:update', onNotificationCountUpdate);
 };
 
-function onTicketCreate(ticketObj) {
-
-}
-
-function onNotificationCountUpdate(user) {
-
-}
+// function onTicketCreate(ticketObj) {
+//
+// }
+//
+// function onNotificationCountUpdate(user) {
+//
+// }

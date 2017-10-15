@@ -4,7 +4,6 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9)](https://www.codacy.com/app/polonel/trudesk?utm_source=github.com&utm_medium=referral&utm_content=polonel/trudesk&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/polonel/trudesk.svg?branch=master)](https://travis-ci.org/polonel/trudesk)
-[![Coverage Status](https://coveralls.io/repos/polonel/trudesk/badge.svg?branch=master&service=github)](https://coveralls.io/github/polonel/trudesk?branch=develop)
 
 [http://trudesk.io](http://trudesk.io/)
 
@@ -22,6 +21,13 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 3. Build the scripts: ```npm run build```
 3. Start the server: ```npm start```
 4. Navigate to: ```http://localhost:8118```
+
+#### Ubuntu 16.04 Install Script
+```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
+
+#### Trudesk Virtual Appliance
+The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as VMWare. Visit the appliance documentation for more information.
+[Trudesk Virtual Appliance Documentation](http://www.trudesk.io/docs/install_virtual_appliance.html)
 
 ### Documentation
 To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)

@@ -1,0 +1,17 @@
+<div class="uk-modal" id="createTicketTypeModal" ng-controller="settingsCtrl">
+    <div class="uk-modal-dialog">
+        <form class="uk-form-stacked" id="createTicketTypeForm" ng-submit="createTicketType($event)">
+            <div class="">
+                <label for="typeName">Type Name</label>
+                <input type="text" class="md-input" id="typeName" name="typeName"
+                       data-validation="length"
+                       data-validation-length="min3"
+                       data-validation-error-msg="Please enter a valid type name. Type name must contain at least 3 characters." />
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitCreateTicketType" ng-click="createTicketType($event)">Create</button>
+            </div>
+        </form>
+    </div>
+</div>

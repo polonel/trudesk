@@ -12,8 +12,7 @@
 
  **/
 
-var _       = require('underscore'),
-    winston = require('winston'),
+var winston = require('winston'),
     path    = require('path'),
     fs      = require('fs'),
     request = require('request'),
@@ -89,7 +88,7 @@ api_plugins.removePlugin = function(req, res) {
 
         var plugin = JSON.parse(body).plugin;
 
-        if (plugin == null)
+        if (plugin === null)
             return res.json({success: false, error: 'Invalid Plugin'});
 
         rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function(err) {

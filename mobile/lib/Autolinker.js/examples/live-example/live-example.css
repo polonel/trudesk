@@ -1,0 +1,27 @@
+html,
+body,
+.full-height {
+	height: 100%;
+}
+
+label { font-weight: normal; }
+
+body {
+	overflow-x: hidden;
+	padding-bottom: 180px;
+}
+
+
+.pt10 { padding-top: 10px; }
+.pl10 { padding-left: 10px; }
+.pl20 { padding-left: 20px; }
+
+.textfield { line-height: 0; }
+
+
+.title-link { color: #333; }
+.title-link:focus, .title-link:hover { color: #333; text-decoration: underline; }
+
+.code-sample { width: 100%; height: 265px; overflow: auto; font: 14px "Courier New"; }
+
+.code-box { width: 100%; height: 300px; border: 1px solid #CCC; padding: 2px; word-wrap: break-word; overflow-y: auto; font: 14px/20px 'Helvetica Neue', Helvetica, Arial, sans-serif; }

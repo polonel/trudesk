@@ -19,6 +19,7 @@ var winston         = require('winston');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
 var emitter         = require('../emitter');
+var permissions     = require('../permissions');
 
 /**
  * @since 1.0
@@ -186,7 +187,7 @@ ticketsController.getAssigned = function(req, res, next) {
 
     req.processor = self.processor;
 
-    next();
+    return next();
 };
 
 ticketsController.filter = function(req, res, next) {
@@ -196,7 +197,9 @@ ticketsController.filter = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var queryString = req.query;
+    var uid = queryString.uid;
     var subject = queryString.fs;
+    var issue = queryString.it;
     var dateStart = queryString.ds;
     var dateEnd = queryString.de;
     var status = queryString.st;
@@ -217,7 +220,9 @@ ticketsController.filter = function(req, res, next) {
     if (!_.isUndefined(assignee) && !_.isArray(assignee)) assignee = [assignee];
 
     var filter = {
+        uid: uid,
         subject: subject,
+        issue: issue,
         date: {
             start: dateStart,
             end: dateEnd
@@ -277,15 +282,13 @@ ticketsController.processor = function(req, res) {
     self.content.data.filter = object.filter;
 
     var userGroups = [];
-    var totalCount = 0;
 
     async.waterfall([
         function(callback) {
             groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
                 if (err) return callback(err);
-                var p = require('../permissions');
                 userGroups = grps;
-                if (p.canThis(req.user.role, 'ticket:public')) {
+                if (permissions.canThis(req.user.role, 'ticket:public')) {
                     groupSchema.getAllPublicGroups(function(err, groups) {
                         if (err) return callback(err);
                         userGroups = groups.concat(grps);
@@ -300,6 +303,12 @@ ticketsController.processor = function(req, res) {
             ticketSchema.getTicketsWithObject(grps, object, function(err, results) {
                 if (err) return callback(err);
 
+                if (!permissions.canThis(req.user.role, 'notes:view')) {
+                    _.each(results, function(ticket) {
+                        ticket.notes = [];
+                    });
+                }
+
                 return callback(null, results);
             });
         }
@@ -307,9 +316,7 @@ ticketsController.processor = function(req, res) {
         if (err) return handleError(res, err);
 
         //Ticket Data
-        self.content.data.totalCount = 0;
         self.content.data.tickets = results;
-        totalCount = results.length;
 
         var countObject = {
             status: object.status,
@@ -325,16 +332,16 @@ ticketsController.processor = function(req, res) {
             self.content.data.pagination = {};
             self.content.data.pagination.type = processor.pagetype;
             self.content.data.pagination.currentpage = object.page;
-            self.content.data.pagination.start = (object.page == 0) ? 1 : object.page * object.limit;
-            self.content.data.pagination.end = (object.page == 0) ? object.limit : (object.page*object.limit)+object.limit;
+            self.content.data.pagination.start = (object.page === 0) ? 1 : object.page * object.limit;
+            self.content.data.pagination.end = (object.page === 0) ? object.limit : (object.page*object.limit)+object.limit;
             self.content.data.pagination.enabled = false;
 
             self.content.data.pagination.total = totalCount;
             if (self.content.data.pagination.total > object.limit)
                 self.content.data.pagination.enabled = true;
 
-            self.content.data.pagination.prevpage = (object.page == 0) ? 0 : Number(object.page) - 1;
-            self.content.data.pagination.prevEnabled = (object.page != 0);
+            self.content.data.pagination.prevpage = (object.page === 0) ? 0 : Number(object.page) - 1;
+            self.content.data.pagination.prevEnabled = (object.page !== 0);
             self.content.data.pagination.nextpage = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total) ? Number(object.page) + 1 : object.page;
             self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
 
@@ -368,7 +375,7 @@ ticketsController.print = function(req, res) {
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
-        var permissions = require('../permissions');
+
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
@@ -379,6 +386,9 @@ ticketsController.print = function(req, res) {
                 return res.redirect('/tickets');
             }
         }
+
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
 
         self.content.data.ticket = ticket;
         self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
@@ -431,7 +441,6 @@ ticketsController.single = function(req, res) {
         if (err) return handleError(res, err);
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
-        var permissions = require('../permissions');
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
         if (!_.any(ticket.group.members, user._id)) {
@@ -443,10 +452,11 @@ ticketsController.single = function(req, res) {
             }
         }
 
+        if (!permissions.canThis(user.role, 'notes:view'))
+            ticket.notes = [];
+
         self.content.data.ticket = ticket;
-        self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
-        //self.content.data.ticket.tagsArray = ticket.tags;
-        self.content.data.ticket.commentCount = _.size(ticket.comments);
+        self.content.data.ticket.priorityname = ticket.priorityFormatted;
 
         return res.render('subviews/singleticket', self.content);
     });
@@ -519,7 +529,7 @@ ticketsController.postcomment = function(req, res, next) {
         }, function(err, T) {
             if (err) return handleError(res, err);
 
-            ticketSchema.populate(T.save, 'comments.owner', function(err) {
+            ticketSchema.populate(T.save, 'subscribers comments.owner', function(err) {
                 emitter.emit('ticket:comment:added', T.save, Comment);
 
                 return res.send(T);

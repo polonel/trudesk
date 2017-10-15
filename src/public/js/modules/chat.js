@@ -23,28 +23,36 @@ define('modules/chat',[
 
 ], function($, _, moment, helpers, UIKit) {
     var chatClient = {},
-        socket;
+        socket,
+        loggedInAccount;
 
     chatClient.init = function(sock) {
+        loggedInAccount = window.trudeskSessionService.getUser();
         socket = sock;
 
         socket.removeAllListeners('connect');
         socket.on('connect', function() {
-            socket.emit('joinChatServer');
+            // There seems to be a bug in Firefox that prevents
+            // the socket from executing an emit right after the event.
+            // Workaround is to delay the joining of the server for 100ms
+
+            //Socket joinChatServer was impl into the server and removed from client side. 8-9-2017
+            // var i = _.debounce(function() {
+            //     socket.emit('joinChatServer');
+            // }, 100);
+            // i();
         });
 
         socket.removeAllListeners('connectingToSocketServer');
-        socket.on('connectingToSocketServer', function(data) {
+        socket.on('connectingToSocketServer', function() {
 
         });
 
-        //TODO: This is called often. Even on 5sec loop. This needs to be optimized. JANK!
-        // This should not be on loop. Maybe have the UI update based on Connect/Disconnect
         socket.removeAllListeners('updateUsers');
         socket.on('updateUsers', function(data) {
             var html = '';
             var onlineList = $('.online-list-wrapper').find('ul.online-list');
-            var username = $('#__loggedInAccount_username').text();
+            var username = loggedInAccount.username;
             var filteredData = _.filter(data, function(item) { return item.user.username !== username; });
             var activeNow = $('.active-now');
             if (_.size(filteredData) < 1) {
@@ -53,7 +61,7 @@ define('modules/chat',[
                 activeNow.show();
             }
             onlineList.html('');
-            _.each(filteredData, function(v,k) {
+            _.each(filteredData, function(v) {
                 var onlineUser = v.user;
                 if (onlineUser.username === username) return true;
                 var imageUrl = onlineUser.image;
@@ -104,14 +112,19 @@ define('modules/chat',[
         socket.on('spawnChatWindow', function(data) {
             var messageContent = $('#message-content[data-conversation-id]');
             if (messageContent.length > 0) {
-                var loggedInAccountId = $('#__loggedInAccount__id').text();
+                var loggedInAccountId = loggedInAccount._id;
                 startConversation(loggedInAccountId, data._id, function(err, convo) {
                     if (err) {
                         console.log('[trudesk:chat:openChatWindow] - Error');
                         console.error(err);
                         return helpers.UI.showSnackbar('Unable to start chat', true);
                     } else {
-                        History.pushState(null, null, '/messages/' + convo._id, true);
+                        var splitPath = window.location.pathname.split('/');
+                        if (splitPath.length > 1) {
+                            if (splitPath[0].toString().toLowerCase() === 'messages')
+                                return true;
+                        } else
+                            History.pushState(null, null, '/messages/' + convo._id, true);
                     }
                 });
             } else {
@@ -218,7 +231,7 @@ define('modules/chat',[
     function stopTyping(cid, to) {
         isTyping[cid] = false;
         typingTimeout[cid] = undefined;
-        var loggedInAccountId = $('#__loggedInAccount__id').text();
+        var loggedInAccountId = loggedInAccount._id;
         socket.emit('chatStopTyping', {
             cid: cid,
             to: to,
@@ -243,7 +256,7 @@ define('modules/chat',[
         socket.emit('chatTyping', {
             cid: cid,
             to: userid,
-            from: $('#__loggedInAccount__id').text()
+            from: loggedInAccount._id
         });
 
         isTyping[cid] = true;
@@ -308,7 +321,7 @@ define('modules/chat',[
                 if (v.length < 1) return;
 
                 //Send Message
-                chatClient.sendChatMessage(cid, userId, v, function(err) {
+                chatClient.sendChatMessage(cid, userId, v, function() {
                     clearTimeout(typingTimeout[cid]);
                     stopTyping(cid, userId);
                 });
@@ -332,7 +345,7 @@ define('modules/chat',[
             e.preventDefault();
             $(this).parents('.chat-box[data-chat-userid]').parent().remove();
 
-            var $loggedInAccountId = $('#__loggedInAccount__id').text();
+            var $loggedInAccountId = loggedInAccount._id;
             var cid = $chatCloseButton.parents('.chat-box[data-conversation-id]').attr('data-conversation-id');
             socket.emit('saveChatWindow', {userId: $loggedInAccountId, convoId: cid, remove: true});
         });
@@ -395,7 +408,7 @@ define('modules/chat',[
         }
     }
 
-    function loadChatMessages(chatBox, messageArray, callback) {
+    function loadChatMessages(chatBox, messageArray) {
         var to = chatBox.attr('data-chat-userid'),
             chatMessage,
             chatMessageList,
@@ -424,7 +437,7 @@ define('modules/chat',[
     }
 
     chatClient.sendChatMessage = function(cid, toUserId, message, complete) {
-        var loggedInAccountId = $('#__loggedInAccount__id').text();
+        var loggedInAccountId = loggedInAccount._id;
         $.ajax({
             url: '/api/v1/messages/send',
             type: 'POST',
@@ -475,7 +488,7 @@ define('modules/chat',[
                 return complete();
             return true;
         }
-        var loggedInAccountId = $('#__loggedInAccount__id').text();
+        var loggedInAccountId = loggedInAccount._id;
         if (_.isUndefined(loggedInAccountId)) {
             return helpers.UI.showSnackbar('Unable to start chat', true);
         }
@@ -487,7 +500,7 @@ define('modules/chat',[
                 // return helpers.UI.showSnackbar('Unable to start chat', true);
             }
 
-            var username = $('#__loggedInAccount_username').text();
+            var username = loggedInAccount.username;
             if (user.username === username) return true;
 
             var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]');
@@ -548,7 +561,7 @@ define('modules/chat',[
         $('span[data-user-status-id]').each(function() {
             $(this).removeClass('user-online').addClass('user-offline');
         });
-        _.each(usersOnline, function(v, k) {
+        _.each(usersOnline, function(v) {
             var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
             $bubble.each(function() {
                 var self = $(this);
@@ -589,7 +602,7 @@ define('modules/chat',[
         if (oldHeight === newHeight)
             return true;
 
-        var textAreaHeight = self.parent().outerHeight();
+        // var textAreaHeight = self.parent().outerHeight();
         var messages = self.parent().siblings('.chat-box-messages');
         messages.css({'min-height': '170px', 'max-height': '220px'});
         self.parent().css({'max-height': '77px', 'min-height':'16px'});

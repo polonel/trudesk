@@ -1,0 +1,83 @@
+<div class="uk-grid uk-grid-collapse" ng-controller="settingsCtrl">
+    <div class="uk-width-3-10 message-list">
+        <div class="page-title noshadow nopadding-right" style="padding-left: 20px;">
+            <div class="page-title-border-right">
+                <p>{{title}}</p>
+            </div>
+        </div>
+
+        <div class="page-content-left full-height">
+            <div class="tag-info-wrap uk-clearfix" style="padding: 15px 0 0 15px;">
+                <h4>Tag Information</h4>
+                <div class="uk-width-1-1 padding-right-15">
+                    <div class="tru-card" style="background: #fff;min-height: 150px; margin: 0; padding: 15px;">
+                        <div class="scrollable">
+                            <div class="uk-margin-small-top uk-margin-medium-bottom">
+                                <label for="editType_Name">Name</label>
+                                <input id="editType_Name" name="editType_Name" type="text" class="md-input" value="{{data.tickettype.name}}" />
+                            </div>
+
+                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-success" ng-click="updateTicketType('{{data.tickettype._id}}')">Update</button>
+                            <hr />
+                            <button type="button" class="md-btn md-btn-block md-btn-wave-light md-btn-danger uk-margin-medium-bottom" ng-click="showDeleteTicketType('{{data.tickettype._id}}', {{data.hasTickets}})">Delete</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="uk-width-7-10 nopadding page-message">
+        <div class="page-title-right page-title nopadding noshadow">
+            <p style="padding-left: 20px; font-size: 24px;">Tickets</p>
+        </div>
+
+        <div class="page-content page-content-right full-height scrollable">
+            <div class="uk-grid uk-margin-medium-bottom">
+                <div class="uk-width-1-1">
+                    <div class="uk-grid" data-uk-grid-margin>
+                        <div class="uk-width-medium-1-1">
+                            <div id="overdue_tickets" class="tru-card noshadow" style="min-height: 245px;">
+                                <div class="tru-card-content">
+                                    <div class="uk-overflow-container">
+                                        <table class="uk-table">
+                                            <thead>
+                                            <tr>
+                                                <th class="uk-text-nowrap">Ticket</th>
+                                                <th class="uk-text-nowrap">Status</th>
+                                                <th class="uk-text-nowrap">Subject</th>
+                                                <th class="uk-text-nowrap uk-text-right">Created</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+
+                                            {{#each data.tickets}}
+                                                <tr class="uk-table-middle">
+                                                    <td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/{{uid}}">T#{{uid}}</a></td>
+                                                    <td class="uk-width-1-10 uk-text-nowrap">
+                                                        <span class="uk-badge ticket-status-{{lowercase (statusName status)}} uk-width-1-1">{{statusName status}}</span></td>
+                                                    <td class="uk-width-6-10">
+                                                        {{subject}}
+                                                    </td>
+                                                    <td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">
+                                                        {{{formatDate date "MM.DD.YYYY"}}}
+                                                    </td>
+                                                </tr>
+                                            {{/each}}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+
+</div>
+
+{{> deleteTicketTypeWindow}}
+
+{{#contentFor 'js-plugins'}}
+
+{{/contentFor}}

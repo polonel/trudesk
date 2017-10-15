@@ -1,12 +1,44 @@
 # Change Log
 
-## [0.1.8](https://github.com/polonel/trudesk/tree/HEAD)
+## [Unreleased](https://github.com/polonel/trudesk/tree/HEAD)
 
-[Full Changelog](https://github.com/polonel/trudesk/compare/0.1.7...HEAD)
+[Full Changelog](https://github.com/polonel/trudesk/compare/0.1.9...HEAD)
+
+**Fixed bugs:**
+
+- Cannot create a group in 1.8 [\#23](https://github.com/polonel/trudesk/issues/23)
+- Crash in MailCheck [\#9](https://github.com/polonel/trudesk/issues/9)
+
+**Closed issues:**
+
+- Confirm Delete on Groups [\#16](https://github.com/polonel/trudesk/issues/16)
+
+## [0.1.9](https://github.com/polonel/trudesk/tree/0.1.9) (2017-05-01)
+[Full Changelog](https://github.com/polonel/trudesk/compare/0.1.8...0.1.9)
+
+**Implemented enhancements:**
+
+- 404 Errors getting dumped to log file [\#22](https://github.com/polonel/trudesk/issues/22)
+
+**Fixed bugs:**
+
+- 404 Errors getting dumped to log file [\#22](https://github.com/polonel/trudesk/issues/22)
+- Able to delete your own account [\#21](https://github.com/polonel/trudesk/issues/21)
+- Default Administrators Group can be deleted [\#20](https://github.com/polonel/trudesk/issues/20)
+- Install Script for New Mongodb does not show restart [\#14](https://github.com/polonel/trudesk/issues/14)
+- User role can edit/add tags on tickets [\#12](https://github.com/polonel/trudesk/issues/12)
+
+## [0.1.8](https://github.com/polonel/trudesk/tree/0.1.8) (2017-03-07)
+[Full Changelog](https://github.com/polonel/trudesk/compare/0.1.7...0.1.8)
 
 **Fixed bugs:**
 
 - \*UNSTABLE\* - Unable to run install script [\#17](https://github.com/polonel/trudesk/issues/17)
+
+**Merged pull requests:**
+
+- Bug Fixes for 0.1.8 [\#19](https://github.com/polonel/trudesk/pull/19) ([polonel](https://github.com/polonel))
+- Release 0.1.8 Merge [\#18](https://github.com/polonel/trudesk/pull/18) ([polonel](https://github.com/polonel))
 
 ## [0.1.7](https://github.com/polonel/trudesk/tree/0.1.7) (2016-10-22)
 [Full Changelog](https://github.com/polonel/trudesk/compare/0.1.6...0.1.7)

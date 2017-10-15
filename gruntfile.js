@@ -17,12 +17,12 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            sass: {
-                files: [
-                    'src/sass/**/*.sass'
-                ],
-                tasks: ['sass', 'cssmin']
-            },
+            // sass: {
+            //     files: [
+            //         'src/sass/**/*.sass'
+            //     ],
+            //     tasks: ['sass', 'cssmin']
+            // },
             web: {
                 files: [
                     '*.js',
@@ -52,10 +52,11 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
+                    // {
+                    //     grunt: true,
+                    //     args: ['watch:sass']
+                    // },
                     {
-                        grunt: true,
-                        args: ['watch:sass']
-                    }, {
                         grunt: true,
                         args: ['watch:web']
                     }, {
@@ -105,17 +106,9 @@ module.exports = function(grunt) {
             minify: {
                 expand: true,
                 cwd: 'public/css/',
-                src: ['*.css', '!*.min.css'],
+                src: ['*.css', '!app.min.css', '!*.min.css'],
                 dest: 'public/css/',
                 ext: '.min.css'
-            }
-        },
-
-        sass: {
-            dist: {
-                files: {
-                    'public/css/app.css': 'src/sass/app.sass'
-                }
             }
         },
 
@@ -188,12 +181,11 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('buildcss', ['sass', 'cssmin']);
+    grunt.registerTask('buildcss', ['cssmin']);
     grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('build', ['builddocs', 'uglify:uikit', 'shell:webpackDist', 'buildcss']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
-    grunt.registerTask('changelog', ['conventionalChangelog']);
     grunt.registerTask('default', ['server']);
 };

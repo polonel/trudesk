@@ -55,7 +55,52 @@ var canThis = function(role, a) {
     return _.indexOf(typePerm, action) !== -1;
 };
 
+var getRoles = function(action) {
+    if (_.isUndefined(action)) return false;
+
+    var rolesWithAction = [];
+
+    _.each(roles, function(role) {
+        var actionType = action.split(':')[0];
+        var theAction = action.split(':')[1];
+
+        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return false;
+        if (_.indexOf(role.allowedAction, '*') !== -1) {
+            rolesWithAction.push(role);
+            return;
+        }
+
+        var result = _.filter(role.allowedAction, function(value) {
+            if (_s.startsWith(value, actionType + ':')) return value;
+        });
+
+        if (_.isUndefined(result) || _.size(result) < 1) return;
+        if (_.size(result) === 1) {
+            if (result[0] === '*') {
+                rolesWithAction.push(role);
+                return;
+            }
+        }
+
+        var typePerm = result[0].split(':')[1].split(' ');
+        typePerm = _.uniq(typePerm);
+
+        if (_.indexOf(typePerm, '*') !== -1) {
+            rolesWithAction.push(role);
+            return;
+        }
+
+        if (_.indexOf(typePerm, theAction) !== -1)
+            rolesWithAction.push(role);
+    });
+
+    rolesWithAction = _.uniq(rolesWithAction);
+
+    return rolesWithAction;
+};
+
 module.exports = {
     roles: roles,
-    canThis: canThis
+    canThis: canThis,
+    getRoles: getRoles
 };

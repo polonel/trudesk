@@ -26,7 +26,6 @@ define('pages/tags', [
 
     tagsPage.init = function(callback) {
         $(document).ready(function() {
-            helpers.init();
             var table = $('#tagsTable');
             table.dataTable({
                 searching: false,

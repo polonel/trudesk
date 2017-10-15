@@ -12,6 +12,7 @@
     mailerCheckPort={{data.settings.mailerCheckPort.value}};
     mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
     mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
+    mailerCheckTicketType='{{data.settings.mailerCheckTicketType.value}}';
 
     showTour={{data.settings.showTour.value}};
     showOverdueTickets={{data.settings.showOverdueTickets.value}};
@@ -131,7 +132,7 @@
                                 </label>
                             </div>
                         </div>
-                        <hr class="nomargin-top">
+                        <hr class="nomargin-top clear">
                         <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
                             <div class="uk-position-relative">
                                 <div class="uk-margin-medium-bottom">
@@ -191,7 +192,7 @@
                                 </label>
                             </div>
                         </div>
-                        <hr class="nomargin-top">
+                        <hr class="nomargin-top clear">
                         <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
                             <div class="">
                                 <div class="uk-margin-medium-bottom">
@@ -209,6 +210,14 @@
                                 <div class="uk-margin-medium-bottom">
                                     <label for="mailerCheckPassword">Password</label>
                                     <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
+                                </div>
+                                <div class="uk-margin-medium-bottom">
+                                    <label for="mailerCheckTicketType">Default Ticket Type</label>
+                                    <select name="mailerCheckTicketType" id="mailerCheckTicketType" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                                        {{#each data.common.ticketTypes}}
+                                            <option value="{{{_id}}}">{{name}}</option>
+                                        {{/each}}
+                                    </select>
                                 </div>
                                 <div class="uk-clearfix">
                                     <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
@@ -236,7 +245,7 @@
                                 </label>
                             </div>
                         </div>
-                        <hr class="nomargin-top">
+                        <hr class="nomargin-top clear">
                         <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
                             <div class="">
                                 <div class="uk-margin-medium-bottom">

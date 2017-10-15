@@ -14,15 +14,22 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
-function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
+define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'jscookie', 'tether', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
     var helpers = {};
 
     var easing_swiftOut = [ 0.4,0,0.2,1 ];
 
-    helpers.init = function() {
+    helpers.loaded = false;
+    helpers.init = function(reload) {
         var self = this;
+        if (reload) self.loaded = false;
+        if (self.loaded) {
+            console.warn('Helpers already loaded. Possible double load.');
+        }
+
+        self.prototypes();
 
         self.resizeFullHeight();
         self.setupScrollers();
@@ -35,6 +42,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         self.ajaxFormSubmit();
         self.setupChosen();
         self.bindNewMessageSubmit();
+
+        //self.UI.expandSidebar();
+        //self.UI.tooltipSidebar();
+
+        self.UI.initSidebar();
+        self.UI.bindExpand();
+        self.UI.setupSidebarTether();
+        self.UI.bindAccordion();
 
         self.UI.fabToolbar();
         self.UI.inputs();
@@ -49,6 +64,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
         //Initial Call to Load Layout
         layout();
         $(window).resize(layout);
+
+        self.loaded = true;
     };
 
     helpers.countUpMe = function() {
@@ -62,13 +79,166 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     helpers.UI = {};
 
+    helpers.UI.bindAccordion = function() {
+        $('li[data-nav-accordion]').each(function() {
+            if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
+                $(this).addClass('hasSubMenuOpen');
+                var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
+                if (subMenu.length > 0) subMenu.addClass('subMenuOpen');
+            }
+            var $this = $(this).find('> a');
+            $this.off('click');
+            $this.on('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (!$(this).parents('.sidebar').hasClass('expand')) {
+                    var href = $(this).attr('href');
+                    if (href !== '#')
+                        History.pushState(null, null, href);
+                    return true;
+                }
+
+                //Shut all other sidebars...
+                $('li[data-nav-accordion].hasSubMenuOpen').each(function() {
+                    var $tTarget = $('#' + $(this).attr('data-nav-accordion-target'));
+                    $tTarget.removeClass('subMenuOpen');
+                    $(this).removeClass('hasSubMenuOpen');
+                });
+
+                var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'));
+
+                if ($target.length > 0) {
+                    $target.toggleClass('subMenuOpen');
+                    $(this).parent('li.hasSubMenu').toggleClass('hasSubMenuOpen');
+                }
+            });
+        });
+    };
+
+    helpers.UI.expandSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.addClass('no-animation expand');
+        $('#page-content').addClass('no-animation expanded-sidebar');
+        setTimeout(function() {
+            $sidebar.removeClass('no-animation');
+            $('#page-content').removeClass('no-animation');
+        }, 500);
+    };
+
+    helpers.UI.toggleSidebar = function() {
+        var $sidebar = $('.sidebar');
+        $sidebar.toggleClass('expand');
+        $('#page-content').toggleClass('expanded-sidebar');
+        if ($sidebar.hasClass('expand')) {
+            $('.sidebar').find('.tether-element.tether-enabled').hide();
+            $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen');
+            $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen');
+        } else {
+            setTimeout(function() { Tether.position(); $('.sidebar').find('.tether-element.tether-enabled').show();}, 500);
+            $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen');
+            $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen');
+        }
+
+    };
+
+    helpers.UI.bindExpand = function() {
+        var menuButton = $('#expand-menu');
+        if (menuButton.length > 0) {
+            menuButton.off('click');
+            menuButton.on('click', function(e) {
+                e.preventDefault();
+                helpers.UI.toggleSidebar();
+                if ($('.sidebar').hasClass('expand')) {
+                    Cookies.set('$trudesk:sidebar:expanded', true, { expires: 999 });
+                } else {
+                    Cookies.set('$trudesk:sidebar:expanded', false, { expires: 999 });
+                }
+            });
+        }
+    };
+
+    helpers.UI.initSidebar = function() {
+        if (Cookies.get('$trudesk:sidebar:expanded') === 'true')
+            helpers.UI.expandSidebar();
+    };
+
+    helpers.UI.tooltipSidebar = function() {
+        $('.sidebar').find('a[data-uk-tooltip]').each(function() {
+            $(this).attr('style', 'padding: 0 !important; font-size: 0 !important;');
+        });
+    };
+
+    helpers.UI.setupSidebarTether = function() {
+        var sidebarElements = [
+            {element: "#side-nav-sub-tickets", target: 'tickets'},
+            {element: "#side-nav-sub-reports", target: 'reports'},
+            {element: "#side-nav-sub-settings", target: 'settings'}
+        ];
+
+        _.each(sidebarElements, function(item) {
+            var element = $('.sidebar-to-right').find(item.element);
+            if (element.length < 1) return;
+            var sidebar = $('.sidebar');
+            var target = sidebar.find('li[data-nav-id="' + item.target + '"]');
+            if (target.length < 1) return;
+            helpers.UI.sidebarTether(element, target);
+            var isInside = false;
+            target.on('mouseover',function() {
+                if (sidebar.hasClass('expand')) {
+                    element.removeClass('sub-menu-right-open');
+                    isInside = false;
+                } else {
+                    element.addClass('sub-menu-right-open');
+                    isInside = true;
+                }
+            });
+            target.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside) {
+                        element.removeClass('sub-menu-right-open');
+                    }
+                }, 100);
+            });
+            element.on('mouseover', function() { isInside = true; });
+            element.on('mouseleave', function() {
+                isInside = false;
+                setTimeout(function() {
+                    if (!isInside)
+                        element.removeClass('sub-menu-right-open');
+                }, 100);
+            });
+        });
+    };
+
+    helpers.UI.sidebarTether = function(element, target) {
+        if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1)
+            return;
+
+        new Tether({
+            element: element,
+            target: target,
+            attachment: 'top left',
+            targetAttachment: 'top right',
+            offset: '0 -3px'
+        });
+    };
+
+    helpers.UI.setNavItem = function(id) {
+        var $sidebar = $('.sidebar');
+        $sidebar.find('li.active').removeClass('active');
+        $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active');
+    };
+
     helpers.UI.onlineUserSearch = function() {
-        var $searchBox = $('.online-list-search-box').find('input');
-        $searchBox.off('keyup', onSearchKeyUp);
-        $searchBox.on('keyup', onSearchKeyUp);
+        $(document).off('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+        $(document).on('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp);
+
 
         function onSearchKeyUp() {
+            var $searchBox = $('.online-list-search-box').find('input');
             var searchTerm = $searchBox.val().toLowerCase();
+            
             $('.user-list li').each(function() {
                 if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
                     $(this).show();
@@ -128,7 +298,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.UI.showSnackbar = function() {
-        if (arguments.length == 2) {
+        if (arguments.length === 2) {
             return(helpers.UI.showSnackbar__.apply(this, arguments));
         }  else {
             return(helpers.UI.showSnackbar_.apply(this, arguments));
@@ -285,7 +455,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     helpers.UI.selectize = function(parent) {
         // selectize plugins
         if(typeof $.fn.selectize != 'undefined') {
-            Selectize.define('dropdown_after', function (options) {
+            Selectize.define('dropdown_after', function () {
                 var self = this;
                 self.positionDropdown = (function () {
                     var $control = this.$control,
@@ -550,17 +720,16 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.bindKeys = function() {
-        var self = this;
-        var commentReply = $('#commentReply');
-        if (commentReply.length > 0) {
-            commentReply.off('keydown');
-            commentReply.on('keydown', function(e) {
-                var keyCode = (e.which ? e.which : e.keyCode);
-                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
-                    $('#comment-reply').find('button[type="submit"]').trigger('click');
-                }
-            });
-        }
+        // var commentReply = $('#commentReply');
+        // if (commentReply.length > 0) {
+        //     commentReply.off('keydown');
+        //     commentReply.on('keydown', function(e) {
+        //         var keyCode = (e.which ? e.which : e.keyCode);
+        //         if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+        //             $('#comment-reply').find('button[type="submit"]').trigger('click');
+        //         }
+        //     });
+        // }
 
         var ticketIssue = $('#createTicketForm').find('textarea#issue');
         if (ticketIssue.length > 0) {
@@ -598,6 +767,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     helpers.onWindowResize = function() {
         var self = this;
         return _.debounce(function() {
+            $('body > .side-nav-sub.tether-element').each(function() {
+                $(this).remove();
+            });
+
             self.resizeFullHeight();
             self.hideAllpDropDowns();
 
@@ -776,7 +949,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     scaleColor: false,
                     barColor: trackColor,
                     trackColor: '#e3e5e8',
-                    onStart: function(value, to) {
+                    onStart: function(value) {
                         $(this.el).find('.chart-value').text(value);
                     },
                     onStop: function(value, to) {
@@ -856,7 +1029,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                         var target = $(targetScroll);
                         if (target.length !== 0) {
                             self.click(function(e) {
-                                target.animate({scrollTop: target[0].scrollHeight}, 1000);
+                                var animation = self.attr('data-action-animation');
+                                if (!_.isUndefined(animation) && animation.toLowerCase() === "false")
+                                    target.animate({scrollTop: target[0].scrollHeight}, 0);
+                                else
+                                    target.animate({scrollTop: target[0].scrollHeight}, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
                                 if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
@@ -909,7 +1086,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
                     type: self.attr('method'),
                     url: self.attr('action'),
                     data: self.serialize(),
-                    success: function(data) {
+                    success: function() {
                         //send socket to add reply.
                         self.find('*[data-clearOnSubmit="true"]').each(function() {
                             $(this).val('');
@@ -1017,7 +1194,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     }
 
     helpers.canUser = function(a) {
-        var role = $('div#__loggedInAccount_role').text();
+        var role = window.trudeskSessionService.getUser().role;
         if (_.isUndefined(role)) return false;
 
         var rolePerm = _.find(ROLES, {'id': role});
@@ -1050,10 +1227,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
     };
 
     helpers.canUserEditSelf = function(ownerId, perm) {
-        var id = $('div#__loggedInAccount__id').text();
+        var id = window.trudeskSessionService.getUser()._id;
 
         if (helpers.canUser(perm + ':editSelf')) {
-            return id.toString() == ownerId.toString();
+            return id.toString() === ownerId.toString();
         } else {
             return false;
         }
@@ -1106,9 +1283,67 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES) {
 
     };
 
+    helpers.setupTruTabs = function(tabs) {
+        var toggleTab = function(element) {
+            if ($(element).hasClass('active')) {
+                $(element).parent().find('.tru-tab-highlighter').css({width: $(element).outerWidth()});
+            }
+            $(element).off('click');
+            $(element).on('click', function(event) {
+                event.preventDefault();
+                if ($(this).hasClass('active')) return true;
+
+                var $highlighter = $(this).parent().find('.tru-tab-highlighter');
+                $(this).parent().find('.tru-tab-selector').each(function() {
+                    $(this).removeClass('active');
+                });
+
+                $(this).addClass('active');
+                $highlighter.css({width: $(this).outerWidth()});
+
+                var tabId = $(this).attr('data-tabid');
+
+                $(this).parents('.tru-tabs').find('.tru-tab-section').each(function() {
+                    $(this).removeClass('visible').addClass('hidden');
+                });
+
+                $(this).parents('.tru-tabs').find('.tru-tab-section[data-tabid="' + tabId + '"]').addClass('visible').removeClass('hidden');
+
+                var highlighterPos = $(this).position().left + 'px';
+                $highlighter.css('transform', 'translateX(' + highlighterPos + ')');
+
+            });
+        };
+
+        _.each(tabs, function(i) {
+            toggleTab(i);
+        });
+    };
+
     function stringStartsWith(string, prefix) {
         return string.slice(0, prefix.length) == prefix;
     }
+
+    helpers.prototypes = function() {
+        String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
+            function () {
+                "use strict";
+                var str = this.toString();
+                if (arguments.length) {
+                    var t = typeof arguments[0];
+                    var key;
+                    var args = ("string" === t || "number" === t) ?
+                        Array.prototype.slice.call(arguments)
+                        : arguments[0];
+
+                    for (key in args) {
+                        str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
+                    }
+                }
+
+                return str;
+            };
+    };
 
     return helpers;
 });

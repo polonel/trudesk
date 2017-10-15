@@ -17,19 +17,24 @@
  Permissions for TruDesk. Define Roles / Groups.
  --- group:action action action
 
- *                       = all permissions for grp
- create                  = create permission for grp
- delete                  = delete permission for grp
- edit                    = edit permission for grp
- editSelf                = edit Self Created Items
- assignee                = allowed to be assigned to a ticket
- view                    = view permission for grp
- ticket:attachment       = can add attachment
- ticket:removeAttachment = can remove attachment
- ticket:viewHistory      = can view ticket history on single page
- ticket:setAssignee      = can set ticket Assignee
- ticket:public           = can view public created tickets
- plugins:manage          = user can add/remove Plugins
+ *                              = all permissions for grp
+ create                         = create permission for grp
+ delete                         = delete permission for grp
+ edit                            = edit permission for grp
+ editSelf                       = edit Self Created Items
+ assignee                       = allowed to be assigned to a ticket
+ view                           = view permission for grp
+
+ ticket:attachment              = can add attachment
+ ticket:removeAttachment        = can remove attachment
+ ticket:viewHistory             = can view ticket history on single page
+ ticket:setAssignee             = can set ticket Assignee
+ ticket:public                  = can view public created tickets
+ ticket:notifications_create    = send notification on ticket created
+
+ notes:                         = Internal Notes on tickets
+
+ plugins:manage                 = user can add/remove Plugins
  */
 var roles = {
     admin: {
@@ -42,13 +47,13 @@ var roles = {
         id: "mod",
         name: "Moderators",
         description: "Moderators",
-        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "comment:*", "reports:view"]
+        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "comment:*", "notes:*", "reports:view"]
     },
     support: {
         id: "support",
         name: "Support",
         description: "Support User",
-        allowedAction: ["ticket:*", "accounts:create edit view delete", "comment:editSelf create delete", "reports:view", "notices:*", "invoices:view edit delete"]
+        allowedAction: ["ticket:*", "accounts:create edit view delete", "comment:editSelf create delete", "notes:create view", "reports:view", "notices:*", "invoices:view edit delete"]
     },
     user: {
         id: "user",

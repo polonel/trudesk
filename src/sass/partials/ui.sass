@@ -110,7 +110,7 @@ input
 textarea.md-input
   min-height: 80px
   resize: none
-  overflow: hidden
+  //overflow: hidden
   -webkit-transition: height 200ms ease-out
   transition: height 200ms ease-out
   line-height: 24px
@@ -261,6 +261,7 @@ label.md-label
   font-size: 11px
   line-height: 15px
   font-weight: 400
+  margin-left: 5px
   &.uk-badge-blue
     background: $accent_blue
   &.uk-badge-success
@@ -269,6 +270,13 @@ label.md-label
     background: #ffa000
   &.uk-badge-danger
     background: #e53935
+  &.uk-badge-grey
+    background: #ccc
+  &.uk-badge-small
+    font-size: 10px
+    padding: 2px 4px
+    +borderRadius(2px)
+    line-height: 12px
 
 .uk-progress
   background: white
@@ -324,6 +332,12 @@ label.md-label
   border-left-color: #424242
   margin-top: -5px
 
+.uk-tooltip
+  background: $topbar_bg
+  &:after
+    border-right-color: $topbar_bg
+  .uk-tooltip-inner
+    color: $topbar_user_text
 
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important

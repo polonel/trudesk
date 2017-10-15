@@ -35,8 +35,14 @@ define('modules/ajaxify', [
         socketClient.chat.getOpenWindows();
         socketClient.chat.updateOnlineBubbles();
 
-        helpers.init();
+        //Remove Rogue Tethers
+        $('body > .side-nav-sub.tether-element').each(function() {
+            $(this).remove();
+        });
+
+        helpers.init(true);
         helpers.hideAllUiKitDropdowns();
+        // helpers.UI.setNavItem($('#__sidebar_route').text().toLowerCase());
 
         nav.init();
 
@@ -111,9 +117,9 @@ define('modules/ajaxify', [
         var documentHtml = function(html){
             // Prepare
             var result = String(html)
-                    .replace(/<\!DOCTYPE[^>]*>/i, '')
-                    .replace(/<(html|head|body|title|meta|script)([\s\>])/gi,'<div class="document-$1"$2')
-                    .replace(/<\/(html|head|body|title|meta|script)\>/gi,'</div>')
+                    .replace(/<!DOCTYPE[^>]*>/i, '')
+                    .replace(/<(html|head|body|title|meta|script)([\s>])/gi,'<div class="document-$1"$2')
+                    .replace(/<\/(html|head|body|title|meta|script)>/gi,'</div>')
                 ;
 
             // Return
@@ -134,7 +140,7 @@ define('modules/ajaxify', [
                     title = $this.attr('title')||null;
 
                 // Continue as normal for cmd clicks etc
-                if ( event.which == 2 || event.metaKey ) { return true; }
+                if ( event.which === 2 || event.metaKey ) { return true; }
 
                 // Ajaxify this link
                 History.pushState(null,title,url);
@@ -223,7 +229,10 @@ define('modules/ajaxify', [
                         try {
                             document.getElementsByTagName('title')[0].innerHTML = document.title.replace('<','&lt;').replace('>','&gt;').replace(' & ',' &amp; ');
                         }
-                        catch ( Exception ) { }
+                        catch ( Exception ) {
+                            //Should be an empty block
+                            console.log('[AJAXIFY] ERROR: SHOULD HAVE NOT HAPPENED!')
+                        }
 
                         // Add the scripts
                         $scripts.each(function(){

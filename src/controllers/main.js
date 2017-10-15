@@ -12,13 +12,9 @@
 
  **/
 
-var async           = require('async'),
+var _               = require('underscore'),
     path            = require('path'),
-    _               = require('underscore'),
-    _mixins         = require('../helpers/underscore'),
     passport        = require('passport'),
-    ticketSchema    = require('../models/ticket'),
-    settingSchema   = require('../models/setting'),
     nconf           = require('nconf'),
     winston         = require('winston');
 
@@ -43,8 +39,17 @@ mainController.index = function(req, res) {
 
         if (!_.isNull(setting))
             self.content.allowUserRegistration = setting.value;
+        settings.getSettingByName('mailer:enable', function(err, setting) {
+            if (err) {
+                winston.warn(err);
+                return res.render('login', self.content);
+            }
 
-        return res.render('login', self.content);
+            if (!_.isNull(setting))
+                self.content.mailerEnabled = setting.value;
+
+            return res.render('login', self.content);
+        });
     });
 
 };

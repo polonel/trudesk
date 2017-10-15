@@ -154,7 +154,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
+    <!--<script src="/js/trudesk.min.js"></script>-->
 </head>
 <body>
 <div class="alert-message {{#if flash}} {{else}} hide {{/if}} {{#if flash.success}} green {{/if}}">
@@ -231,8 +231,12 @@
 </div>
 
 <script type="text/javascript">
-    window.truRequire(['jquery'], function(loadedModules) {
+    window.truRequire(['jquery', 'helpers'], function(loadedModules) {
         var $ = loadedModules[0];
+        var helpers = loadedModules[1];
+        helpers.UI.inputs();
+        helpers.UI.waves();
+
         $(window).on('$trudesk:ready', function() {
             $('#code').focus();
         });

@@ -73,7 +73,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     data: apiData,
                     headers: { 'Content-Type': 'application/json' }
                 })
-                    .success(function(data) {
+                    .success(function() {
                         helpers.UI.showSnackbar('Group Saved Successfully', false);
                         UIkit.modal('#groupEditModal').hide();
                         //Refresh Grid
@@ -99,7 +99,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     data: apiData,
                     headers: { 'Content-Type': 'application/json' }
                 })
-                    .success(function(data) {
+                    .success(function() {
                         helpers.UI.showSnackbar('Group Created Successfully', false);
                         UIkit.modal("#groupCreateModal").hide();
                         //Refresh Grid
@@ -147,7 +147,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
             function refreshGrid() {
                 var $cards = $('#group_list').find('.tru-card-wrapper');
                 $cards.each(function() {
-                    var self = $(this);
+                    var vm = this;
+                    var self = $(vm);
                     self.remove();
                 });
 

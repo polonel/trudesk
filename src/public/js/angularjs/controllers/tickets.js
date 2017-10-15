@@ -60,6 +60,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }
             };
 
+            $scope.searchBarSubmit = function(event) {
+                if (!_.isUndefined(event.keyCode) && event.keyCode === 13) {
+                    var searchBoxText = $('#tickets_Search').val();
+                    if (searchBoxText.length < 3) return true;
+
+                    var queryString = "?uid={0}&fs={0}&it={0}".formatUnicorn(searchBoxText);
+
+                    History.pushState(null, null, '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
+                }
+            };
+
             $scope.showTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
@@ -118,7 +129,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 helpers.hideAllpDropDowns();
             };
 
-            $scope.openTickets = function() {
+            $scope.setOpenTickets = function() {
                 var $ids = getChecked();
 
                 _.each($ids, function(id) {
@@ -130,13 +141,31 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ).success(function() {
                         helpers.UI.showSnackbar({text: 'Ticket status set to open'});
                     }).error(function(e) {
-                        $log.error('[trudesk:tickets:openTickets] - Error: ' + e);
-                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                        $log.error('[trudesk:tickets:openTickets] - Error: ', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
                     });
                 });
             };
 
-            $scope.closeTickets = function() {
+            $scope.setPendingTickets = function() {
+                var $ids = getChecked();
+
+                _.each($ids, function(id) {
+                    $http.put(
+                        '/api/v1/tickets/' + id,
+                        {
+                            "status": 2
+                        }
+                    ).success(function() {
+                        helpers.UI.showSnackbar('Ticket status set to pending', false);
+                    }).error(function(e) {
+                        $log.error('[trudes:tickets:setPendingTickets] - Error ', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
+                    });
+                });
+            };
+
+            $scope.setClosedTickets = function() {
                 var $ids = getChecked();
 
                 _.each($ids, function(id) {
@@ -146,16 +175,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             "status": 3
                         }
                     ).success(function() {
-
+                        helpers.UI.showSnackbar('Ticket status set to closed', false);
                     }).error(function(e) {
-                        $log.error('[trudesk:tickets:closeTickets] - ' + e);
-                        helpers.UI.showSnackbar({text: 'Error: ' + e, actionTextColor: '#B92929'});
+                        $log.error('[trudesk:tickets:closeTickets] - Error', e);
+                        helpers.UI.showSnackbar('An Error occurred. Please check console.', true);
                     });
                 });
-
-                //hide Dropdown
-                clearChecked();
-                helpers.hideAllpDropDowns();
             };
 
             $scope.GridRefreshChanged = function() {
@@ -181,7 +206,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.submitFilter = function() {
                 var data = {};
-                $('#ticketFilterForm').serializeArray().map(function(x){data[x.name] = x.value;});
+                var $ticketFilterForm = $('#ticketFilterForm');
+
+                $ticketFilterForm.serializeArray().map(function(x){data[x.name] = x.value;});
                 var querystring = '?f=1';
                 if (!_.isEmpty(data.filterSubject))
                     querystring += '&fs=' + data.filterSubject;
@@ -190,32 +217,32 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 if (!_.isEmpty(data.filterDate_End))
                     querystring += '&de=' + data.filterDate_End;
 
-                var filterStatus = $('#ticketFilterForm select#filterStatus').val();
+                var filterStatus = $ticketFilterForm.find('select#filterStatus').val();
                 _.each(filterStatus, function(item) {
                     querystring += '&st=' + item;
                 });
 
-                var filterPriority = $('#ticketFilterForm select#filterPriority').val();
+                var filterPriority = $ticketFilterForm.find('select#filterPriority').val();
                 _.each(filterPriority, function(item) {
                     querystring += '&pr=' + item;
                 });
 
-                var filterGroup = $('#ticketFilterForm select#filterGroup').val();
+                var filterGroup = $ticketFilterForm.find('select#filterGroup').val();
                 _.each(filterGroup, function(item) {
                     querystring += '&gp=' + item;
                 });
 
-                var filterType = $('#ticketFilterForm select#filterType').val();
+                var filterType = $ticketFilterForm.find('select#filterType').val();
                 _.each(filterType, function(item) {
                     querystring += '&tt=' + item;
                 });
 
-                var filterTags = $('#ticketFilterForm select#filterTags').val();
+                var filterTags = $ticketFilterForm.find('select#filterTags').val();
                 _.each(filterTags, function(item) {
                     querystring += '&tag=' + item;
                 });
 
-                var filterAssignee = $('#ticketFilterForm select#filterAssignee').val();
+                var filterAssignee = $ticketFilterForm.find('select#filterAssignee').val();
                 _.each(filterAssignee, function(item) {
                     querystring += '&au=' + item;
                 });
@@ -226,12 +253,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.clearFilterForm = function(e) {
                 $(':input', '#ticketFilterForm').not(':button, :submit, :reset, :hidden').val('');
-                $('#ticketFilterForm option:selected').removeAttr('selected').trigger('chosen:updated');
+                $('#ticketFilterForm').find('option:selected').removeAttr('selected').trigger('chosen:updated');
                 e.preventDefault();
             };
 
             function clearChecked() {
-                $('#ticketTable input[type="checkbox"]:checked').each(function() {
+                $('#ticketTable').find('input[type="checkbox"]:checked').each(function() {
                     var vm = this;
                     var self = $(vm);
                     self.prop('checked', false);
@@ -240,7 +267,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             function getChecked() {
                 var checkedIds = [];
-                $('#ticketTable input[type="checkbox"]:checked').each(function() {
+                $('#ticketTable').find('input[type="checkbox"]:checked').each(function() {
                     var vm = this;
                     var self = $(vm);
                     var $ticketTR = self.parents('tr');
@@ -257,7 +284,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             }
 
             function removeCheckedFromGrid() {
-                $('#ticketTable input[type="checkbox"]:checked').each(function() {
+                $('#ticketTable').find('input[type="checkbox"]:checked').each(function() {
                     var vm = this;
                     var self = $(vm);
                     var $ticketTR = self.parents('tr');

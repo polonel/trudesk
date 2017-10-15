@@ -271,8 +271,8 @@
         };
 
         NodeCache.prototype._wrap = function(value, ttl, asClone) {
-            var livetime, now, oReturn, ttlMultiplicator;
-            if (asClone == null) {
+            var livetime, now, ttlMultiplicator;
+            if (asClone === null) {
                 asClone = true;
             }
             if (!this.options.useClones) {
@@ -292,7 +292,7 @@
                     livetime = now + (this.options.stdTTL * ttlMultiplicator);
                 }
             }
-            return oReturn = {
+            return {
                 t: livetime,
                 v: asClone ? clone(value) : value
             };

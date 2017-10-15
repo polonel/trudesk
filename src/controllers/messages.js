@@ -42,7 +42,7 @@ messagesController.get = function(req, res) {
         async.eachSeries(convos, function(convo, done) {
             var c = convo.toObject();
 
-            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == req.user._id.toString(); })];
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
             if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
                 return done();
             }
@@ -58,7 +58,7 @@ messagesController.get = function(req, res) {
                 rm = _.first(rm);
 
                 if (!_.isUndefined(rm)) {
-                    if (String(c.partner._id) == String(rm.owner._id)) {
+                    if (String(c.partner._id) === String(rm.owner._id)) {
                         c.recentMessage = c.partner.fullname + ': ' + rm.body;
                     } else {
                         c.recentMessage = 'You: ' + rm.body
@@ -102,8 +102,8 @@ messagesController.getConversation = function(req, res) {
                 if (err) return next(err);
 
                 async.eachSeries(convos, function(convo, done) {
-                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == req.user._id.toString(); })];
-                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt && req.params.convoid != convo._id) {
+                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
+                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt && req.params.convoid.toString() !== convo._id.toString()) {
                         return done();
                     }
 
@@ -119,7 +119,7 @@ messagesController.getConversation = function(req, res) {
                         rm = _.first(rm);
 
                         if (!_.isUndefined(rm)) {
-                            if (String(c.partner._id) == String(rm.owner._id)) {
+                            if (String(c.partner._id) === String(rm.owner._id)) {
                                 c.recentMessage = c.partner.fullname + ': ' + rm.body;
                             } else {
                                 c.recentMessage = 'You: ' + rm.body
@@ -148,7 +148,7 @@ messagesController.getConversation = function(req, res) {
             conversationSchema.getConversation(cid, function(err, convo) {
                 if (err) return next(err);
 
-                if (convo == null || convo == undefined)
+                if (convo === null || convo === undefined)
                     return res.redirect('/messages');
 
                 var c = convo.toObject();
@@ -161,7 +161,7 @@ messagesController.getConversation = function(req, res) {
                         }
                     });
 
-                    c.requestingUserMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == req.user._id.toString(); })];
+                    c.requestingUserMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
 
                     self.content.data.conversation = c;
                     self.content.data.conversation.messages = messages.reverse();

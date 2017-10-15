@@ -35,10 +35,11 @@ define('pages/pageloader', ['async'], function(async) {
             'pages/settings',
             'pages/logs',
             'pages/tags',
+            'pages/settingsTicketTypes',
 
             'modules/ajaximgupload',
             'modules/attachmentUpload'
-        ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q) {
+        ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) {
             async.parallel([
                 function(done) { a.init(done); },
                 function(done) { b.init(done); },
@@ -55,11 +56,12 @@ define('pages/pageloader', ['async'], function(async) {
                 function(done) { m.init(done); },
                 function(done) { n.init(done); },
                 function(done) { o.init(done); },
+                function(done) { p.init(done); },
                 function(done) {
-                    p.init();
                     q.init();
+                    r.init();
 
-                    done();
+                    return done();
                 }
             ], function() {
                 if (typeof callback === 'function')
