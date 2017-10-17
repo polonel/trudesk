@@ -15,7 +15,8 @@
 var async           = require('async'),
     path            = require('path'),
     _               = require('underscore'),
-    winston         = require('winston');
+    winston         = require('winston'),
+    Chance = require('chance');
 
 var installController = {};
 
@@ -221,13 +222,15 @@ installController.install = function(req, res) {
                     if (user.password !== user.passconfirm)
                         return next('Passwords do not match!');
 
+                    var chance = new Chance();
                     var adminUser = new userSchema({
                         username:   user.username,
                         password:   user.password,
                         fullname:   user.fullname,
                         email:      user.email,
                         role:       'admin',
-                        title:      'Administrator'
+                        title:      'Administrator',
+                        accessToken:chance.hash()
                     });
 
                     adminUser.save(function(err, savedUser) {

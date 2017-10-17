@@ -681,6 +681,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('assignee', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
+        .populate('group')
         .populate('group.members', 'username fullname email role image title')
         .populate('group.sendMailTo', 'username fullname email role image title')
         .populate('subscribers', 'username fullname email role image title')
