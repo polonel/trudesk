@@ -30,12 +30,13 @@ The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as 
 [Trudesk Virtual Appliance Documentation](http://www.trudesk.io/docs/install_virtual_appliance.html)
 
 ### Documentation
+___Docs are still in development___
+
 To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
 
 To build the development documentation run ```grunt builddocs```.
 
 The documentation after build is located in:
-- ```{repo folder}/docs``` 
 - ```{repo folder}/apidocs```
 
 ### Help
