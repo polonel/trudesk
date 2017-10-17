@@ -49,3 +49,9 @@ patch:
         patched: '2017-05-17T22:49:53.552Z'
     - grunt-jsdoc > jsdoc > marked:
         patched: '2017-05-17T22:49:53.552Z'
+    - marked:
+        patched: '2017-10-17T23:24:34.128Z'
+    - jsdoc > marked:
+        patched: '2017-10-17T23:24:34.128Z'
+    - grunt-jsdoc > jsdoc > marked:
+        patched: '2017-10-17T23:24:34.128Z'
