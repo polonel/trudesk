@@ -334,7 +334,7 @@
                 <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="set-admin-account">Create Admin</button>
             </form>
         </div>
-        <div class="slide hide">
+        <div id="installingSlide" class="slide hide">
             <h2 style="margin-bottom: 25px;">Installing...</h2>
             <p style="text-align: left;">Putting it all together. Trudesk is currently building itself and powering up its engine. Please wait, this may take a minute.</p>
             <div class="loader">
@@ -603,10 +603,10 @@
                             text: 'We did it! Everything is all set up!'
                         });
 
-                        var $savingConfig = $('#savingConfig');
+                        var $installingSlide = $('#installingSlide');
                         var $restartSlide = $('#restartSlide');
-                        $savingConfig.fadeOut(300, function() {
-                            $savingConfig.addClass('hide');
+                        $installingSlide.fadeOut(300, function() {
+                            $installingSlide.addClass('hide');
                             $restartSlide.css({display: 'none'}).removeClass('hide');
                             $restartSlide.fadeIn(300, function() {
                                 $restartSlide.addClass('activeSlide');

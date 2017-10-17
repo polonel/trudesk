@@ -182,7 +182,7 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildcss', ['cssmin']);
-    grunt.registerTask('builddocs', ['jsdoc', 'apidoc']);
+    grunt.registerTask('builddocs', ['apidoc']);
     grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
     grunt.registerTask('build', ['builddocs', 'uglify:uikit', 'shell:webpackDist', 'buildcss']);

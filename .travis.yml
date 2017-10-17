@@ -1,28 +1,21 @@
 sudo: false
 language: node_js
-env:
-  - CXX=g++-4.8
 node_js:
   - 7
-  - 8
+  - node
 services:
   - mongodb
-addons:
-  apt:
-    sources:
-      - mongodb-3.2-precise
-      - ubuntu-toolchain-r-test
-    packages:
-      - mongodb-org-server
-      - gcc-4.8
-      - g++-4.8
+
+cache: yarn
 
 before_install:
   - npm install -g grunt
   - npm install -g grunt-cli
 
 script:
+  - npm run build
   - npm test
 
 after_success:
-  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive && ./node_modules/.bin/istanbul-coveralls
+#  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- --recursive && ./node_modules/.bin/istanbul-coveralls
+  - npm run codacy
