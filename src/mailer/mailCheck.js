@@ -16,7 +16,7 @@ var _           = require('underscore');
 var async       = require('async');
 var Imap        = require('imap');
 var winston     = require('winston');
-var marked      = require('marked');
+// var marked      = require('marked');
 var simpleParser = require('mailparser').simpleParser;
 
 var emitter     = require('../emitter');
@@ -73,7 +73,7 @@ mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
     });
 
     mailCheck.Imap.once('ready', function() {
-        openInbox(function(err, box) {
+        openInbox(function(err) {
             if (err) {
                 mailCheck.Imap.end();
                 winston.debug(err);
@@ -101,10 +101,9 @@ mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
                     });
 
                     f.on('message', function(msg, seqno) {
-                        msg.on('body', function(stream, info) {
-                            var buffer = '', count = 0;
+                        msg.on('body', function(stream) {
+                            var buffer = '';
                             stream.on('data', function(chunk) {
-                                count += chunk.length;
                                 buffer += chunk.toString('utf8');
                             });
 

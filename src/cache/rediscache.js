@@ -16,8 +16,8 @@ var _ = require('underscore');
 var redis = require('redis');
 var winston = require('winston');
 
-var REDIS_PORT = process.env.REDIS_PORT || 6379;
-var REDIS_HOST = process.env.REDIS_HOST || 'localhost';
+// var REDIS_PORT = process.env.REDIS_PORT || 6379;
+// var REDIS_HOST = process.env.REDIS_HOST || 'localhost';
 
 var client = redis.createClient(32819, '24.142.200.107');
 
@@ -30,7 +30,7 @@ var redisCache = {};
 redisCache.setCache = function(key, value, callback, ttl) {
     if (!_.isArray(value))
         value = [value];
-    if (ttl != undefined) {
+    if (!_.isUndefined(ttl)) {
         var importMulti = client.multi();
         var v = JSON.stringify(value);
         importMulti.hmset(rake('$trudesk', key), {data: v});
@@ -42,7 +42,7 @@ redisCache.setCache = function(key, value, callback, ttl) {
         //     importMulti.expire(rake('$trudesk', key), 600);
         // });
 
-        importMulti.exec(function(err, results) {
+        importMulti.exec(function(err) {
             if (err) return callback(err);
 
             client.quit();

@@ -44,7 +44,7 @@ define('modules/chat',[
         });
 
         socket.removeAllListeners('connectingToSocketServer');
-        socket.on('connectingToSocketServer', function(data) {
+        socket.on('connectingToSocketServer', function() {
 
         });
 
@@ -61,7 +61,7 @@ define('modules/chat',[
                 activeNow.show();
             }
             onlineList.html('');
-            _.each(filteredData, function(v,k) {
+            _.each(filteredData, function(v) {
                 var onlineUser = v.user;
                 if (onlineUser.username === username) return true;
                 var imageUrl = onlineUser.image;
@@ -321,7 +321,7 @@ define('modules/chat',[
                 if (v.length < 1) return;
 
                 //Send Message
-                chatClient.sendChatMessage(cid, userId, v, function(err) {
+                chatClient.sendChatMessage(cid, userId, v, function() {
                     clearTimeout(typingTimeout[cid]);
                     stopTyping(cid, userId);
                 });
@@ -408,7 +408,7 @@ define('modules/chat',[
         }
     }
 
-    function loadChatMessages(chatBox, messageArray, callback) {
+    function loadChatMessages(chatBox, messageArray) {
         var to = chatBox.attr('data-chat-userid'),
             chatMessage,
             chatMessageList,
@@ -561,7 +561,7 @@ define('modules/chat',[
         $('span[data-user-status-id]').each(function() {
             $(this).removeClass('user-online').addClass('user-offline');
         });
-        _.each(usersOnline, function(v, k) {
+        _.each(usersOnline, function(v) {
             var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
             $bubble.each(function() {
                 var self = $(this);
@@ -602,7 +602,7 @@ define('modules/chat',[
         if (oldHeight === newHeight)
             return true;
 
-        var textAreaHeight = self.parent().outerHeight();
+        // var textAreaHeight = self.parent().outerHeight();
         var messages = self.parent().siblings('.chat-box-messages');
         messages.css({'min-height': '170px', 'max-height': '220px'});
         self.parent().css({'max-height': '77px', 'min-height':'16px'});

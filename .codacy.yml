@@ -1,0 +1,7 @@
+exclude_paths:
+  - apidocs/**
+  - mobile/**
+  - apidoc_template/**
+  - docs/**
+  - src/public/js/plugins/**
+  - test/**

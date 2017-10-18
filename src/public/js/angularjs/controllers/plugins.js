@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socketClient) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], function(angular, _, $, helpers) {
     return angular.module('trudesk.controllers.plugins', [])
         .controller('pluginsCtrl', function($scope, $http, $log, $timeout, $window) {
             var $tableBody = $('#plugin_list_table > tbody');
@@ -158,7 +158,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             function compareVersions(v1, comparator, v2) {
                 "use strict";
-                var comparator = comparator == '=' ? '==' : comparator;
+                comparator = comparator == '=' ? '==' : comparator;
                 if(['==','===','<','<=','>','>=','!=','!=='].indexOf(comparator) == -1) {
                     throw new Error('Invalid comparator. ' + comparator);
                 }

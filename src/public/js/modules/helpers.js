@@ -298,7 +298,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI.showSnackbar = function() {
-        if (arguments.length == 2) {
+        if (arguments.length === 2) {
             return(helpers.UI.showSnackbar__.apply(this, arguments));
         }  else {
             return(helpers.UI.showSnackbar_.apply(this, arguments));

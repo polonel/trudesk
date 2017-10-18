@@ -18,6 +18,7 @@ var express     = require('express'),
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
+    router.get('/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
 
@@ -38,7 +39,10 @@ function mainRoutes(router, middleware, controllers) {
         res.set('Content-Type', 'image/svg+xml');
         res.send(captcha.data);
     });
+
+    //Public
     router.get('/newissue', controllers.tickets.pubNewIssue);
+    router.get('/register', controllers.accounts.signup);
     router.get('/signup', controllers.accounts.signup);
 
     //Tickets
@@ -67,10 +71,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
 
     //Calendar
-    router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
+    // router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
 
     //Servers
-    router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
+    // router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
 
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
@@ -293,12 +297,12 @@ function handleErrors(err, req, res) {
     var status = err.status || 500;
     res.status(err.status);
 
-    if (status == 404) {
+    if (status === 404) {
         res.render('404', {layout: false});
         return;
     }
 
-    if (status == 503) {
+    if (status === 503) {
         res.render('503', {layout: false});
         return;
     }

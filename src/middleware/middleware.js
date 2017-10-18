@@ -19,7 +19,7 @@ var db = require('../database');
 var mongoose = require('mongoose');
 var winston = require('winston');
 
-var app, middleware = {};
+var middleware = {};
 
 middleware.db = function(req, res, next) {
     if (mongoose.connection.readyState !== 1) {
@@ -158,7 +158,7 @@ middleware.isAdmin = function(req, res, next) {
 };
 
 middleware.isMod = function(req, res, next) {
-    if (req.user.role === 'mod' || req.user.role == 'admin')
+    if (req.user.role === 'mod' || req.user.role === 'admin')
         return next();
     else
         return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
@@ -171,8 +171,7 @@ middleware.isSupport = function(req, res, next) {
         return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
 };
 
-module.exports = function(server) {
-    app = server;
+module.exports = function() {
 
     return middleware;
 };
