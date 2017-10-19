@@ -9,8 +9,9 @@ COPY . /usr/src/trudesk
 RUN apk add --no-cache make gcc g++ python && \
     npm install -g yarn grunt grunt-cli && \
     yarn && \
-    npm run build && \
-    npm prune --production && \
+    npm run build
+
+RUN npm prune --production && \
     apk del make gcc g++ python
 
 EXPOSE 8118
