@@ -7,7 +7,7 @@ COPY package.json /usr/src/trudesk
 COPY . /usr/src/trudesk
 
 RUN apk add --no-cache make gcc g++ python && \
-    npm install -g yarn && \
+    npm install -g yarn grunt grunt-cli && \
     yarn && \
     npm run build && \
     npm prune --production && \
