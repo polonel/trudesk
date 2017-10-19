@@ -1,14 +1,16 @@
-FROM node:6.3.0-wheezy
+FROM node:8-alpine
 
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
 
 COPY package.json /usr/src/trudesk
-RUN npm install
-
 COPY . /usr/src/trudesk
 
-RUN npm run build
+RUN apk add --no-cache make gcc g++ python && \
+    npm install --slient && \
+    npm run build && \
+    npm prune --production && \
+    apk del make gcc g++ python
 
 EXPOSE 8118
 
