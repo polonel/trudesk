@@ -4,7 +4,6 @@
   "private": true,
   "scripts": {
     "start": "node ./runner",
-    "postinstall": "npm install webpack exports-loader expose-loader imports-loader script-loader webpack-node-externals && npm run build",
     "build": "grunt build",
     "heroku-postbuild": "npm run build",
     "test": "mocha --recursive",
