@@ -12,8 +12,7 @@
     "webpackwatch": "webpack --config webpack.config.js --watch",
     "webpackdev": "webpack --config webpack.config.js",
     "webpackdist": "webpack --config webpack.config.dist.js",
-    "snyk-protect": "snyk protect",
-    "prepublish": "npm run snyk-protect"
+    "snyk-protect": "snyk protect"
   },
   "dependencies": {
     "ansi_up": "1.3.0",
