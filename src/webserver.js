@@ -77,6 +77,7 @@ var express = require('express'),
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
+        router.get('/healthz', function (req, res) { res.status(200).send('OK'); });
         router.get('/install', controllers.install.index);
         router.post('/install', controllers.install.install);
         router.post('/install/mongotest', controllers.install.mongotest);

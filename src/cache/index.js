@@ -16,7 +16,7 @@ var NodeCache   = require('node-cache'),
     async       = require('async'),
     path        = require('path'),
     nconf       = require('nconf'),
-    _           = require('underscore'),
+    _           = require('lodash'),
     winston     = require('winston'),
     moment      = require('moment');
 

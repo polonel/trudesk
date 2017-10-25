@@ -23,7 +23,6 @@ var winston             = require('winston'),
 var socketServer = function(ws) {
     "use strict";
     var _ = require('lodash'),
-        __ = require('underscore'),
         usersOnline = {},
         sockets = [],
         io = require('socket.io')(ws.server);
@@ -105,7 +104,7 @@ var socketServer = function(ws) {
             joinChatServer();
 
         function updateOnlineBubbles() {
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]}));
+            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
         }
 
@@ -174,8 +173,8 @@ var socketServer = function(ws) {
                     return true;
                 }
 
-                notifications.items = __.first(items, 5);
-                var p = __.where(items, {unread: true});
+                notifications.items = _.take(items, 5);
+                var p = _.filter(items, {unread: true});
                 notifications.count = _.size(p);
 
                 utils.sendToSelf(socket, 'updateNotifications', notifications);
@@ -256,7 +255,7 @@ var socketServer = function(ws) {
         });
 
         socket.on('updateUsers', function() {
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
+            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
             utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
@@ -615,13 +614,13 @@ var socketServer = function(ws) {
             if (usersOnline.hasOwnProperty(user.username.toLowerCase()))
                 exists = true;
 
-            var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
+            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
 
             if (!exists) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
 
-                    sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
+                    sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                     sockets.push(socket);
@@ -631,7 +630,7 @@ var socketServer = function(ws) {
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
                 utils.sendToSelf(socket, 'joinSuccessfully');
-                sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
+                sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 sockets.push(socket);
 
@@ -814,7 +813,7 @@ var socketServer = function(ws) {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                var sortedUserList = __.object(__.sortBy(__.pairs(usersOnline), function(o) { return o[0]; }));
+                var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);

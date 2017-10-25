@@ -13,7 +13,7 @@
  **/
 
 var async           = require('async');
-var _               = require('underscore');
+var _               = require('lodash');
 var userSchema      = require('../models/user');
 var groupSchema     = require('../models/group');
 var permissions     = require('../permissions');

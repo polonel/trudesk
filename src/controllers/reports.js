@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var permissions     = require('../permissions');
 
 var reportsController = {};

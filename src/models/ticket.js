@@ -14,7 +14,7 @@
 
 var async               = require('async');
 var mongoose            = require('mongoose');
-var _                   = require('underscore');
+var _                   = require('lodash');
 var deepPopulate        = require('mongoose-deep-populate')(mongoose);
 var moment              = require('moment');
 var hash                = require('object-hash');
@@ -87,7 +87,7 @@ var ticketSchema = mongoose.Schema({
     subscribers:[{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 });
 
-ticketSchema.index({deleted: -1}, {group: 1}, {status: 1});
+ticketSchema.index({deleted: -1, group: 1, status: 1});
 
 ticketSchema.plugin(deepPopulate);
 
@@ -672,7 +672,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     var _status = object.status;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
-        var g = _.pluck(grpId, '_id').map(String);
+        var g = _.map(grpId, '_id').map(String);
         grpId = _.intersection(object.filter.groups, g);
     }
 
@@ -759,7 +759,7 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
     var self = this;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
-        var g = _.pluck(grpId, '_id').map(String);
+        var g = _.map(grpId, '_id').map(String);
         grpId = _.intersection(object.filter.groups, g);
     }
 
@@ -879,7 +879,8 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
         .populate('notes.owner', 'username fullname email role image title')
         .populate('type')
         .populate('tags')
-        .deepPopulate(['group']);
+        .populate({path: 'group'});
+        // .deepPopulate(['group']);
 
     return q.exec(callback);
 };
@@ -1215,7 +1216,7 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
                     o._id = ticket.group._id;
                     o.name = ticket.group.name;
 
-                    if (!_.where(a, {'name': o.name}).length)
+                    if (!_.filter(a, {'name': o.name}).length)
                         a.push(o);
                     else
                         o = null;

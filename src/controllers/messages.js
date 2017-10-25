@@ -12,7 +12,7 @@
 
  **/
 
-var _       = require('underscore'),
+var _       = require('lodash'),
     async   = require('async'),
     winston = require('winston'),
     conversationSchema = require('../models/chat/conversation'),

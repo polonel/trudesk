@@ -14,7 +14,6 @@
  **/
 
 var _       = require('lodash');
-var _s      = require('underscore.string');
 var roles   = require('./roles');
 
 
@@ -39,7 +38,7 @@ var canThis = function(role, a) {
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false;
 
     var result = _.filter(rolePerm.allowedAction, function(value) {
-        if (_s.startsWith(value, actionType + ':')) return value;
+        if (_.startsWith(value, actionType + ':')) return value;
     });
 
     if (_.isUndefined(result) || _.size(result) < 1) return false;
@@ -71,7 +70,7 @@ var getRoles = function(action) {
         }
 
         var result = _.filter(role.allowedAction, function(value) {
-            if (_s.startsWith(value, actionType + ':')) return value;
+            if (_.startsWith(value, actionType + ':')) return value;
         });
 
         if (_.isUndefined(result) || _.size(result) < 1) return;

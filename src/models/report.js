@@ -10,7 +10,7 @@
  */
 
 var mongoose        = require('mongoose');
-var _               = require('underscore');
+var _               = require('lodash');
 var deepPopulate    = require('mongoose-deep-populate')(mongoose);
 
 var COLLECTION = 'reports';

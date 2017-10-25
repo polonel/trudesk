@@ -13,7 +13,7 @@
  **/
 
 var async           = require('async'),
-    _               = require('underscore'),
+    _               = require('lodash'),
     winston         = require('winston'),
     sanitizeHtml    = require('sanitize-html'),
 

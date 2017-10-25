@@ -21,7 +21,7 @@
 
 
 // node_modules
-var _       = require('underscore');
+var _       = require('lodash');
 var moment  = require('moment');
 
 // The module to be exported
@@ -513,8 +513,7 @@ var helpers = {
     },
 
     firstCap: function(str) {
-        var _s = require('underscore.string');
-        return _s.capitalize(str);
+        return _.capitalize(str);
     },
 
     lowercase: function(str) {

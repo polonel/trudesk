@@ -13,7 +13,7 @@
  **/
 
 var mongoose        = require('mongoose');
-var _               = require('underscore');
+var _               = require('lodash');
 
 var COLLECTION = "conversations";
 

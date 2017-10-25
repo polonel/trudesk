@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var noticeSchema    = require('../models/notice');
 var permissions     = require('../permissions');
 

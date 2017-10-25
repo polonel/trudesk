@@ -15,7 +15,7 @@
 var RELPATH         = '../';
 
 var async           = require('async');
-var _               = require('underscore');
+var _               = require('lodash');
 var winston         = require('winston');
 var userSchema      = require(RELPATH + 'models/user');
 var groupSchema     = require(RELPATH + 'models/group');
@@ -95,13 +95,13 @@ accountsController.get = function(req, res) {
                         var user = u.toObject();
 
                         var groups = _.filter(grps, function(g) {
-                            return _.any(g.members, function(m) {
+                            return _.some(g.members, function(m) {
                                 if (m)
                                     return m._id.toString() === user._id.toString();
                             });
                         });
 
-                        user.groups = _.pluck(groups, 'name');
+                        user.groups = _.map(groups, 'name');
 
                         result.push(user);
                         c();

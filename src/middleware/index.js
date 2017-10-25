@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore'),
+var _               = require('lodash'),
     path            = require('path'),
     async           = require('async'),
     express         = require('express'),
@@ -110,14 +110,17 @@ module.exports = function(app, db, callback) {
             var dive = require('dive');
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
                if (err) throw err;
-               var plugin = require(path.join(dir, 'plugin.json'));
-               if (_.findWhere(global.plugins, {'name': plugin.name}) !== undefined)
-                   throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
+               var fs = require('fs');
+               if (fs.existsSync(path.join(dir, 'plugin.json'))) {
+                   var plugin = require(path.join(dir, 'plugin.json'));
+                   if (_.find(global.plugins, {'name': plugin.name}) !== undefined)
+                       throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
 
-               global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
-               var pluginPublic = path.join(dir, '/public');
-               app.use('/plugins/' + plugin.name, express.static(pluginPublic));
-               winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
+                   global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
+                   var pluginPublic = path.join(dir, '/public');
+                   app.use('/plugins/' + plugin.name, express.static(pluginPublic));
+                   winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
+               }
             }, function() {
                 next(null, store);
             });

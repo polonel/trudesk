@@ -13,7 +13,7 @@
  **/
 
 var async   = require('async'),
-    _       = require('underscore'),
+    _       = require('lodash'),
     winston = require('winston'),
     moment  = require('moment'),
     permissions     = require('../../permissions');
@@ -154,7 +154,7 @@ viewController.getUserNotifications = function(request, callback) {
             return callback(err);
         }
 
-        data = _.first(data, 5);
+        data = _.take(data, 5);
 
         return callback(null, data);
     })

@@ -13,15 +13,14 @@
  **/
 
 var _       = require('lodash');
-var __      = require('underscore');
 
 module.exports.sendToSelf = function (socket, method, data) {
     socket.emit(method, data);
 };
 
 module.exports._sendToSelf = function(io, socketId, method, data) {
-    __.each(io.sockets.sockets, function(socket) {
-        if (socket.id == socketId) {
+    _.each(io.sockets.sockets, function(socket) {
+        if (socket.id === socketId) {
             socket.emit(method, data);
         }
     });
@@ -53,8 +52,8 @@ module.exports.sendToUser = function(socketList, userList, username, method, dat
 };
 
 module.exports.sendToAllExcept = function(io, exceptSocketId, method, data) {
-    __.each(io.sockets.sockets, function(socket) {
-        if (socket.id != exceptSocketId) {
+    _.each(io.sockets.sockets, function(socket) {
+        if (socket.id !== exceptSocketId) {
             socket.emit(method, data);
         }
     });

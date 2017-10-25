@@ -12,7 +12,7 @@
 
  **/
 
-var _            = require('underscore'),
+var _            = require('lodash'),
     async        = require('async'),
     winston      = require('winston'),
     ticketSchema = require('../../../models/ticket'),
@@ -112,7 +112,7 @@ api_reports.generate.ticketsByPriority = function(req, res) {
 
     async.waterfall([
         function(done) {
-            if (_.contains(postData.groups, '-1')) {
+            if (_.includes(postData.groups, '-1')) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
@@ -180,7 +180,7 @@ api_reports.generate.ticketsByStatus = function(req, res) {
 
     async.waterfall([
         function(done) {
-            if (_.contains(postData.groups, '-1')) {
+            if (_.includes(postData.groups, '-1')) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
@@ -252,7 +252,7 @@ api_reports.generate.ticketsByTags = function(req, res) {
 
     async.waterfall([
         function(done) {
-            if (_.contains(postData.groups, '-1')) {
+            if (_.includes(postData.groups, '-1')) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
@@ -323,7 +323,7 @@ api_reports.generate.ticketsByType = function(req, res) {
     var postData = req.body;
     async.waterfall([
         function(done) {
-            if (_.contains(postData.groups, '-1')) {
+            if (_.includes(postData.groups, '-1')) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
@@ -394,7 +394,7 @@ api_reports.generate.ticketsByUser = function(req, res) {
     var postData = req.body;
     async.waterfall([
         function(done) {
-            if (_.contains(postData.groups, '-1')) {
+            if (_.includes(postData.groups, '-1')) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });

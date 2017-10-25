@@ -9,7 +9,7 @@
  ========================================================================
 */
 
-var _               = require('underscore');
+var _               = require('lodash');
 var winston         = require('winston');
 var taskSchema      = require('../models/task');
 
