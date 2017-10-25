@@ -9,7 +9,7 @@
  ========================================================================
  **/
 
-var _           = require('underscore'),
+var _           = require('lodash'),
     async       = require('async'),
     path        = require('path'),
     fs          = require('fs'),

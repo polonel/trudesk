@@ -18,6 +18,7 @@ var express     = require('express'),
 
 function mainRoutes(router, middleware, controllers) {
     router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index);
+    router.get('/healthz', function(req, res) { return res.status(200).send('OK'); });
     router.get('/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.get('/install', function(req, res){ return res.redirect('/'); });
     router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
@@ -236,9 +237,9 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/sendmail', controllers.debug.sendmail);
         //router.get('/api/v1/import', middleware.api, controllers.api.import);
         router.get('/debug/cache/refresh', function (req, res) {
-            var _ = require('underscore');
+            var _ = require('lodash');
 
-            var forkProcess = _.findWhere(global.forks, {name: 'cache'});
+            var forkProcess = _.find(global.forks, {name: 'cache'});
             forkProcess.fork.send({name: 'cache:refresh'});
 
             res.send('OK');

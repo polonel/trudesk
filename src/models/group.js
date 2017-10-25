@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var mongoose        = require('mongoose');
 
 var COLLECTION = 'groups';
@@ -53,7 +53,7 @@ groupSchema.methods.removeMember = function(memberId, callback) {
 
     if (!isMember(this.members, memberId)) return callback(null, false);
 
-    this.members.splice(_.indexOf(this.members, _.findWhere(this.members, {"_id" : memberId})), 1);
+    this.members.splice(_.indexOf(this.members, _.find(this.members, {"_id" : memberId})), 1);
 
     this.members = _.uniq(this.members);
 
@@ -82,7 +82,7 @@ groupSchema.methods.removeSendMailTo = function(memberId, callback) {
 
     if (!isMember(this.sendMailTo, memberId)) return callback(null, false);
 
-    this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.findWhere(this.sendMailTo, {"_id" : memberId})), 1);
+    this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.find(this.sendMailTo, {"_id" : memberId})), 1);
 
     return callback(null, true);
 };

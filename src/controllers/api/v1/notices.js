@@ -12,7 +12,7 @@
 
  **/
 
-var _ = require('underscore'),
+var _ = require('lodash'),
     winston = require('winston'),
     noticeSchema = require('../../../models/notice');
 

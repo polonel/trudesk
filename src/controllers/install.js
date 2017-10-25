@@ -14,7 +14,7 @@
 
 var async           = require('async'),
     path            = require('path'),
-    _               = require('underscore'),
+    _               = require('lodash'),
     winston         = require('winston'),
     Chance = require('chance');
 

@@ -12,9 +12,8 @@
 
  **/
 
-var _               = require('underscore'),
+var _               = require('lodash'),
     async           = require('async'),
-    winston         = require('winston'),
 
     groupSchema     = require('../../../models/group'),
     ticketSchema    = require('../../../models/ticket');

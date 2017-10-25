@@ -12,9 +12,8 @@
 
  **/
 
-var _           = require('underscore');
+var _           = require('lodash');
 var nodeMailer  = require('nodemailer');
-var winston     = require('winston');
 
 var settings    = require('../models/setting');
 

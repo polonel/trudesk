@@ -12,7 +12,7 @@
 
  **/
 
-var _                   = require('underscore');
+var _                   = require('lodash');
 var path                = require('path');
 var async               = require('async');
 var winston             = require('winston');

@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore'),
+var _               = require('lodash'),
     path            = require('path'),
     passport        = require('passport'),
     nconf           = require('nconf'),

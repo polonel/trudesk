@@ -13,7 +13,7 @@
  **/
 
 var async       = require('async'),
-    _           = require('underscore'),
+    _           = require('lodash'),
     winston     = require('winston'),
     permissions = require('../../../permissions'),
     emitter     = require('../../../emitter'),
@@ -76,12 +76,12 @@ api_users.getWithLimit = function(req, res) {
                         var user = u.toObject();
 
                         var groups = _.filter(grps, function(g) {
-                            return _.any(g.members, function(m) {
-                                return m._id.toString() == user._id.toString();
+                            return _.some(g.members, function(m) {
+                                return m._id.toString() === user._id.toString();
                             });
                         });
 
-                        user.groups = _.pluck(groups, 'name');
+                        user.groups = _.map(groups, 'name');
 
                         result.push(user);
                         c();
@@ -350,7 +350,7 @@ api_users.update = function(req, res) {
             groupSchema.getAllGroups(function(err, groups) {
                 if (err) return done(err);
                 async.each(groups, function(grp, callback) {
-                    if (_.contains(obj.groups, grp._id.toString())) {
+                    if (_.includes(obj.groups, grp._id.toString())) {
                         if (grp.isMember(obj._id)) return callback();
                         grp.addMember(obj._id, function (err, result) {
                             if (err) return callback(err);

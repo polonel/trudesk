@@ -12,7 +12,7 @@
 
  **/
 
-var _               = require('underscore');
+var _               = require('lodash');
 var async           = require('async');
 var ticketSchema    = require('../models/ticket');
 
@@ -22,7 +22,7 @@ _.mixin({
             return comparator ? comparator(obj[key], key) : key;
         });
 
-        return _.object(keys, _.map(keys, function (key) {
+        return _.zipObject(keys, _.map(keys, function (key) {
             return obj[key];
         }));
     }
@@ -96,16 +96,8 @@ function buildMostRequester(ticketArray, callback) {
         return m.owner.fullname;
     });
 
-    var r = _.reduce(requesters, function(counts, key) {
-        counts[key]++;
-        return counts;
-    }, _.object(_.map(_.uniq(requesters), function(key) {
-        return [key, 0];
-    })));
-
-    r = _.sortKeysBy(r, function(v) {
-        return -v;
-    });
+    var r = _.countBy(requesters, function(k) { return k; });
+    r = _(r).toPairs().sortBy(0).fromPairs().value();
 
     r = _.map(r, function(v, k) {
         return { name: k, value: v};
@@ -129,16 +121,11 @@ function buildMostComments(ticketArray, callback) {
 
     commenters = flatten(commenters);
 
-    var c = _.reduce(commenters, function(c, k) {
-        c[k]++;
-        return c;
-    }, _.object(_.map(_.uniq(commenters), function(key) {
-        return [key, 0];
-    })));
-
-    c = _.sortKeysBy(c, function(v) {
-        return -v;
+    var c = _.countBy(commenters, function(k) {
+        return k;
     });
+
+    c = _(c).toPairs().sortBy(0).fromPairs().value();
 
     c = _.map(c, function(v, k) {
         return { name: k, value: v};
@@ -156,16 +143,9 @@ function buildMostAssignee(ticketArray, callback) {
         return m.assignee.fullname;
     });
 
-    var a = _.reduce(assignees, function(c, k) {
-        c[k]++;
-        return c;
-    }, _.object(_.map(_.uniq(assignees), function(key) {
-        return [key, 0];
-    })));
+    var a = _.countBy(assignees, function(k) { return k; });
 
-    a = _.sortKeysBy(a, function(v) {
-        return -v;
-    });
+    a = _(a).toPairs().sortBy(0).fromPairs().value();
 
     a = _.map(a, function(v, k) {
         return { name: k, value: v};

@@ -13,7 +13,7 @@
  **/
 
 var async           = require('async'),
-    _               = require('underscore'),
+    _               = require('lodash'),
     moment          = require('moment'),
     winston         = require('winston'),
     permissions     = require('../../../permissions'),
@@ -1018,7 +1018,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.object(keys, _.map(keys, function (key) {
+                            return _.fromPairs(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
@@ -1027,7 +1027,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                     tags = _.reduce(t, function(counts, key) {
                         counts[key]++;
                         return counts;
-                    }, _.object(_.map(_.uniq(t), function(key) {
+                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
                         return [key, 0];
                     })));
 
@@ -1126,7 +1126,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.object(keys, _.map(keys, function (key) {
+                            return _.fromPairs(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
@@ -1135,7 +1135,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                     tags = _.reduce(t, function(counts, key) {
                         counts[key]++;
                         return counts;
-                    }, _.object(_.map(_.uniq(t), function(key) {
+                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
                         return [key, 0];
                     })));
 

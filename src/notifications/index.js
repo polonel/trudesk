@@ -12,7 +12,7 @@
 
  **/
 
-var _                   = require('underscore'),
+var _                   = require('lodash'),
     nconf               = require('nconf'),
     async               = require('async'),
     winston             = require('winston'),

@@ -12,8 +12,7 @@
 var ticketSchema    = require('../models/ticket');
 var async           = require('async');
 var path            = require('path');
-var _               = require('underscore');
-var _s              = require('underscore.string');
+var _               = require('lodash');
 var flash           = require('connect-flash');
 var winston         = require('winston');
 var groupSchema     = require('../models/group');
@@ -378,7 +377,7 @@ ticketsController.print = function(req, res) {
 
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
-        if (!_.any(ticket.group.members, user._id)) {
+        if (!_.some(ticket.group.members, user._id)) {
             if (ticket.group.public && hasPublic) {
                 //Blank to bypass
             } else {
@@ -443,7 +442,7 @@ ticketsController.single = function(req, res) {
 
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
-        if (!_.any(ticket.group.members, user._id)) {
+        if (!_.some(ticket.group.members, user._id)) {
             if (ticket.group.public && hasPublic) {
                 //Blank to bypass
             } else {

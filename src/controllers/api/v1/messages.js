@@ -13,8 +13,7 @@
  **/
 
 var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
+    _ = require('lodash'),
     winston = require('winston'),
     permissions = require('../../../permissions'),
     emitter = require('../../../emitter'),
@@ -258,8 +257,8 @@ api_messages.deleteConversation = function(req, res) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         var user = req.user;
-        var idx = _.findIndex(convo.userMeta, function(item) { return item.userId.toString() == user._id.toString(); });
-        if (idx == -1)
+        var idx = _.findIndex(convo.userMeta, function(item) { return item.userId.toString() === user._id.toString(); });
+        if (idx === -1)
             return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
 
         convo.userMeta[idx].deletedAt = new Date();

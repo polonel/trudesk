@@ -12,8 +12,7 @@
 
  **/
 
-var _               = require('underscore');
-var __              = require('lodash');
+var _               = require('lodash');
 var async           = require('async');
 var moment          = require('moment');
 
@@ -22,7 +21,7 @@ var ticketSchema    = require('../models/ticket');
 var init = function(tickets, timespan, callback) {
     var tags = [];
     var $tickets = [];
-    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan == 0) timespan = 99999;
+    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 99999;
 
     var today = moment().hour(23).minute(59).second(59);
     var tsDate = today.clone().subtract(timespan, 'd').toDate().getTime();
@@ -53,7 +52,7 @@ var init = function(tickets, timespan, callback) {
         function(done) {
             var t = [];
 
-            $tickets = __.filter($tickets, function(v) {
+            $tickets = _.filter($tickets, function(v) {
                 return (v.date < today && v.date > tsDate);
             });
 
@@ -70,7 +69,7 @@ var init = function(tickets, timespan, callback) {
                     });
 
 
-                    return _.object(keys, _.map(keys, function (key) {
+                    return _.fromPairs(keys, _.map(keys, function (key) {
                         return obj[key];
                     }));
                 }
@@ -79,7 +78,7 @@ var init = function(tickets, timespan, callback) {
             tags = _.reduce(t, function(counts, key) {
                 counts[key]++;
                 return counts;
-            }, _.object(_.map(_.uniq(t), function(key) {
+            }, _.fromPairs(_.map(_.uniq(t), function(key) {
                 return [key, 0];
             })));
 

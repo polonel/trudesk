@@ -13,8 +13,7 @@
  **/
 
 var async = require('async'),
-    _ = require('underscore'),
-    _s = require('underscore.string'),
+    _ = require('lodash'),
     winston = require('winston'),
     permissions = require('../permissions'),
 
@@ -72,12 +71,12 @@ apiController.import = function(req, res) {
         var fields = item.split(',');
         var fullname = fields[0].toString().replace('.', ' ');
         var k = fullname.split(' ');
-        var kCap = _s.capitalize(k[0]);
-        var kCap1 = _s.capitalize(k[1]);
+        var kCap = _.capitalize(k[0]);
+        var kCap1 = _.capitalize(k[1]);
         fullname = kCap + ' ' + kCap1;
 
         var groupName = fields[2].replace('\\r', '');
-        groupName = _s.trim(groupName);
+        groupName = _.trim(groupName);
         var User = new userModel({
             username: fields[0],
             password: 'Granville789',

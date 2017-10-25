@@ -1,4 +1,4 @@
-var _           = require('underscore');
+var _           = require('lodash');
 var async       = require('async');
 var expect      = require('chai').expect;
 var should      = require('chai').should();
