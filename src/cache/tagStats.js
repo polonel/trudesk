@@ -62,29 +62,17 @@ var init = function(tickets, timespan, callback) {
                 });
             }
 
-            _.mixin({
-                'sortKeysBy': function (obj, comparator) {
-                    var keys = _.sortBy(_.keys(obj), function (key) {
-                        return comparator ? comparator(obj[key], key) : key;
-                    });
-
-
-                    return _.fromPairs(keys, _.map(keys, function (key) {
-                        return obj[key];
-                    }));
-                }
+            var tags = _.map(t, function(tag){
+                var length = _.reject(t, function(el){
+                    return (el.indexOf(tag) < 0);
+                }).length;
+                return {name: tag, count: length};
             });
 
-            tags = _.reduce(t, function(counts, key) {
-                counts[key]++;
-                return counts;
-            }, _.fromPairs(_.map(_.uniq(t), function(key) {
-                return [key, 0];
-            })));
+            tags = _.uniqBy(tags, 'name');
 
-            tags = _.sortKeysBy(tags, function(value) {
-                return -value;
-            });
+            // tags = _.first(tags);
+            console.log(tags);
 
             return done();
         }
