@@ -62,17 +62,14 @@ var init = function(tickets, timespan, callback) {
                 });
             }
 
-            var tags = _.map(t, function(tag){
-                var length = _.reject(t, function(el){
-                    return (el.indexOf(tag) < 0);
-                }).length;
-                return {name: tag, count: length};
-            });
+            tags = _.reduce(t, function(counts, key) {
+                counts[key]++;
+                return counts;
+            }, _.fromPairs(_.map(t, function(key) {
+                return [key, 0];
+            })));
 
-            tags = _.uniqBy(tags, 'name');
-
-            // tags = _.first(tags);
-            console.log(tags);
+            tags = _.fromPairs(_.sortBy(_.toPairs(tags), function(a){ return a[1]}).reverse());
 
             return done();
         }
