@@ -83,7 +83,7 @@ api_users.getWithLimit = function(req, res) {
 
                         user.groups = _.map(groups, 'name');
 
-                        result.push(user);
+                        result.push(StripUserFields(user));
                         c();
                     }, function(err) {
                         if (err) return callback(err);
@@ -424,7 +424,7 @@ api_users.update = function(req, res) {
  */
 api_users.updatePreferences = function(req, res) {
     var username = req.params.username;
-    if(username == undefined || username == 'undefined')
+    if(typeof(username) === "undefined")
         return res.status(400).json({success: false, error: 'Invalid Request'});
 
     var data = req.body;
@@ -594,7 +594,6 @@ api_users.enableUser = function(req, res) {
  * @apiSuccess {string}     email               Email Address of the User
  * @apiSuccess {string}     role                Assigned Permission Role of the user
  * @apiSuccess {string}     title               Title of the User
- * @apiSuccess {string}     accessToken         Access Token for the user to access the API
  * @apiSuccess {string}     image               Image filename for the user's profile picture
  * @apiSuccess {array}      iOSDeviceTokens     iOS Device Tokens for push notifications
  *
@@ -912,7 +911,7 @@ api_users.uploadProfilePic = function(req, res) {
     object.username = req.params.username;
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        if (mimetype.indexOf('image/') == -1) {
+        if (mimetype.indexOf('image/') === -1) {
             error = {
                 status: 400,
                 message: 'Invalid file type'
@@ -975,6 +974,7 @@ function StripUserFields(user) {
     user.accessToken = undefined;
     user.__v = undefined;
     //user.role = undefined;
+    user.tOTPKey = undefined;
     user.iOSDeviceTokens = undefined;
 
     return user;

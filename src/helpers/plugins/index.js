@@ -21,7 +21,7 @@ pluginHelpers.checkPermissions = function(userRole, permissions) {
     var permissionArray = permissions.split(' ');
     var result = false;
     for (var i = 0; i < permissionArray.length; i++) {
-        if (userRole.toString().toLowerCase() == permissionArray[i].toString().toLowerCase())
+        if (userRole.toString().toLowerCase() === permissionArray[i].toString().toLowerCase())
             result = true;
     }
 

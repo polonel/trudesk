@@ -186,7 +186,7 @@ viewController.getConversations = function(request, callback) {
         async.eachSeries(conversations, function(convo, done) {
             var c = convo.toObject();
 
-            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == request.user._id.toString(); })];
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === request.user._id.toString(); })];
             if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
                 return done();
             }
@@ -202,7 +202,7 @@ viewController.getConversations = function(request, callback) {
                 rm = _.first(rm);
 
                 if (!_.isUndefined(rm)) {
-                    if (String(c.partner._id) == String(rm.owner._id)) {
+                    if (String(c.partner._id) === String(rm.owner._id)) {
                         c.recentMessage = c.partner.fullname + ': ' + rm.body;
                     } else {
                         c.recentMessage = 'You: ' + rm.body
@@ -230,7 +230,7 @@ viewController.getUsers = function(request, callback) {
             return callback();
         }
 
-        var u = _.reject(users, function(u) { return u.deleted == true; });
+        var u = _.reject(users, function(u) { return u.deleted === true; });
         u.password = null;
         u.role = null;
         u.resetPassHash = null;

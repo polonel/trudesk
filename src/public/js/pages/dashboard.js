@@ -178,7 +178,6 @@ define('pages/dashboard', [
                         });
 
                         arr = _.first(arr, 10);
-
                         var colors = [
                             '#e74c3c',
                             '#3498db',

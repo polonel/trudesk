@@ -61,7 +61,7 @@ var userSchema = mongoose.Schema({
         tOTPKey: String,
         tOTPPeriod: Number,
 
-        accessToken: { type: String, unique: true, sparse: true},
+        accessToken: { type: String, sparse: true},
 
         iOSDeviceTokens: [{type: String}],
 
