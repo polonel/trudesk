@@ -104,7 +104,7 @@ var socketServer = function(ws) {
             joinChatServer();
 
         function updateOnlineBubbles() {
-            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
         }
 
@@ -255,7 +255,7 @@ var socketServer = function(ws) {
         });
 
         socket.on('updateUsers', function() {
-            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
             utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
@@ -813,7 +813,7 @@ var socketServer = function(ws) {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);

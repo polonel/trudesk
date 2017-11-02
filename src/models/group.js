@@ -150,7 +150,7 @@ groupSchema.statics.getGroupById = function(gId, callback) {
 
 function isMember(arr, id) {
     var matches = _.filter(arr, function (value) {
-        if (value._id.toString() == id.toString()) {
+        if (value._id.toString() === id.toString()) {
             return value;
         }
     });

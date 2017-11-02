@@ -97,11 +97,13 @@ function buildMostRequester(ticketArray, callback) {
     });
 
     var r = _.countBy(requesters, function(k) { return k; });
-    r = _(r).toPairs().sortBy(0).fromPairs().value();
+    r = _(r).value();
 
     r = _.map(r, function(v, k) {
         return { name: k, value: v};
     });
+
+    r = _.sortBy(r, function(o) { return -o.value; });
 
     return callback(r);
 }
@@ -125,11 +127,13 @@ function buildMostComments(ticketArray, callback) {
         return k;
     });
 
-    c = _(c).toPairs().sortBy(0).fromPairs().value();
+    c = _(c).value();
 
     c = _.map(c, function(v, k) {
         return { name: k, value: v};
     });
+
+    c = _.sortBy(c, function(o) { return -o.value; });
 
     return callback(c);
 }
@@ -145,11 +149,13 @@ function buildMostAssignee(ticketArray, callback) {
 
     var a = _.countBy(assignees, function(k) { return k; });
 
-    a = _(a).toPairs().sortBy(0).fromPairs().value();
+    a = _(a).value();
 
     a = _.map(a, function(v, k) {
         return { name: k, value: v};
     });
+
+    a = _.sortBy(a, function(o) { return -o.value; });
 
     return callback(a);
 }

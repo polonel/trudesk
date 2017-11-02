@@ -17,7 +17,7 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
 ### Install & Run
 1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
-2. Install dependencies: ```npm install```
+2. Install dependencies: ```npm i yarn -g && yarn```
 3. Build the scripts: ```npm run build```
 3. Start the server: ```npm start```
 4. Navigate to: ```http://localhost:8118```
@@ -32,12 +32,7 @@ The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as 
 ### Documentation
 ___Docs are still in development___
 
-To view the online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
-
-To build the development documentation run ```grunt builddocs```.
-
-The documentation after build is located in:
-- ```{repo folder}/apidocs```
+To view the online documentation: [http://www.trudesk.io/v1/guide](http://www.trudesk.io/v1/guide)
 
 ### Help
 if you like what you see here, and want to help support the work being done, you could:
