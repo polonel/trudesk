@@ -92,7 +92,9 @@ userSchema.pre('save', function(next) {
 
 userSchema.methods.addAccessToken = function(callback) {
     var user = this;
-    var chance = new Chance();
+    var date = new Date();
+    var salt = user.username.toString() + date.toISOString();
+    var chance = new Chance(salt);
     user.accessToken = chance.hash();
     user.save(function(err) {
         if (err) return callback(err, null);
