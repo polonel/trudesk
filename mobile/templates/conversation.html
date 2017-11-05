@@ -2,11 +2,13 @@
   <ion-nav-title style="font-size: 12px; font-family: 'Open Sans', sans-serif; font-weight: 400;line-height: 16px;display:inline-block;margin-top: 10px;">
     {{conversation.partner.fullname}}
     <span style="font-size:12px; font-weight: 300;color:#ccc;display:block;" ng-if="isUserOnline(onlineUsers, conversation.partner)">Active Now</span>
-    <span style="font-size:12px; font-weight: 300;color:#ccc;display:block;" ng-if="!isUserOnline(onlineUsers, conversation.partner)" am-time-ago="conversation.partner.lastOnline"></span>    
+    <span style="font-size:12px; font-weight: 300;color:#ccc;display:block;" ng-if="!isUserOnline(onlineUsers, conversation.partner)" am-time-ago="conversation.partner.lastOnline"></span>
   </ion-nav-title>
-  <ion-nav-buttons side="secondary">
-    <button class="button button-icon button-clear ion-ios-more" ng-click="popover.show($event)"></button>
-    </ion-nav-buttons>
+
+  <!--<ion-nav-buttons side="secondary">-->
+    <!--<button class="button button-icon button-clear ion-ios-more" ng-click="popover.show($event)"></button>-->
+  <!--</ion-nav-buttons>-->
+
   <ion-content style="bottom: 90px !important;" delegate-handle="userMessageScroll">
     <div class="message-profile">
         <img ng-src="/uploads/users/{{conversation.partner.image}}" ng-if="conversation.partner.image != undefined">

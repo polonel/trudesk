@@ -57,14 +57,14 @@ api_messages.getConversations = function(req, res) {
 };
 
 api_messages.getRecentConversations = function(req, res) {
-    conversationSchema.getConversationsWithLimit(req.user._id, 3, function(err, conversations) {
+    conversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         var result = [];
         async.eachSeries(conversations, function(item, done) {
 
-            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() == req.user._id.toString(); });
-            if (idx == -1)
+            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() === req.user._id.toString(); });
+            if (idx === -1)
                 return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
 
             messageSchema.getMostRecentMessage(item._id, function(err, m) {
