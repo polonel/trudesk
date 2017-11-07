@@ -48,11 +48,12 @@ winston.err = function (err) {
 };
 
 process.on('message', function(msg) {
-    if (msg == 'shutdown') {
+    if (msg === 'shutdown') {
         console.log('Closing all connections...');
 
         if (ws.server)
             ws.server.close();
+
         process.exit(0);
     }
 });
@@ -108,10 +109,6 @@ if (nconf.get('install') || !configExists && !process.env.HEROKU) {
 
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
     start();
-} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
-    setup();
-} else if (nconf.get('upgrade')) {
-    //upgrade();
 }
 
 function loadConfig() {
@@ -141,28 +138,6 @@ function start() {
             dbCallback(err, db);
         }
     });
-}
-
-function setup() {
-    loadConfig();
-
-    if (nconf.get('setup')) {
-        winston.info('Starting trudesk setup....');
-    } else {
-        winston.warn('Configuration not found!!! Starting trudesk setup....');
-    }
-
-    var install = require('./src/install');
-
-    install.setup(function(err) {
-        if (err) {
-            winston.error('There was a problem completing trudesk setup: ', err.message);
-        } else {
-            winston.info('trudesk Setup Completed. Run \'./trudesk start\' to manually start your trudesk server.');
-        }
-
-        process.exit();
-    })
 }
 
 function dbCallback(err, db) {
