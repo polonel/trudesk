@@ -124,7 +124,7 @@ api_messages.startConversation = function(req, res) {
             return res.status(400).json({success: false, error: err.message});
         }
 
-        if (convo.length == 1) {
+        if (convo.length === 1) {
             return res.json({success: true, conversation: convo[0]});
         } else {
             var userMeta = [];
@@ -134,7 +134,7 @@ api_messages.startConversation = function(req, res) {
                     joinedAt: new Date()
                 };
 
-                if (requester == item)
+                if (requester === item)
                     meta.lastRead = new Date();
 
                 userMeta.push(meta);
@@ -211,8 +211,8 @@ api_messages.send = function(req, res) {
 
 api_messages.getMessagesForConversation = function(req, res) {
     var conversation = req.params.id;
-    var page = (req.query.page == undefined ? 0 : req.query.page);
-    var limit = (req.query.limit == undefined ? 10 : req.query.limit);
+    var page = (req.query.page === undefined ? 0 : req.query.page);
+    var limit = (req.query.limit === undefined ? 10 : req.query.limit);
     if (_.isUndefined(conversation) || _.isNull(conversation))
         return res.status(400).json({success: false, error: 'Invalid Conversation'});
 
@@ -235,7 +235,7 @@ api_messages.getMessagesForConversation = function(req, res) {
                 response.messages = messages;
 
                 done();
-            })
+            });
         }
     ], function(err) {
         if (err) {
