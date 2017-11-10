@@ -27,7 +27,7 @@ Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
 #### Trudesk Virtual Appliance
 The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as VMWare. Visit the appliance documentation for more information.
-[Trudesk Virtual Appliance Documentation](http://www.trudesk.io/docs/install_virtual_appliance.html)
+[Trudesk Virtual Appliance Documentation](http://www.trudesk.io/v1/guide/installation.html#Virtual-Appliance)
 
 ### Documentation
 ___Docs are still in development___

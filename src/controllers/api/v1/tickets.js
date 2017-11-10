@@ -184,9 +184,9 @@ api_tickets.search = function(req, res) {
             });
         }
     ], function(err, results) {
-        if (err) return res.status(400).json({error: 'Error - ' + err.message});
+        if (err) return res.status(400).json({success: false, error: 'Error - ' + err.message});
 
-        return res.json({count: _.size(results), tickets: _.sortBy(results, 'uid').reverse()});
+        return res.json({success: true, error: null, count: _.size(results), tickets: _.sortBy(results, 'uid').reverse()});
     });
 };
 

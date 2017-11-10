@@ -57,14 +57,14 @@ api_messages.getConversations = function(req, res) {
 };
 
 api_messages.getRecentConversations = function(req, res) {
-    conversationSchema.getConversationsWithLimit(req.user._id, 3, function(err, conversations) {
+    conversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         var result = [];
         async.eachSeries(conversations, function(item, done) {
 
-            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() == req.user._id.toString(); });
-            if (idx == -1)
+            var idx = _.findIndex(item.userMeta, function(mItem) { return mItem.userId.toString() === req.user._id.toString(); });
+            if (idx === -1)
                 return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
 
             messageSchema.getMostRecentMessage(item._id, function(err, m) {
@@ -124,7 +124,7 @@ api_messages.startConversation = function(req, res) {
             return res.status(400).json({success: false, error: err.message});
         }
 
-        if (convo.length == 1) {
+        if (convo.length === 1) {
             return res.json({success: true, conversation: convo[0]});
         } else {
             var userMeta = [];
@@ -134,7 +134,7 @@ api_messages.startConversation = function(req, res) {
                     joinedAt: new Date()
                 };
 
-                if (requester == item)
+                if (requester === item)
                     meta.lastRead = new Date();
 
                 userMeta.push(meta);
@@ -211,8 +211,8 @@ api_messages.send = function(req, res) {
 
 api_messages.getMessagesForConversation = function(req, res) {
     var conversation = req.params.id;
-    var page = (req.query.page == undefined ? 0 : req.query.page);
-    var limit = (req.query.limit == undefined ? 10 : req.query.limit);
+    var page = (req.query.page === undefined ? 0 : req.query.page);
+    var limit = (req.query.limit === undefined ? 10 : req.query.limit);
     if (_.isUndefined(conversation) || _.isNull(conversation))
         return res.status(400).json({success: false, error: 'Invalid Conversation'});
 
@@ -235,7 +235,7 @@ api_messages.getMessagesForConversation = function(req, res) {
                 response.messages = messages;
 
                 done();
-            })
+            });
         }
     ], function(err) {
         if (err) {

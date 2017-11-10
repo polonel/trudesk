@@ -38,7 +38,7 @@ var express = require('express'),
             server.on('error', function(err) {
                 if (err.code === 'EADDRINUSE') {
                     winston.error('Address in use, exiting...');
-                    //server.close();
+                    server.close();
                 } else {
                     winston.error(err.message);
                     throw err;
@@ -92,9 +92,13 @@ var express = require('express'),
 
         require('socket.io')(server);
 
-        server.listen(port, '0.0.0.0', function() {
-            callback();
-        });
+        if (!server.listening) {
+            server.listen(port, '0.0.0.0', function() {
+                return callback();
+            });
+        } else {
+            return callback();
+        }
     };
 
 })(WebServer);

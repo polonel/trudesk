@@ -10,9 +10,9 @@
   </ion-header-bar>
   <ion-content>
     <ion-list>
-      <ion-item 
-        class="item-remove-animate item-avatar item-icon-right" 
-        ng-repeat="user in userList track by user.username | orderBy:'username'" 
+      <ion-item
+        class="item-remove-animate item-avatar item-icon-right"
+        ng-repeat="user in userList track by user.username | orderBy:'username'"
         style="min-height:50px;"
         ng-click="startConversation(user._id);">
         <div ng-if="user.image !== undefined" class="avatar avatar-small avatar-with-status">
