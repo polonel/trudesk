@@ -79,7 +79,7 @@ apiController.import = function(req, res) {
         groupName = _.trim(groupName);
         var User = new userModel({
             username: fields[0],
-            password: 'Granville789',
+            password: 'Password123',
             email: fields[1],
             fullname: fullname,
             role: 'user'
@@ -142,7 +142,7 @@ apiController.testPromo = function(req, res) {
                 } else {
                     var mailOptions = {
                         from: 'no-reply@trudesk.io',
-                        to: 'chris.brame@granvillecounty.org',
+                        to: 'polonel@outlook.com',
                         subject: 'Trudesk Launch',
                         html: html,
                         generateTextFromHTML: true
