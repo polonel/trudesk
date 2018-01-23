@@ -49,7 +49,7 @@ mailCheck.init = function(settings) {
     var MAILERCHECK_USER = s.mailerCheckUsername.value;
     var MAILERCHECK_PASS = s.mailerCheckPassword.value;
     var MAILERCHECK_PORT = s.mailerCheckPort.value;
-    var MAILERCHECK_TLS = (s.mailerCheckPort.value == 993) {value: true} : false;
+    var MAILERCHECK_TLS = (s.mailerCheckPort.value == 993) ? {value: true} : false;
     var POLLING_INTERVAL = 600000; //10 min
     var DEFAULT_TICKET_TYPE = s.mailerCheckTicketType.value;
 
