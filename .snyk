@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.7.1
+version: v1.8.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:ms:20170412':
@@ -55,3 +55,6 @@ patch:
         patched: '2017-10-17T23:24:34.128Z'
     - grunt-jsdoc > jsdoc > marked:
         patched: '2017-10-17T23:24:34.128Z'
+  'npm:marked:20170907':
+    - marked:
+        patched: '2017-10-31T23:21:19.994Z'

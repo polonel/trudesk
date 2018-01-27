@@ -5,7 +5,7 @@ $accent_blue: #2196F3
 $accent_success: #29b955
 $accent_danger: #d32f2f
 
-$text_color: lighten(#222, 10%)
+$text_color: #e2e2e2
 $p_color: $text_color
 
 
@@ -15,7 +15,7 @@ $logo_text_color: #FFFFFF
 $logo_circle_color: #E74C3C
 
 $topbar_bg: darken(#595f69, 10%)
-$topbar_icons: #FFFFFF
+$topbar_icons: #EEEEEE
 $topbar_icons_hover: darken($topbar_icons, 10%)
 $topbar_badge: #E74C3C
 $topbar_user_text: #FFFFFF
@@ -23,29 +23,29 @@ $topbar_text_color: #222222
 
 //$sidebar_box_shadow: inset 0px 3px 4px rgba(0,0,0,0.07)
 $sidebar_box_shadow: none
-$sidebar_bg: #e6e7e8
+$sidebar_bg: darken(#595f69, 15%)
 $sidebar_border_right: 1px solid #ddd
-$sidebar_text: #3f444c
-$sidebar_text_hover: #3f444c
-$sidebar_item_hover: #d2d3d6
-$sidebar_item_active: #595f69
+$sidebar_text: #EEE
+$sidebar_text_hover: $sidebar_text
+$sidebar_item_hover: lighten($sidebar_bg, 10%)
+$sidebar_item_active: lighten($sidebar_bg, 15%)
 $sidebar_item_active_text: #fff
-$sidebar_subnav_bg: #dfe0e2
+$sidebar_subnav_bg: darken($sidebar_bg, 5%)
 $sidebar_subnav_box_shadow: none
-$sidebar_subnav_text: lighten(#333, 15%)
-$sidebar_subnav_hover: #222
-$sidebar_subnav_item_hover: #d2d3d6
-$sidebar_subnav_active: #000
-$sidebar_subnav_hr: darken($sidebar_subnav_bg, 25%)
+$sidebar_subnav_text: lighten($sidebar_bg, 15%)
+$sidebar_subnav_hover: #e2e2e2
+$sidebar_subnav_item_hover: darken($sidebar_item_hover, 10%)
+$sidebar_subnav_active: #e2e2e2
+$sidebar_subnav_hr: lighten($sidebar_subnav_bg, 25%)
 
-$page_content_bg: #f7f8fa
-$page_content_right_bg: #FFFFFF
-$page_content_left_bg: #f7f8fa
-$page_content_title_bg: #f7f8fa
+$page_content_bg: darken(#595f69, 20%)
+$page_content_right_bg: darken(#595f69, 20%)
+$page_content_left_bg: darken(#595f69, 20%)
+$page_content_title_bg: darken(#595f69, 20%)
 $page_content_title_shadow: 2px 2px 2px 0px rgba(44,62,80,0.1)
-$page_content_title_border_color: darken(#EEE, 8%)
+$page_content_title_border_color: darken(#595f69, 25%)
 $page_content_title_text: #222222
-$page_content_border_top: 1px solid darken(#EEE, 8%)
+$page_content_border_top: 1px solid darken(#263238, 12%)
 $page_content_border_accent: 2px solid $page_content_title_bg
 $page_content_button_color: #FFFFFF
 $page_content_button_text_color: $sidebar_item_active
@@ -55,7 +55,7 @@ $ticket_status_open: $accent_danger
 $ticket_status_pending: $accent_blue
 $ticket_status_closed: #CCCCCC
 
-$trupanel_bg: #FFF
+$trupanel_bg: darken(#263238, 2%)
 
 $datatables_head_bg: $page_content_title_bg
 $datatables_head_border_top: 1px solid $page_content_title_border_color

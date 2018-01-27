@@ -48,11 +48,12 @@ winston.err = function (err) {
 };
 
 process.on('message', function(msg) {
-    if (msg == 'shutdown') {
+    if (msg === 'shutdown') {
         console.log('Closing all connections...');
 
         if (ws.server)
             ws.server.close();
+
         process.exit(0);
     }
 });
@@ -106,15 +107,8 @@ if (process.env.HEROKU) {
 //    return;
 //}
 
-//if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
-//    start();
-//} else if (nconf.get('setup') || nconf.get('install') || !configExists && !process.env.HEROKU) {
-//    setup();
-//} else if (nconf.get('upgrade')) {
-//    //upgrade();
-//} else if (nconf.get('reset')) {
-//    reset();
-//}
+    return;
+}
 
 start();
 

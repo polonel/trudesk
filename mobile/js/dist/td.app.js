@@ -635,7 +635,7 @@ function($scope, $attrs, $element, $timeout) {
 }]);
 angular.module('trudesk.services', [])
 .factory('WebSocket', function($q, $rootScope, $timeout, $http, $localStorage) {
-  var dataStream = io.connect('localhost:8118', {
+  var dataStream = io.connect('/', {
     query: 'token=' + $localStorage.accessToken
   });
 
@@ -646,7 +646,7 @@ angular.module('trudesk.services', [])
     console.log('Connected to Server: ' + $localStorage.server);
     // dataStream.emit('joinChatServer'); // join chat server so trudesk knows its online!
   });
-  
+
   dataStream.on('error', function(e) {
     console.log('Error', e);
   });
@@ -668,8 +668,8 @@ angular.module('trudesk.services', [])
   });
 
   dataStream.on('chatTyping', function(data) {
-    ionic.trigger('$trudesk.conversation.usertyping', data); 
-  }); 
+    ionic.trigger('$trudesk.conversation.usertyping', data);
+  });
 
   dataStream.on('chatStopTyping', function(data) {
     ionic.trigger('$trudesk.conversation.userstoptyping', data);
@@ -715,21 +715,21 @@ angular.module('trudesk.services', [])
         });
       },
       getUsers : function() {
-        return $http.get('/api/v1/users?limit=-1', {
+        return $http.get( '/api/v1/users?limit=-1', {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
         });
       },
       getAssignees: function() {
-        return $http.get('/api/v1/users/getassignees', {
+        return $http.get( '/api/v1/users/getassignees', {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
         });
       },
       getRoles: function() {
-        return $http.get('/api/v1/roles', {
+        return $http.get( '/api/v1/roles', {
           headers: {
             'accesstoken': $localStroage.accessToken
           }
@@ -745,14 +745,14 @@ angular.module('trudesk.services', [])
         if (!$localStorage.username)
           deferred.reject('No username stored.');
         else {
-          $http.get('/api/v1/users/' + $localStorage.username, {
+          $http.get( '/api/v1/users/' + $localStorage.username, {
             headers: {
               'accesstoken': $localStorage.accessToken
             }
           }).then(function successCallback(response) {
             if (response.data.user) {
               $localStorage.loggedInUser = response.data.user;
-              if ($localStorage.loggedInUser.image == undefined)
+              if ($localStorage.loggedInUser.image === undefined)
                 $localStorage.loggedInUser.image = 'defaultProfile.jpg';
               deferred.resolve($localStorage.loggedInUser);
             } else {
@@ -769,10 +769,7 @@ angular.module('trudesk.services', [])
       isUserOnline: function(onlineUsers, userObj) {
         if (userObj === undefined) return false;
         if (onlineUsers === undefined) return false;
-        if (onlineUsers[userObj.username] !== undefined)
-          return true;
-        else
-          return false;
+        return onlineUsers[userObj.username] !== undefined;
       }
     };
 })
@@ -783,7 +780,7 @@ angular.module('trudesk.services', [])
       if (page === undefined)
         page = 0;
 
-      var queryString = '/api/v1/tickets?limit=' + 10 + '&status[]=0&status[]=1&status[]=2&page=' + page;
+      var queryString =  '/api/v1/tickets?limit=' + 10 + '&status[]=0&status[]=1&status[]=2&page=' + page;
       if ($localStorage.showClosedTickets !== undefined && $localStorage.showClosedTickets === true)
         queryString += '&status[]=3';
       if ($localStorage.showOnlyAssigned !== undefined && $localStorage.showOnlyAssigned === true)
@@ -795,35 +792,35 @@ angular.module('trudesk.services', [])
       });
     },
     get: function(uid) {
-      return $http.get('/api/v1/tickets/' + uid, {
+      return $http.get( '/api/v1/tickets/' + uid, {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
       });
     },
     create: function(ticket) {
-        return $http.post('/api/v1/tickets/create', ticket, {
+        return $http.post( '/api/v1/tickets/create', ticket, {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
         });
     },
     search: function(search) {
-      return $http.get('/api/v1/tickets/search/?search=' + search, {
+      return $http.get( '/api/v1/tickets/search/?search=' + search, {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
       });
     },
     update: function(ticket) {
-      return $http.put('/api/v1/tickets/' + ticket._id, ticket, {
+      return $http.put( '/api/v1/tickets/' + ticket._id, ticket, {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
       });
     },
     addComment: function(ticket, comment) {
-      return $http.post('/api/v1/tickets/addcomment', {
+      return $http.post( '/api/v1/tickets/addcomment', {
         _id: ticket._id,
         comment: comment.comment,
         ownerId: comment.ownerId
@@ -833,8 +830,19 @@ angular.module('trudesk.services', [])
         }
       });
     },
+    addNote: function(ticket, note) {
+      return $http.post( '/api/v1/tickets/addnote', {
+        ticketid: ticket._id,
+        note: note.note,
+        owner: note.ownerId
+      }, {
+        headers: {
+          'accesstoken': $localStorage.accessToken
+        }
+      });
+    },
     ticketStats: function(timespan) {
-      return $http.get('/api/v1/tickets/stats/' + timespan, {
+      return $http.get( '/api/v1/tickets/stats/' + timespan, {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
@@ -846,14 +854,14 @@ angular.module('trudesk.services', [])
 .factory('Groups', function($http, $localStorage) {
   return {
     all: function() {
-      return $http.get('/api/v1/groups', {
+      return $http.get( '/api/v1/groups', {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
       });
     },
     get: function(_id) {
-      return $http.get('/api/v1/groups/' + _id, {
+      return $http.get( '/api/v1/groups/' + _id, {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
@@ -865,7 +873,7 @@ angular.module('trudesk.services', [])
 .factory('TicketTypes', function($http, $localStorage) {
   return {
     all: function() {
-      return $http.get('/api/v1/tickets/types', {
+      return $http.get( '/api/v1/tickets/types', {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
@@ -880,7 +888,7 @@ angular.module('trudesk.services', [])
         if (page === undefined)
           page = 0;
 
-        var queryString = '/api/v1/messages/conversation/' + convoId + '?page=' + page;
+        var queryString =  '/api/v1/messages/conversation/' + convoId + '?page=' + page;
         return $http.get(queryString, {
           headers: {
             'accesstoken': $localStorage.accessToken
@@ -888,17 +896,17 @@ angular.module('trudesk.services', [])
         });
       },
       getRecent: function() {
-        return $http.get('/api/v1/messages/conversations/recent', {
+        return $http.get( '/api/v1/messages/conversations/recent', {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
         });
       },
       sendMessage: function(convoId, message) {
-        return $http.post('/api/v1/messages/send', {
+        return $http.post( '/api/v1/messages/send', {
             cId: convoId,
-            owner: message.ownerId,            
-            body: message.body,
+            owner: message.ownerId,
+            body: message.body
           }, {
             headers: {
               'accesstoken': $localStorage.accessToken
@@ -906,7 +914,7 @@ angular.module('trudesk.services', [])
         });
       },
       startConversation: function(userId) {
-        return $http.post('/api/v1/messages/conversation/start', {
+        return $http.post( '/api/v1/messages/conversation/start', {
             owner: $localStorage.loggedInUser._id,
             participants: [
               $localStorage.loggedInUser._id,
@@ -919,7 +927,7 @@ angular.module('trudesk.services', [])
         });
       },
       deleteConversation: function(convoId) {
-        return $http.delete('/api/v1/messages/conversation/' + convoId, {
+        return $http.delete( '/api/v1/messages/conversation/' + convoId, {
           headers: {
             'accesstoken': $localStorage.accessToken
           }
@@ -931,7 +939,7 @@ angular.module('trudesk.services', [])
 .factory('Graphs', function($http, $localStorage) {
   return {
     topGroups: function() {
-      return $http.get('/api/v1/tickets/count/topgroups', {
+      return $http.get( '/api/v1/tickets/count/topgroups', {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
@@ -988,7 +996,7 @@ angular.module('trudesk.services', [])
     profilePicture: function(fileURL) {
       var deferred = $q.defer();
       if (ionic.Platform.isWebView()) {
-        var serverURL = '/api/v1/users/' + $localStorage.username + '/uploadprofilepic';
+        var serverURL =  '/api/v1/users/' + $localStorage.username + '/uploadprofilepic';
 
         var uploadOptions = new FileUploadOptions();
         uploadOptions.fileKey = 'file';
@@ -1044,14 +1052,14 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
   $scope.auth = {
     server: '',
     username: '',
-    password: '',
-  }
+    password: ''
+  };
 
   $scope.invalid = {
     server: false,
     username: false,
     password: false
-  }
+  };
 
   function showError(err) {
     var alertPopup = $ionicPopup.alert({
@@ -1106,7 +1114,7 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
               showError('Could not connect. Please check server and try again.');
               break;
             case 401:
-              showError('Invalid Username / Password')
+              showError('Invalid Username / Password');
               break;
             default:
               showError('Could not connect. Please check server and try again.');
@@ -1142,7 +1150,7 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
       angular.element(document).find('ion-view').removeClass('hide');
     }, 850);
   });
-})
+});
 
 angular.module('trudesk.controllers.accounts', [])
 .controller('AccountCtrl', function($q, $scope, $state, $http, $timeout, $localStorage, $ionicHistory, $ionicActionSheet, $ionicModal, $cordovaCamera, Camera, Users, Upload) {
@@ -1183,7 +1191,7 @@ angular.module('trudesk.controllers.accounts', [])
                 return true;
               case 1:
                 $scope.openPhotoLibrary();
-                return true;
+                return true
               default:
                 return true;
             }
@@ -1465,7 +1473,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
   });
 
   $scope.$on("$ionicView.enter", function (scopes, states) {
-    
+
   });
 
   $scope.$on('$stateChangeStart', function (e) {
@@ -1477,13 +1485,10 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
     Messages.getRecent().then(function (response) {
       //Success
       $scope.recentConversations = response.data.conversations;
-      if (_.size($scope.recentConversations) < 1)
-        $scope.showRecentConversations = false;
-      else
-        $scope.showRecentConversations = true;        
+      $scope.showRecentConversations = _.size($scope.recentConversations) >= 1;
     }, function (err) {
       console.log(err);
-      $scope.showRecentConversations = false;      
+      $scope.showRecentConversations = false;
     });
   };
 
@@ -1498,18 +1503,17 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
       filterBarInstance();
       filterBarInstance = null;
     }
-    
+
     $scope.newConversation.hide();
-  }
+  };
 
   $scope.startConversation = function (userId) {
     Messages.startConversation(userId).then(function (response) {
       var convoId = response.data.conversation._id;
       if (convoId === undefined) {
         $scope.showSnackbar('Invalid Conversation Id', true);
-        return;
       } else {
-        if ($scope.newConversation != undefined)
+        if ($scope.newConversation !== undefined)
           $scope.hideNewConversation();
         return $state.go('tab.messages-conversation', {
           conversationid: convoId
@@ -1526,7 +1530,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
       if (response.data.success) {
         var convo = _.find($scope.recentConversations, function(obj) { return obj._id.toString() === convoId.toString()});
         var idx = $scope.recentConversations.indexOf(convo);
-        if (idx != -1)
+        if (idx !== -1)
           $scope.recentConversations.splice(idx, 1);
       }
     }, function (error) {
@@ -1544,7 +1548,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
     return Users.getUsers().then(function (res) {
       var list = res.data.users;
       for (var i = 0; i < list.length; i++) {
-        if (list[i].username == $localStorage.loggedInUser.username)
+        if (list[i].username === $localStorage.loggedInUser.username)
           list.splice(i, 1);
         else {
           delete list[i].__v;
@@ -1565,11 +1569,10 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
       $scope.showSnackbar(err, true);
       console.log(err);
     });
-  }
+  };
 
   var filterBarInstance;
   $scope.showFilterBar = function () {
-    console.log($scope.userList);
     filterBarInstance = $ionicFilterBar.show({
       items: $scope.userList,
       container: '.modal',
@@ -1579,7 +1582,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
         $scope.userList = filteredItems;
       }
     });
-  }
+  };
 
   $scope.showSnackbar = function (text, error) {
     if (_.isUndefined(error)) error = false;
@@ -1771,7 +1774,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
   // });
 
   $scope.getConversation = function () {
-    if ($scope.page === undefined)
+    if ($scope.page == undefined)
       $scope.page = 0;
 
     return Messages.getConversation($stateParams.conversationid, $scope.page).then(function (response) {
@@ -1779,7 +1782,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
 
       //Set partner ID
       for (var i = 0; i < $scope.conversation.participants.length; i++) {
-        if ($scope.conversation.participants[i].username !== $scope.loggedInUser.username)
+        if ($scope.conversation.participants[i].username != $scope.loggedInUser.username)
           $scope.conversation.partner = $scope.conversation.participants[i];
       }
 
@@ -1788,7 +1791,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
         return;
       }
 
-      if ($scope.page === 0)
+      if ($scope.page == 0)
         $scope.messages = response.data.messages.reverse();      
       else {
         var a = $scope.messages;
@@ -1806,7 +1809,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
       console.log(err);
     }).then(function () {
       $timeout(function () {
-        if ($scope.page === 0)
+        if ($scope.page == 0)
           scrollBottom();
         else 
           $timeout(function () {
@@ -1853,9 +1856,8 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
 
     isTyping = true;
 
-    if (typingTimer === undefined)
+    if (typingTimer == undefined)
       typingTimer = setTimeout(stopTyping, 5000);
-
     WebSocket.startTyping($scope.conversation._id, $scope.conversation.partner._id, $localStorage.loggedInUser._id);
   };
 
@@ -1863,7 +1865,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
     $timeout(function () {
       partnerTyping = true;
     }, 0);
-  }
+  };
 
   // Functions
   function stopTyping() {
@@ -1950,7 +1952,7 @@ function ensureLogin($localStorage, $state) {
 
 angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetailCtrl', function(
   $scope, $state, $stateParams, $ionicHistory, $ionicNavBarDelegate, $localStorage, $ionicModal, $ionicPopover, $ionicActionSheet, Tickets, Users) {
-  
+
   $ionicNavBarDelegate.showBackButton(true);
 
   $scope.showSnackbar = function(text, error) {
@@ -1974,8 +1976,11 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
   $scope.commentModalForm = {
     comment: ''
   };
+  $scope.noteModalForm = {
+    note: ''
+  };
 
-  $scope.isSupport = ($localStorage.loggedInUser.role == 'admin' || $localStorage.loggedInUser.role == 'mod' || $localStorage.loggedInUser.role == 'support');
+  $scope.isSupport = ($localStorage.loggedInUser.role === 'admin' || $localStorage.loggedInUser.role === 'mod' || $localStorage.loggedInUser.role === 'support');
 
   $ionicModal.fromTemplateUrl('templates/modals/modal-ticket-details.html', {
     scope: $scope,
@@ -1989,6 +1994,13 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
     animation: 'slide-in-up'
   }).then(function(modal) {
       $scope.addCommentModal = modal;
+  });
+
+  $ionicModal.fromTemplateUrl('templates/modals/modal-addNote.html', {
+    scope: $scope,
+    animation: 'slide-in-up'
+  }).then(function(modal) {
+    $scope.addNoteModal = modal;
   });
 
   $ionicModal.fromTemplateUrl('templates/modals/modal-ticket-setAssignee.html', {
@@ -2006,9 +2018,9 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
     $scope.hasAssignee = 'hide';
     if ($scope.ticket.assignee !== undefined) $scope.hasAssignee = 'show';
     if ($scope.ticket.assignee !== undefined && $scope.ticket.assignee.image === undefined) $scope.ticket.assignee.image = 'defaultProfile.jpg';
-    
+
     if ($scope.isSupport)
-      $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), '-date');
+      $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date');
     else
       $scope.ticket.commentsMerged = $scope.ticket.comments;
   });
@@ -2098,6 +2110,20 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
     $scope.addCommentModal.hide();
   };
 
+  $scope.showAddNote = function($event) {
+      Users.getLoggedInUser().then(function(user) {
+        $scope.loggedInUser = user;
+      }).then(function() {
+        $scope.addNoteModal.show();
+        $scope.popover.hide();
+      });
+  };
+
+  $scope.closeAddNote = function() {
+    $scope.noteModalForm.note = '';
+    $scope.addNoteModal.hide();
+  };
+
   $scope.openSetAssigneeModal = function() {
     $scope.setAssigneeModal.show();
     $scope.popover.hide();
@@ -2145,7 +2171,7 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
           $scope.ticket = response.data.ticket;
           //Merge Arrays for Note Displaying
           if ($scope.isSupport)
-            $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), '-date');
+            $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date');
           else
             $scope.ticket.commentsMerged = $scope.ticket.comments;
 
@@ -2155,6 +2181,34 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
           $scope.closeAddComment();
         });
       });
+  };
+
+  $scope.addNoteFormSubmit = function() {
+    var note = {
+      ownerId: $scope.loggedInUser._id,
+      note: this.noteModalForm.note
+    };
+
+    Tickets.addNote($scope.ticket, note).then(function successCallback(response) {
+      //Note Added
+    }, function errorCallback(err) {
+      console.log(err);
+      $scope.showSnackbar(err, true);
+    }).then(function() {
+      Tickets.get($stateParams.ticketuid).then(function successCallback(response) {
+        $scope.ticket = response.data.ticket;
+
+        if ($scope.isSupport)
+          $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date');
+        else
+          $scope.ticket.commentsMerged = $scope.tickets.comments;
+
+        if ($scope.ticket.owner.image === undefined) $scope.ticket.owner.image = 'defaultProfile.jpg';
+      }).then(function() {
+        $scope.noteModalForm.note = '';
+        $scope.closeAddNote();
+      });
+    });
   };
 
   $scope.setAssigneeFormSubmit = function() {
@@ -2189,6 +2243,7 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
   $scope.$on('$destroy', function() {
       $scope.popover.remove();
       $scope.addCommentModal.remove();
+      $scope.addNoteModal.remove();
       $scope.ticketDetailModal.remove();
       $scope.setAssigneeModal.remove();
   });
