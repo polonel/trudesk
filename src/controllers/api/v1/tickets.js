@@ -489,7 +489,7 @@ api_tickets.update = function(req, res) {
         ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
-            //Check the user has permission to update ticket.
+            //TODO: Check the user has permission to update ticket.
 
             async.parallel([
                 function(cb) {
@@ -504,10 +504,15 @@ api_tickets.update = function(req, res) {
                     }
                 },
                 function(cb) {
-                    if (!_.isUndefined(reqTicket.group))
-                        ticket.group = reqTicket.group;
+                    if (!_.isUndefined(reqTicket.group)) {
+                        ticket.group = reqTicket.group._id;
 
-                    cb();
+                        ticket.populate('group', function() {
+                             cb();
+                        });
+                    } else {
+                        cb();
+                    }
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.closedDate))
@@ -541,7 +546,9 @@ api_tickets.update = function(req, res) {
                 }
             ], function() {
                 ticket.save(function(err, t) {
-                    if (err) return res.send(err.message);
+                    if (err) {
+                        return res.status(400).json({success: false, error: err.message});
+                    }
 
                     if (!permissions.canThis(user.role, 'notes:view'))
                         t.notes = [];
