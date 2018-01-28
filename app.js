@@ -12,7 +12,6 @@
 var _           = require('lodash'),
     async       = require('async'),
     path        = require('path'),
-    fs          = require('fs'),
     winston     = require('winston'),
     nconf       = require('nconf'),
     pkg         = require('./package.json'),
@@ -54,7 +53,7 @@ process.on('message', function(msg) {
         if (ws.server)
             ws.server.close();
 
-        process.exit(0);
+        throw new Error('Server has been shutdown!');
     }
 });
 
@@ -71,43 +70,6 @@ if (!process.env.FORK) {
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
-}
-
-var configFile = path.join(__dirname, '/config.json'),
-    configExists;
-
-if (nconf.get('config')) {
-    configFile = path.resolve(__dirname, nconf.get('config'));
-}
-configExists = fs.existsSync(configFile);
-
-if (process.env.HEROKU) {
-    //Build Config for Heroku
-    var configHeroku = {
-        "url": "http://localhost:8118",
-        "port": "8118"
-    };
-
-    winston.info('Creating heroku config file...');
-    var config = JSON.stringify(configHeroku, null, 4);
-
-    if (configExists)
-        fs.unlinkSync(configFile);
-
-    fs.writeFileSync(configFile, config);
-
-    start();
-}
-
-//if (nconf.get('install') || !configExists && !process.env.HEROKU) {
-//    ws.installServer(function() {
-//        return winston.info('Trudesk Install Server Running...');
-//    });
-//
-//    return;
-//}
-
-    return;
 }
 
 start();
