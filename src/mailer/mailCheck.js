@@ -48,6 +48,8 @@ mailCheck.init = function(settings) {
     var MAILERCHECK_HOST = s.mailerCheckHost.value;
     var MAILERCHECK_USER = s.mailerCheckUsername.value;
     var MAILERCHECK_PASS = s.mailerCheckPassword.value;
+    var MAILERCHECK_PORT = s.mailerCheckPort.value;
+    var MAILERCHECK_TLS = (s.mailerCheckPort.value == 993) ? {value: true} : false;
     var POLLING_INTERVAL = 600000; //10 min
     var DEFAULT_TICKET_TYPE = s.mailerCheckTicketType.value;
 
@@ -57,7 +59,8 @@ mailCheck.init = function(settings) {
         user: MAILERCHECK_USER,
         password: MAILERCHECK_PASS,
         host: MAILERCHECK_HOST,
-        port: 143
+        port: MAILERCHECK_PORT,
+        tls: MAILERCHECK_TLS
     });
 
     mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
