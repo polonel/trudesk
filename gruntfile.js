@@ -35,14 +35,6 @@ module.exports = function(grunt) {
                     nospawn: true,
                     atBegin: true
                 }
-            },
-            docs: {
-                files: [
-                    '*.js',
-                    'src/**/*.js',
-                    'routes/**/*.js'
-                ],
-                tasks: ['jsdoc', 'apidoc']
             }
         },
 
@@ -64,15 +56,6 @@ module.exports = function(grunt) {
                         args: ['shell:webpackWatch']
                     }
                 ]
-            },
-            docs: {
-                options: {
-                    stream: true
-                },
-                tasks: [{
-                    grunt: true,
-                    args: ['watch:docs']
-                }]
             }
         },
 
@@ -109,30 +92,6 @@ module.exports = function(grunt) {
                 src: ['*.css', '!app.min.css', '!*.min.css'],
                 dest: 'public/css/',
                 ext: '.min.css'
-            }
-        },
-
-        apidoc: {
-            trudesk: {
-                src: 'src/controllers/api/',
-                dest: 'apidocs/',
-                template: 'apidoc_template/',
-                options: {
-                    //debug: true,
-                    includeFilters: ['.*\\.js$'],
-                    excludeFilters: ['node_modules/']
-                }
-            }
-        },
-
-        jsdoc: {
-            dist: {
-                src: ['README.md', 'src/**/*.js', '!src/public/js/vendor/**/*.js', '!src/public/js/plugins/*.js'],
-                options: {
-                    destination: 'docs',
-                    template: 'docs/jaguarjs-jsdoc',
-                    configure: 'docs/jaguarjs-jsdoc/conf.json'
-                }
             }
         },
 
@@ -182,10 +141,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildcss', ['cssmin']);
-    grunt.registerTask('builddocs', ['apidoc']);
-    grunt.registerTask('watchdocs', ['parallel:docs']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['builddocs', 'uglify:uikit', 'shell:webpackDist', 'buildcss']);
+    grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('default', ['server']);
 };
