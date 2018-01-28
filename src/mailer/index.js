@@ -61,19 +61,23 @@ function createTransporter(callback) {
 
       mailSettings.enabled = mailSettings.enabled && mailSettings.enabled.value ? mailSettings.enabled.value : false;
 
-      mailSettings.transporter = nodeMailer.createTransport({
+      var transport = { 
           host: mailSettings.host && mailSettings.host.value ? mailSettings.host.value : '127.0.0.1',
           port: mailSettings.port && mailSettings.port.value ? mailSettings.port.value : 25,
           secure: mailSettings.ssl && mailSettings.ssl.value ? mailSettings.ssl.value : false,
-          auth: {
-              user: mailSettings.username && mailSettings.username.value ? mailSettings.username.value : '',
-              pass: mailSettings.password && mailSettings.password.value ? mailSettings.password.value : ''
-          },
           tls: {
               rejectUnauthorized: false,
               ciphers: 'SSLv3'
           }
-      });
+      };
+      if (mailSettings.username && mailSettings.username.value) {
+          transport.auth = {
+              user: mailSettings.username.value,
+              pass: mailSettings.password && mailSettings.password.value ? mailSettings.password.value : ''
+          };
+      }
+
+      mailSettings.transporter = nodeMailer.createTransport(transport);
 
       return callback(null, mailSettings);
   });
