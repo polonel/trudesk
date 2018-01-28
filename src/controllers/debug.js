@@ -180,7 +180,7 @@ debugController.sendmail = function(req, res) {
                     winston.error(err);
                 } else {
                     var mailOptions = {
-                        to: 'chris.brame@granvillecounty.org',
+                        to: 'polonel@outlook.com',
                         subject: 'Trudesk Launch',
                         html: html,
                         generateTextFromHTML: true
