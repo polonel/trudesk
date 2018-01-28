@@ -1018,22 +1018,14 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.fromPairs(keys, _.map(keys, function (key) {
+                            return _.zipObject(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
                     });
 
-                    tags = _.reduce(t, function(counts, key) {
-                        counts[key]++;
-                        return counts;
-                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
-                        return [key, 0];
-                    })));
-
-                    tags = _.sortKeysBy(tags, function(value) {
-                        return -value;
-                    });
+                    tags = _.countBy(t, function(k){ return k; });
+                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
 
                     return callback(null, tickets);
                 });
@@ -1045,7 +1037,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
             var r = {};
             r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
-            r.recentTickets = _.last(tickets, 5);
+            r.recentTickets = _.takeRight(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
                 return v.status === 3;
             });
@@ -1126,22 +1118,14 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.fromPairs(keys, _.map(keys, function (key) {
+                            return _.zipObject(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
                     });
 
-                    tags = _.reduce(t, function(counts, key) {
-                        counts[key]++;
-                        return counts;
-                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
-                        return [key, 0];
-                    })));
-
-                    tags = _.sortKeysBy(tags, function(value) {
-                        return -value;
-                    });
+                    tags = _.countBy(t, function(k){ return k; });
+                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
 
                     return callback(null, tickets);
                 });
@@ -1153,7 +1137,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
             var r = {};
             r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
-            r.recentTickets = _.last(tickets, 5);
+            r.recentTickets = _.takeRight(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
                 return v.status === 3;
             });
