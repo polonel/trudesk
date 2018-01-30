@@ -167,38 +167,41 @@ function randomDate(start, end) {
 
 debugController.sendmail = function(req, res) {
     var mailer              = require('../mailer');
-    var emailTemplates      = require('email-templates');
+    var Email               = require('email-templates');
     var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-    emailTemplates(templateDir, function(err, template) {
-        if (err) {
-            winston.error(err);
-        } else {
+    var to = req.query['email'];
+    if (to === undefined)
+        return res.status(400).send('Invalid Email in querystring "email"');
 
-            template('ticket-updated', function(err, html) {
-                if (err) {
-                    winston.error(err);
-                } else {
-                    var mailOptions = {
-                        to: 'polonel@outlook.com',
-                        subject: 'Trudesk Launch',
-                        html: html,
-                        generateTextFromHTML: true
-                    };
-
-                    mailer.sendMail(mailOptions, function(err) {
-                        if (err) {
-                            winston.warn(err);
-                            return res.send(err);
-                        }
-
-
-                        return res.status(200).send('OK');
-                    });
-                }
-            });
+    var email = new Email({
+        views: {
+            root: templateDir,
+            options: {
+                extension: 'handlebars'
+            }
         }
     });
+
+    email.render('ticket-updated', {})
+        .then(function(html) {
+            var mailOptions = {
+                to: to,
+                subject: 'Trudesk Test Email [Debugger]',
+                html: html,
+                generateTextFromHTML: true
+            };
+
+            mailer.sendMail(mailOptions, function(err) {
+                if (err) throw new Error(err);
+
+                return res.status(200).send('OK');
+            });
+        })
+        .catch(function(err) {
+            winston.warn(err);
+            res.status(400).send(err);
+        });
 };
 
 debugController.uploadPlugin = function(req, res) {

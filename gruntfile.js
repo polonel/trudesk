@@ -17,12 +17,6 @@ module.exports = function(grunt) {
         },
 
         watch: {
-            // sass: {
-            //     files: [
-            //         'src/sass/**/*.sass'
-            //     ],
-            //     tasks: ['sass', 'cssmin']
-            // },
             web: {
                 files: [
                     '*.js',
@@ -44,10 +38,6 @@ module.exports = function(grunt) {
                     stream: true
                 },
                 tasks: [
-                    // {
-                    //     grunt: true,
-                    //     args: ['watch:sass']
-                    // },
                     {
                         grunt: true,
                         args: ['watch:web']

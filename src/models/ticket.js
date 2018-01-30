@@ -15,7 +15,6 @@
 var async               = require('async');
 var mongoose            = require('mongoose');
 var _                   = require('lodash');
-var deepPopulate        = require('mongoose-deep-populate')(mongoose);
 var moment              = require('moment');
 var hash                = require('object-hash');
 // var redisCache          = require('../cache/rediscache');
@@ -88,8 +87,6 @@ var ticketSchema = mongoose.Schema({
 });
 
 ticketSchema.index({deleted: -1, group: 1, status: 1});
-
-ticketSchema.plugin(deepPopulate);
 
 ticketSchema.pre('save', function(next) {
     if (!_.isUndefined(this.uid) || this.uid) return next();
@@ -556,11 +553,8 @@ ticketSchema.methods.removeSubscriber = function(userId, callback) {
 ticketSchema.statics.getAll = function(callback) {
     var self = this;
     var q = self.model(COLLECTION).find({deleted: false})
-        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('type')
-        .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
+        .populate('owner assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
+        .populate('type tags group')
         .sort({'status': 1})
         .lean();
 
@@ -591,10 +585,8 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
         status = [status];
 
     var q = self.model(COLLECTION).find({status: {$in: status}, deleted: false})
-        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('type tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags group')
         .sort({'status': 1})
         .lean();
 
@@ -622,11 +614,8 @@ ticketSchema.statics.getTickets = function(grpIds, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpIds}, deleted: false})
-        .populate('owner', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('assignee', '-password -__v -preferences -iOSDeviceTokens -tOTPKey')
-        .populate('type')
-        .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers'])
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags group')
         .sort({'status': 1});
 
     return q.exec(callback);
@@ -677,19 +666,13 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     }
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner', 'username fullname email role image title')
+        .populate('owner assignee subscribers comments.owner notes.owner history.owner', 'username fullname email role image title')
         .populate('assignee', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .populate('group')
+        .populate('type tags group')
         .populate('group.members', 'username fullname email role image title')
         .populate('group.sendMailTo', 'username fullname email role image title')
-        .populate('subscribers', 'username fullname email role image title')
-        .populate('comments.owner', 'username fullname email role image title')
-        .populate('notes.owner', 'username fullname email role image title')
-        .populate('history.owner', 'username fullname email role image title')
         .sort('-uid');
-        //.sort({'status': 1})
+
     if (limit !== -1) {
         q.skip(page*limit).limit(limit);
     }
@@ -786,41 +769,6 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
     return q.lean().exec(callback)
 };
 
-/**
- * Gets Tickets with a limit on given group id. <br/><br/>
- * *Sorts on UID Desc -> STATUS Asc*
- * @memberof Ticket
- * @static
- * @method getTicketsWithLimit
- *
- * @param {Object} grpId Group Id to retrieve tickets for.
- * @param {Number} limit Number of tickets to return
- * @param {QueryCallback} callback MongoDB Query Callback
- */
-ticketSchema.statics.getTicketsWithLimit = function(grpId, limit, callback) {
-    if (_.isUndefined(grpId)) {
-        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-    }
-
-    if (!_.isArray(grpId)) {
-        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
-    }
-
-    var self = this;
-
-    var q = self.model(COLLECTION).find({group: {$in: grpId}, deleted: false})
-        .populate('owner')
-        .populate('assignee')
-        .populate('type')
-        .populate('tags')
-        .populate('notes.owner', 'username fullname email role image title')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
-        .sort({'uid': -1})
-        .sort({'status': 1})
-        .limit(limit);
-
-    return q.exec(callback);
-};
 
 /**
  * Gets Tickets for status in given group. <br/><br/>
@@ -845,12 +793,8 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, status: status, deleted: false})
-        .populate('owner', 'username fullname email role image title')
-        .populate('assignee', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .populate('notes.owner', 'username fullname email role image title')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers'])
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags group')
         .sort({'uid': -1});
 
     return q.exec(callback);
@@ -871,16 +815,8 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).findOne({uid: uid, deleted: false})
-        .populate('owner', 'username fullname email role image title')
-        .populate('assignee', 'username fullname email role image title')
-        .populate('subscribers', 'username fullname email role image title')
-        .populate('history.owner', 'username fullname email role image title')
-        .populate('comments.owner', 'username fullname email role image title')
-        .populate('notes.owner', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .populate({path: 'group'});
-        // .deepPopulate(['group']);
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags group');
 
     return q.exec(callback);
 };
@@ -900,11 +836,24 @@ ticketSchema.statics.getTicketById = function(id, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).findOne({_id: id, deleted: false})
-        .populate('owner', 'username fullname email role image title')
-        .populate('assignee', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags')
+        .populate({
+            path: 'group',
+            model: groupSchema,
+            populate: [
+                {
+                    path: 'members',
+                    model: userSchema,
+                    select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+                },
+                {
+                    path: 'sendMailTo',
+                    model: userSchema,
+                    select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+                }
+            ]
+        });
 
     return q.exec(callback);
 };
@@ -924,11 +873,24 @@ ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({owner: userId, deleted: false})
-        .populate('owner', 'username fullname email role image title')
-        .populate('assignee', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags')
+        .populate({
+            path: 'group',
+            model: groupSchema,
+            populate: [
+                {
+                    path: 'members',
+                    model: userSchema,
+                    select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+                },
+                {
+                    path: 'sendMailTo',
+                    model: userSchema,
+                    select: '-__v -iOSDeviceTokens -accessToken -tOTPKey'
+                }
+            ]
+        });
 
     return q.exec(callback);
 };
@@ -943,10 +905,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
     async.parallel([
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, $where: '/^' + search + '.*/.test(this.uid)'})
-                .populate('owner', 'username fullname email role image title')
-                .populate('assignee', 'username fullname email role image title')
-                .populate('type tags')
-                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
+                .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+                .populate('type tags group')
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -956,10 +916,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         },
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, subject: { $regex: search, $options: 'i'}})
-                .populate('owner', 'username fullname email role image title')
-                .populate('assignee', 'username fullname email role image title')
-                .populate('type tags')
-                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'history.owner', 'subscribers']);
+                .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+                .populate('type tags group')
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -969,10 +927,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         },
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, issue: { $regex: search, $options: 'i'}})
-                .populate('owner', 'username fullname email role image title')
-                .populate('assignee', 'username fullname email role image title')
-                .populate('type tags')
-                .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
+                .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+                .populate('type tags group')
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -1154,11 +1110,8 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
     var self = this;
 
     var q = self.model(COLLECTION).find({assignee: user_id, deleted: false, status: {$ne: 3}})
-        .populate('owner', 'username fullname email role image title')
-        .populate('assignee', 'username fullname email role image title')
-        .populate('type')
-        .populate('tags')
-        .deepPopulate(['group', 'group.members', 'group.sendMailTo', 'comments', 'comments.owner', 'notes.owner', 'history.owner', 'subscribers']);
+        .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
+        .populate('type tags group');
 
     return q.exec(callback);
 };
@@ -1183,7 +1136,7 @@ ticketSchema.statics.getAssigned = function(user_id, callback) {
  * });
  */
 ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
-    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan == 0) timespan = -1;
+    if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = -1;
     if (_.isUndefined(top) || _.isNaN(top)) top = 5;
 
     var self = this;
@@ -1234,7 +1187,7 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
                 var tickets = [];
                 var grp = grps[g];
                 for (var i = 0; i < ticketsDb.length; i++) {
-                    if (ticketsDb[i].groupId == grp._id)
+                    if (ticketsDb[i].groupId === grp._id)
                         tickets.push(ticketsDb);
                 }
 

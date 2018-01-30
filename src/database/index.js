@@ -18,7 +18,9 @@ var mongoose = require('mongoose'),
 
 var db = {};
 
-var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + nconf.get('mongo:password') + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
+var dbPassword = encodeURIComponent(nconf.get('mongo:password'));
+
+var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + dbPassword + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
 
 mongoose.connection.on('error', function(e) {
     winston.error('Oh no, something went wrong with DB! - ' + e.message);
@@ -29,7 +31,7 @@ mongoose.connection.on('connected', function() {
         winston.info('Connected to MongoDB');
 });
 
-var options = { useMongoClient: true, keepAlive: 1, connectTimeoutMS: 30000 };
+var options = { keepAlive: 1, connectTimeoutMS: 30000 };
 
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;

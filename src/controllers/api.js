@@ -125,44 +125,6 @@ apiController.import = function(req, res) {
     });
 };
 
-apiController.testPromo = function(req, res) {
-    var path                = require('path');
-    var mailer              = require('../mailer');
-    var emailTemplates      = require('email-templates');
-    var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
-
-    emailTemplates(templateDir, function(err, template) {
-        if (err) {
-            winston.error(err);
-        } else {
-
-            template('promo', function(err, html) {
-                if (err) {
-                    winston.error(err);
-                } else {
-                    var mailOptions = {
-                        from: 'no-reply@trudesk.io',
-                        to: 'polonel@outlook.com',
-                        subject: 'Trudesk Launch',
-                        html: html,
-                        generateTextFromHTML: true
-                    };
-
-                    mailer.sendMail(mailOptions, function(err) {
-                        if (err) {
-                            winston.warn(err);
-                            return res.send(err);
-                        }
-
-
-                        return res.status(200).send('OK');
-                    });
-                }
-            });
-        }
-    });
-};
-
 /**
  * Redirects to login page
  * @param {object} req Express Request

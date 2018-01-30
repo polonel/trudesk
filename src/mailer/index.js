@@ -78,6 +78,7 @@ function createTransporter(callback) {
       }
 
       mailSettings.transporter = nodeMailer.createTransport(transport);
+      mailer.transporter = mailSettings.transporter;
 
       return callback(null, mailSettings);
   });
