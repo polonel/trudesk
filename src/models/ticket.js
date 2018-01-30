@@ -715,7 +715,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.tags)) {
         q.where({tags: {$in: object.filter.tags}});
     }
-    
+
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
         q.where({assignee: {$in: object.filter.assignee}});
     }
@@ -1210,17 +1210,19 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
                 var a = [];
 
                 for (var i = 0; i < t.length; i++) {
-                    ticketsDb.push({ticketId: t[i]._id, groupId: t[i].group._id});
                     var ticket = t[i];
-                    var o = {};
-                    o._id = ticket.group._id;
-                    o.name = ticket.group.name;
+                    if (ticket.group) {
+                        ticketsDb.push({ticketId: t[i]._id, groupId: t[i].group._id});
+                        var o = {};
+                        o._id = ticket.group._id;
+                        o.name = ticket.group.name;
 
-                    if (!_.filter(a, {'name': o.name}).length)
-                        a.push(o);
-                    else
-                        o = null;
+                        if (!_.filter(a, {'name': o.name}).length)
+                            a.push(o);
+                        else
+                            o = null;
 
+                    }
                     ticket = null;
                 }
 
