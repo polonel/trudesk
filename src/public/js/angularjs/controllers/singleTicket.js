@@ -15,7 +15,7 @@
 define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
     function(angular, _, $, UIkit, socket, nav, md, helpers) {
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
-        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q) {
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q, $log) {
 
             $scope.loggedInAccount = SessionService.getUser();
 
@@ -77,7 +77,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     });
                                 }).
                                 error(function(e) {
-                                    console.log('[trudesk:singleTicket:ticketTypes] - ' + e);
+                                    $log.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
             $q.all([ticketTypes]).then(function() {
@@ -91,7 +91,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     });
                                 }).
                                 error(function(e) {
-                                    console.log('[trudesk:singleTicket:groupHttpGet] - ' + e);
+                                    $log.log('[trudesk:singleTicket:groupHttpGet] - ' + e);
                                 });
 
             $q.all([groupHttpGet]).then(function() {
@@ -169,7 +169,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 ).success(function() {
 
                     }).error(function(e) {
-                        console.log('[trudesk:singleTicket:SubscriberChange] - ' + e);
+                        $log.log('[trudesk:singleTicket:SubscriberChange] - ' + e);
                         helpers.UI.showSnackbar('Error: ' + e.message, true);
                     });
             };
@@ -233,7 +233,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                             }, 250);
                         })
                         .error(function(err) {
-                            console.log('[trudesk:tickets:addTag} - Error: ' + err.error);
+                            $log.log('[trudesk:tickets:addTag} - Error: ' + err.error);
                             helpers.UI.showSnackbar('Error: ' + err.error, true);
                         });
                 }
@@ -257,7 +257,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
                         UIkit.modal('#addTagModal').hide();
                 }).error(function(e) {
-                    console.log('[trudesk:singleTicket:submitAddTags] - ' + e);
+                    $log.log('[trudesk:singleTicket:submitAddTags] - ' + e);
                     helpers.UI.showSnackbar('Error: ' + e.message, true);
 
                     UIkit.modal('#addTagModal').hide();
@@ -277,7 +277,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     $('#addTagModal').find('select').trigger('chosen:updated');
                     UIkit.modal('#addTagModal').hide();
                 }).error(function(e) {
-                    console.log('[trudesk:singleTicket:clearTags] - ' + e.message);
+                    $log.log('[trudesk:singleTicket:clearTags] - ' + e.message);
                     helpers.UI.showSnackbar('Error: ' + e.message, true);
                     UIkit.modal('#addTagModal').hide();
                 });
@@ -295,11 +295,11 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         "comment": commentField.val(),
                         "_id": id.val().toString(),
                         "ownerId": $scope.loggedInAccount._id
-                    }).success(function(data) {
+                    }).success(function() {
                         commentField.val('');
                     }).error(function(e) {
-                        console.error('[trudesk:singleTicket:submitComment]');
-                        console.error(e);
+                        $log.error('[trudesk:singleTicket:submitComment]');
+                        $log.error(e);
                         helpers.UI.showSnackbar('Error: ' + e.error, true);
                     });
                 }
@@ -317,11 +317,11 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         "note": noteField.val(),
                         "ticketid": id,
                         "owner": $scope.loggedInAccount._id
-                    }).success(function(data) {
+                    }).success(function() {
                         noteField.val('');
                     }).error(function(e) {
-                        console.error('[trudesk:singleTicket:submitInternalNote]');
-                        console.error(e);
+                        $log.error('[trudesk:singleTicket:submitInternalNote]');
+                        $log.error(e);
                         helpers.UI.showSnackbar('Error: ' + e.error, true);
                     });
                 }

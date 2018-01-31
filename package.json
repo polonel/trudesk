@@ -2,6 +2,9 @@
   "name": "Trudesk",
   "version": "0.1.10",
   "private": true,
+  "engines": {
+      "node": ">=6.0.0"
+  },
   "scripts": {
     "start": "node ./app",
     "build": "grunt build",
