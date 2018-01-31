@@ -441,7 +441,6 @@ ticketsController.single = function(req, res) {
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
-
         if (!_.some(ticket.group.members, user._id)) {
             if (ticket.group.public && hasPublic) {
                 //Blank to bypass

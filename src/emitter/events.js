@@ -21,7 +21,7 @@ var util                = require('../helpers/utils');
 var ticketSchema        = require('../models/ticket');
 var userSchema          = require('../models/user');
 var notificationSchema  = require('../models/notification');
-var emailTemplates      = require('email-templates');
+var Email               = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 var permissions         = require('../permissions');
 
@@ -51,39 +51,34 @@ var notifications       = require('../notifications'); // Load Push Events
 
                          emails = _.uniq(emails);
 
-                         emailTemplates(templateDir, function(err, template) {
-                             if (err) {
-                                 winston.error('[trudesk:events:ticket:created] - Error: ' + err);
-                                 return c();
-                             } else {
-                                 var locals = {
-                                     ticket: ticket
-                                 };
-
-                                 template('new-ticket', locals, function(err, html) {
-                                     if (err) {
-                                         winston.error('[trudesk:events:ticket:created] - Error: ' + err);
-                                         return c();
-                                     } else {
-                                         var mailOptions = {
-                                             to: emails.join(),
-                                             subject: 'Ticket #' + ticket.uid + '-' + ticket.subject,
-                                             html: html,
-                                             generateTextFromHTML: true
-                                         };
-
-                                         mailer.sendMail(mailOptions, function(err, info) {
-                                             if (err) {
-                                                 winston.warn('[trudesk:events:ticket:created] - Error: ' + err);
-                                                 return c();
-                                             }
-
-                                             return c(null, info);
-                                         });
-                                     }
-                                 });
+                         var email = new Email({
+                             views: {
+                                 root: templateDir,
+                                 options: {
+                                     extension: 'handlebars'
+                                 }
                              }
                          });
+
+                         email.render('new-ticket', {ticket: ticket})
+                             .then(function(html) {
+                                 var mailOptions = {
+                                     to: emails.join(),
+                                     subject: 'Ticket #' + ticket.uid + '-' + ticket.subject,
+                                     html: html,
+                                     generateTextFromHTML: true
+                                 };
+
+                                 mailer.sendMail(mailOptions, function(err) {
+                                     throw new Error(err);
+                                 });
+                             }).catch(function(err) {
+                                winston.warn('[trudesk:events:ticket:created] - ' + err);
+                                return c(err);
+                             })
+                             .finally(function() {
+                                 return c();
+                             });
                      });
                  },
                  function (c) {
@@ -240,44 +235,38 @@ var notifications       = require('../notifications'); // Load Push Events
                         return c();
                     }
 
-                    emailTemplates(templateDir, function(err, template) {
-                        if (err) {
-                            winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
-                            return c(err);
-                        } else {
-                            ticket.populate('comments.owner', function(err, ticket) {
-                                if (err) return true;
+                    var email = new Email({
+                        views: {
+                            root: templateDir,
+                            options: {
+                                extension: 'handlebars'
+                            }
+                        }
+                    });
 
-                                var locals = {
-                                    ticket: ticket,
-                                    comment: comment
+                    ticket.populate('comments.owner', function(err, ticket) {
+                        if (err) winston.warn(err);
+                        if (err) return c();
+
+                        email.render('ticket-comment-added', {ticket: ticket, comment: comment})
+                            .then(function(html) {
+                                var mailOptions = {
+                                    to: emails.join(),
+                                    subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
+                                    html: html,
+                                    generateTextFromHTML: true
                                 };
 
-                                template('ticket-comment-added', locals, function(err, html) {
-                                    if (err) {
-                                        winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
-                                        return c(err);
-                                    } else {
-                                        var mailOptions = {
-                                            to: emails.join(),
-                                            subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
-                                            html: html,
-                                            generateTextFromHTML: true
-                                        };
-
-                                        mailer.sendMail(mailOptions, function(err, info) {
-                                            if (err) {
-                                                winston.warn('[trudesk:events:sendSubscriberEmail] - Error: ' + err.message);
-                                                return c();
-                                            }
-
-                                            //winston.debug('Sent Subscriber Mail.');
-                                            return c(null, info);
-                                        });
-                                    }
+                                mailer.sendMail(mailOptions, function(err) {
+                                    throw new Error(err);
                                 });
+                            }).catch(function(err) {
+                                winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err);
+                                return c(err);
+                            })
+                            .finally(function() {
+                                return c();
                             });
-                        }
                     });
                 });
             }

@@ -488,7 +488,6 @@ api_tickets.update = function(req, res) {
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
-
             //TODO: Check the user has permission to update ticket.
 
             async.parallel([
@@ -1517,7 +1516,6 @@ api_tickets.updateTag = function(req, res) {
  */
 api_tickets.deleteTag = function(req, res) {
     var id = req.params.id;
-    console.log(id);
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({success: false, error: 'Invalid Tag Id'});
 
     async.series([
@@ -1526,7 +1524,7 @@ api_tickets.deleteTag = function(req, res) {
             ticketModel.getAllTicketsByTag(id, function(err, tickets) {
                 if (err) return next(err);
                 async.each(tickets, function(ticket, cb) {
-                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id == id; });
+                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id === id; });
 
                     ticket.save(function(err) {
                         return cb(err);

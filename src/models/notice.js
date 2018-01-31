@@ -10,7 +10,6 @@
  */
 
 var mongoose        = require('mongoose');
-var deepPopulate    = require('mongoose-deep-populate')(mongoose);
 
 var COLLECTION = 'notices';
 
@@ -40,8 +39,6 @@ var noticeSchema = mongoose.Schema({
     activeDate: { type: Date, default: Date.now },
     alertWindow:{ type: Boolean, default: false }
 });
-
-noticeSchema.plugin(deepPopulate);
 
 noticeSchema.statics.getNotices = function(callback) {
     return this.model(COLLECTION).find({}).exec(callback);

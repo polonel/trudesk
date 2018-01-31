@@ -56,14 +56,14 @@ var userSchema = mongoose.Schema({
         title:      String,
         image:      String,
 
-        resetPassHash: String,
-        resetPassExpire: Date,
-        tOTPKey: String,
-        tOTPPeriod: Number,
+        resetPassHash: { type: String, select: false},
+        resetPassExpire: { type: Date, select: false},
+        tOTPKey: { type: String, select: false },
+        tOTPPeriod: { type: Number, select: false },
 
-        accessToken: { type: String, sparse: true},
+        accessToken: { type: String, sparse: true, select: false},
 
-        iOSDeviceTokens: [{type: String}],
+        iOSDeviceTokens: [{type: String, select: false}],
 
         preferences: {
             tourCompleted: { type: Boolean, default: false },

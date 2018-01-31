@@ -181,29 +181,26 @@ mainController.forgotPass = function(req, res) {
 
             //Send mail
             var mailer          = require('../mailer');
-            var emailTemplates  = require('email-templates');
+            var Email           = require('email-templates');
             var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-            emailTemplates(templateDir, function(err, template) {
-                if (err) {
-                    req.flash('Error: ' + err);
-                    return res.status(400).send(err.message);
-                }
-
-                var data = {
-                    base_url: nconf.get('url'),
-                    user: savedUser
-                };
-
-                template('password-reset', data, function(err, html) {
-                    if (err) {
-                        req.flash('Error: ' + err);
-                        winston.warn(err.message);
-                        return res.status(400).send(err.message);
+            var email = new Email({
+                views: {
+                    root: templateDir,
+                    options: {
+                        extension: 'handlebars'
                     }
+                }
+            });
 
+            var data = {
+                base_url: nconf.get('url'),
+                user: savedUser
+            };
+
+            email.render('password-reset', data)
+                .then(function(html) {
                     var mailOptions = {
-                        from: nconf.get('mailer:from'),
                         to: email,
                         subject: '[TruDesk] Password Reset Request',
                         html: html,
@@ -212,15 +209,17 @@ mainController.forgotPass = function(req, res) {
 
                     mailer.sendMail(mailOptions, function(err) {
                         if (err) {
-                            req.flash('Error: ' + err.message);
-                            winston.warn(err.message);
-                            return res.status(400).send(err.message);
+                            throw new Error(err);
                         }
 
                         return res.status(200).send();
                     });
+                })
+                .catch(function(err) {
+                    req.flash('Error: ' + err);
+                    winston.warn(err);
+                    res.status(400).send(err.message);
                 });
-            });
         });
     });
 };
@@ -259,27 +258,26 @@ mainController.resetPass = function(req, res) {
 
                 //Send mail
                 var mailer          = require('../mailer');
-                var emailTemplates  = require('email-templates');
+                var Email           = require('email-templates');
                 var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-                emailTemplates(templateDir, function(err, template) {
-                    if (err) {
-                        return res.status(500).send(err.message);
-                    }
-
-                    var data = {
-                        password: gPass,
-                        user: updated
-                    };
-
-                    template('new-password', data, function(err, html) {
-                        if (err) {
-                            req.flash('Error: ' + err);
-                            return res.status(500).send(err.message);
+                var email = new Email({
+                    views: {
+                        root: templateDir,
+                        options: {
+                            extension: 'handlebars'
                         }
+                    }
+                });
 
+                var data = {
+                    password: gPass,
+                    user: updated
+                };
+
+                email.render('new-password', data)
+                    .then(function(html) {
                         var mailOptions = {
-                            from: 'no-reply@trudesk.io',
                             to: updated.email,
                             subject: '[TruDesk] New Password',
                             html: html,
@@ -287,15 +285,16 @@ mainController.resetPass = function(req, res) {
                         };
 
                         mailer.sendMail(mailOptions, function(err) {
-                            if (err) {
-                                req.flash('Error: ' + err.message);
-                                return res.status(500).send(err.message);
-                            }
+                            if (err) throw new Error(err);
 
                             return res.render('login', { flash: { success: true, message: 'Password Reset Successful' } });
                         });
+                    })
+                    .catch(function(err) {
+                        winston.warn(err);
+                        req.flash('Error: ' + err.message);
+                        res.status(400).send(err.message);
                     });
-                });
             });
         }
     });
