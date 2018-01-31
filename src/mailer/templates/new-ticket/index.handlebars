@@ -59,7 +59,14 @@
         <h5><span class="strong">Submitted Date:</span> {{ticket.date}}</h5>
         <h5><span class="strong">Ticket Type:</span> {{ticket.type.name}}</h5>
         <h5><span class="strong">Ticket Priority:</span> {{ticket.priority}}</h5>
-        <h5><span class="strong">Tags:</span> {{ticket.tags}}</h5>
+        <h5>
+            <span class="strong">Tags:</span>
+            <ul>
+                {{#each ticket.tags}}
+                    <li>{{name}}</li>
+                {{/each}}
+            </ul>
+        </h5>
         <br/>
         <h4>Ticket Issue</h4>
         <hr/>

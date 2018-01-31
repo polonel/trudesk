@@ -6,8 +6,7 @@
 
     pm2.connect(true, function(err) {
        if (err) {
-           console.log(err);
-           process.exit(2);
+           throw err;
        }
 
        pm2.start({

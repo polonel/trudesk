@@ -79,7 +79,7 @@ apiController.import = function(req, res) {
         groupName = _.trim(groupName);
         var User = new userModel({
             username: fields[0],
-            password: 'Granville789',
+            password: 'Password123',
             email: fields[1],
             fullname: fullname,
             role: 'user'
@@ -122,44 +122,6 @@ apiController.import = function(req, res) {
         if (err) return res.status(500).send(err);
 
         res.status(200).send('Imported ' + _.size(clean));
-    });
-};
-
-apiController.testPromo = function(req, res) {
-    var path                = require('path');
-    var mailer              = require('../mailer');
-    var emailTemplates      = require('email-templates');
-    var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
-
-    emailTemplates(templateDir, function(err, template) {
-        if (err) {
-            winston.error(err);
-        } else {
-
-            template('promo', function(err, html) {
-                if (err) {
-                    winston.error(err);
-                } else {
-                    var mailOptions = {
-                        from: 'no-reply@trudesk.io',
-                        to: 'chris.brame@granvillecounty.org',
-                        subject: 'Trudesk Launch',
-                        html: html,
-                        generateTextFromHTML: true
-                    };
-
-                    mailer.sendMail(mailOptions, function(err) {
-                        if (err) {
-                            winston.warn(err);
-                            return res.send(err);
-                        }
-
-
-                        return res.status(200).send('OK');
-                    });
-                }
-            });
-        }
     });
 };
 

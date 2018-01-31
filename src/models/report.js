@@ -11,7 +11,6 @@
 
 var mongoose        = require('mongoose');
 var _               = require('lodash');
-var deepPopulate    = require('mongoose-deep-populate')(mongoose);
 
 var COLLECTION = 'reports';
 
@@ -40,8 +39,6 @@ var reportSchema = mongoose.Schema({
     status:     { type: Number, required: true, default: 0},
     data:       { type: [mongoose.Schema.Types.Mixed], required: true}
 });
-
-reportSchema.plugin(deepPopulate);
 
 reportSchema.pre('save', function(next) {
     if (!_.isUndefined(this.uid) || this.uid) return next();

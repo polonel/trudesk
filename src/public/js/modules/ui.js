@@ -90,17 +90,17 @@ define('modules/ui', [
 
     socketUi.onDisconnect = function() {
         socket.removeAllListeners('disconnect');
-        socket.on('disconnect', function(data) {
+        socket.on('disconnect', function() {
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('reconnect_attempt');
-        socket.on('reconnect_attempt', function(err) {
+        socket.on('reconnect_attempt', function() {
             helpers.UI.showDisconnectedOverlay();
         });
 
         socket.removeAllListeners('connect_timeout');
-        socket.on('connect_timeout', function(err) {
+        socket.on('connect_timeout', function() {
             helpers.UI.showDisconnectedOverlay();
         });
     };
@@ -951,7 +951,7 @@ define('modules/ui', [
 
     socketUi.onTicketCreated = function() {
         socket.removeAllListeners('ticket:created');
-        socket.on('ticket:created', function(data) {
+        socket.on('ticket:created', function() {
             socket.emit('updateNotifications');
             var audio = $('audio#newticketaudio');
             if (audio.length > 0) audio.trigger('play');
@@ -961,7 +961,7 @@ define('modules/ui', [
 
     socketUi.onTicketDelete = function() {
         socket.removeAllListeners('ticket:delete');
-        socket.on('ticket:delete', function(data) {
+        socket.on('ticket:delete', function() {
             var refreshEnabled = $('input#refreshSwitch:checked');
             if (refreshEnabled.length > 0)
                 $('a#refreshTicketGrid').trigger('click');

@@ -3,7 +3,7 @@
 <br/><br/>
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9)](https://www.codacy.com/app/polonel/trudesk?utm_source=github.com&utm_medium=referral&utm_content=polonel/trudesk&utm_campaign=badger)
-[![Build Status](https://travis-ci.org/polonel/trudesk.svg?branch=master)](https://travis-ci.org/polonel/trudesk)
+[![Build Status](https://semaphoreci.com/api/v1/polonel/trudesk/branches/develop/badge.svg)](https://semaphoreci.com/polonel/trudesk)
 
 [http://trudesk.io](http://trudesk.io/)
 
@@ -44,7 +44,7 @@ if you like what you see here, and want to help support the work being done, you
 
 ### License
 
-    Copyright 2014-2017 Chris Brame
+    Copyright 2014-2018 Chris Brame
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.

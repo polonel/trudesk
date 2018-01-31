@@ -488,8 +488,7 @@ api_tickets.update = function(req, res) {
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
-
-            //Check the user has permission to update ticket.
+            //TODO: Check the user has permission to update ticket.
 
             async.parallel([
                 function(cb) {
@@ -504,10 +503,15 @@ api_tickets.update = function(req, res) {
                     }
                 },
                 function(cb) {
-                    if (!_.isUndefined(reqTicket.group))
-                        ticket.group = reqTicket.group;
+                    if (!_.isUndefined(reqTicket.group)) {
+                        ticket.group = reqTicket.group._id;
 
-                    cb();
+                        ticket.populate('group', function() {
+                             cb();
+                        });
+                    } else {
+                        cb();
+                    }
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.closedDate))
@@ -541,7 +545,9 @@ api_tickets.update = function(req, res) {
                 }
             ], function() {
                 ticket.save(function(err, t) {
-                    if (err) return res.send(err.message);
+                    if (err) {
+                        return res.status(400).json({success: false, error: err.message});
+                    }
 
                     if (!permissions.canThis(user.role, 'notes:view'))
                         t.notes = [];
@@ -1018,22 +1024,14 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.fromPairs(keys, _.map(keys, function (key) {
+                            return _.zipObject(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
                     });
 
-                    tags = _.reduce(t, function(counts, key) {
-                        counts[key]++;
-                        return counts;
-                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
-                        return [key, 0];
-                    })));
-
-                    tags = _.sortKeysBy(tags, function(value) {
-                        return -value;
-                    });
+                    tags = _.countBy(t, function(k){ return k; });
+                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
 
                     return callback(null, tickets);
                 });
@@ -1045,7 +1043,7 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
             var r = {};
             r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
-            r.recentTickets = _.last(tickets, 5);
+            r.recentTickets = _.takeRight(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
                 return v.status === 3;
             });
@@ -1126,22 +1124,14 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                                 return comparator ? comparator(obj[key], key) : key;
                             });
 
-                            return _.fromPairs(keys, _.map(keys, function (key) {
+                            return _.zipObject(keys, _.map(keys, function (key) {
                                 return obj[key];
                             }));
                         }
                     });
 
-                    tags = _.reduce(t, function(counts, key) {
-                        counts[key]++;
-                        return counts;
-                    }, _.fromPairs(_.map(_.uniq(t), function(key) {
-                        return [key, 0];
-                    })));
-
-                    tags = _.sortKeysBy(tags, function(value) {
-                        return -value;
-                    });
+                    tags = _.countBy(t, function(k){ return k; });
+                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
 
                     return callback(null, tickets);
                 });
@@ -1153,7 +1143,7 @@ api_tickets.getTicketStatsForUser = function(req, res) {
             var r = {};
             r.ticketCount = _.size(tickets);
             tickets = _.sortBy(tickets, 'date');
-            r.recentTickets = _.last(tickets, 5);
+            r.recentTickets = _.takeRight(tickets, 5);
             r.closedTickets = _.filter(tickets, function(v) {
                 return v.status === 3;
             });
@@ -1526,7 +1516,6 @@ api_tickets.updateTag = function(req, res) {
  */
 api_tickets.deleteTag = function(req, res) {
     var id = req.params.id;
-    console.log(id);
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({success: false, error: 'Invalid Tag Id'});
 
     async.series([
@@ -1535,7 +1524,7 @@ api_tickets.deleteTag = function(req, res) {
             ticketModel.getAllTicketsByTag(id, function(err, tickets) {
                 if (err) return next(err);
                 async.each(tickets, function(ticket, cb) {
-                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id == id; });
+                    ticket.tags = _.reject(ticket.tags, function(o) { return o._id === id; });
 
                     ticket.save(function(err) {
                         return cb(err);

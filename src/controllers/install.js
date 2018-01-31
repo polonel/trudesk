@@ -46,8 +46,8 @@ installController.mongotest = function(req, res) {
     if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
 
     var data = req.body;
-
-    var CONNECTION_URI = 'mongodb://' + data.username + ':' + data.password + '@' + data.host + ':' + data.port + '/' + data.database;
+    var dbPassword = encodeURIComponent(data.password);
+    var CONNECTION_URI = 'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database;
 
     var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), { env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI } });
     global.forks.push({name: 'mongotest', fork: child});
@@ -56,6 +56,10 @@ installController.mongotest = function(req, res) {
 
         return res.json({success: true});
     });
+
+    child.on('close', function(code, signal) {
+        winston.debug('MongoTest process terminated');
+    })
 };
 
 installController.existingdb = function(req, res) {

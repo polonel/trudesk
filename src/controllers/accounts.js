@@ -145,13 +145,12 @@ accountsController.profile = function(req, res) {
 
     async.parallel({
         account: function(callback) {
-            userSchema.getUser(req.user._id, function (err, obj) {
-                callback(err, obj);
+            userSchema.findOne({_id: req.user._id}, '+accessToken +tOTPKey', function (err, obj) {
+                    callback(err, obj);
             });
         }
     }, function(err, result) {
         if (err) {
-            req.flash('message', err.message);
             winston.warn(err);
             return res.redirect(backUrl);
         }
