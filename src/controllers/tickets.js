@@ -572,7 +572,7 @@ ticketsController.uploadAttachment = function(req, res) {
         }
 
         var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId);
-        var sanitizedFilename = filename.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+        var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
 
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
