@@ -12,11 +12,12 @@
 
  **/
 
-var passport = require('passport');
-var Local = require('passport-local').Strategy;
+var _            = require('lodash');
+var passport     = require('passport');
+var Local        = require('passport-local').Strategy;
 var TotpStrategy = require('passport-totp').Strategy;
-var base32 = require('thirty-two');
-var User = require('../models/user');
+var base32       = require('thirty-two');
+var User         = require('../models/user');
 
 module.exports = function() {
     passport.serializeUser(function(user, done) {
@@ -34,7 +35,7 @@ module.exports = function() {
         passwordField : 'login-password',
         passReqToCallback : true
     }, function(req, username, password, done) {
-        User.findOne({'username' : new RegExp("^" + username + "$", 'i')}).select('+password').exec(function(err, user) {
+        User.findOne({'username' : new RegExp("^" + username + "$", 'i'), deleted: false}).select('+password +tOTPKey +tOTPPeriod').exec(function(err, user) {
             if (err) {
                 return done(err);
             }
@@ -57,10 +58,16 @@ module.exports = function() {
         window: 6
     },
         function(user, done) {
-            if (user.tOTPPeriod === null || user.tOTPPeriod === undefined)
-                user.tOTPPeriod = 30;
+            if (!user.hasL2Auth) return done(false);
 
-            return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod);
+            User.findOne({_id: user._id}, '+tOTPKey +tOTPPeriod', function(err, user) {
+                if (err) return done(err);
+
+                if (user.tOTPPeriod === null || user.tOTPPeriod === undefined)
+                    user.tOTPPeriod = 30;
+
+                return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod);
+            });
         }
     ));
 

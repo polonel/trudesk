@@ -60,7 +60,9 @@ var userSchema = mongoose.Schema({
         resetPassExpire: { type: Date, select: false},
         tOTPKey: { type: String, select: false },
         tOTPPeriod: { type: Number, select: false },
-
+        resetL2AuthHash: { type: String, select: false },
+        resetL2AuthExpire: { type: Date, select: false },
+        hasL2Auth: { type: Boolean, required: true, default: false },
         accessToken: { type: String, sparse: true, select: false},
 
         iOSDeviceTokens: [{type: String, select: false}],
@@ -74,8 +76,11 @@ var userSchema = mongoose.Schema({
         deleted:    { type: Boolean, default: false }
     });
 
+userSchema.set('toObject', {getters: true});
+
 userSchema.pre('save', function(next) {
     var user = this;
+
     if (!user.isModified('password')) return next();
 
     bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
@@ -125,6 +130,7 @@ userSchema.methods.generateL2Auth = function(callback) {
         var base32GenOTPKey = base32.encode(genOTPKey).toString().replace(/=/g, '');
 
         user.tOTPKey = base32GenOTPKey;
+        user.hasL2Auth = true;
         user.save(function(err) {
             if (err) return callback(err);
 
@@ -138,9 +144,9 @@ userSchema.methods.generateL2Auth = function(callback) {
 
 userSchema.methods.removeL2Auth = function(callback) {
     var user = this;
-    if (!user.tOTPKey) return callback();
 
     user.tOTPKey = undefined;
+    user.hasL2Auth = false;
     user.save(function(err) {
         if (err) return callback(err, null);
 
@@ -181,7 +187,7 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
 };
 
 userSchema.methods.addOpenChatWindow = function(convoId, callback) {
-    if (convoId == undefined) {
+    if (convoId === undefined) {
         if (!_.isFunction(callback)) return;
         return callback('Invalid convoId');
     }
@@ -207,7 +213,7 @@ userSchema.methods.addOpenChatWindow = function(convoId, callback) {
 };
 
 userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
-    if (convoId == undefined) {
+    if (convoId === undefined) {
         if (!_.isFunction(callback)) return;
         return callback('Invalid convoId');
     }
@@ -297,7 +303,7 @@ userSchema.statics.getUserByUsername = function(user, callback) {
         return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
     }
 
-    return this.model(COLLECTION).findOne({username: new RegExp("^" + user + "$", 'i') }).select('+password +accessToken').exec(callback);
+    return this.model(COLLECTION).findOne({username: new RegExp("^" + user + "$", 'i')}).select('+password +accessToken').exec(callback);
 };
 
 /**
@@ -315,7 +321,7 @@ userSchema.statics.getUserByEmail = function(email, callback) {
         return callback("Invalid Email - UserSchema.GetUserByEmail()", null);
     }
 
-    return this.model(COLLECTION).findOne({email: email}, callback);
+    return this.model(COLLECTION).findOne({email: email, deleted: false}, callback);
 };
 
 /**
@@ -333,7 +339,14 @@ userSchema.statics.getUserByResetHash = function(hash, callback) {
         return callback("Invalid Hash - UserSchema.GetUserByResetHash()", null);
     }
 
-    return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, callback);
+    return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, '+resetPassHash +resetPassExpire', callback);
+};
+
+userSchema.statics.getUserByL2ResetHash = function(hash, callback) {
+    if (_.isUndefined(hash))
+        return callback("Invalid Hash - UserSchema.GetUserByL2ResetHash()", null);
+
+    return this.model(COLLECTION).findOne({resetL2AuthHash: hash, deleted: false}, '+resetL2AuthHash +resetL2AuthExpire', callback);
 };
 
 /**
@@ -368,7 +381,7 @@ userSchema.statics.getUserWithObject = function(object, callback) {
     var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
         .sort({'fullname': 1})
         .skip(page*limit);
-    if (limit != -1)
+    if (limit !== -1)
         q.limit(limit);
 
     if (!_.isEmpty(search))
@@ -399,7 +412,7 @@ userSchema.statics.getAssigneeUsers = function(callback) {
     this.model(COLLECTION).find({role: {$in: assigneeRoles}, deleted: false}, function(err, users) {
         if (err) {
             winston.warn(err);
-            return callback(err);
+            return callback(err, null);
         }
 
         callback(null, users);
@@ -469,7 +482,7 @@ userSchema.statics.createUser = function(data, callback) {
  */
 function hasAccessToken(arr, token) {
     var matches = _.filter(arr, function(value) {
-        if (value == token) {
+        if (value === token) {
             return value;
         }
     });
@@ -497,7 +510,7 @@ function hasAccessToken(arr, token) {
 function hasDeviceToken(user, token, type) {
     if (type === 1) {
         var mataches = _.filter(user.iOSDeviceTokens, function(value) {
-            if (value == token) {
+            if (value === token) {
                 return value;
             }
         });

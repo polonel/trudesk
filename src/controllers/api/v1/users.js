@@ -775,6 +775,7 @@ api_users.generateL2Auth = function(req, res) {
         user.generateL2Auth(function(err, generatedKey) {
             if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
+            req.session.l2auth = 'totp';
             return res.json({success: true, generatedKey: generatedKey});
         });
     });
@@ -810,6 +811,7 @@ api_users.removeL2Auth = function(req, res) {
         user.removeL2Auth(function(err) {
             if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
+            req.session.l2auth = null;
             return res.json({success: true});
         });
     });

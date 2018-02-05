@@ -30,6 +30,8 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/logout', controllers.main.logout);
     router.post('/forgotpass', controllers.main.forgotPass);
     router.get('/resetpassword/:hash', controllers.main.resetPass);
+    router.post('/forgotl2auth', controllers.main.forgotL2Auth);
+    router.get('/resetl2auth/:hash', controllers.main.resetl2auth);
 
     router.get('/about', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.about);
 
