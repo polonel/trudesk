@@ -32,16 +32,14 @@ mainController.index = function(req, res) {
     var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) {
-            winston.warn(err);
-            return res.render('login', self.content);
+            throw new Error(err);
         }
 
         if (!_.isNull(setting))
             self.content.allowUserRegistration = setting.value;
         settings.getSettingByName('mailer:enable', function(err, setting) {
             if (err) {
-                winston.warn(err);
-                return res.render('login', self.content);
+                throw new Error(err);
             }
 
             if (!_.isNull(setting))
@@ -466,7 +464,17 @@ mainController.l2authget = function(req, res) {
     self.content.title = "Login";
     self.content.layout = false;
 
-    res.render('login-otp', self.content);
+    var settings = require('../models/setting');
+    settings.getSettingByName('mailer:enable', function(err, setting) {
+        if (err) {
+            throw new Error(err);
+        }
+
+        if (!_.isNull(setting))
+            self.content.mailerEnabled = setting.value;
+
+        return res.render('login-otp', self.content);
+    });
 };
 
 function parseUrl(href) {

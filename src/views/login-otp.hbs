@@ -225,8 +225,10 @@
 
             <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Send</button>
         </form>
-        <hr>
-        <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
+        {{#if mailerEnabled}}
+            <hr>
+            <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
+        {{/if}}
     </div>
 
     <div class="forgotl2auth" style="display: none;">
