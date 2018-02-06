@@ -21,10 +21,9 @@
 <body>
 <div>
     <p>Dear {{user.fullname}},</p>
-    <p>You have requested to reset your password for your Trudesk account: {{user.username}}</p>
-    <p>
-        <a href="{{base_url}}/resetpassword/{{user.resetPassHash}}">Click here to reset your password</a>
-    </p>
+    <p>Your Two-Factor authentication has been removed from your trudesk account: {{user.username}}</p>
+    <p>Please login with your username and password. If you wish to re-enable two-factor authentication, please visit
+    your trudesk user profile.</p>
 </div>
 </body>
 </html>

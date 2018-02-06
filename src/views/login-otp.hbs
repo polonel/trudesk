@@ -110,7 +110,6 @@
             border-radius: 5px;
             -webkit-border-radius: 5px;
             -moz-border-radius: 5px;
-            -o-border-radius: 5px;
             transform: translate(-50%, 0);
         }
 
@@ -120,6 +119,7 @@
             color: white;
             font-weight: 300;
             text-align: center;
+            font-size: 22px;
         }
 
         button.button.noCap {
@@ -225,8 +225,23 @@
 
             <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Send</button>
         </form>
-        <hr>
-        <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
+        {{#if mailerEnabled}}
+            <hr>
+            <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
+        {{/if}}
+    </div>
+
+    <div class="forgotl2auth" style="display: none;">
+        <form id="forgotl2auth" method="post" action="/">
+            <div class="uk-margin-medium-bottom">
+                <label for="forgotl2auth-email">Email</label>
+                <input id="forgotl2auth-email" name="forgotl2auth-email" type="text" class="md-input" />
+            </div>
+            <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
+            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Recover Account</button>
+        </form>
+
+        <a id="backToLogin" href="#" class="no-ajaxy">Back to Login</a>
     </div>
 </div>
 
@@ -237,9 +252,60 @@
         helpers.UI.inputs();
         helpers.UI.waves();
 
-        $(window).on('$trudesk:ready', function() {
-            $('#code').focus();
+        $('#cantlogin').click(function(e) {
+            e.preventDefault();
+            $('.level2auth').fadeOut(100, function() {
+                $('.forgotl2auth').fadeIn();
+            });
+
         });
+
+        $('#backToLogin').click(function(e) {
+            e.preventDefault();
+            $('.forgotl2auth').fadeOut(100, function() {
+                $('.level2auth').fadeIn();
+            })
+        });
+
+        $('#forgotl2auth').submit(function(e) {
+            e.preventDefault();
+            var self = $(this);
+            var alertMessage = $('.alert-message');
+            $.ajax({
+                type: 'POST',
+                url: '/forgotl2auth',
+                data: self.serialize(),
+                async: true,
+                success: function(data) {
+                    alertMessage.removeClass('hide')
+                            .addClass('green')
+                            .find('p')
+                            .html('Account recovery email sent');
+
+                    $('#forgotl2auth-email').val('');
+
+                    $('.forgotl2auth').fadeOut(100, function() {
+                        $('.loginForm').fadeIn();
+                    });
+
+                    setTimeout(function() {
+                        window.location = '/';
+                    }, 3000);
+                },
+
+                error: function(xhr, ajaxOptions, thrownError) {
+                    alertMessage.removeClass('hide')
+                            .find('p')
+                            .html(xhr.responseText);
+                }
+            });
+
+            return false;
+        });
+
+        setTimeout(function() {
+            $('input#code').focus();
+        }, 600);
     });
 </script>
 </body>

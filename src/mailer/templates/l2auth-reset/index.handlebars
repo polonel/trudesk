@@ -21,9 +21,10 @@
 <body>
 <div>
     <p>Dear {{user.fullname}},</p>
-    <p>You have requested to reset your password for your Trudesk account: {{user.username}}</p>
+    <p>Someone (or you) has requested account recovery for your trudesk account: {{user.username}}</p>
+    <p>Click the link below if you made this request to recover your account.</p>
     <p>
-        <a href="{{base_url}}/resetpassword/{{user.resetPassHash}}">Click here to reset your password</a>
+        <a href="{{base_url}}/resetl2auth/{{user.resetL2AuthHash}}">Click here to recovery your trudesk account</a>
     </p>
 </div>
 </body>
