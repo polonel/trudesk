@@ -24,6 +24,7 @@ var socketServer = function(ws) {
     "use strict";
     var _ = require('lodash'),
         usersOnline = {},
+        idleUsers = {},
         sockets = [],
         io = require('socket.io')(ws.server);
 
@@ -99,13 +100,14 @@ var socketServer = function(ws) {
            updateOnlineBubbles();
         });
 
-        // socket.on('joinChatServer', joinChatServer);
         if (socket.request.user.logged_in)
             joinChatServer();
 
         function updateOnlineBubbles() {
             var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
-            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', sortedUserList);
+            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
         }
 
         function updateConversationsNotifications() {
@@ -608,6 +610,43 @@ var socketServer = function(ws) {
             utils.sendToAllConnectedClients(io, 'updateClearNotice');
         });
 
+        socket.on('$trudesk:setUserIdle', function() {
+            var user = socket.request.user;
+            var exists = false;
+            if (idleUsers.hasOwnProperty(user.username.toLowerCase()))
+                exists = true;
+
+            var sortedUserList = null;
+            var sortedIdleList = null;
+
+            if (!exists) {
+                if (user.username.length !== 0) {
+                    idleUsers[user.username.toLowerCase()] = {sockets: [socket.id], user:user};
+                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+                    utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
+                }
+            } else {
+                idleUsers[user.username].sockets.push(socket.id);
+                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+                utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
+            }
+        });
+
+        socket.on('$trudesk:setUserActive', function() {
+            var user = socket.request.user;
+            if (idleUsers.hasOwnProperty(user.username.toLowerCase())) {
+                delete idleUsers[user.username.toLowerCase()];
+                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+                utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
+            }
+        });
+
         function joinChatServer() {
             var user = socket.request.user;
             var exists = false;
@@ -653,7 +692,7 @@ var socketServer = function(ws) {
                     conversationSchema.getConversation(convoId, function(err, conversation) {
                         if (err || !conversation) return done();
                         _.each(conversation.participants, function(i) {
-                            if (i._id.toString() != loggedInAccountId.toString()) {
+                            if (i._id.toString() !== loggedInAccountId.toString()) {
                                 partner = i.toObject();
                                 return partner;
                             }
@@ -812,6 +851,8 @@ var socketServer = function(ws) {
                 } else {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
+
+                //TODO: Remove Idle Sockets
 
                 var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);

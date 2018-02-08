@@ -70,7 +70,7 @@ define('modules/chat',[
                 html += '<a class="no-ajaxy" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">';
                 html += '<div class="online-list-user">';
                 html += '<div class="image"><img src="/uploads/users/' + imageUrl + '"></div>';
-                html += '<div class="online-status"></div>';
+                html += '<span class="online-status" data-user-status-id="' + onlineUser._id + '"></span>';
                 html += '<div class="online-name">' + onlineUser.fullname + '</div>';
                 html += '</div>';
                 html += '</a>';
@@ -95,11 +95,11 @@ define('modules/chat',[
             }
 
             chatClient.bindActions();
-
+            socket.emit('$trudesk:chat:updateOnlineBubbles');
 
         });
 
-        socket.removeAllListeners('$trudesk:chat:udateOnlineBubbles');
+        socket.removeAllListeners('$trudesk:chat:updateOnlineBubbles');
         socket.on('$trudesk:chat:updateOnlineBubbles', function(data) {
             var $u = _.throttle(function() {
                 UpdateOnlineBubbles(data);
@@ -213,14 +213,14 @@ define('modules/chat',[
                 chatBox[i].find('.user-is-typing-wrapper').addClass('hide');
                 scroller = chatBox[i].find('.chat-box-messages');
                 if (scroller.length > 0)
-                    if (scroller.scrollTop() == scroller[0].scrollHeight)
+                    if (scroller.scrollTop() === scroller[0].scrollHeight)
                         helpers.scrollToBottom(scroller);
             }
 
             scroller = $('#message-content');
             if (scroller.length > 0) {
                 // Only scroll if the scroller is on bottom
-                if (scroller.scrollTop() == scroller[0].scrollHeight)
+                if (scroller.scrollTop() === scroller[0].scrollHeight)
                     helpers.scrollToBottom(scroller);
             }
         });
@@ -260,7 +260,7 @@ define('modules/chat',[
         });
 
         isTyping[cid] = true;
-        if (typingTimeout[cid] == undefined)
+        if (typingTimeout[cid] === undefined)
             typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, userid);
 
         if (_.isFunction(complete))
@@ -295,14 +295,14 @@ define('modules/chat',[
         $textarea.off('keyup');
         $textarea.off('keydown');
         $textarea.on('keydown', function(e) {
-            if (e.keyCode == 13)
+            if (e.keyCode === 13)
                 return;
 
             var self = $(this);
             var cid = self.parent().parent().attr('data-conversation-id');
             var user = self.parent().parent().attr('data-chat-userid');
 
-            if (cid == undefined || user == undefined) {
+            if (cid === undefined || user === undefined) {
                 console.log('Invalid Conversation ID or User ID');
                 return false;
             }
@@ -417,7 +417,7 @@ define('modules/chat',[
         messageArray = messageArray.reverse();
 
         _.each(messageArray, function(m) {
-            if (m.owner._id == to) {
+            if (m.owner._id === to) {
                 chatMessage = createChatMessageFromUser(m.owner, m.body);
                 chatMessageList = chatBox.find('.chat-message-list:first');
                 chatMessageList.append(chatMessage);
@@ -467,7 +467,7 @@ define('modules/chat',[
                 console.log(error);
                 helpers.UI.showSnackbar(error, true);
 
-                if (complete != undefined && _.isFunction(complete))
+                if (complete !== undefined && _.isFunction(complete))
                     return complete(error);
             }
         });
@@ -475,10 +475,6 @@ define('modules/chat',[
 
     chatClient.getOpenWindows = function() {
         socket.emit('getOpenChatWindows');
-    };
-
-    chatClient.updateOnlineBubbles = function() {
-        socket.emit('$trudesk:chat:updateOnlineBubbles');
     };
 
     chatClient.openChatWindow = function(user, complete) {
@@ -557,18 +553,43 @@ define('modules/chat',[
         });
     };
 
+    chatClient.setUserIdle = function() {
+        socket.emit('$trudesk:setUserIdle');
+    };
+
+    chatClient.setUserActive = function() {
+        socket.emit('$trudesk:setUserActive');
+    };
+
+    chatClient.updateOnlineBubbles = function() {
+        socket.emit('$trudesk:chat:updateOnlineBubbles');
+    };
+
     function UpdateOnlineBubbles(usersOnline) {
         $('span[data-user-status-id]').each(function() {
-            $(this).removeClass('user-online').addClass('user-offline');
+            $(this).removeClass('user-online user-idle').addClass('user-offline');
         });
-        _.each(usersOnline, function(v) {
+
+        var onlineUserList = usersOnline.sortedUserList;
+        var idleUserList = usersOnline.sortedIdleList;
+
+        _.each(onlineUserList, function(v) {
             var $bubble = $('span[data-user-status-id="' + v.user._id +'"]');
             $bubble.each(function() {
                 var self = $(this);
 
-                self.removeClass('user-offline').addClass('user-online');
+                self.removeClass('user-offline user-idle').addClass('user-online');
             });
         });
+
+        _.each(idleUserList, function(v) {
+            var $bubble = $('span[data-user-status-id="' + v.user._id + '"]');
+            $bubble.each(function() {
+                var self = $(this);
+
+                self.removeClass('user-offline user-online').addClass('user-idle');
+            });
+        })
     }
 
     function createChatMessageDiv(message) {

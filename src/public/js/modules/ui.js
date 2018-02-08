@@ -642,7 +642,7 @@ define('modules/ui', [
 
     socketUi.updateUsers = function() {
         socket.emit('updateUsers');
-    }
+    };
 
     function updateAssigneeList(e) {
         socket.emit('updateAssigneeList');
@@ -936,7 +936,7 @@ define('modules/ui', [
             var $notificationsCount = $('#btn_notifications').find('span');
             var $bottomActions = $('#notifications').find('.bottom-actions');
             if ($notificationsCount.length > 0) {
-                if (data.count == 0) {
+                if (data.count === 0) {
                     $notificationsCount.html('0');
                     $notificationsCount.addClass('hide');
                     $bottomActions.addClass('hide');
