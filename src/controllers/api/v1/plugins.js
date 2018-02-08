@@ -17,6 +17,7 @@ var winston = require('winston'),
     fs      = require('fs'),
     request = require('request'),
     rimraf  = require('rimraf'),
+    mkdirp  = require('mkdirp'),
     tar     = require('tar');
 
 var api_plugins = {};
@@ -51,22 +52,19 @@ api_plugins.installPlugin = function(req, res) {
                         if (error) winston.debug(error);
                         if (error) return res.json({success: false, error: 'Unable to remove plugin directory.'});
 
-                        var extracter = tar.Extract({path: pluginPath})
-                            .on('error', function(err){ console.log(err); return res.status(400).json({success: false, error: 'Unable to Extract plugin.'}); })
-                            .on('end', function(){
-                                //File has been extracted Delete Zip File...
-                                rimraf(path.join(pluginPath, plugin.url), function(){
-                                    //Wrap it up!!!!
-                                    request.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads', function() {
-                                        res.json({success: true, plugin: plugin});
-                                        restartServer();
-                                    });
+                        var fileFullPath = path.join(pluginPath, plugin.url);
+                        mkdirp.sync(pluginExtractFolder);
+
+                        tar.extract({C: pluginExtractFolder, file: path.join(pluginPath, plugin.url)}, function(err) {
+                            rimraf(fileFullPath, function(err) {
+                                if (err) return res.status(400).json({success: false, error: err});
+
+                                request.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads', function() {
+                                    res.json({success: true, plugin: plugin});
+                                    restartServer();
                                 });
                             });
-
-                        fs.createReadStream(path.join(pluginPath, plugin.url))
-                            .on('error', function(err){ console.log(err); return res.status(400).json({success: false, error: 'Unable to Extract plugin.'}); })
-                            .pipe(extracter);
+                        });
                     });
                 });
 

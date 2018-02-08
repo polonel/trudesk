@@ -186,7 +186,7 @@ apidoc-core@~0.8.2:
     lodash "~4.17.4"
     semver "~5.3.0"
 
-apidoc@*, apidoc@0.17.6:
+apidoc@*:
   version "0.17.6"
   resolved "https://registry.yarnpkg.com/apidoc/-/apidoc-0.17.6.tgz#4ee8ac610dedddcb1006c3e28fa7dd634b4a5ce6"
   dependencies:
@@ -7506,9 +7506,9 @@ tar-pack@^3.4.0:
     tar "^2.2.1"
     uid-number "^0.0.6"
 
-tar@4.3.0:
-  version "4.3.0"
-  resolved "https://registry.yarnpkg.com/tar/-/tar-4.3.0.tgz#11351be1c7944c59dd197850119c2081d8bc7fe5"
+tar@4.3.3:
+  version "4.3.3"
+  resolved "https://registry.yarnpkg.com/tar/-/tar-4.3.3.tgz#e03823dbde4e8060f606fef7d09f92ce06c1064b"
   dependencies:
     chownr "^1.0.1"
     fs-minipass "^1.2.3"
