@@ -59,7 +59,10 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                                 helpers.countUpMe();
                                 helpers.UI.cardShow();
 
-                                $(document).idleTimer(5000);
+                                //5min idle timer
+                                var idleTime = 5 * 60 * 1000;
+
+                                $(document).idleTimer(idleTime);
                                 $(document).on('idle.idleTimer', function(event, elm, obj) {
                                     socket.chat.setUserIdle();
                                 });
