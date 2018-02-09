@@ -146,7 +146,7 @@ describe('Database', function() {
         async.series([
             function(cb) {
               database.init(function(err, db) {
-                expect(err).to.not.exists;
+                expect(err).to.not.exist;
                 expect(db).to.be.a('object');
                 expect(db.connection._readyState).to.equal(1);
 
@@ -156,7 +156,7 @@ describe('Database', function() {
             function(cb) {
               //Test rerunning init and getting DB back without calling connect.
               database.init(function(err, db) {
-                expect(err).to.not.exists;
+                expect(err).to.not.exist;
                 expect(db).to.be.a('object');
                 expect(db.connection._readyState).to.equal(1);
 

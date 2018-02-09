@@ -1,7 +1,7 @@
 <div class="uk-modal" id="accountCreateModal">
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createAccountForm" action="#" method="POST">
-            <input type="hidden" name="socketId" id="socketId" value="{{data.user.socket.id}}" />
+            <input type="hidden" name="socketId" id="ca_socketId" value="{{data.user.socket.id}}" />
             <!--<div class="uk-margin-medium-bottom">-->
                 <!--&lt;!&ndash;<form id="aUploadImageForm" action="/account/uploadimage" method="post" class="form nomargin" enctype="multipart/form-data">&ndash;&gt;-->
                     <!--&lt;!&ndash;<input type="hidden" name="_id" value="{{data.account._id}}" />&ndash;&gt;-->
@@ -14,7 +14,7 @@
             <!--</div>-->
             <div class="uk-margin-medium-bottom">
                 <label for="aUsername">Username</label>
-                <input type="text" class="md-input" id="aUsername" name="aUsername"
+                <input type="text" class="md-input" id="caUsername" name="aUsername"
                     data-validation="length"
                        data-validation-length="min5"
                        data-validation-error-msg="Please enter a valid username. Username must be at least 5 characters."
@@ -22,29 +22,29 @@
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aFullname">Name</label>
-                <input type="text" class="md-input" id="aFullname" name="aFullname"/>
+                <input type="text" class="md-input" id="caFullname" name="aFullname"/>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aTitle" class="uk-form-label">Title</label>
-                <input type="text" class="md-input" id="aTitle" name="aTitle"/>
+                <input type="text" class="md-input" id="caTitle" name="aTitle"/>
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="left" style="width: 50%; padding-right: 20px;">
                     <label for="aPass" class="uk-form-label">Password</label>
-                    <input type="password" class="md-input" id="aPass" name="aPass"/>
+                    <input type="password" class="md-input" id="caPass" name="aPass"/>
                 </div>
                 <div class="left" style="width: 50%;">
                     <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
-                    <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
+                    <input type="password" class="md-input" id="caPassConfirm" name="aPassConfirm"/>
                 </div>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aEmail" class="uk-form-label">Email</label>
-                <input type="email" class="md-input" id="aEmail" name="aEmail"/>
+                <input type="email" class="md-input" id="caEmail" name="aEmail"/>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aRole" class="uk-form-label">Role</label>
-                <select class="selectize-white" name="aRole" id="aRole" data-md-selectize-inline>
+                <select class="selectize-white" name="aRole" id="caRole" data-md-selectize-inline>
                     {{#each data.common.roles}}
                         <option value="{{id}}">{{name}}</option>
                     {{/each}}
@@ -52,7 +52,7 @@
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aGrps" class="uk-form-label">Groups</label>
-                <select name="aGrps" id="aGrps" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                <select name="aGrps" id="caGrps" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                     {{#each data.allGroups}}
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
@@ -60,7 +60,7 @@
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="submit" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewTicket" ng-click="createAccount($event)">Create Account</button>
+                <button type="submit" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="createAccount($event)">Create Account</button>
             </div>
         </form>
     </div>

@@ -69,13 +69,18 @@
           right: 10px
           top: 15px
           display: block
-          &:after
-            content: ''
-            background: $accent_success
-            width: 6px
-            height: 6px
-            +borderRadius(50%)
-            display: block
+          //background: $accent_success !important
+          width: 6px !important
+          height: 6px !important
+          border: none !important
+          +borderRadius(50%)
+          //display: block
+          &.user-online
+            background: $accent_success !important
+          &.user-idle
+            background: #f1c40f !important
+
+
         .online-status-offline
           position: absolute
           right: 10px
@@ -83,3 +88,11 @@
           display: block
           font-size: 11px
           color: lighten($sidebar_text, 30%)
+          border: none !important
+          line-height: 20px !important
+          &.user-offline,
+          &.user-online,
+          &.user-idle
+            background: none !important
+            height: auto !important
+            width: auto !important

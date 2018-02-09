@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/tour', 'history'], function(angular, _, $, socket, UI, tour) {
+define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/tour', 'modules/helpers', 'history'], function(angular, _, $, socket, UI, tour, helpers) {
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-        .controller('commonCtrl', function($scope, $window, $http, $cookies, $timeout) {
+        .controller('commonCtrl', function($scope, $window, $http, $cookies, $timeout, $log) {
 
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
@@ -122,7 +122,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                 $timeout(function() {
                     var showTour = ($('#__tourEnabled').text() === 'true');
                     if (showTour) {
-                        if ($window.location.pathname != '/dashboard') {
+                        if ($window.location.pathname !== '/dashboard') {
                             $window.location.href = '/dashboard';
                         } else
                             tour.init();
@@ -156,6 +156,19 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                 }
             };
 
+            $scope.showAllNotifications = function($event) {
+                $event.preventDefault();
+
+                $scope.showAllNotificationsWindow = $('#viewAllNotificationsModal');
+                if ($scope.showAllNotificationsWindow.length > 0) {
+                    var modal = UI.modal($scope.showAllNotificationsWindow, {
+                        bgclose: true
+                    });
+
+                    helpers.hideAllpDropDowns();
+                    modal.show();
+                }
+            };
         })
         .directive('closeUkDropdown', function($document, $timeout) {
             return {

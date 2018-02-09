@@ -51,7 +51,7 @@ notificationSchema.statics.findAllForUser = function(oId, callback) {
         return callback("Invalid ObjectId - NotificationSchema.FindAllForUser()", null);
     }
 
-    var q = this.model(COLLECTION).find({owner: oId}).sort({data: -1});
+    var q = this.model(COLLECTION).find({owner: oId}).sort({created: -1});
 
     return q.exec(callback);
 };

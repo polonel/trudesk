@@ -441,7 +441,6 @@ ticketsController.single = function(req, res) {
         if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets');
 
         var hasPublic = permissions.canThis(user.role, 'ticket:public');
-
         if (!_.some(ticket.group.members, user._id)) {
             if (ticket.group.public && hasPublic) {
                 //Blank to bypass
@@ -573,10 +572,12 @@ ticketsController.uploadAttachment = function(req, res) {
         }
 
         var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId);
+        var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
-        object.filePath = path.join(savePath, 'attachment_' + filename);
-        object.filename = filename;
+        object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename);
+        object.filename = sanitizedFilename;
         object.mimetype = mimetype;
 
         if (fs.existsSync(object.filePath)) {

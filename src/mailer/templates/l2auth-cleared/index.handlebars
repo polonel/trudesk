@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Password Reset</title>
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin-bottom: 2px;
+        }
+        hr {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #ccc;
+            height: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>Dear {{user.fullname}},</p>
+    <p>Your Two-Factor authentication has been removed from your trudesk account: {{user.username}}</p>
+    <p>Please login with your username and password. If you wish to re-enable two-factor authentication, please visit
+    your trudesk user profile.</p>
+</div>
+</body>
+</html>

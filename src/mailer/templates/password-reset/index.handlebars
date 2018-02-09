@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Password Reset</title>
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin-bottom: 2px;
+        }
+        hr {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #ccc;
+            height: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>Dear {{user.fullname}},</p>
+    <p>You have requested to reset your password for your Trudesk account: {{user.username}}</p>
+    <p>
+        <a href="{{base_url}}/resetpassword/{{user.resetPassHash}}">Click here to reset your password</a>
+    </p>
+</div>
+</body>
+</html>

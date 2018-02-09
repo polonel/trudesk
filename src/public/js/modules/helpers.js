@@ -14,7 +14,25 @@
 
 "use strict";
 
-define(['jquery', 'underscore', 'moment', 'uikit', 'countup', 'waves', 'selectize','snackbar', 'roles', 'jscookie', 'tether', 'async', 'easypiechart', 'chosen', 'velocity', 'formvalidator', 'peity'],
+define([
+        'jquery',
+        'underscore',
+        'moment',
+        'uikit',
+        'countup',
+        'waves',
+        'selectize',
+        'snackbar',
+        'roles',
+        'jscookie',
+        'tether',
+        'async',
+        'easypiechart',
+        'chosen',
+        'velocity',
+        'formvalidator',
+        'peity'
+    ],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
     var helpers = {};
@@ -59,6 +77,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         self.UI.waves();
         self.UI.matchHeight();
         self.UI.onlineUserSearch();
+        // self.UI.notificationsLinks();
 
         var layout = self.onWindowResize();
         //Initial Call to Load Layout
@@ -651,6 +670,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 stroke: "#0288d1"
             });
         });
+    };
+
+    helpers.closeNotificationsWindow = function() {
+        UIkit.modal('#viewAllNotificationsModal').hide();
     };
 
     helpers.showFlash = function(message, error, sticky) {

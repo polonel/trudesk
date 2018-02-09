@@ -133,7 +133,8 @@ settingsController.logs = function(req, res) {
 
     var fs = require('fs'),
         path = require('path'),
-        ansi_up = require('ansi_up'),
+        AnsiUp = require('ansi_up'),
+        ansi_up = new AnsiUp.default,
         file = path.join(__dirname, '../../logs/output.log');
 
     fs.readFile(file, 'utf-8', function(err, data) {

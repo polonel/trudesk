@@ -64,6 +64,7 @@ module.exports = {
             waves:          'vendor/waves/waves',
             isinview:       'plugins/jquery.isinview',
             jquery_docsize: 'plugins/jquery.documentsize',
+            idletimer:      'plugins/jquery.idletimer.js',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether.min',
@@ -106,7 +107,7 @@ module.exports = {
             name: ['vendor'],
             minChunks: Infinity
         }),
-        new webpack.IgnorePlugin(/^\.\/locale$/, [/moment$/]),
+        new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.UglifyJsPlugin({
             mangle: false,

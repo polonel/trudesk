@@ -1,0 +1,57 @@
+table.notificationsTable
+  table-layout: fixed
+  width: 99%
+  line-height: normal
+  +borderRadius(3px)
+  border-style: hidden
+  border-collapse: collapse
+  box-shadow: 0 0 0 2px #f1f1f1
+  text-align: left
+  margin: 2px
+  thead
+    &:first-child
+      tr:first-child
+        background: #fafafa
+        border: 2px solid #f1f1f1
+    tr
+      th.type
+        width: 10%
+      th.title
+        width: 60%
+      th.date
+        width: 30%
+  tr
+    transition: background .4s
+    &:hover
+      background: #fafafa
+  .notification-row
+    background: #fff
+    cursor: pointer
+    border-color: transparent
+    vertical-align: top
+    border-top: 2px solid #f1f1f1
+    padding: 1rem
+    &.unread
+      background-color: #fafafa
+    td
+      word-break: break-all
+      &:first-child
+        padding-left: 15px
+      &.type
+        width: 8%
+        padding-bottom: 20px
+        padding-top: 20px
+        vertical-align: inherit
+        color: $accent_success
+      &.title
+        width: 60%
+        padding: 15px 35px 15px 0!important
+        line-height: 1.5
+        p
+          font-weight: 600 !important
+      &.date
+        padding-top: 15px
+    p,time
+      margin: 0 0 .4rem
+      line-height: 1.45rem
+      font-size: 16px

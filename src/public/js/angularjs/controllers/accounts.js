@@ -22,7 +22,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 if (!form.isValid(null, null, false)) return true;
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
-                data.aGrps = form.find('#aGrps').val();
+                data.aGrps = form.find('select[name="aGrps"]').val();
                 $http({
                     method: 'POST',
                     url: '/api/v1/users/create',

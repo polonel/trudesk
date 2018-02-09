@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Updated: Ticket #{{ticket.uid}}</title>
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin-bottom: 2px;
+        }
+        hr {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #ccc;
+            height: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h2>Updated: {{{ticket.subject}}}</h2>
+        <h5>Ticket Group: {{ticket.group.name}}</h5>
+        <h5>Ticket Submitted by: {{ticket.owner.fullname}}</h5>
+        <h5>Submitted Date: {{ticket.date}}</h5>
+        <h5>Ticket Type: {{ticket.type.name}}</h5>
+        <h5>Ticket Priority: {{ticket.priority}}</h5>
+        <h5>
+            <span class="strong">Tags:</span>
+            <ul>
+                {{#each ticket.tags}}
+                    <li>{{name}}</li>
+                {{/each}}
+            </ul>
+        </h5>
+
+        <br/><br/>
+        <h4>Ticket Issue</h4>
+        <hr/>
+        <p class="issue">{{{ticket.issue}}}</p>
+
+        <br/><br/>
+        <h4>Comments</h4>
+        <hr/>
+        {{#each ticket.comments}}
+            <h5>{{owner.fullname}}</h5>
+            <h5>{{date}}</h5>
+            <br/>
+            <p class="issue">{{{comment}}}</p>
+            <br/>
+            <hr/>
+        {{/each}}
+    </div>
+</body>
+</html>

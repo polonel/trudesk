@@ -38,16 +38,17 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                 require([
                     'underscore',
                     'modules/navigation',
-                    'uikit',
                     'modules/socket',
+                    'uikit',
                     'modules/ajaxify',
                     'modernizr',
                     'fastclick',
                     'placeholder',
                     'pace',
-                    'easypiechart'
+                    'easypiechart',
+                    'idletimer'
 
-                ], function(_, nav) {
+                ], function(_, nav, socket) {
                     //Page loading (init)
                     require(['pages/pageloader'], function(pl) {
                         pl.init(function() {
@@ -57,6 +58,18 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                                 helpers.hideLoader(1000);
                                 helpers.countUpMe();
                                 helpers.UI.cardShow();
+
+                                //5min idle timer
+                                var idleTime = 5 * 60 * 1000;
+
+                                $(document).idleTimer(idleTime);
+                                $(document).on('idle.idleTimer', function(event, elm, obj) {
+                                    socket.chat.setUserIdle();
+                                });
+
+                                $(document).on('active.idleTimer', function() {
+                                    socket.chat.setUserActive();
+                                });
 
                                 $.event.trigger('$trudesk:ready', window);
 

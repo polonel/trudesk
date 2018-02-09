@@ -14,7 +14,6 @@
 
 var _            = require('lodash'),
     async        = require('async'),
-    winston      = require('winston'),
     ticketSchema = require('../../../models/ticket'),
     groupSchema  = require('../../../models/group'),
     csv          = require('csv'),

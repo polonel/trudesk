@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Password Reset</title>
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin-bottom: 2px;
+        }
+        hr {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #ccc;
+            height: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>Dear {{user.fullname}},</p>
+    <p>Someone (or you) has requested account recovery for your trudesk account: {{user.username}}</p>
+    <p>Click the link below if you made this request to recover your account.</p>
+    <p>
+        <a href="{{base_url}}/resetl2auth/{{user.resetL2AuthHash}}">Click here to recovery your trudesk account</a>
+    </p>
+</div>
+</body>
+</html>

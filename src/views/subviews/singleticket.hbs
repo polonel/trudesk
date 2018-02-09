@@ -718,15 +718,15 @@
                                     <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                                 {{/each}}
                             </select>
-                            <button type="button" ng-click="showCreateTags($event)"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                            <button type="button" ng-click="showCreateTags($event)" style="border-radius: 0; -moz-border-radius: 0;"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
                         </div>
 
                         <div class="left" style="margin-top: 15px;">
                             <button class="uk-button red nomargin" type="button" ng-click="clearTags($event)">Clear</button>
                         </div>
                         <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button cancel nomargin uk-modal-close" type="button">Cancel</button>
-                            <button class="uk-button uk-button-primary nomargin" type="submit">Add Tags</button>
+                            <button class="uk-button uk-button-secondary cancel nomargin uk-modal-close" type="button">Cancel</button>
+                            <button class="uk-button uk-button-success nomargin" type="submit">Save Tags</button>
                         </div>
                     </form>
                 </div>
@@ -742,7 +742,7 @@
                         <input type="text" id="tag" name="tag" class="md-input" />
 
                         <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button uk-button-primary nomargin" type="submit">Add Tags</button>
+                            <button class="uk-button uk-button-success nomargin" type="submit">Create Tag</button>
                         </div>
                     </form>
                 </div>

@@ -17,12 +17,17 @@ winston.add(winston.transports.Console, {
 (function() {
     var CONNECTION_URI = process.env.MONGOTESTURI;
     if (!CONNECTION_URI) return process.send({error: {message: 'Invalid connection uri'}});
-    var options = { server: { auto_reconnect: false, socketOptions: { connectTimeoutMS: 5000 } }};
+    var options = { keepAlive: 0, auto_reconnect: false, connectTimeoutMS: 5000 };
     database.init(function(e, db) {
-        if (e) return process.send({error: e});
+        if (e) {
+            process.send({error: e});
+            return process.kill(0);
+        }
 
-        if (!db)
-            return process.send({error: {message: 'Unable to open database'}});
+        if (!db) {
+            process.send({error: {message: 'Unable to open database'}});
+            return process.kill(0);
+        }
 
         process.send({success: true});
 

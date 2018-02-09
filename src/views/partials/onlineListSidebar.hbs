@@ -24,7 +24,7 @@
                                     {{else}}
                                         <div class="image"><img src="/uploads/users/defaultProfile.jpg"></div>
                                     {{/if}}
-                                    <div class="online-status-offline">{{fromNow lastOnline}}</div>
+                                    <span class="online-status-offline" data-user-status-id="{{_id}}">{{fromNow lastOnline}}</span>
                                     <div class="user-name">{{fullname}}</div>
                                 </div>
                             </a>

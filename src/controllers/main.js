@@ -15,7 +15,6 @@
 var _               = require('lodash'),
     path            = require('path'),
     passport        = require('passport'),
-    nconf           = require('nconf'),
     winston         = require('winston');
 
 var mainController = {};
@@ -33,16 +32,14 @@ mainController.index = function(req, res) {
     var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) {
-            winston.warn(err);
-            return res.render('login', self.content);
+            throw new Error(err);
         }
 
         if (!_.isNull(setting))
             self.content.allowUserRegistration = setting.value;
         settings.getSettingByName('mailer:enable', function(err, setting) {
             if (err) {
-                winston.warn(err);
-                return res.render('login', self.content);
+                throw new Error(err);
             }
 
             if (!_.isNull(setting))
@@ -106,7 +103,10 @@ mainController.loginPost = function(req, res, next) {
         }
 
         req.logIn(user, function(err) {
-            if (err) return next(err);
+            if (err) {
+                winston.debug(err);
+                return next(err);
+            }
 
             return res.redirect(redirectUrl);
         });
@@ -142,6 +142,80 @@ mainController.logout = function(req, res) {
     req.session.l2auth = null;
     req.session.destroy();
     return res.redirect('/');
+};
+
+mainController.forgotL2Auth = function(req, res) {
+    var data = req.body;
+    if (_.isUndefined(data['forgotl2auth-email']))
+        return res.send(400).send('No Form Data');
+
+    var email = data['forgotl2auth-email'];
+    var userSchema = require('../models/user');
+    userSchema.getUserByEmail(email, function(err, user) {
+        if (err) {
+            return res.status(400).send(err.message);
+        }
+
+        if (!user) {
+            return res.status(400).send('Invalid Email: Account not found!');
+        }
+
+        var Chance = require('chance');
+        var chance = new Chance();
+
+        user.resetL2AuthHash = chance.hash({casing: 'upper'});
+        var expireDate = new Date();
+        expireDate.setDate(expireDate.getDate() + 2);
+        user.resetL2AuthExpire = expireDate;
+
+        user.save(function(err, savedUser) {
+            if (err)
+                return res.status(400).send(err.message);
+
+            var mailer = require('../mailer');
+            var Email = require('email-templates');
+            var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates');
+
+            var email = new Email({
+                views: {
+                    root: templateDir,
+                    options: {
+                        extension: 'handlebars'
+                    }
+                }
+            });
+
+            var base_url = parseUrl(req.headers.referer);
+
+            var data = {
+                base_url: base_url.protocol + '//' + base_url.host,
+                user: savedUser
+            };
+
+            email.render('l2auth-reset', data)
+                .then(function(html) {
+                    var mailOptions = {
+                        to: savedUser.email,
+                        subject: '[Trudesk] Account Recovery',
+                        html: html,
+                        generateTextFromHTML: true
+                    };
+
+                    mailer.sendMail(mailOptions, function(err) {
+                        if (err) {
+                            winston.warn(err);
+                            return res.status(400).send(err);
+                        } else {
+                            return res.send('OK');
+                        }
+                    });
+                })
+                .catch(function(err) {
+                    winston.warn(err);
+                    return res.status(400).send(err.message);
+                })
+        });
+    })
 };
 
 mainController.forgotPass = function(req, res) {
@@ -181,47 +255,120 @@ mainController.forgotPass = function(req, res) {
 
             //Send mail
             var mailer          = require('../mailer');
-            var emailTemplates  = require('email-templates');
+            var Email           = require('email-templates');
             var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-            emailTemplates(templateDir, function(err, template) {
-                if (err) {
-                    req.flash('Error: ' + err);
-                    return res.status(400).send(err.message);
-                }
-
-                var data = {
-                    base_url: nconf.get('url'),
-                    user: savedUser
-                };
-
-                template('password-reset', data, function(err, html) {
-                    if (err) {
-                        req.flash('Error: ' + err);
-                        winston.warn(err.message);
-                        return res.status(400).send(err.message);
+            var email = new Email({
+                views: {
+                    root: templateDir,
+                    options: {
+                        extension: 'handlebars'
                     }
+                }
+            });
 
+            var base_url = parseUrl(req.headers.referer);
+
+            var data = {
+                base_url: base_url.protocol + '//' + base_url.host,
+                user: savedUser
+            };
+
+            email.render('password-reset', data)
+                .then(function(html) {
                     var mailOptions = {
-                        from: nconf.get('mailer:from'),
-                        to: email,
-                        subject: '[TruDesk] Password Reset Request',
+                        to: savedUser.email,
+                        subject: '[Trudesk] Password Reset Request',
                         html: html,
                         generateTextFromHTML: true
                     };
 
                     mailer.sendMail(mailOptions, function(err) {
                         if (err) {
-                            req.flash('Error: ' + err.message);
-                            winston.warn(err.message);
-                            return res.status(400).send(err.message);
+                            winston.warn(err);
+                            return res.status(400).send(err);
+                        } else {
+                            return res.status(200).send();
                         }
-
-                        return res.status(200).send();
                     });
+                })
+                .catch(function(err) {
+                    req.flash('loginMessage', 'Error: ' + err);
+                    winston.warn(err);
+                    return res.status(400).send(err.message);
                 });
-            });
         });
+    });
+};
+
+mainController.resetl2auth = function(req, res) {
+    var hash = req.params.hash;
+    if (_.isUndefined(hash))
+        return res.status(400).send('Invalid Link!');
+
+    var userSchema = require('../models/user');
+    userSchema.getUserByL2ResetHash(hash, function(err, user) {
+        if (err)
+            return res.status(400).send('Invalid Link!');
+
+        if (_.isUndefined(user) || _.isEmpty(user))
+            return res.status(400).send('Invalid Link!');
+
+        var now = new Date();
+        if (now < user.resetL2AuthExpire) {
+            user.tOTPKey = undefined;
+            user.hasL2Auth = false;
+            user.resetL2AuthHash = undefined;
+            user.resetL2AuthExpire = undefined;
+
+            user.save(function(err, updated) {
+                if (err) {
+                    return res.status(500).send(err.message);
+                }
+
+                //Send mail
+                var mailer          = require('../mailer');
+                var Email           = require('email-templates');
+                var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
+
+                var email = new Email({
+                    views: {
+                        root: templateDir,
+                        options: {
+                            extension: 'handlebars'
+                        }
+                    }
+                });
+
+                email.render('l2auth-cleared', user)
+                    .then(function(html) {
+                        var mailOptions = {
+                            to: updated.email,
+                            subject: '[Trudesk] Two-Factor Authentication Removed!',
+                            html: html,
+                            generateTextFromHTML: true
+                        };
+
+                        mailer.sendMail(mailOptions, function(err) {
+                            if (err) {
+                                winston.warn(err);
+                                req.flash('loginMessage', err.message);
+                                return res.redirect(307, '/');
+                            }
+
+                            req.flash('loginMessage', 'Account Recovery Email Sent.');
+                            return mainController.logout(req, res);
+                        });
+                    })
+                    .catch(function(err) {
+                        winston.warn(err);
+                        req.flash('loginMessage', err.message);
+                        return res.status(400).send(err.message);
+                    });
+            });
+        } else {
+            return res.status(400).send('Invalid Link!');
+        }
     });
 };
 
@@ -259,58 +406,89 @@ mainController.resetPass = function(req, res) {
 
                 //Send mail
                 var mailer          = require('../mailer');
-                var emailTemplates  = require('email-templates');
+                var Email           = require('email-templates');
                 var templateDir     = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-                emailTemplates(templateDir, function(err, template) {
-                    if (err) {
-                        return res.status(500).send(err.message);
-                    }
-
-                    var data = {
-                        password: gPass,
-                        user: updated
-                    };
-
-                    template('new-password', data, function(err, html) {
-                        if (err) {
-                            req.flash('Error: ' + err);
-                            return res.status(500).send(err.message);
+                var email = new Email({
+                    views: {
+                        root: templateDir,
+                        options: {
+                            extension: 'handlebars'
                         }
+                    }
+                });
 
+                var data = {
+                    password: gPass,
+                    user: updated
+                };
+
+                email.render('new-password', data)
+                    .then(function(html) {
                         var mailOptions = {
-                            from: 'no-reply@trudesk.io',
                             to: updated.email,
-                            subject: '[TruDesk] New Password',
+                            subject: '[Trudesk] New Password',
                             html: html,
                             generateTextFromHTML: true
                         };
 
                         mailer.sendMail(mailOptions, function(err) {
                             if (err) {
-                                req.flash('Error: ' + err.message);
-                                return res.status(500).send(err.message);
+                                winston.warn(err);
+                                req.flash('loginMessage', err.message);
+                                return res.redirect(307, '/');
                             }
 
-                            return res.render('login', { flash: { success: true, message: 'Password Reset Successful' } });
+                            req.flash('loginMessage', 'Password reset successfully');
+                            return res.redirect(307, '/');
                         });
+                    })
+                    .catch(function(err) {
+                        winston.warn(err);
+                        req.flash('Error: ' + err.message);
+                        res.status(400).send(err.message);
                     });
-                });
             });
         }
     });
 };
 
 mainController.l2authget = function(req, res) {
-    if (!req.user)
+    if (!req.user || !req.user.hasL2Auth) {
+        req.logout();
         return res.redirect('/');
+    }
 
     var self = mainController;
     self.content = {};
     self.content.title = "Login";
     self.content.layout = false;
 
-    res.render('login-otp', self.content);
+    var settings = require('../models/setting');
+    settings.getSettingByName('mailer:enable', function(err, setting) {
+        if (err) {
+            throw new Error(err);
+        }
+
+        if (!_.isNull(setting))
+            self.content.mailerEnabled = setting.value;
+
+        return res.render('login-otp', self.content);
+    });
 };
+
+function parseUrl(href) {
+    var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
+    return match && {
+        href: href,
+        protocol: match[1],
+        host: match[2],
+        hostname: match[3],
+        port: match[4],
+        pathname: match[5],
+        search: match[6],
+        hash: match[7]
+    }
+}
 
 module.exports = mainController;

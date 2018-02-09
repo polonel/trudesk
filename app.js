@@ -53,7 +53,7 @@ process.on('message', function(msg) {
         if (ws.server)
             ws.server.close();
 
-        throw new Error('Server has been shutdown!');
+        throw new Error('Server has shutdown.');
     }
 });
 

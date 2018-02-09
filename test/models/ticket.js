@@ -30,7 +30,7 @@ describe('ticket.js', function() {
             history: []
 
         }, function(err, t) {
-            expect(err).to.not.exists;
+            expect(err).to.not.exist;
             expect(t).to.be.a('object');
             expect(t._doc).to.include.keys(
                 '_id', 'uid', 'owner','group', 'status', 'tags', 'date', 'subject', 'issue', 'priority', 'type', 'history', 'attachments', 'comments', 'deleted'

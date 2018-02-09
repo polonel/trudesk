@@ -38,7 +38,7 @@ middleware.db = function(req, res, next) {
 
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
-        if (req.user.tOTPKey) {
+        if (req.user.hasL2Auth) {
             return middleware.ensurel2Auth(req, res, next);
         } else {
             return res.redirect('/dashboard');
@@ -61,7 +61,7 @@ middleware.redirectToLogin = function(req, res, next) {
             req.session.destroy();
             return res.redirect('/');
         } else {
-            if (!_.isUndefined(req.user.tOTPKey)) {
+            if (req.user.hasL2Auth) {
                 if (req.session.l2auth !== 'totp') {
                     return res.redirect('/');
                 }
@@ -72,26 +72,15 @@ middleware.redirectToLogin = function(req, res, next) {
     }
 };
 
-middleware.checkUserHasL2Auth = function(req, res, next) {
-    if (!req.user) {
-        return res.redirect('/');
-    } else {
-        if (_.isUndefined(req.user.tOTPKey)) {
-            return next()
-        }
-
-        next();
-    }
-};
-
 middleware.ensurel2Auth = function(req, res, next) {
     if (req.session.l2auth === 'totp') {
         if (req.user)
             return res.redirect('/dashboard');
         else
             return next();
+    } else {
+        return res.redirect('/l2auth');
     }
-    return res.redirect('/l2auth');
 };
 
 //Common

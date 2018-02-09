@@ -15,10 +15,6 @@
 var async = require('async'),
     _ = require('lodash'),
     winston = require('winston'),
-    permissions = require('../../../permissions'),
-    emitter = require('../../../emitter'),
-
-    userSchema = require('../../../models/user'),
 
     conversationSchema = require('../../../models/chat/conversation'),
     messageSchema = require('../../../models/chat/message');

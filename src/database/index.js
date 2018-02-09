@@ -30,7 +30,7 @@ mongoose.connection.on('connected', function() {
         winston.info('Connected to MongoDB');
 });
 
-var options = { useMongoClient: true, keepAlive: 1, connectTimeoutMS: 30000 };
+var options = { keepAlive: 1, connectTimeoutMS: 30000 };
 
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
