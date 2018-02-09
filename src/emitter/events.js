@@ -70,7 +70,8 @@ var notifications       = require('../notifications'); // Load Push Events
                                  };
 
                                  mailer.sendMail(mailOptions, function(err) {
-                                     throw new Error(err);
+                                     if (err) winston.warn('[trudesk:events:ticket:created] - ' + err);
+
                                  });
                              }).catch(function(err) {
                                 winston.warn('[trudesk:events:ticket:created] - ' + err);

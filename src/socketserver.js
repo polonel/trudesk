@@ -175,7 +175,8 @@ var socketServer = function(ws) {
                     return true;
                 }
 
-                notifications.items = _.take(items, 5);
+                // notifications.items = _.take(items, 5);
+                notifications.items = items;
                 var p = _.filter(items, {unread: true});
                 notifications.count = _.size(p);
 

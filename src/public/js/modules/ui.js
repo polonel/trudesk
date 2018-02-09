@@ -140,7 +140,7 @@ define('modules/ui', [
             var html = "";
 
             _.each(items, function(item) {
-                if (item.partner != undefined) {
+                if (item.partner !== undefined) {
                     html    += '<li>';
                     html    += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">';
                     html    += '<div class="uk-clearfix">';
@@ -534,7 +534,7 @@ define('modules/ui', [
         };
 
         socket.emit('$trudesk:tickets:setNoteText', payload);
-    }
+    };
 
     socketUi.removeNote = function(ticketId, noteId) {
         var payload = {
@@ -543,7 +543,7 @@ define('modules/ui', [
         };
 
         socket.emit('$trudesk:tickets:removeNote', payload);
-    }
+    };
 
     socketUi.refreshTicketAttachments = function(ticketId) {
         var payload = {
@@ -880,9 +880,11 @@ define('modules/ui', [
             var $notifications = $('#notifications-Messages').find('ul');
             if ($notifications.length < 1) return;
 
+            var last5 = _.take(data.items, 5);
+
             $notifications.html('');
             //Build Notifications
-            _.each(data.items, function(item) {
+            _.each(last5, function(item) {
                 var html = '';
                 html += '<li>' +
                     '<a class="messageNotification" href="/tickets/' + item.data.ticket.uid + '" role="button" data-notificationId="' + item._id + '" >' +
@@ -932,6 +934,48 @@ define('modules/ui', [
                     });
                 });
             });
+
+            //All Notifications
+            var $notificationsTable = $('table.notificationsTable');
+            if ($notifications.length > 0) {
+                var $tbody = $notificationsTable.find('tbody');
+                $tbody.html('');
+                _.each(data.items, function(item) {
+                    if (!item.data && item.data.ticket) return;
+                    var html = '';
+                    html += '<tr class="notification-row ' + (item.unread ? 'unread' : '') + '" data-notificationid="' + item._id + '" data-ticket-uid="' + item.data.ticket.uid + '" ng-click="notificationClick($event)">';
+                    html += '<td class="type">';
+                    html += '<i class="fa fa-2x fa-check"></i>';
+                    html += '</td>';
+                    html += '<td class="title">';
+                    html += '<p>' + item.title + '</p>';
+                    html += '<div class="body">';
+                    html += item.message;
+                    html += '</div>';
+                    html += '</td>';
+                    html += '<td class="date">';
+                    html += '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDThh:mm") + '">' + helpers.formatDate(item.created, "MMM DD, YYYY") + '</time>';
+                    html += '</td>';
+                    html += '</tr>';
+
+                    $tbody.append(html);
+
+                    var $nRows = $tbody.find('.notification-row');
+                    $.each($nRows, function(k, val) {
+                        var $item = $(val);
+                        $item.off('click');
+                        $item.on('click', function(e) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            var $id = $(e.currentTarget).attr('data-notificationId');
+                            var $uid = $(e.currentTarget).attr('data-ticket-uid');
+                            socketUi.markNotificationRead($id);
+                            helpers.closeNotificationsWindow();
+                            History.pushState(null, null, '/tickets/' + $uid);
+                        });
+                    })
+                });
+            }
 
             var $notificationsCount = $('#btn_notifications').find('span');
             var $bottomActions = $('#notifications').find('.bottom-actions');

@@ -40,6 +40,7 @@ viewController.getData = function(request, cb) {
           function(callback) {
               viewController.getUserNotifications(request, function(err, data) {
                   if (err) return callback(err);
+
                   viewdata.notifications.items = data;
                   return callback();
               })
@@ -154,7 +155,7 @@ viewController.getUserNotifications = function(request, callback) {
             return callback(err);
         }
 
-        data = _.take(data, 5);
+        // data = _.take(data, 5);
 
         return callback(null, data);
     })
