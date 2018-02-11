@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "ansi_up": "2.0.2",
-    "apn": "2.2.0",
     "async": "2.6.0",
     "bcrypt": "1.0.3",
     "body-parser": "1.18.2",

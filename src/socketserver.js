@@ -301,6 +301,7 @@ var socketServer = function(ws) {
                             if (err) return true;
 
                             emitter.emit('ticket:subscriber:update', {user: userId, subscribe: true});
+                            emitter.emit('ticket:setAssignee', {assigneeId: ticket.assignee._id, ticketId: ticket._id, ticketUid: ticket.uid, hostname: socket.handshake.headers.host});
                             emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateAssignee', ticket);
                         });

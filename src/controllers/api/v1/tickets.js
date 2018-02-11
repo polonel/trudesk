@@ -266,7 +266,7 @@ api_tickets.create = function(req, res) {
             return res.status(400).json(response);
         }
 
-        emitter.emit('ticket:created', {socketId: socketId, ticket: t});
+        emitter.emit('ticket:created', {hostname: req.headers.host, socketId: socketId, ticket: t});
 
         response.ticket = t;
         res.json(response);
@@ -668,7 +668,7 @@ api_tickets.postComment = function(req, res) {
         t.history.push(HistoryItem);
 
         t.save(function(err, tt) {
-            if (err) return res.status(400).json({success: false, error: err.message})
+            if (err) return res.status(400).json({success: false, error: err.message});
 
             if (!permissions.canThis(req.user.role, 'notes:view'))
                 tt.notes = [];
@@ -676,7 +676,7 @@ api_tickets.postComment = function(req, res) {
             ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
                 if (err) return res.json({success: true, error: null, ticket: tt});
 
-                emitter.emit('ticket:comment:added', tt, Comment);
+                emitter.emit('ticket:comment:added', tt, Comment, req.headers.host);
 
                 return res.json({success: true, error: null, ticket: tt});
             });

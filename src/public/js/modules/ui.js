@@ -346,6 +346,7 @@ define('modules/ui', [
         };
 
         socket.emit('setAssignee', payload);
+        $('#assigneeDropdown').removeClass('pDropOpen');
     }
 
     socketUi.updateAssignee = function() {
@@ -396,7 +397,7 @@ define('modules/ui', [
 
             socket.emit('$trudesk:chat:updateOnlineBubbles');
 
-            $('#assigneeDropdown').removeClass('pDropOpen');
+
         });
     };
 

@@ -120,6 +120,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.tpsEnabledChange = function() {
+                var vm = this;
+                $scope.tpsEnabled = vm.tpsEnabled;
+
+                $http.put('/api/v1/settings', {
+                    name: 'tps:enable',
+                    value: $scope.tpsEnabled
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
+            $scope.tpsFormSubmit = function($event) {
+                $event.preventDefault();
+                $http.put('/api/v1/settings', [
+                    { name: 'tps:username', value: $scope.tpsUsername },
+                    { name: 'tps:apikey', value: $scope.tpsApiKey}
+                ], {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('TPS Settings Saved', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
             $scope.$watch('mailerCheckEnabled', function(newVal) {
                 var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
