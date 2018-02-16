@@ -12,7 +12,8 @@
 
  **/
 
-var winston             = require('winston'),
+var _                   = require('lodash'),
+    winston             = require('winston'),
     async               = require('async'),
     utils               = require('./helpers/utils'),
     passportSocketIo    = require('passport.socketio'),
@@ -22,8 +23,7 @@ var winston             = require('winston'),
 
 var socketServer = function(ws) {
     "use strict";
-    var _ = require('lodash'),
-        usersOnline = {},
+    var usersOnline = {},
         idleUsers = {},
         sockets = [],
         io = require('socket.io')(ws.server);
@@ -258,8 +258,9 @@ var socketServer = function(ws) {
         });
 
         socket.on('updateUsers', function() {
-            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
+            var sortedUserList = sortByKeys(usersOnline);
+
             utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
 
@@ -578,7 +579,8 @@ var socketServer = function(ws) {
 
         socket.on('logs:fetch', function() {
             var path = require('path');
-            var ansi_up = require('ansi_up');
+            var AnsiUp = require('ansi_up');
+            var ansi_up = new AnsiUp.default;
             var fileTailer = require('file-tail');
             var fs = require('fs');
             var logFile = path.join(__dirname, '../logs/output.log');
@@ -660,8 +662,8 @@ var socketServer = function(ws) {
             if (!exists) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
+                    sortedUserList = sortByKeys(usersOnline);
 
-                    sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                     sockets.push(socket);
@@ -671,7 +673,8 @@ var socketServer = function(ws) {
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
                 utils.sendToSelf(socket, 'joinSuccessfully');
-                sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+
+                sortedUserList = sortByKeys(usersOnline);
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 sockets.push(socket);
 
@@ -856,7 +859,8 @@ var socketServer = function(ws) {
 
                 //TODO: Remove Idle Sockets
 
-                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                // var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                var sortedUserList = sortByKeys(usersOnline);
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
@@ -882,6 +886,14 @@ var socketServer = function(ws) {
 
 
 };
+
+function sortByKeys(obj) {
+    const keys = Object.keys(obj);
+    const sortedKeys = _.sortBy(keys);
+    return _.fromPairs(
+        _.map(sortedKeys, function(key) { return [key, obj[key]]})
+    );
+}
 
 function onAuthorizeSuccess(data, accept) {
     "use strict";

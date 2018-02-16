@@ -7,7 +7,7 @@
 
 [http://trudesk.io](http://trudesk.io/)
 
-TruDesk is an open source help desk solution still in active development. 
+Trudesk is an open source help desk solution still in active development.
 
 Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
 
