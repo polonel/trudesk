@@ -281,21 +281,23 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI.showDisconnectedOverlay = function() {
-        var $disconnected = $('.disconnected');
+        setTimeout(function() {
+            var $disconnected = $('.disconnected');
 
-        if ($disconnected.css("display") === 'block')
-            return true;
+            if ($disconnected.css("display") === 'block')
+                return true;
 
-        $disconnected.velocity("fadeIn", {
-            duration: 500,
-            easing: easing_swiftOut,
-            begin: function() {
-                $disconnected.css({
-                    'display': 'block',
-                    'opacity': 0
-                });
-            }
-        });
+            $disconnected.velocity("fadeIn", {
+                duration: 500,
+                easing: easing_swiftOut,
+                begin: function() {
+                    $disconnected.css({
+                        'display': 'block',
+                        'opacity': 0
+                    });
+                }
+            });
+        }, 500);
     };
 
     helpers.UI.hideDisconnectedOverlay = function() {
