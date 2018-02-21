@@ -188,7 +188,7 @@ define('pages/accounts', [
             else
             html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">';
 
-            if (user.role == 'admin')
+            if (user.role === 'admin')
             html    +=          '<div class="tru-card-head tru-card-head-admin">';
             else
             html    +=          '<div class="tru-card-head ' + (user.deleted ? "tru-card-head-deleted" : "") +'">';

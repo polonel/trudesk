@@ -26,11 +26,11 @@ define([
         'roles',
         'jscookie',
         'tether',
+        'formvalidator',
         'async',
         'easypiechart',
         'chosen',
         'velocity',
-        'formvalidator',
         'peity'
     ],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
@@ -735,10 +735,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.formvalidator = function() {
         $.validate({
-            modules: 'html5',
             errorElementClass: 'uk-form-danger',
-            errorMessageClass: 'uk-form-danger',
-            ignore: ':hidden:not([class~=selectized]),:hidden > .selectized, .selectize-control .selectize-input input'
+            errorMessageClass: 'uk-form-danger'
+            // ignore: ':hidden:not([class~=selectized]),:hidden > .selectized,.selectize-control .selectize-input input'
         });
     };
 
