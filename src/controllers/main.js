@@ -185,10 +185,8 @@ mainController.forgotL2Auth = function(req, res) {
                 }
             });
 
-            var base_url = parseUrl(req.headers.referer);
-
             var data = {
-                base_url: base_url.protocol + '//' + base_url.host,
+                base_url: req.protocol + '://' + req.get('host'),
                 user: savedUser
             };
 
@@ -217,6 +215,19 @@ mainController.forgotL2Auth = function(req, res) {
         });
     })
 };
+/* 
+
+mainController.forgotPassGet = function (req, res) {
+    var self = mainController;
+    self.content = {};
+    self.content.title = "Forgot Password";
+    // self.content.nav = 'dashboard';
+    self.content.layout = false;
+
+    self.content.data = {};
+
+    return res.render('forgot', self.content);
+}; */
 
 mainController.forgotPass = function(req, res) {
     var data = req.body;
@@ -267,10 +278,8 @@ mainController.forgotPass = function(req, res) {
                 }
             });
 
-            var base_url = parseUrl(req.headers.referer);
-
             var data = {
-                base_url: base_url.protocol + '//' + base_url.host,
+                base_url: req.protocol + '://' + req.get('host'),
                 user: savedUser
             };
 
