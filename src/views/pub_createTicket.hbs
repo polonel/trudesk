@@ -316,11 +316,11 @@
             <form id="adminAccount" class="uk-form-stacked uk-clearfix">
                 <div class="uk-margin-medium-bottom">
                     <label for="ticket-subject">Subject</label>
-                    <input type="text" id="ticket-subject" name="ticket-subject" class="md-input" />
+                    <input type="text" id="ticket-subject" name="ticket-subject" class="md-input" required />
                 </div>
                 <div class="uk-margin-medium-bottom">
                     <label for="ticket-issue">Issue</label>
-                    <textarea name="ticket-issue" id="ticket-issue" cols="30" rows="10" class="md-input"></textarea>
+                    <textarea name="ticket-issue" id="ticket-issue" cols="30" rows="10" class="md-input" required></textarea>
                 </div>
 
                 <div style="width: 25%; float: left;">
@@ -601,9 +601,45 @@
 
             $('button#submit-issue').click(function() {
                 if (isDoubleClicked($(this))) return;
+
+                var adminInfoFormData = $('form#adminAccount').serializeObject();
+                var $subjectField, $issueField;
+                var $subjectValid = false, $issueValid = false;
+
+                if (!adminInfoFormData['ticket-subject'] || (adminInfoFormData['ticket-subject'].length < 5)) {
+                    $subjectField = $('form#adminAccount').find('input#ticket-subject');
+                    $subjectField.parent('.md-input-wrapper').addClass('has-error');
+                    $subjectField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $subjectField.addClass('uk-form-danger');
+                } else {
+                    $subjectField = $('form#adminAccount').find('input#ticket-subject');
+                    $subjectField.parent('.md-input-wrapper').removeClass('has-error');
+                    $subjectField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $subjectField.removeClass('uk-form-danger');
+
+                    $subjectValid = true;
+                }
+
+                if (!adminInfoFormData['ticket-issue'] || (adminInfoFormData['ticket-issue'].length < 10)) {
+                    $issueField = $('form#adminAccount').find('textarea#ticket-issue');
+                    $issueField.parent('.md-input-wrapper').addClass('has-error');
+                    $issueField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $issueField.addClass('uk-form-danger');
+                } else {
+                    $issueField = $('form#adminAccount').find('textarea#ticket-issue');
+                    $issueField.parent('.md-input-wrapper').removeClass('has-error');
+                    $issueField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $issueField.removeClass('uk-form-danger');
+
+                    $issueValid = true;
+                }
+
+                if (!$subjectValid || !$issueValid)
+                    return false;
+
                 ticket = {
-                    subject: $('#ticket-subject').val(),
-                    issue: $('#ticket-issue').val()
+                    subject: adminInfoFormData['ticket-subject'],
+                    issue: adminInfoFormData['ticket-issue']
                 };
 
                 advanceSlide();
