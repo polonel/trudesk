@@ -81,6 +81,12 @@ settingsController.get = function(req, res) {
         s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable' });
         s.tpsEnabled = (s.tpsEnabled === undefined) ? {value: false} : s.tpsEnabled;
 
+        s.tpsUsername = _.find(settings, function(x) { return x.name === 'tps:username'});
+        s.tpsUsername = (s.tpsUsername === undefined) ? { value: ''} : s.tpsUsername;
+
+        s.tpsApiKey = _.find(settings, function(x) { return x.name === 'tps:apikey'});
+        s.tpsApiKey = (s.tpsApiKey === undefined) ? { value: ''} : s.tpsApiKey;
+
         s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable' });
         s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
 

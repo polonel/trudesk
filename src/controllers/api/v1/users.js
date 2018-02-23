@@ -846,7 +846,6 @@ api_users.checkEmail = function(req, res) {
     if (!req.secure) host = 'http://' + host;
 
     if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-    // if (_.isUndefined(token) || token.length < 25) return res.status(400).json({success: false, error: 'Invalid Private Token'});
     if (_.isUndefined(email) || _.isNull(email))
         return res.status(400).json({success: false, error: 'Invalid Post Data'});
 

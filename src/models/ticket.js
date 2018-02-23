@@ -229,7 +229,7 @@ ticketSchema.methods.setAssignee = function(ownerId, userId, callback) {
 
         self.history.push(historyItem);
 
-        callback(null, self);
+        return callback(null, self);
     });
 };
 

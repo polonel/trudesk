@@ -23,7 +23,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             var ticketStatus = $('#__ticketStatus').html();
             var assigneeListBtn = $('.ticket-assignee > a');
             if (assigneeListBtn.length > 0 && ticketStatus.length > 0) {
-                if (ticketStatus == '3') {
+                if (ticketStatus === '3') {
                     assigneeListBtn.removeAttr('data-notifications');
                     assigneeListBtn.removeAttr('data-updateUi');
                     nav.notifications();

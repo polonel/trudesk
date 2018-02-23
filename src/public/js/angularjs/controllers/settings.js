@@ -120,6 +120,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.tpsEnabledChange = function() {
+                var vm = this;
+                $scope.tpsEnabled = vm.tpsEnabled;
+
+                $http.put('/api/v1/settings', {
+                    name: 'tps:enable',
+                    value: $scope.tpsEnabled
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
+            $scope.tpsFormSubmit = function($event) {
+                $event.preventDefault();
+                $http.put('/api/v1/settings', [
+                    { name: 'tps:username', value: $scope.tpsUsername },
+                    { name: 'tps:apikey', value: $scope.tpsApiKey}
+                ], {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('TPS Settings Saved', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
             $scope.$watch('mailerCheckEnabled', function(newVal) {
                 var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
@@ -280,6 +314,41 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.showCreateTagWindow = function($event) {
+                $event.preventDefault();
+                var createTagModal = $('#createTagModal');
+                if (createTagModal.length > 0) {
+                    UIkit.modal(createTagModal, {bgclose: false}).show();
+                }
+            };
+
+            $scope.createTag = function($event) {
+                $event.preventDefault();
+                var form = $('#createTagForm');
+                if (!form.isValid(null, null, false)) {
+                    return true;
+                } else {
+                    var tagName = form.find('input[name="tagName"]').val();
+                    if (!tagName || tagName.length < 3) return true;
+
+                    $http.post('/api/v1/tickets/addtag', {
+                        tag: tagName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
+
+                        History.pushState(null, null, '/settings/tags/?refresh=1');
+
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Unable to create tag. Check console', true);
+                        $log.error(err);
+                    });
+                }
+            };
+
             $scope.showCreateTicketTypeWindow = function($event) {
                 $event.preventDefault();
                 var createTicketTypeModal = $('#createTicketTypeModal');
@@ -306,7 +375,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
 
-                        History.pushState(null, null, '/settings/tickettypes');
+                        History.pushState(null, null, '/settings/tickettypes/?refresh=1');
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);

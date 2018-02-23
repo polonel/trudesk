@@ -19,7 +19,8 @@
     allowPublicTickets={{data.settings.allowPublicTickets.value}};
     allowUserRegistration={{data.settings.allowUserRegistration.value}};
     tpsEnabled={{data.settings.tpsEnabled.value}};
-
+    tpsUsername='{{data.settings.tpsUsername.value}}';
+    tpsApiKey='{{data.settings.tpsApiKey.value}}';
     init();
 ">
     <div class="nopadding settings">
@@ -33,7 +34,7 @@
                 <div class="setting-item-wrap uk-margin-medium-bottom">
                     <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
                         <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour</h6>
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
                             <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
                                 Tour the user interface on initial login.
                             </h5>
@@ -232,7 +233,7 @@
                         <div class="left">
                             <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">TPS</h6>
                             <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Trudesk Push Server authentication for push notifications.
+                                Trudesk Push Server authentication for push notifications. <a href="http://push.trudesk.io/signup" target="_blank">Get API Key</a>
                             </h5>
                         </div>
                         <div class="right" style="position:relative;">
@@ -240,7 +241,7 @@
                             <div class="md-switch md-green" style="margin: 20px 0 0 0;">
                                 <label>
                                     Enable
-                                    <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="tpsEnabled" ng-change="tpsEnabledChanged()">
+                                    <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="tpsEnabled" ng-change="tpsEnabledChange()">
                                     <span class="lever"></span>
                                 </label>
                             </div>
@@ -254,10 +255,10 @@
                                 </div>
                                 <div class="uk-margin-medium-bottom">
                                     <label for="tspAPIKey">API Key</label>
-                                    <input id="tspAPIKey" class="md-input md-input-width-medium" name="tspAPIKey" type="text" ng-model="tspAPIKey" />
+                                    <input id="tspAPIKey" class="md-input md-input-width-medium" name="tpsApiKey" type="text" ng-model="tpsApiKey" />
                                 </div>
                                 <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="tpsSubmit" ng-click="tpsSubmit($event);">Apply</button>
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="tpsSubmit" ng-click="tpsFormSubmit($event);">Apply</button>
                                 </div>
                             </div>
                         </div>

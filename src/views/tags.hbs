@@ -6,14 +6,15 @@
                 <ul class="button-group uk-float-left">
                     <li class="pagination relative">
                         <div class="right" data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
-                            <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
-                            <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
-                                <ul class="uk-nav">
-                                    <li>
-                                        <a href="#" role="button" ng-click="createTag($event)">Create</a>
-                                    </li>
-                                </ul>
-                            </div>
+                            <a href="#" class="no-ajaxy md-btn md-btn-success" style="margin-top: 15px;" ng-click="showCreateTagWindow($event)">Create</a>
+                            <!--<a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>-->
+                            <!--<div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">-->
+                                <!--<ul class="uk-nav">-->
+                                    <!--<li>-->
+                                        <!--<a href="#" role="button" class="no-ajaxy" ng-click="showCreateTagWindow($event)">Create</a>-->
+                                    <!--</li>-->
+                                <!--</ul>-->
+                            <!--</div>-->
                         </div>
                     </li>
                 </ul>
@@ -46,6 +47,7 @@
             </table>
         </div>
     </div>
+    {{> createTagWindow}}
 </div>
 
 {{#contentFor 'js-plugins'}}
