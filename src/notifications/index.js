@@ -13,66 +13,42 @@
  **/
 
 var _                   = require('lodash'),
-    nconf               = require('nconf'),
-    async               = require('async'),
     winston             = require('winston'),
-    request             = require('request'),
-    notificationSchema  = require('../models/notification');
+    request             = require('request');
 
-module.exports.pushNotification = function(notification) {
-    var enabled = nconf.get('tps:enable') ? nconf.get('tps:enable') : false;
-    if (!enabled) return true;
-    var apiKey = nconf.get("tps:apikey");
-    var tps_username = nconf.get("tps:username");
-
-    if (_.isUndefined(apiKey) || _.isUndefined(tps_username)) return true;
-
-    async.parallel({
-        badgeCount: function(cb) {
-            notificationSchema.getUnreadCount(notification.owner, function(err, c) {
-                var count = 1;
-                if (!err) count = c;
-
-                cb(null, count);
-            });
+module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification) {
+    var body = {
+        "title": notification.title,
+        "content": notification.content,
+        "data": {
+            "hostname": notification.hostname,
+            "users": notification.data.users
         }
-    }, function(err, results) {
-        if (err) return winston.warn("[trudesk:TPS:pushNotification] Error - " + err);
+    };
+
+    if (notification.data.ticketId) {
+        body.data.ticketId = notification.data.ticketId;
+    }
+    if (notification.data.ticketUid) {
+        body.data.ticketUid = notification.data.ticketUid;
+    }
 
 
-        //TODO: Refractor this when Android support is complete
-        var body = {
-            "username": tps_username,
-            "notification": {
-                "title": notification.title,
-                "deviceType": "ios",
-                "deviceIds": notification.owner.iOSDeviceTokens,
-                "data": {
-                    "unreadCount": results.badgeCount,
-                    "ticket": {
-                        "_id": notification.data.ticket._id,
-                        "uid": notification.data.ticket.uid
-                    }
-                }
-            }
-        };
-
-        request({
-            url: 'http://push.trudesk.io/api/pushNotification',
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'accesstoken': apiKey
-            },
-            body: JSON.stringify(body)
-        }, function(err, response, body) {
-            if (err)
-                winston.debug(err);
-            else {
-                if (response.statusCode === 401)
-                    winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.');
-            }
-        });
+    request({
+        url: 'http://push.trudesk.io/api/pushNotification',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'accesstoken': tpsApiKey
+        },
+        body: JSON.stringify(body)
+    }, function(err, response, body) {
+        if (err)
+            winston.debug(err);
+        else {
+            if (response.statusCode === 401)
+                winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.');
+        }
     });
 };
 

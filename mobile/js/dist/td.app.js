@@ -16,22 +16,22 @@ angular.module('snackbar', [])
 }]);
 
 angular.module('trudesk', [
-  'ionic', 
-  'ngCordova', 
-  'ngStorage', 
-  'underscore', 
-  'trudesk.controllers', 
-  'trudesk.services', 
-  'fileOnChange', 
-  'angular-peity', 
-  'snackbar', 
-  'ngCropper', 
+  'ionic',
+  'ngCordova',
+  'ngStorage',
+  'underscore',
+  'trudesk.controllers',
+  'trudesk.services',
+  'fileOnChange',
+  'angular-peity',
+  'snackbar',
+  'ngCropper',
   'monospaced.elastic',
   'angularMoment',
   'jett.ionic.filter.bar'
   ])
 
-.run(function($ionicPlatform, $rootScope, $location, $localStorage) {
+.run(function($ionicPlatform, $rootScope, $location, $localStorage, $state) {
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -45,13 +45,33 @@ angular.module('trudesk', [
       window.StatusBar.styleLightContent();
     }
 
+    var notificationOpenedCallback = function(jsonData) {
+      if (jsonData.notification.payload && jsonData.notification.payload.additionalData) {
+        var ticketUid = jsonData.notification.payload.additionalData.ticketUid;
+        if (ticketUid) {
+          console.log('Moving to ticket: ' + ticketUid);
+          $state.go('tab.tickets')
+          setTimeout(function() {
+            return $state.go('tab.tickets-details', { ticketuid: ticketUid})
+          }, 850);
+        }
+      }
+    };
+
+    if (window.plugins && window.plugins.OneSignal) {
+      window.plugins.OneSignal
+        .startInit("f8e19190-b53b-4b72-bac8-210e7f31bebb")
+        .handleNotificationOpened(notificationOpenedCallback)
+        .endInit();
+    }
+
     $rootScope.$on('$stateChangeStart', function(event, next, current) {
         if ($location.url() !== '/login' && ($localStorage.accessToken == undefined || $localStorage.server == undefined)) {
           return $location.path('/login');
         }
     });
 
-    setTimeout(function() {
+                       setTimeout(function() {
       angular.element(document.querySelector('#loader')).addClass('hide');
     }, 900);
   });
@@ -69,13 +89,13 @@ angular.module('trudesk', [
     };
 })
 
-.filter('removeHTMLTags', function() { 
+.filter('removeHTMLTags', function() {
 	return function(text) {
 		return  text ? String(text).replace(/<[^>]+>/gm, ' ') : '';
 	};
 })
 
-.filter('nl2br', ['$filter', 
+.filter('nl2br', ['$filter',
   function($filter) {
     return function(data) {
       if (!data) return data;
@@ -644,7 +664,10 @@ angular.module('trudesk.services', [])
   //Socket.io events
   dataStream.on('connect', function() {
     console.log('Connected to Server: ' + $localStorage.server);
-    // dataStream.emit('joinChatServer'); // join chat server so trudesk knows its online!
+  });
+
+  dataStream.on('disconnect', function() {
+    console.log('Disconnected from Server: ' + $localStorage.server);
   });
 
   dataStream.on('error', function(e) {
@@ -677,6 +700,7 @@ angular.module('trudesk.services', [])
 
   return {
     message: message,
+    socket: dataStream,
     startTyping: function(convoId, partnerId, loggedInUserId) {
             dataStream.emit('chatTyping', {
               cid: convoId,
@@ -702,6 +726,19 @@ angular.module('trudesk.services', [])
     },
     updateUsers: function() {
       return dataStream.emit('updateUsers');
+    },
+    checkConnection: function() {
+      if (dataStream == undefined || !dataStream.connected) {
+        console.log('Reconnecting to: ' + $localStorage.server)
+        dataStream = undefined;
+        dataStream = io.connect('http://' + $localStorage.server, {
+          query: 'token=' + $localStorage.accessToken
+        });
+      }
+    },
+    close: function() {
+      console.log('Closing Socket...');
+      return dataStream.disconnect();
     }
   }
 })
@@ -1095,6 +1132,12 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
             $localStorage.accessToken = response.data.accessToken;
             $localStorage.loggedInUser = response.data.user;
 
+            //OneSignal
+            if (window.plugins && window.plugins.OneSignal) {
+              window.plugins.OneSignal.setSubscription(true);
+              window.plugins.OneSignal.sendTags({host: $localStorage.server, user: $localStorage.loggedInUser._id});
+            }
+
             $http.get('/api/v1/roles', {
               headers: {
                 'accesstoken': $localStorage.accessToken
@@ -1148,7 +1191,9 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
         window.StatusBar.styleDefault();
 
       angular.element(document).find('ion-view').removeClass('hide');
-    }, 850);
+      if (window.plugins && window.plugins.OneSignal)
+        window.plugins.OneSignal.setSubscription(false);
+    }, 600);
   });
 });
 
@@ -1228,9 +1273,11 @@ angular.module('trudesk.controllers.accounts', [])
       }, function errorCallback(response) {
 
       }).finally(function() {
-        ionic.trigger('$trudesk.clearLoginForm', {});
+        ionic.trigger('$trudesk.clearLoginForm', {});    
         $localStorage.server = undefined;
         $localStorage.accessToken = undefined;
+        if (window.plugins && window.plugins.OneSignal)
+          window.plugins.OneSignal.setSubscription(false);
         $ionicHistory.clearCache();
         return $state.go('login');
       });
@@ -1269,8 +1316,7 @@ angular.module('trudesk.controllers.dashboard', []).controller('DashCtrl', funct
     {label: '60 Days', value: 60},
     {label: '90 Days', value: 90},
     {label: '180 Days', value: 180},
-    {label: '365 Days', value: 365},
-    {label: 'Lifetime', value: 0}
+    {label: '365 Days', value: 365}
   ];
 
   $scope.selectedTimespan = 30;
@@ -1455,7 +1501,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
   $scope.isUserOnline = Users.isUserOnline;
   $scope.onlineUsers = [];
   $scope.userList = [];
-
+  
   //EVENTS
   $scope.$on('$ionicView.beforeEnter', function () {
     ensureLogin($localStorage, $state);
@@ -1473,7 +1519,7 @@ angular.module('trudesk.controllers.messages', []).controller('MessagesCtrl', fu
   });
 
   $scope.$on("$ionicView.enter", function (scopes, states) {
-
+    
   });
 
   $scope.$on('$stateChangeStart', function (e) {
@@ -1681,7 +1727,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
     });
   });
 
-  $scope.$on('$ionicView.enter', function () {  
+  $scope.$on('$ionicView.enter', function () {
     txtInput = angular.element(document.body.querySelector('#message-textarea'));
   });
 
@@ -1689,7 +1735,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
     window.removeEventListener('native.keyboardshow', onKeyboardShow);
     window.removeEventListener('native.keyboardhide', onKeyboardHide);
     window.removeEventListener('$trudesk.conversation.chatmessage', onChatMessage);
-    
+
     ionic.off('$trudesk.conversation.usertyping', onPartnerTyping, window);
     ionic.off('$trudesk.conversation.userstoptyping', onPartnerStopTyping, window);
     window.removeEventListener('$trudesk.conversation.updateusers', onUpdateUsers);
@@ -1767,7 +1813,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
   // var TIMER = $interval(function() {
   //     if ($ionicHistory.currentView().stateName != 'tab.messages-conversation') {
   //         console.log('OFF CONVERSATION');
-  //         ionic.off('$trudesk.conversation.chatmessage', onChatMessage, window);        
+  //         ionic.off('$trudesk.conversation.chatmessage', onChatMessage, window);
   //         $interval.cancel(TIMER);
   //         return;
   //     }
@@ -1792,7 +1838,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
       }
 
       if ($scope.page == 0)
-        $scope.messages = response.data.messages.reverse();      
+        $scope.messages = response.data.messages.reverse();
       else {
         var a = $scope.messages;
         if (_.size(a) > 0)
@@ -1811,13 +1857,13 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
       $timeout(function () {
         if ($scope.page == 0)
           scrollBottom();
-        else 
+        else
           $timeout(function () {
             viewScroll.scrollBy(0, 150, true);
           });
 
         $scope.page++;
-        $scope.$broadcast('scroll.infiniteScrollComplete');      
+        $scope.$broadcast('scroll.infiniteScrollComplete');
       }, 0);
     });
   };
@@ -1926,7 +1972,7 @@ angular.module('trudesk.controllers.messages.conversation', []).controller('Conv
     }, 3000);
   };
 
-  
+
   $scope.sendChatMessage = function () {
     if (_.isEmpty($scope.message.body)) return false;
     $scope.message.ownerId = $scope.loggedInUser._id;
@@ -2314,7 +2360,9 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
 
       Snackbar.show({
         text: text,
-        showAction: false,
+        showAction: true,
+        actionText: 'X',
+        actionTextColor: '#ccc',
         duration: 3000,
         textColor: textColor
       });
@@ -2493,6 +2541,10 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
 
   $scope.openFilterTicket = function() {
       $scope.filterTicketModal.show();
+  };
+
+  $scope.applyTicketFilter = function() {
+    $scope.closeTicketFilter();
   };
 
   $scope.closeTicketFilter = function() {

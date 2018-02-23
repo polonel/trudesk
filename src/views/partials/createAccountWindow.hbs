@@ -22,7 +22,11 @@
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aFullname">Name</label>
-                <input type="text" class="md-input" id="caFullname" name="aFullname"/>
+                <input type="text" class="md-input" id="caFullname" name="aFullname"
+                    data-validation="length"
+                       data-validation-length="min4"
+                       data-validation-error-msg="Please enter a valid name. Name must be at be 4 characters."
+                />
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aTitle" class="uk-form-label">Title</label>
@@ -31,16 +35,26 @@
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="left" style="width: 50%; padding-right: 20px;">
                     <label for="aPass" class="uk-form-label">Password</label>
-                    <input type="password" class="md-input" id="caPass" name="aPass"/>
+                    <input type="password" class="md-input" id="caPass" name="aPass"
+                        data-validation="length"
+                        data-validation-length="min6"
+                    />
                 </div>
                 <div class="left" style="width: 50%;">
                     <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
-                    <input type="password" class="md-input" id="caPassConfirm" name="aPassConfirm"/>
+                    <input type="password" class="md-input" id="caPassConfirm" name="aPassConfirm"
+                        data-validation="confirmation"
+                        data-validation-confirm="aPass"
+                        data-validation-error-msg="Password fields do not match."
+                    />
                 </div>
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aEmail" class="uk-form-label">Email</label>
-                <input type="email" class="md-input" id="caEmail" name="aEmail"/>
+                <input type="email" class="md-input" id="caEmail" name="aEmail"
+                    data-validation="email"
+                    data-validation-error-msg="Please enter a valid email address."
+                />
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="aRole" class="uk-form-label">Role</label>
@@ -57,6 +71,7 @@
                         <option value="{{_id}}">{{name}}</option>
                     {{/each}}
                 </select>
+                <span class="aGrps-error-message hide help-block uk-form-danger">Please select a group for this user.</span>
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>

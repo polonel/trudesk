@@ -10233,6 +10233,10 @@ ion-tabs.tabs-color-active-positive .tab-item.activated {
     font-size: 24px !important;
     line-height: 24px !important; }
 
+.button-success {
+  background-color: #29B955 !important;
+  color: white !important; }
+
 .profile-pic {
   width: 50px;
   height: 50px;
@@ -10303,7 +10307,7 @@ h2.stat {
   0% {
     -webkit-transform: translateY(0%); }
   50% {
-    -webkit-transform: translateY(-700%); }
+    -webkit-transform: translateY(-100%); }
   100% {
     -webkit-transform: translateY(0%); } }
 
@@ -10527,12 +10531,16 @@ h2.stat {
   min-height: 100%;
   height: 100%; }
 
-.noTickets {
+.noTickets, .noMessages {
   height: 100%;
   font-size: 24px;
   font-weight: 300;
   font-family: "Roboto", sans-serif;
   color: #aaa; }
+
+.snackbar-container .action {
+  font-size: 17px !important;
+  font-weight: bold !important; }
 
 .profile-details {
   margin-bottom: 15px; }
