@@ -55,7 +55,7 @@
     "js-string-escape": "1.0.1",
     "lodash": "4.17.4",
     "mailparser": "2.1.0",
-    "marked": "0.3.12",
+    "marked": "0.3.17",
     "matchdep": "2.0.0",
     "mkdirp": "0.5.1",
     "moment": "2.20.1",
