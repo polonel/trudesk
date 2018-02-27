@@ -215,19 +215,6 @@ mainController.forgotL2Auth = function(req, res) {
         });
     })
 };
-/* 
-
-mainController.forgotPassGet = function (req, res) {
-    var self = mainController;
-    self.content = {};
-    self.content.title = "Forgot Password";
-    // self.content.nav = 'dashboard';
-    self.content.layout = false;
-
-    self.content.data = {};
-
-    return res.render('forgot', self.content);
-}; */
 
 mainController.forgotPass = function(req, res) {
     var data = req.body;
