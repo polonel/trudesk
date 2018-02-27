@@ -363,9 +363,21 @@ api_tickets.createPublicTicket = function(req, res) {
         },
 
         function(group, savedUser, next) {
+            var settingsSchema = require('../../../models/setting');
+            settingsSchema.getSettingByName('ticket:type:default', function(err, defaultType) {
+                if (err) return next(err);
+
+                if (defaultType.value)
+                    return next(null, defaultType.value, group, savedUser);
+                else
+                    return next('Failed: Invalid Default Ticket Type.');
+            });
+        },
+
+        function(defaultTicketType, group, savedUser, next) {
             //Create Ticket
             var ticketTypeSchema = require('../../../models/tickettype');
-            ticketTypeSchema.getTypeByName('Issue', function(err, ticketType) {
+            ticketTypeSchema.getType(defaultTicketType, function(err, ticketType) {
                 if (err) return next(err);
 
                 var ticketSchema = require('../../../models/ticket');
@@ -393,7 +405,7 @@ api_tickets.createPublicTicket = function(req, res) {
                 ticket.save(function(err, t) {
                     if (err) return next(err);
 
-                    emitter.emit('ticket:created', {socketId: '', ticket: t});
+                    emitter.emit('ticket:created', {hostname: req.headers.host, socketId: '', ticket: t});
 
                     return next(null, {user: savedUser, group: group, ticket: t});
                 });

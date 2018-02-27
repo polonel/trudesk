@@ -105,8 +105,9 @@ var notifications       = require('../notifications'); // Load Push Events
                          rolesWithPublic = _.map(rolesWithPublic, 'id');
                          userSchema.getUsersByRoles(rolesWithPublic, function(err, users) {
                              if (err) return c();
+                             var ticketPushClone = _.clone(ticket);
                              async.each(users, function(user, cb) {
-
+                                 ticketPushClone.group.sendMailTo.push(user._id);
                                  return saveNotification(user, ticket, cb);
                              }, function(err) {
                                  sendPushNotification({
@@ -114,7 +115,7 @@ var notifications       = require('../notifications'); // Load Push Events
                                      tpsUsername: tpsUsername,
                                      tpsApiKey: tpsApiKey,
                                      hostname: hostname
-                                 }, { type: 1, ticket: ticket});
+                                 }, { type: 1, ticket: ticketPushClone});
 
                                  return c(err);
                              });

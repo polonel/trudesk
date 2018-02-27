@@ -1,4 +1,5 @@
 <div ng-controller="settingsCtrl" ng-init="
+    defaultTicketType='{{data.settings.defaultTicketType.value}}';
     mailerEnabled={{data.settings.mailerEnabled.value}};
     mailerHost='{{data.settings.mailerHost.value}}';
     mailerSSL={{data.settings.mailerSSL.value}};
@@ -30,6 +31,26 @@
         <!--Content Here-->
         <div class="page-wrapper full-height scrollable no-overflow-x">
             <div id="page-content-inner">
+
+                <div class="setting-item-wrap uk-margin-medium-bottom">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                        <div class="left">
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Default Ticket Type</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                Default ticket type for newly created tickets.
+                            </h5>
+                        </div>
+                        <div class="right" style="position:relative; padding-top: 5px;">
+                            <div class="uk-float-left" style="padding-right: 11px; min-width: 130px; width: 100%;">
+                                <select class="selectize-white" name="type" id="type"  ng-model="defaultTicketType" data-md-selectize-inline2 selectize>
+                                    {{#each data.common.ticketTypes}}
+                                        <option value="{{{_id}}}">{{name}}</option>
+                                    {{/each}}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="setting-item-wrap uk-margin-medium-bottom">
                     <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">

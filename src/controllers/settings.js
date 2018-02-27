@@ -42,6 +42,9 @@ settingsController.get = function(req, res) {
         if (err) return handleError(res, 'Invalid Settings');
 
         var s = {};
+        s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'});
+        s.defaultTicketType = (s.defaultTicketType === undefined) ? {value: ''} : s.defaultTicketType;
+
         s.mailerEnabled = _.find(settings, function(x){return x.name === 'mailer:enable'});
         s.mailerHost = _.find(settings, function(x) { return x.name === 'mailer:host'});
         s.mailerSSL = _.find(settings, function(x) { return x.name === 'mailer:ssl'});

@@ -14,6 +14,25 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
+        .directive('selectize', function($timeout) {
+            return {
+                restrict: 'A',
+                require: '?ngModel',
+                link: function(scope, element, attrs, ngModel) {
+                    var $element;
+                    $timeout(function() {
+                        $element = $(element).selectize(scope.$eval(attrs.selectize));
+                        if(!ngModel) return;
+                        $(element).selectize().on('change', function() {
+                            scope.$apply(function() {
+                                var newValue = $(element).selectize().val();
+                                ngModel.$setViewValue(newValue);
+                            });
+                        });
+                    });
+                }
+            }
+        })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
@@ -30,6 +49,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                     if ($scope.mailerCheckTicketType !== '') {
                         var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                        if ($mailerCheckTicketTypeSelect.length < 1)
+                            return;
                         $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
                         var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                         $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
@@ -46,6 +67,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('input#mailerPassword').attr('disabled', !newVal);
                 $('input#mailerFrom').attr('disabled', !newVal);
                 $('button#mailerSubmit').attr('disabled', !newVal);
+            });
+
+            $scope.$watch('defaultTicketType', function(newValue) {
+                if (!newValue)
+                    return;
+                $http.put('/api/v1/settings', {
+                    name: 'ticket:type:default',
+                    value: newValue
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    $log.error(err);
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                });
             });
 
             $scope.mailerEnabledChange = function() {
