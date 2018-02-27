@@ -291,7 +291,7 @@ var notifications       = require('../notifications'); // Load Push Events
                         data: {ticket: ticket},
                         unread: true
                     });
-
+                  
                     notification.save(function(err) {
                         return cb(err);
                     });

@@ -147,7 +147,7 @@ mainController.logout = function(req, res) {
 mainController.forgotL2Auth = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data['forgotl2auth-email']))
-        return res.send(400).send('No Form Data');
+        return res.status(400).send('No Form Data');
 
     var email = data['forgotl2auth-email'];
     var userSchema = require('../models/user');
@@ -221,7 +221,7 @@ mainController.forgotL2Auth = function(req, res) {
 mainController.forgotPass = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data['forgotPass-email'])) {
-        return res.send(400).send('No Form Data');
+        return res.status(400).send('No Form Data');
     }
 
     var email = data['forgotPass-email'];
