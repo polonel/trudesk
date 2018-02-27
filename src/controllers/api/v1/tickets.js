@@ -538,6 +538,12 @@ api_tickets.update = function(req, res) {
                     cb();
                 },
                 function(cb) {
+                    if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue))
+                        ticket.issue = reqTicket.issue;
+
+                    cb();
+                },
+                function(cb) {
                     if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
                         ticket.assignee = reqTicket.assignee;
                         ticket.populate('assignee', function(err, t) {

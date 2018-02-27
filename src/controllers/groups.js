@@ -29,28 +29,27 @@ groupsController.get = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Groups";
-    self.content.nav = 'groups';
+    var content = {};
+    content.title = "Groups";
+    content.nav = 'groups';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
-    self.content.data.users = [];
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.groups = {};
+    content.data.users = [];
 
     groupSchema.getAllGroups(function(err, groups) {
         if (err) handleError(res, err);
 
-        self.content.data.groups = _.sortBy(groups, 'name');
+        content.data.groups = _.sortBy(groups, 'name');
 
         userSchema.findAll(function(err, users) {
             if (err) handleError(res, err);
 
-            self.content.data.users = _.sortBy(users, 'fullname');
+            content.data.users = _.sortBy(users, 'fullname');
 
-            res.render('groups', self.content);
+            res.render('groups', content);
         });
     });
 };
@@ -62,23 +61,22 @@ groupsController.getCreate = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Groups";
-    self.content.nav = 'groups';
+    var content = {};
+    content.title = "Groups";
+    content.nav = 'groups';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
-    self.content.data.users = [];
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.groups = {};
+    content.data.users = [];
 
     userSchema.findAll(function(err, users) {
         if (err) return handleError(res, err);
 
-        self.content.data.users = _.sortBy(users, "fullname");
+        content.data.users = _.sortBy(users, "fullname");
 
-        res.render('subviews/createGroup', self.content);
+        res.render('subviews/createGroup', content);
     });
 };
 
@@ -89,15 +87,14 @@ groupsController.edit = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Groups";
-    self.content.nav = 'groups';
+    var content = {};
+    content.title = "Groups";
+    content.nav = 'groups';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.users = [];
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.users = [];
     var groupId = req.params.id;
     if (_.isUndefined(groupId)) return res.redirect('/groups/');
 
@@ -119,10 +116,10 @@ groupsController.edit = function(req, res) {
         }, function(err, done) {
             if (err) return handleError(res, err);
 
-            self.content.data.users =  _.sortBy(done.users, 'fullname');
-            self.content.data.group = done.group;
+            content.data.users =  _.sortBy(done.users, 'fullname');
+            content.data.group = done.group;
 
-            res.render('subviews/editGroup', self.content);
+            res.render('subviews/editGroup', content);
     });
 };
 

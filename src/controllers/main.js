@@ -22,12 +22,10 @@ var mainController = {};
 mainController.content = {};
 
 mainController.index = function(req, res) {
-    "use strict";
-    var self = mainController;
-    self.content = {};
-    self.content.title = "Login";
-    self.content.layout = false;
-    self.content.flash = req.flash('loginMessage');
+    var content = {};
+    content.title = "Login";
+    content.layout = false;
+    content.flash = req.flash('loginMessage');
 
     var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
@@ -36,16 +34,16 @@ mainController.index = function(req, res) {
         }
 
         if (!_.isNull(setting))
-            self.content.allowUserRegistration = setting.value;
+            content.allowUserRegistration = setting.value;
         settings.getSettingByName('mailer:enable', function(err, setting) {
             if (err) {
                 throw new Error(err);
             }
 
             if (!_.isNull(setting))
-                self.content.mailerEnabled = setting.value;
+                content.mailerEnabled = setting.value;
 
-            return res.render('login', self.content);
+            return res.render('login', content);
         });
     });
 
@@ -55,36 +53,34 @@ mainController.about = function(req, res) {
     var pkg = require('../../package.json');
     var settings = require('../models/setting');
     settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
-        var self = {};
-        self.content = {};
-        self.content.title = "About";
-        self.content.nav = 'about';
+        var content = {};
+        content.title = "About";
+        content.nav = 'about';
 
-        self.content.data = {};
-        self.content.data.user = req.user;
-        self.content.data.common = req.viewdata;
+        content.data = {};
+        content.data.user = req.user;
+        content.data.common = req.viewdata;
 
-        self.content.data.version = pkg.version;
+        content.data.version = pkg.version;
         if (privacyPolicy == null || _.isUndefined(privacyPolicy.value))
-            self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+            content.data.privacyPolicy = 'No Privacy Policy has been set.';
         else
-            self.content.data.privacyPolicy = privacyPolicy.value;
+            content.data.privacyPolicy = privacyPolicy.value;
 
-        return res.render('about', self.content);
+        return res.render('about', content);
     });
 };
 
 mainController.dashboard = function(req, res) {
-    var self = mainController;
-    self.content = {};
-    self.content.title = "Dashboard";
-    self.content.nav = 'dashboard';
+    var content = {};
+    content.title = "Dashboard";
+    content.nav = 'dashboard';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
-    return res.render('dashboard', self.content);
+    return res.render('dashboard', content);
 };
 
 mainController.loginPost = function(req, res, next) {
@@ -455,10 +451,9 @@ mainController.l2authget = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = mainController;
-    self.content = {};
-    self.content.title = "Login";
-    self.content.layout = false;
+    var content = {};
+    content.title = "Login";
+    content.layout = false;
 
     var settings = require('../models/setting');
     settings.getSettingByName('mailer:enable', function(err, setting) {
@@ -467,9 +462,9 @@ mainController.l2authget = function(req, res) {
         }
 
         if (!_.isNull(setting))
-            self.content.mailerEnabled = setting.value;
+            content.mailerEnabled = setting.value;
 
-        return res.render('login-otp', self.content);
+        return res.render('login-otp', content);
     });
 };
 

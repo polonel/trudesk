@@ -53,17 +53,16 @@ ticketsController.pubNewIssue = function(req, res) {
             settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
                 if (err) return handleError(res, err);
 
-                var self = ticketsController;
-                self.content = {};
-                self.content.title = "New Issue";
-                self.content.layout = false;
-                self.content.data = {};
+                var content = {};
+                content.title = "New Issue";
+                content.layout = false;
+                content.data = {};
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
-                    self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+                    content.data.privacyPolicy = 'No Privacy Policy has been set.';
                 else
-                    self.content.data.privacyPolicy = privacyPolicy.value;
+                    content.data.privacyPolicy = privacyPolicy.value;
 
-                return res.render('pub_createTicket', self.content);
+                return res.render('pub_createTicket', content);
             });
         } else {
             return res.redirect('/');
@@ -80,17 +79,16 @@ ticketsController.pubNewIssue = function(req, res) {
  */
 ticketsController.getByStatus = function(req, res, next) {
     var url = require('url');
-    var self = this;
     var page = req.params.page;
     if (_.isUndefined(page)) page = 0;
 
-    self.processor = {};
-    self.processor.title = "Tickets";
-    self.processor.nav = 'tickets';
-    self.processor.subnav = 'tickets-';
-    self.processor.renderpage = 'tickets';
-    self.processor.pagetype = 'active';
-    self.processor.object = {
+    var processor = {};
+    processor.title = "Tickets";
+    processor.nav = 'tickets';
+    processor.subnav = 'tickets-';
+    processor.renderpage = 'tickets';
+    processor.pagetype = 'active';
+    processor.object = {
         limit: 50,
         page: page,
         status: []
@@ -120,11 +118,11 @@ ticketsController.getByStatus = function(req, res, next) {
             break;
     }
 
-    self.processor.subnav += tType;
-    self.processor.pagetype = tType;
-    self.processor.object.status.push(s);
+    processor.subnav += tType;
+    processor.pagetype = tType;
+    processor.object.status.push(s);
 
-    req.processor = self.processor;
+    req.processor = processor;
     return next();
 };
 
@@ -136,23 +134,22 @@ ticketsController.getByStatus = function(req, res, next) {
  * @see Ticket
  */
 ticketsController.getActive = function(req, res, next) {
-    var self = this;
     var page = req.params.page;
     if (_.isUndefined(page)) page = 0;
 
-    self.processor = {};
-    self.processor.title = "Tickets";
-    self.processor.nav = 'tickets';
-    self.processor.subnav = 'tickets-active';
-    self.processor.renderpage = 'tickets';
-    self.processor.pagetype = 'active';
-    self.processor.object = {
+    var processor = {};
+    processor.title = "Tickets";
+    processor.nav = 'tickets';
+    processor.subnav = 'tickets-active';
+    processor.renderpage = 'tickets';
+    processor.pagetype = 'active';
+    processor.object = {
         limit: 50,
         page: page,
         status: [0,1,2]
     };
 
-    req.processor = self.processor;
+    req.processor = processor;
 
     return next();
 };
@@ -166,17 +163,16 @@ ticketsController.getActive = function(req, res, next) {
  * @see Ticket
  */
 ticketsController.getAssigned = function(req, res, next) {
-    var self = this;
     var page = req.params.page;
     if (_.isUndefined(page)) page = 0;
 
-    self.processor = {};
-    self.processor.title = "Tickets";
-    self.processor.nav = 'tickets';
-    self.processor.subnav = 'tickets-assigned';
-    self.processor.renderpage = 'tickets';
-    self.processor.pagetype = 'assigned';
-    self.processor.object = {
+    var processor = {};
+    processor.title = "Tickets";
+    processor.nav = 'tickets';
+    processor.subnav = 'tickets-assigned';
+    processor.renderpage = 'tickets';
+    processor.pagetype = 'assigned';
+    processor.object = {
         limit: 50,
         page: page,
         status: [0,1,2],
@@ -184,14 +180,12 @@ ticketsController.getAssigned = function(req, res, next) {
         user: req.user._id
     };
 
-    req.processor = self.processor;
+    req.processor = processor;
 
     return next();
 };
 
 ticketsController.filter = function(req, res, next) {
-    var self = this;
-
     var page = req.query.page;
     if (_.isUndefined(page)) page = 0;
 
@@ -235,13 +229,13 @@ ticketsController.filter = function(req, res, next) {
         raw: rawNoPage
     };
 
-    self.processor = {};
-    self.processor.title = "Tickets";
-    self.processor.nav = 'tickets';
-    //self.processor.subnav = 'tickets-assigned';
-    self.processor.renderpage = 'tickets';
-    self.processor.pagetype = 'filter';
-    self.processor.object = {
+    var processor = {};
+    processor.title = "Tickets";
+    processor.nav = 'tickets';
+    //processor.subnav = 'tickets-assigned';
+    processor.renderpage = 'tickets';
+    processor.pagetype = 'filter';
+    processor.object = {
         limit: 50,
         page: page,
         status: filter.status,
@@ -249,7 +243,7 @@ ticketsController.filter = function(req, res, next) {
         filter: filter
     };
 
-    req.processor = self.processor;
+    req.processor = processor;
 
     return next();
 };
@@ -262,23 +256,22 @@ ticketsController.filter = function(req, res, next) {
  * @see Ticket
  */
 ticketsController.processor = function(req, res) {
-    var self = this;
     var processor = req.processor;
     if (_.isUndefined(processor)) return res.redirect('/');
 
-    self.content = {};
-    self.content.title = processor.title;
-    self.content.nav = processor.nav;
-    self.content.subnav = processor.subnav;
+    var content = {};
+    content.title = processor.title;
+    content.nav = processor.nav;
+    content.subnav = processor.subnav;
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     var object = processor.object;
     object.limit = (object.limit === 1) ? 10 : object.limit;
 
-    self.content.data.filter = object.filter;
+    content.data.filter = object.filter;
 
     var userGroups = [];
 
@@ -315,7 +308,7 @@ ticketsController.processor = function(req, res) {
         if (err) return handleError(res, err);
 
         //Ticket Data
-        self.content.data.tickets = results;
+        content.data.tickets = results;
 
         var countObject = {
             status: object.status,
@@ -328,23 +321,24 @@ ticketsController.processor = function(req, res) {
         ticketSchema.getCountWithObject(userGroups, countObject, function(err, totalCount) {
             if (err) return handleError(res, err);
 
-            self.content.data.pagination = {};
-            self.content.data.pagination.type = processor.pagetype;
-            self.content.data.pagination.currentpage = object.page;
-            self.content.data.pagination.start = (object.page === 0) ? 1 : object.page * object.limit;
-            self.content.data.pagination.end = (object.page === 0) ? object.limit : (object.page*object.limit)+object.limit;
-            self.content.data.pagination.enabled = false;
+            content.data.pagination = {};
+            content.data.pagination.type = processor.pagetype;
+            content.data.pagination.currentpage = object.page;
+            content.data.pagination.start = (object.page === 0) ? 1 : object.page * object.limit;
+            content.data.pagination.end = (object.page === 0) ? object.limit : (object.page*object.limit)+object.limit;
+            content.data.pagination.enabled = false;
 
-            self.content.data.pagination.total = totalCount;
-            if (self.content.data.pagination.total > object.limit)
-                self.content.data.pagination.enabled = true;
+            content.data.pagination.total = totalCount;
+            if (content.data.pagination.total > object.limit)
+                content.data.pagination.enabled = true;
 
-            self.content.data.pagination.prevpage = (object.page === 0) ? 0 : Number(object.page) - 1;
-            self.content.data.pagination.prevEnabled = (object.page !== 0);
-            self.content.data.pagination.nextpage = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total) ? Number(object.page) + 1 : object.page;
-            self.content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= self.content.data.pagination.total);
+            content.data.pagination.prevpage = (object.page === 0) ? 0 : Number(object.page) - 1;
+            content.data.pagination.prevEnabled = (object.page !== 0);
+            content.data.pagination.nextpage = ((object.page * object.limit) + object.limit <= content.data.pagination.total) ? Number(object.page) + 1 : object.page;
+            content.data.pagination.nextEnabled = ((object.page * object.limit) + object.limit <= content.data.pagination.total);
+            content.data.user = req.user;
 
-            res.render(processor.renderpage, self.content);
+            res.render(processor.renderpage, content);
         });
     });
 };
@@ -356,20 +350,19 @@ ticketsController.processor = function(req, res) {
  * @return {View} Subviews/PrintTicket View
  */
 ticketsController.print = function(req, res) {
-    var self = this;
     var user = req.user;
     var uid = req.params.id;
     if (isNaN(uid)) {
         return res.redirect('/tickets');
     }
-    self.content = {};
-    self.content.title = "Tickets - " + req.params.id;
-    self.content.nav = 'tickets';
+    var content = {};
+    content.title = "Tickets - " + req.params.id;
+    content.nav = 'tickets';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.ticket = {};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.ticket = {};
 
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
@@ -389,13 +382,13 @@ ticketsController.print = function(req, res) {
         if (!permissions.canThis(user.role, 'notes:view'))
             ticket.notes = [];
 
-        self.content.data.ticket = ticket;
-        self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
-        self.content.data.ticket.tagsArray = ticket.tags;
-        self.content.data.ticket.commentCount = _.size(ticket.comments);
-        self.content.layout = 'layout/print';
+        content.data.ticket = ticket;
+        content.data.ticket.priorityname = getPriorityName(ticket.priority);
+        content.data.ticket.tagsArray = ticket.tags;
+        content.data.ticket.commentCount = _.size(ticket.comments);
+        content.layout = 'layout/print';
 
-        return res.render('subviews/printticket', self.content);
+        return res.render('subviews/printticket', content);
     });
 };
 
@@ -407,34 +400,34 @@ ticketsController.print = function(req, res) {
  * @see Ticket
  * @example
  * //Content Object
- * self.content.title = "Tickets - " + req.params.id;
- * self.content.nav = 'tickets';
+ * content.title = "Tickets - " + req.params.id;
+ * content.nav = 'tickets';
  *
- * self.content.data = {};
- * self.content.data.user = req.user;
- * self.content.data.common = req.viewdata;
+ * content.data = {};
+ * content.data.user = req.user;
+ * content.data.common = req.viewdata;
  *
  * //Ticket Data
- * self.content.data.ticket = ticket;
- * self.content.data.ticket.priorityname = getPriorityName(ticket.priority);
- * self.content.data.ticket.tagsArray = ticket.tags;
- * self.content.data.ticket.commentCount = _.size(ticket.comments);
+ * content.data.ticket = ticket;
+ * content.data.ticket.priorityname = getPriorityName(ticket.priority);
+ * content.data.ticket.tagsArray = ticket.tags;
+ * content.data.ticket.commentCount = _.size(ticket.comments);
  */
 ticketsController.single = function(req, res) {
-    var self = this;
     var user = req.user;
     var uid = req.params.id;
     if (isNaN(uid)) {
         return res.redirect('/tickets');
     }
-    self.content = {};
-    self.content.title = "Tickets - " + req.params.id;
-    self.content.nav = 'tickets';
 
-    self.content.data = {};
-    self.content.data.user = user;
-    self.content.data.common = req.viewdata;
-    self.content.data.ticket = {};
+    var content = {};
+    content.title = "Tickets - " + req.params.id;
+    content.nav = 'tickets';
+
+    content.data = {};
+    content.data.user = user;
+    content.data.common = req.viewdata;
+    content.data.ticket = {};
 
     ticketSchema.getTicketByUid(uid, function(err, ticket) {
         if (err) return handleError(res, err);
@@ -453,10 +446,10 @@ ticketsController.single = function(req, res) {
         if (!permissions.canThis(user.role, 'notes:view'))
             ticket.notes = [];
 
-        self.content.data.ticket = ticket;
-        self.content.data.ticket.priorityname = ticket.priorityFormatted;
+        content.data.ticket = ticket;
+        content.data.ticket.priorityname = ticket.priorityFormatted;
 
-        return res.render('subviews/singleticket', self.content);
+        return res.render('subviews/singleticket', content);
     });
 };
 

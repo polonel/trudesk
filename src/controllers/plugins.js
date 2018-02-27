@@ -16,24 +16,17 @@
 var pluginsController = {};
 
 pluginsController.get = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Plugins";
-    self.content.nav = 'plugins';
+    var content = {};
+    content.title = "Plugins";
+    content.nav = 'plugins';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.plugins = {};
-    self.content.data.plugins.installed = JSON.stringify(global.plugins, null, 2);
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.plugins = {};
+    content.data.plugins.installed = JSON.stringify(global.plugins, null, 2);
 
-    res.render('plugins', self.content);
+    res.render('plugins', content);
 };
-
-// function handleError(res, err) {
-//     if (err) {
-//         return res.render('error', {layout: false, error: err, message: err.message});
-//     }
-// }
 
 module.exports = pluginsController;

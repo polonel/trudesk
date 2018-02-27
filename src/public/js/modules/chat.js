@@ -53,6 +53,7 @@ define('modules/chat',[
             var html = '';
             var onlineList = $('.online-list-wrapper').find('ul.online-list');
             var username = loggedInAccount.username;
+            var isUserRole = loggedInAccount.role === 'user';
             var filteredData = _.filter(data, function(item) { return item.user.username !== username; });
             var activeNow = $('.active-now');
             if (_.size(filteredData) < 1) {
@@ -61,9 +62,12 @@ define('modules/chat',[
                 activeNow.show();
             }
             onlineList.html('');
+            var activeCount = 0;
             _.each(filteredData, function(v) {
                 var onlineUser = v.user;
                 if (onlineUser.username === username) return true;
+                //This hides all other users from the active online list.
+                if (isUserRole && onlineUser.role === 'user') return true;
                 var imageUrl = onlineUser.image;
                 if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
                 html += '<li>';
@@ -80,6 +84,7 @@ define('modules/chat',[
                 var userStatus = allUserList.find('li[data-user-id="' + onlineUser._id + '"]').find('.online-status-offline');
                 userStatus.removeClass('online-status-offline').addClass('online-status');
                 userStatus.text('');
+                activeCount++;
             });
 
             onlineList.append(html);
@@ -89,7 +94,7 @@ define('modules/chat',[
                 var size = _.size(filteredData);
                 if (size < 1) onlineUserCount.addClass('hide');
                 else {
-                    onlineUserCount.text(size);
+                    onlineUserCount.text(activeCount);
                     onlineUserCount.removeClass('hide');
                 }
             }
@@ -459,7 +464,7 @@ define('modules/chat',[
                         message: data.message.body
                     });
 
-                if (complete != undefined && _.isFunction(complete))
+                if (complete !== undefined && _.isFunction(complete))
                     return complete();
             },
             error: function(error) {
@@ -510,7 +515,7 @@ define('modules/chat',[
             var imageUrl = user.image;
             if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg';
 
-            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() == loggedInAccountId.toString(); })];
+            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === loggedInAccountId.toString(); })];
             var html = '<div class="chat-box-position">';
             html += '<div class="chat-box" data-conversation-id="' + convo._id + '" data-chat-userid="' + user._id + '">';
             html += '<div class="chat-box-title">';

@@ -23,13 +23,12 @@ var installController = {};
 installController.content = {};
 
 installController.index = function(req, res) {
-    var self = installController;
-    self.content = {};
-    self.content.title = "Install Trudesk";
-    self.content.layout = false;
+    var content = {};
+    content.title = "Install Trudesk";
+    content.layout = false;
 
 
-    res.render('install', self.content);
+    res.render('install', content);
 };
 
 installController.mongotest = function(req, res) {

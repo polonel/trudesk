@@ -25,27 +25,20 @@ noticesController.get = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Notices";
-    self.content.nav = 'notices';
+    var content = {};
+    content.title = "Notices";
+    content.nav = 'notices';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.notices = [];
-
-    //self.content.data.common.notice = {
-    //    date: Date.now(),
-    //    color: '#7FE73A',
-    //    message: 'Internet is experiencing issues.'
-    //};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.notices = [];
 
     noticeSchema.getNotices(function(err, notices) {
         if (err) return handleError(res, err);
-        self.content.data.notices = notices;
+        content.data.notices = notices;
 
-        res.render('notices', self.content);
+        res.render('notices', content);
     });
 };
 
@@ -56,16 +49,15 @@ noticesController.create = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Notices - Create";
-    self.content.nav = 'notices';
+    var content = {};
+    content.title = "Notices - Create";
+    content.nav = 'notices';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
-    res.render('subviews/createNotice', self.content);
+    res.render('subviews/createNotice', content);
 };
 
 noticesController.edit = function(req, res) {
@@ -75,19 +67,18 @@ noticesController.edit = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Notices - Edit";
-    self.content.nav = 'notices';
+    var content = {};
+    content.title = "Notices - Edit";
+    content.nav = 'notices';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
     noticeSchema.getNotice(req.params.id, function(err, notice) {
         if (err) return handleError(res, err);
-        self.content.data.notice = notice;
+        content.data.notice = notice;
 
-        res.render('subviews/editNotice', self.content);
+        res.render('subviews/editNotice', content);
     });
 };
 

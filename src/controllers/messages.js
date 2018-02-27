@@ -23,15 +23,14 @@ var messagesController = {};
 messagesController.content = {};
 
 messagesController.get = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Messages";
-    self.content.nav = 'messages';
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.conversations = [];
-    self.content.data.showNewConvo = req.showNewConvo;
+    var content = {};
+    content.title = "Messages";
+    content.nav = 'messages';
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.conversations = [];
+    content.data.showNewConvo = req.showNewConvo;
 
     conversationSchema.getConversationsWithLimit(req.user._id, undefined, function(err, convos) {
         if (err) {
@@ -67,7 +66,7 @@ messagesController.get = function(req, res) {
                     c.recentMessage = 'New Conversation';
                 }
 
-                self.content.data.conversations.push(c);
+                content.data.conversations.push(c);
 
 
                 return done();
@@ -78,23 +77,22 @@ messagesController.get = function(req, res) {
                 return handleError(res, err);
             }
 
-            return res.render('messages', self.content);
+            return res.render('messages', content);
         });
     });
 };
 
 messagesController.getConversation = function(req, res) {
-    var self = this;
     var cid = req.params.convoid;
     if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!');
 
-    self.content = {};
-    self.content.title = "Messages";
-    self.content.nav = 'messages';
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.conversations = [];
+    var content = {};
+    content.title = "Messages";
+    content.nav = 'messages';
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.conversations = [];
 
     async.parallel([
         function(next) {
@@ -131,7 +129,7 @@ messagesController.getConversation = function(req, res) {
                         if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && !_.isUndefined(rm) && rm.createdAt < userMeta.deletedAt)
                             c.recentMessage = 'New Conversation';
 
-                        self.content.data.conversations.push(c);
+                        content.data.conversations.push(c);
 
                         return done();
                     })
@@ -143,7 +141,7 @@ messagesController.getConversation = function(req, res) {
             });
         },
         function(next) {
-            self.content.data.page = 2;
+            content.data.page = 2;
 
             conversationSchema.getConversation(cid, function(err, convo) {
                 if (err) return next(err);
@@ -163,8 +161,8 @@ messagesController.getConversation = function(req, res) {
 
                     c.requestingUserMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
 
-                    self.content.data.conversation = c;
-                    self.content.data.conversation.messages = messages.reverse();
+                    content.data.conversation = c;
+                    content.data.conversation.messages = messages.reverse();
 
                     return next();
                 })
@@ -172,7 +170,7 @@ messagesController.getConversation = function(req, res) {
         }
     ], function(err) {
         if (err) return handleError(res, err);
-        return res.render('messages', self.content);
+        return res.render('messages', content);
     });
 };
 

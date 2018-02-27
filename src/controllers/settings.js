@@ -28,15 +28,14 @@ settingsController.content = {};
 settingsController.get = function(req, res) {
     if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Settings";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-general';
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-general';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     settingSchema.getSettings(function(err, settings) {
         if (err) return handleError(res, 'Invalid Settings');
@@ -96,22 +95,21 @@ settingsController.get = function(req, res) {
         s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
         s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
 
-        self.content.data.settings = s;
+        content.data.settings = s;
 
-        return res.render('settings', self.content);
+        return res.render('settings', content);
     });
 };
 
 settingsController.legal = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Legal Settings";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-legal';
+    var content = {};
+    content.title = "Legal Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-legal';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     settingSchema.getSettings(function(err, settings) {
         if (err) return handleError(res, 'Invalid Settings');
@@ -121,24 +119,23 @@ settingsController.legal = function(req, res) {
         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
-        self.content.data.settings = s;
+        content.data.settings = s;
 
-        return res.render('subviews/settings/legal', self.content);
+        return res.render('subviews/settings/legal', content);
     });
 };
 
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Server Logs";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-logs';
+    var content = {};
+    content.title = "Server Logs";
+    content.nav = 'settings';
+    content.subnav = 'settings-logs';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     var fs = require('fs'),
         path = require('path'),
@@ -148,29 +145,28 @@ settingsController.logs = function(req, res) {
 
     fs.readFile(file, 'utf-8', function(err, data) {
         if (err)  {
-            self.content.data.logFileContent = err;
-            return res.render('logs', self.content);
+            content.data.logFileContent = err;
+            return res.render('logs', content);
         }
 
-        self.content.data.logFileContent = data.toString().trim();
-        self.content.data.logFileContent = ansi_up.ansi_to_html(self.content.data.logFileContent);
+        content.data.logFileContent = data.toString().trim();
+        content.data.logFileContent = ansi_up.ansi_to_html(content.data.logFileContent);
 
-        return res.render('logs', self.content);
+        return res.render('logs', content);
     });
 };
 
 settingsController.tags = function(req, res) {
     if (!checkPerms(req, 'settings:tags'))  return res.redirect('/settings');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Ticket Tags";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-tags';
+    var content = {};
+    content.title = "Ticket Tags";
+    content.nav = 'settings';
+    content.subnav = 'settings-tags';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     var resultTags = [];
     async.waterfall([
@@ -197,8 +193,8 @@ settingsController.tags = function(req, res) {
             });
         }
     ], function() {
-        self.content.data.tags = _.sortBy(resultTags, function(o){ return o.tag.name; });
-        return res.render('tags', self.content)
+        content.data.tags = _.sortBy(resultTags, function(o){ return o.tag.name; });
+        return res.render('tags', content)
     });
 };
 
@@ -208,15 +204,14 @@ settingsController.editTag = function(req, res) {
     var tagId = req.params.id;
     if (_.isUndefined(tagId)) return res.redirect('/settings/tags');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Edit Tag";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-tags';
+    var content = {};
+    content.title = "Edit Tag";
+    content.nav = 'settings';
+    content.subnav = 'settings-tags';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     async.parallel([
         function(cb) {
@@ -228,7 +223,7 @@ settingsController.editTag = function(req, res) {
                     return res.redirect('/settings/tags');
                 }
 
-                self.content.data.tag = tag;
+                content.data.tag = tag;
 
                 return cb();
             });
@@ -259,7 +254,7 @@ settingsController.editTag = function(req, res) {
                     ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
                         if (err) return cb(err);
 
-                        self.content.data.tickets = tickets;
+                        content.data.tickets = tickets;
 
                         return cb();
                     });
@@ -268,22 +263,21 @@ settingsController.editTag = function(req, res) {
         }
     ], function(err) {
         if (err) return handleError(res, err);
-        return res.render('subviews/editTag', self.content);
+        return res.render('subviews/editTag', content);
     });
 };
 
 settingsController.ticketTypes = function(req, res) {
     if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Ticket Types";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-tickettypes';
+    var content = {};
+    content.title = "Ticket Types";
+    content.nav = 'settings';
+    content.subnav = 'settings-tickettypes';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     var resultTypes = [];
     async.series([
@@ -295,9 +289,9 @@ settingsController.ticketTypes = function(req, res) {
             });
         }
     ], function() {
-        self.content.data.types = _.sortBy(resultTypes, function(o){ return o.name; });
+        content.data.types = _.sortBy(resultTypes, function(o){ return o.name; });
 
-        return res.render('subviews/settings/ticketTypes', self.content)
+        return res.render('subviews/settings/ticketTypes', content)
     });
 };
 
@@ -307,15 +301,14 @@ settingsController.editTicketType = function(req, res) {
     var typeId = req.params.id;
     if (_.isUndefined(typeId)) return res.redirect('/settings/tickettypes');
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Edit Ticket Type";
-    self.content.nav = 'settings';
-    self.content.subnav = 'settings-tickettypes';
+    var content = {};
+    content.title = "Edit Ticket Type";
+    content.nav = 'settings';
+    content.subnav = 'settings-tickettypes';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
     async.parallel([
         function(cb) {
@@ -327,7 +320,7 @@ settingsController.editTicketType = function(req, res) {
                     return res.redirect('/settings/tickettypes');
                 }
 
-                self.content.data.tickettype = type;
+                content.data.tickettype = type;
 
                 return cb();
             });
@@ -358,8 +351,8 @@ settingsController.editTicketType = function(req, res) {
                     ticketSchema.getTicketsByType(grps, typeId, function(err, tickets) {
                         if (err) return cb(err);
 
-                        self.content.data.tickets = tickets;
-                        self.content.data.hasTickets = _.size(tickets) > 0;
+                        content.data.tickets = tickets;
+                        content.data.hasTickets = _.size(tickets) > 0;
 
                         return cb();
                     }, true);
@@ -368,7 +361,7 @@ settingsController.editTicketType = function(req, res) {
         }
     ], function(err) {
         if (err) return handleError(res, err);
-        return res.render('subviews/settings/editTicketType', self.content);
+        return res.render('subviews/settings/editTicketType', content);
     });
 };
 
