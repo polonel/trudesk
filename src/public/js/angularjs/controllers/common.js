@@ -87,7 +87,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                     if ($scope.noticeAlertWindow.length > 0) {
                         var cookieName = $('#__noticeCookieName').text();
                         if (angular.isUndefined(cookieName) || _.isEmpty(cookieName)) return true;
-                        var shouldShowNotice = ($cookies.get(cookieName) == 'true' || angular.isUndefined($cookies.get(cookieName)));
+                        var shouldShowNotice = ($cookies.get(cookieName) === 'true' || angular.isUndefined($cookies.get(cookieName)));
 
                         if (shouldShowNotice) {
                             var modal = UI.modal($scope.noticeAlertWindow, {

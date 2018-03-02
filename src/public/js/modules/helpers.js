@@ -372,7 +372,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 .on('blur', '.md-input', function() {
                     $(this).closest('.md-input-wrapper').removeClass('md-input-focus');
                     if(!$(this).hasClass('label-fixed')) {
-                        if($(this).val() != '') {
+                        if($(this).val() !== '') {
                             $(this).closest('.md-input-wrapper').addClass('md-input-filled')
                         } else {
                             $(this).closest('.md-input-wrapper').removeClass('md-input-filled')
@@ -414,7 +414,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if(object.hasClass('label-fixed')) {
             object.closest('.md-input-wrapper').addClass('md-input-filled')
         }
-        if(object.val() != '') {
+        if(object.val() !== '') {
             object.closest('.md-input-wrapper').addClass('md-input-filled')
         }
     }
@@ -475,7 +475,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.UI.selectize = function(parent) {
         // selectize plugins
-        if(typeof $.fn.selectize != 'undefined') {
+        if(typeof $.fn.selectize !== 'undefined') {
             Selectize.define('dropdown_after', function () {
                 var self = this;
                 self.positionDropdown = (function () {
@@ -984,7 +984,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                             return true;
                         }
 
-                        if (to == Infinity) to = 0;
+                        if (to === Infinity) to = 0;
                         $(this.el).find('.chart-value').text(Math.round(to));
                     },
                     onStep: function(from, to, percent) {
@@ -1002,7 +1002,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                             }
                         }
 
-                        if (percent == Infinity) percent = 0;
+                        if (percent === Infinity) percent = 0;
                         $(this.el).find('.chart-value').text(Math.round(percent));
                     }
                 });
@@ -1345,7 +1345,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     function stringStartsWith(string, prefix) {
-        return string.slice(0, prefix.length) == prefix;
+        return string.slice(0, prefix.length) === prefix;
     }
 
     helpers.prototypes = function() {

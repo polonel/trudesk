@@ -392,7 +392,7 @@ define('modules/chat',[
                         url: '/api/v1/messages/conversation/' + data.conversation._id,
                         type: 'GET',
                         success: function(d) {
-                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() == owner.toString()})];
+                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() === owner.toString()})];
                             if (userMeta && userMeta.deletedAt) {
                                 d.messages = _.filter(d.messages, function(message) {
                                     return moment(message.createdAt) > moment(userMeta.deletedAt);

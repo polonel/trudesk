@@ -70,33 +70,33 @@ reportSchema.statics.getReports = function(callback) {
     return this.model(COLLECTION).find({}).exec(callback);
 };
 
-/**
- * Get only Runnable Reports
- *
- * @method getRunnableReports
- * @memberof Report
- * @param {QueryCallback} callback MongoDB Query Callback
- */
-reportSchema.statics.getRunnableReports = function(callback) {
-    var reports = [];
-    var q = this.model(COLLECTION).find({status: 0});
-
-    q.exec(function(err, items) {
-        if (err) return callback(err);
-        _.each(items, function(item) {
-            if (!item.recurring) {
-                reports.push(item);
-            } else {
-                var now = Date.now();
-                var nextrun = new Date(now + item.interval);
-                if (now >= nextrun)
-                    reports.push(item);
-            }
-        });
-
-        callback(null, reports);
-    });
-};
+// /**
+//  * Get only Runnable Reports
+//  *
+//  * @method getRunnableReports
+//  * @memberof Report
+//  * @param {QueryCallback} callback MongoDB Query Callback
+//  */
+// reportSchema.statics.getRunnableReports = function(callback) {
+//     var reports = [];
+//     var q = this.model(COLLECTION).find({status: 0});
+//
+//     q.exec(function(err, items) {
+//         if (err) return callback(err);
+//         _.each(items, function(item) {
+//             if (!item.recurring) {
+//                 reports.push(item);
+//             } else {
+//                 var now = Date.now();
+//                 var nextrun = new Date(now + item.interval);
+//                 if (now >= nextrun)
+//                     reports.push(item);
+//             }
+//         });
+//
+//         callback(null, reports);
+//     });
+// };
 
 reportSchema.statics.getReportByType = function(type, callback) {
     if (_.isUndefined(type) || _.isNull(type)) return callback("Invalid Report Type - ReportSchema.GetReportByType();", null);

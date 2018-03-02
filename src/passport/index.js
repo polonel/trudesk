@@ -12,7 +12,6 @@
 
  **/
 
-var _            = require('lodash');
 var passport     = require('passport');
 var Local        = require('passport-local').Strategy;
 var TotpStrategy = require('passport-totp').Strategy;

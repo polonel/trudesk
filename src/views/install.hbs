@@ -390,7 +390,7 @@
             var activeSlide = 0;
             $slides.each(function(idx) {
                 $(this).addClass('slide-' + idx);
-                if (idx == 0)
+                if (idx === 0)
                     $(this).addClass('activeSlide');
                 else
                     $(this).addClass('hide');

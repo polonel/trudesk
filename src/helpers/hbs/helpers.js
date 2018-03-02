@@ -175,15 +175,15 @@ var helpers = {
         }
 
         var operators = {
-            '==':     function(l, r) {return l == r; },
+            '==':     function(l, r) {return l === r; },
             '===':    function(l, r) {return l === r; },
-            '!=':     function(l, r) {return l != r; },
+            '!=':     function(l, r) {return l !== r; },
             '!==':    function(l, r) {return l !== r; },
             '<':      function(l, r) {return l < r; },
             '>':      function(l, r) {return l > r; },
             '<=':     function(l, r) {return l <= r; },
             '>=':     function(l, r) {return l >= r; },
-            'typeof': function(l, r) {return typeof l == r; }
+            'typeof': function(l, r) {return typeof l === r; }
         };
 
         if (!operators[operator]) {
@@ -414,7 +414,7 @@ var helpers = {
      * @example: {{ifEven @index}}
      */
     ifEven: function (conditional, options) {
-        if ((conditional % 2) == 0) {
+        if ((conditional % 2) === 0) {
             return options.fn(this);
         } else {
             return options.inverse(this);
@@ -489,7 +489,7 @@ var helpers = {
     },
 
     fromNow: function(date) {
-        if (date == undefined)
+        if (date === undefined)
             return 'Never';
         moment.updateLocale('en', {
             relativeTime : {

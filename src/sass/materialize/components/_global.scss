@@ -79,7 +79,7 @@ ul {
 
 .hoverable {
   transition: box-shadow .25s;
-  box-shadow: 0;
+  box-shadow: none;
 }
 
 .hoverable:hover {

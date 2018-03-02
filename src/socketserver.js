@@ -81,11 +81,6 @@ var socketServer = function(ws) {
         'polling'
     ]);
 
-    // function onAuthorizeFail(data, message, error, accept) {
-    //     winston.warn('Forcing Accept of socket connect! - (' + message + ') -- ' + 'Maybe iOS?');
-    //     accept();
-    // }
-
     io.sockets.on('connection', function(socket) {
         // var totalOnline = _.size(usersOnline);
 
