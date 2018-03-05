@@ -846,15 +846,11 @@ var socketServer = function(ws) {
                 var userSockets = usersOnline[user.username].sockets;
 
                 if (_.size(userSockets) < 2) {
-                    // console.log('Deleting ' + user.username + ' from online socket list...');
                     delete usersOnline[user.username];
                 } else {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                //TODO: Remove Idle Sockets
-
-                // var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                 var sortedUserList = sortByKeys(usersOnline);
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});

@@ -494,14 +494,15 @@ api_tickets.single = function(req, res) {
 api_tickets.update = function(req, res) {
     var user = req.user;
     if (!_.isUndefined(user) && !_.isNull(user)) {
+        var permissions = require('../../../permissions');
+        if (!permissions.canThis(user.role, 'ticket:update'))
+            return res.status(401).json({success: false, error: 'Invalid Permissions'});
         var oId = req.params.id;
         var reqTicket = req.body;
         if (_.isUndefined(oId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
-            //TODO: Check the user has permission to update ticket.
-
             async.parallel([
                 function(cb) {
                     if (!_.isUndefined(reqTicket.status)) {
