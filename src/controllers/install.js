@@ -34,8 +34,8 @@ installController.index = function(req, res) {
 installController.mongotest = function(req, res) {
     var origin = req.headers.origin;
     var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
+    if (req.protocol === 'https') host = 'https://' + host;
+    else host = 'http://' + host;
 
     //Firefox Hack - Firefox Bug 1341689
     //Trudesk Bug #26
@@ -64,8 +64,8 @@ installController.mongotest = function(req, res) {
 installController.existingdb = function(req, res) {
     var origin = req.headers.origin;
     var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
+    if (req.protocol === 'https') shost = 'https://' + shost;
+    else shost = 'http://' + shost;
 
     //Firefox Hack - Firefox Bug 1341689
     //Trudesk Bug #26
@@ -110,8 +110,8 @@ installController.existingdb = function(req, res) {
 installController.install = function(req, res) {
     var origin = req.headers.origin;
     var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
+    if (req.protocol === 'https') shost = 'https://' + shost;
+    else shost = 'http://' + shost;
 
     //Firefox Hack - Firefox Bug 1341689
     //Trudesk Bug #26
@@ -128,13 +128,6 @@ installController.install = function(req, res) {
 
     var data = req.body;
 
-    ////Mongo
-    //var host = data['mongo[host]'];
-    //var port =  data['mongo[port]'];
-    //var database = data['mongo[database]'];
-    //var username = data['mongo[username]'];
-    //var password = data['mongo[password]'];
-
     //Account
     var user = {
         username: data['account[username]'],
@@ -144,9 +137,8 @@ installController.install = function(req, res) {
         fullname: data['account[fullname]']
     };
 
-    //var conuri = 'mongodb://' + username + ':' + password + '@' + host + '/' + database;
-    var dbPassword = encodeURIComponent(password);
-    var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database;
+    if (!user.username || !user.password || !user.email || !user.fullname)
+        return res.status(400).json({success: false, error: 'Invalid Post Data.'});
 
     async.waterfall([
         function(next) {
@@ -281,43 +273,20 @@ installController.install = function(req, res) {
 
                 return next(null);
             });
-            //Write Configfile
-            //var fs = require('fs');
-            //var configFile = path.join(__dirname, '../../config.json');
-            //
-            //var conf = {
-            //    installed: true
-            //    //mongo: {
-            //    //    host: host,
-            //    //    port: port,
-            //    //    username: username,
-            //    //    password: password,
-            //    //    database: database
-            //    //}
-            //};
-            //
-            //fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
-            //    if (err) {
-            //        winston.error('FS Error: ' + err.message);
-            //        return next('FS Error: ' + err.message);
-            //    }
-            //
-            //    return next(null);
-            //});
         }
     ], function(err) {
         if (err)
             return res.status(400).json({success: false, error: err});
 
-        res.json({success: true});
+        return res.json({success: true});
     });
 };
 
 installController.restart = function(req, res) {
     var origin = req.headers.origin;
     var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
+    if (req.protocol === 'https') host = 'https://' + host;
+    else host = 'http://' + host;
 
     //Firefox Hack - Firefox Bug 1341689
     //Trudesk Bug #26
