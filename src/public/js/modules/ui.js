@@ -346,6 +346,7 @@ define('modules/ui', [
         };
 
         socket.emit('setAssignee', payload);
+        $('#assigneeDropdown').removeClass('pDropOpen');
     }
 
     socketUi.updateAssignee = function() {
@@ -396,7 +397,7 @@ define('modules/ui', [
 
             socket.emit('$trudesk:chat:updateOnlineBubbles');
 
-            $('#assigneeDropdown').removeClass('pDropOpen');
+
         });
     };
 
@@ -897,7 +898,7 @@ define('modules/ui', [
                         html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>';
                         break;
                     case 1:
-                        html += '<div class="messageIcon left"><i class="fa fa-warning"></i></div>';
+                        html += '<div class="messageIcon left"><i class="fa fa-comment-o green" style="margin-top: -5px"></i></div>';
                         break;
                     case 2:
                         html += '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>';

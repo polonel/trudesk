@@ -266,7 +266,7 @@ api_tickets.create = function(req, res) {
             return res.status(400).json(response);
         }
 
-        emitter.emit('ticket:created', {socketId: socketId, ticket: t});
+        emitter.emit('ticket:created', {hostname: req.headers.host, socketId: socketId, ticket: t});
 
         response.ticket = t;
         res.json(response);
@@ -363,9 +363,21 @@ api_tickets.createPublicTicket = function(req, res) {
         },
 
         function(group, savedUser, next) {
+            var settingsSchema = require('../../../models/setting');
+            settingsSchema.getSettingByName('ticket:type:default', function(err, defaultType) {
+                if (err) return next(err);
+
+                if (defaultType.value)
+                    return next(null, defaultType.value, group, savedUser);
+                else
+                    return next('Failed: Invalid Default Ticket Type.');
+            });
+        },
+
+        function(defaultTicketType, group, savedUser, next) {
             //Create Ticket
             var ticketTypeSchema = require('../../../models/tickettype');
-            ticketTypeSchema.getTypeByName('Issue', function(err, ticketType) {
+            ticketTypeSchema.getType(defaultTicketType, function(err, ticketType) {
                 if (err) return next(err);
 
                 var ticketSchema = require('../../../models/ticket');
@@ -393,7 +405,7 @@ api_tickets.createPublicTicket = function(req, res) {
                 ticket.save(function(err, t) {
                     if (err) return next(err);
 
-                    emitter.emit('ticket:created', {socketId: '', ticket: t});
+                    emitter.emit('ticket:created', {hostname: req.headers.host, socketId: '', ticket: t});
 
                     return next(null, {user: savedUser, group: group, ticket: t});
                 });
@@ -482,14 +494,15 @@ api_tickets.single = function(req, res) {
 api_tickets.update = function(req, res) {
     var user = req.user;
     if (!_.isUndefined(user) && !_.isNull(user)) {
+        var permissions = require('../../../permissions');
+        if (!permissions.canThis(user.role, 'ticket:update'))
+            return res.status(401).json({success: false, error: 'Invalid Permissions'});
         var oId = req.params.id;
         var reqTicket = req.body;
         if (_.isUndefined(oId)) return res.status(400).json({success: false, error: "Invalid Post Data"});
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
             if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
-            //TODO: Check the user has permission to update ticket.
-
             async.parallel([
                 function(cb) {
                     if (!_.isUndefined(reqTicket.status)) {
@@ -522,6 +535,12 @@ api_tickets.update = function(req, res) {
                 function(cb) {
                     if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                         ticket.tags = reqTicket.tags;
+
+                    cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue))
+                        ticket.issue = reqTicket.issue;
 
                     cb();
                 },
@@ -668,7 +687,7 @@ api_tickets.postComment = function(req, res) {
         t.history.push(HistoryItem);
 
         t.save(function(err, tt) {
-            if (err) return res.status(400).json({success: false, error: err.message})
+            if (err) return res.status(400).json({success: false, error: err.message});
 
             if (!permissions.canThis(req.user.role, 'notes:view'))
                 tt.notes = [];
@@ -676,7 +695,7 @@ api_tickets.postComment = function(req, res) {
             ticketModel.populate(tt, 'subscribers comments.owner', function(err) {
                 if (err) return res.json({success: true, error: null, ticket: tt});
 
-                emitter.emit('ticket:comment:added', tt, Comment);
+                emitter.emit('ticket:comment:added', tt, Comment, req.headers.host);
 
                 return res.json({success: true, error: null, ticket: tt});
             });

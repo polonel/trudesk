@@ -250,7 +250,7 @@ define('pages/messages', [
                     ul.append(li);
 
                     var fromName = message.owner.fullname;
-                    if (message.owner._id.toString() == $loggedInAccountId) {
+                    if (message.owner._id.toString() === $loggedInAccountId) {
                         fromName = 'You';
                     }
                     convoListItem.find('.message-subject').text(fromName + ': ' + message.body);
@@ -261,7 +261,7 @@ define('pages/messages', [
                     var convoUL = $('#convo-list > ul.message-items');
                     if (convoUL.length > 0) {
                         var partner = message.owner;
-                        if (message.owner._id.toString() == $loggedInAccountId.toString())
+                        if (message.owner._id.toString() === $loggedInAccountId.toString())
                             partner = data.toUser;
                         var newLI = buildConversationListItem({
                             _id: message.conversation,

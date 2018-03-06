@@ -55,7 +55,7 @@ api_plugins.installPlugin = function(req, res) {
                         var fileFullPath = path.join(pluginPath, plugin.url);
                         mkdirp.sync(pluginExtractFolder);
 
-                        tar.extract({C: pluginExtractFolder, file: path.join(pluginPath, plugin.url)}, function(err) {
+                        tar.extract({C: pluginExtractFolder, file: path.join(pluginPath, plugin.url)}, function() {
                             rimraf(fileFullPath, function(err) {
                                 if (err) return res.status(400).json({success: false, error: err});
 

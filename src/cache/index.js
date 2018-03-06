@@ -213,7 +213,7 @@ truCache.refreshCache = function(callback) {
 //Fork of Main
 (function() {
     process.on('message', function(message) {
-        if (message.name == 'cache:refresh') {
+        if (message.name === 'cache:refresh') {
             winston.debug('Refreshing Cache....');
             var now = moment();
             var timeSinceLast = Math.round(moment.duration(now.diff(lastUpdated)).asMinutes());

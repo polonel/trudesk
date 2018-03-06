@@ -12,6 +12,7 @@
 var _           = require('lodash'),
     async       = require('async'),
     path        = require('path'),
+    fs          = require('fs'),
     winston     = require('winston'),
     nconf       = require('nconf'),
     pkg         = require('./package.json'),
@@ -138,6 +139,9 @@ function dbCallback(err, db) {
                 });
                     },
                     function(next) {
+                require('./src/settings/defaults').init(next);
+            },
+            function(next) {
                         //Start Task Runners
                         require('./src/taskrunner');
                 return next();

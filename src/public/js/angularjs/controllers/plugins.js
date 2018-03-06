@@ -158,8 +158,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
             function compareVersions(v1, comparator, v2) {
                 "use strict";
-                comparator = comparator == '=' ? '==' : comparator;
-                if(['==','===','<','<=','>','>=','!=','!=='].indexOf(comparator) == -1) {
+                comparator = comparator === '=' ? '==' : comparator;
+                if(['==','===','<','<=','>','>=','!=','!=='].indexOf(comparator) === -1) {
                     throw new Error('Invalid comparator. ' + comparator);
                 }
                 var v1parts = v1.split('.'), v2parts = v2.split('.');

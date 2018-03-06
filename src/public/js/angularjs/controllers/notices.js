@@ -38,7 +38,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     message: formData.nMessage,
                     color: formData.nColor,
                     fontColor: formData.nFontColor,
-                    alertWindow: (formData.nAlertWindow == 'on')
+                    alertWindow: (formData.nAlertWindow === 'on')
                 };
 
                 $http({
@@ -67,7 +67,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     message: formData.nMessage,
                     color: formData.nColor,
                     fontColor: formData.nFontColor,
-                    alertWindow: (formData.nAlertWindow == 'on')
+                    alertWindow: (formData.nAlertWindow === 'on')
                 };
 
                 $http({

@@ -12,7 +12,6 @@
 
  **/
 
-var _            = require('lodash');
 var passport     = require('passport');
 var Local        = require('passport-local').Strategy;
 var TotpStrategy = require('passport-totp').Strategy;
@@ -21,7 +20,7 @@ var User         = require('../models/user');
 
 module.exports = function() {
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        done(null, user._id);
     });
 
     passport.deserializeUser(function(id, done) {

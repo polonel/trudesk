@@ -53,7 +53,7 @@ var roles = {
         id: "support",
         name: "Support",
         description: "Support User",
-        allowedAction: ["ticket:*", "accounts:create edit view delete", "comment:editSelf create delete", "notes:create view", "reports:view", "notices:*", "invoices:view edit delete"]
+        allowedAction: ["ticket:*", "accounts:create edit view delete", "comment:editSelf create delete", "notes:create view", "reports:view", "notices:*"]
     },
     user: {
         id: "user",

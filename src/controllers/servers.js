@@ -19,15 +19,14 @@ var serversController = {};
 serversController.content = {};
 
 serversController.get = function(req, res) {
-    var self = this;
-    self.content = {};
-    self.content.title = "Servers";
-    self.content.nav = 'servers';
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    var content = {};
+    content.title = "Servers";
+    content.nav = 'servers';
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
-    res.render('servers', self.content);
+    res.render('servers', content);
 };
 
 module.exports = serversController;

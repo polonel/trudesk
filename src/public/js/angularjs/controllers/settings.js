@@ -14,6 +14,25 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
+        .directive('selectize', function($timeout) {
+            return {
+                restrict: 'A',
+                require: '?ngModel',
+                link: function(scope, element, attrs, ngModel) {
+                    var $element;
+                    $timeout(function() {
+                        $element = $(element).selectize(scope.$eval(attrs.selectize));
+                        if(!ngModel) return;
+                        $(element).selectize().on('change', function() {
+                            scope.$apply(function() {
+                                var newValue = $(element).selectize().val();
+                                ngModel.$setViewValue(newValue);
+                            });
+                        });
+                    });
+                }
+            }
+        })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
@@ -30,6 +49,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                     if ($scope.mailerCheckTicketType !== '') {
                         var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                        if ($mailerCheckTicketTypeSelect.length < 1)
+                            return;
                         $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
                         var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                         $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
@@ -46,6 +67,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('input#mailerPassword').attr('disabled', !newVal);
                 $('input#mailerFrom').attr('disabled', !newVal);
                 $('button#mailerSubmit').attr('disabled', !newVal);
+            });
+
+            $scope.$watch('defaultTicketType', function(newValue) {
+                if (!newValue)
+                    return;
+                $http.put('/api/v1/settings', {
+                    name: 'ticket:type:default',
+                    value: newValue
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    $log.error(err);
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                });
             });
 
             $scope.mailerEnabledChange = function() {
@@ -118,6 +157,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
                 });
+            };
+
+            $scope.tpsEnabledChange = function() {
+                var vm = this;
+                $scope.tpsEnabled = vm.tpsEnabled;
+
+                $http.put('/api/v1/settings', {
+                    name: 'tps:enable',
+                    value: $scope.tpsEnabled
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
+            };
+
+            $scope.tpsFormSubmit = function($event) {
+                $event.preventDefault();
+                $http.put('/api/v1/settings', [
+                    { name: 'tps:username', value: $scope.tpsUsername },
+                    { name: 'tps:apikey', value: $scope.tpsApiKey}
+                ], {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('TPS Settings Saved', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar(err, true);
+                })
             };
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
@@ -280,6 +353,41 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 });
             };
 
+            $scope.showCreateTagWindow = function($event) {
+                $event.preventDefault();
+                var createTagModal = $('#createTagModal');
+                if (createTagModal.length > 0) {
+                    UIkit.modal(createTagModal, {bgclose: false}).show();
+                }
+            };
+
+            $scope.createTag = function($event) {
+                $event.preventDefault();
+                var form = $('#createTagForm');
+                if (!form.isValid(null, null, false)) {
+                    return true;
+                } else {
+                    var tagName = form.find('input[name="tagName"]').val();
+                    if (!tagName || tagName.length < 3) return true;
+
+                    $http.post('/api/v1/tickets/addtag', {
+                        tag: tagName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
+
+                        History.pushState(null, null, '/settings/tags/?refresh=1');
+
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Unable to create tag. Check console', true);
+                        $log.error(err);
+                    });
+                }
+            };
+
             $scope.showCreateTicketTypeWindow = function($event) {
                 $event.preventDefault();
                 var createTicketTypeModal = $('#createTicketTypeModal');
@@ -306,7 +414,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
 
-                        History.pushState(null, null, '/settings/tickettypes');
+                        History.pushState(null, null, '/settings/tickettypes/?refresh=1');
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);

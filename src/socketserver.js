@@ -12,7 +12,8 @@
 
  **/
 
-var winston             = require('winston'),
+var _                   = require('lodash'),
+    winston             = require('winston'),
     async               = require('async'),
     utils               = require('./helpers/utils'),
     passportSocketIo    = require('passport.socketio'),
@@ -22,8 +23,7 @@ var winston             = require('winston'),
 
 var socketServer = function(ws) {
     "use strict";
-    var _ = require('lodash'),
-        usersOnline = {},
+    var usersOnline = {},
         idleUsers = {},
         sockets = [],
         io = require('socket.io')(ws.server);
@@ -80,11 +80,6 @@ var socketServer = function(ws) {
         'jsonp-polling',
         'polling'
     ]);
-
-    // function onAuthorizeFail(data, message, error, accept) {
-    //     winston.warn('Forcing Accept of socket connect! - (' + message + ') -- ' + 'Maybe iOS?');
-    //     accept();
-    // }
 
     io.sockets.on('connection', function(socket) {
         // var totalOnline = _.size(usersOnline);
@@ -258,8 +253,9 @@ var socketServer = function(ws) {
         });
 
         socket.on('updateUsers', function() {
-            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
             //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
+            var sortedUserList = sortByKeys(usersOnline);
+
             utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
 
@@ -301,6 +297,7 @@ var socketServer = function(ws) {
                             if (err) return true;
 
                             emitter.emit('ticket:subscriber:update', {user: userId, subscribe: true});
+                            emitter.emit('ticket:setAssignee', {assigneeId: ticket.assignee._id, ticketId: ticket._id, ticketUid: ticket.uid, hostname: socket.handshake.headers.host});
                             emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateAssignee', ticket);
                         });
@@ -577,7 +574,8 @@ var socketServer = function(ws) {
 
         socket.on('logs:fetch', function() {
             var path = require('path');
-            var ansi_up = require('ansi_up');
+            var AnsiUp = require('ansi_up');
+            var ansi_up = new AnsiUp.default;
             var fileTailer = require('file-tail');
             var fs = require('fs');
             var logFile = path.join(__dirname, '../logs/output.log');
@@ -659,8 +657,8 @@ var socketServer = function(ws) {
             if (!exists) {
                 if (user.username.length !== 0) {
                     usersOnline[user.username] = {sockets: [socket.id], user: user};
+                    sortedUserList = sortByKeys(usersOnline);
 
-                    sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
                     utils.sendToSelf(socket, 'joinSuccessfully');
                     utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                     sockets.push(socket);
@@ -670,7 +668,8 @@ var socketServer = function(ws) {
             } else {
                 usersOnline[user.username].sockets.push(socket.id);
                 utils.sendToSelf(socket, 'joinSuccessfully');
-                sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+
+                sortedUserList = sortByKeys(usersOnline);
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 sockets.push(socket);
 
@@ -847,15 +846,12 @@ var socketServer = function(ws) {
                 var userSockets = usersOnline[user.username].sockets;
 
                 if (_.size(userSockets) < 2) {
-                    // console.log('Deleting ' + user.username + ' from online socket list...');
                     delete usersOnline[user.username];
                 } else {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                //TODO: Remove Idle Sockets
-
-                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+                var sortedUserList = sortByKeys(usersOnline);
                 utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
@@ -881,6 +877,14 @@ var socketServer = function(ws) {
 
 
 };
+
+function sortByKeys(obj) {
+    const keys = Object.keys(obj);
+    const sortedKeys = _.sortBy(keys);
+    return _.fromPairs(
+        _.map(sortedKeys, function(key) { return [key, obj[key]]})
+    );
+}
 
 function onAuthorizeSuccess(data, accept) {
     "use strict";

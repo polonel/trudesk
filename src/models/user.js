@@ -321,7 +321,7 @@ userSchema.statics.getUserByEmail = function(email, callback) {
         return callback("Invalid Email - UserSchema.GetUserByEmail()", null);
     }
 
-    return this.model(COLLECTION).findOne({email: email, deleted: false}, callback);
+    return this.model(COLLECTION).findOne({email: email}, callback);
 };
 
 /**
@@ -450,7 +450,7 @@ userSchema.statics.getUsersByRoles = function(roles, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.createUser = function(data, callback) {
-    if (_.isUndefined(data)) {
+    if (_.isUndefined(data) || _.isUndefined(data.username)) {
         return callback("Invalid User Data - UserSchema.CreateUser()", null);
     }
     var self = this;

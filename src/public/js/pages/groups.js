@@ -32,7 +32,7 @@ define('pages/groups', [
             var filterArray = [];
             $('#group_list').children().each(function() {
                 var thisfilter = $(this).attr('data-uk-filter');
-                if ( $.inArray( thisfilter, filterArray ) == -1) {
+                if ( $.inArray( thisfilter, filterArray ) === -1) {
                     filterArray.push(thisfilter);
                 }
             });

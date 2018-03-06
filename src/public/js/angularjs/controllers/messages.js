@@ -65,7 +65,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                     var actions = $document[0].getElementById('convo-actions').children;
                     [].forEach.call(actions, function(el) {
-                        if (el.style.display == 'none')
+                        if (el.style.display === 'none')
                             el.style.display = 'block';
                         else
                             el.style.display = 'none';
@@ -106,7 +106,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                     var actions = $document[0].getElementById('convo-actions').children;
                     [].forEach.call(actions, function(el) {
-                        if (el.style.display == 'none')
+                        if (el.style.display === 'none')
                             el.style.display = 'block';
                         else
                             el.style.display = 'none';

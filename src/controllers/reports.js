@@ -26,20 +26,19 @@ reportsController.overview = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Overview";
-    self.content.nav = 'reports';
-    self.content.subnav = 'reports-overview';
+    var content = {};
+    content.title = "Overview";
+    content.nav = 'reports';
+    content.subnav = 'reports-overview';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.groups = {};
 
-    self.content.data.reports = {};
+    content.data.reports = {};
 
-    return res.render('subviews/reports/overview', self.content);
+    return res.render('subviews/reports/overview', content);
 };
 
 reportsController.generate = function(req, res) {
@@ -49,17 +48,16 @@ reportsController.generate = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = 'Generate Report';
-    self.content.nav = 'reports';
-    self.content.subnav = 'reports-generate';
+    var content = {};
+    content.title = 'Generate Report';
+    content.nav = 'reports';
+    content.subnav = 'reports-generate';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
 
-    return res.render('subviews/reports/generate', self.content);
+    return res.render('subviews/reports/generate', content);
 };
 
 reportsController.breakdownGroup = function(req, res) {
@@ -69,20 +67,19 @@ reportsController.breakdownGroup = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Group Breakdown";
-    self.content.nav = 'reports';
-    self.content.subnav = 'reports-breakdown-group';
+    var content = {};
+    content.title = "Group Breakdown";
+    content.nav = 'reports';
+    content.subnav = 'reports-breakdown-group';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.groups = {};
 
-    self.content.data.reports = {};
+    content.data.reports = {};
 
-    return res.render('subviews/reports/breakdown_Group', self.content);
+    return res.render('subviews/reports/breakdown_Group', content);
 
 };
 
@@ -93,20 +90,19 @@ reportsController.breakdownUser = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "User Breakdown";
-    self.content.nav = 'reports';
-    self.content.subnav = 'reports-breakdown-user';
+    var content = {};
+    content.title = "User Breakdown";
+    content.nav = 'reports';
+    content.subnav = 'reports-breakdown-user';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.groups = {};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.groups = {};
 
-    self.content.data.reports = {};
+    content.data.reports = {};
 
-    return res.render('subviews/reports/breakdown_User', self.content);
+    return res.render('subviews/reports/breakdown_User', content);
 };
 
 // function handleError(res, err) {

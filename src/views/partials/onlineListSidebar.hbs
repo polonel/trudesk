@@ -16,19 +16,37 @@
             <ul class="user-list">
                 {{#each data.common.users}}
                     {{#compare username '!=' ../data.common.loggedInAccount.username}}
-                        <li data-search-term="{{lowercase fullname}}" data-user-id="{{_id}}">
-                            <a class="no-ajaxy" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
-                                <div class="user-list-user">
-                                    {{#if image}}
-                                        <div class="image"><img src="/uploads/users/{{image}}"></div>
-                                    {{else}}
-                                        <div class="image"><img src="/uploads/users/defaultProfile.jpg"></div>
-                                    {{/if}}
-                                    <span class="online-status-offline" data-user-status-id="{{_id}}">{{fromNow lastOnline}}</span>
-                                    <div class="user-name">{{fullname}}</div>
-                                </div>
-                            </a>
-                        </li>
+                        {{#compare ../data.common.loggedInAccount.role '==' 'user'}}
+                            {{#compare role '!=' 'user'}}
+                                <li data-search-term="{{lowercase fullname}}" data-user-id="{{_id}}">
+                                    <a class="no-ajaxy" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
+                                        <div class="user-list-user">
+                                            {{#if image}}
+                                                <div class="image"><img src="/uploads/users/{{image}}"></div>
+                                            {{else}}
+                                                <div class="image"><img src="/uploads/users/defaultProfile.jpg"></div>
+                                            {{/if}}
+                                            <span class="online-status-offline" data-user-status-id="{{_id}}">{{fromNow lastOnline}}</span>
+                                            <div class="user-name">{{fullname}}</div>
+                                        </div>
+                                    </a>
+                                </li>
+                            {{/compare}}
+                        {{else}}
+                            <li data-search-term="{{lowercase fullname}}" data-user-id="{{_id}}">
+                                <a class="no-ajaxy" data-action="startChat" data-chatuser="{{_id}}" href="#" role="button">
+                                    <div class="user-list-user">
+                                        {{#if image}}
+                                            <div class="image"><img src="/uploads/users/{{image}}"></div>
+                                        {{else}}
+                                            <div class="image"><img src="/uploads/users/defaultProfile.jpg"></div>
+                                        {{/if}}
+                                        <span class="online-status-offline" data-user-status-id="{{_id}}">{{fromNow lastOnline}}</span>
+                                        <div class="user-name">{{fullname}}</div>
+                                    </div>
+                                </a>
+                            </li>
+                        {{/compare}}
                     {{/compare}}
                 {{/each}}
             </ul>

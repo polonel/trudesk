@@ -111,7 +111,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         var hasNotice = false;
         var $noticeFrame = $('.wrapper').find('#notice-banner');
         if ($noticeFrame.length > 0) {
-            hasNotice = $noticeFrame.hasClass('uk-hidden') == false;
+            hasNotice = $noticeFrame.hasClass('uk-hidden') === false;
         }
 
         var topOffset = $(this).offset().top - $(window).scrollTop() - pageOffsetTop;

@@ -224,7 +224,7 @@ debugController.uploadPlugin = function(req, res) {
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
         console.log(mimetype);
-        if (mimetype.indexOf('x-zip-compressed') == -1) {
+        if (mimetype.indexOf('x-zip-compressed') === -1) {
             error = {
                 status: 500,
                 message: 'Invalid File Type'

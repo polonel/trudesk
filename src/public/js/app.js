@@ -23,7 +23,7 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
         // Allowing the SessionUser to be populated before the controllers have access.
         angular.injector(['ng', 'sessionLoader']).get('SessionService').init(function(err) {
             if (err)
-                console.error(err);
+                throw new Error(err);
 
             require(['angularjs/main'], function() {
                 //Static Bootstraps

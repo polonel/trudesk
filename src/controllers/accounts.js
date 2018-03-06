@@ -33,18 +33,18 @@ accountsController.signup = function(req, res) {
         if (setting && setting.value === true) {
             settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
                 if (err) return handleError(res, err);
-                var self = accountsController;
-                self.content = {};
-                self.content.title = "Create Account";
-                self.content.layout = false;
-                self.content.data = {};
+
+                var content = {};
+                content.title = "Create Account";
+                content.layout = false;
+                content.data = {};
 
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
-                    self.content.data.privacyPolicy = 'No Privacy Policy has been set.';
+                    content.data.privacyPolicy = 'No Privacy Policy has been set.';
                 else
-                    self.content.data.privacyPolicy = privacyPolicy.value;
+                    content.data.privacyPolicy = privacyPolicy.value;
 
-                return res.render('pub_signup', self.content);
+                return res.render('pub_signup', content);
             });
         } else {
             return res.redirect('/');
@@ -58,16 +58,15 @@ accountsController.get = function(req, res) {
         return res.redirect('/');
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Accounts";
-    self.content.nav = 'accounts';
+    var content = {};
+    content.title = "Accounts";
+    content.nav = 'accounts';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.accounts = {};
-    self.content.data.page = 2;
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.accounts = {};
+    content.data.page = 2;
 
     async.waterfall([
         function(callback) {
@@ -86,7 +85,7 @@ accountsController.get = function(req, res) {
                         var g = grps.slice(0);
                         g.members = undefined;
                         g.sendMailTo = undefined;
-                        self.content.data.allGroups = g;
+                        content.data.allGroups = g;
                         cc(null, grps)
                     });
                 },
@@ -117,9 +116,9 @@ accountsController.get = function(req, res) {
         }
     ], function(err, rr) {
         if (err) return res.render('error', {message: err.message, error: err, layout: false});
-        self.content.data.accounts = _.sortBy(rr, 'fullname');
+        content.data.accounts = _.sortBy(rr, 'fullname');
 
-        res.render('accounts', self.content);
+        res.render('accounts', content);
     });
 };
 
@@ -132,16 +131,15 @@ accountsController.profile = function(req, res) {
         return res.redirect(backUrl);
     }
 
-    var self = this;
-    self.content = {};
-    self.content.title = "Profile";
-    self.content.nav = 'profile';
+    var content = {};
+    content.title = "Profile";
+    content.nav = 'profile';
 
-    self.content.data = {};
-    self.content.data.user = req.user;
-    self.content.data.common = req.viewdata;
-    self.content.data.host = req.hostname;
-    self.content.data.account = {};
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+    content.data.host = req.hostname;
+    content.data.account = {};
 
     async.parallel({
         account: function(callback) {
@@ -155,9 +153,9 @@ accountsController.profile = function(req, res) {
             return res.redirect(backUrl);
         }
 
-        self.content.data.account = result.account;
+        content.data.account = result.account;
 
-        res.render('subviews/profile', self.content);
+        res.render('subviews/profile', content);
     });
 };
 

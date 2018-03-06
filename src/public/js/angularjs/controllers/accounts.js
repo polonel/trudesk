@@ -16,10 +16,39 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
 
+            function checkGroupValidation() {
+                var data = {};
+                var form = $('#createAccountForm');
+                data.aGrps = form.find('select[name="aGrps"]').val();
+
+                if (!data.aGrps || data.aGrps.length < 1) {
+                    //Validate Group
+                    $('label[for="aGrps"]').css('color', '#d85030');
+                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
+                    $('.aGrps-error-message').removeClass('hide').css('display', 'block').css('color', '#d85030').css('font-weight', 'bold');
+                    return false;
+                } else {
+                    $('label[for="aGrps"]').css('color', '#4d4d4d');
+                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
+                    $('.aGrps-error-message').addClass('hide');
+                    return true;
+                }
+
+            }
+
             $scope.createAccount = function(event) {
                 var data = {};
                 var form = $('#createAccountForm');
-                if (!form.isValid(null, null, false)) return true;
+                // if (!form.isValid(null, null, false)) return true;
+                if (!form.isValid(null, null, false)) {
+                    checkGroupValidation();
+                    return false;
+                } else {
+                    if (!checkGroupValidation()) {
+                        event.preventDefault();
+                        return false;
+                    }
+                }
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.aGrps = form.find('select[name="aGrps"]').val();
@@ -36,19 +65,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                                 return;
                             }
 
-                            helpers.UI.showSnackbar('Error Submitting Ticket', true);
+                            helpers.UI.showSnackbar('Error Creating Account', true);
                         }
 
-                        //helpers.showFlash('Ticket Created Successfully.');
                         helpers.UI.showSnackbar({text:   'Account Created'});
 
+                        //Refresh UserGrid
+                        History.pushState(null,null, '/accounts/?refresh=1');
+
                         UIkit.modal("#accountCreateModal").hide();
-
-                        //History.pushState(null, null, '/tickets/');
-
                     }).error(function(err) {
-                        $log.log('[trudesk:accounts:createAccount] - ' + err.error.message);
-                        helpers.UI.showSnackbar('Error: ' + err.error.message, true);
+                        $log.log('[trudesk:accounts:createAccount]', err);
+                        helpers.UI.showSnackbar('An error occurred while creating the account. Check Console.', true);
                 });
             };
 
