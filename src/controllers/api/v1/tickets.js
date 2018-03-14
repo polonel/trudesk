@@ -328,7 +328,7 @@ api_tickets.createPublicTicket = function(req, res) {
     async.waterfall([
         function(next) {
             var userSchema = require('../../../models/user');
-            plainTextPass = chance.string({length: 8, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%'});
+            plainTextPass = chance.string({length: 6, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'});
 
             user = new userSchema({
                 username: postData.user.email,

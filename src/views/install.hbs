@@ -555,6 +555,86 @@
             }
 
             $('button#set-admin-account').click(function() {
+                if (isDoubleClicked($(this))) return;
+
+                var adminInfoFormData = $('form#adminAccount').serializeObject();
+                var $usernameField, $fullnameField, $passwordField, $confirmPasswordField, $emailField;
+                var $usernameValid = false, $fullnameValid = false, $passwordValid = false, $emailValid = false;
+
+                if (!adminInfoFormData['admin-username'] || (adminInfoFormData['admin-username'].length < 5)) {
+                    $usernameField = $('form#adminAccount').find('input#admin-username');
+                    $usernameField.parent('.md-input-wrapper').addClass('has-error');
+                    $usernameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $usernameField.addClass('uk-form-danger');
+                } else {
+                    $usernameField = $('form#adminAccount').find('input#admin-username');
+                    $usernameField.parent('.md-input-wrapper').removeClass('has-error');
+                    $usernameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $usernameField.removeClass('uk-form-danger');
+
+                    $usernameValid = true;
+                }
+
+                if (!adminInfoFormData['admin-fullname'] || (adminInfoFormData['admin-fullname'].length < 1)) {
+                    $fullnameField = $('form#adminAccount').find('input#admin-fullname');
+                    $fullnameField.parent('.md-input-wrapper').addClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $fullnameField.addClass('uk-form-danger');
+                } else {
+                    $fullnameField = $('form#adminAccount').find('input#admin-fullname');
+                    $fullnameField.parent('.md-input-wrapper').removeClass('has-error');
+                    $fullnameField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $fullnameField.removeClass('uk-form-danger');
+
+                    $fullnameValid = true;
+                }
+
+                if (!adminInfoFormData['admin-password'] || (adminInfoFormData['admin-password'].length < 6)) {
+                    $passwordField = $('form#adminAccount').find('input#admin-password');
+                    $passwordField.parent('.md-input-wrapper').addClass('has-error');
+                    $passwordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $passwordField.addClass('uk-form-danger');
+                } else {
+                    $passwordField = $('form#adminAccount').find('input#admin-password');
+                    $passwordField.parent('.md-input-wrapper').removeClass('has-error');
+                    $passwordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $passwordField.removeClass('uk-form-danger');
+                }
+
+                if (!adminInfoFormData['admin-cpassword'] || (adminInfoFormData['admin-cpassword'] !== adminInfoFormData['admin-password'])) {
+                    $confirmPasswordField = $('form#adminAccount').find('input#admin-cpassword');
+                    $confirmPasswordField.parent('.md-input-wrapper').addClass('has-error');
+                    $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $confirmPasswordField.addClass('uk-form-danger');
+                } else {
+                    $confirmPasswordField = $('form#adminAccount').find('input#admin-cpassword');
+                    $confirmPasswordField.parent('.md-input-wrapper').removeClass('has-error');
+                    $confirmPasswordField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $confirmPasswordField.removeClass('uk-form-danger');
+
+                    $passwordValid = true;
+                }
+
+                if (!adminInfoFormData['admin-email'] || (!validateEmail(adminInfoFormData['admin-email']))) {
+                    $emailField = $('form#adminAccount').find('input#admin-email');
+                    $emailField.parent('.md-input-wrapper').addClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').addClass('bottom-fix error-color');
+                    $emailField.addClass('uk-form-danger');
+                } else {
+                    $emailField = $('form#adminAccount').find('input#admin-email');
+                    $emailField.parent('.md-input-wrapper').removeClass('has-error');
+                    $emailField.parent('.md-input-wrapper').find('.md-input-bar').removeClass('bottom-fix error-color');
+                    $emailField.removeClass('uk-form-danger');
+
+                    $emailValid = true;
+                }
+
+                if (!$usernameValid ||
+                    !$fullnameValid ||
+                    !$passwordValid ||
+                    !$emailValid)
+                    return false;
+
                 adminAccount = {
                     username: $('#admin-username').val(),
                     fullname: $('#admin-fullname').val(),
@@ -651,6 +731,11 @@
                 return false;
             }
 
+            function validateEmail(email) {
+                var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                return email.match(mailFormat);
+            }
+
             $.fn.serializeObject = function(){
                 var obj = {};
 
@@ -660,7 +745,7 @@
 
                     obj[n] = obj[n] === undefined ? v
                             : $.isArray( obj[n] ) ? obj[n].concat( v )
-                            : [ obj[n], v ];
+                                    : [ obj[n], v ];
                 });
 
                 return obj;

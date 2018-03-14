@@ -60,6 +60,8 @@ div#accountsTable_wrapper
       display: block !important
       height: 0 !important
       opacity: 0 !important
+      padding: 0 !important
+      margin: 0 !important
     &.shown
       height: 124px !important
       opacity: 1 !important
@@ -68,16 +70,15 @@ div#accountsTable_wrapper
   position: absolute
   top: 28px
   left: -5px
-  padding: 5px
+  padding: 0
   background: #ffffff
   border: 1px solid #bec4d0
   +borderRadius(3px)
   z-index: 999
   ul
     margin: 0
-    padding: 0
     list-style: none
-
+    padding: 5px
     li
       margin-bottom: 3px
       cursor: pointer
@@ -219,7 +220,7 @@ div#accountsTable_wrapper
 
   select, select:focus
     -webkit-appearance: none
-    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='#444' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>")
+    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='#ccc' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>")
     background-position: 100% 50%
     background-repeat: no-repeat
     border: none

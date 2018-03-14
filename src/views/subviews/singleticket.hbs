@@ -41,7 +41,7 @@
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
                             {{/canUser}}
                         {{/is}}
-
+                        <span class="drop-icon material-icons" style="left: auto; right: 20px; bottom: -18px">keyboard_arrow_down</span>
                         <div id="statusSelect" close-mouse-up class="hide">
                             <ul>
                                 <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
@@ -71,6 +71,7 @@
                                             <img src="/uploads/users/defaultProfile.jpg" alt=""/>
                                         {{/if}}
                                         <span class="user-offline uk-border-circle" data-user-status-id="{{data.ticket.assignee._id}}"></span>
+                                        <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
                                     </a>
                                     <div class="ticket-assignee-details">
                                         <h3>{{data.ticket.assignee.fullname}}</h3>
@@ -88,6 +89,7 @@
 
                                        style="float: left;" class="relative no-ajaxy">
                                         <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                        <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
                                     </a>
                                     <div class="ticket-assignee-details">
                                         <h3>No User Assigned</h3>

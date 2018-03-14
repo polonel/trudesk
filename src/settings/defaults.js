@@ -13,6 +13,7 @@
  **/
 
 var _               = require('lodash');
+var async           = require('async');
 var winston         = require('winston');
 
 var settingsSchema  = require('../models/setting');
@@ -21,7 +22,48 @@ var settingsDefaults = {};
 
 settingsDefaults.init = function(callback) {
     winston.debug('Checking Default Settings...');
+    async.parallel([
+        function(done) {
+            return showTourSettingDefault(done);
+        },
+        function(done) {
+            return ticketTypeSettingDefault(done);
+        }
+    ], function(err) {
+        if (_.isFunction(callback))
+            return callback(err);
+    });
+};
 
+function showTourSettingDefault(callback) {
+    settingsSchema.getSettingByName('showTour:enable', function(err, setting) {
+        if (err) {
+            winston.warn(err);
+            if (_.isFunction(callback)) return callback(err);
+            return;
+        }
+
+        if (!setting) {
+            var defaultShowTour = new settingsSchema({
+                name: 'showTour:enable',
+                value: 0
+            });
+
+            defaultShowTour.save(function(err) {
+                if (err) {
+                    winston.warn(err);
+                    if (_.isFunction(callback)) return callback(err);
+                }
+
+                if (_.isFunction(callback)) return callback();
+            });
+        } else {
+            if (_.isFunction(callback)) return callback();
+        }
+    });
+}
+
+function ticketTypeSettingDefault(callback) {
     settingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
         if (err) {
             winston.warn(err);
@@ -36,6 +78,7 @@ settingsDefaults.init = function(callback) {
                     winston.warn(err);
                     if (_.isFunction(callback))
                         return callback(err);
+                    return;
                 }
 
                 var type = _.first(types);
@@ -61,6 +104,6 @@ settingsDefaults.init = function(callback) {
                 return callback();
         }
     });
-};
+}
 
 module.exports = settingsDefaults;

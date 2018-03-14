@@ -103,10 +103,11 @@ middleware.cache = function(seconds) {
 
 middleware.checkCaptcha = function(req, res, next) {
     var postData = req.body;
-    var captcha = postData.captcha;
     if (postData === undefined) {
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
     }
+
+    var captcha = postData.captcha;
     var captchaValue = req.session.captcha;
     if (captchaValue === undefined) {
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
