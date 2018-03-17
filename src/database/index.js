@@ -36,7 +36,7 @@ var options = { keepAlive: 1, connectTimeoutMS: 30000 };
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
     if (opts) options = opts;
-    if (process.env.MONGOHQ_URL !== undefined) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
+    if (process.env.MONGOHQ_URL !== undefined) CONNECTION_URI = encodeURIComponent(process.env.MONGOHQ_URL.trim());
 
     if (db.connection) {
         return callback(null, db);
