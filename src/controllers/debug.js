@@ -434,7 +434,7 @@ debugController.populatedatabase = function(req, res) {
         },
         function(done) {
             var counterSchema = require('../models/counters');
-            counterSchema.setCounter('tickets', 100001, done);
+            counterSchema.setCounter('tickets', 101001, done);
         }
     ], function(err) {
         if (err) return res.status(400).send(err);
