@@ -35,7 +35,7 @@ define('pages/accounts', [
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
 
-    accountsPage.init = function(callback) {
+    accountsPage.init = function(callback, reset) {
         $(document).ready(function() {
             var $account_list   = $('#account_list'),
                 $scroller       = $account_list.parents('.scrollable'),
@@ -43,9 +43,14 @@ define('pages/accounts', [
                 $spinner        = $scrollspy.find('i'),
                 $filterAll      = $('.filter-all'),
 
-                $nextPage       = 2,
+                $nextPage       = 1,
                 $enabled        = true,
                 $loading        = false;
+
+            if (reset) {
+                $nextPage = 0;
+                getAccounts();
+            }
 
             UIkit.grid($account_list,{
                 controls: '#account_list_filter',
@@ -54,7 +59,7 @@ define('pages/accounts', [
 
             $scroller.scroll(function() {
                 if ($scrollspy.isInView($scroller)) {
-                    var run = _.throttle(getAccounts, 100);
+                    var run = _.throttle(getAccounts, 500);
                     run();
                 }
             });
@@ -127,7 +132,7 @@ define('pages/accounts', [
                 $spinner.removeClass('uk-hidden');
 
                 $.ajax({
-                    url: '/api/v1/users?page=' + $nextPage
+                    url: '/api/v1/users?limit=20&page=' + $nextPage
                 }).done(function (data) {
                     $spinner.addClass('uk-hidden');
                     var users = data.users;
@@ -140,7 +145,15 @@ define('pages/accounts', [
                     var html = '';
 
                     _.each(users, function (u) {
-                        var h = buildUserHTML(u, false);
+                        var h = null;
+                        if (reset) {
+                            $account_list.html('');
+                            h = buildUserHTML(u, true);
+                            reset = false;
+                        } else {
+                            h = buildUserHTML(u, false);
+                        }
+
                         if (h.length > 0) html += h;
                     });
 
@@ -206,7 +219,7 @@ define('pages/accounts', [
             html    +=              '<div class="uk-text-center">';
             html    +=                  '<div class="account-image relative uk-display-inline-block">';
             if (user.image)
-            html    +=                      '<img src="/uploads/users/' + user.image + '" alt="Profile Pic" class="tru-card-head-avatar" />';
+            html    +=                      '<img src="/uploads/users/' + user.image + '?' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000) + '" alt="Profile Pic" class="tru-card-head-avatar" />';
             else
             html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
             html    +=                      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' + user._id + '"></span>';

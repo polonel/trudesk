@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
 
@@ -71,7 +71,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         helpers.UI.showSnackbar({text:   'Account Created'});
 
                         //Refresh UserGrid
-                        History.pushState(null,null, '/accounts/?refresh=1');
+                        History.pushState(null,null, '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
 
                         UIkit.modal("#accountCreateModal").hide();
                     }).error(function(err) {
@@ -182,6 +182,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     });
 
                     $selectizeGrps.refreshItems();
+
+                    //Profile Picture
+                    var aImageUploadForm = $('form#aUploadImageForm');
+                    var image = aImageUploadForm.find('img');
+                    var input_id = aImageUploadForm.find('input#imageUpload_id');
+                    var input_username = aImageUploadForm.find('input#imageUpload_username');
+                    input_id.val(user._id);
+                    input_username.val(user.username);
+                    if (user.image)
+                        image.attr('src', '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
+                    else
+                        image.attr('src', '/uploads/users/defaultProfile.jpg?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
+
                     var modal = UIkit.modal('#editAccountModal');
                     if (!modal.isActive()) modal.show();
 
@@ -218,6 +231,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
                         UIkit.modal("#editAccountModal").hide();
 
+                        accountsPage.init(null, true);
 
                     }).error(function(err) {
                     $log.log('[trudesk:accounts:saveAccount] - ' + err.error.message);

@@ -46,7 +46,9 @@ var api_users = {};
  }
  */
 api_users.getWithLimit = function(req, res) {
-    var limit = parseInt(req.query.limit);
+    var limit = 10;
+    if (!_.isUndefined(req.query.limit))
+        limit = parseInt(req.query.limit);
     var page = parseInt(req.query.page);
     var search = req.query.search;
 
@@ -64,6 +66,7 @@ api_users.getWithLimit = function(req, res) {
 
         }, function (users, callback) {
             var result = [];
+
             async.waterfall([
                 function(cc) {
                     groupSchema.getAllGroups(function(err, grps) {

@@ -26,6 +26,11 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+            viewdata.hostname = request.hostname;
+            viewdata.hosturl = request.protocol + '://' + request.get('host');
+            return callback();
+          },
+          function(callback) {
               viewController.getActiveNotice(function(err, data) {
                   if (err) return callback(err);
                   viewdata.notice = data;
