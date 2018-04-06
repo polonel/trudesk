@@ -227,8 +227,8 @@ truCache.refreshCache = function(callback) {
             winston.debug('Refreshing Cache....');
             var now = moment();
             var timeSinceLast = Math.round(moment.duration(now.diff(lastUpdated)).asMinutes());
-            if (timeSinceLast < 30) {
-                var i = 30 - timeSinceLast;
+            if (timeSinceLast < 5) {
+                var i = 5 - timeSinceLast;
                 winston.debug('Cannot refresh cache for another ' + i + ' minutes');
                 return false;
             }

@@ -842,6 +842,9 @@ var socketServer = function(ws) {
 
         socket.on('disconnect', function() {
             var user = socket.request.user;
+            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
             if (!_.isUndefined(usersOnline[user.username])) {
                 var userSockets = usersOnline[user.username].sockets;
 
@@ -851,10 +854,25 @@ var socketServer = function(ws) {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                var sortedUserList = sortByKeys(usersOnline);
-                utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
+                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
+            }
+
+            if (!_.isUndefined(idleUsers[user.username])) {
+                var idleSockets = idleUsers[user.username].sockets;
+
+                if (_.size(idleSockets) < 2) {
+                    delete idleUsers[user.username];
+                } else {
+                    idleUsers[user.username].sockets = _.without(idleSockets, socket.id);
+                }
+
+                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+                var i = _.findKey(sockets, {'id': socket.id});
+                sockets = _.without(sockets, i);
             }
 
             //Save lastOnline Time
@@ -866,6 +884,8 @@ var socketServer = function(ws) {
                     u.save();
                 }
             });
+
+            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
 
             winston.debug('User disconnected: ' + user.username + ' - ' + socket.id);
         });
