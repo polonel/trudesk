@@ -308,6 +308,11 @@ label.md-label
 .uk-button
   text-shadow: none
 
+.uk-button-success
+  background-color: $success-color
+  &:hover
+    background-color: darken($success-color, 10%)
+
 .uk-button.uk-button-accent
   background: $accent_color
   color: white
@@ -338,6 +343,13 @@ label.md-label
     border-right-color: $topbar_bg
   .uk-tooltip-inner
     color: $topbar_user_text
+
+.uk-tooltip-modal
+  z-index: 99999
+  &.uk-tooltip-small
+    &:after
+      display: none !important
+
 
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important

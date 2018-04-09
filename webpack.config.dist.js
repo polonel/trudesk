@@ -61,6 +61,7 @@ module.exports = {
             countup:        'vendor/countup/countUp.min',
             velocity:       'vendor/velocity/velocity.min',
             selectize:      'vendor/selectize/selectize',
+            multiselect:    'vendor/multiselect/js/jquery.multi-select',
             waves:          'vendor/waves/waves',
             isinview:       'plugins/jquery.isinview',
             jquery_docsize: 'plugins/jquery.documentsize',

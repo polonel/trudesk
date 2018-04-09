@@ -78,6 +78,9 @@
 .round
   +borderRadius(50% !important)
 
+.text-white
+  color: #fff !important
+
 .font-weight-300
   font-weight: 300 !important
 
@@ -442,18 +445,68 @@ div.ptooltip-box
 
 .mediumProfilePic
   @extend .largeProfilePic
-  width: 128px
-  height: 128px
+  width: 82px
+  height: 82px
   +borderRadius(50%)
   img
-    width: 128px
-    height: 128px
+    width: 82px
+    height: 82px
+
+.profile-picture-controls
+  .btn-file
+    cursor: pointer
+    text-align: center
+    position: absolute
+    top: -4px
+    right: -8px
+    width: 32px
+    height: 32px
+    line-height: 38px
+    background: white
+    display: block
+    +borderRadius(50%)
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)
+    -moz-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)
+    -webkit-box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)
+    overflow: hidden
+    .material-icons
+      color: #1976d2
+      font-size: 24px
+      line-height: 32px
 
 .profilePicHover
   box-shadow: 0 1px 3px rgba(0,0,0,.12), 0 1px 2px rgba(0,0,0,.24)
   transition: all 280ms cubic-bezier(.4,0,.2,1)
   &:hover
     box-shadow: 0 10px 20px rgba(0,0,0,.19), 0 6px 6px rgba(0,0,0,.23)
+
+.user-heading
+  position: relative
+  .md-fab-wrapper
+    position: absolute
+    bottom: -22px
+    right: 24px
+    > .md-fab
+      position: static
+      z-index: auto
+      right: auto
+      left: auto
+.user-heading-content
+  padding: 16px 0
+  h2
+    color: white
+    margin: 0
+    font: 400 22px/28px Roboto, sans-serif
+    span
+      font: 400 22px/28px Roboto, sans-serif
+      color: white
+    .sub-heading
+      font-weight: 300
+      font-size: 16px
+      line-height: 20px
+      display: block
+
+
 
 div.hoverAction
   position: absolute

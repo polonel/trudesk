@@ -66,6 +66,7 @@ module.exports = function(grunt) {
                         'src/public/js/vendor/uikit/css/uikit_custom.css',
                         'src/public/js/plugins/snackbar.css',
                         'src/public/js/vendor/c3/c3.css',
+                        'src/public/js/vendor/multiselect/css/multi-select.css',
                         'src/public/js/vendor/formvalidator/theme-default.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-default.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-dark.css',

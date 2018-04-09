@@ -12,24 +12,24 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit, accountsPage) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator', 'multiselect'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
 
             function checkGroupValidation() {
                 var data = {};
                 var form = $('#createAccountForm');
-                data.aGrps = form.find('select[name="aGrps"]').val();
+                data.aGrps = form.find('select[name="caGrps[]"]').val();
 
                 if (!data.aGrps || data.aGrps.length < 1) {
                     //Validate Group
-                    $('label[for="aGrps"]').css('color', '#d85030');
-                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
+                    $('label[for="caGrps"]').css('color', '#d85030');
+                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
                     $('.aGrps-error-message').removeClass('hide').css('display', 'block').css('color', '#d85030').css('font-weight', 'bold');
                     return false;
                 } else {
-                    $('label[for="aGrps"]').css('color', '#4d4d4d');
-                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
+                    $('label[for="caGrps"]').css('color', '#4d4d4d');
+                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
                     $('.aGrps-error-message').addClass('hide');
                     return true;
                 }
@@ -51,7 +51,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 }
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
-                data.aGrps = form.find('select[name="aGrps"]').val();
+                data.aGrps = form.find('select[name="caGrps[]"]').val();
                 $http({
                     method: 'POST',
                     url: '/api/v1/users/create',
@@ -156,6 +156,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 var username = self.attr('data-username');
                 if (_.isUndefined(username)) return true;
 
+                var $menu = self.parents('.tru-card-head-menu');
+                if (!_.isUndefined($menu)) {
+                    $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active');
+                }
+
                 $http.get(
                     '/api/v1/users/' + username
                 ).success(function(data) {
@@ -163,6 +168,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     var form = editAccountModal.find('form#editAccountForm');
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
+
+                    var $userHeadingContent = $('.user-heading-content');
+                    $userHeadingContent.find('.js-username').text(user.username);
+                    $userHeadingContent.find('.js-user-title').text(user.title);
 
                     form.find('#aId').val(user._id);
                     form.find('#aUsername').val(user.username).prop('disabled', true).parent().addClass('md-input-filled');
@@ -174,14 +183,19 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     $selectizeRole.setValue(user.role, true);
                     $selectizeRole.refreshItems();
 
-                    var $selectizeGrps = form.find('#aGrps')[0].selectize;
-                    var groups = data.groups;
+                   // _.each(data.groups, function(i) {
+                        form.find('#aGrps').multiSelect('deselect_all');
+                        form.find('#aGrps').multiSelect('select', data.groups);
+                    //});
 
-                    _.each(groups, function(i) {
-                        $selectizeGrps.addItem(i, true);
-                    });
-
-                    $selectizeGrps.refreshItems();
+                    // var $selectizeGrps = form.find('#aGrps')[0].selectize;
+                    // var groups = data.groups;
+                    //
+                    // _.each(groups, function(i) {
+                    //     $selectizeGrps.addItem(i, true);
+                    // });
+                    //
+                    // $selectizeGrps.refreshItems();
 
                     //Profile Picture
                     var aImageUploadForm = $('form#aUploadImageForm');
