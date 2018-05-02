@@ -66,6 +66,8 @@ module.exports = {
             isinview:       'plugins/jquery.isinview',
             jquery_docsize: 'plugins/jquery.documentsize',
             idletimer:      'plugins/jquery.idletimer.js',
+            jquery_steps:   'plugins/jquery.steps',
+            jquery_actual:  'plugins/jquery.actual',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether',

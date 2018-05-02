@@ -180,14 +180,18 @@ settingsController.tags = function(req, res) {
         function(tags, next) {
             var ts = require('../models/ticket');
             async.each(tags, function(tag, cb) {
-                ts.getTagCount(tag._id, function(err, count) {
-                    if (err) return cb(err);
-                    //tag count for id
+                //4-23-18 Disable the count of tickets per tag for now.
+                resultTags.push({tag: tag});
+                return cb();
 
-                    resultTags.push({tag: tag, count: count});
-
-                    cb();
-                });
+                // ts.getTagCount(tag._id, function(err, count) {
+                //     if (err) return cb(err);
+                //     //tag count for id
+                //
+                //     resultTags.push({tag: tag, count: count});
+                //
+                //     cb();
+                // });
             }, function(err) {
                return next(err);
             });
@@ -250,8 +254,9 @@ settingsController.editTag = function(req, res) {
                     }
                 ], function(err) {
                     if (err) return cb(err);
+                    var grpIds = _.map(grps, '_id');
 
-                    ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
+                    ticketSchema.getTicketsByTag(grpIds, tagId, function(err, tickets) {
                         if (err) return cb(err);
 
                         content.data.tickets = tickets;

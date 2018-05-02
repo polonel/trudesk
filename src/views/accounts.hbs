@@ -12,10 +12,12 @@
                                 <i class="material-icons">person_add</i>
                                 Create
                             </a>
-                            <a href="#" class="text-white">
-                                <i class="material-icons">cloud_upload</i>
-                                Import
-                            </a>
+                            {{#canUser data.common.loggedInAccount 'accounts:import'}}
+                                <a href="/accounts/import" class="text-white">
+                                    <i class="material-icons">cloud_upload</i>
+                                    Import
+                                </a>
+                            {{/canUser}}
                         </div>
                     </div>
                 </div>

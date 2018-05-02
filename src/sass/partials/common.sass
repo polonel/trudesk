@@ -10,6 +10,14 @@
 
 .clear
   clear: both
+.clearfix
+  &:before
+    content: ""
+    display: table-cell
+  &:after
+    content: ""
+    display: table
+    clear: both
 
 .hide
   display: none
@@ -83,6 +91,18 @@
 
 .font-weight-300
   font-weight: 300 !important
+.font-size-40
+  font-size: 40px !important
+
+.heading-wiz
+  margin: 0
+  font: 400 18px/24px Roboto, sans-serif
+  .sub-heading
+    font-weight: 300
+    font-size: 14px
+    line-height: 18px
+    display: block
+    color: #727272
 
 .cursor-pointer
   cursor: default !important
@@ -105,6 +125,14 @@ a.blackLink
 a.hoverUnderline
   &:hover
     text-decoration: underline !important
+
+.md-hr,.md-hr-2
+  margin: 24px 0 !important
+  height: 0
+  border-top: 2px solid rgba(0,0,0, 0.12)
+
+.md-hr-2
+  margin: 14px 0 !important
 
 .profilePic
   width: 50px

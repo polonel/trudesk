@@ -43,7 +43,7 @@ define('modules/ajaximgupload', [
                     },
                     error: function(err) {
                         console.log('[trudesk:ajaximgupload:onChange] Error - ', err);
-                        helpers.UI.showSnackbar({text: 'An error occurred. Please check console.', actionTextColor: '#B92929'});
+                        helpers.UI.showSnackbar({text: 'An error occurred. Please check console. 2', actionTextColor: '#B92929'});
                     }
                 });
 

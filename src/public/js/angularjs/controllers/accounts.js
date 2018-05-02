@@ -257,6 +257,38 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 throttledAccountPicClick();
             };
 
+            $scope.selectAccountsImport = function(event, type) {
+                if ($(event.currentTarget).hasClass('card-disabled'))
+                    return false;
+
+                switch(type) {
+                    case 'csv':
+                        $('#csv_wizard_card').removeClass('uk-hidden');
+                        $('#json-import-selector').addClass('card-disabled');
+                        $('#ldap-import-selector').addClass('card-disabled');
+                        break;
+                    case 'json':
+                        $('#json_wizard_card').removeClass('uk-hidden');
+                        $('#csv-import-selector').addClass('card-disabled');
+                        $('#ldap-import-selector').addClass('card-disabled');
+                        break;
+                    case 'ldap':
+                        $('#ldap_wizard_card').removeClass('uk-hidden');
+                        $('#csv-import-selector').addClass('card-disabled');
+                        $('#json-import-selector').addClass('card-disabled');
+                }
+            };
+
+            $scope.resetWizardSelection = function() {
+                $('#csv_wizard_card').addClass('uk-hidden');
+                $('#json_wizard_card').addClass('uk-hidden');
+                $('#ldap_wizard_card').addClass('uk-hidden');
+
+                $('#csv-import-selector').removeClass('card-disabled');
+                $('#json-import-selector').removeClass('card-disabled');
+                $('#ldap-import-selector').removeClass('card-disabled');
+            };
+
             function throttledAccountPicClick() {
                 $timeout(function() {
                     var $profileImageInput = $('#profileImageInput');

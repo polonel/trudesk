@@ -64,7 +64,7 @@ mailCheck.init = function(settings) {
     });
 
     mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
-    setInterval(function() {
+    mailCheck.checkTimer = setInterval(function() {
         mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
     }, POLLING_INTERVAL);
 };
@@ -72,7 +72,7 @@ mailCheck.init = function(settings) {
 mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
     mailCheck.Imap.connect();
     mailCheck.Imap.once('error', function(err) {
-        winston.warn(err);
+        winston.debug(err);
     });
 
     mailCheck.Imap.once('ready', function() {

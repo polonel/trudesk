@@ -399,8 +399,8 @@ debugController.populatedatabase = function(req, res) {
                                 var ticketTags = [];
                                 for (var k = 0; k < tagCount; k++) {
                                     var t = tags[Math.floor(Math.random() * tags.length)];
-                                    if (!_.includes(ticketTags, t))
-                                        ticketTags.push(t);
+                                    if (!_.includes(ticketTags, t._id))
+                                        ticketTags.push(t._id);
                                 }
                                 var ticket = {
                                     __v: 0,

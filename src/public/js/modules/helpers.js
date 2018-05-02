@@ -61,6 +61,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         self.ajaxFormSubmit();
         self.setupChosen();
         self.bindNewMessageSubmit();
+        self.jsPreventDefault();
 
         //self.UI.expandSidebar();
         //self.UI.tooltipSidebar();
@@ -96,6 +97,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var countTo = $(self).text();
             var theAnimation = new CountUp(self, 0, countTo, 0, 2);
             theAnimation.start();
+        });
+    };
+
+    helpers.jsPreventDefault = function() {
+        $('.js-prevent-default').each(function() {
+            $(this).on('click', function(event) {
+                event.preventDefault();
+            });
         });
     };
 
