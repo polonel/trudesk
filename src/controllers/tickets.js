@@ -548,14 +548,15 @@ ticketsController.uploadAttachment = function(req, res) {
     });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        winston.debug(mimetype);
+        // winston.debug(mimetype);
 
         if (mimetype.indexOf('image/') === -1 &&
             mimetype.indexOf('text/') === -1 &&
             mimetype.indexOf('audio/mpeg') === -1 &&
             mimetype.indexOf('audio/mp3') === -1 &&
             mimetype.indexOf('audio/wav') === -1 &&
-            mimetype.indexOf('application/x-zip-compressed') === -1) {
+            mimetype.indexOf('application/x-zip-compressed') === -1 &&
+            mimetype.indexOf('application/pdf') === -1) {
             error = {
                 status: 500,
                 message: 'Invalid File Type'
