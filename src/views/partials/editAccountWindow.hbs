@@ -1,4 +1,4 @@
-<div class="uk-modal" id="editAccountModal" style="padding-top: 30px;">
+<div class="uk-modal" id="editAccountModal" style="padding-top: 0px;">
     <div class="uk-modal-dialog nopadding" style="padding-bottom: 30px !important;">
         <div class="user-heading" style="min-height: 130px; background: #1976d2; padding: 24px;">
             <div style="width: 100%;">
@@ -24,24 +24,24 @@
                     </h2>
                 </div>
             </div>
-            <div class="md-fab-wrapper">
-                <div class="md-fab md-fab-toolbar md-fab-small md-fab-success">
-                    <i class="material-icons text-white">&#xE8BE;</i>
-                    <div class="md-fab-toolbar-actions">
-                        <button id="account_edit_save" title="Save" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}" ng-click="saveAccount()">
-                            <i class="material-icons text-white">save</i>
-                        </button>
-                        <!--<button id="account_edit_delete" title="Delete" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">-->
-                            <!--<i class="material-icons text-white">delete</i>-->
+            <!--<div class="md-fab-wrapper">-->
+                <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-success">-->
+                    <!--<i class="material-icons text-white">&#xE8BE;</i>-->
+                    <!--<div class="md-fab-toolbar-actions">-->
+                        <!--<button id="account_edit_save" title="Save" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}" ng-click="saveAccount()">-->
+                            <!--<i class="material-icons text-white">save</i>-->
                         <!--</button>-->
-                        <button id="account_edit_cancel" class="uk-modal-close" title="Cancel" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">
-                            <i class="material-icons text-white">cancel</i>
-                        </button>
-                    </div>
-                </div>
-            </div>
+                        <!--&lt;!&ndash;<button id="account_edit_delete" title="Delete" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<i class="material-icons text-white">delete</i>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                        <!--<button id="account_edit_cancel" class="uk-modal-close" title="Cancel" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">-->
+                            <!--<i class="material-icons text-white">cancel</i>-->
+                        <!--</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
         </div>
-        <div style="margin: 24px;">
+        <div style="margin: 24px 24px 0 24px;">
             <form class="uk-form-stacked" id="editAccountForm">
                 <input type="hidden" id="aId" name="aId" />
                 <!--<div class="uk-margin-medium-bottom">-->
@@ -92,10 +92,10 @@
                         {{/each}}
                     </select>
                 </div>
-                <!--<div class="uk-modal-footer uk-text-right">-->
-                    <!--<button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>-->
-                    <!--<button type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>-->
-                <!--</div>-->
+                <div class="uk-modal-footer uk-text-right">
+                    <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
+                    <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
+                </div>
             </form>
         </div>
     </div>

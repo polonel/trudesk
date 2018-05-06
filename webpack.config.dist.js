@@ -34,7 +34,6 @@ module.exports = {
             modernizr:      'vendor/modernizr/modernizr',
             fastclick:      'vendor/fastclick/fastclick',
             placeholder:    'vendor/placeholder/placeholder',
-            // nicescroll:     'vendor/nicescroll/nicescroll.min',
             underscore:     'vendor/underscore/underscore',
             history:        'vendor/history/jquery.history',
             app:            'app',
