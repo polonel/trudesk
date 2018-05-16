@@ -15,10 +15,10 @@
 
  **/
 
-define('pages/pageloader', ['async'], function(async) {
+define('pages/pageloader', ['async', 'jquery'], function(async, $) {
     var pageLoader = {};
-
     pageLoader.init = function(callback) {
+        global.react.updateSidebar({activeItem: $('#__sidebar_route').text(), activeSubItem: $('#__sidebar_sub_route').text(), sessionUser: window.trudeskSessionService.getUser()});
         require([
             'pages/dashboard',
             'pages/messages',

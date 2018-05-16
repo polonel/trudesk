@@ -16,7 +16,7 @@ module.exports = {
         publicPath: '/js/'
     },
     resolve: {
-        modules: [path.resolve(__dirname, 'src/public/js/')],
+        modules: [path.resolve(__dirname, 'src/public/js/'), 'node_modules'],
         alias: {
             //server side
             roles:          path.resolve(__dirname, 'src/permissions/roles'),
@@ -87,7 +87,8 @@ module.exports = {
                 fallback: 'style-loader',
                 use: [{loader: 'css-loader', options: {minimize: true}}, 'sass-loader'],
                 publicPath: '/public/css'
-            })}
+            })},
+            { test: /\.jsx$/, exclude: /node_modules/, loader: "babel-loader?cacheDirectory" }
         ]
     },
     plugins: [

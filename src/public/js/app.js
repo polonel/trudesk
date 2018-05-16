@@ -15,6 +15,8 @@
 //Load SASS (Webpack)
 require('../../sass/app.sass');
 
+global.react = {}; // Global react var for calling state outside react.
+
 require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, helpers, angular) {
     helpers.init();
 
@@ -51,6 +53,9 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                 ], function(_, nav, socket) {
                     //Page loading (init)
                     require(['pages/pageloader'], function(pl) {
+                        //React
+                        require('../../client/app.jsx');
+
                         pl.init(function() {
                             nav.init();
 

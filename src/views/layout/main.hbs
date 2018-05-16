@@ -20,10 +20,9 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
-
 </head>
 <body>
+
 <div id="loader-wrapper" class="loader-wrapper">
     <div class="shadow-wrapper">
         <svg class="shadow">
@@ -125,11 +124,12 @@
     </div>
 
     {{> topbar }}
+    {{> nav }}
 
     <div class="ajaxyContent">
-        {{> nav }}
 
         <div id="__sidebar_route" class="hide" style="visibility: hidden">{{nav}}</div>
+        <div id="__sidebar_sub_route" class="hide" style="visibility: hidden">{{subnav}}</div>
         <div id="page-content" style="margin-left: 57px;" ng-controller="truCtrl">
             {{{body}}}
         </div>
@@ -152,6 +152,8 @@
         document.location = '/mobile';
     }
 </script>
+
+<script src="/js/trudesk.min.js"></script>
 </body>
 
 </html>

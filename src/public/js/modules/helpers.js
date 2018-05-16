@@ -112,9 +112,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.UI.bindAccordion = function() {
         $('li[data-nav-accordion]').each(function() {
+            //Remove hasSubMenuOpen from LI and subMenuOpen from submenu UL to prevent menu from staying open after page load
+            var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
+            if (subMenu.length > 0) subMenu.removeClass('subMenuOpen');
             if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
                 $(this).addClass('hasSubMenuOpen');
-                var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
                 if (subMenu.length > 0) subMenu.addClass('subMenuOpen');
             }
             var $this = $(this).find('> a');
@@ -163,7 +165,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if ($sidebar.hasClass('expand')) {
             $('.sidebar').find('.tether-element.tether-enabled').hide();
             $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen');
-            $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen');
+            $sidebar.find('li[data-nav-accordion-target].active ul.side-nav-accordion').addClass('subMenuOpen');
         } else {
             setTimeout(function() { Tether.position(); $('.sidebar').find('.tether-element.tether-enabled').show();}, 500);
             $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen');
@@ -207,9 +209,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         ];
 
         _.each(sidebarElements, function(item) {
+            var sidebar = $('.sidebar');
             var element = $('.sidebar-to-right').find(item.element);
             if (element.length < 1) return;
-            var sidebar = $('.sidebar');
             var target = sidebar.find('li[data-nav-id="' + item.target + '"]');
             if (target.length < 1) return;
             helpers.UI.sidebarTether(element, target);
