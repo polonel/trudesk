@@ -40,8 +40,15 @@ class Sidebar extends React.Component {
                 <NavButton text="Messages" icon="chat" href="/messages" class="navMessages" active={(this.state.activeItem === 'messages')} />
                 <NavButton text="Accounts" icon="&#xE7FD;" href="/accounts" class="navAccounts" active={(this.state.activeItem === 'accounts')} />
                 <NavButton text="Groups" icon="supervisor_account" href="/groups" class="navGroups" active={(this.state.activeItem === 'groups')} />
-                <NavButton text="Reports" icon="chat" href="/reports/generate" class="navReports" active={(this.state.activeItem === 'reports')} />
-                <NavButton text="Plugins" icon="select_all" href="/plugins" class="navPlugins" active={(this.state.activeItem === 'plugins')} />
+                <NavButton text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(this.state.activeItem === 'reports')} >
+                    <Submenu id="reports">
+                        <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={this.state.activeSubItem === 'reports-generate'} />
+                        {/*<NavSeperator/>*/}
+                        {/*<SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={this.state.activeSubItem === 'reports-breakdown-group'} />*/}
+                        {/*<SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={this.state.activeSubItem === 'reports-breakdown-user'} />*/}
+                    </Submenu>
+                </NavButton>
+                <NavButton text="Plugins" icon="extension" href="/plugins" class="navPlugins" active={(this.state.activeItem === 'plugins')} />
                 <NavButton text="Notices" icon="warning" href="/notices" class="navNotices" active={(this.state.activeItem === 'notices')} />
                 <NavSeperator/>
                 <NavButton text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(this.state.activeItem === 'settings')}>
