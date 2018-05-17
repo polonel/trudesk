@@ -43,9 +43,9 @@ class Sidebar extends React.Component {
                 <NavButton text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(this.state.activeItem === 'reports')} >
                     <Submenu id="reports">
                         <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={this.state.activeSubItem === 'reports-generate'} />
-                        {/*<NavSeperator/>*/}
-                        {/*<SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={this.state.activeSubItem === 'reports-breakdown-group'} />*/}
-                        {/*<SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={this.state.activeSubItem === 'reports-breakdown-user'} />*/}
+                        <NavSeperator/>
+                        <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={this.state.activeSubItem === 'reports-breakdown-group'} />
+                        <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={this.state.activeSubItem === 'reports-breakdown-user'} />
                     </Submenu>
                 </NavButton>
                 <NavButton text="Plugins" icon="extension" href="/plugins" class="navPlugins" active={(this.state.activeItem === 'plugins')} />
