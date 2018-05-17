@@ -1035,6 +1035,8 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
                         t.push(tag.name);
                     });
 
+                    t = _.take(t, 10);
+
                     return cb();
                 }, function() {
                     _.mixin({
@@ -1075,9 +1077,13 @@ api_tickets.getTicketStatsForGroup = function(req, res) {
 
                 //Get average Response
                 buildAvgResponse(tickets, function(obj) {
-                    r.avgResponse = obj.avgResponse;
+                    if (_.isUndefined(obj))
+                        return callback(null, r);
+                    else {
+                        r.avgResponse = obj.avgResponse;
 
-                    return callback(null, r);
+                        return callback(null, r);
+                    }
                 });
             });
         }
@@ -1135,6 +1141,8 @@ api_tickets.getTicketStatsForUser = function(req, res) {
                         t.push(tag.name);
                     });
 
+                    t = _.take(t, 10);
+
                     return cb();
                 }, function() {
                     _.mixin({
@@ -1175,9 +1183,13 @@ api_tickets.getTicketStatsForUser = function(req, res) {
 
                 //Get average Response
                 buildAvgResponse(tickets, function(obj) {
-                    r.avgResponse = obj.avgResponse;
+                    if (_.isUndefined(obj))
+                        return callback(null, r);
+                    else {
+                        r.avgResponse = obj.avgResponse;
 
-                    return callback(null, r);
+                        return callback(null, r);
+                    }
                 });
             });
         }
@@ -1203,7 +1215,8 @@ function buildGraphData(arr, days, callback) {
     for (var i=days;i--;) {
         timespanArray.push(i);
     }
-    async.eachSeries(timespanArray, function(day, next) {
+
+    _.each(timespanArray, function(day) {
         var obj = {};
         var d = today.clone().subtract(day, 'd');
         obj.date = d.format('YYYY-MM-DD');
@@ -1215,44 +1228,38 @@ function buildGraphData(arr, days, callback) {
         $dateCount = _.size($dateCount);
         obj.value = $dateCount;
         graphData.push(obj);
-
-        async.setImmediate(function() {
-            next();
-        });
-
-    }, function() {
-        callback(graphData);
     });
+
+    if (_.isFunction(callback))
+        return callback(graphData);
+    else
+        return graphData;
 }
 
 function buildAvgResponse(ticketArray, callback) {
     var cbObj = {};
     var $ticketAvg = [];
-    async.eachSeries(ticketArray, function (ticket, callback) {
-        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return callback();
+    _.each(ticketArray, function (ticket) {
+        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return;
 
         var ticketDate = moment(ticket.date);
         var firstCommentDate = moment(ticket.comments[0].date);
 
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
-
-        async.setImmediate(function() {
-           return callback();
-        });
-    }, function (err) {
-        if (err) return callback(err);
-
-        var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
-            return m + x;
-        }, 0);
-        var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
-        cbObj.avgResponse = Math.floor(tvt);
-
-        async.setImmediate(function() {
-            return callback(cbObj);
-        });
     });
+
+    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+        return m + x;
+    }, 0);
+
+    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
+    cbObj.avgResponse = Math.floor(tvt);
+
+    if (_.isFunction(callback))
+        return callback(cbObj);
+    else
+        return cbObj;
 }
 
 /**
