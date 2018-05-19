@@ -66,10 +66,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         //self.UI.expandSidebar();
         //self.UI.tooltipSidebar();
 
-        self.UI.initSidebar();
-        self.UI.bindExpand();
-        self.UI.setupSidebarTether();
-        self.UI.bindAccordion();
+        // self.UI.initSidebar();
+        // self.UI.bindExpand();
+        // self.UI.setupSidebarTether();
+        // self.UI.bindAccordion();
 
         self.UI.fabToolbar();
         self.UI.fabSheet();
@@ -114,7 +114,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         $('li[data-nav-accordion]').each(function() {
             //Remove hasSubMenuOpen from LI and subMenuOpen from submenu UL to prevent menu from staying open after page load
             var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'));
-            if (subMenu.length > 0) subMenu.removeClass('subMenuOpen');
+            if (subMenu.length > 0) {
+                if (subMenu.attr('id') !== 'side-nav-accordion-plugins')
+                    subMenu.removeClass('subMenuOpen');
+            }
             if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
                 $(this).addClass('hasSubMenuOpen');
                 if (subMenu.length > 0) subMenu.addClass('subMenuOpen');
@@ -169,7 +172,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         } else {
             setTimeout(function() { Tether.position(); $('.sidebar').find('.tether-element.tether-enabled').show();}, 500);
             $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen');
-            $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen');
+            $sidebar.find('ul.side-nav-accordion.side-nav-sub:not(#side-nav-accordion-plugins)').removeClass('subMenuOpen');
         }
 
     };
@@ -761,6 +764,21 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 fill: "#d1e4f6",
                 stroke: "#0288d1"
             });
+        });
+    };
+
+    helpers.UI.getPlugins = function(callback) {
+        $.ajax({
+            url: '/api/v1/plugins/list/installed',
+            method: 'GET',
+            success: function(data) {
+                if (_.isFunction(callback))
+                    return callback(null, data);
+            },
+            error: function(error) {
+                if (_.isFunction(callback))
+                    return callback(error, null);
+            }
         });
     };
 

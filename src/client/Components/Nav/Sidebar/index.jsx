@@ -1,10 +1,12 @@
 import React from 'react';
-import NavButton from "../NavButton/index.jsx";
+import SidebarItem from "../SidebarItem/index.jsx";
 import NavSeperator from '../NavSeperator/index.jsx';
 import Submenu from '../Submenu/index.jsx';
 import SubmenuItem from '../SubmenuItem/index.jsx';
 
 import Permissions from '../../../../permissions/index.js';
+
+import Helpers from 'modules/helpers'
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -12,7 +14,9 @@ class Sidebar extends React.Component {
         this.state = {
             activeItem: '',
             activeSubItem: '',
-            sessionUser: null
+            sessionUser: null,
+
+            plugins: null
         };
     }
 
@@ -22,50 +26,85 @@ class Sidebar extends React.Component {
         };
     }
 
+    componentDidMount() {
+        Helpers.UI.getPlugins((err, result) => {
+            if (!err && result.plugins) {
+                this.setState({plugins: result.plugins});
+            }
+        });
+    }
+
+    componentDidUpdate() {
+        Helpers.UI.initSidebar();
+        Helpers.UI.bindExpand();
+    }
+
     render() {
+        const { activeItem, activeSubItem, plugins, sessionUser } = this.state;
         return (
             <ul className="side-nav">
-                <NavButton text="Dashboard" icon="dashboard" href="/dashboard" class="navHome" active={(this.state.activeItem === 'dashboard')} />
-                <NavButton text="Tickets" icon="assignment" href="/tickets" class="navTickets no-ajaxy" hasSubmenu={true} subMenuTarget='tickets' active={(this.state.activeItem === 'tickets')}>
+                <SidebarItem text="Dashboard" icon="dashboard" href="/dashboard" class="navHome" active={(activeItem === 'dashboard')} />
+                <SidebarItem text="Tickets" icon="assignment" href="/tickets" class="navTickets no-ajaxy" hasSubmenu={true} subMenuTarget='tickets' active={(activeItem === 'tickets')}>
                     <Submenu id="tickets">
-                        <SubmenuItem text="Active" icon="timer" href="/tickets/active" active={this.state.activeSubItem === 'tickets-active'} />
-                        <SubmenuItem text="Assigned" icon="assignment_ind" href="/tickets/assigned" active={this.state.activeSubItem === 'tickets-assigned'} />
+                        <SubmenuItem text="Active" icon="timer" href="/tickets/active" active={activeSubItem === 'tickets-active'} />
+                        <SubmenuItem text="Assigned" icon="assignment_ind" href="/tickets/assigned" active={activeSubItem === 'tickets-assigned'} />
                         <NavSeperator />
-                        <SubmenuItem text="New" icon="&#xE24D;" href="/tickets/new" active={this.state.activeSubItem === 'tickets-new'} />
-                        <SubmenuItem text="Pending" icon="&#xE629;" href="/tickets/pending" active={this.state.activeSubItem === 'tickets-pending'} />
-                        <SubmenuItem text="Open" icon="&#xE2C8;" href="/tickets/open" active={this.state.activeSubItem === 'tickets-open'} />
-                        <SubmenuItem text="Closed" icon="&#xE2C7;" href="/tickets/closed" active={this.state.activeSubItem === 'tickets-closed'} />
+                        <SubmenuItem text="New" icon="&#xE24D;" href="/tickets/new" active={activeSubItem === 'tickets-new'} />
+                        <SubmenuItem text="Pending" icon="&#xE629;" href="/tickets/pending" active={activeSubItem === 'tickets-pending'} />
+                        <SubmenuItem text="Open" icon="&#xE2C8;" href="/tickets/open" active={activeSubItem === 'tickets-open'} />
+                        <SubmenuItem text="Closed" icon="&#xE2C7;" href="/tickets/closed" active={activeSubItem === 'tickets-closed'} />
                     </Submenu>
-                </NavButton>
-                <NavButton text="Messages" icon="chat" href="/messages" class="navMessages" active={(this.state.activeItem === 'messages')} />
-                <NavButton text="Accounts" icon="&#xE7FD;" href="/accounts" class="navAccounts" active={(this.state.activeItem === 'accounts')} />
-                <NavButton text="Groups" icon="supervisor_account" href="/groups" class="navGroups" active={(this.state.activeItem === 'groups')} />
-                <NavButton text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(this.state.activeItem === 'reports')} >
+                </SidebarItem>
+                <SidebarItem text="Messages" icon="chat" href="/messages" class="navMessages" active={(activeItem === 'messages')} />
+                <SidebarItem text="Accounts" icon="&#xE7FD;" href="/accounts" class="navAccounts" active={(activeItem === 'accounts')} />
+                <SidebarItem text="Groups" icon="supervisor_account" href="/groups" class="navGroups" active={(activeItem === 'groups')} />
+                <SidebarItem text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(activeItem === 'reports')} >
                     <Submenu id="reports">
-                        <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={this.state.activeSubItem === 'reports-generate'} />
+                        <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={activeSubItem === 'reports-generate'} />
                         <NavSeperator/>
-                        <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={this.state.activeSubItem === 'reports-breakdown-group'} />
-                        <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={this.state.activeSubItem === 'reports-breakdown-user'} />
+                        <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={activeSubItem === 'reports-breakdown-group'} />
+                        <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={activeSubItem === 'reports-breakdown-user'} />
                     </Submenu>
-                </NavButton>
-                <NavButton text="Plugins" icon="extension" href="/plugins" class="navPlugins" active={(this.state.activeItem === 'plugins')} />
-                <NavButton text="Notices" icon="warning" href="/notices" class="navNotices" active={(this.state.activeItem === 'notices')} />
+                </SidebarItem>
+                {!plugins &&
+                    <SidebarItem text="Plugins" icon="extension" href="/plugins" class="navPlugins" hasSubmenu={false} active={(activeItem === 'plugins')} />
+                }
+                {plugins &&
+                    <SidebarItem text="Plugins" icon="extension" href="/plugins" class="navPlugins" hasSubmenu={plugins.length > 0} subMenuTarget="plugins" active={(activeItem === 'plugins')}>
+                        {plugins && plugins.length > 0 &&
+                        <Submenu id='plugins' subMenuOpen={(activeItem === 'plugins')}>
+                            {plugins.map(function(item) {
+                                return (
+                                    <SubmenuItem
+                                        key={item.name}
+                                        text={item.menu.main.name}
+                                        icon={item.menu.main.icon}
+                                        href={item.menu.main.link}
+                                        active={activeSubItem === item.name}
+                                    />
+                                )
+                            })}
+                        </Submenu>
+                        }
+                    </SidebarItem>
+                }
+                <SidebarItem text="Notices" icon="warning" href="/notices" class="navNotices" active={(activeItem === 'notices')} />
                 <NavSeperator/>
-                <NavButton text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(this.state.activeItem === 'settings')}>
+                <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>
                     <Submenu id="settings">
-                        <SubmenuItem text="General" icon="tune" href="/settings" active={this.state.activeSubItem === 'settings-general'} />
-                        <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={this.state.activeSubItem === 'settings-legal'} />
+                        <SubmenuItem text="General" icon="tune" href="/settings" active={activeSubItem === 'settings-general'} />
+                        <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={activeSubItem === 'settings-legal'} />
                         <NavSeperator/>
-                        <SubmenuItem text="Tags" icon="style" href="/settings/tags" active={this.state.activeSubItem === 'settings-tags'}/>
-                        <SubmenuItem text="Ticket Types" icon="text_fields" href="/settings/tickettypes" active={this.state.activeSubItem === 'settings-tickettypes'}/>
+                        <SubmenuItem text="Tags" icon="style" href="/settings/tags" active={activeSubItem === 'settings-tags'}/>
+                        <SubmenuItem text="Ticket Types" icon="text_fields" href="/settings/tickettypes" active={activeSubItem === 'settings-tickettypes'}/>
 
-                        {this.state.sessionUser && Permissions.canThis(this.state.sessionUser.role, 'settings:logs') &&
-                            <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={this.state.activeSubItem === 'settings-logs'} />
+                        {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') &&
+                            <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={activeSubItem === 'settings-logs'} />
                         }
 
                     </Submenu>
-                </NavButton>
-                <NavButton href="/about" icon="help" text="About" active={(this.state.activeItem === 'about')} />
+                </SidebarItem>
+                <SidebarItem href="/about" icon="help" text="About" active={(activeItem === 'about')} />
             </ul>
         )
     }

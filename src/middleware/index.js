@@ -107,6 +107,7 @@ module.exports = function(app, db, callback) {
             //Remove to enable plugins
             //next(null, store);
             global.plugins = [];
+            global.pluginsJson = [];
             var dive = require('dive');
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
                if (err) throw err;
@@ -117,6 +118,7 @@ module.exports = function(app, db, callback) {
                        throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
 
                    global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
+                   global.pluginsJson.push(plugin);
                    var pluginPublic = path.join(dir, '/public');
                    app.use('/plugins/' + plugin.name, express.static(pluginPublic));
                    winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);

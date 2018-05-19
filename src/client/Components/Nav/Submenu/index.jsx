@@ -61,13 +61,16 @@ class Submenu extends React.Component {
 
     render() {
         return (
-            <div>
-                <ul id={"side-nav-accordion-" + this.props.id} className="side-nav-sub side-nav-accordion">
-                    {this.props.children}
-                </ul>
-            </div>
+            <ul id={"side-nav-accordion-" + this.props.id} className={"side-nav-sub side-nav-accordion" + ((this.props.subMenuOpen === true) ? ' subMenuOpen' : '')}>
+                {this.props.children}
+            </ul>
         )
     }
+}
+
+Submenu.proptypes = {
+    id: PropTypes.string.isRequired,
+    subMenuOpen: PropTypes.bool
 }
 
 export default Submenu;

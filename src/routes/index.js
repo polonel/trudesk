@@ -204,7 +204,7 @@ function mainRoutes(router, middleware, controllers) {
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
 
-    router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
+    router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins, plugins: global.pluginsJson}); });
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
     router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
