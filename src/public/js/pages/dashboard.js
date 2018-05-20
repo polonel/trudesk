@@ -42,7 +42,7 @@ define('pages/dashboard', [
             var parms = {
                 full_width: true,
                 height: 250,
-                target: '#test',
+                target: '#breakdownGraph',
                 x_accessor: 'date',
                 y_accessor: 'value',
                 y_extended_ticks: true,
