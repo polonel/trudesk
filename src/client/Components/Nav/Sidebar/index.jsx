@@ -39,6 +39,40 @@ class Sidebar extends React.Component {
         Helpers.UI.bindExpand();
     }
 
+    renderPlugins() {
+        const { plugins, sessionUser, activeItem, activeSubItem } = this.state;
+        return (
+            <SidebarItem
+                text="Plugins"
+                icon="extension"
+                href="/plugins"
+                class="navPlugins tether-plugins"
+                hasSubmenu={plugins && plugins.length > 0}
+                subMenuTarget="plugins"
+                active={(activeItem === 'plugins')}
+            >
+                {plugins && plugins.length > 0 &&
+                    <Submenu id='plugins' subMenuOpen={(activeItem === 'plugins')}>
+                        {plugins.map(function(item) {
+                            const perms = item.permissions.split(' ');
+                            if (perms.indexOf(sessionUser.role) === -1)
+                                return;
+                            return (
+                                <SubmenuItem
+                                    key={item.name}
+                                    text={item.menu.main.name}
+                                    icon={item.menu.main.icon}
+                                    href={item.menu.main.link}
+                                    active={activeSubItem === item.name}
+                                />
+                            )
+                        })}
+                    </Submenu>
+                }
+            </SidebarItem>
+        )
+    }
+
     render() {
         const { activeItem, activeSubItem, plugins, sessionUser } = this.state;
         return (
@@ -66,28 +100,9 @@ class Sidebar extends React.Component {
                         <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={activeSubItem === 'reports-breakdown-user'} />
                     </Submenu>
                 </SidebarItem>
-                {!plugins &&
-                    <SidebarItem text="Plugins" icon="extension" href="/plugins" class="navPlugins" hasSubmenu={false} active={(activeItem === 'plugins')} />
-                }
-                {plugins &&
-                    <SidebarItem text="Plugins" icon="extension" href="/plugins" class="navPlugins" hasSubmenu={plugins.length > 0} subMenuTarget="plugins" active={(activeItem === 'plugins')}>
-                        {plugins && plugins.length > 0 &&
-                        <Submenu id='plugins' subMenuOpen={(activeItem === 'plugins')}>
-                            {plugins.map(function(item) {
-                                return (
-                                    <SubmenuItem
-                                        key={item.name}
-                                        text={item.menu.main.name}
-                                        icon={item.menu.main.icon}
-                                        href={item.menu.main.link}
-                                        active={activeSubItem === item.name}
-                                    />
-                                )
-                            })}
-                        </Submenu>
-                        }
-                    </SidebarItem>
-                }
+
+                {this.renderPlugins()}
+
                 <SidebarItem text="Notices" icon="warning" href="/notices" class="navNotices" active={(activeItem === 'notices')} />
                 <NavSeperator/>
                 <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>

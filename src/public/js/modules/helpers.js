@@ -260,6 +260,10 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         });
     };
 
+    helpers.UI.tetherUpdate = function() {
+        setTimeout(function() { Tether.position(); }, 500);
+    };
+
     helpers.UI.setNavItem = function(id) {
         var $sidebar = $('.sidebar');
         $sidebar.find('li.active').removeClass('active');

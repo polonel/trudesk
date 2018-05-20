@@ -11,6 +11,7 @@ class NavButton extends React.Component {
 
     componentDidUpdate() {
         Helpers.UI.bindAccordion();
+        Helpers.UI.tetherUpdate();
     }
 
     renderAnchorLink() {
