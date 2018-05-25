@@ -1,10 +1,11 @@
-import isUndefined from 'lodash/isUndefined';
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import Helpers from 'modules/helpers'
 
-class NavButton extends React.Component {
+import './style.sass'
+
+class NavButton extends Component {
     constructor(props) {
         super(props);
     }

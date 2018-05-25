@@ -1,12 +1,16 @@
 import React from 'react';
-import SidebarItem from "../SidebarItem/index.jsx";
-import NavSeperator from '../NavSeperator/index.jsx';
-import Submenu from '../Submenu/index.jsx';
-import SubmenuItem from '../SubmenuItem/index.jsx';
+import SidebarItem from 'Components/Nav/SidebarItem';
+import NavSeperator from 'Components/Nav/NavSeperator';
+import Submenu from 'Components/Nav/Submenu';
+import SubmenuItem from 'Components/Nav/SubmenuItem';
 
 import Permissions from '../../../../permissions/index.js';
 
-import Helpers from 'modules/helpers'
+import Helpers from 'modules/helpers';
+
+//Sass
+import './style.sass';
+import 'sass/partials/sidebar.sass';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -90,35 +94,45 @@ class Sidebar extends React.Component {
                     </Submenu>
                 </SidebarItem>
                 <SidebarItem text="Messages" icon="chat" href="/messages" class="navMessages" active={(activeItem === 'messages')} />
-                <SidebarItem text="Accounts" icon="&#xE7FD;" href="/accounts" class="navAccounts" active={(activeItem === 'accounts')} />
-                <SidebarItem text="Groups" icon="supervisor_account" href="/groups" class="navGroups" active={(activeItem === 'groups')} />
-                <SidebarItem text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(activeItem === 'reports')} >
-                    <Submenu id="reports">
-                        <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={activeSubItem === 'reports-generate'} />
-                        <NavSeperator/>
-                        <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={activeSubItem === 'reports-breakdown-group'} />
-                        <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={activeSubItem === 'reports-breakdown-user'} />
-                    </Submenu>
-                </SidebarItem>
+                {sessionUser && Permissions.canThis(sessionUser.role, 'accounts:view') &&
+                    <SidebarItem text="Accounts" icon="&#xE7FD;" href="/accounts" class="navAccounts" active={(activeItem === 'accounts')} />
+                }
+                {sessionUser && Permissions.canThis(sessionUser.role, 'groups:view') &&
+                    <SidebarItem text="Groups" icon="supervisor_account" href="/groups" class="navGroups" active={(activeItem === 'groups')} />
+                }
+                {sessionUser && Permissions.canThis(sessionUser.role, 'reports:view') &&
+                    <SidebarItem text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(activeItem === 'reports')} >
+                        <Submenu id="reports">
+                            <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={activeSubItem === 'reports-generate'} />
+                            <NavSeperator/>
+                            <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={activeSubItem === 'reports-breakdown-group'} />
+                            <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={activeSubItem === 'reports-breakdown-user'} />
+                        </Submenu>
+                    </SidebarItem>
+                }
 
                 {this.renderPlugins()}
 
-                <SidebarItem text="Notices" icon="warning" href="/notices" class="navNotices" active={(activeItem === 'notices')} />
+                {sessionUser && Permissions.canThis(sessionUser.role, 'notices:view') &&
+                    <SidebarItem text="Notices" icon="warning" href="/notices" class="navNotices" active={(activeItem === 'notices')} />
+                }
                 <NavSeperator/>
-                <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>
-                    <Submenu id="settings">
-                        <SubmenuItem text="General" icon="tune" href="/settings" active={activeSubItem === 'settings-general'} />
-                        <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={activeSubItem === 'settings-legal'} />
-                        <NavSeperator/>
-                        <SubmenuItem text="Tags" icon="style" href="/settings/tags" active={activeSubItem === 'settings-tags'}/>
-                        <SubmenuItem text="Ticket Types" icon="text_fields" href="/settings/tickettypes" active={activeSubItem === 'settings-tickettypes'}/>
+                {sessionUser && Permissions.canThis(sessionUser.role, 'settings:edit') &&
+                    <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>
+                        <Submenu id="settings">
+                            <SubmenuItem text="General" icon="tune" href="/settings" active={activeSubItem === 'settings-general'} />
+                            <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={activeSubItem === 'settings-legal'} />
+                            <NavSeperator/>
+                            <SubmenuItem text="Tags" icon="style" href="/settings/tags" active={activeSubItem === 'settings-tags'}/>
+                            <SubmenuItem text="Ticket Types" icon="text_fields" href="/settings/tickettypes" active={activeSubItem === 'settings-tickettypes'}/>
 
-                        {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') &&
-                            <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={activeSubItem === 'settings-logs'} />
-                        }
+                            {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') &&
+                                <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={activeSubItem === 'settings-logs'} />
+                            }
 
-                    </Submenu>
-                </SidebarItem>
+                        </Submenu>
+                    </SidebarItem>
+                }
                 <SidebarItem href="/about" icon="help" text="About" active={(activeItem === 'about')} />
             </ul>
         )

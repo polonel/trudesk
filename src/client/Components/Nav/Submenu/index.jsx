@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
 import IsArray from 'lodash/isArray';
@@ -6,7 +6,10 @@ import $ from 'jquery';
 
 import Helpers from 'modules/helpers';
 
-class Submenu extends React.Component {
+//Sass
+import './style.sass';
+
+class Submenu extends Component {
     componentDidMount() {
         this.buildFloatingMenu(this.props.id);
     }
@@ -16,19 +19,15 @@ class Submenu extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        if (this.props.children !== nextProps.children) {
-            return true;
-        } else {
-            return false;
-        }
+        return this.props.children !== nextProps.children;
     }
 
     buildFloatingMenu(navId) {
         if (this.props.children) {
-            var $sideBarToRight = $('.sidebar-to-right');
+            let $sideBarToRight = $('.sidebar-to-right');
             $sideBarToRight.find('#side-nav-sub-' + navId).remove();
-            var ul = $('<ul id="side-nav-sub-' + this.props.id + '" class="side-nav-sub side-nav-floating"></ul>');
-            var li = null;
+            let ul = $('<ul id="side-nav-sub-' + this.props.id + '" class="side-nav-sub side-nav-floating"></ul>');
+            let li = null;
             if (!IsArray(this.props.children)) {
                 if (this.props.children.type.name === 'NavSeperator')
                     return;
@@ -36,8 +35,7 @@ class Submenu extends React.Component {
                 li = $('<li class="' + (this.props.children.props.active ? ' active ' : '') + '"><a href="' + this.props.children.props.href + '"><span>' + this.props.children.props.text +'</span></a></li>');
                 ul.append(li);
             } else {
-                var children = [];
-                for (var i = 0; i < this.props.children.length; i++) {
+                for (let i = 0; i < this.props.children.length; i++) {
                     if (!this.props.children[i])
                         continue;
                     if (this.props.children[i].type.name === 'NavSeperator')
@@ -53,7 +51,7 @@ class Submenu extends React.Component {
 
             $sideBarToRight.append(ul);
 
-            Helpers.UI.setupSidebarTether()
+            Helpers.UI.setupSidebarTether();
             //Ajaxify new floating menu links
             $('body').ajaxify();
         }
@@ -71,6 +69,6 @@ class Submenu extends React.Component {
 Submenu.proptypes = {
     id: PropTypes.string.isRequired,
     subMenuOpen: PropTypes.bool
-}
+};
 
 export default Submenu;

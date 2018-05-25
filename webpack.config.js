@@ -71,8 +71,12 @@ module.exports = {
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether',
             shepherd:       'vendor/shepherd/js/shepherd.min',
-            snackbar:       'plugins/snackbar'
-        }
+            snackbar:       'plugins/snackbar',
+
+            sass:           path.resolve(__dirname, 'src/sass'),
+            Components:     path.resolve(__dirname, 'src/client/Components')
+        },
+        extensions: [".js", ".jsx"]
     },
     externals: {
         //These are bunbled already
