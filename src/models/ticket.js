@@ -703,6 +703,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({assignee: {$in: object.filter.assignee}});
     }
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.unassigned)) {
+        q.where({assignee: {$exits: false} });
+    }
+
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.owner)) {
         q.where({owner: {$in: object.filter.owner}});
     }
@@ -711,6 +715,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, "i")}]);
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
+    if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({assignee: {$exists: false}});
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
         var startDate = new Date(2000, 0, 1, 0, 0, 1);
@@ -764,6 +769,10 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
 
     if (!_.isUndefined(object.assignedSelf) && object.assignedSelf === true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
         q.where('assignee', object.assignedUserId);
+    }
+
+    if (!_.isUndefined(object.unassigned) && object.unassigned === true) {
+        q.where({assignee: {$exists: false}});
     }
 
     return q.lean().exec(callback)
