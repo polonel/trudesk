@@ -551,6 +551,8 @@ var helpers = {
     },
 
     trim: function(string) {
+        if (_.isUndefined(string) || _.isNull(string) || string.length < 1 || typeof(string) === 'object')
+            return "";
         return string.trim();
     },
 
