@@ -1,4 +1,4 @@
-<div class="uk-modal" id="editAccountModal" style="padding-top: 0px;">
+<div class="uk-modal" id="editAccountModal" style="padding-top: 0;">
     <div class="uk-modal-dialog nopadding" style="padding-bottom: 30px !important;">
         <div class="user-heading" style="min-height: 130px; background: #1976d2; padding: 24px;">
             <div style="width: 100%;">
@@ -62,18 +62,16 @@
                     <!--<label for="aTitle" class="uk-form-label">Title</label>-->
                     <!--<input type="text" class="md-input" id="aTitle" name="aTitle"/>-->
                 <!--</div>-->
-                {{#is data.common.loggedInAccount.role "admin"}}
-                    <div class="uk-margin-medium-bottom uk-clearfix">
-                        <div class="left" style="width: 50%; padding-right: 20px;">
-                            <label for="aPass" class="uk-form-label">Password</label>
-                            <input type="password" class="md-input" id="aPass" name="aPass"/>
-                        </div>
-                        <div class="left" style="width: 50%;">
-                            <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
-                            <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
-                        </div>
+                <div class="uk-margin-medium-bottom uk-clearfix">
+                    <div class="left" style="width: 50%; padding-right: 20px;">
+                        <label for="aPass" class="uk-form-label">Password</label>
+                        <input type="password" class="md-input" id="aPass" name="aPass"/>
                     </div>
-                {{/is}}
+                    <div class="left" style="width: 50%;">
+                        <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
+                        <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
+                    </div>
+                </div>
                 <div class="uk-margin-medium-bottom">
                     <label for="aEmail" class="uk-form-label">Email</label>
                     <input type="email" class="md-input" id="aEmail" name="aEmail"/>

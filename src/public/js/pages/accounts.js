@@ -74,7 +74,7 @@ define('pages/accounts', [
 
             $("#account_list_search").keyup(function(e) {
                 e.preventDefault();
-                var key = event.keyCode || event.which;
+                var key = e.keyCode || e.which;
 
                 var sValue = $(this).val().toLowerCase();
 

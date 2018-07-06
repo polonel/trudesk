@@ -169,9 +169,27 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
+                    var loggedInAccount = window.trudeskSessionService.getUser();
+                    if (loggedInAccount == null) return true;
+
                     var $userHeadingContent = $('.user-heading-content');
                     $userHeadingContent.find('.js-username').text(user.username);
                     $userHeadingContent.find('.js-user-title').text(user.title);
+
+                    var isEditingSelf = false;
+                    if (user.username === loggedInAccount.username)
+                        isEditingSelf = true;
+
+                    if (!isEditingSelf && (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') && (user.role === 'admin' || user.role === 'mod')) {
+                        //Remove Password from being edited by anything other than admin, as well as role.
+                        form.find('#aPass').parent().hide();
+                        form.find('#aPassConfirm').parent().hide();
+                        form.find('#aRole').parent().hide();
+                    } else {
+                        form.find('#aPass').parent().show();
+                        form.find('#aPassConfirm').parent().show();
+                        form.find('#aRole').parent().show();
+                    }
 
                     form.find('#aId').val(user._id);
                     form.find('#aUsername').val(user.username).prop('disabled', true).parent().addClass('md-input-filled');
@@ -179,23 +197,23 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     form.find('#aTitle').val(user.title).parent().addClass('md-input-filled');
                     form.find('#aEmail').val(user.email).parent().addClass('md-input-filled');
                     form.find('#aRole option[value="' + user.role + '"]').prop('selected', true);
-                    var $selectizeRole = form.find('#aRole')[0].selectize;
-                    $selectizeRole.setValue(user.role, true);
-                    $selectizeRole.refreshItems();
+                    if (form.find('#aRole').length > 0) {
+                        var $selectizeRole = form.find('#aRole')[0].selectize;
+                        $selectizeRole.setValue(user.role, true);
 
-                   // _.each(data.groups, function(i) {
-                        form.find('#aGrps').multiSelect('deselect_all');
-                        form.find('#aGrps').multiSelect('select', data.groups);
-                    //});
+                        if (loggedInAccount.role === 'support' || loggedInAccount.role === 'user') {
+                            $selectizeRole.removeOption('admin');
+                            $selectizeRole.removeOption('mod');
+                        }
 
-                    // var $selectizeGrps = form.find('#aGrps')[0].selectize;
-                    // var groups = data.groups;
-                    //
-                    // _.each(groups, function(i) {
-                    //     $selectizeGrps.addItem(i, true);
-                    // });
-                    //
-                    // $selectizeGrps.refreshItems();
+                        if (loggedInAccount.role === 'mod')
+                            $selectizeRole.removeOption('admin');
+
+                        $selectizeRole.refreshItems();
+                    }
+
+                    form.find('#aGrps').multiSelect('deselect_all');
+                    form.find('#aGrps').multiSelect('select', data.groups);
 
                     //Profile Picture
                     var aImageUploadForm = $('form#aUploadImageForm');
