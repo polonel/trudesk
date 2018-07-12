@@ -321,7 +321,7 @@ userSchema.statics.getUserByEmail = function(email, callback) {
         return callback("Invalid Email - UserSchema.GetUserByEmail()", null);
     }
 
-    return this.model(COLLECTION).findOne({email: email}, callback);
+    return this.model(COLLECTION).findOne({email: new RegExp("^" + email + "$", 'i')}, callback);
 };
 
 /**
