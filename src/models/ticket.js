@@ -19,7 +19,7 @@ var moment              = require('moment');
 var hash                = require('object-hash');
 // var redisCache          = require('../cache/rediscache');
 
-//Needed - Even if unused!
+//Needed - For Population
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var userSchema          = require('./user');
@@ -28,6 +28,7 @@ var noteSchema          = require('./note');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
 var tagSchema           = require('./tag');
+var prioritySchema      = require('./ticketpriority');
 
 var COLLECTION = 'tickets';
 
@@ -74,7 +75,8 @@ var ticketSchema = mongoose.Schema({
     deleted:    { type: Boolean, default: false, required: true, index: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true, index: true },
-    priority:   { type: Number, required: true },
+    // priority:   { type: Number, required: true },
+    priority:   { type: mongoose.Schema.Types.ObjectId, ref: 'priorities', required: true },
     tags:       [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
@@ -106,6 +108,15 @@ ticketSchema.pre('save', function(next) {
         return next();
     });
 });
+
+var autoPopulatePriority = function(next) {
+    this.populate('priority');
+    next();
+};
+
+ticketSchema.
+    pre('findOne', autoPopulatePriority).
+    pre('find', autoPopulatePriority);
 
 ticketSchema.virtual('statusFormatted').get(function() {
     var s = this.status;
@@ -289,13 +300,13 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isNaN(priority)) return callback('Priority must be a number.', null);
+    if (_.isUndefined(priority)) return callback('Priority must be a Object.', null);
 
     var self = this;
-    self.priority = priority;
+    self.priority = priority._id;
     var historyItem = {
         action: 'ticket:set:priority',
-        description: 'Ticket Priority set to: ' + priority,
+        description: 'Ticket Priority set to: ' + priority.name,
         owner: ownerId
     };
     self.history.push(historyItem);

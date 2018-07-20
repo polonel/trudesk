@@ -478,7 +478,7 @@ ticketsController.single = function(req, res) {
             ticket.notes = [];
 
         content.data.ticket = ticket;
-        content.data.ticket.priorityname = ticket.priorityFormatted;
+        content.data.ticket.priorityname = ticket.priority.name;
 
         return res.render('subviews/singleticket', content);
     });

@@ -1,6 +1,6 @@
 <div ng-init="
     ticketType='{{data.ticket.type._id}}';
-    ticketPriority={{data.ticket.priority}};
+    ticketPriority='{{data.ticket.priority._id}}';
     ticketGroup='{{data.ticket.group._id}}';
     subscribed={{isSubscribed data.ticket.subscribers data.common.loggedInAccount._id}};
     user='{{data.common.loggedInAccount._id}}';">
@@ -134,7 +134,7 @@
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tPriority" id="tPriority"
                                                     ng-model="selected_priority"
-                                                    ng-options="p.name for p in priorities track by p.value"
+                                                    ng-options="p.name for p in selected_type.priorities track by p._id"
                                                     ng-change="updateTicketPriority()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
 

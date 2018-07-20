@@ -160,7 +160,7 @@ var notifications       = require('../notifications'); // Load Push Events
             message = data.message;
 
         if (!tpsEnabled || !tpsUsername || !tpsApiKey ) {
-            winston.debug('TPS Pushing Not Enabled');
+            winston.debug('Warn: TPS - Push Service Not Enabled');
             return;
         }
 

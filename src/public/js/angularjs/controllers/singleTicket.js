@@ -62,17 +62,13 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             };
 
             $scope.types = [];
-            $scope.priorities = [
-                {name: 'Normal', value: 1},
-                {name: 'Urgent', value: 2},
-                {name: 'Critical', value: 3}
-            ];
+            $scope.priorities = [];
             $scope.groups = [];
 
-            $scope.selected_priority = _.findWhere($scope.priorities, {value: $scope.ticketPriority});
             var ticketTypes = $http.get('/api/v1/tickets/types').
                                 success(function(data) {
                                     _.each(data, function(item) {
+                                        item.priorities = _.sortBy(item.priorities, function(i) { return i.name; });
                                         $scope.types.push(item);
                                     });
                                 }).
@@ -82,6 +78,9 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
             $q.all([ticketTypes]).then(function() {
                 $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
+                $scope.priorities = $scope.selected_type.priorities;
+                $scope.priorities = _.sortBy($scope.priorities, 'name');
+                $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
             });
 
             var groupHttpGet = $http.get('/api/v1/groups').
@@ -102,13 +101,20 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = $('#__ticketId').html();
                 if (id.length > 0) {
                     socket.ui.setTicketType(id, $scope.selected_type);
+                    $scope.priorities = $scope.selected_type.priorities;
+                    $scope.priorities = _.sortBy($scope.priorities, 'name');
+                    $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
+                    if (_.isUndefined($scope.selected_priority)) {
+
+                    }
                 }
             };
 
             $scope.updateTicketPriority = function() {
                 var id = $('#__ticketId').html();
-                if (id.length > 0) {
-                    socket.ui.setTicketPriority(id, $scope.selected_priority);
+                if (id.length > 0 && $scope.selected_priority) {
+                    socket.ui.setTicketPriority(id, $scope.selected_priority._id);
+                    $scope.ticketPriority = $scope.selected_priority._id;
                 }
             };
 

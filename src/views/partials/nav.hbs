@@ -17,7 +17,8 @@
                             Assigned
                         </a>
                     </li>
-                    <hr/>
+                    <li {{#is subnav 'tickets-unassigned'}} class='active' {{/is}}><a href="/tickets/unassigned"><i class="material-icons fa-sub-icon">person_add_disabled</i>Unassigned</a></li>
+                    <hr style="margin: 0 20px;"/>
                     <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="material-icons fa-sub-icon">&#xE24D;</i>New</a></li>
                     <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="material-icons fa-sub-icon">&#xE629;</i>Pending</a></li>
                     <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="material-icons fa-sub-icon">&#xE2C8;</i>Open</a></li>
@@ -151,6 +152,7 @@
         <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
         <li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
         <hr>
+        <li {{#is subnav 'settings-ticketsettings'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">style</i><span>Tickets</span></a></li>
         <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>
         <li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>
         {{#canUser data.user "settings:logs"}}

@@ -16,6 +16,9 @@ var mongoose = require('mongoose');
 
 var COLLECTION = 'tickettypes';
 
+//Needed for Population
+var ticketPriorities = require('./ticketpriority');
+
 /**
  * TicketType Schema
  * @module models/tickettype
@@ -26,8 +29,17 @@ var COLLECTION = 'tickettypes';
  * @property {String} name ```Required``` ```unique``` Name of Ticket Type
  */
 var ticketTypeSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true }
+    name:       { type: String, required: true, unique: true },
+    priorities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'priorities'}]
 });
+
+var autoPopulatePriorities = function(next) {
+    this.populate('priorities');
+    return next();
+};
+
+ticketTypeSchema.pre('find', autoPopulatePriorities);
+ticketTypeSchema.pre('findOne', autoPopulatePriorities);
 
 /**
  * Return all Ticket Types

@@ -250,7 +250,11 @@ api_tickets.create = function(req, res) {
 
     var ticketModel = require('../../../models/ticket');
     var ticket = new ticketModel(postData);
-    ticket.owner = req.user._id;
+    if (!_.isUndefined(postData.owner))
+        ticket.owner = postData.owner;
+    else
+        ticket.owner = req.user._id;
+
     var marked = require('marked');
     var tIssue = ticket.issue;
     tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");

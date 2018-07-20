@@ -41,7 +41,7 @@ var settingSchema = mongoose.Schema({
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 settingSchema.statics.getSettings = function(callback) {
-    var q = this.model(COLLECTION).find({}).select('name value');
+    var q = this.model(COLLECTION).find().select('name value');
 
     return q.exec(callback);
 };

@@ -335,20 +335,25 @@ var socketServer = function(ws) {
 
         socket.on('setTicketPriority', function(data) {
             var ticketId = data.ticketId;
-            var priority = data.priority.value;
+            var priority = data.priority;
             var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
+            var prioritySchema = require('./models/ticketpriority');
 
             if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true;
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
-                ticket.setTicketPriority(ownerId, priority, function(err, t) {
+                prioritySchema.getPriority(priority, function(err, p) {
                     if (err) return true;
-                    t.save(function(err, tt) {
-                        if (err) return true;
 
-                        emitter.emit('ticket:updated', ticketId);
-                        utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
+                    ticket.setTicketPriority(ownerId, p, function(err, t) {
+                        if (err) return true;
+                        t.save(function(err, tt) {
+                            if (err) return true;
+
+                            emitter.emit('ticket:updated', ticketId);
+                            utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
+                        });
                     });
                 });
             });
