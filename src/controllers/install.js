@@ -214,10 +214,13 @@ installController.install = function(req, res) {
                 }
 
                 if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+                    winston.error('Username: ' + user.username + ' already exists.');
                     return next('Username: ' + user.username + ' already exists.');
                 } else {
-                    if (user.password !== user.passconfirm)
+                    if (user.password !== user.passconfirm) {
+                        winston.error('Passwords do not match!');
                         return next('Passwords do not match!');
+                    }
 
                     var chance = new Chance();
                     var adminUser = new userSchema({
@@ -242,8 +245,10 @@ installController.install = function(req, res) {
                                 return next('Database Error: ' + err.message);
                             }
 
-                            if (!success)
+                            if (!success) {
+                                winston.error('Unable to add user to Administrator group!');
                                 return next('Unable to add user to Administrator group!');
+                            }
 
                             adminGroup.save(function(err) {
                                 if (err) {
@@ -275,8 +280,10 @@ installController.install = function(req, res) {
             });
         }
     ], function(err) {
-        if (err)
+        if (err) {
+            winston.error(err);
             return res.status(400).json({success: false, error: err});
+        }
 
         return res.json({success: true});
     });
