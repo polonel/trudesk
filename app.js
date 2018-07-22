@@ -178,7 +178,7 @@ function dbCallback(err, db) {
             },
             function(next) {
                 require('./src/settings/defaults').init(next);
-            },
+            }, 
             function(next) {
                 //Start Task Runners
                 require('./src/taskrunner');
