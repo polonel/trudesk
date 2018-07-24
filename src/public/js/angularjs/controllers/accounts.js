@@ -174,7 +174,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
 
                     var $userHeadingContent = $('.user-heading-content');
                     $userHeadingContent.find('.js-username').text(user.username);
-                    $userHeadingContent.find('.js-user-title').text(user.title);
+                    if (!user.title)
+                        $userHeadingContent.find('.js-user-title').text('');
+                    else
+                        $userHeadingContent.find('.js-user-title').text(user.title);
 
                     var isEditingSelf = false;
                     if (user.username === loggedInAccount.username)
