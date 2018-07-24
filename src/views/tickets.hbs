@@ -116,7 +116,7 @@
                     <tbody>
                     {{#each data.tickets}}
                         {{#if_eq status compare=0}}
-                            <tr class="ticket-new" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                            <tr class="ticket-new  {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
                                     <label for="c_{{_id}}"></label>
@@ -144,7 +144,7 @@
                             </tr>
                         {{/if_eq}}
                         {{#is status 1}}
-                            <tr class="ticket-open {{#overdue ../data.common.showOverdue updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                            <tr class="ticket-open {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>

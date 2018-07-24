@@ -105,10 +105,10 @@ define('pages/dashboard', [
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
                         } else if(_data.data.length < 1) {
                             // No data in graph. Show No Data avaliable
-                            $('#test').empty();
-                            $('#test').append('<div class="no-data-available-text">No Data Available</div>');
+                            $('#breakdownGraph').empty();
+                            $('#breakdownGraph').append('<div class="no-data-available-text">No Data Available</div>');
                         } else {
-                            $('#test').empty();
+                            $('#breakdownGraph').empty();
                             parms.data = MG.convert.date(_data.data, 'date');
                             MG.data_graphic(parms);
                         }

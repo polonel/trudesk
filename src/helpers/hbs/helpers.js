@@ -632,6 +632,15 @@ var helpers = {
         });
     },
 
+    match_id: function(_id1, _id2, options) {
+        var result = _id1.toString() === _id2.toString();
+        if (result) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
     json: function(str) {
         return JSON.stringify(str);
     },
@@ -644,12 +653,15 @@ var helpers = {
         return num1+num2;
     },
 
-    overdue: function(showOverdue, updated, options) {
+    overdue: function(showOverdue, date, updated, overdueIn, options) {
         if (!showOverdue) return false;
         var now = moment();
-        updated = moment(updated);
-        var timeout = updated.clone().add(2, 'd');
+        if (updated)
+            updated = moment(updated);
+        else
+            updated = moment(date);
 
+        var timeout = updated.clone().add(overdueIn, 'm');
         var result = now.isAfter(timeout);
 
         if (result)

@@ -49,7 +49,7 @@ winston.err = function (err) {
 
 process.on('message', function(msg) {
     if (msg === 'shutdown') {
-        console.log('Closing all connections...');
+        winston.debug('Closing all connections...');
 
         if (ws.server)
             ws.server.close();
@@ -67,7 +67,7 @@ if (!process.env.FORK) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
+    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
@@ -159,18 +159,20 @@ function dbCallback(err, db) {
             function(next) {
                 //Start Check Mail
                 var settingSchema = require('./src/models/setting');
-                settingSchema.getSettings(function(err, settings) {
-                   if (err) {
-                       winston.warn(err);
-                       return next();
-                   }
+                settingSchema.getSetting('mailer:check:enable', function(err, mailCheckEnabled) {
+                    if (err) {
+                        winston.warn(err);
+                        return next();
+                    }
 
-                    var mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-                    mailerCheckEnabled = (mailerCheckEnabled === undefined) ? {value: false} : mailerCheckEnabled;
-                    if (mailerCheckEnabled.value) {
-                        var mailCheck = require('./src/mailer/mailCheck');
-                        winston.debug('Starting MailCheck...');
-                        mailCheck.init(settings);
+                    if (mailCheckEnabled && mailCheckEnabled.value) {
+                        settingSchema.getSettings(function(err, settings) {
+                            if (err) return next();
+
+                            var mailCheck = require('./src/mailer/mailCheck');
+                            winston.debug('Starting MailCheck...');
+                            mailCheck.init(settings);
+                        });
                     }
 
                     return next();
@@ -178,7 +180,7 @@ function dbCallback(err, db) {
             },
             function(next) {
                 require('./src/settings/defaults').init(next);
-            }, 
+            },
             function(next) {
                 //Start Task Runners
                 require('./src/taskrunner');
@@ -237,7 +239,7 @@ function dbCallback(err, db) {
                 return next();
             }
         ], function() {
-            winston.info("TruDesk Ready");
+            winston.info("trudesk Ready");
         });
     });
 }

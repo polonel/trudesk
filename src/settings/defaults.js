@@ -249,21 +249,45 @@ function checkPriorities(callback) {
 }
 
 function addedDefaultPrioritesToTicketTypes(callback) {
-    //TODO: Change this so we check if ticketType doesn't have priorities then we add the default ones to it.
-    // The default Priorities cannot be deleted.
-    var ticketTypeSchema = require('../models/tickettype');
-    prioritySchema.find({default: true}).then(function(priorities) {
-        return ticketTypeSchema.collection.update({}, {$set: {priorities: _.map(priorities, '_id')}}, {multi: true}).then(function(res) {
-            if (res && res.result) {
-                if (res.result.ok === 1)
-                    return callback();
-                else {
-                    winston.warn(res.message);
-                    return callback(res.message);
-                }
-            }
-        });
-    });
+    async.waterfall([
+        function(next) {
+            prioritySchema.find({default: true})
+                .then(function(results) {
+                    return next(null, results);
+                })
+                .catch(next);
+        },
+        function(priorities, next) {
+            var ticketTypeSchema = require('../models/tickettype');
+            ticketTypeSchema.getTypes(function(err, types) {
+                if (err) return next(err);
+
+                async.each(types, function(type, done) {
+                    var prioritiesToAdd = [];
+                    if (!type.priorities) {
+                        type.priorities = [];
+                        prioritiesToAdd = _.map(priorities, '_id');
+                    } else {
+                      _.each(priorities, function(priority) {
+                          if (!_.find(type.priorities, {'_id': priority._id})) {
+                              winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
+                              prioritiesToAdd.push(priority._id);
+                          }
+                      });
+                    }
+
+                    if (prioritiesToAdd.length < 1)
+                        return done();
+
+                    type.priorities = _.concat(type.priorities, prioritiesToAdd);
+                    type.save(done);
+
+                }, function() {
+                    next(null);
+                });
+            });
+        }
+    ], callback);
 }
 
 module.exports = settingsDefaults;

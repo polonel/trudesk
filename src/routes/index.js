@@ -130,6 +130,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
+    router.get('/api/v1/tickets/type/:id', middleware.api, controllers.api.tickets.getType);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType);
     router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType);

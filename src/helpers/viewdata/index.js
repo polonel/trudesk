@@ -98,6 +98,15 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
+            viewController.getDefaultTicketType(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.defaultTicketType = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
               viewController.getTags(request, function(err, data) {
                   if (err) return callback();
 
@@ -297,6 +306,26 @@ viewController.getTypes = function(request, callback) {
         }
 
         return callback(null, data);
+    });
+};
+
+viewController.getDefaultTicketType = function(request, callback) {
+    var settingSchema = require('../../models/setting');
+    settingSchema.getSetting('ticket:type:default', function(err, defaultType) {
+        if (err) {
+            winston.debug('Error viewController:getDefaultTicketType: ', err);
+            return callback(err);
+        }
+
+        var typeSchema = require('../../models/tickettype');
+        typeSchema.getType(defaultType.value, function(err, type) {
+            if (err) {
+                winston.debug('Error viewController:getDefaultTicketType: ', err);
+                return callback(err);
+            }
+
+            return callback(null, type);
+        });
     });
 };
 

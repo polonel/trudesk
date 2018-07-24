@@ -796,11 +796,24 @@ api_tickets.postInternalNote = function(req, res) {
 api_tickets.getTypes = function(req, res) {
     var ticketType = require('../../../models/tickettype');
     ticketType.getTypes(function(err, types) {
-        if (err) return res.status(400).json({error: "Invalid Post Data"});
+        if (err) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
-        res.json(types);
+        return res.json(types);
     });
 };
+
+api_tickets.getType = function(req, res) {
+    var id = req.params.id;
+    if (!id) return res.status(400).json({success: false, error: 'Invalid Type ID'});
+
+    var ticketType = require('../../../models/tickettype');
+    ticketType.getType(id, function(err, type) {
+        if (err) return res.status(400).json({success: false, error: 'Invalid Type ID'});
+
+        return res.json({success: true, type: type});
+    })
+};
+
 
 /**
  * @api {post} /api/v1/tickets/types/create Create Ticket Type

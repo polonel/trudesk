@@ -68,4 +68,6 @@ settingSchema.statics.getSettingsByName = function(names, callback) {
     return q.exec(callback);
 };
 
+settingSchema.statics.getSetting = settingSchema.statics.getSettingByName;
+
 module.exports = mongoose.model(COLLECTION, settingSchema);

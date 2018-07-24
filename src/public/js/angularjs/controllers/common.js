@@ -36,18 +36,88 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                           }
 
                           var $type = modal.find('select#type');
+                          var $priorities = modal.find('#priority-wrapper');
+                          if (angular.isDefined($priorities[0]))
+                              $priorities.empty();
+
                           if (angular.isDefined($type[0])) {
                               var $type_selectize = $type[0].selectize;
-                              options = $type_selectize.options;
-                              first = _.chain(options).map(function(v, k) {
-                                  if (angular.isDefined(v.$order) && v.$order === 1) return k;
-                              }).first().value();
+                              $type_selectize.on('change', function(value) {
+                                  // Load Priorities on Change.
+                                  var $priorityLoader = $('#priorityLoader');
+                                  $priorityLoader.show();
+                                  $priorities.empty();
+                                  $timeout(function() {
+                                      $http.get('/api/v1/tickets/type/' + value)
+                                          .then(
+                                              function success(response) {
+                                                  if (response.data && response.data.type && response.data.type.priorities && response.data.success) {
+                                                      var typePriorities = response.data.type.priorities;
+                                                      if (angular.isDefined($priorities[0])) {
+                                                          var priorities = _.sortBy(typePriorities, 'migrationNum');
+                                                          $priorities.empty();
+                                                          _.each(priorities, function(priority, idx) {
+                                                              var checked = (idx === 0) ? 'checked' : '';
+                                                              if (angular.isUndefined(priority.htmlColor))
+                                                                  priority.htmlColor = '#29b955';
 
-                              if (first)
-                                  $type_selectize.addItem(first, true);
+                                                              var html = '<span class="icheck-inline">' +
+                                                                  '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />' +
+                                                                  '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>' +
+                                                                  '</span>';
+
+                                                              $priorities.append(html);
+                                                          });
+
+                                                          $priorityLoader.hide();
+                                                      }
+                                                  }
+                                              },
+                                              function error(err) {
+                                                  console.error(err);
+                                              }
+                                          );
+                                  }, 250);
+                              });
+                              options = $type_selectize.options;
+                              var defaultType = $type.attr('data-default');
+                              if (defaultType) {
+                                  var selectDefault = _.find(options, {value: defaultType}).value;
+
+                                  if (selectDefault)
+                                      $type_selectize.addItem(selectDefault, true);
+                              } else {
+                                  first = _.chain(options).map(function(v, k) {
+                                      if (angular.isDefined(v.$order) && v.$order === 1) return k;
+                                  }).first().value();
+
+                                  if (first)
+                                      $type_selectize.addItem(first, true);
+                              }
 
                               $type_selectize.refreshItems();
                           }
+
+                          //Now load priorities for the given type...
+                          // NOTE: This ends up being handled in the onChange event during modal load.
+                          // if (angular.isDefined($priorities[0])) {
+                          //     $priorities.empty();
+                          //     var json = $priorities.attr('data-default-priorities');
+                          //     var parsedPriorities = angular.fromJson(json);
+                          //     var priorities = _.sortBy(parsedPriorities, 'migrationNum');
+                          //     _.each(priorities, function(priority, idx) {
+                          //         var checked = (idx === 0) ? 'checked' : '';
+                          //         if (angular.isUndefined(priority.htmlColor))
+                          //             priority.htmlColor = '#29b955';
+                          //
+                          //         var html = '<span class="icheck-inline">\n' +
+                          //             '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />\n' +
+                          //             '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>\n' +
+                          //             '</span>';
+                          //
+                          //         $priorities.append(html);
+                          //     });
+                          // }
                       }
                   });
               }, 0, false);
