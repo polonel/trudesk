@@ -237,6 +237,29 @@ label.md-label
   padding: 0 6px
   font-size: 11px
 
+.md-btn-small
+  line-height: 27px !important
+  min-width: 14px
+  font-size: 11px !important
+
+.md-btn-group
+  display: inline-block
+  vertical-align: top
+  position: relative
+  font-size: 0
+  white-space: nowrap
+  .md-btn
+    vertical-align: top
+    margin-left: 0 !important
+    &:first-child
+      border-top-right-radius: 0
+      border-bottom-right-radius: 0
+    &:not(:first-child):not(:last-child)
+      border-radius: 0
+    &:last-child
+      border-top-left-radius: 0
+      border-bottom-left-radius: 0
+
 .md-color-white
   color: white !important
 .md-color-green
@@ -262,6 +285,13 @@ label.md-label
   > i
     font-size: 128px
 
+.uk-accordion-title-small
+  font-size: 13px
+  padding: 5px 24px 5px 10px
+  color: white
+  &:after
+    top: 5px
+    color: white
 
 .uk-grid-small
   margin-top: 15px !important
@@ -375,6 +405,14 @@ label.md-label
   &.uk-tooltip-small
     &:after
       display: none !important
+
+.uk-tooltip.long-text
+  text-align: left
+  .uk-tooltip-inner
+    white-space: normal
+    overflow: visible
+    line-height: 18px
+    padding: 4px 0
 
 
 .title-shadow
@@ -513,3 +551,32 @@ textarea.review-list
   top: 50%
   left: 50%
   transform: translate(-50%, -50%)
+
+.danger-zone,
+.zone
+  border: 1px solid #ccc
+  +borderRadius(3px)
+  h2
+    font-weight: 300
+  h5
+    font-weight: 600
+    font-size: 14px
+    line-height: 1.5
+    color: #24292e
+    margin: 0
+  .z-box,
+  .dz-box
+    padding: 16px
+    border-top: 1px solid #e1e4e8
+    margin-top: -1px
+    &:first-of-type
+      border-top: none
+    p
+      font-size: 13px
+      line-height: 1.5
+      color: #24292e
+      margin-top: 0
+      margin-bottom: 10px
+
+.danger-zone
+  border: 1px solid $accent_danger

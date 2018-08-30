@@ -51,6 +51,7 @@ mainController.index = function(req, res) {
 
 mainController.about = function(req, res) {
     var pkg = require('../../package.json');
+    var marked = require('marked');
     var settings = require('../models/setting');
     settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
         var content = {};
@@ -65,7 +66,7 @@ mainController.about = function(req, res) {
         if (privacyPolicy == null || _.isUndefined(privacyPolicy.value))
             content.data.privacyPolicy = 'No Privacy Policy has been set.';
         else
-            content.data.privacyPolicy = privacyPolicy.value;
+            content.data.privacyPolicy = marked(privacyPolicy.value);
 
         return res.render('about', content);
     });

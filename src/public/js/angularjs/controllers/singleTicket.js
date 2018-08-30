@@ -12,12 +12,103 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
-    function(angular, _, $, UIkit, socket, nav, md, helpers) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'easymde', 'angularjs/services/session', 'history'],
+    function(angular, _, $, UIkit, socket, nav, md, helpers, EasyMDE) {
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
         .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q, $log) {
 
             $scope.loggedInAccount = SessionService.getUser();
+
+            var mdeToolbarItems = [
+                {
+                    name: 'bold',
+                    action: EasyMDE.toggleBold,
+                    className: 'material-icons mi-bold no-ajaxy',
+                    title: 'Bold'
+                },
+                {
+                    name: 'italic',
+                    action: EasyMDE.toggleItalic,
+                    className: 'material-icons mi-italic no-ajaxy',
+                    title: 'Italic'
+                },
+                {
+                    name: 'Title',
+                    action: EasyMDE.toggleHeadingSmaller,
+                    className: 'material-icons mi-title no-ajaxy',
+                    title: 'Title'
+                },
+                "|",
+                {
+                    name: 'Code',
+                    action: EasyMDE.toggleCodeBlock,
+                    className: 'material-icons mi-code no-ajaxy',
+                    title: 'Code'
+                },
+                {
+                    name: 'Quote',
+                    action: EasyMDE.toggleBlockquote,
+                    className: 'material-icons mi-quote no-ajaxy',
+                    title: 'Quote'
+                },
+                {
+                    name: 'Generic List',
+                    action: EasyMDE.toggleUnorderedList,
+                    className: 'material-icons mi-list no-ajaxy',
+                    title: 'Generic List'
+                },
+                {
+                    name: 'Numbered List',
+                    action: EasyMDE.toggleOrderedList,
+                    className: 'material-icons mi-numlist no-ajaxy',
+                    title: 'Numbered List'
+                },
+                "|",
+                {
+                    name: 'Create Link',
+                    action: EasyMDE.drawLink,
+                    className: 'material-icons mi-link no-ajaxy',
+                    title: 'Create Link'
+                },
+                "|",
+                {
+                    name: 'Toggle Preview',
+                    action: EasyMDE.togglePreview,
+                    className: 'material-icons mi-preview no-disable no-mobile no-ajaxy',
+                    title: 'Toggle Preview'
+                }
+            ];
+
+            var $commentReply = $('#commentReply');
+            var commentMDE = null;
+            if ($commentReply.length > 0) {
+                commentMDE = new EasyMDE({
+                    element: $commentReply[0],
+                    forceSync: true,
+                    minHeight: "220px", //Slighty smaller to adjust the scroll
+                    toolbar: mdeToolbarItems,
+                });
+
+                commentMDE.codemirror.setOption("extraKeys", {
+                    "Ctrl-Enter": function(cm) {
+                        var $submitButton = $(cm.display.wrapper).parents('form').find('#comment-reply-submit-button');
+                        if ($submitButton)
+                            $submitButton.click();
+                    }
+                })
+            }
+
+            var $ticketNote = $('#ticket-note');
+            var noteMDE = null;
+            if ($ticketNote.length > 0) {
+                noteMDE = new EasyMDE({
+                    element: $ticketNote[0],
+                    forceSync: true,
+                    minHeight: '220px',
+                    toolbar: mdeToolbarItems
+                });
+
+            }
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();
@@ -299,13 +390,19 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = form.find('input[name="ticketId"]');
                 var commentField = form.find('#commentReply');
                 if (commentField.length < 1 || id.length < 1) return;
+                if (commentField.val().length < 5) {
+                    commentField.validate();
+                    return;
+                }
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addcomment', {
-                        "comment": commentField.val(),
+                        "comment": commentMDE.value(),
                         "_id": id.val().toString(),
                         "ownerId": $scope.loggedInAccount._id
                     }).success(function() {
                         commentField.val('');
+                        if (commentMDE)
+                            commentMDE.value('');
                     }).error(function(e) {
                         $log.error('[trudesk:singleTicket:submitComment]');
                         $log.error(e);

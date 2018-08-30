@@ -61,7 +61,7 @@ notificationSchema.statics.getCount = function(oId, callback) {
         return callback("Invalid ObjectId - NotificationSchema.GetCount()", null);
     }
 
-    return this.model(COLLECTION).count({owner: oId}, callback);
+    return this.model(COLLECTION).countDocuments({owner: oId}, callback);
 };
 
 notificationSchema.statics.getUnreadCount = function(oId, callback) {
@@ -69,7 +69,7 @@ notificationSchema.statics.getUnreadCount = function(oId, callback) {
         return callback("Invalid ObjectId - NotificationSchema.GetUnreadCount()", null);
     }
 
-    return this.model(COLLECTION).count({owner: oId, unread: true}, callback);
+    return this.model(COLLECTION).countDocuments({owner: oId, unread: true}, callback);
 };
 
 notificationSchema.statics.clearNotifications = function(oId, callback) {

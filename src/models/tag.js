@@ -57,7 +57,7 @@ tagSchema.statics.getTagByName = function(tagName, callback) {
 };
 
 tagSchema.statics.tagExist = function(tagName, callback) {
-    var q = this.model(COLLECTION).count({name: tagName});
+    var q = this.model(COLLECTION).countDocuments({name: tagName});
 
     return q.exec(callback);
 };

@@ -57,7 +57,12 @@ reportsController.generate = function(req, res) {
     content.data.user = req.user;
     content.data.common = req.viewdata;
 
-    return res.render('subviews/reports/generate', content);
+    var prioritySchema = require('../models/ticketpriority');
+    prioritySchema.getPriorities(function(err, priorities) {
+        content.data.priorities = priorities;
+
+        return res.render('subviews/reports/generate', content);
+    });
 };
 
 reportsController.breakdownGroup = function(req, res) {

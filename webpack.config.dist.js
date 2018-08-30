@@ -25,6 +25,7 @@ module.exports = {
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
             jscookie:       'vendor/jscookie/js.cookie.js',
+            easing:         'vendor/jquery/jquery.easing',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -71,6 +72,7 @@ module.exports = {
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether.min',
             shepherd:       'vendor/shepherd/js/shepherd.min',
+            easymde:        'vendor/easymde/dist/easymde.min',
             snackbar:       'plugins/snackbar'
         }
     },

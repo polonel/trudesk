@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'easymde', 'velocity', 'history'], function(angular, _, $, helpers, ui, UIkit, EasyMDE) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
         .directive('selectize', function($timeout) {
             return {
@@ -34,6 +34,67 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             }
         })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
+
+            var mdeToolbarItems = [
+                {
+                    name: 'bold',
+                    action: EasyMDE.toggleBold,
+                    className: 'material-icons mi-bold no-ajaxy',
+                    title: 'Bold'
+                },
+                {
+                    name: 'italic',
+                    action: EasyMDE.toggleItalic,
+                    className: 'material-icons mi-italic no-ajaxy',
+                    title: 'Italic'
+                },
+                {
+                    name: 'Title',
+                    action: EasyMDE.toggleHeadingSmaller,
+                    className: 'material-icons mi-title no-ajaxy',
+                    title: 'Title'
+                },
+                "|",
+                {
+                    name: 'Code',
+                    action: EasyMDE.toggleCodeBlock,
+                    className: 'material-icons mi-code no-ajaxy',
+                    title: 'Code'
+                },
+                {
+                    name: 'Quote',
+                    action: EasyMDE.toggleBlockquote,
+                    className: 'material-icons mi-quote no-ajaxy',
+                    title: 'Quote'
+                },
+                {
+                    name: 'Generic List',
+                    action: EasyMDE.toggleUnorderedList,
+                    className: 'material-icons mi-list no-ajaxy',
+                    title: 'Generic List'
+                },
+                {
+                    name: 'Numbered List',
+                    action: EasyMDE.toggleOrderedList,
+                    className: 'material-icons mi-numlist no-ajaxy',
+                    title: 'Numbered List'
+                },
+                "|",
+                {
+                    name: 'Create Link',
+                    action: EasyMDE.drawLink,
+                    className: 'material-icons mi-link no-ajaxy',
+                    title: 'Create Link'
+                },
+                "|",
+                {
+                    name: 'Toggle Preview',
+                    action: EasyMDE.togglePreview,
+                    className: 'material-icons mi-preview no-disable no-mobile no-ajaxy',
+                    title: 'Toggle Preview'
+                }
+            ];
+
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 $timeout(function() {
@@ -46,6 +107,21 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                 s.addClass('md-input-filled');
                         }
                     });
+
+                    var $privacyPolicy = $('#privacyPolicy');
+                    if ($privacyPolicy.length > 0) {
+                        var privacyPolicyMDE = new EasyMDE({
+                            element: $privacyPolicy[0],
+                            forceSync: true,
+                            minHeight: "220px", //Slighty smaller to adjust the scroll
+                            toolbar: mdeToolbarItems
+                        });
+
+                        privacyPolicyMDE.codemirror.off('change');
+                        privacyPolicyMDE.codemirror.on('change', function() {
+                            $scope.privacyPolicy = privacyPolicyMDE.value();
+                        });
+                    }
 
                     if ($scope.mailerCheckTicketType !== '') {
                         var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
@@ -86,6 +162,32 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     helpers.UI.showSnackbar('Error: ' + err, true);
                 });
             });
+
+            $scope.switchSettings = function(event, settings) {
+                if (settings) {
+                    var currentTarget = $(event.currentTarget);
+                    var $target = $('div[data-settings-id="' + settings + '"]');
+                    var $settingsWrap = $('.settings-wrap');
+                    if ($target.length > 0) {
+                        //Hide Them
+                        $('.settings-categories > li').each(function(){ var vm = this; $(vm).removeClass('active'); });
+                        $settingsWrap.find('div[data-settings-id]').each(function() {
+                            var vm = this;
+                            $(vm).removeClass('active');
+                        });
+
+                        //Show Selected
+                        $target.addClass('active');
+                        if (currentTarget.length > 0) {
+                            currentTarget.addClass('active');
+                        }
+
+                        if (settings === 'settings-tickets') {
+                            $target.find('ul>li[data-key]').first().addClass('active');
+                        }
+                    }
+                }
+            };
 
             $scope.mailerEnabledChange = function() {
                 var vm = this;
@@ -396,6 +498,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }
             };
 
+            $scope.switchTicketType = function($event) {
+                var $currentTarget = $($event.currentTarget);
+                if ($currentTarget) {
+                    if ($currentTarget.hasClass('active')) return true;
+                    var key = $currentTarget.attr('data-key');
+                    var $keyWindow = $currentTarget.parent().parent().parent().find('div[data-ticket-type-id="' + key + '"]');
+                    if ($keyWindow) {
+                        $currentTarget.parent().find('li.active').removeClass('active');
+                        $currentTarget.addClass('active');
+                        $('div[data-ticket-type-id].active').velocity({
+                            opacity: 0
+                        }, {
+                            duration: 250,
+                            complete: function() {
+                                var vm = this;
+                                $(vm).removeClass('active').addClass('hide');
+
+                                $keyWindow.velocity({
+                                    opacity: 1
+                                }, {
+                                    duration: 250,
+                                    begin: function() {
+                                        $keyWindow.removeClass('hide');
+                                    },
+                                    complete: function() {
+                                        $keyWindow.addClass('active');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            };
+
             $scope.createTicketType = function(event) {
                 event.preventDefault();
                 var form = $('#createTicketTypeForm');
@@ -414,7 +550,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
 
-                        History.pushState(null, null, '/settings/tickettypes/?refresh=1');
+                        History.pushState(null, null, '/settings/tickets/?refresh=true');
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);
@@ -433,6 +569,28 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (!ticketTypeId) return true;
 
                 History.pushState(null, null, '/settings/tickettypes/' + ticketTypeId);
+            };
+
+            $scope.submitUpdateTicketType = function($event, typeId) {
+                $event.preventDefault();
+                var $form = $($event.currentTarget);
+                if ($form) {
+                    var $typeNameInput = $form.find('input#ticket-type-name-' + typeId);
+                    var typeName = $typeNameInput.val();
+
+                    $http.put('/api/v1/tickets/types/' + typeId, {
+                        name: typeName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Type: ' + typeName + ' updated successfully', false);
+                        $('li[data-key="' + typeId + '"]').find('h3').text(typeName);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                }
             };
 
             $scope.updateTicketType = function(typeId) {

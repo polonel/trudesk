@@ -27,6 +27,7 @@ var accountsController = {};
 accountsController.content = {};
 
 accountsController.signup = function(req, res) {
+    var marked = require('marked');
     var settings = require(RELPATH + 'models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) return handleError(res, err);
@@ -42,7 +43,7 @@ accountsController.signup = function(req, res) {
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
                     content.data.privacyPolicy = 'No Privacy Policy has been set.';
                 else
-                    content.data.privacyPolicy = privacyPolicy.value;
+                    content.data.privacyPolicy = marked(privacyPolicy.value);
 
                 return res.render('pub_signup', content);
             });

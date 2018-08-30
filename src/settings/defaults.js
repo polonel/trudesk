@@ -162,19 +162,19 @@ function checkPriorities(callback) {
 
     async.parallel([
         function(done) {
-            ticketSchema.collection.count({priority: 1}).then(function(count) {
+            ticketSchema.collection.countDocuments({priority: 1}).then(function(count) {
                 migrateP1 = count > 0;
                 return done();
             });
         },
         function(done) {
-            ticketSchema.collection.count({priority: 2}).then(function(count) {
+            ticketSchema.collection.countDocuments({priority: 2}).then(function(count) {
                 migrateP2 = count > 0;
                 return done();
             });
         },
         function(done) {
-            ticketSchema.collection.count({priority: 3}).then(function(count) {
+            ticketSchema.collection.countDocuments({priority: 3}).then(function(count) {
                 migrateP3 = count > 0;
                 return done();
             });

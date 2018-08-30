@@ -25,7 +25,7 @@ var settingsController = {};
 
 settingsController.content = {};
 
-settingsController.get = function(req, res) {
+settingsController.general = function(req, res) {
     if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
     var content = {};
@@ -37,8 +37,111 @@ settingsController.get = function(req, res) {
     content.data.user = req.user;
     content.data.common = req.viewdata;
 
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+settingsController.ticketSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-tickets';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+settingsController.mailerSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-mailer';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+settingsController.notificationsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-notifications';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+settingsController.tpsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-tps';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+settingsController.legal = function(req, res) {
+    if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-legal';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('subviews/settings/settings-tickets', content);
+    });
+};
+
+function getSettings(content, callback) {
     settingSchema.getSettings(function(err, settings) {
-        if (err) return handleError(res, 'Invalid Settings');
+        if (err) return callback('Invalid Settings');
 
         var s = {};
         s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'});
@@ -95,35 +198,45 @@ settingsController.get = function(req, res) {
         s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
         s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
 
-        content.data.settings = s;
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.legal = function(req, res) {
-    var content = {};
-    content.title = "Legal Settings";
-    content.nav = 'settings';
-    content.subnav = 'settings-legal';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    settingSchema.getSettings(function(err, settings) {
-        if (err) return handleError(res, 'Invalid Settings');
-
-        var s = {};
         s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
         content.data.settings = s;
 
-        return res.render('subviews/settings/legal', content);
+        ticketTypeSchema.getTypes(function(err, types) {
+            if (err) return callback(err);
+
+            content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
+
+            return callback();
+        });
     });
-};
+}
+
+// settingsController.legal = function(req, res) {
+//     var content = {};
+//     content.title = "Legal Settings";
+//     content.nav = 'settings';
+//     content.subnav = 'settings-legal';
+//
+//     content.data = {};
+//     content.data.user = req.user;
+//     content.data.common = req.viewdata;
+//
+//     settingSchema.getSettings(function(err, settings) {
+//         if (err) return handleError(res, 'Invalid Settings');
+//
+//         var s = {};
+//         s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
+//         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
+//         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
+//
+//         content.data.settings = s;
+//
+//         return res.render('subviews/settings/legal', content);
+//     });
+// };
 
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');

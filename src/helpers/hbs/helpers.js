@@ -23,6 +23,7 @@
 // node_modules
 var _       = require('lodash');
 var moment  = require('moment');
+require('moment-duration-format');
 
 // The module to be exported
 var helpers = {
@@ -472,6 +473,14 @@ var helpers = {
 
     formatDate: function(date, format) {
         return moment(date).format(format);
+    },
+
+    formatDateParse: function(date, parseFormat, returnFormat) {
+        return moment(date, parseFormat).format(returnFormat);
+    },
+
+    durationFormat: function(duration, parseFormat) {
+        return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both'});
     },
 
     calendarDate: function(date) {

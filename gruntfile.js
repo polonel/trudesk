@@ -73,7 +73,8 @@ module.exports = function(grunt) {
                         'src/public/js/vendor/shepherd/css/shepherd-theme-arrows.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-arrows-fix.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-square.css',
-                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css'
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css',
+                        'src/public/js/vendor/easymde/dist/easymde.min.css'
                     ]
                 }
             },

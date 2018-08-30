@@ -107,10 +107,14 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
-    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
+    router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
+    router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
+    router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
-    router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
     router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);

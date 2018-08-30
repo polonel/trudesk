@@ -46,6 +46,7 @@ var ticketsController = {};
 ticketsController.content = {};
 
 ticketsController.pubNewIssue = function(req, res) {
+    var marked = require('marked');
     var settings = require('../models/setting');
     settings.getSettingByName('allowPublicTickets:enable', function(err, setting) {
         if (err) return handleError(res, err);
@@ -60,7 +61,7 @@ ticketsController.pubNewIssue = function(req, res) {
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
                     content.data.privacyPolicy = 'No Privacy Policy has been set.';
                 else
-                    content.data.privacyPolicy = privacyPolicy.value;
+                    content.data.privacyPolicy = marked(privacyPolicy.value);
 
                 return res.render('pub_createTicket', content);
             });

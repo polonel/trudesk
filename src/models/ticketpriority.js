@@ -20,7 +20,7 @@ var COLLECTION = 'priorities';
 var prioritySchema = mongoose.Schema({
     name:         { type: String, required: true, unique: true },
     overdueIn:    { type: Number, required: true, default: 2880}, // Minutes until overdue (48 Hours)
-    htmlColor:    { type: String },
+    htmlColor:    { type: String, default:  '#29b955'},
 
     migrationNum: { type: Number, index: true }, //Needed to convert <1.0 priorities to new format.
     default:      { type: Boolean }
@@ -28,6 +28,10 @@ var prioritySchema = mongoose.Schema({
 
 prioritySchema.statics.getPriority = function(_id, callback) {
     return this.model(COLLECTION).findOne({_id: _id}).exec(callback);
+};
+
+prioritySchema.statics.getPriorities = function(callback) {
+    return this.model(COLLECTION).find({}).exec(callback);
 };
 
 prioritySchema.statics.getByMigrationNum = function(num, callback) {

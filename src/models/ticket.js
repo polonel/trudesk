@@ -762,7 +762,7 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
         grpId = _.intersection(object.filter.groups, g);
     }
 
-    var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({group: {$in: grpId}, deleted: false});
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
         var status = object.status.map(Number);
         q.where({status: {$in: status} });
@@ -1235,7 +1235,7 @@ ticketSchema.statics.getTagCount = function(tagId, callback) {
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({tags: tagId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({tags: tagId, deleted: false});
 
     return q.exec(callback);
 };
@@ -1245,7 +1245,7 @@ ticketSchema.statics.getTypeCount = function(typeId, callback) {
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({type: typeId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({type: typeId, deleted: false});
 
     return q.exec(callback);
 };

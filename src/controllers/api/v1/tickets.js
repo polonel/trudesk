@@ -674,7 +674,10 @@ api_tickets.postComment = function(req, res) {
         if (_.isUndefined(comment)) return res.status(400).json({success: false, error: "Invalid Post Data"});
 
         var marked = require('marked');
-        comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        marked.setOptions({
+            breaks: true
+        });
+        // comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
         var Comment = {
             owner: owner,
             date: new Date(),
@@ -749,11 +752,11 @@ api_tickets.postInternalNote = function(req, res) {
         if (_.isUndefined(payload.note)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
         var marked = require('marked');
-        var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+        // var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
         var Note = {
             owner: payload.owner,
             date: new Date(),
-            note: marked(note)
+            note: marked(payload.note)
         };
 
         ticket.updated = Date.now();
