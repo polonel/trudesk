@@ -390,10 +390,24 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = form.find('input[name="ticketId"]');
                 var commentField = form.find('#commentReply');
                 if (commentField.length < 1 || id.length < 1) return;
+
+                var $mdeError = null;
                 if (commentField.val().length < 5) {
-                    commentField.validate();
+                    // commentField.validate();
+                    commentField.parent().css({border: '1px solid #E74C3C'});
+                    var mdeError = $('<div class="mde-error uk-float-left uk-text-left">Please enter a valid comment. Comments must contain at least 5 characters.</div>');
+
+                    $mdeError = commentField.siblings('.editor-statusbar').find('.mde-error');
+                    if ($mdeError.length < 1)
+                        commentField.siblings('.editor-statusbar').prepend(mdeError);
+
                     return;
+                } else {
+                    commentField.parent().css('border', 'none');
+                    $mdeError = commentField.parent().find('.mde-error');
+                    if ($mdeError.length > 0) $mdeError.remove();
                 }
+
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addcomment', {
                         "comment": commentMDE.value(),
@@ -418,6 +432,23 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 if (form.length < 1) return;
                 var noteField = form.find('#ticket-note');
                 if (noteField.length < 1 || id.length < 1) return;
+
+                var $mdeError = null;
+                if (noteField.val().length < 5) {
+                    noteField.parent().css({border: '1px solid #E74C3C'});
+                    var mdeError = $('<div class="mde-error uk-float-left uk-text-left">Please enter a valid note. Notes must contain at least 5 characters.</div>');
+
+                    $mdeError = noteField.siblings('.editor-statusbar').find('.mde-error');
+                    if ($mdeError.length < 1)
+                        noteField.siblings('.editor-statusbar').prepend(mdeError);
+
+                    return;
+                } else {
+                    noteField.parent().css('border', 'none');
+                    $mdeError = noteField.parent().find('.mde-error');
+                    if ($mdeError.length > 0) $mdeError.remove();
+                }
+
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addnote', {
                         "note": noteField.val(),
@@ -425,6 +456,8 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         "owner": $scope.loggedInAccount._id
                     }).success(function() {
                         noteField.val('');
+                        if (noteMDE)
+                            noteMDE.value('');
                     }).error(function(e) {
                         $log.error('[trudesk:singleTicket:submitInternalNote]');
                         $log.error(e);
