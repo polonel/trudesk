@@ -1,0 +1,31 @@
+<div class="uk-modal" id="deletePriorityModal-{{_id}}" ng-controller="settingsCtrl">
+    <div class="uk-modal-dialog">
+        <form class="uk-form-stacked" id="deletePriorityForm-{{_id}}" action="#" method="POST">
+            <input type="hidden" id="del_priority_name-{{_id}}" name="del_priority_name" value="{{name}}">
+            <div class="uk-margin-medium-bottom uk-clearfix">
+                <h2 class="">Remove Priority</h2>
+                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>
+                <hr style="margin: 10px 0" />
+            </div>
+            <div class="uk-margin-medium-bottom uk-clearfix">
+                <div class="uk-float-left" style="width: 100%;">
+                    <label for="priority" class="uk-form-label">Priority</label>
+                    <select class="selectize-white" name="priority" data-md-selectize-inline>
+                        {{#each @root.data.common.priorities}}
+                            {{#isnot name ../name}}
+                                <option value="{{{_id}}}">{{name}}</option>
+                            {{/isnot}}
+                        {{/each}}
+                    </select>
+                </div>
+            </div>
+            <div class="uk-margin-medium-bottom uk-clearfix">
+                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>{{name}}</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>
+            </div>
+            <div class="uk-modal-footer uk-text-right">
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority('{{_id}}', $event)">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>

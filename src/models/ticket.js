@@ -75,7 +75,7 @@ var ticketSchema = mongoose.Schema({
     deleted:    { type: Boolean, default: false, required: true, index: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true, index: true },
-    // priority:   { type: Number, required: true },
+
     priority:   { type: mongoose.Schema.Types.ObjectId, ref: 'priorities', required: true },
     tags:       [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
     subject:    { type: String, required: true },

@@ -40,7 +40,7 @@ settingsController.general = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -59,7 +59,7 @@ settingsController.ticketSettings = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -78,7 +78,7 @@ settingsController.mailerSettings = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -97,7 +97,7 @@ settingsController.notificationsSettings = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -116,7 +116,7 @@ settingsController.tpsSettings = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -135,7 +135,7 @@ settingsController.legal = function(req, res) {
     getSettings(content, function(err) {
         if (err) return handleError(res, err);
 
-        return res.render('subviews/settings/settings-tickets', content);
+        return res.render('settings', content);
     });
 };
 
@@ -208,35 +208,21 @@ function getSettings(content, callback) {
             if (err) return callback(err);
 
             content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
+            _.each(content.data.ticketTypes, function(type) {
+                type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name']);
+            });
 
-            return callback();
+            var ticketPrioritySchema = require('../models/ticketpriority');
+            ticketPrioritySchema.getPriorities(function(err, priorities) {
+                if (err) return callback(err);
+
+                content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+                return callback();
+            });
         });
     });
 }
-
-// settingsController.legal = function(req, res) {
-//     var content = {};
-//     content.title = "Legal Settings";
-//     content.nav = 'settings';
-//     content.subnav = 'settings-legal';
-//
-//     content.data = {};
-//     content.data.user = req.user;
-//     content.data.common = req.viewdata;
-//
-//     settingSchema.getSettings(function(err, settings) {
-//         if (err) return handleError(res, 'Invalid Settings');
-//
-//         var s = {};
-//         s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
-//         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
-//         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
-//
-//         content.data.settings = s;
-//
-//         return res.render('subviews/settings/legal', content);
-//     });
-// };
 
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');

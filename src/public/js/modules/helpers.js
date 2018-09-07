@@ -397,6 +397,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         });
     };
 
+    helpers.UI.reRenderInputs = function() {
+        $('.md-input').each(function() {
+            updateInput($(this));
+        });
+    };
+
     function updateInput(object) {
         // clear wrapper classes
         object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success uk-input-group-nocolor');

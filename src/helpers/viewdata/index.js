@@ -107,6 +107,15 @@ viewController.getData = function(request, cb) {
             });
           },
           function(callback) {
+            viewController.getPriorities(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.priorities = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
               viewController.getTags(request, function(err, data) {
                   if (err) return callback();
 
@@ -326,6 +335,20 @@ viewController.getDefaultTicketType = function(request, callback) {
 
             return callback(null, type);
         });
+    });
+};
+
+viewController.getPriorities = function(request, callback) {
+    var ticketPrioritySchema = require('../../models/ticketpriority');
+    ticketPrioritySchema.getPriorities(function(err, priorities) {
+        if (err) {
+            winston.debug('Error viewController:getPriorities: ' + err);
+            return callback(err);
+        }
+
+        priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+        return callback(null, priorities);
     });
 };
 

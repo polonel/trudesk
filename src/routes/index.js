@@ -135,10 +135,17 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
     router.get('/api/v1/tickets/type/:id', middleware.api, controllers.api.tickets.getType);
+    router.post('/api/v1/tickets/type/:id/removepriority', middleware.api, controllers.api.tickets.typeRemovePriority);
+    router.post('/api/v1/tickets/type/:id/addpriority', middleware.api, controllers.api.tickets.typeAddPriority);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType);
     router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType);
     router.delete('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.deleteType);
+    router.post('/api/v1/tickets/priority/create', middleware.api, controllers.api.tickets.createPriority);
+    router.post('/api/v1/tickets/priority/:id/delete', middleware.api, controllers.api.tickets.deletePriority);
+    router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities);
+    router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority);
+
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);

@@ -258,6 +258,7 @@ function addedDefaultPrioritesToTicketTypes(callback) {
                 .catch(next);
         },
         function(priorities, next) {
+            priorities = _.sortBy(priorities, 'migrationNum');
             var ticketTypeSchema = require('../models/tickettype');
             ticketTypeSchema.getTypes(function(err, types) {
                 if (err) return next(err);
@@ -267,14 +268,18 @@ function addedDefaultPrioritesToTicketTypes(callback) {
                     if (!type.priorities) {
                         type.priorities = [];
                         prioritiesToAdd = _.map(priorities, '_id');
-                    } else {
-                      _.each(priorities, function(priority) {
-                          if (!_.find(type.priorities, {'_id': priority._id})) {
-                              winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
-                              prioritiesToAdd.push(priority._id);
-                          }
-                      });
+                    } else if (type.priorities.length < 1) {
+                        type.priorities = [];
+                        prioritiesToAdd = _.map(priorities, '_id');
                     }
+                    // } else {
+                    //   _.each(priorities, function(priority) {
+                    //       if (!_.find(type.priorities, {'_id': priority._id})) {
+                    //           winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
+                    //           prioritiesToAdd.push(priority._id);
+                    //       }
+                    //   });
+                    // }
 
                     if (prioritiesToAdd.length < 1)
                         return done();

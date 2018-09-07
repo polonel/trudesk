@@ -113,13 +113,10 @@
                         <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">style</i><span>Legal</span></a></li>
 
 
-                        <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>
-                        <li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>
                         {{#canUser data.user "settings:logs"}}
                             <hr>
                             <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
                         {{/canUser}}
-                        <li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
                     </ul>
                 </li>
             {{/canUser}}

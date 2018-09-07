@@ -12,6 +12,7 @@
 
  **/
 
+var _        = require('lodash');
 var mongoose = require('mongoose');
 
 var COLLECTION = 'tickettypes';
@@ -86,6 +87,31 @@ ticketTypeSchema.statics.getTypeByName = function(name, callback) {
     var q = this.model(COLLECTION).findOne({name: name});
 
     return q.exec(callback);
+};
+
+ticketTypeSchema.methods.addPriority = function(priorityId, callback) {
+    if (!priorityId) return callback({message: 'Invalid Priority Id'});
+
+    var self = this;
+
+    if (!_.isArray(self.priorities))
+        self.priorities = [];
+
+    self.priorities.push(priorityId);
+
+    return callback(null, self);
+};
+
+ticketTypeSchema.methods.removePriority = function(priorityId, callback) {
+    if (!priorityId) return callback({message: 'Invalid Priority Id'});
+
+    var self = this;
+
+    self.priorities = _.reject(self.priorities, function(p) {
+         return p._id.toString() === priorityId.toString();
+    });
+
+    return callback(null, self);
 };
 
 module.exports = mongoose.model(COLLECTION, ticketTypeSchema);

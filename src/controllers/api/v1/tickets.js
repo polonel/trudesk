@@ -841,11 +841,17 @@ api_tickets.createType = function(req, res) {
     if (_.isUndefined(typeName) || typeName.length < 3) return res.status(400).json({success: false, error: 'Invalid Type Name!'});
 
     var ticketTypeSchema = require('../../../models/tickettype');
-    ticketTypeSchema.create({name: typeName}, function(err, ticketType) {
+    var ticketPrioritiesSchema = require('../../../models/ticketpriority');
+    ticketPrioritiesSchema.find({default: true}, function(err, priorities) {
         if (err) return res.status(400).json({success: false, error: err.message});
+        priorities = _.sortBy(priorities, 'migrationNum');
+        
+        ticketTypeSchema.create({name: typeName, priorities: priorities}, function(err, ticketType) {
+            if (err) return res.status(400).json({success: false, error: err.message});
 
-        return res.json({success: true, tickettype: ticketType});
-    })
+            return res.json({success: true, tickettype: ticketType});
+        })
+    });
 };
 
 /**
@@ -879,6 +885,58 @@ api_tickets.updateType = function(req, res) {
             if (err) return res.status(400).json({success: false, error: err.message});
 
             return res.json({success: true, type: t});
+        });
+    });
+};
+
+api_tickets.typeAddPriority = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (!id || !data || !data.priority)
+        return res.status(400).json({success: false, error: 'Invalid request data'});
+
+    var ticketTypeSchema = require('../../../models/tickettype');
+    ticketTypeSchema.getType(id, function(err, type) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        type.addPriority(data.priority, function(err, type) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            type.save(function(err, t) {
+                if (err) return res.status(400).json({success: false, error: err.message});
+
+                t.populate('priorities', function(err, tt) {
+                    if (err) return res.status(400).json({success: false, error: err.message});
+
+                    return res.json({success: true, type: tt});
+                });
+            });
+        });
+    });
+};
+
+api_tickets.typeRemovePriority = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (!id || !data || !data.priority)
+        return res.status(400).json({success: false, error: 'Invalid request data'});
+
+    var ticketTypeSchema = require('../../../models/tickettype');
+    ticketTypeSchema.getType(id, function(err, type) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        type.removePriority(data.priority, function(err, type) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            type.save(function(err, t) {
+                if (err) return res.status(400).json({success: false, error: err.message});
+
+                t.populate('priorities', function(err, tt) {
+                    if (err) return res.status(400).json({success: false, error: err.message});
+
+                    return res.json({success: true, type: tt});
+                });
+            });
         });
     });
 };
@@ -937,6 +995,95 @@ api_tickets.deleteType = function(req, res) {
     ], function(err, result) {
         if (err) return res.status(400).json({success: false, error: err});
         return res.json({success: true, updated: result.nModified});
+    });
+};
+
+api_tickets.createPriority = function(req, res) {
+    var data = req.body;
+    var pName = data.name;
+    var pOverdueIn = data.overdueIn;
+    var pHtmlColor = data.htmlColor;
+
+    if (!pName)
+        return res.status(400).json({success: false, error: 'Invalid Request Data.'});
+
+    var ticketPrioritySchema = require('../../../models/ticketpriority');
+    var P = new ticketPrioritySchema({
+        name: pName,
+        overdueIn: pOverdueIn,
+        htmlColor: pHtmlColor
+    });
+
+    P.save(function(err, savedPriority) {
+        if (err)
+            return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true, priority: savedPriority});
+    });
+};
+
+api_tickets.getPriorities = function(req, res) {
+    var ticketPrioritySchema = require('../../../models/ticketpriority');
+    ticketPrioritySchema.find({}, function(err, priorities) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+        return res.json({success: true, priorities: priorities});
+    });
+};
+
+api_tickets.updatePriority = function(req, res) {
+    var id = req.params.id;
+    var data = req.body;
+    if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
+        return res.status(400).json({success: false, error: 'Invalid Request Data'});
+
+    var ticketPrioritySchema = require('../../../models/ticketpriority');
+    ticketPrioritySchema.findOne({_id: id}, function(err, priority) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        if (data.name)
+            priority.name = data.name;
+        if (data.htmlColor)
+            priority.htmlColor = data.htmlColor;
+        if (data.overdueIn)
+            priority.overdueIn = data.overdueIn;
+
+        priority.save(function(err, p) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+
+            return res.json({success: true, priority: p});
+        });
+    });
+};
+
+api_tickets.deletePriority = function(req, res) {
+    var id = req.params.id;
+    var newPriority = req.body.newPriority;
+    if (!id || !newPriority)
+        return res.status(400).json({success: false, error: 'Invalid Request Data'});
+
+    async.series([
+        function(next) {
+            var ticketSchema = require('../../../models/ticket');
+            ticketSchema.updateMany({priority: id}, {priority: newPriority}, next);
+        },
+        function(next) {
+            var ticketPrioritySchema = require('../../../models/ticketpriority');
+            ticketPrioritySchema.findOne({_id: id}, function(err, priority) {
+                if (err) return next(err);
+
+                if (priority.default)
+                    return next('Unable to delete default priority: ' + priority.name);
+
+                priority.remove(next);
+            });
+        }
+    ], function(err) {
+        if (err) return res.status(400).json({success: false, error: err.message});
+
+        return res.json({success: true});
     });
 };
 
