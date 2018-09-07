@@ -4,6 +4,7 @@ var should      = require('chai').should();
 var m           = require('mongoose');
 var ticketSchema = require('../../src/models/ticket');
 var groupSchema = require('../../src/models/group');
+var prioritySchema = require('../../src/models/ticketpriority');
 
 describe('ticket.js', function() {
     //it('should clear collections.', function(done) {
@@ -17,28 +18,33 @@ describe('ticket.js', function() {
     //});
 
     it('should create ticket', function(done) {
-        ticketSchema.create({
-            owner: m.Types.ObjectId(),
-            group: m.Types.ObjectId(),
-            status: 0,
-            tags: [],
-            date: new Date(),
-            subject: 'Dummy Test Subject',
-            issue: 'Dummy Test Issue',
-            priority: 0,
-            type: m.Types.ObjectId(),
-            history: []
-
-        }, function(err, t) {
+        prioritySchema.findOne({default: true}).exec(function(err, p) {
             expect(err).to.not.exist;
-            expect(t).to.be.a('object');
-            expect(t._doc).to.include.keys(
-                '_id', 'uid', 'owner','group', 'status', 'tags', 'date', 'subject', 'issue', 'priority', 'type', 'history', 'attachments', 'comments', 'deleted'
-            );
+            expect(p).to.be.a('object');
 
-            expect(t.uid).to.equal(1000);
+            ticketSchema.create({
+                owner: m.Types.ObjectId(),
+                group: m.Types.ObjectId(),
+                status: 0,
+                tags: [],
+                date: new Date(),
+                subject: 'Dummy Test Subject',
+                issue: 'Dummy Test Issue',
+                priority: p._id,
+                type: m.Types.ObjectId(),
+                history: []
 
-            done();
+            }, function(err, t) {
+                expect(err).to.not.exist;
+                expect(t).to.be.a('object');
+                expect(t._doc).to.include.keys(
+                    '_id', 'uid', 'owner','group', 'status', 'tags', 'date', 'subject', 'issue', 'priority', 'type', 'history', 'attachments', 'comments', 'deleted'
+                );
+
+                expect(t.uid).to.equal(1000);
+
+                done();
+            });
         });
     });
 
@@ -118,11 +124,16 @@ describe('ticket.js', function() {
     it('should set ticket priority', function(done) {
         ticketSchema.getTicketByUid(1000, function(err, ticket) {
             var ownerId = m.Types.ObjectId();
-            ticket.setTicketPriority(ownerId, 3, function(err, ticket) {
+            prioritySchema.getByMigrationNum(3, function(err, priority) {
                 expect(err).to.not.exist;
-                expect(ticket.priority).to.equal(3);
+                expect(priority).to.be.a('object');
 
-                done();
+                ticket.setTicketPriority(ownerId, priority, function(err, ticket) {
+                    expect(err).to.not.exist;
+                    expect(ticket.priority.name).to.equal('Critical');
+
+                    done();
+                });
             });
         });
     });

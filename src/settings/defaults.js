@@ -142,13 +142,12 @@ function ticketPriorityDefaults(callback) {
     priorities.push(normal);
     priorities.push(urgent);
     priorities.push(critical);
-
     async.each(priorities, function(item, next) {
         prioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
-            if (!err && _.isUndefined(priority)) {
+            if (!err && (_.isUndefined(priority) || _.isNull(priority))) {
                 return item.save(next);
             } else {
-                return next();
+                return next(err);
             }
         });
     }, callback);

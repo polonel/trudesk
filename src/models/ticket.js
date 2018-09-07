@@ -311,7 +311,9 @@ ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
     };
     self.history.push(historyItem);
 
-    callback(null, self);
+    self.populate('priority').execPopulate()
+        .then(function(updatedSelf){ return callback(null, updatedSelf); })
+        .catch(function(err) { return callback(err, null); });
 };
 
 /**

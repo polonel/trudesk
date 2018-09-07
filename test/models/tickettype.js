@@ -22,7 +22,7 @@ describe('ticketType.js', function() {
         ticketTypeSchema.getTypes(function(err, types) {
             expect(err).to.not.exist;
             expect(types).to.be.a('array');
-            expect(types).to.have.length(1);
+            expect(types).to.have.length(3); //Has default ticket types already
 
             done();
         });
