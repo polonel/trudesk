@@ -67,19 +67,13 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/unassigned/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getUnassigned, controllers.tickets.processor);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
-    router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
+    // router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);
     router.get('/messages/startconversation', middleware.redirectToLogin, middleware.loadCommonData, function(req, res, next){ req.showNewConvo = true; next();}, controllers.messages.get);
     router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
-
-    //Calendar
-    // router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
-
-    //Servers
-    // router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
 
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
@@ -266,7 +260,6 @@ function mainRoutes(router, middleware, controllers) {
             res.send('OK');
         });
 
-        router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
             var pm2 = require('pm2');
             pm2.connect(function(err) {
@@ -290,10 +283,6 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
-    //Docs
-    app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
-    app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
-
     mainRoutes(router, middleware, controllers);
     app.use('/', router);
 

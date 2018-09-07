@@ -450,10 +450,7 @@ var socketServer = function(ws) {
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
 
-                        ticketSchema.populate(tt, 'comments.owner', function(err) {
-                            if (err) return winston.error(err);
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                      });
                 });
             });
@@ -476,10 +473,7 @@ var socketServer = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        ticketSchema.populate(tt, 'comments.owner', function(err) {
-                            if (err) return true;
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -503,10 +497,7 @@ var socketServer = function(ws) {
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
 
-                        ticketSchema.populate(tt, 'notes.owner', function(err) {
-                            if (err) return winston.error(err);
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -528,11 +519,7 @@ var socketServer = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        ticketSchema.populate(tt, 'notes.owner', function(err) {
-                            if (err) return true;
-
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -1248,8 +1235,8 @@ var socketServer = function(ws) {
 };
 
 function sortByKeys(obj) {
-    const keys = Object.keys(obj);
-    const sortedKeys = _.sortBy(keys);
+    var keys = Object.keys(obj);
+    var sortedKeys = _.sortBy(keys);
     return _.fromPairs(
         _.map(sortedKeys, function(key) { return [key, obj[key]]})
     );

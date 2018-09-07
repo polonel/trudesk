@@ -677,7 +677,7 @@ api_tickets.postComment = function(req, res) {
         marked.setOptions({
             breaks: true
         });
-        // comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+
         var Comment = {
             owner: owner,
             date: new Date(),
@@ -705,7 +705,7 @@ api_tickets.postComment = function(req, res) {
                 emitter.emit('ticket:comment:added', tt, Comment, req.headers.host);
 
                 return res.json({success: true, error: null, ticket: tt});
-            });
+            })
         });
     });
 };

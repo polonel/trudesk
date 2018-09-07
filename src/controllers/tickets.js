@@ -510,56 +510,56 @@ function getPriorityName(val) {
 }
 
 //Move to API
-ticketsController.postcomment = function(req, res, next) {
-    var Ticket = ticketSchema;
-    var id = req.body.ticketId;
-    var comment = req.body.commentReply;
-    var User = req.user;
-
-    //TODO: Error check fields
-
-    Ticket.getTicketById(id, function(err, t) {
-        if (err) return handleError(res, err);
-        var marked = require('marked');
-        comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-        var Comment = {
-            owner: User._id,
-            date: new Date(),
-            comment: marked(comment)
-        };
-        t.updated = Date.now();
-        t.comments.push(Comment);
-        var HistoryItem = {
-            action: 'ticket:comment:added',
-            description: 'Comment was added',
-            owner: User._id
-        };
-        t.history.push(HistoryItem);
-
-        async.series({
-            subscribers: function(callback) {
-                t.addSubscriber(User._id, function (err, _t) {
-                    if (err) return callback(err);
-                    emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
-                    callback();
-                });
-            },
-            save: function (callback) {
-                t.save(function (err, tt) {
-                    callback(err, tt);
-                });
-            }
-        }, function(err, T) {
-            if (err) return handleError(res, err);
-
-            ticketSchema.populate(T.save, 'subscribers comments.owner', function() {
-                emitter.emit('ticket:comment:added', T.save, Comment, req.headers.host);
-
-                return res.send(T);
-            });
-        });
-    });
-};
+// ticketsController.postcomment = function(req, res, next) {
+//     var Ticket = ticketSchema;
+//     var id = req.body.ticketId;
+//     var comment = req.body.commentReply;
+//     var User = req.user;
+//
+//     //TODO: Error check fields
+//
+//     Ticket.getTicketById(id, function(err, t) {
+//         if (err) return handleError(res, err);
+//         var marked = require('marked');
+//         comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+//         var Comment = {
+//             owner: User._id,
+//             date: new Date(),
+//             comment: marked(comment)
+//         };
+//         t.updated = Date.now();
+//         t.comments.push(Comment);
+//         var HistoryItem = {
+//             action: 'ticket:comment:added',
+//             description: 'Comment was added123',
+//             owner: User._id
+//         };
+//         t.history.push(HistoryItem);
+//
+//         async.series({
+//             subscribers: function(callback) {
+//                 t.addSubscriber(User._id, function (err, _t) {
+//                     if (err) return callback(err);
+//                     emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
+//                     callback();
+//                 });
+//             },
+//             save: function (callback) {
+//                 t.save(function (err, tt) {
+//                     callback(err, tt);
+//                 });
+//             }
+//         }, function(err, T) {
+//             if (err) return handleError(res, err);
+//
+//             ticketSchema.populate(T.save, 'subscribers comments.owner', function() {
+//                 emitter.emit('ticket:comment:added', T.save, Comment, req.headers.host);
+//
+//                 return res.send(T);
+//             });
+//         });
+//     });
+// };
 
 ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs');
