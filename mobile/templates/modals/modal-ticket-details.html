@@ -9,7 +9,7 @@
     <ion-list>
 
       <ion-item>Status<span class="item-note">{{ticket.status | statusMap}}</span></ion-item>
-      <ion-item>Priority<span class="item-note">{{ticket.priority | priorityMap}}</span></ion-item>
+      <ion-item>Priority<span class="item-note">{{ticket.priority.name}}</span></ion-item>
       <ion-item>Type<span class="item-note">{{ticket.type.name}}</span></ion-item>
       <ion-item>Group<span class="item-note">{{ticket.group.name}}</span></ion-item>
       <ion-item>Assignee<span class="item-note">{{ticket.assignee.fullname | assigneeMap}}</span></ion-item>

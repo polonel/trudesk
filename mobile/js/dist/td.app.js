@@ -138,25 +138,6 @@ angular.module('trudesk', [
   }
 })
 
-.filter('priorityMap', function() {
-  return function(p) {
-    var priority;
-    switch (p) {
-      case 1:
-        priority = 'Normal';
-        break;
-      case 2:
-        priority = 'Urgent';
-        break;
-      case 3:
-        priority = 'Critical';
-        break;
-    }
-
-    return priority;
-  }
-})
-
 .filter('assigneeMap', function() {
   return function(a) {
     if (a === undefined || a === null) {
@@ -911,6 +892,25 @@ angular.module('trudesk.services', [])
   return {
     all: function() {
       return $http.get( '/api/v1/tickets/types', {
+        headers: {
+          'accesstoken': $localStorage.accessToken
+        }
+      });
+    },
+    get: function(typeId) {
+      return $http.get('http://' + $localStorage.server + '/api/v1/tickets/type/' + typeId, {
+        headers: {
+          'accesstoken': $localStorage.accessToken
+        }
+      });
+    }
+  }
+})
+
+.factory('Priorities', function($http, $localStorage) {
+  return {
+    all: function() {
+      return $http.get('http://' + $localStorage.server + '/api/v1/tickets/priorities', {
         headers: {
           'accesstoken': $localStorage.accessToken
         }
@@ -2329,12 +2329,6 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
 
 
   //SETUP VARS
-  $scope.priorities = [
-    {name: 'Normal', value: 1},
-    {name: 'Urgent', value: 2},
-    {name: 'Critical', value: 3}
-  ];
-
   // $scope.server = $localStorage.server;
   $scope.showLoadingTickets = true;
   $scope.search = {
@@ -2510,8 +2504,13 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
   $scope.selected = {
     group: '',
     ticketType: '',
-    priority: 1
+    priority: ''
   };
+
+  $scope.$watch('selected.ticketType', function(newValue, oldValue, scope) {
+      if (newValue && newValue.priorities)
+        $scope.selected.priority = newValue.priorities[0];
+  }, true);
 
   $scope.openNewTicket = function() {
     var groups = Groups.all(),
@@ -2521,13 +2520,13 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
         $scope.groups = results[0].data.groups;
         $scope.ticketTypes = results[1].data;
         if ($scope.ticketTypes[0] && $scope.ticketTypes[0]._id)
-          $scope.selected.ticketType = $scope.ticketTypes[0]._id;
+          $scope.selected.ticketType = $scope.ticketTypes[0];
         $scope.modalNewTicketForm = {
             subject: '',
             issue: ''
         };
         $scope.selected.group = '';
-        $scope.selected.priority = 1;
+
     }, function errorCallback(error) {
       console.error('Error - ' + error);
     }).then(function() {
