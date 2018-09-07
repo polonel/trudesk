@@ -336,8 +336,8 @@ api_users.update = function(req, res) {
                     user.fullname = obj.fullname;
                     user.email = obj.email;
 
-                    if (!_.isUndefined(obj.title)) user.title = obj.title;
-                    if (!_.isUndefined(obj.role)) user.role = obj.role;
+                    if (!_.isUndefined(obj.title) && obj.title.length > 0) user.title = obj.title;
+                    if (!_.isUndefined(obj.role) && obj.role.length > 0) user.role = obj.role;
 
                     user.save(function (err, nUser) {
                         if (err) return done(err);

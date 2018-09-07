@@ -184,14 +184,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                         isEditingSelf = true;
 
                     if (!isEditingSelf && (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') && (user.role === 'admin' || user.role === 'mod')) {
-                        //Remove Password from being edited by anything other than admin, as well as role.
+                        //Disable editing user with higher roles.
                         form.find('#aPass').parent().hide();
                         form.find('#aPassConfirm').parent().hide();
                         form.find('#aRole').parent().hide();
+                        form.find('#aFullname').attr('disabled', 'disabled');
+                        form.find('#aTitle').attr('disabled', 'disabled');
+                        form.find('#aEmail').attr('disabled', 'disabled');
+                        form.find('#aGrps').attr('disabled', 'disabled');
+                        form.find('#aSaveButton').addClass('disabled').attr('disabled', 'disabled');
                     } else {
                         form.find('#aPass').parent().show();
                         form.find('#aPassConfirm').parent().show();
                         form.find('#aRole').parent().show();
+                        form.find('#aFullname').attr('disabled', false);
+                        form.find('#aTitle').attr('disabled', false);
+                        form.find('#aEmail').attr('disabled', false);
+                        form.find('#aGrps').attr('disabled', false);
+                        form.find('#aSaveButton').removeClass('disabled').attr('disabled', false);
                     }
 
                     form.find('#aId').val(user._id);
@@ -217,6 +227,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
 
                     form.find('#aGrps').multiSelect('deselect_all');
                     form.find('#aGrps').multiSelect('select', data.groups);
+                    form.find('#aGrps').multiSelect('refresh');
+
 
                     //Profile Picture
                     var aImageUploadForm = $('form#aUploadImageForm');
@@ -245,6 +257,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
                 data.saveGroups = true;
+                data.aRole = (form.find('#aRole').val().length > 0) ? form.find('#aRole').val() : undefined;
+                data.aPass = (form.find('#aPass').val().length > 0) ? form.find('#aPass').val() : undefined;
+                data.aPassConfirm = (form.find('#aPassConfirm').val().length > 0) ? form.find('#aPassConfirm').val() : undefined;
 
                 $http({
                     method: 'PUT',
