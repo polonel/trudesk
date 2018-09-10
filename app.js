@@ -153,6 +153,10 @@ function dbCallback(err, db) {
 
         async.series([
             function(next) {
+                require('./src/elasticsearch').init();
+                return next();
+            },
+            function(next) {
                 require('./src/socketserver')(ws);
                 return next();
             },
