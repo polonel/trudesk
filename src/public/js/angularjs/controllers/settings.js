@@ -97,6 +97,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             var privacyPolicyMDE = null;
 
+            // TODO: Does this run on Ajaxy call????
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 $timeout(function() {
@@ -134,6 +135,29 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
                         $selectizeTicketType.refreshItems();
                     }
+
+                    // Pagination on ticket Tags
+                    $('.ticket-tags-pagination[data-uk-pagination]').on('select.uk.pagination', function(e, pageIndex) {
+                        e.preventDefault();
+
+                        $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
+                            .success(function(response) {
+                                var tags = [];
+                                var tagWrapper = $('.ticket-tags-wrapper');
+                                tagWrapper.empty();
+                                if (response.success) {
+                                    tags = response.tags;
+
+                                    tags.forEach(function(tag) {
+                                        tagWrapper.append('<span style="display: block; margin-bottom: 2px;">' + tag.name + '</span>');
+                                    });
+                                }
+                            })
+                            .error(function(err) {
+                                $log.error(err);
+                            });
+                    });
+
                 }, 0);
             };
 

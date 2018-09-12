@@ -50,6 +50,14 @@ tagSchema.statics.getTags = function(callback) {
     return q.exec(callback);
 };
 
+tagSchema.statics.getTagsWithLimit = function(limit, page, callback) {
+    return this.model(COLLECTION).find({})
+        .limit(limit)
+        .skip(page*limit)
+        .sort('name')
+        .exec(callback);
+};
+
 tagSchema.statics.getTagByName = function(tagName, callback) {
     var q = this.model(COLLECTION).find({name: tagName}).limit(1);
 
@@ -58,6 +66,12 @@ tagSchema.statics.getTagByName = function(tagName, callback) {
 
 tagSchema.statics.tagExist = function(tagName, callback) {
     var q = this.model(COLLECTION).countDocuments({name: tagName});
+
+    return q.exec(callback);
+};
+
+tagSchema.statics.getTagCount = function(callback) {
+    var q = this.model(COLLECTION).countDocuments({}).lean();
 
     return q.exec(callback);
 };

@@ -145,6 +145,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
+    router.get('/api/v1/tickets/tags/limit', middleware.api, controllers.api.tickets.getTagsWithLimit);
     router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
     router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);

@@ -394,6 +394,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 .on('change', '.md-input', function() {
                     updateInput($(this));
                 });
+
+            $('.search-input').focus(function(){
+                $(this).parent().addClass('focus');
+            }).blur(function(){
+                $(this).parent().removeClass('focus');
+            })
         });
     };
 

@@ -204,22 +204,45 @@ function getSettings(content, callback) {
 
         content.data.settings = s;
 
-        ticketTypeSchema.getTypes(function(err, types) {
+        async.parallel([
+            function(done) {
+                ticketTypeSchema.getTypes(function(err, types) {
+                    if (err) return done(err);
+
+                    content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
+                    _.each(content.data.ticketTypes, function(type) {
+                        type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name']);
+                    });
+
+                    return done();
+                });
+            },
+            function(done) {
+                var ticketPrioritySchema = require('../models/ticketpriority');
+                ticketPrioritySchema.getPriorities(function(err, priorities) {
+                    if (err) return done(err);
+
+                    content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+                    return done();
+                });
+            },
+            function(done) {
+                var tagSchema = require('../models/tag');
+                tagSchema.getTagCount(function(err, count) {
+                    if (err) return done(err);
+
+                    content.data.tags = {
+                        count: count
+                    };
+
+                    return done();
+                });
+            }
+        ], function(err) {
             if (err) return callback(err);
 
-            content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
-            _.each(content.data.ticketTypes, function(type) {
-                type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name']);
-            });
-
-            var ticketPrioritySchema = require('../models/ticketpriority');
-            ticketPrioritySchema.getPriorities(function(err, priorities) {
-                if (err) return callback(err);
-
-                content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name']);
-
-                return callback();
-            });
+            return callback();
         });
     });
 }

@@ -1658,6 +1658,23 @@ api_tickets.getTags = function(req, res) {
     });
 };
 
+api_tickets.getTagsWithLimit = function(req, res) {
+    var qs = req.query;
+    var limit = qs["limit"] ? qs["limit"] : 25;
+    var page = (qs["page"]) ? qs["page"] : 0;
+
+    var tagSchema = require('../../../models/tag');
+    try {
+        tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function(err, tags) {
+            if (err) return res.status(400).json({success: false, error: err.message });
+
+            return res.json({success: true, tags: tags});
+        });
+    } catch(e) {
+        return res.status(400).json({success: false, error: 'Invalid Limit and/or page'});
+    }
+};
+
 /**
  * @api {put} /api/v1/tickets/tags/:id Update Tag
  * @apiName updateTag
