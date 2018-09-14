@@ -437,7 +437,7 @@ function processReportData(tickets) {
         var t = [];
         t.push(ticket.uid);
         t.push(ticket.type.name);
-        t.push(ticket.priorityFormatted);
+        t.push(ticket.priority.name);
         t.push(ticket.statusFormatted);
         t.push(moment(ticket.date).format('MMM DD, YY HH:mm:ss'));
         t.push(ticket.subject);

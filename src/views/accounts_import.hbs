@@ -1,0 +1,303 @@
+<div class="nopadding accountsImport" ng-controller="accountsCtrl">
+    <div class="uk-width-1-1 page-title dt-borderBottom" style="padding-left: 25px !important;">
+        <p class="left">{{title}}</p>
+
+        <div class="right clearfix" style="min-width: 250px;">
+
+        </div>
+    </div>
+    <!--Content Here-->
+    <div class="page-wrapper full-height scrollable no-overflow-x">
+        <div id="page-content-inner" style="padding: 24px">
+            <div class="uk-grid uk-grid-medium uk-margin-medium-bottom js-wizard-select-wrapper">
+                <div class="uk-width-1-1 uk-margin-small-bottom"><h3>Select Import Type</h3></div>
+                <div class="uk-width-1-3">
+                    <div id="csv-import-selector" class="panel trupanel nopadding md-bg-color-green md-color-white cursor-pointer" style="min-height: 85px;" ng-click="selectAccountsImport($event, 'csv');">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-small-top">
+                                <i class="material-icons font-size-40">description</i>
+                            </div>
+                            <h2 class="uk-margin-remove">
+                                <span class="md-color-white uk-margin-small-bottom">CSV</span>
+                                <span class="md-color-white uk-text-small uk-display-block">Import accounts from an uploaded csv</span>
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div id="json-import-selector" class="panel trupanel nopadding md-bg-color-blue-grey md-color-white cursor-pointer" style="min-height: 85px;" ng-click="selectAccountsImport($event, 'json');">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-small-top">
+                                <svg style="width:40px;height:40px" viewBox="0 0 24 24">
+                                    <path fill="#ffffff" d="M8,3A2,2 0 0,0 6,5V9A2,2 0 0,1 4,11H3V13H4A2,2 0 0,1 6,15V19A2,2 0 0,0 8,21H10V19H8V14A2,2 0 0,0 6,12A2,2 0 0,0 8,10V5H10V3M16,3A2,2 0 0,1 18,5V9A2,2 0 0,0 20,11H21V13H20A2,2 0 0,0 18,15V19A2,2 0 0,1 16,21H14V19H16V14A2,2 0 0,1 18,12A2,2 0 0,1 16,10V5H14V3H16Z" />
+                                </svg>
+                            </div>
+                            <h2 class="uk-margin-remove">
+                                <span class="md-color-white uk-margin-small-bottom">JSON</span>
+                                <span class="md-color-white uk-text-small uk-display-block">Import accounts from an uploaded json file</span>
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="uk-width-1-3">
+                    <div id="ldap-import-selector" class="panel trupanel nopadding md-bg-color-blue md-color-white cursor-pointer" style="min-height: 85px;" ng-click="selectAccountsImport($event, 'ldap');">
+                        <div class="tru-card-content">
+                            <div class="right uk-margin-small-top">
+                                <i class="material-icons font-size-40">&#xE875;</i>
+                            </div>
+                            <h2 class="uk-margin-remove">
+                                <span class="md-color-white uk-margin-small-bottom">LDAP</span>
+                                <span class="md-color-white uk-text-small uk-display-block">Import accounts from an enterprise ldap server.</span>
+                            </h2>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div id="csv_wizard_card" class="uk-grid uk-margin-small-bottom uk-hidden">
+                <div class="uk-width-1-1">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="position: relative; min-height: 265px;">
+                        <div class="left">
+                            <h6 style="padding: 10px 0 0 15px; margin: 0; font-size: 16px;">CSV Account Import Wizard</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: -2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                This wizard will walk you through importing accounts from a csv file.
+                            </h5>
+                        </div>
+                        <div class="right" style="margin: 15px;">
+                            <button class="btn md-btn md-btn-warning js-wizard-cancel" ng-click="resetWizardSelection();">Cancel</button>
+                        </div>
+                        <hr class="nomargin">
+                        <!--<div class="card-spinner">-->
+                            <!--<div class="spinner"></div>-->
+                        <!--</div>-->
+                        <form class="uk-form-stacked" id="wizard_csv_form">
+                            <div id="wizard_csv">
+                                <h3>File Upload</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        File Upload
+                                        <span class="sub-heading">Upload csv file containing user data to import.</span>
+                                    </h2>
+                                    <hr class="md-hr" />
+                                    <div id="upload-drop" class="uk-file-upload">
+                                        <p class="uk-text">Drop file to upload</p>
+                                        <p class="uk-text-muted uk-text-small uk-margin-small-bottom">or</p>
+                                        <a class="uk-form-file md-btn">
+                                            choose file
+                                            <input type="file" id="upload-select" />
+                                        </a>
+                                    </div>
+
+                                    <div id="progressbar" class="uk-progress uk-active uk-progress-success uk-hidden">
+                                        <div class="uk-progress-bar" style="width: 0;"></div>
+                                    </div>
+                                </section>
+                                <h3>Review Uploaded Data</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        Review Uploaded Data
+                                        <span class="sub-heading">Below is the parsed contents of the uploaded csv file.</span>
+                                    </h2>
+
+                                    <textarea class="review-list" id="csv-review-list" disabled></textarea>
+
+                                </section>
+                                <h3>Import Accounts</h3>
+                                <section>
+                                    <h2 class="heading-wiz uk-margin-medium-bottom">
+                                        Importing Accounts..
+                                        <span class="sub-heading">Please wait while your accounts are imported.
+                                            <br/><em>Please do not navigate away from this page. Some UI Elements have been disabled.</em></span>
+                                    </h2>
+                                    <!--<hr class="md-hr-2" />-->
+                                    <div id="csv-import-status-box" style="width: 100%; height: 300px; border: 1px solid #ccc; overflow: auto; padding: 10px;">
+                                        <ul></ul>
+                                    </div>
+                                    <br />
+                                    <div class="js-csv-progress uk-progress uk-progress-striped uk-active uk-progress-success" style="margin-bottom: 0; box-shadow: inset 0 0 0 1px rgba(0, 0, 0,.06); background: #f4f4f4;">
+                                        <div class="uk-progress-bar" style="width: 0;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div id="json_wizard_card" class="uk-grid uk-margin-small-bottom uk-hidden">
+                <div class="uk-width-1-1">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="position: relative; min-height: 265px;">
+                        <div class="left">
+                            <h6 style="padding: 10px 0 0 15px; margin: 0; font-size: 16px;">JSON Account Import Wizard</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: -2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                This wizard will walk you through importing accounts from a json file.
+                            </h5>
+                        </div>
+                        <div class="right" style="margin: 15px;">
+                            <button class="btn md-btn md-btn-warning js-wizard-cancel" ng-click="resetWizardSelection();">Cancel</button>
+                        </div>
+                        <hr class="nomargin">
+                        <!--<div class="card-spinner">-->
+                        <!--<div class="spinner"></div>-->
+                        <!--</div>-->
+                        <form class="uk-form-stacked" id="wizard_json_form">
+                            <div id="wizard_json">
+                                <h3>File Upload</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        File Upload
+                                        <span class="sub-heading">Upload json file containing user data to import.</span>
+                                    </h2>
+                                    <hr class="md-hr" />
+                                    <div id="json-upload-drop" class="uk-file-upload">
+                                        <p class="uk-text">Drop file to upload</p>
+                                        <p class="uk-text-muted uk-text-small uk-margin-small-bottom">or</p>
+                                        <a class="uk-form-file md-btn">
+                                            choose file
+                                            <input type="file" id="json-upload-select" />
+                                        </a>
+                                    </div>
+
+                                    <div id="json-progressbar" class="uk-progress uk-active uk-progress-success uk-hidden">
+                                        <div class="uk-progress-bar" style="width: 0;"></div>
+                                    </div>
+                                </section>
+                                <h3>Review Uploaded Data</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        Review Uploaded Data
+                                        <span class="sub-heading">Below is the parsed contents of the uploaded csv file.</span>
+                                    </h2>
+
+                                    <textarea class="review-list" id="json-review-list" disabled></textarea>
+
+                                </section>
+                                <h3>Import Accounts</h3>
+                                <section>
+                                    <h2 class="heading-wiz uk-margin-medium-bottom">
+                                        Importing Accounts..
+                                        <span class="sub-heading">Please wait while your accounts are imported.
+                                            <br/><em>Please do not navigate away from this page. Some UI Elements have been disabled.</em></span>
+                                    </h2>
+                                    <!--<hr class="md-hr-2" />-->
+                                    <div id="json-import-status-box" style="width: 100%; height: 300px; border: 1px solid #ccc; overflow: auto; padding: 10px;">
+                                        <ul></ul>
+                                    </div>
+                                    <br />
+                                    <div class="js-json-progress uk-progress uk-progress-striped uk-active uk-progress-success" style="margin-bottom: 0; box-shadow: inset 0 0 0 1px rgba(0, 0, 0,.06); background: #f4f4f4;">
+                                        <div class="uk-progress-bar" style="width: 0;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ldap_wizard_card" class="uk-grid uk-margin-small-bottom uk-hidden">
+                <div class="uk-width-1-1">
+                    <div class="panel trupanel nopadding no-hover-shadow" style="position: relative; min-height: 265px;">
+                        <div class="left">
+                            <h6 style="padding: 10px 0 0 15px; margin: 0; font-size: 16px;">LDAP Account Import Wizard</h6>
+                            <h5 style="padding: 0 0 10px 15px; margin: -2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                This wizard will walk you through connecting and import users from a LDAP server.
+                            </h5>
+                        </div>
+                        <div class="right" style="margin: 15px;">
+                            <button class="btn md-btn md-btn-warning js-wizard-cancel" ng-click="resetWizardSelection();">Cancel</button>
+                        </div>
+                        <hr class="nomargin">
+                        <div class="card-spinner uk-hidden" style="opacity: .85;">
+                            <div class="spinner"></div>
+                        </div>
+                        <form action="#" class="uk-form-stacked" id="wizard_ldap_connection_form">
+                            <div id="wizard_ldap">
+                                <h3>Connection Information</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        Connection Information
+                                        <span class="sub-heading">To import users from an LDAP server, we need a little connection information.</span>
+                                    </h2>
+                                    <hr class="md-hr" style="margin-top: 14px !important;" />
+
+                                        <div class="uk-grid">
+                                            <div class="uk-margin-large-bottom uk-width-1-3">
+                                                <label for="ldap-server">LDAP Server</label>
+                                                <input id="ldap-server" type="text" class="md-input" name="ldap-server" required value="" />
+                                            </div>
+                                            <div class="uk-margin-large-bottom uk-width-1-3">
+                                                <label for="ldap-bind-dn">Bind DN (CN=Administrator,DC=domain,DC=com)</label>
+                                                <input type="text" class="md-input" name="ldap-bind-dn" required value="" />
+                                            </div>
+                                            <div class="uk-margin-large-bottom uk-width-1-3">
+                                                <label for="ldap-password">Password</label>
+                                                <input type="password" class="md-input" name="ldap-password" required value="" />
+                                            </div>
+                                            <div class="uk-margin-large-bottom uk-width-1-2">
+                                                <label for="ldap-search-base">Search Base</label>
+                                                <input type="text" class="md-input" name="ldap-search-base" required value="" />
+                                            </div>
+                                            <div class="uk-margin-large-bottom uk-width-1-2">
+                                                <label for="ldap-filter">Search Filter (Defaults to Users)</label>
+                                                <input type="text" class="md-input" name="ldap-filter" required value="(&(objectClass=user)(objectCategory=person))" />
+                                            </div>
+                                        </div>
+                                </section>
+
+                                <h3>Verify Connection</h3>
+                                <section>
+                                    <h2 class="heading-wiz">
+                                        Verify Connection
+                                        <span id="wizard_ldap_verify_text" class="sub-heading">Please wait while we try to bind to your ldap server...</span>
+                                    </h2>
+
+                                    <div id="wizard_ldap_verify_spinner" class="card-spinner" style="background: none !important; min-height: 400px;">
+                                        <div class="spinner"></div>
+                                    </div>
+
+                                    <div id="wizard_ldap_verify_icon" class="md-large-icon md-color-red uk-text-center uk-hidden">
+                                        <i class="material-icons">&#xE86C;</i>
+                                    </div>
+
+                                </section>
+                                <h3>Review Accounts</h3>
+                                <section>
+                                    <h2 class="heading-wiz" style="margin-bottom: 15px;">
+                                        Review Accounts
+                                        <span class="sub-heading">Please review the accounts below before proceeding. The next step will import the accounts.</span>
+                                    </h2>
+
+                                    <textarea class="review-list" id="ldap-review-list" disabled></textarea>
+
+                                </section>
+
+                                <h3>Import Accounts</h3>
+                                <section>
+                                    <h2 class="heading-wiz uk-margin-medium-bottom">
+                                        Importing Accounts..
+                                        <span class="sub-heading">Please wait while your accounts are imported.
+                                            <br/><em>Please do not navigate away from this page. Some UI Elements have been disabled.</em></span>
+                                    </h2>
+                                    <!--<hr class="md-hr-2" />-->
+                                    <div id="ldap-import-status-box" style="width: 100%; height: 300px; border: 1px solid #ccc; overflow: auto; padding: 10px;">
+                                        <ul></ul>
+                                    </div>
+                                    <br />
+                                    <div class="js-ldap-progress uk-progress uk-progress-striped uk-active uk-progress-success" style="margin-bottom: 0; box-shadow: inset 0 0 0 1px rgba(0, 0, 0,.06); background: #f4f4f4;">
+                                        <div class="uk-progress-bar" style="width: 0;"></div>
+                                    </div>
+                                </section>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{{#contentFor 'js-plugins'}}
+
+{{/contentFor}}

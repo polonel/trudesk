@@ -19,7 +19,7 @@ var moment              = require('moment');
 var hash                = require('object-hash');
 // var redisCache          = require('../cache/rediscache');
 
-//Needed - Even if unused!
+//Needed - For Population
 var groupSchema         = require('./group');
 var ticketTypeSchema    = require('./tickettype');
 var userSchema          = require('./user');
@@ -28,6 +28,7 @@ var noteSchema          = require('./note');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
 var tagSchema           = require('./tag');
+var prioritySchema      = require('./ticketpriority');
 
 var COLLECTION = 'tickets';
 
@@ -74,7 +75,8 @@ var ticketSchema = mongoose.Schema({
     deleted:    { type: Boolean, default: false, required: true, index: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true, index: true },
-    priority:   { type: Number, required: true },
+
+    priority:   { type: mongoose.Schema.Types.ObjectId, ref: 'priorities', required: true },
     tags:       [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
@@ -106,6 +108,15 @@ ticketSchema.pre('save', function(next) {
         return next();
     });
 });
+
+var autoPopulatePriority = function(next) {
+    this.populate('priority');
+    next();
+};
+
+ticketSchema.
+    pre('findOne', autoPopulatePriority).
+    pre('find', autoPopulatePriority);
 
 ticketSchema.virtual('statusFormatted').get(function() {
     var s = this.status;
@@ -289,18 +300,20 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isNaN(priority)) return callback('Priority must be a number.', null);
+    if (_.isUndefined(priority)) return callback('Priority must be a Object.', null);
 
     var self = this;
-    self.priority = priority;
+    self.priority = priority._id;
     var historyItem = {
         action: 'ticket:set:priority',
-        description: 'Ticket Priority set to: ' + priority,
+        description: 'Ticket Priority set to: ' + priority.name,
         owner: ownerId
     };
     self.history.push(historyItem);
 
-    callback(null, self);
+    self.populate('priority').execPopulate()
+        .then(function(updatedSelf){ return callback(null, updatedSelf); })
+        .catch(function(err) { return callback(err, null); });
 };
 
 /**
@@ -703,6 +716,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         q.where({assignee: {$in: object.filter.assignee}});
     }
 
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.unassigned)) {
+        q.where({assignee: {$exits: false} });
+    }
+
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.owner)) {
         q.where({owner: {$in: object.filter.owner}});
     }
@@ -711,6 +728,7 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, "i")}]);
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
+    if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({assignee: {$exists: false}});
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
         var startDate = new Date(2000, 0, 1, 0, 0, 1);
@@ -746,7 +764,7 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
         grpId = _.intersection(object.filter.groups, g);
     }
 
-    var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({group: {$in: grpId}, deleted: false});
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
         var status = object.status.map(Number);
         q.where({status: {$in: status} });
@@ -764,6 +782,10 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
 
     if (!_.isUndefined(object.assignedSelf) && object.assignedSelf === true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
         q.where('assignee', object.assignedUserId);
+    }
+
+    if (!_.isUndefined(object.unassigned) && object.unassigned === true) {
+        q.where({assignee: {$exists: false}});
     }
 
     return q.lean().exec(callback)
@@ -1215,7 +1237,7 @@ ticketSchema.statics.getTagCount = function(tagId, callback) {
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({tags: tagId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({tags: tagId, deleted: false});
 
     return q.exec(callback);
 };
@@ -1225,7 +1247,7 @@ ticketSchema.statics.getTypeCount = function(typeId, callback) {
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({type: typeId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({type: typeId, deleted: false});
 
     return q.exec(callback);
 };

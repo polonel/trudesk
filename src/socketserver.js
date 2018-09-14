@@ -335,20 +335,25 @@ var socketServer = function(ws) {
 
         socket.on('setTicketPriority', function(data) {
             var ticketId = data.ticketId;
-            var priority = data.priority.value;
+            var priority = data.priority;
             var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
+            var prioritySchema = require('./models/ticketpriority');
 
             if (_.isUndefined(ticketId) || _.isUndefined(priority)) return true;
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
                 if (err) return true;
-                ticket.setTicketPriority(ownerId, priority, function(err, t) {
+                prioritySchema.getPriority(priority, function(err, p) {
                     if (err) return true;
-                    t.save(function(err, tt) {
-                        if (err) return true;
 
-                        emitter.emit('ticket:updated', ticketId);
-                        utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
+                    ticket.setTicketPriority(ownerId, p, function(err, t) {
+                        if (err) return true;
+                        t.save(function(err, tt) {
+                            if (err) return true;
+
+                            emitter.emit('ticket:updated', ticketId);
+                            utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
+                        });
                     });
                 });
             });
@@ -445,10 +450,7 @@ var socketServer = function(ws) {
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
 
-                        ticketSchema.populate(tt, 'comments.owner', function(err) {
-                            if (err) return winston.error(err);
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                      });
                 });
             });
@@ -471,10 +473,7 @@ var socketServer = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        ticketSchema.populate(tt, 'comments.owner', function(err) {
-                            if (err) return true;
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -498,10 +497,7 @@ var socketServer = function(ws) {
                     ticket.save(function(err, tt) {
                         if (err) return winston.error(err);
 
-                        ticketSchema.populate(tt, 'notes.owner', function(err) {
-                            if (err) return winston.error(err);
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -523,11 +519,7 @@ var socketServer = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        ticketSchema.populate(tt, 'notes.owner', function(err) {
-                            if (err) return true;
-
-                            utils.sendToAllConnectedClients(io, 'updateComments', tt);
-                        });
+                        utils.sendToAllConnectedClients(io, 'updateComments', tt);
                     });
                 });
             });
@@ -840,8 +832,355 @@ var socketServer = function(ws) {
             utils.sendToUser(sockets, usersOnline, user.username, 'chatStopTyping', data);
         });
 
+        //
+        // Imports
+        //
+
+        // CSV
+        socket.on('$trudesk:accounts:import:csv', function(data) {
+            var userSchema = require('./models/user');
+            var authUser = socket.request.user;
+            var permissions = require('./permissions');
+            if (!permissions.canThis(authUser.role, 'accounts:import')) {
+                //Send Error Socket Emit
+                winston.warn('[$trudesk:accounts:import:csv] - Error: Invalid permissions.');
+                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: 'Invalid Permissions. Check Console.'});
+                return;
+            }
+
+            var addedUsers = data.addedUsers;
+            var updatedUsers = data.updatedUsers;
+
+            var completedCount = 0;
+            async.series([
+                function(next) {
+                    async.eachSeries(addedUsers, function(cu, done) {
+                        var data = {
+                            type: 'csv',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: cu.username,
+                                state: 1
+                            }
+                        };
+
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                        var user = new userSchema({
+                            username: cu.username,
+                            fullname: cu.fullname,
+                            email: cu.email,
+                            password: 'Password1!'
+                        });
+
+                        if (!_.isUndefined(cu.role)) {
+                            user.role = cu.role;
+                        } else {
+                            user.role = 'user';
+                        }
+
+                        if (!_.isUndefined(cu.title))
+                            user.title = cu.title;
+
+                        user.save(function(err) {
+                            if (err) {
+                                winston.warn(err);
+                                data.item.state = 3;
+                                utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                            } else {
+                                completedCount++;
+                                // Send update
+                                data.completedCount = completedCount;
+                                data.item.state = 2; //Completed
+                                setTimeout(function() {
+                                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                                    done();
+                                }, 150);
+                            }
+                        });
+
+                    }, function() {
+                        return next();
+                    });
+                },
+                function(next) {
+                    _.each(updatedUsers, function(uu) {
+                        var data = {
+                            type: 'csv',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: uu.username,
+                                state: 1 //Starting
+                            }
+                        };
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                        userSchema.getUserByUsername(uu.username, function(err, user) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                user.fullname = uu.fullname;
+                                user.title = uu.title;
+                                user.email = uu.email;
+                                if (!_.isUndefined(uu.role))
+                                    user.role = uu.role;
+
+                                user.save(function(err, savedUser) {
+                                    if (err) {
+                                        console.log(err);
+                                        data.item.state = 3;
+                                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                    } else {
+                                        completedCount++;
+                                        data.item.state = 2;
+                                        data.completedCount = completedCount;
+                                        setTimeout(function() {
+                                            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                        }, 150);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    return next();
+                }
+            ], function() {
+
+            });
+        });
+
+        // JSON
+        socket.on('$trudesk:accounts:import:json', function(data) {
+            var userSchema = require('./models/user');
+            var authUser = socket.request.user;
+            var permissions = require('./permissions');
+            if (!permissions.canThis(authUser.role, 'accounts:import')) {
+                //Send Error Socket Emit
+                winston.warn('[$trudesk:accounts:import:json] - Error: Invalid permissions.');
+                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: 'Invalid Permissions. Check Console.'});
+                return;
+            }
+
+            var addedUsers = data.addedUsers;
+            var updatedUsers = data.updatedUsers;
+
+            var completedCount = 0;
+            async.series([
+                function(next) {
+                    async.eachSeries(addedUsers, function(cu, done) {
+                        var data = {
+                            type: 'json',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: cu.username,
+                                state: 1
+                            }
+                        };
+
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                        var user = new userSchema({
+                            username: cu.username,
+                            fullname: cu.fullname,
+                            email: cu.email,
+                            password: 'Password1!'
+                        });
+
+                        if (!_.isUndefined(cu.role)) {
+                            user.role = cu.role;
+                        } else {
+                            user.role = 'user';
+                        }
+
+                        if (!_.isUndefined(cu.title))
+                            user.title = cu.title;
+
+                        user.save(function(err) {
+                            if (err) {
+                                winston.warn(err);
+                                data.item.state = 3;
+                                utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                            } else {
+                                completedCount++;
+                                // Send update
+                                data.completedCount = completedCount;
+                                data.item.state = 2; //Completed
+                                setTimeout(function() {
+                                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                                    done();
+                                }, 150);
+                            }
+                        });
+
+                    }, function() {
+                        return next();
+                    });
+                },
+                function(next) {
+                    _.each(updatedUsers, function(uu) {
+                        var data = {
+                            type: 'json',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: uu.username,
+                                state: 1 //Starting
+                            }
+                        };
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                        userSchema.getUserByUsername(uu.username, function(err, user) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                user.fullname = uu.fullname;
+                                user.title = uu.title;
+                                user.email = uu.email;
+                                if (!_.isUndefined(uu.role))
+                                    user.role = uu.role;
+
+                                user.save(function(err, savedUser) {
+                                    if (err) {
+                                        console.log(err);
+                                        data.item.state = 3;
+                                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                    } else {
+                                        completedCount++;
+                                        data.item.state = 2;
+                                        data.completedCount = completedCount;
+                                        setTimeout(function() {
+                                            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                        }, 150);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    return next();
+                }
+            ], function() {
+
+            });
+        });
+
+        // LDAP
+        socket.on('$trudesk:accounts:import:ldap', function(data) {
+            var userSchema = require('./models/user');
+            var authUser = socket.request.user;
+            var permissions = require('./permissions');
+            if (!permissions.canThis(authUser.role, 'accounts:import')) {
+                //Send Error Socket Emit
+                winston.warn('[$trudesk:accounts:import:ldap] - Error: Invalid permissions.');
+                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: 'Invalid Permissions. Check Console.'});
+                return;
+            }
+
+            var addedUsers = data.addedUsers;
+            var updatedUsers = data.updatedUsers;
+
+            var completedCount = 0;
+            async.series([
+                function(next) {
+                    async.eachSeries(addedUsers, function(lu, done) {
+                        var data = {
+                            type: 'ldap',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: lu.sAMAccountName,
+                                state: 1 //Starting
+                            }
+                        };
+
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                        var user = new userSchema({
+                            username: lu.sAMAccountName,
+                            fullname: lu.displayName,
+                            email: lu.mail,
+                            title: lu.title,
+                            role: 'user',
+                            password: 'Password1!'
+                        });
+
+                        user.save(function(err, u) {
+                            if (err) {
+                                winston.warn(err);
+                                data.item.state = 3;
+                                utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                            } else {
+                                completedCount++;
+                                // Send update
+                                data.completedCount = completedCount;
+                                data.item.state = 2; //Completed
+                                setTimeout(function() {
+                                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+
+                                    done();
+                                }, 150);
+                            }
+                        });
+                    }, function() {
+                        return next();
+                    });
+                },
+                function(next) {
+                    _.each(updatedUsers, function(uu) {
+                        var data = {
+                            type: 'ldap',
+                            totalCount: addedUsers.length + updatedUsers.length,
+                            completedCount: completedCount,
+                            item: {
+                                username: uu.username,
+                                state: 1 //Starting
+                            }
+                        };
+                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                        userSchema.getUser(uu._id, function(err, user) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+                                user.fullname = uu.fullname;
+                                user.title = uu.title;
+                                user.email = uu.email;
+
+                                user.save(function(err, savedUser) {
+                                    if (err) {
+                                        console.log(err);
+                                        data.item.state = 3;
+                                        utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                    } else {
+                                        completedCount++;
+                                        data.item.state = 2;
+                                        data.completedCount = completedCount;
+                                        setTimeout(function() {
+                                            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
+                                        }, 150);
+                                    }
+                                });
+                            }
+                        });
+                    });
+
+                    return next();
+                }
+            ], function() {
+
+            });
+        });
+
+
+        //
         socket.on('disconnect', function() {
             var user = socket.request.user;
+            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
             if (!_.isUndefined(usersOnline[user.username])) {
                 var userSockets = usersOnline[user.username].sockets;
 
@@ -851,10 +1190,25 @@ var socketServer = function(ws) {
                     usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 }
 
-                var sortedUserList = sortByKeys(usersOnline);
-                utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
+                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]}));
+
                 var o = _.findKey(sockets, {'id': socket.id});
                 sockets = _.without(sockets, o);
+            }
+
+            if (!_.isUndefined(idleUsers[user.username])) {
+                var idleSockets = idleUsers[user.username].sockets;
+
+                if (_.size(idleSockets) < 2) {
+                    delete idleUsers[user.username];
+                } else {
+                    idleUsers[user.username].sockets = _.without(idleSockets, socket.id);
+                }
+
+                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]}));
+
+                var i = _.findKey(sockets, {'id': socket.id});
+                sockets = _.without(sockets, i);
             }
 
             //Save lastOnline Time
@@ -866,6 +1220,8 @@ var socketServer = function(ws) {
                     u.save();
                 }
             });
+
+            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
 
             winston.debug('User disconnected: ' + user.username + ' - ' + socket.id);
         });
@@ -879,8 +1235,8 @@ var socketServer = function(ws) {
 };
 
 function sortByKeys(obj) {
-    const keys = Object.keys(obj);
-    const sortedKeys = _.sortBy(keys);
+    var keys = Object.keys(obj);
+    var sortedKeys = _.sortBy(keys);
     return _.fromPairs(
         _.map(sortedKeys, function(key) { return [key, obj[key]]})
     );

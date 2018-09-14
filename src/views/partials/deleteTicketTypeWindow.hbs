@@ -1,16 +1,18 @@
-<div class="uk-modal" id="deleteTicketTypeModal" ng-controller="settingsCtrl">
+<div class="uk-modal" id="deleteTicketTypeModal-{{_id}}" ng-controller="settingsCtrl">
     <div class="uk-modal-dialog">
-        <form class="uk-form-stacked" id="deleteTicketTypeForm" action="#" method="POST">
-            <input type="hidden" id="del_type_name" name="del_type_name" value="{{data.tickettype.name}}">
+        <form class="uk-form-stacked" id="deleteTicketTypeForm-{{_id}}" action="#" method="POST">
+            <input type="hidden" id="del_type_name-{{_id}}" name="del_type_name" value="{{name}}">
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <span>There're currently tickets assigned to this Ticket Type. Please select the ticket type you wish to reassign those tickets to in order to delete the ticket type.</span>
+                <h2 class="">Remove Ticket Type</h2>
+                <span>Please select the ticket type you wish to reassign tickets to in order to delete the ticket type.</span>
+                <hr style="margin: 10px 0" />
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="width: 100%;">
-                    <label for="type" class="uk-form-label">Type</label>
-                    <select class="selectize-white" name="type" id="type" data-md-selectize-inline>
-                        {{#each data.common.ticketTypes}}
-                            {{#isnot name ../data.tickettype.name}}
+                    <label for="ticketType" class="uk-form-label">Type</label>
+                    <select class="selectize-white" name="ticketType" data-md-selectize-inline>
+                        {{#each @root.data.common.ticketTypes}}
+                            {{#isnot name ../name}}
                                 <option value="{{{_id}}}">{{name}}</option>
                             {{/isnot}}
                         {{/each}}
@@ -18,11 +20,11 @@
                 </div>
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <span class="uk-text-danger">WARNING: This will change all tickets with type: <strong>{{data.tickettype.name}}</strong> to the selected ticket type above. <br /><strong>This is permanent!</strong></span>
+                <span class="uk-text-danger">WARNING: This will change all tickets with type: <strong>{{name}}</strong> to the selected ticket type above. <br /><strong>This is permanent!</strong></span>
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" id="submitDeleteTicketType" ng-click="submitDeleteTicketType('{{data.tickettype._id}}', $event)">Delete</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitDeleteTicketType('{{_id}}', $event)">Delete</button>
             </div>
         </form>
     </div>

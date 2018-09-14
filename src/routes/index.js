@@ -63,9 +63,11 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/closed/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getByStatus, controllers.tickets.processor);
     router.get('/tickets/assigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
     router.get('/tickets/assigned/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getAssigned, controllers.tickets.processor);
+    router.get('/tickets/unassigned', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getUnassigned, controllers.tickets.processor);
+    router.get('/tickets/unassigned/page/:page', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getUnassigned, controllers.tickets.processor);
     router.get('/tickets/print/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.print);
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
-    router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
+    // router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
 
     //Messages
@@ -73,16 +75,14 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/messages/startconversation', middleware.redirectToLogin, middleware.loadCommonData, function(req, res, next){ req.showNewConvo = true; next();}, controllers.messages.get);
     router.get('/messages/:convoid', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.getConversation);
 
-    //Calendar
-    // router.get('/calendar', middleware.redirectToLogin, middleware.loadCommonData, function(req, res){ res.redirect('/dashboard');});
-
-    //Servers
-    // router.get('/servers', middleware.redirectToLogin, middleware.loadCommonData, controllers.servers.get);
-
     //Accounts
     router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile);
     router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get);
     router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage);
+    router.get('/accounts/import', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.importPage);
+    router.post('/accounts/import/csv/upload', middleware.redirectToLogin, controllers.accounts.uploadCSV);
+    router.post('/accounts/import/json/upload', middleware.redirectToLogin, controllers.accounts.uploadJSON);
+    router.post('/accounts/import/ldap/bind', middleware.redirectToLogin, controllers.accounts.bindLdap);
 
     //Groups
     router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get);
@@ -101,13 +101,16 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/notices/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.create);
     router.get('/notices/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.notices.edit);
 
-    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.get);
+    router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
+    router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
+    router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
+    router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
-    router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);
-    router.get('/settings/tickettypes/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTicketType);
 
     //Plugins
     router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
@@ -123,15 +126,24 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
     router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create);
+    router.get('/api/v1/tickets/type/:id', middleware.api, controllers.api.tickets.getType);
+    router.post('/api/v1/tickets/type/:id/removepriority', middleware.api, controllers.api.tickets.typeRemovePriority);
+    router.post('/api/v1/tickets/type/:id/addpriority', middleware.api, controllers.api.tickets.typeAddPriority);
     router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes);
     router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType);
     router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType);
     router.delete('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.deleteType);
+    router.post('/api/v1/tickets/priority/create', middleware.api, controllers.api.tickets.createPriority);
+    router.post('/api/v1/tickets/priority/:id/delete', middleware.api, controllers.api.tickets.deletePriority);
+    router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities);
+    router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority);
+
     router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
+    router.get('/api/v1/tickets/tags/limit', middleware.api, controllers.api.tickets.getTagsWithLimit);
     router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
     router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
@@ -237,7 +249,12 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);
-        //router.get('/api/v1/import', middleware.api, controllers.api.import);
+        router.get('/debug/mailcheck/refetch', function(req, res) {
+            var mailCheck = require('../mailer/mailCheck');
+            mailCheck.refetch();
+            res.send('OK');
+        });
+
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('lodash');
 
@@ -247,7 +264,6 @@ function mainRoutes(router, middleware, controllers) {
             res.send('OK');
         });
 
-        router.get('/debug/devices/testiOS', middleware.api, controllers.api.devices.testApn);
         router.get('/debug/restart', function (req, res) {
             var pm2 = require('pm2');
             pm2.connect(function(err) {
@@ -271,10 +287,6 @@ function mainRoutes(router, middleware, controllers) {
 }
 
 module.exports = function(app, middleware) {
-    //Docs
-    app.use('/docs', express.static(path.join(__dirname, '../../', 'docs')));
-    app.use('/apidocs', express.static(path.join(__dirname, '../../', 'apidocs')));
-
     mainRoutes(router, middleware, controllers);
     app.use('/', router);
 

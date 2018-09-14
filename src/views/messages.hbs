@@ -82,13 +82,13 @@
                                          src="/uploads/users/{{owner.image}}"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
                                 {{else}}
                                     <img class="profileImage"
                                          src="/uploads/users/defaultProfile.jpg"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
                                 {{/if}}
                                 <div class="message-body">
                                     <p>{{{body}}}</p>
@@ -96,7 +96,7 @@
                             </div>
                         {{else}}
                             <div class="message message-right">
-                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}">
+                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{formatDate createdAt 'MM/DD/YY h:mma'}}">
                                     <p>{{{body}}}</p>
                                 </div>
                             </div>

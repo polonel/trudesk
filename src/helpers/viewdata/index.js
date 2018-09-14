@@ -26,6 +26,25 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+            viewdata.hostname = request.hostname;
+            viewdata.hosturl = request.protocol + '://' + request.get('host');
+
+            // If hosturl setting is not set. Let's set it.
+              var settingSchema = require('../../models/setting');
+              settingSchema.getSetting('gen:siteurl', function(err, setting) {
+                  if (!err && !setting) {
+                      settingSchema.create({
+                          name: 'gen:siteurl',
+                          value: viewdata.hosturl
+                      }, function() {
+                          return callback();
+                      });
+                  } else {
+                      return callback();
+                  }
+              });
+          },
+          function(callback) {
               viewController.getActiveNotice(function(err, data) {
                   if (err) return callback(err);
                   viewdata.notice = data;
@@ -91,6 +110,24 @@ viewController.getData = function(request, cb) {
 
                   return callback();
               });
+          },
+          function(callback) {
+            viewController.getDefaultTicketType(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.defaultTicketType = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
+            viewController.getPriorities(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.priorities = data;
+
+                return callback();
+            });
           },
           function(callback) {
               viewController.getTags(request, function(err, data) {
@@ -292,6 +329,40 @@ viewController.getTypes = function(request, callback) {
         }
 
         return callback(null, data);
+    });
+};
+
+viewController.getDefaultTicketType = function(request, callback) {
+    var settingSchema = require('../../models/setting');
+    settingSchema.getSetting('ticket:type:default', function(err, defaultType) {
+        if (err) {
+            winston.debug('Error viewController:getDefaultTicketType: ', err);
+            return callback(err);
+        }
+
+        var typeSchema = require('../../models/tickettype');
+        typeSchema.getType(defaultType.value, function(err, type) {
+            if (err) {
+                winston.debug('Error viewController:getDefaultTicketType: ', err);
+                return callback(err);
+            }
+
+            return callback(null, type);
+        });
+    });
+};
+
+viewController.getPriorities = function(request, callback) {
+    var ticketPrioritySchema = require('../../models/ticketpriority');
+    ticketPrioritySchema.getPriorities(function(err, priorities) {
+        if (err) {
+            winston.debug('Error viewController:getPriorities: ' + err);
+            return callback(err);
+        }
+
+        priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+        return callback(null, priorities);
     });
 };
 

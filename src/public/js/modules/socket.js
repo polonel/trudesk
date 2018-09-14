@@ -14,9 +14,11 @@
 
 define('modules/socket', [
     'modules/chat',
-    'modules/ui'
+    'modules/ui',
 
-], function(chat, ui) {
+    'modules/socket.io/accountsImporter'
+
+], function(chat, ui, accountsImporter) {
     var socket = io.connect();
     var sClient = {
         socket: socket
@@ -27,6 +29,9 @@ define('modules/socket', [
 
     chat.init(socket);
     sClient.chat = chat;
+
+    accountsImporter.init(socket);
+    sClient.accountsImporter = accountsImporter;
 
     return sClient;
 });

@@ -24,7 +24,8 @@ module.exports = {
             //client side
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
-            jscookie:       'vendor/jscookie/js.cookie.js',
+            jscookie:       'vendor/jscookie/js.cookie',
+            easing:         'vendor/jquery/jquery.easing',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -34,7 +35,6 @@ module.exports = {
             modernizr:      'vendor/modernizr/modernizr',
             fastclick:      'vendor/fastclick/fastclick',
             placeholder:    'vendor/placeholder/placeholder',
-            // nicescroll:     'vendor/nicescroll/nicescroll.min',
             underscore:     'vendor/underscore/underscore',
             history:        'vendor/history/jquery.history',
             app:            'app',
@@ -61,14 +61,18 @@ module.exports = {
             countup:        'vendor/countup/countUp.min',
             velocity:       'vendor/velocity/velocity.min',
             selectize:      'vendor/selectize/selectize',
+            multiselect:    'vendor/multiselect/js/jquery.multi-select',
             waves:          'vendor/waves/waves',
             isinview:       'plugins/jquery.isinview',
             jquery_docsize: 'plugins/jquery.documentsize',
             idletimer:      'plugins/jquery.idletimer.js',
+            jquery_steps:   'plugins/jquery.steps',
+            jquery_actual:  'plugins/jquery.actual',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether',
             shepherd:       'vendor/shepherd/js/shepherd.min',
+            easymde:        'vendor/easymde/dist/easymde.min',
             snackbar:       'plugins/snackbar'
         }
     },
@@ -83,7 +87,7 @@ module.exports = {
             { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
             { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'), use: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
-                use: [{loader: 'css-loader', options: {minimize: true}}, 'sass-loader'],
+                use: [{loader: 'css-loader', options: {minimize: false}}, 'sass-loader'],
                 publicPath: '/public/css'
             })}
         ]

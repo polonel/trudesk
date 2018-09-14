@@ -1,0 +1,10 @@
+# NPM files
+node_modules/
+
+# IDE files
+*.iml
+*.ipr
+*.iws
+.idea/
+.vscode/
+dev_test/

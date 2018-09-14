@@ -12,12 +12,103 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'angularjs/services/session', 'history'],
-    function(angular, _, $, UIkit, socket, nav, md, helpers) {
+define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'easymde', 'angularjs/services/session', 'history'],
+    function(angular, _, $, UIkit, socket, nav, md, helpers, EasyMDE) {
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
         .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q, $log) {
 
             $scope.loggedInAccount = SessionService.getUser();
+
+            var mdeToolbarItems = [
+                {
+                    name: 'bold',
+                    action: EasyMDE.toggleBold,
+                    className: 'material-icons mi-bold no-ajaxy',
+                    title: 'Bold'
+                },
+                {
+                    name: 'italic',
+                    action: EasyMDE.toggleItalic,
+                    className: 'material-icons mi-italic no-ajaxy',
+                    title: 'Italic'
+                },
+                {
+                    name: 'Title',
+                    action: EasyMDE.toggleHeadingSmaller,
+                    className: 'material-icons mi-title no-ajaxy',
+                    title: 'Title'
+                },
+                "|",
+                {
+                    name: 'Code',
+                    action: EasyMDE.toggleCodeBlock,
+                    className: 'material-icons mi-code no-ajaxy',
+                    title: 'Code'
+                },
+                {
+                    name: 'Quote',
+                    action: EasyMDE.toggleBlockquote,
+                    className: 'material-icons mi-quote no-ajaxy',
+                    title: 'Quote'
+                },
+                {
+                    name: 'Generic List',
+                    action: EasyMDE.toggleUnorderedList,
+                    className: 'material-icons mi-list no-ajaxy',
+                    title: 'Generic List'
+                },
+                {
+                    name: 'Numbered List',
+                    action: EasyMDE.toggleOrderedList,
+                    className: 'material-icons mi-numlist no-ajaxy',
+                    title: 'Numbered List'
+                },
+                "|",
+                {
+                    name: 'Create Link',
+                    action: EasyMDE.drawLink,
+                    className: 'material-icons mi-link no-ajaxy',
+                    title: 'Create Link'
+                },
+                "|",
+                {
+                    name: 'Toggle Preview',
+                    action: EasyMDE.togglePreview,
+                    className: 'material-icons mi-preview no-disable no-mobile no-ajaxy',
+                    title: 'Toggle Preview'
+                }
+            ];
+
+            var $commentReply = $('#commentReply');
+            var commentMDE = null;
+            if ($commentReply.length > 0) {
+                commentMDE = new EasyMDE({
+                    element: $commentReply[0],
+                    forceSync: true,
+                    minHeight: "220px", //Slighty smaller to adjust the scroll
+                    toolbar: mdeToolbarItems,
+                });
+
+                commentMDE.codemirror.setOption("extraKeys", {
+                    "Ctrl-Enter": function(cm) {
+                        var $submitButton = $(cm.display.wrapper).parents('form').find('#comment-reply-submit-button');
+                        if ($submitButton)
+                            $submitButton.click();
+                    }
+                })
+            }
+
+            var $ticketNote = $('#ticket-note');
+            var noteMDE = null;
+            if ($ticketNote.length > 0) {
+                noteMDE = new EasyMDE({
+                    element: $ticketNote[0],
+                    forceSync: true,
+                    minHeight: '220px',
+                    toolbar: mdeToolbarItems
+                });
+
+            }
 
             //Setup Assignee Drop based on Status
             var ticketStatus = $('#__ticketStatus').html();
@@ -62,17 +153,13 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             };
 
             $scope.types = [];
-            $scope.priorities = [
-                {name: 'Normal', value: 1},
-                {name: 'Urgent', value: 2},
-                {name: 'Critical', value: 3}
-            ];
+            $scope.priorities = [];
             $scope.groups = [];
 
-            $scope.selected_priority = _.findWhere($scope.priorities, {value: $scope.ticketPriority});
             var ticketTypes = $http.get('/api/v1/tickets/types').
                                 success(function(data) {
                                     _.each(data, function(item) {
+                                        item.priorities = _.sortBy(item.priorities, function(i) { return i.name; });
                                         $scope.types.push(item);
                                     });
                                 }).
@@ -82,6 +169,12 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
             $q.all([ticketTypes]).then(function() {
                 $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
+                $scope.priorities = $scope.selected_type.priorities;
+                $scope.priorities = _.sortBy($scope.priorities, 'name');
+                $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
+                if (!$scope.selected_priority) {
+                    UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
+                }
             });
 
             var groupHttpGet = $http.get('/api/v1/groups').
@@ -102,13 +195,20 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = $('#__ticketId').html();
                 if (id.length > 0) {
                     socket.ui.setTicketType(id, $scope.selected_type);
+                    $scope.priorities = $scope.selected_type.priorities;
+                    $scope.priorities = _.sortBy($scope.priorities, 'name');
+                    $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
+                    if (_.isUndefined($scope.selected_priority)) {
+                        UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
+                    }
                 }
             };
 
             $scope.updateTicketPriority = function() {
                 var id = $('#__ticketId').html();
-                if (id.length > 0) {
-                    socket.ui.setTicketPriority(id, $scope.selected_priority);
+                if (id.length > 0 && $scope.selected_priority) {
+                    socket.ui.setTicketPriority(id, $scope.selected_priority._id);
+                    $scope.ticketPriority = $scope.selected_priority._id;
                 }
             };
 
@@ -290,13 +390,33 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = form.find('input[name="ticketId"]');
                 var commentField = form.find('#commentReply');
                 if (commentField.length < 1 || id.length < 1) return;
+
+                var $mdeError = null;
+                if (commentField.val().length < 5) {
+                    // commentField.validate();
+                    commentField.parent().css({border: '1px solid #E74C3C'});
+                    var mdeError = $('<div class="mde-error uk-float-left uk-text-left">Please enter a valid comment. Comments must contain at least 5 characters.</div>');
+
+                    $mdeError = commentField.siblings('.editor-statusbar').find('.mde-error');
+                    if ($mdeError.length < 1)
+                        commentField.siblings('.editor-statusbar').prepend(mdeError);
+
+                    return;
+                } else {
+                    commentField.parent().css('border', 'none');
+                    $mdeError = commentField.parent().find('.mde-error');
+                    if ($mdeError.length > 0) $mdeError.remove();
+                }
+
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addcomment', {
-                        "comment": commentField.val(),
+                        "comment": commentMDE.value(),
                         "_id": id.val().toString(),
                         "ownerId": $scope.loggedInAccount._id
                     }).success(function() {
                         commentField.val('');
+                        if (commentMDE)
+                            commentMDE.value('');
                     }).error(function(e) {
                         $log.error('[trudesk:singleTicket:submitComment]');
                         $log.error(e);
@@ -312,6 +432,23 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 if (form.length < 1) return;
                 var noteField = form.find('#ticket-note');
                 if (noteField.length < 1 || id.length < 1) return;
+
+                var $mdeError = null;
+                if (noteField.val().length < 5) {
+                    noteField.parent().css({border: '1px solid #E74C3C'});
+                    var mdeError = $('<div class="mde-error uk-float-left uk-text-left">Please enter a valid note. Notes must contain at least 5 characters.</div>');
+
+                    $mdeError = noteField.siblings('.editor-statusbar').find('.mde-error');
+                    if ($mdeError.length < 1)
+                        noteField.siblings('.editor-statusbar').prepend(mdeError);
+
+                    return;
+                } else {
+                    noteField.parent().css('border', 'none');
+                    $mdeError = noteField.parent().find('.mde-error');
+                    if ($mdeError.length > 0) $mdeError.remove();
+                }
+
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addnote', {
                         "note": noteField.val(),
@@ -319,6 +456,8 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         "owner": $scope.loggedInAccount._id
                     }).success(function() {
                         noteField.val('');
+                        if (noteMDE)
+                            noteMDE.value('');
                     }).error(function(e) {
                         $log.error('[trudesk:singleTicket:submitInternalNote]');
                         $log.error(e);

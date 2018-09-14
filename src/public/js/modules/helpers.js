@@ -31,7 +31,8 @@ define([
         'easypiechart',
         'chosen',
         'velocity',
-        'peity'
+        'peity',
+        'multiselect'
     ],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
@@ -60,6 +61,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         self.ajaxFormSubmit();
         self.setupChosen();
         self.bindNewMessageSubmit();
+        self.jsPreventDefault();
 
         //self.UI.expandSidebar();
         //self.UI.tooltipSidebar();
@@ -70,10 +72,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         self.UI.bindAccordion();
 
         self.UI.fabToolbar();
+        self.UI.fabSheet();
         self.UI.inputs();
         self.UI.cardOverlay();
         self.UI.setupPeity();
         self.UI.selectize();
+        self.UI.multiSelect();
         self.UI.waves();
         self.UI.matchHeight();
         self.UI.onlineUserSearch();
@@ -93,6 +97,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var countTo = $(self).text();
             var theAnimation = new CountUp(self, 0, countTo, 0, 2);
             theAnimation.start();
+        });
+    };
+
+    helpers.jsPreventDefault = function() {
+        $('.js-prevent-default').each(function() {
+            $(this).on('click', function(event) {
+                event.preventDefault();
+            });
         });
     };
 
@@ -382,6 +394,18 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 .on('change', '.md-input', function() {
                     updateInput($(this));
                 });
+
+            $('.search-input').focus(function(){
+                $(this).parent().addClass('focus');
+            }).blur(function(){
+                $(this).parent().removeClass('focus');
+            })
+        });
+    };
+
+    helpers.UI.reRenderInputs = function() {
+        $('.md-input').each(function() {
+            updateInput($(this));
         });
     };
 
@@ -446,6 +470,18 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
                 });
 
+            $('.page-content').on('scroll', function(e) {
+                if ($fab_toolbar.hasClass('md-fab-active')) {
+                    if (!$(e.target).closest($fab_toolbar).length) {
+                        $fab_toolbar.css({height: '', width: ''}).removeClass('md-fab-active');
+
+                        setTimeout(function() {
+                            $fab_toolbar.removeClass('md-fab-animated');
+                        }, 140);
+                    }
+                }
+            });
+
             $(document).on('click scroll', function(e) {
                 if( $fab_toolbar.hasClass('md-fab-active') ) {
                     if (!$(e.target).closest($fab_toolbar).length) {
@@ -458,6 +494,63 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                             $fab_toolbar.removeClass('md-fab-animated');
                         },140);
 
+                    }
+                }
+            });
+        }
+    };
+
+    helpers.UI.fabSheet = function() {
+        var $fabSheet = $('.md-fab-sheet');
+
+        if ($fabSheet) {
+            $fabSheet
+                .children('i')
+                .on('click', function(e) {
+                    e.preventDefault();
+
+                    var sheetItems = $fabSheet.children('.md-fab-sheet-actions').children('a').length;
+                    $fabSheet.addClass('md-fab-animated');
+
+                    setTimeout(function() {
+                        $fabSheet.width('240px').height(sheetItems*40 + 8);
+                    }, 140);
+
+                    setTimeout(function() {
+                        $fabSheet.addClass('md-fab-active');
+                    }, 280);
+                });
+
+            $fabSheet.children('.md-fab-sheet-actions').children('a').on('click', function() {
+                if ($fabSheet.hasClass('md-fab-active')) {
+                    $fabSheet.css({height: '', width: ''}).removeClass('md-fab-active');
+
+                    setTimeout(function() {
+                        $fabSheet.removeClass('md-fab-animated');
+                    }, 140);
+                }
+            });
+
+            $('.page-content').on('scroll', function(e) {
+                if ($fabSheet.hasClass('md-fab-active')) {
+                    if (!$(e.target).closest($fabSheet).length) {
+                        $fabSheet.css({height: '', width: ''}).removeClass('md-fab-active');
+
+                        setTimeout(function() {
+                            $fabSheet.removeClass('md-fab-animated');
+                        }, 140);
+                    }
+                }
+            });
+
+            $(document).on('click scroll', function(e) {
+                if ($fabSheet.hasClass('md-fab-active')) {
+                    if (!$(e.target).closest($fabSheet).length) {
+                        $fabSheet.css({height: '', width: ''}).removeClass('md-fab-active');
+
+                        setTimeout(function() {
+                            $fabSheet.removeClass('md-fab-animated');
+                        }, 140);
                     }
                 }
             });
@@ -575,7 +668,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                                 .velocity('slideDown', {
                                     begin: function() {
                                         if (typeof thisPosBottom !== 'undefined') {
-                                            $dropdown.css({'margin-top':'0'})
+                                            $dropdown.css({'margin-top':'0'});
                                             if (typeof posTopOffset !== 'undefined') {
                                                 $dropdown.css({'margin-top': posTopOffset+'px'});
                                             }
@@ -604,6 +697,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                     });
             }
         });
+    };
+
+    helpers.UI.multiSelect = function() {
+        $('.multiselect').each(function() {
+            var self = $(this);
+            self.multiSelect();
+        })
     };
 
     helpers.UI.cardShow = function() {

@@ -42,7 +42,7 @@ define('pages/dashboard', [
             var parms = {
                 full_width: true,
                 height: 250,
-                target: '#test',
+                target: '#breakdownGraph',
                 x_accessor: 'date',
                 y_accessor: 'value',
                 y_extended_ticks: true,
@@ -103,7 +103,12 @@ define('pages/dashboard', [
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
+                        } else if(_data.data.length < 1) {
+                            // No data in graph. Show No Data avaliable
+                            $('#breakdownGraph').empty();
+                            $('#breakdownGraph').append('<div class="no-data-available-text">No Data Available</div>');
                         } else {
+                            $('#breakdownGraph').empty();
                             parms.data = MG.convert.date(_data.data, 'date');
                             MG.data_graphic(parms);
                         }

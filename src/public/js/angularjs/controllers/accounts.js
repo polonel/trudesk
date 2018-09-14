@@ -12,24 +12,24 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'selectize', 'formvalidator'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator', 'multiselect'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
         .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
 
             function checkGroupValidation() {
                 var data = {};
                 var form = $('#createAccountForm');
-                data.aGrps = form.find('select[name="aGrps"]').val();
+                data.aGrps = form.find('select[name="caGrps[]"]').val();
 
                 if (!data.aGrps || data.aGrps.length < 1) {
                     //Validate Group
-                    $('label[for="aGrps"]').css('color', '#d85030');
-                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
+                    $('label[for="caGrps"]').css('color', '#d85030');
+                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
                     $('.aGrps-error-message').removeClass('hide').css('display', 'block').css('color', '#d85030').css('font-weight', 'bold');
                     return false;
                 } else {
-                    $('label[for="aGrps"]').css('color', '#4d4d4d');
-                    $('select[name="aGrps"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
+                    $('label[for="caGrps"]').css('color', '#4d4d4d');
+                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
                     $('.aGrps-error-message').addClass('hide');
                     return true;
                 }
@@ -51,7 +51,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 }
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
-                data.aGrps = form.find('select[name="aGrps"]').val();
+                data.aGrps = form.find('select[name="caGrps[]"]').val();
                 $http({
                     method: 'POST',
                     url: '/api/v1/users/create',
@@ -71,7 +71,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         helpers.UI.showSnackbar({text:   'Account Created'});
 
                         //Refresh UserGrid
-                        History.pushState(null,null, '/accounts/?refresh=1');
+                        History.pushState(null,null, '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
 
                         UIkit.modal("#accountCreateModal").hide();
                     }).error(function(err) {
@@ -156,6 +156,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 var username = self.attr('data-username');
                 if (_.isUndefined(username)) return true;
 
+                var $menu = self.parents('.tru-card-head-menu');
+                if (!_.isUndefined($menu)) {
+                    $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active');
+                }
+
                 $http.get(
                     '/api/v1/users/' + username
                 ).success(function(data) {
@@ -164,24 +169,79 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
+                    var loggedInAccount = window.trudeskSessionService.getUser();
+                    if (loggedInAccount == null) return true;
+
+                    var $userHeadingContent = $('.user-heading-content');
+                    $userHeadingContent.find('.js-username').text(user.username);
+                    if (!user.title)
+                        $userHeadingContent.find('.js-user-title').text('');
+                    else
+                        $userHeadingContent.find('.js-user-title').text(user.title);
+
+                    var isEditingSelf = false;
+                    if (user.username === loggedInAccount.username)
+                        isEditingSelf = true;
+
+                    if (!isEditingSelf && (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') && (user.role === 'admin' || user.role === 'mod')) {
+                        //Disable editing user with higher roles.
+                        form.find('#aPass').parent().hide();
+                        form.find('#aPassConfirm').parent().hide();
+                        form.find('#aRole').parent().hide();
+                        form.find('#aFullname').attr('disabled', 'disabled');
+                        form.find('#aTitle').attr('disabled', 'disabled');
+                        form.find('#aEmail').attr('disabled', 'disabled');
+                        form.find('#aGrps').attr('disabled', 'disabled');
+                        form.find('#aSaveButton').addClass('disabled').attr('disabled', 'disabled');
+                    } else {
+                        form.find('#aPass').parent().show();
+                        form.find('#aPassConfirm').parent().show();
+                        form.find('#aRole').parent().show();
+                        form.find('#aFullname').attr('disabled', false);
+                        form.find('#aTitle').attr('disabled', false);
+                        form.find('#aEmail').attr('disabled', false);
+                        form.find('#aGrps').attr('disabled', false);
+                        form.find('#aSaveButton').removeClass('disabled').attr('disabled', false);
+                    }
+
                     form.find('#aId').val(user._id);
                     form.find('#aUsername').val(user.username).prop('disabled', true).parent().addClass('md-input-filled');
                     form.find('#aFullname').val(user.fullname).parent().addClass('md-input-filled');
                     form.find('#aTitle').val(user.title).parent().addClass('md-input-filled');
                     form.find('#aEmail').val(user.email).parent().addClass('md-input-filled');
                     form.find('#aRole option[value="' + user.role + '"]').prop('selected', true);
-                    var $selectizeRole = form.find('#aRole')[0].selectize;
-                    $selectizeRole.setValue(user.role, true);
-                    $selectizeRole.refreshItems();
+                    if (form.find('#aRole').length > 0) {
+                        var $selectizeRole = form.find('#aRole')[0].selectize;
+                        $selectizeRole.setValue(user.role, true);
 
-                    var $selectizeGrps = form.find('#aGrps')[0].selectize;
-                    var groups = data.groups;
+                        if (loggedInAccount.role === 'support' || loggedInAccount.role === 'user') {
+                            $selectizeRole.removeOption('admin');
+                            $selectizeRole.removeOption('mod');
+                        }
 
-                    _.each(groups, function(i) {
-                        $selectizeGrps.addItem(i, true);
-                    });
+                        if (loggedInAccount.role === 'mod')
+                            $selectizeRole.removeOption('admin');
 
-                    $selectizeGrps.refreshItems();
+                        $selectizeRole.refreshItems();
+                    }
+
+                    form.find('#aGrps').multiSelect('deselect_all');
+                    form.find('#aGrps').multiSelect('select', data.groups);
+                    form.find('#aGrps').multiSelect('refresh');
+
+
+                    //Profile Picture
+                    var aImageUploadForm = $('form#aUploadImageForm');
+                    var image = aImageUploadForm.find('img');
+                    var input_id = aImageUploadForm.find('input#imageUpload_id');
+                    var input_username = aImageUploadForm.find('input#imageUpload_username');
+                    input_id.val(user._id);
+                    input_username.val(user.username);
+                    if (user.image)
+                        image.attr('src', '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
+                    else
+                        image.attr('src', '/uploads/users/defaultProfile.jpg?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
+
                     var modal = UIkit.modal('#editAccountModal');
                     if (!modal.isActive()) modal.show();
 
@@ -197,6 +257,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
                 data.saveGroups = true;
+                data.aRole = (form.find('#aRole').val().length > 0) ? form.find('#aRole').val() : undefined;
+                data.aPass = (form.find('#aPass').val().length > 0) ? form.find('#aPass').val() : undefined;
+                data.aPassConfirm = (form.find('#aPassConfirm').val().length > 0) ? form.find('#aPassConfirm').val() : undefined;
 
                 $http({
                     method: 'PUT',
@@ -218,6 +281,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
                         UIkit.modal("#editAccountModal").hide();
 
+                        accountsPage.init(null, true);
 
                     }).error(function(err) {
                     $log.log('[trudesk:accounts:saveAccount] - ' + err.error.message);
@@ -227,6 +291,38 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
             $scope.accountEditPic = function() {
                 throttledAccountPicClick();
+            };
+
+            $scope.selectAccountsImport = function(event, type) {
+                if ($(event.currentTarget).hasClass('card-disabled'))
+                    return false;
+
+                switch(type) {
+                    case 'csv':
+                        $('#csv_wizard_card').removeClass('uk-hidden');
+                        $('#json-import-selector').addClass('card-disabled');
+                        $('#ldap-import-selector').addClass('card-disabled');
+                        break;
+                    case 'json':
+                        $('#json_wizard_card').removeClass('uk-hidden');
+                        $('#csv-import-selector').addClass('card-disabled');
+                        $('#ldap-import-selector').addClass('card-disabled');
+                        break;
+                    case 'ldap':
+                        $('#ldap_wizard_card').removeClass('uk-hidden');
+                        $('#csv-import-selector').addClass('card-disabled');
+                        $('#json-import-selector').addClass('card-disabled');
+                }
+            };
+
+            $scope.resetWizardSelection = function() {
+                $('#csv_wizard_card').addClass('uk-hidden');
+                $('#json_wizard_card').addClass('uk-hidden');
+                $('#ldap_wizard_card').addClass('uk-hidden');
+
+                $('#csv-import-selector').removeClass('card-disabled');
+                $('#json-import-selector').removeClass('card-disabled');
+                $('#ldap-import-selector').removeClass('card-disabled');
             };
 
             function throttledAccountPicClick() {

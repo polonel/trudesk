@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'history'], function(angular, _, $, helpers, ui, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'easymde', 'velocity', 'history'], function(angular, _, $, helpers, ui, UIkit, EasyMDE) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
         .directive('selectize', function($timeout) {
             return {
@@ -34,6 +34,68 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             }
         })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
+            var mdeToolbarItems = [
+                {
+                    name: 'bold',
+                    action: EasyMDE.toggleBold,
+                    className: 'material-icons mi-bold no-ajaxy',
+                    title: 'Bold'
+                },
+                {
+                    name: 'italic',
+                    action: EasyMDE.toggleItalic,
+                    className: 'material-icons mi-italic no-ajaxy',
+                    title: 'Italic'
+                },
+                {
+                    name: 'Title',
+                    action: EasyMDE.toggleHeadingSmaller,
+                    className: 'material-icons mi-title no-ajaxy',
+                    title: 'Title'
+                },
+                "|",
+                {
+                    name: 'Code',
+                    action: EasyMDE.toggleCodeBlock,
+                    className: 'material-icons mi-code no-ajaxy',
+                    title: 'Code'
+                },
+                {
+                    name: 'Quote',
+                    action: EasyMDE.toggleBlockquote,
+                    className: 'material-icons mi-quote no-ajaxy',
+                    title: 'Quote'
+                },
+                {
+                    name: 'Generic List',
+                    action: EasyMDE.toggleUnorderedList,
+                    className: 'material-icons mi-list no-ajaxy',
+                    title: 'Generic List'
+                },
+                {
+                    name: 'Numbered List',
+                    action: EasyMDE.toggleOrderedList,
+                    className: 'material-icons mi-numlist no-ajaxy',
+                    title: 'Numbered List'
+                },
+                "|",
+                {
+                    name: 'Create Link',
+                    action: EasyMDE.drawLink,
+                    className: 'material-icons mi-link no-ajaxy',
+                    title: 'Create Link'
+                },
+                "|",
+                {
+                    name: 'Toggle Preview',
+                    action: EasyMDE.togglePreview,
+                    className: 'material-icons mi-preview no-disable no-mobile no-ajaxy',
+                    title: 'Toggle Preview'
+                }
+            ];
+
+            var privacyPolicyMDE = null;
+
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 $timeout(function() {
@@ -47,17 +109,129 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         }
                     });
 
-                    if ($scope.mailerCheckTicketType !== '') {
-                        var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
-                        if ($mailerCheckTicketTypeSelect.length < 1)
-                            return;
-                        $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
-                        var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
-                        $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
-                        $selectizeTicketType.refreshItems();
+                    var $privacyPolicy = $('#privacyPolicy');
+                    if ($privacyPolicy.length > 0) {
+                        privacyPolicyMDE = new EasyMDE({
+                            element: $privacyPolicy[0],
+                            forceSync: true,
+                            minHeight: "220px", //Slighty smaller to adjust the scroll
+                            toolbar: mdeToolbarItems
+                        });
+
+                        privacyPolicyMDE.codemirror.off('change');
+                        privacyPolicyMDE.codemirror.on('change', function() {
+                            $scope.privacyPolicy = privacyPolicyMDE.value();
+                        });
                     }
+
+                    // Load MailCheckTicketType from settings
+                    var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                    if ($mailerCheckTicketTypeSelect.length > 0) {
+                        if ($scope.mailerCheckTicketType !== '') {
+                            $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
+
+                            var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
+                            $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
+                            $selectizeTicketType.refreshItems();
+                        } else {
+                            $scope.mailerCheckTicketType = $mailerCheckTicketTypeSelect.val();
+                        }
+                    }
+
+                    // Load MailCheckTicketPriority from settings
+                    var $mailCheckTicketPrioritySelect = $('#mailerCheckTicketPriority');
+                    if ($mailCheckTicketPrioritySelect.length > 0) {
+                        //Build out priority Options based on selected ticket type
+                        loadTypePrioritySelect($scope.mailerCheckTicketType);
+                    }
+
+                    // Pagination on ticket Tags
+                    loadTicketTagPagination(null, 0);
+                    var $ticketTagPagination = $('.ticket-tags-pagination');
+                    UIkit.pagination($ticketTagPagination, {
+                        items: $scope.ticketTagsCount,
+                        itemsOnPage: 25
+                    });
+                    $ticketTagPagination.on('select.uk.pagination', loadTicketTagPagination);
+
                 }, 0);
             };
+
+            function loadTypePrioritySelect(typeId) {
+                var $mailCheckTicketPrioritySelect = $('#mailerCheckTicketPriority');
+                if ($mailCheckTicketPrioritySelect.length < 1)
+                    return;
+
+                $http.get('/api/v1/tickets/type/' + typeId)
+                    .success(function(response) {
+                        if (response.success) {
+                            $timeout(function() {
+                                var type = response.type;
+                                if ($scope.mailerCheckTicketPriority === '')
+                                    $scope.mailerCheckTicketPriority = _.first(type.priorities)._id;
+
+                                var holdPriorityValue = $scope.mailerCheckTicketPriority;
+
+                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString()}))
+                                    holdPriorityValue = _.first(type.priorities)._id;
+
+                                var $selectizeTicketPriority = $mailCheckTicketPrioritySelect[0].selectize;
+                                $selectizeTicketPriority.clearOptions();
+
+                                type.priorities.forEach(function(priority) {
+                                    $selectizeTicketPriority.addOption({value: priority._id, text: priority.name});
+                                });
+
+                                $selectizeTicketPriority.setValue(holdPriorityValue, true);
+                                $selectizeTicketPriority.refreshOptions(false);
+                                $selectizeTicketPriority.refreshItems();
+                            }, 0);
+                        }
+                    })
+                    .error(function(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+            }
+
+            function loadTicketTagPagination(e, pageIndex) {
+                if (e)
+                    e.preventDefault();
+
+                $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
+                    .success(function(response) {
+                        var tags = [];
+                        var $tagWrapper = $('.ticket-tags-wrapper');
+                        if ($tagWrapper.length < 1)
+                            return;
+
+                        $tagWrapper.empty();
+                        if (response.success) {
+                            tags = response.tags;
+
+                            if (tags.length === 0) {
+                                $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
+                            } else {
+                                tags.forEach(function(tag) {
+                                    var html = '';
+                                    html += '<div class="uk-width-1-3 z-box" style="padding: 10px;">' +
+                                        '<div class="uk-grid uk-grid-collapse">' +
+                                        '<div class="uk-width-1-2 uk-float-left" style="line-height: 31px;">' + tag.name + '</div>' +
+                                        '<div class="uk-width-1-2 uk-float-right uk-text-right pr-10">' +
+                                        '<button type="button" class="md-btn md-btn md-btn-small">Edit</button>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+
+                                    $tagWrapper.append(html);
+                                });
+                            }
+                        }
+                    })
+                    .error(function(err) {
+                        $log.error(err);
+                    });
+            }
 
             $scope.$watch('mailerEnabled', function(newVal) {
                 $('input#mailerHost').attr('disabled', !newVal);
@@ -69,23 +243,77 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('button#mailerSubmit').attr('disabled', !newVal);
             });
 
-            $scope.$watch('defaultTicketType', function(newValue) {
-                if (!newValue)
+            $scope.defaultTicketTypeChanged = function() {
+                if(!$scope.defaultTicketType)
                     return;
+
                 $http.put('/api/v1/settings', {
                     name: 'ticket:type:default',
-                    value: newValue
+                    value: $scope.defaultTicketType
                 }, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }).then(function successCallback() {
-
                 }, function errorCallback(err) {
                     $log.error(err);
                     helpers.UI.showSnackbar('Error: ' + err, true);
                 });
-            });
+            };
+
+            $scope.mailerCheckTicketTypeChanged = function() {
+                loadTypePrioritySelect($scope.mailerCheckTicketType);
+            };
+
+            $scope.switchSettings = function(event, settings) {
+                if (settings) {
+                    var currentTarget = $(event.currentTarget);
+                    var $target = $('div[data-settings-id="' + settings + '"]');
+                    var $settingsWrap = $('.settings-wrap');
+                    if ($target.length > 0) {
+                        //Hide Them
+                        $('.settings-categories > li').each(function(){ var vm = this; $(vm).removeClass('active'); });
+                        $settingsWrap.find('div[data-settings-id]').each(function() {
+                            var vm = this;
+                            $(vm).removeClass('active');
+                        });
+
+                        $('.page-wrapper').scrollTop(0);
+
+                        //Show Selected
+                        $target.addClass('active');
+                        if (currentTarget.length > 0) {
+                            currentTarget.addClass('active');
+                        }
+
+                        if (settings === 'settings-tickets') {
+                            $target.find('ul>li[data-key]').first().addClass('active');
+                        }
+
+                        if (settings === 'settings-legal') {
+                            if (privacyPolicyMDE) {
+                                privacyPolicyMDE.codemirror.refresh();
+                            }
+                        }
+                    }
+                }
+            };
+
+            $scope.saveSiteUrlClicked = function() {
+                $http.put('/api/v1/settings', {
+                    name: 'gen:siteurl',
+                    value: $scope.siteUrl
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Site URL saved successfully.', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                    $log.error(err);
+                });
+            };
 
             $scope.mailerEnabledChange = function() {
                 var vm = this;
@@ -195,6 +423,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
                 var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
+                var $mailerCheckTicketPrioritySelectize = $('select#mailerCheckTicketPriority').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
                 $('input#mailerCheckPort').attr('disabled', !newVal);
                 $('input#mailerCheckUsername').attr('disabled', !newVal);
@@ -205,6 +434,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         $mailerCheckTicketTypeSelectize.selectize.disable();
                     else
                         $mailerCheckTicketTypeSelectize.selectize.enable();
+                }
+                if (!_.isUndefined($mailerCheckTicketPrioritySelectize)) {
+                    if (!newVal === true)
+                        $mailerCheckTicketPrioritySelectize.selectize.disable();
+                    else
+                        $mailerCheckTicketPrioritySelectize.selectize.enable();
                 }
             });
 
@@ -220,7 +455,24 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         'Content-Type': 'application/json'
                     }
                 }).then(function successCallback() {
-
+                    if (!$scope.mailerCheckEnabled) {
+                        UIkit.modal.confirm(
+                            'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
+                            , function() {
+                                $http.get(
+                                    '/api/v1/admin/restart'
+                                )
+                                    .success(function() {
+                                    })
+                                    .error(function(err) {
+                                        helpers.hideLoader();
+                                        $log.log('[trudesk:settings:mailerCheckSubmit] - Error: ' + err.error);
+                                        $log.error(err);
+                                    });
+                            }, {
+                                labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-primary'
+                            });
+                    }
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
                 });
@@ -229,12 +481,16 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.mailerCheckFormSubmit = function($event) {
                 $event.preventDefault();
                 var mailerCheckTicketTypeValue = $('#mailerCheckTicketType option[selected]').val();
+                var mailerCheckTicketPriorityValue = $('#mailerCheckTicketPriority option[selected]').val();
                 $http.put('/api/v1/settings', [
                     {name: 'mailer:check:host', value: $scope.mailerCheckHost},
                     {name: 'mailer:check:port', value: $scope.mailerCheckPort},
                     {name: 'mailer:check:username', value: $scope.mailerCheckUsername},
                     {name: 'mailer:check:password', value: $scope.mailerCheckPassword},
-                    {name: 'mailer:check:ticketype', value: mailerCheckTicketTypeValue}
+                    {name: 'mailer:check:ticketype', value: mailerCheckTicketTypeValue},
+                    {name: 'mailer:check:ticketpriority', value: mailerCheckTicketPriorityValue},
+                    {name: 'mailer:check:createaccount', value: $scope.mailerCheckCreateAccount},
+                    {name: 'mailer:check:deletemessage', value: $scope.mailerCheckDeleteMessage}
 
                 ], {
                     headers: {
@@ -396,6 +652,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }
             };
 
+            $scope.switchTicketType = function($event) {
+                var $currentTarget = $($event.currentTarget);
+                if ($currentTarget) {
+                    if ($currentTarget.hasClass('active')) return true;
+                    var key = $currentTarget.attr('data-key');
+                    var $keyWindow = $currentTarget.parent().parent().parent().find('div[data-ticket-type-id="' + key + '"]');
+                    if ($keyWindow) {
+                        $currentTarget.parent().find('li.active').removeClass('active');
+                        $currentTarget.addClass('active');
+                        $('div[data-ticket-type-id].active').velocity({
+                            opacity: 0
+                        }, {
+                            duration: 250,
+                            complete: function() {
+                                var vm = this;
+                                $(vm).removeClass('active').addClass('hide');
+
+                                $keyWindow.velocity({
+                                    opacity: 1
+                                }, {
+                                    duration: 250,
+                                    begin: function() {
+                                        $keyWindow.removeClass('hide');
+                                    },
+                                    complete: function() {
+                                        $keyWindow.addClass('active');
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            };
+
             $scope.createTicketType = function(event) {
                 event.preventDefault();
                 var form = $('#createTicketTypeForm');
@@ -414,7 +704,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
 
-                        History.pushState(null, null, '/settings/tickettypes/?refresh=1');
+                        History.pushState(null, null, '/settings/tickets/?refresh=true');
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);
@@ -433,6 +723,28 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (!ticketTypeId) return true;
 
                 History.pushState(null, null, '/settings/tickettypes/' + ticketTypeId);
+            };
+
+            $scope.submitUpdateTicketType = function($event, typeId) {
+                $event.preventDefault();
+                var $form = $($event.currentTarget);
+                if ($form) {
+                    var $typeNameInput = $form.find('input#ticket-type-name-' + typeId);
+                    var typeName = $typeNameInput.val();
+
+                    $http.put('/api/v1/tickets/types/' + typeId, {
+                        name: typeName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Type: ' + typeName + ' updated successfully', false);
+                        $('li[data-key="' + typeId + '"]').find('h3').text(typeName);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                }
             };
 
             $scope.updateTicketType = function(typeId) {
@@ -457,11 +769,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             };
 
             $scope.showDeleteTicketType = function(typeId, hasTickets) {
-                event.preventDefault();
                 if (hasTickets) {
-                    var delTicketTypeModal = $('#deleteTicketTypeModal');
+                    var delTicketTypeModal = $('#deleteTicketTypeModal-' + typeId);
                     if (delTicketTypeModal.length > 0) {
                         UIkit.modal(delTicketTypeModal, {bgclose: false}).show();
+                    } else {
+                        $log.log('Unable to locate modal window: #deleteTicketTypeModal' + typeId);
                     }
                 } else {
                     $scope.submitDeleteTicketType(typeId, undefined);
@@ -472,12 +785,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (event) event.preventDefault();
 
                 if (_.isUndefined(typeId) || typeId.length < 1) {
-                    helpers.UI.showSnackbar('Unable to get tag ID', true);
+                    helpers.UI.showSnackbar('Unable to get type ID', true);
                     return true;
                 }
 
-                var typeName = $('input#del_type_name').val();
-                var newTypeId = $('form#deleteTicketTypeForm select[name="type"]').val();
+                var typeName = $('input#del_type_name-' + typeId).val();
+                var newTypeId = $('form#deleteTicketTypeForm-' + typeId + ' select[name="ticketType"]').val();
 
                 if (!newTypeId || newTypeId.length < 1) {
                     helpers.UI.showSnackbar('Unable to get new ticket type. Aborting...', true);
@@ -497,7 +810,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     if (response.data.success) {
                         helpers.UI.showSnackbar('Successfully removed ticket type: ' + typeName, false);
 
-                        return History.pushState(null, null, '/settings/tickettypes/');
+                        return History.pushState(null, null, '/settings/tickets/');
                     }
                 }, function errorCallback(response) {
                     if (!_.isUndefined(response.data.error.custom)) {
@@ -509,6 +822,521 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }
                 });
             };
+
+            $scope.editPriority = function(pId, $event) {
+                $event.preventDefault();
+                var $viewBox = $('#view-p-' + pId);
+                var $editBox = $('#edit-p-' + pId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    $editBox.find('.uk-color-button').css({background: $editBox.find('input[name="p-' + pId + '-htmlColor"]').val()});
+                    $viewBox.addClass('hide');
+                    $editBox.removeClass('hide');
+                }
+            };
+
+            $scope.cancelEditPriority = function(pId, $event) {
+                if ($event)
+                    $event.preventDefault();
+                var $viewBox = $('#view-p-' + pId);
+                var $editBox = $('#edit-p-' + pId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    if ($event)
+                        $($event.currentTarget).parents('form').trigger('reset');
+                    $viewBox.removeClass('hide');
+                    $editBox.addClass('hide');
+                }
+            };
+
+            $scope.editTicketTypePriority = function(typeId, id, $event) {
+                $event.preventDefault();
+                var $viewBox = $('#t-' + typeId + '-view-p-' + id);
+                var $editBox = $('#t-' + typeId + '-edit-p-' + id);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    $editBox.find('.uk-color-button').css({background: $editBox.find('input[name="p-' + id + '-htmlColor"]').val()});
+                    $viewBox.addClass('hide');
+                    $editBox.removeClass('hide');
+                }
+            };
+
+            $scope.cancelEditTicketTypePriority = function(typeId, id, $event) {
+                if ($event)
+                    $event.preventDefault();
+                var $viewBox = $('#t-' + typeId + '-view-p-' + id);
+                var $editBox = $('#t-' + typeId + '-edit-p-' + id);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    if ($event)
+                        $($event.currentTarget).parents('form').trigger('reset');
+                    $viewBox.removeClass('hide');
+                    $editBox.addClass('hide');
+                }
+            };
+
+            $scope.showAddPriorityToType = function(typeId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                //Dynamically load priorities....
+                $http.get('/api/v1/tickets/type/' + typeId)
+                    .success(function(response) {
+                        if (response.success) {
+                            var updatedType = response.type;
+                            $http.get('/api/v1/tickets/priorities')
+                                .success(function(response) {
+                                    var priorities = response.priorities;
+                                    var $addPriorityToTypeModal = $('#addPriorityTicketType-' + typeId);
+                                    var $pLoop = $addPriorityToTypeModal.find('.priority-loop');
+                                    $pLoop.empty();
+
+                                    var html = '';
+                                    _.each(priorities, function(priority) {
+                                        if (_.some(updatedType.priorities, priority)) {
+                                            html = '';
+                                            html += '<div class="z-box uk-clearfix">\n' +
+                                                '       <div class="uk-float-left">\n' +
+                                                '           <h5 class="p-' + priority._id + '-name" style="color: ' + priority.htmlColor + '; font-weight: bold;">' + priority.name + '</h5>\n' +
+                                                '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + priority._id + '-overdueIn">' + priority.durationFormatted + '</strong></p>\n' +
+                                                '       </div>\n' +
+                                                '       <div class="uk-float-right">\n' +
+                                                '           <i class="material-icons uk-text-success mt-10 mr-15" style="font-size: 28px;">check</i>\n' +
+                                                '       </div>\n' +
+                                                '   </div>';
+
+                                            $pLoop.append(html);
+                                        } else {
+                                            html = '';
+                                            html += '<div class="z-box uk-clearfix">\n' +
+                                                '       <div class="uk-float-left">\n' +
+                                                '           <h5 class="p-' + priority._id + '-name" style="color: ' + priority.htmlColor + '; font-weight: bold;">' + priority.name + '</h5>\n' +
+                                                '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + priority._id + '-overdueIn">' + priority.durationFormatted + '</strong></p>\n' +
+                                                '       </div>\n' +
+                                                '       <div class="uk-float-right">\n' +
+                                                '           <a class="uk-button uk-button-success mt-10 mr-10" ng-click="priorityAddBtnClicked(\'' + updatedType._id + '\', \'' + priority._id + '\', $event);">Add</a>\n' +
+                                                '           <i class="material-icons uk-text-success mt-10 mr-15" style="display: none; opacity: 0; font-size: 28px;">check</i>\n' +
+                                                '       </div>\n' +
+                                                '   </div>';
+
+                                            $pLoop.append(html);
+                                        }
+                                    });
+
+                                    var $injector = angular.injector(["ng", "trudesk"]);
+                                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                        var $scope = $pLoop.scope();
+                                        $compile($pLoop)($scope || $rootScope);
+                                        $rootScope.$digest();
+                                    }]);
+
+                                    if ($addPriorityToTypeModal.length > 0) {
+                                        UIkit.modal($addPriorityToTypeModal, {bgclose: false}).show();
+                                    } else {
+                                        $log.error('Unable to locate add priority modal.');
+                                    }
+                                })
+                                .error(function(error) {
+                                    $log.error(error);
+                                    helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
+                                });
+                        } else {
+                            helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
+                        }
+                    })
+                    .error(function(error) {
+                        $log.error(error);
+                        helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
+                    });
+            };
+
+            $scope.priorityAddBtnClicked = function(typeId, pId, $event) {
+                $event.preventDefault();
+                var $addButton = $($event.currentTarget);
+                if ($addButton.length < 1)
+                    return false;
+
+                $http.post('/api/v1/tickets/type/' + typeId + '/addpriority', {
+                    priority: pId
+                }, {
+                    'Content-Type': 'application/json'
+                }).then(function success(response) {
+                    var Type = response.data.type;
+                    if (Type) {
+                        //Update UI
+                        var $typeContainer = $('div[data-ticket-type-id="' + typeId + '"]');
+                        if ($typeContainer.length > 0) {
+                            var $prioritiesBox = $typeContainer.find('.priority-loop');
+                            var html = '';
+                            $prioritiesBox.empty();
+                            var sortedTypePriorities = _.sortBy(( _.sortBy(Type.priorities, 'name')), 'migrationNum');
+
+                            _.each(sortedTypePriorities, function(priority) {
+                                html = '';
+                                html += '<div id="t-' + Type._id + '-view-p-' + priority._id + '" data-pId="' + priority._id + '" class="z-box uk-clearfix">\n' +
+                                    '       <div class="uk-float-left">\n' +
+                                    '           <h5 class="p-' + priority._id + '-name" style="color: ' + priority.htmlColor + '; font-weight: bold;">' + priority.name + '</h5>\n' +
+                                    '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + priority._id + '-overdueIn">' + priority.durationFormatted + '</strong></p>\n' +
+                                    '       </div>\n' +
+                                    '       <div class="uk-float-right">\n' +
+                                    '           <div class="md-btn-group mt-5">\n' +
+                                    '               <a class="md-btn md-btn-small" ng-click="editTicketTypePriority(\'' + Type._id + '\', \'' + priority._id + '\', $event);">Edit</a>\n' +
+                                    '               <a class="md-btn md-btn-small md-btn-danger" ng-click="submitRemoveTicketTypePriority(\'' + Type._id + '\', \'' + priority._id + '\', $event);">Remove</a>\n' +
+                                    '           </div>\n' +
+                                    '       </div>\n' +
+                                    '    </div>\n' +
+                                    '    <div id="t-' + Type._id + '-edit-p-' + priority._id + '" data-pId="' + priority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
+                                    '       <form data-priority-id="' + priority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
+                                    '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                    '               <div class="uk-width-1-4">\n' +
+                                    '                   <label for="">Priority Name</label>\n' +
+                                    '                   <input type="text" class="md-input" name="p-' + priority._id + '-name" value="' + priority.name + '" />\n' +
+                                    '               </div>\n' +
+                                    '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                    '                   <label for="">SLA Overdue (minutes)</label>\n' +
+                                    '                   <input type="text" class="md-input" name="p-' + priority._id + '-overdueIn" value="' + priority.overdueIn + '" />\n' +
+                                    '               </div>\n' +
+                                    '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                    '                   <button type="button" class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + priority.htmlColor + '" ng-click="generateRandomColor(\'' + priority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
+                                    '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
+                                    '                       <label for="">Color</label>\n' +
+                                    '                       <input type="text" class="md-input" name="p-' + priority._id + '-htmlColor" value="' + priority.htmlColor + '" />\n' +
+                                    '                       <span class="md-input-bar"></span>\n' +
+                                    '                   </div>\n' +
+                                    '               </div>\n' +
+                                    '               <div class="uk-width-1-4">\n' +
+                                    '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
+                                    '                       <a class="md-btn md-btn-small" ng-click="cancelEditTicketTypePriority(\'' + Type._id + '\',\'' + priority._id + '\', $event);">Cancel</a>\n' +
+                                    '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
+                                    '                   </div>\n' +
+                                    '               </div>\n' +
+                                    '           </div>\n' +
+                                    '       </form>\n' +
+                                    '   </div>';
+
+                                $prioritiesBox.append(html);
+                            });
+
+                            //Bootstrap Angular dynamically...
+                            var $injector = angular.injector(["ng", "trudesk"]);
+                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                var $scope = $prioritiesBox.scope();
+                                $compile($prioritiesBox)($scope || $rootScope);
+                                $rootScope.$digest();
+                            }]);
+
+                            //Fix filled inputs
+                            helpers.UI.inputs();
+                            helpers.UI.reRenderInputs();
+                        }
+                    }
+
+
+                    //Animation
+                    $addButton.velocity({
+                        opacity: 0
+                    }, {
+                        duration: 350,
+                        complete: function() {
+                            $addButton.addClass('hide');
+                        }
+                    });
+
+                    var $check = $addButton.siblings('i.material-icons');
+                    if ($check.length > 0) {
+                        $check.velocity({
+                            opacity: 1
+                        }, {
+                            delay: 360,
+                            duration: 200,
+                            begin: function() {
+                                $check.show();
+                            }
+                        });
+                    }
+                }, function errorCallback(err) {
+                    $log.error(err);
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                });
+            };
+
+            $scope.removePriorityClicked = function(pId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var deletePriorityModal = $('#deletePriorityModal-' + pId);
+                if (deletePriorityModal.length > 0) {
+                    deletePriorityModal.find('form').trigger('reset');
+                    UIkit.modal(deletePriorityModal, {bgclose: false}).show();
+                } else {
+                    $log.error('Unable to locate delete priority modal.');
+                }
+            };
+
+            $scope.submitRemovePriority = function(pId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                if (pId) {
+                    var $form = $($event.currentTarget).parents('form');
+                    var selectedPriority = $form.find('select[name="priority"]').val();
+
+                    $http.post('/api/v1/tickets/priority/' + pId + '/delete', {
+                        newPriority: selectedPriority
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                        .then(function() {
+                            var $body = $('body');
+                            // $body.find('div#view-p-' + pId).remove();
+                            // $body.find('div#edit-p-' + pId).remove();
+                            $body.find('div[data-pId="' + pId + '"]').remove();
+                            var deletePriorityModal = $('#deletePriorityModal-' + pId);
+                            if (deletePriorityModal) {
+                                UIkit.modal(deletePriorityModal).hide();
+                            }
+                        }, function(err) {
+                            $log.error(err);
+                            helpers.UI.showSnackbar(err.data.error, true);
+                        })
+                }
+            };
+
+            $scope.submitRemoveTicketTypePriority = function(typeId, priorityId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                if (typeId && priorityId) {
+                    $http.post('/api/v1/tickets/type/' + typeId + '/removepriority', {
+                        priority: priorityId
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function() {
+                        helpers.UI.showSnackbar('Removed priority from type', false);
+                        var $body = $('body');
+                        $body.find('div#t-' + typeId + '-view-p-' + priorityId).remove();
+                        $body.find('div#t-' + typeId + '-edit-p-' + priorityId).remove();
+                    }, function(err) {
+                        $log.error(err);
+                        helpers.UI.showSnackbar(err.data.error, true);
+                    });
+                }
+            };
+
+            $scope.showCreatePriorityWindow = function($event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var createPriorityModal = $('#createPriorityModal');
+                if (createPriorityModal.length > 0) {
+                    createPriorityModal.find('form').trigger('reset');
+                    helpers.UI.inputs();
+                    helpers.UI.reRenderInputs();
+                    createPriorityModal.find('form').trigger('reset');
+                    createPriorityModal.find('#generateHtmlColor').css({background: '#29B955'});
+                    UIkit.modal(createPriorityModal, {bgclose: false}).show();
+                    createPriorityModal.find('input[name="p-name"]').focus();
+                } else {
+                    $log.error('Unable to locate create priority modal.');
+                }
+            };
+
+            $scope.createPrioritySubmit = function($event) {
+                $event.preventDefault();
+                var $form = $($event.currentTarget);
+                if ($form) {
+                    if (!$form.isValid(null, null, false)) {
+                        return true;
+                    } else {
+                        var $priorityName = $form.find('input[name="p-name"]');
+                        var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]');
+                        var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]');
+                        if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1)
+                            return false;
+
+                        var name = $priorityName.val();
+                        var overdueIn = $priorityOverdueIn.val();
+                        var htmlColor = $priorityHtmlColor.val();
+
+                        $http.post('/api/v1/tickets/priority/create', {
+                            name: name,
+                            overdueIn: overdueIn,
+                            htmlColor: htmlColor
+                        }, {
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(function successCallback(response) {
+                            var savedPriority = response.data.priority;
+                            if (savedPriority) {
+                                var priorityLoop = $('body').find('.all-priorities-loop');
+                                if (priorityLoop) {
+                                    $http.get('/api/v1/tickets/priorities')
+                                        .success(function(pResponse) {
+                                            var priorities = pResponse.priorities;
+                                            var html = '';
+                                            html += '<div id="view-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix">\n' +
+                                                '       <div class="uk-float-left">\n' +
+                                                '           <h5 class="p-' + savedPriority._id + '-name" style="color: ' + savedPriority.htmlColor + '; font-weight: bold;">' + savedPriority.name + '</h5>\n' +
+                                                '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + savedPriority._id + '-overdueIn">' + savedPriority.durationFormatted + '</strong></p>\n' +
+                                                '       </div>\n' +
+                                                '       <div class="uk-float-right">\n' +
+                                                '           <div class="md-btn-group mt-5">\n' +
+                                                '               <a class="md-btn md-btn-small" ng-click="editPriority(\'' + savedPriority._id + '\', $event);">Edit</a>\n' +
+                                                '               <a class="md-btn md-btn-small md-btn-danger" ng-click="removePriorityClicked(\'' + savedPriority._id + '\', $event);">Remove</a>\n' +
+                                                '           </div>\n' +
+                                                '       </div>\n' +
+                                                '    </div>\n' +
+                                                '    <div id="edit-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
+                                                '       <form data-priority-id="' + savedPriority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
+                                                '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                                '               <div class="uk-width-1-4">\n' +
+                                                '                   <label for="">Priority Name</label>\n' +
+                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-name" value="' + savedPriority.name + '" />\n' +
+                                                '               </div>\n' +
+                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                                '                   <label for="">SLA Overdue (minutes)</label>\n' +
+                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-overdueIn" value="' + savedPriority.overdueIn + '" />\n' +
+                                                '               </div>\n' +
+                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                                '                   <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + savedPriority.htmlColor + '" ng-click="generateRandomColor(\'' + savedPriority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
+                                                '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
+                                                '                       <label for="">Color</label>\n' +
+                                                '                       <input type="text" class="md-input" name="p-' + savedPriority._id + '-htmlColor" value="' + savedPriority.htmlColor + '" />\n' +
+                                                '                       <span class="md-input-bar"></span>\n' +
+                                                '                   </div>\n' +
+                                                '               </div>\n' +
+                                                '               <div class="uk-width-1-4">\n' +
+                                                '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
+                                                '                       <a class="md-btn md-btn-small" ng-click="cancelEditPriority(\'' + savedPriority._id + '\', $event);">Cancel</a>\n' +
+                                                '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
+                                                '                   </div>\n' +
+                                                '               </div>\n' +
+                                                '           </div>\n' +
+                                                '       </form>\n' +
+                                                '    </div>\n' +
+                                                '<div class="uk-modal" id="deletePriorityModal-'+ savedPriority._id + '" data-pId="' + savedPriority._id + '" ng-controller="settingsCtrl">\n' +
+                                                '    <div class="uk-modal-dialog">\n' +
+                                                '        <form class="uk-form-stacked" id="deletePriorityForm-' + savedPriority._id + '" action="#" method="POST">\n' +
+                                                '            <input type="hidden" id="del_priority_name-' + savedPriority._id + '" name="del_priority_name" value="' + savedPriority.name + '">\n' +
+                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                                '                <h2 class="">Remove Priority</h2>\n' +
+                                                '                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>\n' +
+                                                '                <hr style="margin: 10px 0" />\n' +
+                                                '            </div>\n' +
+                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                                '                <div class="uk-float-left" style="width: 100%;">\n' +
+                                                '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
+                                                '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
+
+                                            priorities.forEach(function(p) {
+                                                if (p._id.toString() !== savedPriority._id) {
+                                                    html += '<option value="' + p._id + '">' + p.name + '</option>';
+                                                }
+                                            });
+
+                                                html +=
+                                                '                    </select>\n' +
+                                                '                </div>\n' +
+                                                '            </div>\n' +
+                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                                '                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>' + savedPriority.name + '</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>\n' +
+                                                '            </div>\n' +
+                                                '            <div class="uk-modal-footer uk-text-right">\n' +
+                                                '                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>\n' +
+                                                '                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority(\'' + savedPriority._id + '\', $event)">Delete</button>\n' +
+                                                '            </div>\n' +
+                                                '        </form>\n' +
+                                                '    </div>\n' +
+                                                '</div>\n';
+
+                                            priorityLoop.append(html);
+
+                                            helpers.UI.selectize();
+
+                                            //Bootstrap Angular dynamically...
+                                            var $injector = angular.injector(["ng", "trudesk"]);
+                                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                                var $scope = priorityLoop.scope();
+                                                $compile(priorityLoop)($scope || $rootScope);
+                                                $rootScope.$digest();
+                                            }]);
+
+                                            helpers.UI.showSnackbar('Priority Created.', false);
+                                            var createPriorityModal = $('#createPriorityModal');
+                                            if (createPriorityModal.length > 0) {
+                                                UIkit.modal(createPriorityModal).hide();
+                                            }
+                                        })
+                                        .error(function(errorResponse) {
+                                            $log.error(errorResponse);
+                                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                                        });
+                                }
+                            }
+                        }, function errorCallback(errorResponse) {
+                            $log.error(errorResponse);
+                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                        });
+                    }
+                }
+            };
+
+            $scope.submitUpdatePriority = function($event) {
+                $event.preventDefault();
+                var $form = $($event.currentTarget);
+                var priorityId = $form.attr('data-priority-id');
+                var typeId = $form.parents('div[data-ticket-type-id]').attr('data-ticket-type-id');
+                if ($form && priorityId) {
+                    var $priorityNameInput = $form.find('input[name="p-' + priorityId + '-name"]');
+                    var $priorityHtmlColor = $form.find('input[name="p-' + priorityId + '-htmlColor"]');
+                    var $priorityOverdueIn = $form.find('input[name="p-' + priorityId + '-overdueIn"]');
+                    var priorityName = $priorityNameInput.val();
+                    var htmlColor = $priorityHtmlColor.val();
+                    var overdueIn = $priorityOverdueIn.val();
+
+                    $http.put('/api/v1/tickets/priority/' + priorityId, {
+                        name: priorityName,
+                        htmlColor: htmlColor,
+                        overdueIn: overdueIn
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback(response) {
+                        helpers.UI.showSnackbar('Priority updated successfully', false);
+                        var $body = $('body');
+                        $body.find('.p-' + priorityId + '-name').css({color: htmlColor}).text(priorityName);
+                        $body.find('.p-' + priorityId + '-overdueIn').text(response.data.priority.durationFormatted);
+                        $body.find('input[name="p-' + priorityId + '-htmlColor"]').val(htmlColor);
+                        if (typeId)
+                            $scope.cancelEditTicketTypePriority(typeId, priorityId);
+                        else
+                            $scope.cancelEditPriority(priorityId);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                }
+            };
+
+            $scope.generateRandomColor = function(id, $event) {
+                $event.preventDefault();
+                var $currentTarget = $($event.currentTarget);
+                if ($currentTarget.length > 0) {
+                    var color = getRandomColor();
+                    $currentTarget.css({background: color});
+                    $currentTarget.next().find('input').val(color);
+                }
+            };
+
+            function getRandomColor() {
+                var letters = '0123456789ABCDEF';
+                var color = '#';
+                for (var i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                return color;
+            }
 
             $scope.editTag = function($event) {
                 if (_.isNull($event.target) || _.isUndefined($event.target) ||

@@ -46,6 +46,7 @@ var ticketsController = {};
 ticketsController.content = {};
 
 ticketsController.pubNewIssue = function(req, res) {
+    var marked = require('marked');
     var settings = require('../models/setting');
     settings.getSettingByName('allowPublicTickets:enable', function(err, setting) {
         if (err) return handleError(res, err);
@@ -60,7 +61,7 @@ ticketsController.pubNewIssue = function(req, res) {
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
                     content.data.privacyPolicy = 'No Privacy Policy has been set.';
                 else
-                    content.data.privacyPolicy = privacyPolicy.value;
+                    content.data.privacyPolicy = marked(privacyPolicy.value);
 
                 return res.render('pub_createTicket', content);
             });
@@ -185,6 +186,37 @@ ticketsController.getAssigned = function(req, res, next) {
     return next();
 };
 
+/**
+ * Get Ticket View based on tickets assigned to a given user
+ * _calls ```next()``` to send to processor_
+ * @param {object} req Express Request
+ * @param {object} res Express Response
+ * @param {callback} next Sends the ```req.processor``` object to the processor
+ * @see Ticket
+ */
+ticketsController.getUnassigned = function(req, res, next) {
+    var page = req.params.page;
+    if (_.isUndefined(page)) page = 0;
+
+    var processor = {};
+    processor.title = "Tickets";
+    processor.nav = 'tickets';
+    processor.subnav = 'tickets-unassigned';
+    processor.renderpage = 'tickets';
+    processor.pagetype = 'unassigned';
+    processor.object = {
+        limit: 50,
+        page: page,
+        status: [0,1,2],
+        unassigned: true,
+        user: req.user._id
+    };
+
+    req.processor = processor;
+
+    return next();
+};
+
 ticketsController.filter = function(req, res, next) {
     var page = req.query.page;
     if (_.isUndefined(page)) page = 0;
@@ -232,7 +264,6 @@ ticketsController.filter = function(req, res, next) {
     var processor = {};
     processor.title = "Tickets";
     processor.nav = 'tickets';
-    //processor.subnav = 'tickets-assigned';
     processor.renderpage = 'tickets';
     processor.pagetype = 'filter';
     processor.object = {
@@ -314,6 +345,7 @@ ticketsController.processor = function(req, res) {
             status: object.status,
             assignedSelf: object.assignedSelf,
             assignedUserId: object.user,
+            unassigned: object.unassigned,
             filter: object.filter
         };
 
@@ -447,7 +479,7 @@ ticketsController.single = function(req, res) {
             ticket.notes = [];
 
         content.data.ticket = ticket;
-        content.data.ticket.priorityname = ticket.priorityFormatted;
+        content.data.ticket.priorityname = ticket.priority.name;
 
         return res.render('subviews/singleticket', content);
     });
@@ -478,56 +510,56 @@ function getPriorityName(val) {
 }
 
 //Move to API
-ticketsController.postcomment = function(req, res, next) {
-    var Ticket = ticketSchema;
-    var id = req.body.ticketId;
-    var comment = req.body.commentReply;
-    var User = req.user;
-
-    //TODO: Error check fields
-
-    Ticket.getTicketById(id, function(err, t) {
-        if (err) return handleError(res, err);
-        var marked = require('marked');
-        comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-        var Comment = {
-            owner: User._id,
-            date: new Date(),
-            comment: marked(comment)
-        };
-        t.updated = Date.now();
-        t.comments.push(Comment);
-        var HistoryItem = {
-            action: 'ticket:comment:added',
-            description: 'Comment was added',
-            owner: User._id
-        };
-        t.history.push(HistoryItem);
-
-        async.series({
-            subscribers: function(callback) {
-                t.addSubscriber(User._id, function (err, _t) {
-                    if (err) return callback(err);
-                    emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
-                    callback();
-                });
-            },
-            save: function (callback) {
-                t.save(function (err, tt) {
-                    callback(err, tt);
-                });
-            }
-        }, function(err, T) {
-            if (err) return handleError(res, err);
-
-            ticketSchema.populate(T.save, 'subscribers comments.owner', function() {
-                emitter.emit('ticket:comment:added', T.save, Comment, req.headers.host);
-
-                return res.send(T);
-            });
-        });
-    });
-};
+// ticketsController.postcomment = function(req, res, next) {
+//     var Ticket = ticketSchema;
+//     var id = req.body.ticketId;
+//     var comment = req.body.commentReply;
+//     var User = req.user;
+//
+//     //TODO: Error check fields
+//
+//     Ticket.getTicketById(id, function(err, t) {
+//         if (err) return handleError(res, err);
+//         var marked = require('marked');
+//         comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
+//         var Comment = {
+//             owner: User._id,
+//             date: new Date(),
+//             comment: marked(comment)
+//         };
+//         t.updated = Date.now();
+//         t.comments.push(Comment);
+//         var HistoryItem = {
+//             action: 'ticket:comment:added',
+//             description: 'Comment was added123',
+//             owner: User._id
+//         };
+//         t.history.push(HistoryItem);
+//
+//         async.series({
+//             subscribers: function(callback) {
+//                 t.addSubscriber(User._id, function (err, _t) {
+//                     if (err) return callback(err);
+//                     emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
+//                     callback();
+//                 });
+//             },
+//             save: function (callback) {
+//                 t.save(function (err, tt) {
+//                     callback(err, tt);
+//                 });
+//             }
+//         }, function(err, T) {
+//             if (err) return handleError(res, err);
+//
+//             ticketSchema.populate(T.save, 'subscribers comments.owner', function() {
+//                 emitter.emit('ticket:comment:added', T.save, Comment, req.headers.host);
+//
+//                 return res.send(T);
+//             });
+//         });
+//     });
+// };
 
 ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs');
@@ -548,14 +580,15 @@ ticketsController.uploadAttachment = function(req, res) {
     });
 
     busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
-        winston.debug(mimetype);
+        // winston.debug(mimetype);
 
         if (mimetype.indexOf('image/') === -1 &&
             mimetype.indexOf('text/') === -1 &&
             mimetype.indexOf('audio/mpeg') === -1 &&
             mimetype.indexOf('audio/mp3') === -1 &&
             mimetype.indexOf('audio/wav') === -1 &&
-            mimetype.indexOf('application/x-zip-compressed') === -1) {
+            mimetype.indexOf('application/x-zip-compressed') === -1 &&
+            mimetype.indexOf('application/pdf') === -1) {
             error = {
                 status: 500,
                 message: 'Invalid File Type'

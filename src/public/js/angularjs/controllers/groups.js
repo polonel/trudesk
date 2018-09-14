@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'multiselect'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.groups', [])
         .controller('groupsCtrl', function($scope, $http, $timeout, $log) {
 
@@ -30,21 +30,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         var form = $('#editGroupForm');
                         form.find('#__EditId').text(group._id);
                         form.find('#gName').val(group.name).parent().addClass('md-input-filled');
-                        var $members = form.find('#gMembers')[0].selectize;
-                        var $sendMailTo = form.find('#gSendMailTo')[0].selectize;
+                        var mappedMembers = _.map(group.members, '_id');
+                        var mappedSendMailTo = _.map(group.sendMailTo, '_id');
 
-                        _.each(group.members, function(i) {
-                            if (i)
-                                $members.addItem(i._id, true);
-                        });
-
-                        _.each(group.sendMailTo, function(i) {
-                            if (i)
-                                $sendMailTo.addItem(i._id, true);
-                        });
-
-                        $members.refreshItems();
-                        $sendMailTo.refreshItems();
+                        form.find('#gMembers').multiSelect('deselect_all');
+                        form.find('#gMembers').multiSelect('select', mappedMembers);
+                        form.find('#gSendMailTo').multiSelect('deselect_all');
+                        form.find('#gSendMailTo').multiSelect('select', mappedSendMailTo);
 
                         UIkit.modal('#groupEditModal').show();
                     })
@@ -60,11 +52,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     helpers.UI.showSnackbar('Unable to get Group ID', true);
                     return false;
                 }
-                var formData = $('#editGroupForm').serializeObject();
+                var $form = $('#editGroupForm');
+                var formData = $form.serializeObject();
+                var members = $form.find('#gMembers').val();
+                var sendMailTo = $form.find('#gSendMailTo').val();
+
                 var apiData = {
                     name: formData.gName,
-                    members: formData.gMembers,
-                    sendMailTo: formData.gSendMailTo
+                    members: members,
+                    sendMailTo: sendMailTo
                 };
 
                 $http({

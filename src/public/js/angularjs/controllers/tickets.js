@@ -54,8 +54,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                             //History.pushState(null, null, '/tickets/');
 
                         }).error(function(err) {
-                        $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
-                        helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
+                            $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
+                            helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
                     });
                 }
             };

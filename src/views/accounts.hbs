@@ -5,10 +5,44 @@
             <p class="left uk-width-2-10">Accounts</p>
             <div class="uk-width-8-10 right">
                 <div class="md-fab-wrapper">
-                    <a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
-                        <i class="material-icons" style="color: white;">add</i>
-                    </a>
+                    <div class="md-fab md-fab-accent md-fab-sheet">
+                        <i class="material-icons text-white">person</i>
+                        <div class="md-fab-sheet-actions">
+                            <a href="#" class="text-white no-ajaxy" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
+                                <i class="material-icons">person_add</i>
+                                Create
+                            </a>
+                            {{#canUser data.common.loggedInAccount 'accounts:import'}}
+                                <a href="/accounts/import" class="text-white">
+                                    <i class="material-icons">cloud_upload</i>
+                                    Import
+                                </a>
+                            {{/canUser}}
+                        </div>
+                    </div>
                 </div>
+                <!--<div class="md-fab-wrapper">-->
+                    <!--<a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">-->
+                        <!--<i class="material-icons" style="color: white;">add</i>-->
+                    <!--</a>-->
+                <!--</div>-->
+                <!--<div class="md-fab-wrapper">-->
+                    <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-accent">-->
+                        <!--<i class="material-icons" style="color: white">&#xE8BE;</i>-->
+
+                        <!--<div class="md-fab-toolbar-actions">-->
+                            <!--<button type="submit" id="user_edit_save"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Save"><i-->
+                                <!--class="material-icons md-color-white">&#xE161;</i></button>-->
+                            <!--<button type="submit" id="user_edit_print"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Print"><i-->
+                                <!--class="material-icons md-color-white">&#xE555;</i></button>-->
+                            <!--<button type="submit" id="user_edit_delete"-->
+                                <!--data-uk-tooltip="{cls:'uk-tooltip-small',pos:'bottom'}" title="Delete"><i-->
+                                <!--class="material-icons md-color-white">&#xE872;</i></button>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <div class="uk-grid" data-uk-grid-margin>
                     <div class="uk-width-medium-1-2" style="margin-top: 30px;">
                         <div class="uk-vertical-align">
@@ -19,6 +53,8 @@
                                     <li class="uk-margin-remove" data-uk-filter="admin"><a href="#" class="no-ajaxy">Administrators</a>
                                     </li>
                                     <li class="uk-margin-remove" data-uk-filter="mod"><a href="#" class="no-ajaxy">Moderators</a>
+                                    </li>
+                                    <li class="uk-margin-remove" data-uk-filter="support"><a href="#" class="no-ajaxy">Support</a>
                                     </li>
                                     <li class="uk-margin-remove" data-uk-filter="user"><a href="#" class="no-ajaxy">Users</a>
                                     </li>
@@ -64,7 +100,7 @@
                                     <div class="uk-text-center">
                                         <div class="account-image relative uk-display-inline-block">
                                             {{#if image}}
-                                                <img src="/uploads/users/{{image}}" alt="Profile Pic"
+                                                <img src="/uploads/users/{{image}}?r={{randomNum}}" alt="Profile Pic"
                                                      class="tru-card-head-avatar"/>
                                             {{else}}
                                                 <img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic"

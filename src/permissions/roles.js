@@ -39,13 +39,13 @@
 var roles = {
     admin: {
         id: "admin",
-        name: "Administrators",
+        name: "Administrator",
         description: "Administrators",
         allowedAction: ["*"]
     },
     mod: {
         id: "mod",
-        name: "Moderators",
+        name: "Moderator",
         description: "Moderators",
         allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "comment:*", "notes:*", "reports:view"]
     },

@@ -23,6 +23,7 @@
 // node_modules
 var _       = require('lodash');
 var moment  = require('moment');
+require('moment-duration-format');
 
 // The module to be exported
 var helpers = {
@@ -474,6 +475,14 @@ var helpers = {
         return moment(date).format(format);
     },
 
+    formatDateParse: function(date, parseFormat, returnFormat) {
+        return moment(date, parseFormat).format(returnFormat);
+    },
+
+    durationFormat: function(duration, parseFormat) {
+        return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both'});
+    },
+
     calendarDate: function(date) {
         moment.updateLocale('en', {
             calendar: {
@@ -513,7 +522,16 @@ var helpers = {
     },
 
     firstCap: function(str) {
-        return _.capitalize(str);
+        if (_.isUndefined(str)) return;
+        if (str.length > 0) {
+            if (str[0] === str[0].toUpperCase())
+                return str;
+            else {
+                return str.replace(/\w\S*/g, function (txt) {
+                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                });
+            }
+        }
     },
 
     lowercase: function(str) {
@@ -542,6 +560,8 @@ var helpers = {
     },
 
     trim: function(string) {
+        if (_.isUndefined(string) || _.isNull(string) || string.length < 1 || typeof(string) === 'object')
+            return "";
         return string.trim();
     },
 
@@ -621,6 +641,15 @@ var helpers = {
         });
     },
 
+    match_id: function(_id1, _id2, options) {
+        var result = _id1.toString() === _id2.toString();
+        if (result) {
+            return options.fn(this);
+        } else {
+            return options.inverse(this);
+        }
+    },
+
     json: function(str) {
         return JSON.stringify(str);
     },
@@ -633,12 +662,15 @@ var helpers = {
         return num1+num2;
     },
 
-    overdue: function(showOverdue, updated, options) {
+    overdue: function(showOverdue, date, updated, overdueIn, options) {
         if (!showOverdue) return false;
         var now = moment();
-        updated = moment(updated);
-        var timeout = updated.clone().add(2, 'd');
+        if (updated)
+            updated = moment(updated);
+        else
+            updated = moment(date);
 
+        var timeout = updated.clone().add(overdueIn, 'm');
         var result = now.isAfter(timeout);
 
         if (result)
@@ -668,6 +700,10 @@ var helpers = {
         }
 
         return str;
+    },
+
+    randomNum: function() {
+        return Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
     }
 };
 

@@ -25,7 +25,7 @@ var settingsController = {};
 
 settingsController.content = {};
 
-settingsController.get = function(req, res) {
+settingsController.general = function(req, res) {
     if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
     var content = {};
@@ -37,10 +37,116 @@ settingsController.get = function(req, res) {
     content.data.user = req.user;
     content.data.common = req.viewdata;
 
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.ticketSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-tickets';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.mailerSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-mailer';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.notificationsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-notifications';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.tpsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-tps';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.legal = function(req, res) {
+    if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
+
+    var content = {};
+    content.title = "Settings";
+    content.nav = 'settings';
+    content.subnav = 'settings-legal';
+
+    content.data = {};
+    content.data.user = req.user;
+    content.data.common = req.viewdata;
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+function getSettings(content, callback) {
     settingSchema.getSettings(function(err, settings) {
-        if (err) return handleError(res, 'Invalid Settings');
+        if (err) return callback('Invalid Settings');
 
         var s = {};
+        s.siteUrl = _.find(settings, function(x) { return x.name === 'gen:siteurl'});
+        s.siteUrl = (s.siteUrl === undefined) ? {value: ''} : s.siteUrl;
+
         s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'});
         s.defaultTicketType = (s.defaultTicketType === undefined) ? {value: ''} : s.defaultTicketType;
 
@@ -66,6 +172,9 @@ settingsController.get = function(req, res) {
         s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
         s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
         s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
+        s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority' });
+        s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount' });
+        s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage' });
 
         s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
         s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
@@ -73,6 +182,9 @@ settingsController.get = function(req, res) {
         s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
         s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
         s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: ''} : s.mailerCheckTicketType;
+        s.mailerCheckTicketPriority = (s.mailerCheckTicketPriority === undefined) ? {value: ''} : s.mailerCheckTicketPriority;
+        s.mailerCheckCreateAccount = (s.mailerCheckCreateAccount === undefined) ? {value: false} : s.mailerCheckCreateAccount;
+        s.mailerCheckDeleteMessage = (s.mailerCheckDeleteMessage === undefined) ? {value: true} : s.mailerCheckDeleteMessage;
 
         s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable' });
         s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;
@@ -95,35 +207,54 @@ settingsController.get = function(req, res) {
         s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
         s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
 
-        content.data.settings = s;
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.legal = function(req, res) {
-    var content = {};
-    content.title = "Legal Settings";
-    content.nav = 'settings';
-    content.subnav = 'settings-legal';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    settingSchema.getSettings(function(err, settings) {
-        if (err) return handleError(res, 'Invalid Settings');
-
-        var s = {};
         s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
         content.data.settings = s;
 
-        return res.render('subviews/settings/legal', content);
+        async.parallel([
+            function(done) {
+                ticketTypeSchema.getTypes(function(err, types) {
+                    if (err) return done(err);
+
+                    content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
+                    _.each(content.data.ticketTypes, function(type) {
+                        type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name']);
+                    });
+
+                    return done();
+                });
+            },
+            function(done) {
+                var ticketPrioritySchema = require('../models/ticketpriority');
+                ticketPrioritySchema.getPriorities(function(err, priorities) {
+                    if (err) return done(err);
+
+                    content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+                    return done();
+                });
+            },
+            function(done) {
+                var tagSchema = require('../models/tag');
+                tagSchema.getTagCount(function(err, count) {
+                    if (err) return done(err);
+
+                    content.data.tags = {
+                        count: count
+                    };
+
+                    return done();
+                });
+            }
+        ], function(err) {
+            if (err) return callback(err);
+
+            return callback();
+        });
     });
-};
+}
 
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
@@ -180,14 +311,18 @@ settingsController.tags = function(req, res) {
         function(tags, next) {
             var ts = require('../models/ticket');
             async.each(tags, function(tag, cb) {
-                ts.getTagCount(tag._id, function(err, count) {
-                    if (err) return cb(err);
-                    //tag count for id
+                //4-23-18 Disable the count of tickets per tag for now.
+                resultTags.push({tag: tag});
+                return cb();
 
-                    resultTags.push({tag: tag, count: count});
-
-                    cb();
-                });
+                // ts.getTagCount(tag._id, function(err, count) {
+                //     if (err) return cb(err);
+                //     //tag count for id
+                //
+                //     resultTags.push({tag: tag, count: count});
+                //
+                //     cb();
+                // });
             }, function(err) {
                return next(err);
             });
@@ -250,8 +385,9 @@ settingsController.editTag = function(req, res) {
                     }
                 ], function(err) {
                     if (err) return cb(err);
+                    var grpIds = _.map(grps, '_id');
 
-                    ticketSchema.getTicketsByTag(grps, tagId, function(err, tickets) {
+                    ticketSchema.getTicketsByTag(grpIds, tagId, function(err, tickets) {
                         if (err) return cb(err);
 
                         content.data.tickets = tickets;
@@ -264,104 +400,6 @@ settingsController.editTag = function(req, res) {
     ], function(err) {
         if (err) return handleError(res, err);
         return res.render('subviews/editTag', content);
-    });
-};
-
-settingsController.ticketTypes = function(req, res) {
-    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
-
-    var content = {};
-    content.title = "Ticket Types";
-    content.nav = 'settings';
-    content.subnav = 'settings-tickettypes';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    var resultTypes = [];
-    async.series([
-        function(next) {
-            ticketTypeSchema.getTypes(function(err, types) {
-                if (err) return handleError(res, err);
-                resultTypes = types;
-                return next(null, types);
-            });
-        }
-    ], function() {
-        content.data.types = _.sortBy(resultTypes, function(o){ return o.name; });
-
-        return res.render('subviews/settings/ticketTypes', content)
-    });
-};
-
-settingsController.editTicketType = function(req, res) {
-    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
-
-    var typeId = req.params.id;
-    if (_.isUndefined(typeId)) return res.redirect('/settings/tickettypes');
-
-    var content = {};
-    content.title = "Edit Ticket Type";
-    content.nav = 'settings';
-    content.subnav = 'settings-tickettypes';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    async.parallel([
-        function(cb) {
-            ticketTypeSchema.getType(typeId, function(err, type) {
-                if (err) return cb(err);
-
-                if (!type) {
-                    winston.debug('Invalid Type - ' + type);
-                    return res.redirect('/settings/tickettypes');
-                }
-
-                content.data.tickettype = type;
-
-                return cb();
-            });
-        },
-        function(cb) {
-            var ticketSchema = require('../models/ticket');
-            var groupSchema = require('../models/group');
-            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
-                if (err) return cb(err);
-
-                async.series([
-                    function(next) {
-                        var permissions = require('../permissions');
-                        if (permissions.canThis(req.user.role, 'ticket:public')) {
-                            groupSchema.getAllPublicGroups(function(err, publicGroups) {
-                                if (err) return next(err);
-
-                                grps = grps.concat(publicGroups);
-
-                                return next();
-                            });
-                        } else
-                            return next();
-                    }
-                ], function(err) {
-                    if (err) return cb(err);
-
-                    ticketSchema.getTicketsByType(grps, typeId, function(err, tickets) {
-                        if (err) return cb(err);
-
-                        content.data.tickets = tickets;
-                        content.data.hasTickets = _.size(tickets) > 0;
-
-                        return cb();
-                    }, true);
-                });
-            });
-        }
-    ], function(err) {
-        if (err) return handleError(res, err);
-        return res.render('subviews/settings/editTicketType', content);
     });
 };
 

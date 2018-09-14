@@ -1,53 +1,99 @@
-<div class="uk-modal" id="editAccountModal">
-    <div class="uk-modal-dialog">
-        <form class="uk-form-stacked" id="editAccountForm">
-            <input type="hidden" id="aId" name="aId" />
-            <div class="uk-margin-medium-bottom">
-                <label for="aUsername">Username</label>
-                <input type="text" class="md-input" id="aUsername" name="aUsername"/>
-            </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="aFullname">Name</label>
-                <input type="text" class="md-input" id="aFullname" name="aFullname"/>
-            </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="aTitle" class="uk-form-label">Title</label>
-                <input type="text" class="md-input" id="aTitle" name="aTitle"/>
-            </div>
-            <div class="uk-margin-medium-bottom uk-clearfix">
-                <div class="left" style="width: 50%; padding-right: 20px;">
-                    <label for="aPass" class="uk-form-label">Password</label>
-                    <input type="password" class="md-input" id="aPass" name="aPass"/>
+<div class="uk-modal" id="editAccountModal" style="padding-top: 0;">
+    <div class="uk-modal-dialog nopadding" style="padding-bottom: 30px !important;">
+        <div class="user-heading" style="min-height: 130px; background: #1976d2; padding: 24px;">
+            <div style="width: 100%;">
+                <div class="" style="width: 82px; height: 82px; float: left; margin-right: 24px; position: relative;">
+                    <form id="aUploadImageForm" class="form nomargin" enctype="multipart/form-data">
+                        <input id="imageUpload_id" type="hidden" name="_id" value="" />
+                        <input id="imageUpload_username" type="hidden" name="username" value="" />
+                        <div class="mediumProfilePic" style="position: relative;">
+                            <input id="profileImageInput" name="profileImageInput" type="file" value="" style="display: none;" />
+                            <img src="/uploads/users/defaultProfile.jpg" alt="Profile Picture" style=""/>
+                        </div>
+                        <div class="profile-picture-controls">
+                            <span class="btn-file" ng-click="accountEditPic();">
+                                <i class="material-icons">file_upload</i>
+                            </span>
+                        </div>
+                    </form>
                 </div>
-                <div class="left" style="width: 50%;">
-                    <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
-                    <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
+                <div class="user-heading-content">
+                    <h2>
+                        <span class="uk-text-truncate js-username">Username</span>
+                        <span class="sub-heading js-user-title">User title</span>
+                    </h2>
                 </div>
             </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="aEmail" class="uk-form-label">Email</label>
-                <input type="email" class="md-input" id="aEmail" name="aEmail"/>
-            </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="aRole" class="uk-form-label">Role</label>
-                <select class="selectize-white" name="aRole" id="aRole" data-md-selectize-inline>
-                    {{#each data.common.roles}}
-                        <option value="{{id}}">{{name}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="uk-margin-medium-bottom">
-                <label for="aGrps" class="uk-form-label">Groups</label>
-                <select name="aGrps" id="aGrps" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
-                    {{#each data.allGroups}}
-                        <option value="{{_id}}">{{name}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
-            </div>
-        </form>
+            <!--<div class="md-fab-wrapper">-->
+                <!--<div class="md-fab md-fab-toolbar md-fab-small md-fab-success">-->
+                    <!--<i class="material-icons text-white">&#xE8BE;</i>-->
+                    <!--<div class="md-fab-toolbar-actions">-->
+                        <!--<button id="account_edit_save" title="Save" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}" ng-click="saveAccount()">-->
+                            <!--<i class="material-icons text-white">save</i>-->
+                        <!--</button>-->
+                        <!--&lt;!&ndash;<button id="account_edit_delete" title="Delete" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<i class="material-icons text-white">delete</i>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</button>&ndash;&gt;-->
+                        <!--<button id="account_edit_cancel" class="uk-modal-close" title="Cancel" data-uk-tooltip="{cls:'uk-tooltip-modal uk-tooltip-small',pos:'bottom'}">-->
+                            <!--<i class="material-icons text-white">cancel</i>-->
+                        <!--</button>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+        <div style="margin: 24px 24px 0 24px;">
+            <form class="uk-form-stacked" id="editAccountForm">
+                <input type="hidden" id="aId" name="aId" />
+                <input type="hidden" class="md-input" id="aUsername" name="aUsername"/>
+                <div class="uk-margin-medium-bottom uk-clearfix">
+                    <div class="left" style="width: 50%; padding-right: 20px;">
+                        <label for="aFullname">Name</label>
+                        <input type="text" class="md-input" id="aFullname" name="aFullname"/>
+                    </div>
+                    <div class="left" style="width: 50%;">
+                        <label for="aTitle" class="uk-form-label">Title</label>
+                        <input type="text" class="md-input" id="aTitle" name="aTitle"/>
+                    </div>
+                </div>
+                <!--<div class="uk-margin-medium-bottom">-->
+                    <!--<label for="aTitle" class="uk-form-label">Title</label>-->
+                    <!--<input type="text" class="md-input" id="aTitle" name="aTitle"/>-->
+                <!--</div>-->
+                <div class="uk-margin-medium-bottom uk-clearfix">
+                    <div class="left" style="width: 50%; padding-right: 20px;">
+                        <label for="aPass" class="uk-form-label">Password</label>
+                        <input type="password" class="md-input" id="aPass" name="aPass"/>
+                    </div>
+                    <div class="left" style="width: 50%;">
+                        <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
+                        <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
+                    </div>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="aEmail" class="uk-form-label">Email</label>
+                    <input type="email" class="md-input" id="aEmail" name="aEmail"/>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="aRole" class="uk-form-label">Role</label>
+                    <select class="selectize-white" name="aRole" id="aRole" data-md-selectize-inline>
+                        {{#each data.common.roles}}
+                            <option value="{{id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="aGrps" class="uk-form-label">Groups</label>
+                    <select multiple="multiple" class="multiselect" id="aGrps" name="aGrps[]">
+                        {{#each data.allGroups}}
+                            <option value="{{_id}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="uk-modal-footer uk-text-right">
+                    <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
+                    <button id="aSaveButton" type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>

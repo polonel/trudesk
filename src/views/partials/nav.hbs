@@ -17,7 +17,8 @@
                             Assigned
                         </a>
                     </li>
-                    <hr/>
+                    <li {{#is subnav 'tickets-unassigned'}} class='active' {{/is}}><a href="/tickets/unassigned"><i class="material-icons fa-sub-icon">person_add_disabled</i>Unassigned</a></li>
+                    <hr style="margin: 0 20px;"/>
                     <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><i class="material-icons fa-sub-icon">&#xE24D;</i>New</a></li>
                     <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><i class="material-icons fa-sub-icon">&#xE629;</i>Pending</a></li>
                     <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><i class="material-icons fa-sub-icon">&#xE2C8;</i>Open</a></li>
@@ -104,11 +105,14 @@
                 <li class="hasSubMenu {{#is nav 'settings'}}active{{/is}}" data-nav-id="settings" data-nav-accordion data-nav-accordion-target="side-nav-accordion-settings">
                     <a class="no-ajaxy" href="/settings"><i class="material-icons">settings</i>Settings</a>
                     <ul id="side-nav-accordion-settings" class="side-nav-sub side-nav-accordion">
-                        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
-                        <li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
-                        <hr>
-                        <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>
-                        <li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>
+                        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
+                        <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">assignment</i><span>Tickets</span></a></li>
+                        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">email</i><span>Mailer</span></a></li>
+                        <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon"></i><span>Notifications</span></a></li>-->
+                        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">mobile_friendly</i><span>Push Service</span></a></li>
+                        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
+
+
                         {{#canUser data.user "settings:logs"}}
                             <hr>
                             <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
@@ -129,6 +133,7 @@
     <ul id="side-nav-sub-tickets" class="side-nav-sub side-nav-floating">
         <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><span>Active</span></a></li>
         <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}><a href="/tickets/assigned"><span>Assigned</span></a></li>
+        <li {{#is subnav 'tickets-unassigned'}} class='active' {{/is}}><a href="/tickets/unassigned"><span>Unassigned</span></a></li>
         <hr/>
         <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><span>New</span></a></li>
         <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><span>Pending</span></a></li>
@@ -147,14 +152,20 @@
         <!--<li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>-->
     </ul>
     <ul id="side-nav-sub-settings" class="side-nav-sub side-nav-floating">
-        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
-        <li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
-        <hr>
-        <li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>
-        <li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>
+        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
+        <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">style</i><span>Tickets</span></a></li>
+        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">style</i><span>Mailer</span></a></li>
+        <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon">style</i><span>Notifications</span></a></li>-->
+        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">style</i><span>Push Service</span></a></li>
+        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">style</i><span>Legal</span></a></li>
+
+
+        <!--<li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>-->
+        <!--<li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>-->
         {{#canUser data.user "settings:logs"}}
             <hr />
             <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
         {{/canUser}}
+        <!--<li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>-->
     </ul>
 </div>
