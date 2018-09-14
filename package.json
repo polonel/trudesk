@@ -1,10 +1,11 @@
 {
-  "name": "Trudesk",
+  "name": "trudesk",
   "version": "0.1.11",
   "private": true,
   "engines": {
     "node": ">=9.10.0"
   },
+  "bin": "./app.js",
   "scripts": {
     "start": "node ./app",
     "build": "grunt build",

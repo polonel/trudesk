@@ -28,7 +28,21 @@ viewController.getData = function(request, cb) {
           function(callback) {
             viewdata.hostname = request.hostname;
             viewdata.hosturl = request.protocol + '://' + request.get('host');
-            return callback();
+
+            // If hosturl setting is not set. Let's set it.
+              var settingSchema = require('../../models/setting');
+              settingSchema.getSetting('gen:siteurl', function(err, setting) {
+                  if (!err && !setting) {
+                      settingSchema.create({
+                          name: 'gen:siteurl',
+                          value: viewdata.hosturl
+                      }, function() {
+                          return callback();
+                      });
+                  } else {
+                      return callback();
+                  }
+              });
           },
           function(callback) {
               viewController.getActiveNotice(function(err, data) {

@@ -111,8 +111,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
     router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
     router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
-    router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);
-    router.get('/settings/tickettypes/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTicketType);
 
     //Plugins
     router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
@@ -251,7 +249,12 @@ function mainRoutes(router, middleware, controllers) {
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);
-        //router.get('/api/v1/import', middleware.api, controllers.api.import);
+        router.get('/debug/mailcheck/refetch', function(req, res) {
+            var mailCheck = require('../mailer/mailCheck');
+            mailCheck.refetch();
+            res.send('OK');
+        });
+
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('lodash');
 

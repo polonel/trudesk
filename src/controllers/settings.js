@@ -144,6 +144,9 @@ function getSettings(content, callback) {
         if (err) return callback('Invalid Settings');
 
         var s = {};
+        s.siteUrl = _.find(settings, function(x) { return x.name === 'gen:siteurl'});
+        s.siteUrl = (s.siteUrl === undefined) ? {value: ''} : s.siteUrl;
+
         s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'});
         s.defaultTicketType = (s.defaultTicketType === undefined) ? {value: ''} : s.defaultTicketType;
 
@@ -169,6 +172,9 @@ function getSettings(content, callback) {
         s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
         s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
         s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
+        s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority' });
+        s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount' });
+        s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage' });
 
         s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
         s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
@@ -176,6 +182,9 @@ function getSettings(content, callback) {
         s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
         s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
         s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: ''} : s.mailerCheckTicketType;
+        s.mailerCheckTicketPriority = (s.mailerCheckTicketPriority === undefined) ? {value: ''} : s.mailerCheckTicketPriority;
+        s.mailerCheckCreateAccount = (s.mailerCheckCreateAccount === undefined) ? {value: false} : s.mailerCheckCreateAccount;
+        s.mailerCheckDeleteMessage = (s.mailerCheckDeleteMessage === undefined) ? {value: true} : s.mailerCheckDeleteMessage;
 
         s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable' });
         s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;
@@ -391,104 +400,6 @@ settingsController.editTag = function(req, res) {
     ], function(err) {
         if (err) return handleError(res, err);
         return res.render('subviews/editTag', content);
-    });
-};
-
-settingsController.ticketTypes = function(req, res) {
-    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
-
-    var content = {};
-    content.title = "Ticket Types";
-    content.nav = 'settings';
-    content.subnav = 'settings-tickettypes';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    var resultTypes = [];
-    async.series([
-        function(next) {
-            ticketTypeSchema.getTypes(function(err, types) {
-                if (err) return handleError(res, err);
-                resultTypes = types;
-                return next(null, types);
-            });
-        }
-    ], function() {
-        content.data.types = _.sortBy(resultTypes, function(o){ return o.name; });
-
-        return res.render('subviews/settings/ticketTypes', content)
-    });
-};
-
-settingsController.editTicketType = function(req, res) {
-    if (!checkPerms(req, 'settings:tickettypes'))  return res.redirect('/settings');
-
-    var typeId = req.params.id;
-    if (_.isUndefined(typeId)) return res.redirect('/settings/tickettypes');
-
-    var content = {};
-    content.title = "Edit Ticket Type";
-    content.nav = 'settings';
-    content.subnav = 'settings-tickettypes';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    async.parallel([
-        function(cb) {
-            ticketTypeSchema.getType(typeId, function(err, type) {
-                if (err) return cb(err);
-
-                if (!type) {
-                    winston.debug('Invalid Type - ' + type);
-                    return res.redirect('/settings/tickettypes');
-                }
-
-                content.data.tickettype = type;
-
-                return cb();
-            });
-        },
-        function(cb) {
-            var ticketSchema = require('../models/ticket');
-            var groupSchema = require('../models/group');
-            groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function(err, grps) {
-                if (err) return cb(err);
-
-                async.series([
-                    function(next) {
-                        var permissions = require('../permissions');
-                        if (permissions.canThis(req.user.role, 'ticket:public')) {
-                            groupSchema.getAllPublicGroups(function(err, publicGroups) {
-                                if (err) return next(err);
-
-                                grps = grps.concat(publicGroups);
-
-                                return next();
-                            });
-                        } else
-                            return next();
-                    }
-                ], function(err) {
-                    if (err) return cb(err);
-
-                    ticketSchema.getTicketsByType(grps, typeId, function(err, tickets) {
-                        if (err) return cb(err);
-
-                        content.data.tickets = tickets;
-                        content.data.hasTickets = _.size(tickets) > 0;
-
-                        return cb();
-                    }, true);
-                });
-            });
-        }
-    ], function(err) {
-        if (err) return handleError(res, err);
-        return res.render('subviews/settings/editTicketType', content);
     });
 };
 

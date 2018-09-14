@@ -12,15 +12,13 @@
 
  **/
 
-var RELPATH         = '../';
-
 var async           = require('async');
 var _               = require('lodash');
 var winston         = require('winston');
-var userSchema      = require(RELPATH + 'models/user');
-var groupSchema     = require(RELPATH + 'models/group');
-var permissions     = require(RELPATH + 'permissions');
-var emitter         = require(RELPATH + 'emitter');
+var userSchema      = require('../models/user');
+var groupSchema     = require('../models/group');
+var permissions     = require('../permissions');
+var emitter         = require('../emitter');
 
 var accountsController = {};
 
@@ -28,7 +26,7 @@ accountsController.content = {};
 
 accountsController.signup = function(req, res) {
     var marked = require('marked');
-    var settings = require(RELPATH + 'models/setting');
+    var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
         if (err) return handleError(res, err);
         if (setting && setting.value === true) {

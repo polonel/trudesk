@@ -34,7 +34,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             }
         })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
-
             var mdeToolbarItems = [
                 {
                     name: 'bold',
@@ -97,7 +96,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             var privacyPolicyMDE = null;
 
-            // TODO: Does this run on Ajaxy call????
             $scope.init = function() {
                 //Fix Inputs if input is preloaded with a value
                 $timeout(function() {
@@ -126,40 +124,114 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         });
                     }
 
-                    if ($scope.mailerCheckTicketType !== '') {
-                        var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
-                        if ($mailerCheckTicketTypeSelect.length < 1)
-                            return;
-                        $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
-                        var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
-                        $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
-                        $selectizeTicketType.refreshItems();
+                    // Load MailCheckTicketType from settings
+                    var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                    if ($mailerCheckTicketTypeSelect.length > 0) {
+                        if ($scope.mailerCheckTicketType !== '') {
+                            $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
+
+                            var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
+                            $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
+                            $selectizeTicketType.refreshItems();
+                        } else {
+                            $scope.mailerCheckTicketType = $mailerCheckTicketTypeSelect.val();
+                        }
+                    }
+
+                    // Load MailCheckTicketPriority from settings
+                    var $mailCheckTicketPrioritySelect = $('#mailerCheckTicketPriority');
+                    if ($mailCheckTicketPrioritySelect.length > 0) {
+                        //Build out priority Options based on selected ticket type
+                        loadTypePrioritySelect($scope.mailerCheckTicketType);
                     }
 
                     // Pagination on ticket Tags
-                    $('.ticket-tags-pagination[data-uk-pagination]').on('select.uk.pagination', function(e, pageIndex) {
-                        e.preventDefault();
-
-                        $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
-                            .success(function(response) {
-                                var tags = [];
-                                var tagWrapper = $('.ticket-tags-wrapper');
-                                tagWrapper.empty();
-                                if (response.success) {
-                                    tags = response.tags;
-
-                                    tags.forEach(function(tag) {
-                                        tagWrapper.append('<span style="display: block; margin-bottom: 2px;">' + tag.name + '</span>');
-                                    });
-                                }
-                            })
-                            .error(function(err) {
-                                $log.error(err);
-                            });
+                    loadTicketTagPagination(null, 0);
+                    var $ticketTagPagination = $('.ticket-tags-pagination');
+                    UIkit.pagination($ticketTagPagination, {
+                        items: $scope.ticketTagsCount,
+                        itemsOnPage: 25
                     });
+                    $ticketTagPagination.on('select.uk.pagination', loadTicketTagPagination);
 
                 }, 0);
             };
+
+            function loadTypePrioritySelect(typeId) {
+                var $mailCheckTicketPrioritySelect = $('#mailerCheckTicketPriority');
+                if ($mailCheckTicketPrioritySelect.length < 1)
+                    return;
+
+                $http.get('/api/v1/tickets/type/' + typeId)
+                    .success(function(response) {
+                        if (response.success) {
+                            $timeout(function() {
+                                var type = response.type;
+                                if ($scope.mailerCheckTicketPriority === '')
+                                    $scope.mailerCheckTicketPriority = _.first(type.priorities)._id;
+
+                                var holdPriorityValue = $scope.mailerCheckTicketPriority;
+
+                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString()}))
+                                    holdPriorityValue = _.first(type.priorities)._id;
+
+                                var $selectizeTicketPriority = $mailCheckTicketPrioritySelect[0].selectize;
+                                $selectizeTicketPriority.clearOptions();
+
+                                type.priorities.forEach(function(priority) {
+                                    $selectizeTicketPriority.addOption({value: priority._id, text: priority.name});
+                                });
+
+                                $selectizeTicketPriority.setValue(holdPriorityValue, true);
+                                $selectizeTicketPriority.refreshOptions(false);
+                                $selectizeTicketPriority.refreshItems();
+                            }, 0);
+                        }
+                    })
+                    .error(function(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+            }
+
+            function loadTicketTagPagination(e, pageIndex) {
+                if (e)
+                    e.preventDefault();
+
+                $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
+                    .success(function(response) {
+                        var tags = [];
+                        var $tagWrapper = $('.ticket-tags-wrapper');
+                        if ($tagWrapper.length < 1)
+                            return;
+
+                        $tagWrapper.empty();
+                        if (response.success) {
+                            tags = response.tags;
+
+                            if (tags.length === 0) {
+                                $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
+                            } else {
+                                tags.forEach(function(tag) {
+                                    var html = '';
+                                    html += '<div class="uk-width-1-3 z-box" style="padding: 10px;">' +
+                                        '<div class="uk-grid uk-grid-collapse">' +
+                                        '<div class="uk-width-1-2 uk-float-left" style="line-height: 31px;">' + tag.name + '</div>' +
+                                        '<div class="uk-width-1-2 uk-float-right uk-text-right pr-10">' +
+                                        '<button type="button" class="md-btn md-btn md-btn-small">Edit</button>' +
+                                        '</div>' +
+                                        '</div>' +
+                                        '</div>';
+
+                                    $tagWrapper.append(html);
+                                });
+                            }
+                        }
+                    })
+                    .error(function(err) {
+                        $log.error(err);
+                    });
+            }
 
             $scope.$watch('mailerEnabled', function(newVal) {
                 $('input#mailerHost').attr('disabled', !newVal);
@@ -171,23 +243,27 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('button#mailerSubmit').attr('disabled', !newVal);
             });
 
-            $scope.$watch('defaultTicketType', function(newValue) {
-                if (!newValue)
+            $scope.defaultTicketTypeChanged = function() {
+                if(!$scope.defaultTicketType)
                     return;
+
                 $http.put('/api/v1/settings', {
                     name: 'ticket:type:default',
-                    value: newValue
+                    value: $scope.defaultTicketType
                 }, {
                     headers: {
                         'Content-Type': 'application/json'
                     }
                 }).then(function successCallback() {
-
                 }, function errorCallback(err) {
                     $log.error(err);
                     helpers.UI.showSnackbar('Error: ' + err, true);
                 });
-            });
+            };
+
+            $scope.mailerCheckTicketTypeChanged = function() {
+                loadTypePrioritySelect($scope.mailerCheckTicketType);
+            };
 
             $scope.switchSettings = function(event, settings) {
                 if (settings) {
@@ -221,6 +297,22 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         }
                     }
                 }
+            };
+
+            $scope.saveSiteUrlClicked = function() {
+                $http.put('/api/v1/settings', {
+                    name: 'gen:siteurl',
+                    value: $scope.siteUrl
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Site URL saved successfully.', false);
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar('Error: ' + err, true);
+                    $log.error(err);
+                });
             };
 
             $scope.mailerEnabledChange = function() {
@@ -331,6 +423,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
                 var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
+                var $mailerCheckTicketPrioritySelectize = $('select#mailerCheckTicketPriority').selectize()[0];
                 $('input#mailerCheckHost').attr('disabled', !newVal);
                 $('input#mailerCheckPort').attr('disabled', !newVal);
                 $('input#mailerCheckUsername').attr('disabled', !newVal);
@@ -341,6 +434,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         $mailerCheckTicketTypeSelectize.selectize.disable();
                     else
                         $mailerCheckTicketTypeSelectize.selectize.enable();
+                }
+                if (!_.isUndefined($mailerCheckTicketPrioritySelectize)) {
+                    if (!newVal === true)
+                        $mailerCheckTicketPrioritySelectize.selectize.disable();
+                    else
+                        $mailerCheckTicketPrioritySelectize.selectize.enable();
                 }
             });
 
@@ -382,12 +481,16 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.mailerCheckFormSubmit = function($event) {
                 $event.preventDefault();
                 var mailerCheckTicketTypeValue = $('#mailerCheckTicketType option[selected]').val();
+                var mailerCheckTicketPriorityValue = $('#mailerCheckTicketPriority option[selected]').val();
                 $http.put('/api/v1/settings', [
                     {name: 'mailer:check:host', value: $scope.mailerCheckHost},
                     {name: 'mailer:check:port', value: $scope.mailerCheckPort},
                     {name: 'mailer:check:username', value: $scope.mailerCheckUsername},
                     {name: 'mailer:check:password', value: $scope.mailerCheckPassword},
-                    {name: 'mailer:check:ticketype', value: mailerCheckTicketTypeValue}
+                    {name: 'mailer:check:ticketype', value: mailerCheckTicketTypeValue},
+                    {name: 'mailer:check:ticketpriority', value: mailerCheckTicketPriorityValue},
+                    {name: 'mailer:check:createaccount', value: $scope.mailerCheckCreateAccount},
+                    {name: 'mailer:check:deletemessage', value: $scope.mailerCheckDeleteMessage}
 
                 ], {
                     headers: {

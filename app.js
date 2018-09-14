@@ -103,8 +103,6 @@ if (nconf.get('install') || !configExists && !process.env.HEROKU) {
     ws.installServer(function() {
         return winston.info('Trudesk Install Server Running...');
     });
-
-    return;
 }
 
 if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
