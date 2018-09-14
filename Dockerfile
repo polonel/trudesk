@@ -1,4 +1,4 @@
-FROM node:8.9.4-alpine
+FROM node:10.10-alpine
 
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
