@@ -38,6 +38,9 @@ settingsDefaults.init = function(callback) {
         },
         function(done) {
             return checkPriorities(done);
+        },
+        function(done) {
+            return normalizeTags(done);
         }
     ], function() {
         if (_.isFunction(callback))
@@ -151,6 +154,16 @@ function ticketPriorityDefaults(callback) {
             }
         });
     }, callback);
+}
+
+function normalizeTags(callback) {
+    var tagSchema = require('../models/tag');
+    tagSchema.find({}, function(err, tags) {
+        if (err) return callback(err);
+        async.each(tags, function(tag, next) {
+            tag.save(next)
+        }, callback);
+    })
 }
 
 function checkPriorities(callback) {
