@@ -99,6 +99,9 @@ mainController.loginPost = function(req, res, next) {
             req.session.redirectUrl = null;
         }
 
+        if (req.user.role === 'user')
+            redirectUrl = '/tickets';
+
         req.logIn(user, function(err) {
             if (err) {
                 winston.debug(err);

@@ -41,7 +41,10 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
         if (req.user.hasL2Auth) {
             return middleware.ensurel2Auth(req, res, next);
         } else {
-            return res.redirect('/dashboard');
+            if (req.user.role !== 'user')
+                return res.redirect('/dashboard');
+            else
+                return res.redirect('/tickets');
         }
     } else {
         return next();
@@ -72,10 +75,27 @@ middleware.redirectToLogin = function(req, res, next) {
     }
 };
 
+middleware.redirectIfUser = function(req, res, next) {
+    if (!req.user) {
+        if (!_.isUndefined(req.session))
+            res.session.redirectUrl = req.url;
+
+        return res.redirect('/');
+    } else {
+        if (req.user.role === 'user')
+            return res.redirect(301, '/tickets');
+    }
+
+    return next();
+};
+
 middleware.ensurel2Auth = function(req, res, next) {
     if (req.session.l2auth === 'totp') {
         if (req.user)
-            return res.redirect('/dashboard');
+            if (req.user.role !== 'user')
+                return res.redirect('/dashboard');
+            else
+                return res.redirect('/tickets');
         else
             return next();
     } else {

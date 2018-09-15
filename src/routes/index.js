@@ -21,7 +21,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/healthz', function(req, res) { return res.status(200).send('OK'); });
     router.get('/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.get('/install', function(req, res){ return res.redirect('/'); });
-    router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
+    router.get('/dashboard', middleware.redirectToLogin, middleware.redirectIfUser, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', function(req, res) { return res.redirect('/');});
     router.post('/login', controllers.main.loginPost);
