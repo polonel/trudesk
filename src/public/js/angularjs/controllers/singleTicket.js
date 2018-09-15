@@ -316,7 +316,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
                     $http({
                         method: "POST",
-                        url: '/api/v1/tickets/addtag',
+                        url: '/api/v1/tags/create',
                         data: data,
                         headers: { 'Content-Type': 'application/json'}
                     })

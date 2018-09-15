@@ -156,7 +156,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     var $ticketTagPagination = $('.ticket-tags-pagination');
                     UIkit.pagination($ticketTagPagination, {
                         items: $scope.ticketTagsCount,
-                        itemsOnPage: 25
+                        itemsOnPage: 16
                     });
                     $ticketTagPagination.on('select.uk.pagination', loadTicketTagPagination);
 
@@ -204,7 +204,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (e)
                     e.preventDefault();
 
-                $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
+                $http.get('/api/v1/tags/limit?limit=16&page=' + pageIndex)
                     .success(function(response) {
                         var tags = [];
                         var $tagWrapper = $('.ticket-tags-wrapper');
@@ -214,23 +214,58 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         $tagWrapper.empty();
                         if (response.success) {
                             tags = response.tags;
-
+                            // tags = [];
                             if (tags.length === 0) {
                                 $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
                             } else {
                                 tags.forEach(function(tag) {
                                     var html = '';
-                                    html += '<div class="uk-width-1-3 z-box" style="padding: 10px;">' +
-                                        '<div class="uk-grid uk-grid-collapse">' +
-                                        '<div class="uk-width-1-2 uk-float-left" style="line-height: 31px;">' + tag.name + '</div>' +
-                                        '<div class="uk-width-1-2 uk-float-right uk-text-right pr-10">' +
-                                        '<button type="button" class="md-btn md-btn md-btn-small">Edit</button>' +
-                                        '</div>' +
-                                        '</div>' +
-                                        '</div>';
+                                    html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
+                                        ' <div id="view-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix">\n' +
+                                        '     <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                        '         <div class="uk-width-1-2">\n' +
+                                        '             <h5 class="tag-' + tag._id + '-name" style="font-size: 16px; line-height: 31px; margin: 0; padding: 0; font-weight: 300;">' + tag.name + '</h5>\n' +
+                                        '         </div>\n' +
+                                        '         <div class="uk-width-1-2 uk-text-right">\n' +
+                                        '             <div class="md-btn-group mt-5">\n' +
+                                        '                 <a class="md-btn md-btn-small md-btn-flat" ng-click="editTagClicked(\'' + tag._id + '\', $event);">edit</a>\n' +
+                                        '                 <a class="md-btn md-btn-small md-btn-flat md-btn-flat-danger" ng-click="removeTagClicked(\'' + tag._id + '\', $event);">remove</a>\n' +
+                                        '             </div>\n' +
+                                        '         </div>\n' +
+                                        '     </div>\n' +
+                                        ' </div>\n' +
+                                        ' <div id="edit-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px; border-top: none !important;">\n' +
+                                        '     <form data-tag-id="' + tag._id + '" ng-submit="submitUpdateTag($event);">\n' +
+                                        '         <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                        '             <div class="uk-width-2-3">\n' +
+                                        // '                 <label for="">Name</label>\n' +
+                                        '                 <input type="text" class="md-input" style="padding: 5px;" name="tag-' + tag._id + '-name" value="' + tag.name + '" />\n' +
+                                        '             </div>\n' +
+                                        '             <div class="uk-width-1-3">\n' +
+                                        '                 <div class="md-btn-group uk-float-right uk-text-right" style="margin-top: 2px;">\n' +
+                                        '                     <a class="md-btn md-btn-small md-btn-flat" ng-click="cancelEditTagClicked(\'' + tag._id + '\', $event);">Cancel</a>\n' +
+                                        '                     <button type="submit" class="md-btn md-btn-small md-btn-flat md-btn-flat-success">Save</button>\n' +
+                                        '                 </div>\n' +
+                                        '             </div>\n' +
+                                        '         </div>\n' +
+                                        '     </form>\n' +
+                                        ' </div>\n' +
+                                        ' </div>';
 
                                     $tagWrapper.append(html);
                                 });
+
+                                //Bootstrap Angular dynamically...
+                                var $injector = angular.injector(["ng", "trudesk"]);
+                                $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                    var $scope = $tagWrapper.scope();
+                                    $compile($tagWrapper)($scope || $rootScope);
+                                    $rootScope.$digest();
+                                }]);
+
+                                //Fix filled inputs
+                                helpers.UI.inputs();
+                                helpers.UI.reRenderInputs();
                             }
                         }
                     })
@@ -632,7 +667,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     var tagName = form.find('input[name="tagName"]').val();
                     if (!tagName || tagName.length < 3) return true;
 
-                    $http.post('/api/v1/tickets/addtag', {
+                    $http.post('/api/v1/tags/create', {
                         tag: tagName
                     }, {
                         headers: {
@@ -640,8 +675,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         }
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
-
-                        History.pushState(null, null, '/settings/tags/?refresh=1');
+                        var time = new Date().getTime();
+                        History.pushState(null, null, '/settings/tickets/?refresh=' + time);
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create tag. Check console', true);
@@ -827,6 +862,32 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         helpers.UI.showSnackbar('Unable to remove ticket type. Check console.', true);
                     }
                 });
+            };
+
+            $scope.editTagClicked = function(tagId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var $viewBox = $('#view-tag-' + tagId);
+                var $editBox = $('#edit-tag-' + tagId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    $viewBox.addClass('hide');
+                    $editBox.removeClass('hide');
+                }
+            };
+
+            $scope.cancelEditTagClicked = function(tagId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var $viewBox = $('#view-tag-' + tagId);
+                var $editBox = $('#edit-tag-' + tagId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    if ($event)
+                        $($event.currentTarget).parents('form').trigger('reset');
+                    $viewBox.removeClass('hide');
+                    $editBox.addClass('hide');
+                }
             };
 
             $scope.editPriority = function(pId, $event) {
@@ -1357,58 +1418,56 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 History.pushState(null, null, '/settings/tags/' + id);
             };
 
-            $scope.updateTag = function() {
-                var $tagId = $('#__editTag_TagId');
-                if ($tagId.length < 1) {
-                    //Show invalid Tag Snackbar
+            $scope.submitUpdateTag = function($event) {
+                var $form = $($event.currentTarget);
+                var tagId = $form.attr('data-tag-id');
+                var tagName = $form.find('input[name="tag-' + tagId + '-name"]').val();
+                if (tagName.length < 3) {
+                    helpers.UI.showSnackbar('Invalid Tag Name', true);
+                } else {
+                    $http.put('/api/v1/tags/' + tagId, {
+                        name: tagName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).success(function() {
+                        helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
+                        var $h5 = $('h5.tag-' + tagId + '-name');
+                        if ($h5.length > 0)
+                            $h5.text(tagName);
+                        $scope.cancelEditTagClicked(tagId, null);
+                    }).error(function(err) {
+                        helpers.UI.showSnackbar(err.error);
+                    });
+                }
+            };
+
+            $scope.removeTagClicked = function(tagId) {
+                var tagName = $('#view-tag-' + tagId).find('h5').text();
+                UIkit.modal.confirm("Really delete tag <strong>" + tagName + '</strong><br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
+                    return $scope.deleteTag(tagId);
+                }, {
+                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
+                });
+            };
+
+            $scope.deleteTag = function(tagId) {
+                if (_.isUndefined(tagId) || tagId.length < 1) {
                     helpers.UI.showSnackbar('Unable to get tag ID', true);
                     return true;
                 }
 
-                var id = $tagId.text();
-                var tagName = $('#editTag_Name').val();
-
-                $http.put('/api/v1/tickets/tags/' + id, {
-                    name: tagName
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function successCallback() {
-                    helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
-
-                }, function errorCallback(err) {
-                    helpers.UI.showSnackbar(err, true);
-                });
-            };
-
-            $scope.showDeleteTagConfirm = function() {
-                var tagName = $('#__editTag_TagName').text();
-                UIkit.modal.confirm("Really delete tag " + tagName + '<br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
-                    return $scope.deleteTag();
-                }, {
-                    labels: {'Ok': 'Yes', 'Cancel': 'No'}
-                });
-            };
-
-            $scope.deleteTag = function() {
-                var $tagId = $('#__editTag_TagId');
-                if ($tagId.length < 1) {
-                    helpers.UI.showSnackbar('Unable to get tag ID', true);
-                    return true;
-                }
-
-                var id = $tagId.text();
-                var tagName = $('#__editTag_TagName').text();
+                var tagName = $('#view-tag-' + tagId).find('h5').text();
 
                 $http({
                     method: 'DELETE',
-                    url: '/api/v1/tickets/tags/' + id
+                    url: '/api/v1/tags/' + tagId
                 }).then(function successCallback(response) {
                     if (response.data.success) {
                         helpers.UI.showSnackbar('Successfully removed tag: ' + tagName, false);
 
-                        return History.pushState(null, null, '/settings/tags/');
+                        return History.pushState(null, null, '/settings/tickets/?refresh=' + new Date().getTime());
                     }
                 }, function errorCallback(response) {
                     $log.error('[trudesk:settings:deleteTag] Error - ' + response.data.error);

@@ -138,14 +138,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities);
     router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority);
 
-    router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
-    router.get('/api/v1/tickets/tags/limit', middleware.api, controllers.api.tickets.getTagsWithLimit);
-    router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
-    router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
@@ -162,6 +158,11 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
+
+    router.post('/api/v1/tags/create', middleware.api, controllers.api.tags.createTag);
+    router.get('/api/v1/tags/limit', middleware.api, controllers.api.tags.getTagsWithLimit);
+    router.put('/api/v1/tags/:id', middleware.api, controllers.api.tags.updateTag);
+    router.delete('/api/v1/tags/:id', middleware.api, controllers.api.tags.deleteTag);
 
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
     router.get('/api/v1/groups/all', middleware.api, controllers.api.groups.getAll);

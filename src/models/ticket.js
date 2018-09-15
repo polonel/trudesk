@@ -1073,7 +1073,7 @@ ticketSchema.statics.getAllTicketsByTag = function(tagId, callback) {
 
     var q = self.model(COLLECTION).find({tags: tagId, deleted: false});
 
-    return q.lean().exec(callback);
+    return q.exec(callback);
 };
 
 /**

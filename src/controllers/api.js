@@ -21,6 +21,7 @@ var async = require('async'),
 
     //Sub APIs
     api_tickets_v1      = require('./api/v1/tickets'),
+    api_tags_v1         = require('./api/v1/tags'),
     api_notices_v1      = require('./api/v1/notices'),
     api_users_v1        = require('./api/v1/users'),
     api_messages_v1     = require('./api/v1/messages'),
@@ -48,6 +49,7 @@ var async = require('async'),
  */
 var apiController = {};
 apiController.tickets = api_tickets_v1;
+apiController.tags = api_tags_v1;
 apiController.notices = api_notices_v1;
 apiController.users = api_users_v1;
 apiController.messages = api_messages_v1;

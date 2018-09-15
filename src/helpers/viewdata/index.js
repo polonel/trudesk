@@ -375,7 +375,7 @@ viewController.getTags = function(request, callback) {
             return callback(err);
         }
 
-        data = _.sortBy(data, 'name');
+        // data = _.sortBy(data, 'name');
 
         return callback(null, data);
     });
