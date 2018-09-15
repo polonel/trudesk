@@ -126,14 +126,20 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                     // Load MailCheckTicketType from settings
                     var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                    var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                     if ($mailerCheckTicketTypeSelect.length > 0) {
-                        if ($scope.mailerCheckTicketType !== '') {
+                        if ($scope.mailerCheckTicketType !== '') { //empty string is reading as '? string: ?' ????
                             $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
 
-                            var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                             $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
                             $selectizeTicketType.refreshItems();
                         } else {
+                            // Set default to first option.....
+                            var first = _.first(_.values($selectizeTicketType.options)).value;
+
+                            $selectizeTicketType.setValue(first, true);
+                            $selectizeTicketType.refreshItems();
+
                             $scope.mailerCheckTicketType = $mailerCheckTicketTypeSelect.val();
                         }
                     }
