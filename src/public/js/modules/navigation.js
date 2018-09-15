@@ -75,7 +75,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
 
     function showDropdown(e) {
         var drop = $('#' + $(this).attr('data-notifications'));
-        var scroll = $('#' + $(drop).attr('data-scroll'));
+        // var scroll = $('#' + $(drop).attr('data-scroll'));
         if (drop.css('visibility') === 'visible') {
             drop.removeClass('pDropOpen');
 

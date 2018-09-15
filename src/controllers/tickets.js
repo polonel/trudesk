@@ -17,7 +17,6 @@ var flash           = require('connect-flash');
 var winston         = require('winston');
 var groupSchema     = require('../models/group');
 var typeSchema      = require('../models/tickettype');
-var emitter         = require('../emitter');
 var permissions     = require('../permissions');
 
 /**
@@ -574,7 +573,7 @@ ticketsController.uploadAttachment = function(req, res) {
 
     var object = {}, error;
 
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+    busboy.on('field', function(fieldname, val) {
         if (fieldname === 'ticketId') object.ticketId = val;
         if (fieldname === 'ownerId') object.ownerId = val;
     });

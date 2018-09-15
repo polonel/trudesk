@@ -1108,7 +1108,7 @@ var socketServer = function(ws) {
                             password: 'Password1!'
                         });
 
-                        user.save(function(err, u) {
+                        user.save(function(err) {
                             if (err) {
                                 winston.warn(err);
                                 data.item.state = 3;

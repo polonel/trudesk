@@ -31,7 +31,6 @@ debugController.populatedatabase = function(req, res) {
     var tagSchema = require('../models/tag');
 
     var ticketsToSave = [];
-    var groupsToSave = [];
     var users = [];
 
     var subjects = [

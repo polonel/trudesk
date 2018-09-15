@@ -74,7 +74,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                                                   }
                                               },
                                               function error(err) {
-                                                  console.error(err);
+                                                  $log.error(err);
                                               }
                                           );
                                   }, 250);

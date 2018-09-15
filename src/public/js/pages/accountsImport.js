@@ -163,8 +163,8 @@ define('pages/accountsImport', [
                 }
             };
 
-        var select = UIkit.uploadSelect($('#upload-select'), settings),
-            drop = UIkit.uploadDrop($('#upload-drop'), settings);
+            UIkit.uploadSelect($('#upload-select'), settings);
+            UIkit.uploadDrop($('#upload-drop'), settings);
     };
 
     accountsImportPage.wizard_json = function() {

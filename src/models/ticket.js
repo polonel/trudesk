@@ -21,14 +21,14 @@ var hash                = require('object-hash');
 
 //Needed - For Population
 var groupSchema         = require('./group');
-var ticketTypeSchema    = require('./tickettype');
+                          require('./tickettype');
 var userSchema          = require('./user');
 var commentSchema       = require('./comment');
 var noteSchema          = require('./note');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
-var tagSchema           = require('./tag');
-var prioritySchema      = require('./ticketpriority');
+                          require('./tag');
+                          require('./ticketpriority');
 
 var COLLECTION = 'tickets';
 

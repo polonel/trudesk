@@ -101,7 +101,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                     $document[0].querySelector('.search-box > input').value = '';
                     $('.all-user-list li').each(function() {
-                        $(this).show();
+                        var vm = this;
+                        $(vm).show();
                     });
 
                     var actions = $document[0].getElementById('convo-actions').children;

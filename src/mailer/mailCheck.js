@@ -101,7 +101,7 @@ mailCheck.fetchMail = function() {
         });
 
         mailCheck.Imap.once('ready', function() {
-                openInbox(function (err, box) {
+                openInbox(function (err) {
                     if (err) {
                         mailCheck.Imap.end();
                         winston.debug(err);
@@ -132,7 +132,7 @@ mailCheck.fetchMail = function() {
                                     bodies: ''
                                 });
 
-                                f.on('message', function (msg, seqno) {
+                                f.on('message', function (msg) {
                                     msg.on('body', function (stream) {
                                         var buffer = '';
                                         stream.on('data', function (chunk) {

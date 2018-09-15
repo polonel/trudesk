@@ -42,7 +42,7 @@ module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification)
             'accesstoken': tpsApiKey
         },
         body: JSON.stringify(body)
-    }, function(err, response, body) {
+    }, function(err, response) {
         if (err)
             winston.debug(err);
         else {
@@ -52,7 +52,7 @@ module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification)
     });
 };
 
-module.exports.init = function(emitter) {
+module.exports.init = function() {
     // emitter.on('ticket:created', onTicketCreate);
     // emitter.on('notification:count:update', onNotificationCountUpdate);
 };

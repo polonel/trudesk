@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
       .                              .o8                     oooo
    .o8                             "888                     `888
@@ -9,8 +10,7 @@
  ========================================================================
  **/
 
-var _           = require('lodash'),
-    async       = require('async'),
+var async       = require('async'),
     path        = require('path'),
     fs          = require('fs'),
     winston     = require('winston'),

@@ -20,12 +20,10 @@ define('modules/socket.io/accountsImporter', [
 ], function($, helpers) {
     var accountsImporter = {};
 
-    var socket,
-        loggedInAccount;
+    var socket;
 
     accountsImporter.init = function(sock) {
         socket = sock;
-        loggedInAccount = window.trudeskSessionService.getUser();
 
         socket.removeAllListeners('$trudesk:accounts:import:error');
         socket.on('$trudesk:accounts:import:error', function(data) {

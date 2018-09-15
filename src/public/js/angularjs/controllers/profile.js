@@ -139,6 +139,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                             'Are you sure you want to disable two factor authentication?'
                         , function() {
                             removeL2Auth(function(err) {
+                                if (err)
+                                    $log.error(err);
+
                                 angular.element(event.target).attr('checked', false);
                                 $totpPanel.slideUp(400, function() {
                                     $totpPanel.css({overflow: 'hidden', margin: 0});

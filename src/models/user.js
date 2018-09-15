@@ -570,27 +570,6 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
 };
 
 /**
- * Checks if a user has access token already
- *
- * @memberof User
- * @instance
- * @method hasAccessToken
- *
- * @param {Array} arr Array of access tokens to check
- * @param {String} token token to check for in given array
- * @return {Boolean}
- */
-function hasAccessToken(arr, token) {
-    var matches = _.filter(arr, function(value) {
-        if (value === token) {
-            return value;
-        }
-    });
-
-    return matches.length > 0;
-}
-
-/**
  * Checks if a user has device token already
  *
  * @memberof User
