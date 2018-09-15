@@ -58,7 +58,7 @@ installController.mongotest = function(req, res) {
 
     child.on('close', function(code, signal) {
         winston.debug('MongoTest process terminated');
-    })
+    });
 };
 
 installController.existingdb = function(req, res) {
