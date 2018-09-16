@@ -34,18 +34,18 @@ define('pages/accountsImport', [
                 if (typeof callback === 'function')
                     return callback();
 
-                return;
+                return false;
             }
 
             helpers.resizeAll();
 
-            accountsImportPage.wizard_csv();
+            accountsImportPage.wizardCSV();
             accountsImportPage.csvUpload();
 
-            accountsImportPage.wizard_json();
+            accountsImportPage.wizardJson();
             accountsImportPage.jsonUpload();
 
-            accountsImportPage.wizard_ldap();
+            accountsImportPage.wizardLdap();
 
             state.csvUploaded = false;
             state.csvData = null;
@@ -55,20 +55,20 @@ define('pages/accountsImport', [
         });
     };
 
-    accountsImportPage.wizard_csv = function() {
-        var $wizard_csv = $('#wizard_csv');
+    accountsImportPage.wizardCSV = function() {
+        var $wizardCsv = $('#wizard_csv');
 
-        if ($wizard_csv.length) {
-            $wizard_csv.steps({
+        if ($wizardCsv.length) {
+            $wizardCsv.steps({
                 headerTag: 'h3',
                 bodyTag: 'section',
                 transitionEffect: 'slideLeft',
                 trigger: 'change',
                 cssClass: 'wizard wizard-green',
                 onInit: function(event, currentIndex) {
-                    content_height($wizard_csv, currentIndex);
+                    contentHeight($wizardCsv, currentIndex);
 
-                    $wizard_csv.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
+                    $wizardCsv.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
 
                     setTimeout(function() {
                         $(window).resize();
@@ -86,9 +86,9 @@ define('pages/accountsImport', [
                 onStepChanged: function(event, currentIndex) {
                     if (currentIndex === 2) {
                         //Last step Disable all until done.
-                        $wizard_csv.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
-                        $wizard_csv.find('.actions ul li').addClass('disabled');
-                        $wizard_csv.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
+                        $wizardCsv.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
+                        $wizardCsv.find('.actions ul li').addClass('disabled');
+                        $wizardCsv.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
 
                         var csvStatusBox = $('#csv-import-status-box');
                         var csvStatusUL = csvStatusBox.find('ul');
@@ -104,7 +104,7 @@ define('pages/accountsImport', [
                     //Disable all future steps when moving backwards
                     $('.steps .current').nextAll().removeClass('done').addClass('disabled');
 
-                    content_height($wizard_csv, currentIndex);
+                    contentHeight($wizardCsv, currentIndex);
                 },
                 onFinished: function() {
                     location.href = '/accounts';
@@ -167,20 +167,20 @@ define('pages/accountsImport', [
             UIkit.uploadDrop($('#upload-drop'), settings);
     };
 
-    accountsImportPage.wizard_json = function() {
-        var $wizard_json = $('#wizard_json');
+    accountsImportPage.wizardJson = function() {
+        var $wizardJson = $('#wizard_json');
 
-        if ($wizard_json.length) {
-            $wizard_json.steps({
+        if ($wizardJson.length) {
+            $wizardJson.steps({
                 headerTag: 'h3',
                 bodyTag: 'section',
                 transitionEffect: 'slideLeft',
                 trigger: 'change',
                 cssClass: 'wizard wizard-blue-gray',
                 onInit: function(event, currentIndex) {
-                    content_height($wizard_json, currentIndex);
+                    contentHeight($wizardJson, currentIndex);
 
-                    $wizard_json.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
+                    $wizardJson.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
 
                     setTimeout(function() {
                         $(window).resize();
@@ -198,9 +198,9 @@ define('pages/accountsImport', [
                 onStepChanged: function(event, currentIndex) {
                     if (currentIndex === 2) {
                         //Last step Disable all until done.
-                        $wizard_json.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
-                        $wizard_json.find('.actions ul li').addClass('disabled');
-                        $wizard_json.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
+                        $wizardJson.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
+                        $wizardJson.find('.actions ul li').addClass('disabled');
+                        $wizardJson.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
 
                         var csvStatusBox = $('#json-import-status-box');
                         var csvStatusUL = csvStatusBox.find('ul');
@@ -216,12 +216,12 @@ define('pages/accountsImport', [
                     //Disable all future steps when moving backwards
                     $('.steps .current').nextAll().removeClass('done').addClass('disabled');
 
-                    content_height($wizard_json, currentIndex);
+                    contentHeight($wizardJson, currentIndex);
                 },
                 onFinished: function() {
                     location.href = '/accounts';
                 }
-            })
+            });
         }
     };
 
@@ -276,7 +276,7 @@ define('pages/accountsImport', [
         UIkit.uploadDrop($('#json-upload-drop'), settings);
     };
 
-    accountsImportPage.wizard_ldap = function() {
+    accountsImportPage.wizardLdap = function() {
         var $wizardLdap = $('#wizard_ldap');
         var $connectionForm = $('#wizard_ldap_connection_form');
 
@@ -293,7 +293,7 @@ define('pages/accountsImport', [
                 trigger: 'change',
                 cssClass: 'wizard',
                 onInit: function(event, currentIndex) {
-                    content_height($wizardLdap, currentIndex);
+                    contentHeight($wizardLdap, currentIndex);
 
                     // $wizardLdap.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
                     $wizardLdap.find('.button_next > a').html('Connect  <i class=\'material-icons\'>&#xE315;</i>');
@@ -327,7 +327,7 @@ define('pages/accountsImport', [
                                     console.error(err);
                                     verifyStatus.text('An error occured while trying to bind to the ldap server. Please check connection settings.');
                                     $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                    $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
+                                    $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;');
                                     // $wizardLdap.steps('setStep', 0);
                                 },
                                 success: function(response) {
@@ -335,7 +335,7 @@ define('pages/accountsImport', [
                                         ldapSuccess = true;
                                         verifyStatus.text('Successfully connected to ldap server. Please click next to review accounts.');
                                         $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-red uk-hidden').addClass('md-color-green').find('> i').html('&#xE86C;')
+                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-red uk-hidden').addClass('md-color-green').find('> i').html('&#xE86C;');
                                         addedUsers = response.addedUsers;
                                         updatedUsers = response.updatedUsers;
 
@@ -343,7 +343,7 @@ define('pages/accountsImport', [
                                     } else {
                                         verifyStatus.text('An error occured while trying to bind to the ldap server. Please check connection settings.');
                                         $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
+                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;');
                                     }
                                 },
                                 complete: function() {
@@ -369,11 +369,11 @@ define('pages/accountsImport', [
                         if (!ldapSuccess) return false;
                     }
 
-                    if (newIndex === 3) {
-
-                        // $wizardLdap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
-                        // $wizardLdap.find('.button_finish').addClass('disabled').attr('aria-disabled', true);
-                    }
+                    // if (newIndex === 3) {
+                    //
+                    //     // $wizardLdap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
+                    //     // $wizardLdap.find('.button_finish').addClass('disabled').attr('aria-disabled', true);
+                    // }
 
                     return true;
                 },
@@ -398,12 +398,12 @@ define('pages/accountsImport', [
                     //Disable all future steps when moving backwards
                     $('.steps .current').nextAll().removeClass('done').addClass('disabled');
 
-                    content_height($wizardLdap, currentIndex);
+                    contentHeight($wizardLdap, currentIndex);
                 },
                 onFinished: function() {
                     location.href = '/accounts';
                 }
-            })
+            });
         }
     };
 
@@ -490,9 +490,9 @@ define('pages/accountsImport', [
         return _.union(addedUsersTemplate, sep, updatedUsersTemplate).join('\r');
     }
 
-    function content_height(this_wizard, step) {
-        var this_height = $(this_wizard).find('.step-' + step).actual('outerHeight');
-        $(this_wizard).children('.content').velocity({ height: this_height }, {duration: 140, easing: [0.215,0.61,0.355,1] })
+    function contentHeight(thisWizard, step) {
+        var thisHeight = $(thisWizard).find('.step-' + step).actual('outerHeight');
+        $(thisWizard).children('.content').velocity({ height: thisHeight }, {duration: 140, easing: [0.215,0.61,0.355,1] });
     }
 
     return accountsImportPage;

@@ -177,7 +177,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                                 var holdPriorityValue = $scope.mailerCheckTicketPriority;
 
-                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString()}))
+                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString(); }))
                                     holdPriorityValue = _.first(type.priorities)._id;
 
                                 var $selectizeTicketPriority = $mailCheckTicketPrioritySelect[0].selectize;
@@ -442,7 +442,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.tpsFormSubmit = function($event) {
@@ -458,7 +458,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     helpers.UI.showSnackbar('TPS Settings Saved', false);
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
@@ -470,13 +470,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('input#mailerCheckPassword').attr('disabled', !newVal);
                 $('button#mailerCheckSubmit').attr('disabled', !newVal);
                 if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
-                    if (!newVal === true)
+                    if (!newVal)
                         $mailerCheckTicketTypeSelectize.selectize.disable();
                     else
                         $mailerCheckTicketTypeSelectize.selectize.enable();
                 }
                 if (!_.isUndefined($mailerCheckTicketPrioritySelectize)) {
-                    if (!newVal === true)
+                    if (!newVal)
                         $mailerCheckTicketPrioritySelectize.selectize.disable();
                     else
                         $mailerCheckTicketPrioritySelectize.selectize.enable();
@@ -496,9 +496,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }
                 }).then(function successCallback() {
                     if (!$scope.mailerCheckEnabled) {
-                        UIkit.modal.confirm(
-                            'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
-                            , function() {
+                        UIkit.modal.confirm('Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?', function() {
                                 $http.get(
                                     '/api/v1/admin/restart'
                                 )
@@ -539,9 +537,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }).then(function successCallback() {
                     helpers.UI.showSnackbar('Mail Check Settings Saved', false);
 
-                    UIkit.modal.confirm(
-                        'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
-                        , function() {
+                    UIkit.modal.confirm('Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?', function() {
                             $http.get(
                                 '/api/v1/admin/restart'
                             )
@@ -592,7 +588,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.showOverdueTicketsChanged = function() {
@@ -1162,7 +1158,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         }, function(err) {
                             $log.error(err);
                             helpers.UI.showSnackbar(err.data.error, true);
-                        })
+                        });
                 }
             };
 

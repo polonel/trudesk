@@ -3,7 +3,10 @@ exclude_paths:
   - logs/**
   - apidoc_template/**
   - docs/**
+  - src/public/css/**
   - src/public/css/**/*
+  - src/public/js/plugins/**
   - src/public/js/plugins/**/*
+  - src/public/js/vendor/**
   - src/public/js/vendor/**/*
   - test/**/*

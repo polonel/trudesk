@@ -1105,12 +1105,12 @@ ticketSchema.statics.updateType = function(oldTypeId, newTypeId, callback) {
     return self.model(COLLECTION).update({type: oldTypeId}, {$set: {type: newTypeId}}, {multi: true, new: false}, callback);
 };
 
-ticketSchema.statics.getAssigned = function(user_id, callback) {
-    if (_.isUndefined(user_id)) return callback('Invalid Id - TicketSchema.GetAssigned()', null);
+ticketSchema.statics.getAssigned = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback('Invalid Id - TicketSchema.GetAssigned()', null);
 
     var self = this;
 
-    var q = self.model(COLLECTION).find({assignee: user_id, deleted: false, status: {$ne: 3}})
+    var q = self.model(COLLECTION).find({assignee: userId, deleted: false, status: {$ne: 3}})
         .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
         .populate('type tags group');
 

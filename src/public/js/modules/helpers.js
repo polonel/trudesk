@@ -12,7 +12,7 @@
 
  **/
 
-"use strict";
+'use strict';
 
 define([
         'jquery',
@@ -38,15 +38,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     var helpers = {};
 
-    var easing_swiftOut = [ 0.4,0,0.2,1 ];
+    var easingSwiftOut = [ 0.4,0,0.2,1 ];
 
     helpers.loaded = false;
     helpers.init = function(reload) {
         var self = this;
         if (reload) self.loaded = false;
-        if (self.loaded) {
+        if (self.loaded) 
             console.warn('Helpers already loaded. Possible double load.');
-        }
+        
 
         self.prototypes();
 
@@ -179,11 +179,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             menuButton.on('click', function(e) {
                 e.preventDefault();
                 helpers.UI.toggleSidebar();
-                if ($('.sidebar').hasClass('expand')) {
+                if ($('.sidebar').hasClass('expand')) 
                     Cookies.set('$trudesk:sidebar:expanded', true, { expires: 999 });
-                } else {
+                 else 
                     Cookies.set('$trudesk:sidebar:expanded', false, { expires: 999 });
-                }
+                
             });
         }
     };
@@ -201,9 +201,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.UI.setupSidebarTether = function() {
         var sidebarElements = [
-            {element: "#side-nav-sub-tickets", target: 'tickets'},
-            {element: "#side-nav-sub-reports", target: 'reports'},
-            {element: "#side-nav-sub-settings", target: 'settings'}
+            {element: '#side-nav-sub-tickets', target: 'tickets'},
+            {element: '#side-nav-sub-reports', target: 'reports'},
+            {element: '#side-nav-sub-settings', target: 'settings'}
         ];
 
         _.each(sidebarElements, function(item) {
@@ -226,9 +226,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             target.on('mouseleave', function() {
                 isInside = false;
                 setTimeout(function() {
-                    if (!isInside) {
+                    if (!isInside) 
                         element.removeClass('sub-menu-right-open');
-                    }
+                    
                 }, 100);
             });
             element.on('mouseover', function() { isInside = true; });
@@ -246,7 +246,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1)
             return;
 
-        new Tether({
+        Tether({
             element: element,
             target: target,
             attachment: 'top left',
@@ -271,12 +271,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var searchTerm = $searchBox.val().toLowerCase();
             
             $('.user-list li').each(function() {
-                if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) 
                     $(this).show();
-                } else {
+                 else 
                     $(this).hide();
-                }
-            })
+                
+            });
         }
     };
 
@@ -287,8 +287,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var target = self.attr('data-match-height');
 
             var $target = $(target);
-            var $t_h = $target.height();
-            self.height($t_h);
+            var $targetHeight = $target.height();
+            self.height($targetHeight);
         });
     };
 
@@ -296,12 +296,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         setTimeout(function() {
             var $disconnected = $('.disconnected');
 
-            if ($disconnected.css("display") === 'block')
+            if ($disconnected.css('display') === 'block')
                 return true;
 
-            $disconnected.velocity("fadeIn", {
+            $disconnected.velocity('fadeIn', {
                 duration: 500,
-                easing: easing_swiftOut,
+                easing: easingSwiftOut,
                 begin: function() {
                     $disconnected.css({
                         'display': 'block',
@@ -318,9 +318,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if ($disconnected.css('display') === 'none')
             return true;
 
-        $disconnected.velocity("fadeOut", {
+        $disconnected.velocity('fadeOut', {
             duration: 500,
-            easing: easing_swiftOut,
+            easing: easingSwiftOut,
             complete: function() {
                 $disconnected.css({
                     'display': 'none',
@@ -331,11 +331,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI.showSnackbar = function() {
-        if (arguments.length === 2) {
+        if (arguments.length === 2) 
             return(helpers.UI.showSnackbar__.apply(this, arguments));
-        }  else {
+          else 
             return(helpers.UI.showSnackbar_.apply(this, arguments));
-        }
+        
     };
 
     helpers.UI.showSnackbar_ = function(options) {
@@ -366,29 +366,29 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             if(!$(this).closest('.md-input-wrapper').length) {
                 var $this = $(this);
 
-                if( $this.prev('label').length ) {
+                if( $this.prev('label').length ) 
                     $this.prev('label').andSelf().wrapAll('<div class="md-input-wrapper"/>');
-                } else if($this.siblings('[data-uk-form-password]').length) {
+                 else if($this.siblings('[data-uk-form-password]').length) 
                     $this.siblings('[data-uk-form-password]').andSelf().wrapAll('<div class="md-input-wrapper"/>');
-                } else {
+                 else 
                     $this.wrap('<div class="md-input-wrapper"/>');
-                }
+                
                 $this.closest('.md-input-wrapper').append('<span class="md-input-bar"/>');
 
                 updateInput($this);
             }
             $('body')
                 .on('focus', '.md-input', function() {
-                    $(this).closest('.md-input-wrapper').addClass('md-input-focus')
+                    $(this).closest('.md-input-wrapper').addClass('md-input-focus');
                 })
                 .on('blur', '.md-input', function() {
                     $(this).closest('.md-input-wrapper').removeClass('md-input-focus');
                     if(!$(this).hasClass('label-fixed')) {
-                        if($(this).val() !== '') {
-                            $(this).closest('.md-input-wrapper').addClass('md-input-filled')
-                        } else {
-                            $(this).closest('.md-input-wrapper').removeClass('md-input-filled')
-                        }
+                        if($(this).val() !== '') 
+                            $(this).closest('.md-input-wrapper').addClass('md-input-filled');
+                         else 
+                            $(this).closest('.md-input-wrapper').removeClass('md-input-filled');
+                        
                     }
                 })
                 .on('change', '.md-input', function() {
@@ -399,7 +399,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 $(this).parent().addClass('focus');
             }).blur(function(){
                 $(this).parent().removeClass('focus');
-            })
+            });
         });
     };
 
@@ -415,83 +415,83 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         object.closest('.md-input-wrapper').removeClass('md-input-wrapper-danger md-input-wrapper-success uk-input-wrapper-nocolor md-input-wrapper-disabled');
 
         if(object.hasClass('md-input-danger')) {
-            if(object.closest('.uk-input-group').length) {
-                object.closest('.uk-input-group').addClass('uk-input-group-danger')
-            }
-            object.closest('.md-input-wrapper').addClass('md-input-wrapper-danger')
+            if(object.closest('.uk-input-group').length) 
+                object.closest('.uk-input-group').addClass('uk-input-group-danger');
+            
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-danger');
         }
         if(object.hasClass('md-input-success')) {
-            if(object.closest('.uk-input-group').length) {
-                object.closest('.uk-input-group').addClass('uk-input-group-success')
-            }
-            object.closest('.md-input-wrapper').addClass('md-input-wrapper-success')
+            if(object.closest('.uk-input-group').length) 
+                object.closest('.uk-input-group').addClass('uk-input-group-success');
+            
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-success');
         }
         if(object.hasClass('md-input-nocolor')) {
-            if(object.closest('.uk-input-group').length) {
-                object.closest('.uk-input-group').addClass('uk-input-group-nocolor')
-            }
-            object.closest('.md-input-wrapper').addClass('md-input-wrapper-nocolor')
+            if(object.closest('.uk-input-group').length) 
+                object.closest('.uk-input-group').addClass('uk-input-group-nocolor');
+            
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-nocolor');
         }
-        if(object.prop('disabled')) {
-            object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled')
-        }
-        if(object.hasClass('label-fixed')) {
-            object.closest('.md-input-wrapper').addClass('md-input-filled')
-        }
-        if(object.val() !== '') {
-            object.closest('.md-input-wrapper').addClass('md-input-filled')
-        }
+        if(object.prop('disabled')) 
+            object.closest('.md-input-wrapper').addClass('md-input-wrapper-disabled');
+        
+        if(object.hasClass('label-fixed')) 
+            object.closest('.md-input-wrapper').addClass('md-input-filled');
+        
+        if(object.val() !== '') 
+            object.closest('.md-input-wrapper').addClass('md-input-filled');
+
     }
 
     helpers.UI.fabToolbar = function() {
-        var $fab_toolbar = $('.md-fab-toolbar');
+        var $fabToolbar = $('.md-fab-toolbar');
 
-        if($fab_toolbar) {
-            $fab_toolbar
+        if($fabToolbar) {
+            $fabToolbar
                 .children('i')
                 .on('click', function(e) {
                     e.preventDefault();
 
-                    var toolbarItems = $fab_toolbar.children('.md-fab-toolbar-actions').children().length;
+                    var toolbarItems = $fabToolbar.children('.md-fab-toolbar-actions').children().length;
 
-                    $fab_toolbar.addClass('md-fab-animated');
+                    $fabToolbar.addClass('md-fab-animated');
 
-                    var FAB_padding = !$fab_toolbar.hasClass('md-fab-small') ? 16 : 24,
-                        FAB_size = !$fab_toolbar.hasClass('md-fab-small') ? 64 : 44;
+                    var fabPadding = !$fabToolbar.hasClass('md-fab-small') ? 16 : 24,
+                        fabSize = !$fabToolbar.hasClass('md-fab-small') ? 64 : 44;
 
                     setTimeout(function() {
-                        $fab_toolbar
-                            .width((toolbarItems*FAB_size + FAB_padding))
+                        $fabToolbar
+                            .width((toolbarItems*fabSize + fabPadding));
                     },140);
 
                     setTimeout(function() {
-                        $fab_toolbar.addClass('md-fab-active');
+                        $fabToolbar.addClass('md-fab-active');
                     },420);
 
                 });
 
             $('.page-content').on('scroll', function(e) {
-                if ($fab_toolbar.hasClass('md-fab-active')) {
-                    if (!$(e.target).closest($fab_toolbar).length) {
-                        $fab_toolbar.css({height: '', width: ''}).removeClass('md-fab-active');
+                if ($fabToolbar.hasClass('md-fab-active')) {
+                    if (!$(e.target).closest($fabToolbar).length) {
+                        $fabToolbar.css({height: '', width: ''}).removeClass('md-fab-active');
 
                         setTimeout(function() {
-                            $fab_toolbar.removeClass('md-fab-animated');
+                            $fabToolbar.removeClass('md-fab-animated');
                         }, 140);
                     }
                 }
             });
 
             $(document).on('click scroll', function(e) {
-                if( $fab_toolbar.hasClass('md-fab-active') ) {
-                    if (!$(e.target).closest($fab_toolbar).length) {
+                if( $fabToolbar.hasClass('md-fab-active') ) {
+                    if (!$(e.target).closest($fabToolbar).length) {
 
-                        $fab_toolbar
+                        $fabToolbar
                             .css('width','')
                             .removeClass('md-fab-active');
 
                         setTimeout(function() {
-                            $fab_toolbar.removeClass('md-fab-animated');
+                            $fabToolbar.removeClass('md-fab-animated');
                         },140);
 
                     }
@@ -574,19 +574,19 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 self.positionDropdown = (function () {
                     var $control = this.$control,
                         position = $control.position(),
-                        position_left = position.left,
-                        position_top = position.top + $control.outerHeight(true) + 32;
+                        paddingLeft = position.left,
+                        paddingTop = position.top + $control.outerHeight(true) + 32;
 
                     this.$dropdown.css({
                         width: $control.outerWidth(),
-                        top: position_top,
-                        left: position_left
+                        top: paddingTop,
+                        left: paddingLeft
                     });
                 });
             });
         }
 
-        var $selectize = parent ? $(parent).find('select') : $("[data-md-selectize],.data-md-selectize");
+        var $selectize = parent ? $(parent).find('select') : $('[data-md-selectize],.data-md-selectize');
 
         $selectize.each(function(){
             var $this = $(this);
@@ -610,29 +610,29 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                                     begin: function() {
                                         if (typeof thisPosBottom !== 'undefined') {
                                             $dropdown.css({'margin-top':'0'});
-                                            if (typeof posTopOffset !== 'undefined') {
+                                            if (typeof posTopOffset !== 'undefined') 
                                                 $dropdown.css({'margin-top': posTopOffset+'px'});
-                                            }
+                                            
                                         }
                                     },
                                     duration: 200,
-                                    easing: easing_swiftOut
-                                })
+                                    easing: easingSwiftOut
+                                });
                         },
                         onDropdownClose: function($dropdown) {
                             $dropdown
                                 .show()
                                 .velocity('slideUp', {
                                     complete: function() {
-                                        if (typeof thisPosBottom !== 'undefined') {
-                                            $dropdown.css({'margin-top': ''})
-                                        }
+                                        if (typeof thisPosBottom !== 'undefined') 
+                                            $dropdown.css({'margin-top': ''});
+                                        
 
                                         if (closeOnSelect)
                                             $($dropdown).prev().find('input').blur();
                                     },
                                     duration: 200,
-                                    easing: easing_swiftOut
+                                    easing: easingSwiftOut
                                 });
                         }
                     });
@@ -640,9 +640,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         });
 
         // dropdowns
-        var $selectize_inline = $("[data-md-selectize-inline]");
+        var $selectizeInline = $('[data-md-selectize-inline]');
 
-        $selectize_inline.each(function(){
+        $selectizeInline.each(function(){
             var $this = $(this);
             if(!$this.hasClass('selectized')) {
                 var thisPosBottom = $this.attr('data-md-selectize-bottom');
@@ -669,13 +669,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                                     begin: function() {
                                         if (typeof thisPosBottom !== 'undefined') {
                                             $dropdown.css({'margin-top':'0'});
-                                            if (typeof posTopOffset !== 'undefined') {
+                                            if (typeof posTopOffset !== 'undefined') 
                                                 $dropdown.css({'margin-top': posTopOffset+'px'});
-                                            }
+                                            
                                         }
                                     },
                                     duration: 200,
-                                    easing: easing_swiftOut
+                                    easing: easingSwiftOut
                                 });
                         },
                         onDropdownClose: function($dropdown) {
@@ -683,15 +683,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                                 .show()
                                 .velocity('slideUp', {
                                     complete: function() {
-                                        if (typeof thisPosBottom !== 'undefined') {
-                                            $dropdown.css({'margin-top': ''})
-                                        }
+                                        if (typeof thisPosBottom !== 'undefined') 
+                                            $dropdown.css({'margin-top': ''});
+                                        
 
                                         if (closeOnSelect)
                                             $($dropdown).prev().find('input').blur();
                                     },
                                     duration: 200,
-                                    easing: easing_swiftOut
+                                    easing: easingSwiftOut
                                 });
                         }
                     });
@@ -703,7 +703,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         $('.multiselect').each(function() {
             var self = $(this);
             self.multiSelect();
-        })
+        });
     };
 
     helpers.UI.cardShow = function() {
@@ -714,24 +714,24 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                 opacity: 1
             }, {
                 duration: 400,
-                easing: easing_swiftOut
+                easing: easingSwiftOut
             });
         });
     };
 
     helpers.UI.cardOverlay = function() {
-        var $tru_card = $('.tru-card');
+        var $truCard = $('.tru-card');
 
         // replace toggler icon (x) when overlay is active
-        $tru_card.each(function() {
+        $truCard.each(function() {
             var $this = $(this);
-            if($this.hasClass('tru-card-overlay-active')) {
+            if($this.hasClass('tru-card-overlay-active')) 
                 $this.find('.tru-card-overlay-toggler').html('close');
-            }
+            
         });
 
         // toggle card overlay
-        $tru_card.on('click','.tru-card-overlay-toggler', function(e) {
+        $truCard.on('click','.tru-card-overlay-toggler', function(e) {
             e.preventDefault();
             if(!$(this).closest('.tru-card').hasClass('tru-card-overlay-active')) {
                 $(this)
@@ -743,33 +743,33 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                     .html('more_vert')
                     .closest('.tru-card').removeClass('tru-card-overlay-active');
             }
-        })
+        });
     };
 
     helpers.UI.setupPeity = function() {
         $('.peity-bar').each(function() {
-            $(this).peity("bar", {
+            $(this).peity('bar', {
                 height: 28,
                 width: 48,
-                fill: ["#e74c3c"],
+                fill: ['#e74c3c'],
                 padding: 0.2
             });
         });
 
-        $(".peity-pie").each(function() {
-            $(this).peity("donut", {
+        $('.peity-pie').each(function() {
+            $(this).peity('donut', {
                 height: 24,
                 width: 24,
-                fill: ["#29b955", "#ccc"]
+                fill: ['#29b955', '#ccc']
             });
         });
 
-        $(".peity-line").each(function() {
-            $(this).peity("line", {
+        $('.peity-line').each(function() {
+            $(this).peity('line', {
                 height: 28,
                 width: 64,
-                fill: "#d1e4f6",
-                stroke: "#0288d1"
+                fill: '#d1e4f6',
+                stroke: '#0288d1'
             });
         });
     };
@@ -789,11 +789,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         var flashText = flash.find('.flash-text');
         flashText.html(message);
 
-        if (e) {
+        if (e) 
             flashText.css('background', '#de4d4d');
-        } else {
+         else 
             flashText.css('background', '#29b955');
-        }
+        
 
         if (s) {
             flash.off('mouseout');
@@ -817,9 +817,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         flash.show();
         if (flashTO) clearTimeout(flashTO);
         flashText.stop().animate({top: '0'}, 500, function() {
-            if (!s) {
+            if (!s) 
                 flashTO = setTimeout(flashTimeout, 2000);
-            }
+            
         });
     };
 
@@ -860,9 +860,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             ticketIssue.off('keydown');
             ticketIssue.on('keydown', function(e) {
                 var keyCode = (e.which ? e.which : e.keyCode);
-                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+                if (keyCode === 10 || keyCode === 13 && e.ctrlKey) 
                     $('#saveTicketBtn').trigger('click');
-                }
+                
             });
         }
 
@@ -878,9 +878,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                     if (itemObj.length > 0) {
                         item.on('keydown', function(e) {
                             var keyCode = (e.which ? e.which : e.keyCode);
-                            if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
+                            if (keyCode === 10 || keyCode === 13 && e.ctrlKey) 
                                 itemObj.trigger('click');
-                            }
+                            
                         });
                     }
                 }
@@ -943,7 +943,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var self = $(this);
             ele.ready(function() {
                 var h = $(window).height();
-                if (self.css('borderTopStyle') === "solid")
+                if (self.css('borderTopStyle') === 'solid')
                     h = h - 1;
 
                 var dataOffset = self.attr('data-offset');
@@ -958,13 +958,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
     
     helpers.resizeDataTables = function(selector, hasFooter) {
-        if (_.isUndefined(selector)) {
+        if (_.isUndefined(selector)) 
             return true;
-        }
+        
 
-        if (_.isUndefined(hasFooter)) {
+        if (_.isUndefined(hasFooter)) 
             hasFooter = false;
-        }
+        
 
         $(document).ready(function() {
             var $selector = $(selector);
@@ -989,21 +989,21 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.hideAllpDropDowns = function() {
         $('a[data-notifications]').each(function() {
             var drop = $('#' + $(this).attr('data-notifications'));
-            if (drop.hasClass('pDropOpen')) {
+            if (drop.hasClass('pDropOpen')) 
                 drop.removeClass('pDropOpen');
-            }
+            
         });
     };
 
     helpers.hideAllUiKitDropdowns = function() {
         var dropdowns = $('.uk-dropdown');
         dropdowns.each(function() {
-            var this_dropdown = $(this);
-            this_dropdown.removeClass('uk-dropdown-shown');
+            var thisDropdown = $(this);
+            thisDropdown.removeClass('uk-dropdown-shown');
 
             setTimeout(function() {
-                this_dropdown.removeClass('uk-dropdown-active');
-                this_dropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
+                thisDropdown.removeClass('uk-dropdown-active');
+                thisDropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
 
             },280);
         });
@@ -1015,26 +1015,26 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             pToolTip.each(function() {
                 var title = $(this).attr('data-title');
                 var type = $(this).attr('data-ptooltip-type');
-                var html = "<div class='ptooltip-box-wrap' data-ptooltip-id='" + $(this).attr('id') + "'><div class='ptooltip-box'><span>" + title + "</span>";
+                var html = '<div class=\'ptooltip-box-wrap\' data-ptooltip-id=\'' + $(this).attr('id') + '\'><div class=\'ptooltip-box\'><span>' + title + '</span>';
                 if (type.toLowerCase() === 'service') {
                     var status = $(this).attr('data-service-status');
-                    var color = "#fff";
+                    var color = '#fff';
                     if (status.toLowerCase() === 'starting' || status.toLowerCase() === 'stopping')
-                        color = "#e77c3c";
+                        color = '#e77c3c';
                     if (status.toLowerCase() === 'running')
                         color = '#29b955';
                     if (status.toLowerCase() === 'stopped')
                         color = '#e54242';
 
-                    html += "<span>Status: <span style='color: " + color + ";'>" + status + "</span>";
+                    html += '<span>Status: <span style=\'color: ' + color + ';\'>' + status + '</span>';
                 } else if (type.toLowerCase() === 'dailyticket') {
                     var n = $(this).attr('data-new-count');
                     var c = $(this).attr('data-closed-count');
 
-                    html += "<span><span style='color: #e74c3c'>" + n + "</span> New / <span style='color: #2fb150'>" + c + "</span> Closed</span>";
+                    html += '<span><span style=\'color: #e74c3c\'>' + n + '</span> New / <span style=\'color: #2fb150\'>' + c + '</span> Closed</span>';
                 }
 
-                html += "</div></div>";
+                html += '</div></div>';
                 var k = $('<div></div>').css({'position': 'relative'});
                 k.append(html);
 
@@ -1055,13 +1055,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         $(document).ready(function() {
             $('.donutchart').each(function() {
                 var trackColor = $(this).attr('data-trackColor');
-                if (trackColor == null || trackColor.length <= 0)
+                if (trackColor === null || trackColor.length <= 0)
                     trackColor = '#e74c3c';
                 var numCount = $(this).attr('data-numcount');
-                if (numCount == null || numCount.length <= 0)
+                if (numCount === null || numCount.length <= 0)
                     numCount = false;
                 var $size = $(this).attr('data-size');
-                if ($size == null || $size.length <= 0)
+                if ($size === null || $size.length <= 0)
                     $size = 150;
 
                 $(this).css({height: $size, width: $size});
@@ -1092,7 +1092,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                             var countVal = parseInt($(this.el).attr('data-totalNumCount'));
                             if (countVal <= 0) return;
                             var current = parseInt($(this.el).find('.chart-value').text());
-                            if (countVal != null && countVal > 0 && current != null) {
+                            if (countVal !== null && countVal > 0 && current !== null) {
                                 var totalCount = Math.round(countVal*(100/Math.round(to)));
                                 var val = totalCount*(0.01*Math.round(percent));
                                 var final = Math.round(val);
@@ -1141,9 +1141,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                                 if (_.isUndefined(preventDefault) || preventDefault.length < 1)
                                     e.preventDefault();
 
-                                else if (preventDefault.toLowerCase() === 'true') {
+                                else if (preventDefault.toLowerCase() === 'true') 
                                     e.preventDefault();
-                                }
+                                
                             });
                         }
                     }
@@ -1154,18 +1154,18 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                         if (target.length !== 0) {
                             self.click(function(e) {
                                 var animation = self.attr('data-action-animation');
-                                if (!_.isUndefined(animation) && animation.toLowerCase() === "false")
+                                if (!_.isUndefined(animation) && animation.toLowerCase() === 'false')
                                     target.animate({scrollTop: target[0].scrollHeight}, 0);
                                 else
                                     target.animate({scrollTop: target[0].scrollHeight}, 1000);
 
                                 var preventDefault = self.attr('data-preventDefault');
-                                if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
+                                if (_.isUndefined(preventDefault) || preventDefault.length < 1) 
                                     e.preventDefault();
-                                }
-                                else if (preventDefault.toLowerCase() === 'true') {
+                                
+                                else if (preventDefault.toLowerCase() === 'true') 
                                     e.preventDefault();
-                                }
+                                
                             });
                         }
                     }
@@ -1238,12 +1238,12 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             var eleNoResults = $(this).attr('data-noresults');
             var searchNum = 10;
             if (nosearch) searchNum = 90000;
-            if (!_.isUndefined(elePlaceHolder) && elePlaceHolder.length > 0) {
+            if (!_.isUndefined(elePlaceHolder) && elePlaceHolder.length > 0) 
                 placeholder = elePlaceHolder;
-            }
-            if (!_.isUndefined(eleNoResults) && eleNoResults.length > 0) {
+            
+            if (!_.isUndefined(eleNoResults) && eleNoResults.length > 0) 
                 noResults = eleNoResults;
-            }
+            
 
             self.chosen({
                 disable_search_threshold: searchNum,
@@ -1264,8 +1264,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         //Close reveal and refresh page.
         UIkit.modal('#newMessageModal').hide();
         //Clear Fields
-        var $newMessageTo = $("#newMessageTo");
-        $newMessageTo.find("option").prop('selected', false);
+        var $newMessageTo = $('#newMessageTo');
+        $newMessageTo.find('option').prop('selected', false);
         $newMessageTo.trigger('chosen:updated');
         $('#newMessageSubject').val('');
         $('#newMessageText').val('');
@@ -1300,8 +1300,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             data: JSON.stringify(data),
             processData: false,
             //headers: { 'Content-Type': 'application/json'}
-            contentType: "application/json; charset=utf-8",
-            dataType: "json"
+            contentType: 'application/json; charset=utf-8',
+            dataType: 'json'
         })
             .success(function() {
                 //helpers.showFlash('Message Sent');
@@ -1338,9 +1338,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         });
 
         if (_.isUndefined(result) || _.size(result) < 1) return false;
-        if (_.size(result) === 1) {
+        if (_.size(result) === 1) 
             if (result[0] === '*') return true;
-        }
+        
 
         var typePerm = result[0].split(':')[1].split(' ');
         typePerm = _.uniq(typePerm);
@@ -1353,11 +1353,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.canUserEditSelf = function(ownerId, perm) {
         var id = window.trudeskSessionService.getUser()._id;
 
-        if (helpers.canUser(perm + ':editSelf')) {
+        if (helpers.canUser(perm + ':editSelf')) 
             return id.toString() === ownerId.toString();
-        } else {
+         else 
             return false;
-        }
+        
     };
 
     helpers.setupContextMenu = function(selector, complete) {
@@ -1366,14 +1366,14 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
         $(document).off('mousedown');
         $(document).on('mousedown', function(e) {
-            if (!$(e.target).parents('.context-menu').length > 0) {
+            if ($(e.target).parents('.context-menu').length < 1) {
                 var cm = $('.context-menu');
                 if (cm.length > 0)
                     cm.hide(100);
             }
         });
 
-        var menuOpenFor = undefined;
+        var menuOpenFor;
         $selector.off('contextmenu');
         $selector.on('contextmenu', function(event) {
             event.preventDefault();
@@ -1387,9 +1387,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
         $selector.off('mousedown');
         $selector.on('mousedown', function(event) {
-            if (!$(event.target).parents('.context-menu').length > 0) {
+            if ($(event.target).parents('.context-menu').length < 1)
                 $('.context-menu').hide(100);
-            }
+            
         });
 
         var $contextMenuLi = $('.context-menu li');
@@ -1398,9 +1398,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
             $item.off('click');
             $item.on('click', function() {
                 $('.context-menu').hide(100);
-                if (!_.isFunction(complete)) {
+                if (!_.isFunction(complete)) 
                     console.log('Invalid Callback Function in Context-Menu!');
-                } else
+                 else
                     return complete($(this).attr('data-action'), menuOpenFor);
             });
         });
@@ -1409,9 +1409,9 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.setupTruTabs = function(tabs) {
         var toggleTab = function(element) {
-            if ($(element).hasClass('active')) {
+            if ($(element).hasClass('active')) 
                 $(element).parent().find('.tru-tab-highlighter').css({width: $(element).outerWidth()});
-            }
+            
             $(element).off('click');
             $(element).on('click', function(event) {
                 event.preventDefault();
@@ -1451,18 +1451,17 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.prototypes = function() {
         String.prototype.formatUnicorn = String.prototype.formatUnicorn ||
             function () {
-                "use strict";
                 var str = this.toString();
                 if (arguments.length) {
                     var t = typeof arguments[0];
                     var key;
-                    var args = ("string" === t || "number" === t) ?
+                    var args = ('string' === t || 'number' === t) ?
                         Array.prototype.slice.call(arguments)
                         : arguments[0];
 
-                    for (key in args) {
-                        str = str.replace(new RegExp("\\{" + key + "\\}", "gi"), args[key]);
-                    }
+                    for (key in args) 
+                        str = str.replace(new RegExp('\\{' + key + '\\}', 'gi'), args[key]);
+                    
                 }
 
                 return str;

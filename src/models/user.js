@@ -20,7 +20,7 @@ var _ = require('lodash');
 var Chance = require('chance');
 
 var SALT_FACTOR = 10;
-var COLLECTION = "accounts";
+var COLLECTION = 'accounts';
 
 /**
  * User Schema
@@ -151,7 +151,7 @@ userSchema.methods.removeL2Auth = function(callback) {
         if (err) return callback(err, null);
 
         return callback();
-    })
+    });
 };
 
 userSchema.methods.addDeviceToken = function(token, type, callback) {
@@ -209,7 +209,7 @@ userSchema.methods.addOpenChatWindow = function(convoId, callback) {
 
         if (!_.isFunction(callback)) return;
         return callback(null, u.preferences.openChatWindows);
-    })
+    });
 };
 
 userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
@@ -374,9 +374,9 @@ userSchema.statics.getUserWithObject = function(object, callback) {
 
     var self = this;
 
-    var limit = (object.limit == null ? 10 : object.limit);
-    var page = (object.page == null ? 0 : object.page);
-    var search = (object.search == null ? '' : object.search);
+    var limit = (object.limit === null ? 10 : object.limit);
+    var page = (object.page === null ? 0 : object.page);
+    var search = (object.search === null ? '' : object.search);
 
     var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
         .sort({'fullname': 1})
@@ -535,7 +535,7 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
                     var dataObject = {
                         user: savedUser,
                         plainTextPassword: plainTextPass,
-                        base_url: setting.value
+                        baseUrl: setting.value
                     };
 
                     email.render('public-account-created', dataObject)
@@ -585,12 +585,12 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
  */
 function hasDeviceToken(user, token, type) {
     if (type === 1) {
-        var mataches = _.filter(user.iOSDeviceTokens, function(value) {
+        var matches = _.filter(user.iOSDeviceTokens, function(value) {
             if (value === token)
                 return value;
         });
 
-        return mataches.length > 0;
+        return matches.length > 0;
     }
 
     return false;
