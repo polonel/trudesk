@@ -44,49 +44,20 @@ var init = function(tickets, callback) {
                 $tickets = _.cloneDeep(tickets);
 
                 return done();
-            } else {
-                winston.debug('No Tickets sent to cache (Pulling...)');
-                ticketSchema.getForCache(function(err, tickets) {
-                    if (err) return done(err);
-
-                    $tickets = tickets;
-
-                    return done();
-                });
             }
+
+            winston.debug('No Tickets sent to cache (Pulling...)');
+            ticketSchema.getForCache(function(err, tickets) {
+                if (err) return done(err);
+
+                $tickets = tickets;
+
+                return done();
+            });
+
         },
         function(done) {
             async.series({
-                //Removed 05-04-2017 - Due to performance issues
-                // lifetime: function(c) {
-                //     ex.lifetime.tickets = _.sortBy($tickets, 'date');
-                //
-                //     ex.lifetime.closedTickets = _.chain(ex.lifetime.tickets).map('status').filter(function(v) {
-                //         return v === 3;
-                //     }).value();
-                //
-                //     var firstDate = moment(_.first(ex.lifetime.tickets).date).subtract(1, 'd');
-                //     var diffDays = today.diff(firstDate, 'days');
-                //
-                //     buildGraphData(ex.lifetime.tickets, diffDays, function(graphData) {
-                //         ex.lifetime.graphData = graphData;
-                //
-                //         //Get average Response
-                //         buildAvgResponse(ex.lifetime.tickets, function(obj) {
-                //             ex.lifetime.avgResponse = obj.avgResponse;
-                //             ex.lifetime.tickets = _.size(ex.lifetime.tickets);
-                //             ex.lifetime.closedTickets = _.size(ex.lifetime.closedTickets);
-                //
-                //             //Remove all tickets more than 365 days
-                //             var t365 = e365.toDate().getTime();
-                //             $tickets = _.filter($tickets, function(t) {
-                //                 return (t.date > t365);
-                //             });
-                //
-                //             return c();
-                //         });
-                //     });
-                // },
                 e365: function(c) {
                     ex.e365.tickets = $tickets;
 

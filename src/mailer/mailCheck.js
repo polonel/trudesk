@@ -262,15 +262,15 @@ function handleMessages(messages) {
 
                     if (mailCheck.fetchMailOptions.defaultPriority !== '')
                         return callback(null, mailCheck.fetchMailOptions.defaultPriority);
-                    else {
-                        var firstPriority = _.first(type.priorities);
-                        if (!_.isUndefined(firstPriority))
-                            mailCheck.fetchMailOptions.defaultPriority = firstPriority._id;
-                        else
-                            return callback('Invalid default priority');
 
-                        return callback(null, firstPriority._id);
-                    }
+                    var firstPriority = _.first(type.priorities);
+                    if (!_.isUndefined(firstPriority))
+                        mailCheck.fetchMailOptions.defaultPriority = firstPriority._id;
+                    else
+                        return callback('Invalid default priority');
+
+                    return callback(null, firstPriority._id);
+
                 }],
                 handleCreateTicket: ['handleGroup', 'handlePriority', function (results, callback) {
 

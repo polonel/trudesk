@@ -836,11 +836,12 @@ apiTickets.getType = function(req, res) {
  *
  */
 apiTickets.createType = function(req, res) {
-    var typeName = req.body.name;
+    var typeName = req.body.name,
+        ticketTypeSchema = require('../../../models/tickettype'),
+        ticketPrioritiesSchema = require('../../../models/ticketpriority');
+
     if (_.isUndefined(typeName) || typeName.length < 3) return res.status(400).json({success: false, error: 'Invalid Type Name!'});
 
-    var ticketTypeSchema = require('../../../models/tickettype');
-    var ticketPrioritiesSchema = require('../../../models/ticketpriority');
     ticketPrioritiesSchema.find({default: true}, function(err, priorities) {
         if (err) return res.status(400).json({success: false, error: err.message});
         priorities = _.sortBy(priorities, 'migrationNum');
@@ -869,12 +870,13 @@ apiTickets.createType = function(req, res) {
  *
  */
 apiTickets.updateType = function(req, res) {
-    var id = req.params.id;
-    var data = req.body;
+    var id = req.params.id,
+        data = req.body,
+        ticketTypeSchema = require('../../../models/tickettype');
+
     if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
         return res.status(400).json({success: false, error: 'Invalid Put Data'});
 
-    var ticketTypeSchema = require('../../../models/tickettype');
     ticketTypeSchema.getType(id, function(err, type) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -889,12 +891,13 @@ apiTickets.updateType = function(req, res) {
 };
 
 apiTickets.typeAddPriority = function(req, res) {
-    var id = req.params.id;
-    var data = req.body;
+    var id = req.params.id,
+        data = req.body,
+        ticketTypeSchema = require('../../../models/tickettype');
+
     if (!id || !data || !data.priority)
         return res.status(400).json({success: false, error: 'Invalid request data'});
 
-    var ticketTypeSchema = require('../../../models/tickettype');
     ticketTypeSchema.getType(id, function(err, type) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -915,12 +918,13 @@ apiTickets.typeAddPriority = function(req, res) {
 };
 
 apiTickets.typeRemovePriority = function(req, res) {
-    var id = req.params.id;
-    var data = req.body;
+    var id = req.params.id,
+        data = req.body,
+        ticketTypeSchema = require('../../../models/tickettype');
+
     if (!id || !data || !data.priority)
         return res.status(400).json({success: false, error: 'Invalid request data'});
 
-    var ticketTypeSchema = require('../../../models/tickettype');
     ticketTypeSchema.getType(id, function(err, type) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -959,15 +963,16 @@ apiTickets.typeRemovePriority = function(req, res) {
  *
  */
 apiTickets.deleteType = function(req, res) {
-    var newTypeId = req.body.newTypeId;
-    var delTypeId = req.params.id;
+    var newTypeId = req.body.newTypeId,
+        delTypeId = req.params.id;
 
     if (_.isUndefined(newTypeId) || _.isUndefined(delTypeId))
         return res.status(400).json({success: false, error: 'Invalid POST data.'});
 
-    var ticketTypeSchema = require('../../../models/tickettype');
-    var ticketSchema = require('../../../models/ticket');
-    var settingsSchema = require('../../../models/setting');
+    var ticketTypeSchema = require('../../../models/tickettype'),
+        ticketSchema = require('../../../models/ticket'),
+        settingsSchema = require('../../../models/setting');
+
     async.waterfall([
         function(next) {
             settingsSchema.getSettingByName('mailer:check:ticketype', function(err, setting) {
@@ -998,16 +1003,16 @@ apiTickets.deleteType = function(req, res) {
 };
 
 apiTickets.createPriority = function(req, res) {
-    var data = req.body;
-    var pName = data.name;
-    var pOverdueIn = data.overdueIn;
-    var pHtmlColor = data.htmlColor;
+    var data = req.body,
+        pName = data.name,
+        pOverdueIn = data.overdueIn,
+        pHtmlColor = data.htmlColor;
 
     if (!pName)
         return res.status(400).json({success: false, error: 'Invalid Request Data.'});
 
-    var ticketPrioritySchema = require('../../../models/ticketpriority');
-    var P = new ticketPrioritySchema({
+    var ticketPrioritySchema = require('../../../models/ticketpriority'),
+        P = new ticketPrioritySchema({
         name: pName,
         overdueIn: pOverdueIn,
         htmlColor: pHtmlColor
@@ -1033,8 +1038,9 @@ apiTickets.getPriorities = function(req, res) {
 };
 
 apiTickets.updatePriority = function(req, res) {
-    var id = req.params.id;
-    var data = req.body;
+    var id = req.params.id,
+        data = req.body;
+
     if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
         return res.status(400).json({success: false, error: 'Invalid Request Data'});
 
@@ -1058,8 +1064,9 @@ apiTickets.updatePriority = function(req, res) {
 };
 
 apiTickets.deletePriority = function(req, res) {
-    var id = req.params.id;
-    var newPriority = req.body.newPriority;
+    var id = req.params.id,
+        newPriority = req.body.newPriority;
+
     if (!id || !newPriority)
         return res.status(400).json({success: false, error: 'Invalid Request Data'});
 
@@ -1245,11 +1252,11 @@ apiTickets.getTicketStatsForGroup = function(req, res) {
                 buildAvgResponse(tickets, function(obj) {
                     if (_.isUndefined(obj))
                         return callback(null, r);
-                    else {
-                        r.avgResponse = obj.avgResponse;
 
-                        return callback(null, r);
-                    }
+                    r.avgResponse = obj.avgResponse;
+
+                    return callback(null, r);
+
                 });
             });
         }

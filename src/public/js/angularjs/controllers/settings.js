@@ -1207,140 +1207,140 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $event.preventDefault();
                 var $form = $($event.currentTarget);
                 if ($form) {
-                    if (!$form.isValid(null, null, false)) {
-                        return true;
-                    } else {
-                        var $priorityName = $form.find('input[name="p-name"]');
-                        var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]');
-                        var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]');
-                        if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1)
-                            return false;
+                    if (!$form.isValid(null, null, false))
+                        return false;
 
-                        var name = $priorityName.val();
-                        var overdueIn = $priorityOverdueIn.val();
-                        var htmlColor = $priorityHtmlColor.val();
+                    var $priorityName = $form.find('input[name="p-name"]');
+                    var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]');
+                    var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]');
+                    if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1)
+                        return false;
 
-                        $http.post('/api/v1/tickets/priority/create', {
-                            name: name,
-                            overdueIn: overdueIn,
-                            htmlColor: htmlColor
-                        }, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(function successCallback(response) {
-                            var savedPriority = response.data.priority;
-                            if (savedPriority) {
-                                var priorityLoop = $('body').find('.all-priorities-loop');
-                                if (priorityLoop) {
-                                    $http.get('/api/v1/tickets/priorities')
-                                        .success(function(pResponse) {
-                                            var priorities = pResponse.priorities;
-                                            var html = '';
-                                            html += '<div id="view-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix">\n' +
-                                                '       <div class="uk-float-left">\n' +
-                                                '           <h5 class="p-' + savedPriority._id + '-name" style="color: ' + savedPriority.htmlColor + '; font-weight: bold;">' + savedPriority.name + '</h5>\n' +
-                                                '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + savedPriority._id + '-overdueIn">' + savedPriority.durationFormatted + '</strong></p>\n' +
-                                                '       </div>\n' +
-                                                '       <div class="uk-float-right">\n' +
-                                                '           <div class="md-btn-group mt-5">\n' +
-                                                '               <a class="md-btn md-btn-small" ng-click="editPriority(\'' + savedPriority._id + '\', $event);">Edit</a>\n' +
-                                                '               <a class="md-btn md-btn-small md-btn-danger" ng-click="removePriorityClicked(\'' + savedPriority._id + '\', $event);">Remove</a>\n' +
-                                                '           </div>\n' +
-                                                '       </div>\n' +
-                                                '    </div>\n' +
-                                                '    <div id="edit-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
-                                                '       <form data-priority-id="' + savedPriority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
-                                                '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
-                                                '               <div class="uk-width-1-4">\n' +
-                                                '                   <label for="">Priority Name</label>\n' +
-                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-name" value="' + savedPriority.name + '" />\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
-                                                '                   <label for="">SLA Overdue (minutes)</label>\n' +
-                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-overdueIn" value="' + savedPriority.overdueIn + '" />\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
-                                                '                   <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + savedPriority.htmlColor + '" ng-click="generateRandomColor(\'' + savedPriority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
-                                                '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
-                                                '                       <label for="">Color</label>\n' +
-                                                '                       <input type="text" class="md-input" name="p-' + savedPriority._id + '-htmlColor" value="' + savedPriority.htmlColor + '" />\n' +
-                                                '                       <span class="md-input-bar"></span>\n' +
-                                                '                   </div>\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4">\n' +
-                                                '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
-                                                '                       <a class="md-btn md-btn-small" ng-click="cancelEditPriority(\'' + savedPriority._id + '\', $event);">Cancel</a>\n' +
-                                                '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
-                                                '                   </div>\n' +
-                                                '               </div>\n' +
-                                                '           </div>\n' +
-                                                '       </form>\n' +
-                                                '    </div>\n' +
-                                                '<div class="uk-modal" id="deletePriorityModal-'+ savedPriority._id + '" data-pId="' + savedPriority._id + '" ng-controller="settingsCtrl">\n' +
-                                                '    <div class="uk-modal-dialog">\n' +
-                                                '        <form class="uk-form-stacked" id="deletePriorityForm-' + savedPriority._id + '" action="#" method="POST">\n' +
-                                                '            <input type="hidden" id="del_priority_name-' + savedPriority._id + '" name="del_priority_name" value="' + savedPriority.name + '">\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <h2 class="">Remove Priority</h2>\n' +
-                                                '                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>\n' +
-                                                '                <hr style="margin: 10px 0" />\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <div class="uk-float-left" style="width: 100%;">\n' +
-                                                '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
-                                                '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
+                    var name = $priorityName.val();
+                    var overdueIn = $priorityOverdueIn.val();
+                    var htmlColor = $priorityHtmlColor.val();
 
-                                            priorities.forEach(function(p) {
-                                                if (p._id.toString() !== savedPriority._id) {
-                                                    html += '<option value="' + p._id + '">' + p.name + '</option>';
-                                                }
-                                            });
+                    $http.post('/api/v1/tickets/priority/create', {
+                        name: name,
+                        overdueIn: overdueIn,
+                        htmlColor: htmlColor
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback(response) {
+                        var savedPriority = response.data.priority;
+                        if (savedPriority) {
+                            var priorityLoop = $('body').find('.all-priorities-loop');
+                            if (priorityLoop) {
+                                $http.get('/api/v1/tickets/priorities')
+                                    .success(function(pResponse) {
+                                        var priorities = pResponse.priorities;
+                                        var html = '';
+                                        html += '<div id="view-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix">\n' +
+                                            '       <div class="uk-float-left">\n' +
+                                            '           <h5 class="p-' + savedPriority._id + '-name" style="color: ' + savedPriority.htmlColor + '; font-weight: bold;">' + savedPriority.name + '</h5>\n' +
+                                            '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + savedPriority._id + '-overdueIn">' + savedPriority.durationFormatted + '</strong></p>\n' +
+                                            '       </div>\n' +
+                                            '       <div class="uk-float-right">\n' +
+                                            '           <div class="md-btn-group mt-5">\n' +
+                                            '               <a class="md-btn md-btn-small" ng-click="editPriority(\'' + savedPriority._id + '\', $event);">Edit</a>\n' +
+                                            '               <a class="md-btn md-btn-small md-btn-danger" ng-click="removePriorityClicked(\'' + savedPriority._id + '\', $event);">Remove</a>\n' +
+                                            '           </div>\n' +
+                                            '       </div>\n' +
+                                            '    </div>\n' +
+                                            '    <div id="edit-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
+                                            '       <form data-priority-id="' + savedPriority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
+                                            '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                            '               <div class="uk-width-1-4">\n' +
+                                            '                   <label for="">Priority Name</label>\n' +
+                                            '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-name" value="' + savedPriority.name + '" />\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                            '                   <label for="">SLA Overdue (minutes)</label>\n' +
+                                            '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-overdueIn" value="' + savedPriority.overdueIn + '" />\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                            '                   <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + savedPriority.htmlColor + '" ng-click="generateRandomColor(\'' + savedPriority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
+                                            '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
+                                            '                       <label for="">Color</label>\n' +
+                                            '                       <input type="text" class="md-input" name="p-' + savedPriority._id + '-htmlColor" value="' + savedPriority.htmlColor + '" />\n' +
+                                            '                       <span class="md-input-bar"></span>\n' +
+                                            '                   </div>\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4">\n' +
+                                            '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
+                                            '                       <a class="md-btn md-btn-small" ng-click="cancelEditPriority(\'' + savedPriority._id + '\', $event);">Cancel</a>\n' +
+                                            '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
+                                            '                   </div>\n' +
+                                            '               </div>\n' +
+                                            '           </div>\n' +
+                                            '       </form>\n' +
+                                            '    </div>\n' +
+                                            '<div class="uk-modal" id="deletePriorityModal-'+ savedPriority._id + '" data-pId="' + savedPriority._id + '" ng-controller="settingsCtrl">\n' +
+                                            '    <div class="uk-modal-dialog">\n' +
+                                            '        <form class="uk-form-stacked" id="deletePriorityForm-' + savedPriority._id + '" action="#" method="POST">\n' +
+                                            '            <input type="hidden" id="del_priority_name-' + savedPriority._id + '" name="del_priority_name" value="' + savedPriority.name + '">\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <h2 class="">Remove Priority</h2>\n' +
+                                            '                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>\n' +
+                                            '                <hr style="margin: 10px 0" />\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <div class="uk-float-left" style="width: 100%;">\n' +
+                                            '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
+                                            '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
 
-                                                html +=
-                                                '                    </select>\n' +
-                                                '                </div>\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>' + savedPriority.name + '</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-modal-footer uk-text-right">\n' +
-                                                '                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>\n' +
-                                                '                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority(\'' + savedPriority._id + '\', $event)">Delete</button>\n' +
-                                                '            </div>\n' +
-                                                '        </form>\n' +
-                                                '    </div>\n' +
-                                                '</div>\n';
-
-                                            priorityLoop.append(html);
-
-                                            helpers.UI.selectize();
-
-                                            //Bootstrap Angular dynamically...
-                                            var $injector = angular.injector(["ng", "trudesk"]);
-                                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
-                                                var $scope = priorityLoop.scope();
-                                                $compile(priorityLoop)($scope || $rootScope);
-                                                $rootScope.$digest();
-                                            }]);
-
-                                            helpers.UI.showSnackbar('Priority Created.', false);
-                                            var createPriorityModal = $('#createPriorityModal');
-                                            if (createPriorityModal.length > 0) {
-                                                UIkit.modal(createPriorityModal).hide();
+                                        priorities.forEach(function(p) {
+                                            if (p._id.toString() !== savedPriority._id) {
+                                                html += '<option value="' + p._id + '">' + p.name + '</option>';
                                             }
-                                        })
-                                        .error(function(errorResponse) {
-                                            $log.error(errorResponse);
-                                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
                                         });
-                                }
+
+                                            html +=
+                                            '                    </select>\n' +
+                                            '                </div>\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>' + savedPriority.name + '</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-modal-footer uk-text-right">\n' +
+                                            '                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>\n' +
+                                            '                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority(\'' + savedPriority._id + '\', $event)">Delete</button>\n' +
+                                            '            </div>\n' +
+                                            '        </form>\n' +
+                                            '    </div>\n' +
+                                            '</div>\n';
+
+                                        priorityLoop.append(html);
+
+                                        helpers.UI.selectize();
+
+                                        //Bootstrap Angular dynamically...
+                                        var $injector = angular.injector(["ng", "trudesk"]);
+                                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                            var $scope = priorityLoop.scope();
+                                            $compile(priorityLoop)($scope || $rootScope);
+                                            $rootScope.$digest();
+                                        }]);
+
+                                        helpers.UI.showSnackbar('Priority Created.', false);
+                                        var createPriorityModal = $('#createPriorityModal');
+                                        if (createPriorityModal.length > 0) {
+                                            UIkit.modal(createPriorityModal).hide();
+                                        }
+                                    })
+                                    .error(function(errorResponse) {
+                                        $log.error(errorResponse);
+                                        helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                                    });
                             }
-                        }, function errorCallback(errorResponse) {
-                            $log.error(errorResponse);
-                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
-                        });
-                    }
+                        }
+                    }, function errorCallback(errorResponse) {
+                        $log.error(errorResponse);
+                        helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                    });
+
                 }
             };
 

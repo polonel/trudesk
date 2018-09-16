@@ -19,7 +19,7 @@ var async = require('async'),
     conversationSchema = require('../../../models/chat/conversation'),
     messageSchema = require('../../../models/chat/message');
 
-var api_messages = {};
+var apiMessages = {};
 
 /**
  * @api {get} /api/v1/messages Get Messages
@@ -44,7 +44,7 @@ var api_messages = {};
  *
  */
 
-api_messages.getConversations = function(req, res) {
+apiMessages.getConversations = function(req, res) {
     conversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -52,7 +52,7 @@ api_messages.getConversations = function(req, res) {
     });
 };
 
-api_messages.getRecentConversations = function(req, res) {
+apiMessages.getRecentConversations = function(req, res) {
     conversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -88,7 +88,7 @@ api_messages.getRecentConversations = function(req, res) {
     });
 };
 
-api_messages.get = function(req, res) {
+apiMessages.get = function(req, res) {
     conversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err});
         var fullConversations = [];
@@ -109,52 +109,51 @@ api_messages.get = function(req, res) {
     });
 };
 
-api_messages.startConversation = function(req, res) {
+apiMessages.startConversation = function(req, res) {
     var payload = req.body;
     var requester = payload.owner;
     var participants = payload.participants;
 
     //Check if Conversation with these participants exist
     conversationSchema.getConversations(participants, function(err, convo) {
-        if (err) {
+        if (err) 
             return res.status(400).json({success: false, error: err.message});
-        }
+        
 
-        if (convo.length === 1) {
+        if (convo.length === 1) 
             return res.json({success: true, conversation: convo[0]});
-        } else {
-            var userMeta = [];
-            _.each(participants, function(item) {
-                var meta =  {
-                    userId: item,
-                    joinedAt: new Date()
-                };
 
-                if (requester === item)
-                    meta.lastRead = new Date();
+        var userMeta = [];
+        _.each(participants, function(item) {
+            var meta =  {
+                userId: item,
+                joinedAt: new Date()
+            };
 
-                userMeta.push(meta);
-            });
+            if (requester === item)
+                meta.lastRead = new Date();
 
-            var Conversation = new conversationSchema({
-                participants: participants,
-                userMeta: userMeta,
-                updatedAt: new Date()
-            });
+            userMeta.push(meta);
+        });
 
-            Conversation.save(function(err, cSave) {
-                if (err) {
-                    winston.debug(err);
-                    return res.status(400).json({success: false, error: err.message});
-                }
+        var Conversation = new conversationSchema({
+            participants: participants,
+            userMeta: userMeta,
+            updatedAt: new Date()
+        });
 
-                return res.json({success: true, conversation: cSave});
-            });
-        }
+        Conversation.save(function(err, cSave) {
+            if (err) {
+                winston.debug(err);
+                return res.status(400).json({success: false, error: err.message});
+            }
+
+            return res.json({success: true, conversation: cSave});
+        });
     });
 };
 
-api_messages.send = function(req, res) {
+apiMessages.send = function(req, res) {
     var payload = req.body;
     var cId = payload.cId;
     var owner = payload.owner;
@@ -185,9 +184,9 @@ api_messages.send = function(req, res) {
             });
 
             Message.save(function(err, mSave) {
-                if (err) {
+                if (err) 
                     return done(err);
-                }
+                
 
                 //Update conversation Meta!!
                 return done(null, mSave);
@@ -205,7 +204,7 @@ api_messages.send = function(req, res) {
 
 };
 
-api_messages.getMessagesForConversation = function(req, res) {
+apiMessages.getMessagesForConversation = function(req, res) {
     var conversation = req.params.id;
     var page = (req.query.page === undefined ? 0 : req.query.page);
     var limit = (req.query.limit === undefined ? 10 : req.query.limit);
@@ -243,7 +242,7 @@ api_messages.getMessagesForConversation = function(req, res) {
     });
 };
 
-api_messages.deleteConversation = function(req, res) {
+apiMessages.deleteConversation = function(req, res) {
     var conversation = req.params.id;
 
     if (_.isUndefined(conversation) || _.isNull(conversation))
@@ -267,4 +266,4 @@ api_messages.deleteConversation = function(req, res) {
     });
 };
 
-module.exports = api_messages;
+module.exports = apiMessages;

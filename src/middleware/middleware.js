@@ -12,7 +12,7 @@
 
  **/
 
-"use strict";
+'use strict';
 
 var _ = require('lodash');
 var db = require('../database');
@@ -25,9 +25,9 @@ middleware.db = function(req, res, next) {
     if (mongoose.connection.readyState !== 1) {
         winston.warn('MongoDB ReadyState = ' + mongoose.connection.readyState);
         db.init(function(e, database) {
-            if (e) {
+            if (e) 
                 return res.status(503).send();
-            }
+            
 
             req.db = database;
         });
@@ -38,17 +38,17 @@ middleware.db = function(req, res, next) {
 
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
-        if (req.user.hasL2Auth) {
+        if (req.user.hasL2Auth) 
             return middleware.ensurel2Auth(req, res, next);
-        } else {
+         else {
             if (req.user.role !== 'user')
                 return res.redirect('/dashboard');
             else
                 return res.redirect('/tickets');
         }
-    } else {
+    } else 
         return next();
-    }
+    
 };
 
 middleware.redirectToLogin = function(req, res, next) {
@@ -57,21 +57,21 @@ middleware.redirectToLogin = function(req, res, next) {
             req.session.redirectUrl = req.url;
 
         return res.redirect('/');
-    } else {
-        if (req.user.deleted) {
-            req.logout();
-            req.session.l2auth = null;
-            req.session.destroy();
-            return res.redirect('/');
-        } else {
-            if (req.user.hasL2Auth) {
-                if (req.session.l2auth !== 'totp') {
-                    return res.redirect('/');
-                }
-            }
+    }
 
-            return next();
+    if (req.user.deleted) {
+        req.logout();
+        req.session.l2auth = null;
+        req.session.destroy();
+        return res.redirect('/');
+    } else {
+        if (req.user.hasL2Auth) {
+            if (req.session.l2auth !== 'totp') 
+                return res.redirect('/');
+            
         }
+
+        return next();
     }
 };
 
@@ -92,15 +92,15 @@ middleware.redirectIfUser = function(req, res, next) {
 middleware.ensurel2Auth = function(req, res, next) {
     if (req.session.l2auth === 'totp') {
         if (req.user)
-            if (req.user.role !== 'user')
+            {if (req.user.role !== 'user')
                 return res.redirect('/dashboard');
             else
-                return res.redirect('/tickets');
+                return res.redirect('/tickets');}
         else
             return next();
-    } else {
+    } else 
         return res.redirect('/l2auth');
-    }
+    
 };
 
 //Common
@@ -115,7 +115,7 @@ middleware.loadCommonData = function(req, res, next) {
 
 middleware.cache = function(seconds) {
     return function(req, res, next) {
-        res.setHeader("Cache-Control", "public, max-age=" + seconds);
+        res.setHeader('Cache-Control', 'public, max-age=' + seconds);
 
         next();
     }
@@ -123,15 +123,15 @@ middleware.cache = function(seconds) {
 
 middleware.checkCaptcha = function(req, res, next) {
     var postData = req.body;
-    if (postData === undefined) {
+    if (postData === undefined) 
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
-    }
+    
 
     var captcha = postData.captcha;
     var captchaValue = req.session.captcha;
-    if (captchaValue === undefined) {
+    if (captchaValue === undefined) 
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
-    }
+    
 
     if (captchaValue.toString().toLowerCase() !== captcha.toString().toLowerCase())
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
@@ -157,23 +157,24 @@ middleware.checkOrigin = function(req, res, next) {
 
 //API
 middleware.api = function(req, res, next) {
-    var accessToken = req.headers.accesstoken;
+    var accessToken = req.headers.accesstoken,
+        userSchema = require('../models/user');
+
     if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
         var user = req.user;
         if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({error: 'Invalid Access Token'});
 
         return next();
-    } else {
-        var userSchema = require('../models/user');
-        userSchema.getUserByAccessToken(accessToken, function(err, user) {
-            if (err) return res.status(401).json({'error': err.message});
-            if (!user) return res.status(401).json({'error': 'Invalid Access Token'});
-
-            req.user = user;
-
-            return next();
-        });
     }
+
+    userSchema.getUserByAccessToken(accessToken, function(err, user) {
+        if (err) return res.status(401).json({'error': err.message});
+        if (!user) return res.status(401).json({'error': 'Invalid Access Token'});
+
+        req.user = user;
+
+        return next();
+    });
 };
 
 middleware.isAdmin = function(req, res, next) {

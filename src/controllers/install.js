@@ -156,25 +156,23 @@ installController.install = function(req, res) {
                     return next('Database Error:' + err.message);
                 }
 
-                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
-                    // Already Exists Create Admin
+                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group))
                     return next(null, group);
-                } else {
-                    //Create Admin Group
-                    var adminGroup = new groupSchema({
-                        name: 'Administrators',
-                        members: []
-                    });
 
-                    adminGroup.save(function(err) {
-                        if (err) {
-                            winston.error('Database Error:' + err.message);
-                            return next('Database Error:' + err.message);
-                        }
+                //Create Admin Group
+                var adminGroup = new groupSchema({
+                    name: 'Administrators',
+                    members: []
+                });
 
-                        return next(null, adminGroup);
-                    });
-                }
+                adminGroup.save(function(err) {
+                    if (err) {
+                        winston.error('Database Error:' + err.message);
+                        return next('Database Error:' + err.message);
+                    }
+
+                    return next(null, adminGroup);
+                });
             });
         },
         function (adminGroup, next) {

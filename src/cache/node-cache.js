@@ -1,13 +1,13 @@
 (function() {
     var EventEmitter, _, clone,
         bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; },
-        extend = function(child, parent) { for (var key in parent) { if (hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
+        extend = function(child, parent) { for (var key in parent)  if (hasProp.call(parent, key)) child[key] = parent[key];  function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
         hasProp = {}.hasOwnProperty,
         slice = [].slice;
 
-    _ = require("lodash");
+    _ = require('lodash');
 
-    clone = require("clone");
+    clone = require('clone');
 
     EventEmitter = require('events').EventEmitter;
 
@@ -56,31 +56,31 @@
 
         NodeCache.prototype.get = function(key, cb, errorOnMissing) {
             var _err, _ret;
-            if (typeof cb === "boolean" && arguments.length === 2) {
+            if (typeof cb === 'boolean' && arguments.length === 2) {
                 errorOnMissing = cb;
                 cb = void 0;
             }
             if ((this.data[key] != null) && this._check(key, this.data[key])) {
                 this.stats.hits++;
                 _ret = this._unwrap(this.data[key]);
-                if (cb != null) {
+                if (cb != null) 
                     cb(null, _ret);
-                }
+                
                 return _ret;
             } else {
                 this.stats.misses++;
                 if (this.options.errorOnMissing || errorOnMissing) {
-                    _err = this._error("ENOTFOUND", {
+                    _err = this._error('ENOTFOUND', {
                         key: key
                     }, cb);
-                    if (_err != null) {
+                    if (_err != null) 
                         throw _err;
-                    }
+                    
                     return;
                 } else {
-                    if (cb != null) {
+                    if (cb != null) 
                         cb(null, void 0);
-                    }
+                    
                 }
                 return void 0;
             }
@@ -89,10 +89,10 @@
         NodeCache.prototype.mget = function(keys, cb) {
             var _err, i, key, len, oRet;
             if (!_.isArray(keys)) {
-                _err = this._error("EKEYSTYPE");
-                if (cb != null) {
+                _err = this._error('EKEYSTYPE');
+                if (cb != null) 
                     cb(_err);
-                }
+                
                 return _err;
             }
             oRet = {};
@@ -101,22 +101,22 @@
                 if ((this.data[key] != null) && this._check(key, this.data[key])) {
                     this.stats.hits++;
                     oRet[key] = this._unwrap(this.data[key]);
-                } else {
+                } else 
                     this.stats.misses++;
-                }
+                
             }
-            if (cb != null) {
+            if (cb != null) 
                 cb(null, oRet);
-            }
+            
             return oRet;
         };
 
         NodeCache.prototype.set = function(key, value, ttl, cb) {
             var existend;
             existend = false;
-            if (this.options.forceString && !_.isString(value)) {
+            if (this.options.forceString && !_.isString(value)) 
                 value = JSON.stringify(value);
-            }
+            
             if (arguments.length === 3 && _.isFunction(ttl)) {
                 cb = ttl;
                 ttl = this.options.stdTTL;
@@ -131,18 +131,18 @@
                 this.stats.ksize += this._getKeyLength(key);
                 this.stats.keys++;
             }
-            this.emit("set", key, value);
-            if (cb != null) {
+            this.emit('set', key, value);
+            if (cb != null) 
                 cb(null, true);
-            }
+            
             return true;
         };
 
         NodeCache.prototype.del = function(keys, cb) {
             var delCount, i, key, len, oldVal;
-            if (_.isString(keys)) {
+            if (_.isString(keys)) 
                 keys = [keys];
-            }
+            
             delCount = 0;
             for (i = 0, len = keys.length; i < len; i++) {
                 key = keys[i];
@@ -153,14 +153,14 @@
                     delCount++;
                     oldVal = this.data[key];
                     delete this.data[key];
-                    this.emit("del", key, oldVal.v);
-                } else {
+                    this.emit('del', key, oldVal.v);
+                } else 
                     this.stats.misses++;
-                }
+                
             }
-            if (cb != null) {
+            if (cb != null) 
                 cb(null, delCount);
-            }
+            
             return delCount;
         };
 
@@ -170,34 +170,34 @@
             for (i = 0, len = args.length; i < len; i++) {
                 arg = args[i];
                 switch (typeof arg) {
-                    case "number":
+                    case 'number':
                         ttl = arg;
                         break;
-                    case "function":
+                    case 'function':
                         cb = arg;
                 }
             }
             ttl || (ttl = this.options.stdTTL);
             if (!key) {
-                if (cb != null) {
+                if (cb != null) 
                     cb(null, false);
-                }
+                
                 return false;
             }
             if ((this.data[key] != null) && this._check(key, this.data[key])) {
-                if (ttl > 0) {
+                if (ttl > 0) 
                     this.data[key] = this._wrap(this.data[key].v, ttl, false);
-                } else {
+                 else 
                     this.del(key);
-                }
-                if (cb != null) {
+                
+                if (cb != null) 
                     cb(null, true);
-                }
+                
                 return true;
             } else {
-                if (cb != null) {
+                if (cb != null) 
                     cb(null, false);
-                }
+                
                 return false;
             }
         };
@@ -205,9 +205,9 @@
         NodeCache.prototype.keys = function(cb) {
             var _keys;
             _keys = Object.keys(this.data);
-            if (cb != null) {
+            if (cb != null) 
                 cb(null, _keys);
-            }
+            
             return _keys;
         };
 
@@ -216,9 +216,9 @@
         };
 
         NodeCache.prototype.flushAll = function(_startPeriod) {
-            if (_startPeriod == null) {
+            if (_startPeriod == null) 
                 _startPeriod = true;
-            }
+            
             this.data = {};
             this.stats = {
                 hits: 0,
@@ -229,7 +229,7 @@
             };
             this._killCheckPeriod();
             this._checkData(_startPeriod);
-            this.emit("flush");
+            this.emit('flush');
         };
 
         NodeCache.prototype.close = function() {
@@ -238,9 +238,9 @@
 
         NodeCache.prototype._checkData = function(startPeriod) {
             var key, ref, value;
-            if (startPeriod == null) {
+            if (startPeriod == null) 
                 startPeriod = true;
-            }
+            
             ref = this.data;
             for (key in ref) {
                 value = ref[key];
@@ -248,49 +248,49 @@
             }
             if (startPeriod && this.options.checkperiod > 0) {
                 this.checkTimeout = setTimeout(this._checkData, this.options.checkperiod * 1000);
-                if (this.checkTimeout.unref != null) {
+                if (this.checkTimeout.unref != null) 
                     this.checkTimeout.unref();
-                }
+                
             }
         };
 
         NodeCache.prototype._killCheckPeriod = function() {
-            if (this.checkTimeout != null) {
+            if (this.checkTimeout != null) 
                 return clearTimeout(this.checkTimeout);
-            }
+            
         };
 
         NodeCache.prototype._check = function(key, data) {
             if (data.t !== 0 && data.t < Date.now()) {
                 this.del(key);
-                this.emit("expired", key, this._unwrap(data));
+                this.emit('expired', key, this._unwrap(data));
                 return false;
-            } else {
+            } else 
                 return true;
-            }
+            
         };
 
         NodeCache.prototype._wrap = function(value, ttl, asClone) {
             var livetime, now, ttlMultiplicator;
-            if (asClone === null) {
+            if (asClone === null) 
                 asClone = true;
-            }
-            if (!this.options.useClones) {
+            
+            if (!this.options.useClones) 
                 asClone = false;
-            }
+            
             now = Date.now();
             livetime = 0;
             ttlMultiplicator = 1000;
-            if (ttl === 0) {
+            if (ttl === 0) 
                 livetime = 0;
-            } else if (ttl) {
+             else if (ttl) 
                 livetime = now + (ttl * ttlMultiplicator);
-            } else {
-                if (this.options.stdTTL === 0) {
+             else {
+                if (this.options.stdTTL === 0) 
                     livetime = this.options.stdTTL;
-                } else {
+                 else 
                     livetime = now + (this.options.stdTTL * ttlMultiplicator);
-                }
+                
             }
             return {
                 t: livetime,
@@ -299,18 +299,18 @@
         };
 
         NodeCache.prototype._unwrap = function(value, asClone) {
-            if (asClone == null) {
+            if (asClone === null)
                 asClone = true;
-            }
-            if (!this.options.useClones) {
+            
+            if (!this.options.useClones) 
                 asClone = false;
-            }
-            if (value.v != null) {
-                if (asClone) {
+            
+            if (value.v !== null) {
+                if (asClone) 
                     return clone(value.v);
-                } else {
+                 else 
                     return value.v;
-                }
+                
             }
             return null;
         };
@@ -320,36 +320,36 @@
         };
 
         NodeCache.prototype._getValLength = function(value) {
-            if (_.isString(value)) {
+            if (_.isString(value)) 
                 return value.length;
-            } else if (this.options.forceString) {
+             else if (this.options.forceString) 
                 return JSON.stringify(value).length;
-            } else if (_.isArray(value)) {
+             else if (_.isArray(value)) 
                 return this.options.arrayValueSize * value.length;
-            } else if (_.isNumber(value)) {
+             else if (_.isNumber(value)) 
                 return 8;
-            } else if (_.isObject(value)) {
+             else if (_.isObject(value)) 
                 return this.options.objectValueSize * _.size(value);
-            } else {
+             else 
                 return 0;
-            }
+            
         };
 
         NodeCache.prototype._error = function(type, data, cb) {
             var error;
-            if (data == null) {
+            if (data == null) 
                 data = {};
-            }
+            
             error = new Error();
             error.name = type;
             error.errorcode = type;
-            error.message = this.ERRORS[type] != null ? this.ERRORS[type](data) : "-";
+            error.message = this.ERRORS[type] != null ? this.ERRORS[type](data) : '-';
             error.data = data;
-            if (cb && _.isFunction(cb)) {
+            if (cb && _.isFunction(cb)) 
                 cb(error, null);
-            } else {
+             else 
                 return error;
-            }
+            
         };
 
         NodeCache.prototype._initErrors = function() {
@@ -363,8 +363,8 @@
         };
 
         NodeCache.prototype._ERRORS = {
-            "ENOTFOUND": "Key `<%= key %>` not found",
-            "EKEYSTYPE": "The keys argument has to be an array."
+            'ENOTFOUND': 'Key `<%= key %>` not found',
+            'EKEYSTYPE': 'The keys argument has to be an array.'
         };
 
         return NodeCache;

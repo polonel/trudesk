@@ -196,22 +196,21 @@ apiController.login = function(req, res) {
 };
 
 apiController.getLoggedInUser = function(req, res) {
-    if (!req.user) {
-        //Could be API
+    if (!req.user)
         return res.status(400).json({success: false, error: 'Invalid Auth'});
-    } else {
-        var resUser = _.clone(req.user._doc);
-        delete resUser.resetPassExpire;
-        delete resUser.accessToken;
-        delete resUser.resetPassHash;
-        delete resUser.password;
-        delete resUser.iOSDeviceTokens;
-        delete resUser.tOTPKey;
-        delete resUser.__v;
-        delete resUser.preferences;
 
-        return res.json({success: true, user: resUser});
-    }
+    var resUser = _.clone(req.user._doc);
+    delete resUser.resetPassExpire;
+    delete resUser.accessToken;
+    delete resUser.resetPassHash;
+    delete resUser.password;
+    delete resUser.iOSDeviceTokens;
+    delete resUser.tOTPKey;
+    delete resUser.__v;
+    delete resUser.preferences;
+
+    return res.json({success: true, user: resUser});
+
 };
 
 /**
