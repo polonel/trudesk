@@ -37,8 +37,8 @@ define('pages/accounts', [
 
     accountsPage.init = function(callback, reset) {
         $(document).ready(function() {
-            var $account_list   = $('#account_list'),
-                $scroller       = $account_list.parents('.scrollable'),
+            var $accountList   = $('#account_list'),
+                $scroller       = $accountList.parents('.scrollable'),
                 $scrollspy      = $('#scrollspy'),
                 $spinner        = $scrollspy.find('i'),
                 $filterAll      = $('.filter-all'),
@@ -52,7 +52,7 @@ define('pages/accounts', [
                 getAccounts();
             }
 
-            UIkit.grid($account_list,{
+            UIkit.grid($accountList,{
                 controls: '#account_list_filter',
                 gutter: 20
             });
@@ -87,7 +87,7 @@ define('pages/accounts', [
                     $.ajax({
                         url: '/api/v1/users?search=' + sValue,
                         success: function(data) {
-                            $account_list.children().css('display', 'none');
+                            $accountList.children().css('display', 'none');
                             var users = data.users;
                             var html = '';
                             _.each(users, function(u) {
@@ -96,8 +96,8 @@ define('pages/accounts', [
 
                             var $injector = angular.injector(['ng', 'trudesk']);
                             $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
-                                var $scope = $account_list.append(html).scope();
-                                $compile($account_list)($scope || $rootScope);
+                                var $scope = $accountList.append(html).scope();
+                                $compile($accountList)($scope || $rootScope);
                                 $rootScope.$digest();
                             }]);
 
@@ -147,7 +147,7 @@ define('pages/accounts', [
                     _.each(users, function (u) {
                         var h = null;
                         if (reset) {
-                            $account_list.html('');
+                            $accountList.html('');
                             h = buildUserHTML(u, true);
                             reset = false;
                         } else
@@ -159,8 +159,8 @@ define('pages/accounts', [
 
                     var $injector = angular.injector(['ng', 'trudesk']);
                     $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
-                        var $scope = $account_list.append(html).scope();
-                        $compile($account_list)($scope || $rootScope);
+                        var $scope = $accountList.append(html).scope();
+                        $compile($accountList)($scope || $rootScope);
                         $rootScope.$digest();
                     }]);
 

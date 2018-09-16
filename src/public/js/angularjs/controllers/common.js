@@ -20,19 +20,22 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
             $scope.setDefaultCreateTicketValues = function() {
               $timeout(function() {
                   UI.$html.on('show.uk.modal', function(event) {
-                      var modal = $(event.target);
+                      var modal = $(event.target),
+                          options,
+                          first;
                       if (modal.length > 0) {
                           var $group = modal.find('select#group');
                           if (angular.isDefined($group[0])) {
-                              var $group_selectize = $group[0].selectize;
-                              var options = $group_selectize.options;
-                              var first = _.chain(options).map(function(v, k) {
-                                  if (angular.isDefined(v.$order) && v.$order === 1) return k;
+                              var $groupSelectize = $group[0].selectize;
+                              options = $groupSelectize.options;
+                              first = _.chain(options).map(function(v, k) {
+                                if (angular.isDefined(v.$order) && v.$order === 1)
+                                    return k;
                               }).first().value();
                               if (first)
-                                  $group_selectize.addItem(first, true);
+                                  $groupSelectize.addItem(first, true);
 
-                              $group_selectize.refreshItems();
+                              $groupSelectize.refreshItems();
                           }
 
                           var $type = modal.find('select#type');
@@ -41,8 +44,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                               $priorities.empty();
 
                           if (angular.isDefined($type[0])) {
-                              var $type_selectize = $type[0].selectize;
-                              $type_selectize.on('change', function(value) {
+                              var $typeSelectize = $type[0].selectize;
+                              $typeSelectize.on('change', function(value) {
                                   // Load Priorities on Change.
                                   var $priorityLoader = $('#priorityLoader');
                                   $priorityLoader.show();
@@ -79,23 +82,24 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                                           );
                                   }, 250);
                               });
-                              options = $type_selectize.options;
+
+                              options = $typeSelectize.options;
                               var defaultType = $type.attr('data-default');
                               if (defaultType) {
                                   var selectDefault = _.find(options, {value: defaultType}).value;
 
                                   if (selectDefault)
-                                      $type_selectize.addItem(selectDefault, true);
+                                      $typeSelectize.addItem(selectDefault, true);
                               } else {
                                   first = _.chain(options).map(function(v, k) {
                                       if (angular.isDefined(v.$order) && v.$order === 1) return k;
                                   }).first().value();
 
                                   if (first)
-                                      $type_selectize.addItem(first, true);
+                                      $typeSelectize.addItem(first, true);
                               }
 
-                              $type_selectize.refreshItems();
+                              $typeSelectize.refreshItems();
                           }
 
                           //Now load priorities for the given type...
@@ -150,7 +154,7 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                                 var vm = this;
                                 var self = $(vm);
                                 self.removeClass('md-input-filled');
-                            })
+                            });
                         }
                     });
 
@@ -253,17 +257,17 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                     element.on('mouseup', mouseup);
 
                     function mouseup() {
-                        var this_dropdown = element.parents('.uk-dropdown');
+                        var thisDropdown = element.parents('.uk-dropdown');
 
-                        this_dropdown.removeClass('uk-dropdown-shown');
+                        thisDropdown.removeClass('uk-dropdown-shown');
 
                         $timeout(function() {
-                            this_dropdown.removeClass('uk-dropdown-active');
-                            this_dropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
+                            thisDropdown.removeClass('uk-dropdown-active');
+                            thisDropdown.parents('*[data-uk-dropdown]').removeClass('uk-open').attr('aria-expanded', false);
 
                         },280);
                     }
                 }
-            }
+            };
         });
 });

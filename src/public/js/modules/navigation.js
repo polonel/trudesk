@@ -12,8 +12,6 @@
 
  **/
 
-"use strict";
-
 define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($, helpers, _, socket) {
     var navigation = {};
 
@@ -67,7 +65,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
             if ($(this).has(e.target).length !== 0)
                 return;
             if (!drop.is(e.target) && drop.has(e.target).length === 0)
-                if (drop.hasClass('pDropOpen')) {
+                {if (drop.hasClass('pDropOpen')) 
                     drop.removeClass('pDropOpen');
                 }
         });
@@ -98,28 +96,28 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function($
         if ($(drop).hasClass('pSmall')) leftO = 180;
 
         var left = (($(this).offset().left - $(window).scrollLeft() - pageOffsetLeft) - leftO);
-        if (drop.hasClass('p-dropdown-left')) {
-            //left += 250;
-        }
+        // if (drop.hasClass('p-dropdown-left')) {
+        //     //left += 250;
+        // }
         var leftExtraOffset = $(drop).attr('data-left-offset');
-        if (_.isUndefined(leftExtraOffset)) {
+        if (_.isUndefined(leftExtraOffset)) 
             leftExtraOffset = 0;
-        }
+        
         left += Number(leftExtraOffset);
         left = left + 'px';
 
         var hasNotice = false;
         var $noticeFrame = $('.wrapper').find('#notice-banner');
-        if ($noticeFrame.length > 0) {
+        if ($noticeFrame.length > 0) 
             hasNotice = $noticeFrame.hasClass('uk-hidden') === false;
-        }
+        
 
         var topOffset = $(this).offset().top - $(window).scrollTop() - pageOffsetTop;
         var top = $(this).outerHeight() + topOffset;
         var topExtraOffset = $(drop).attr('data-top-offset');
-        if (_.isUndefined(topExtraOffset)) {
+        if (_.isUndefined(topExtraOffset)) 
             topExtraOffset = 0;
-        }
+        
         top += Number(topExtraOffset);
 
         if (hasNotice)

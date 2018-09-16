@@ -100,9 +100,9 @@ apiController.import = function(req, res) {
                 groupModel.getGroupByName(groupName, function(err, group) {
                     if (err) return next(err);
 
-                    if (_.isUndefined(group) || _.isNull(group)) {
+                    if (_.isUndefined(group) || _.isNull(group)) 
                         return next('no group found = ' + groupName);
-                    }
+                    
 
                     group.addMember(User._id, function(err) {
                         if (err) return next(err);
@@ -167,9 +167,9 @@ apiController.login = function(req, res) {
     var password = req.body.password;
 
     if (_.isUndefined(username) ||
-        _.isUndefined(password)) {
+        _.isUndefined(password)) 
         return res.sendStatus(403);
-    }
+    
 
     userModel.getUserByUsername(username, function(err, user) {
         if (err) return res.status(401).json({'success': false, 'error': err.message});
@@ -283,12 +283,12 @@ apiController.devices.setDeviceToken = function(req, res) {
 
             res.json({success: true, token: token});
         });
-    })
+    });
 };
 
 apiController.devices.testApn = function(req, res) {
     var notification = {};
-    notification.title = "Test Push Notification [trudesk]";
+    notification.title = 'Test Push Notification [trudesk]';
 
     var userModel = require('../models/user');
     var ticketModel = require('../models/ticket');

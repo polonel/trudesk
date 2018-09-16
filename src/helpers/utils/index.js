@@ -20,9 +20,9 @@ module.exports.sendToSelf = function (socket, method, data) {
 
 module.exports._sendToSelf = function(io, socketId, method, data) {
     _.each(io.sockets.sockets, function(socket) {
-        if (socket.id === socketId) {
+        if (socket.id === socketId) 
             socket.emit(method, data);
-        }
+        
     });
 };
 
@@ -37,8 +37,10 @@ module.exports.sendToAllClientsInRoom = function (io, room, method, data) {
 module.exports.sendToUser = function(socketList, userList, username, method, data) {
     var userOnline = null;
     _.forEach(userList, function(v, k) {
-         if (k.toLowerCase() === username.toLowerCase())
-            return userOnline = v;
+         if (k.toLowerCase() === username.toLowerCase()) {
+             userOnline = v;
+             return true;
+         }
     });
 
     if (_.isNull(userOnline)) return true;
@@ -53,8 +55,8 @@ module.exports.sendToUser = function(socketList, userList, username, method, dat
 
 module.exports.sendToAllExcept = function(io, exceptSocketId, method, data) {
     _.each(io.sockets.sockets, function(socket) {
-        if (socket.id !== exceptSocketId) {
+        if (socket.id !== exceptSocketId) 
             socket.emit(method, data);
-        }
+        
     });
 };

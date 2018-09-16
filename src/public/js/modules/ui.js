@@ -125,9 +125,9 @@ define('modules/ui', [
             //TODO: Fixed this once unread messages is fully impl.
             var count = 0;
             var items = data.conversations;
-            if (count < 1) {
+            if (count < 1) 
                 label.hide();
-            } else {
+             else {
                 label.text(count);
                 label.removeClass('hide');
                 label.show();
@@ -136,7 +136,7 @@ define('modules/ui', [
             var mailDropList = $('div.mail-Messages').find('ul');
             mailDropList.empty();
 
-            var html = "";
+            var html = '';
 
             _.each(items, function(item) {
                 if (item.partner !== undefined) {
@@ -152,7 +152,7 @@ define('modules/ui', [
                     html    += '<span>' + item.recentMessage + '</span>';
                     html    += '</div>';
                     html    += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">';
-                    html    += '<time datetime="' + helpers.formatDate(item.updatedAt, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.updatedAt, "MMM DD, YYYY") + '</time>';
+                    html    += '<time datetime="' + helpers.formatDate(item.updatedAt, 'YYYY-MM-DDThh:mm') + '" class="timestamp">' + helpers.formatDate(item.updatedAt, 'MMM DD, YYYY') + '</time>';
                     html    += '</div>';
                     html    += '</div>';
                     html    += '</a>';
@@ -218,9 +218,9 @@ define('modules/ui', [
 
                 if (status === 3) {
                     //Remove Comment Box
-                    if (ticketReply.length > 0) {
+                    if (ticketReply.length > 0) 
                         ticketReply.addClass('hide');
-                    }
+                    
 
                     //Setup assignee list on Closed
                     if (assigneeListBtn.length > 0) {
@@ -229,55 +229,55 @@ define('modules/ui', [
                         nav.notifications();
                     }
                     //Disabled Ticket Details
-                    if (ticketTypeSelect.length > 0) {
+                    if (ticketTypeSelect.length > 0) 
                         ticketTypeSelect.prop('disabled', true);
-                    }
-                    if (ticketPriority.length > 0) {
+                    
+                    if (ticketPriority.length > 0) 
                         ticketPriority.prop('disabled', true);
-                    }
-                    if (ticketGroup.length > 0) {
+                    
+                    if (ticketGroup.length > 0) 
                         ticketGroup.prop('disabled', true);
-                    }
-                    if (ticketTags.length > 0) {
+                    
+                    if (ticketTags.length > 0) 
                         ticketTags.addClass('hide');
-                    }
-                    if (addAttachments.length > 0) {
+                    
+                    if (addAttachments.length > 0) 
                         addAttachments.addClass('hide');
-                    }
-                    if (editIssue.length > 0) {
+                    
+                    if (editIssue.length > 0) 
                         editIssue.addClass('hide');
-                    }
-                    if (commentActions.length > 0) {
+                    
+                    if (commentActions.length > 0) 
                         commentActions.addClass('hide');
-                    }
+                    
 
                 } else {
-                    if (ticketReply.length > 0) {
+                    if (ticketReply.length > 0) 
                         ticketReply.removeClass('hide');
-                    }
+                    
 
                     //Enable Ticket Details
-                    if (ticketTypeSelect.length > 0) {
+                    if (ticketTypeSelect.length > 0) 
                         ticketTypeSelect.prop('disabled', false);
-                    }
-                    if (ticketPriority.length > 0) {
+                    
+                    if (ticketPriority.length > 0) 
                         ticketPriority.prop('disabled', false);
-                    }
-                    if (ticketGroup.length > 0) {
+                    
+                    if (ticketGroup.length > 0) 
                         ticketGroup.prop('disabled', false);
-                    }
-                    if (ticketTags.length > 0) {
+                    
+                    if (ticketTags.length > 0) 
                         ticketTags.removeClass('hide');
-                    }
-                    if (addAttachments.length > 0) {
+                    
+                    if (addAttachments.length > 0) 
                         addAttachments.removeClass('hide');
-                    }
-                    if (editIssue.length > 0) {
+                    
+                    if (editIssue.length > 0) 
                         editIssue.removeClass('hide');
-                    }
-                    if (commentActions.length > 0) {
+                    
+                    if (commentActions.length > 0) 
                         commentActions.removeClass('hide');
-                    }
+                    
 
                     //Setup assignee list
                     if (assigneeListBtn.length > 0) {
@@ -299,11 +299,11 @@ define('modules/ui', [
                 var html = '<li data-setAssignee="' + user._id + '">';
                 html    += '<a class="messageNotification no-ajaxy" role="button">';
                 html    += '<div class="uk-clearfix">';
-                if (_.isUndefined(user.image)) {
+                if (_.isUndefined(user.image)) 
                     html    += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>';
-                } else {
+                 else 
                     html    += '<div class="profilePic left"><img src="/uploads/users/' + user.image + '" alt="profile"/></div>';
-                }
+                
                 html    += '<div class="messageAuthor"><strong>' + user.fullname + '</strong></div>';
                 html    += '<div class="messageSnippet">';
                 html    += '<span>' + user.email + '</span>';
@@ -326,9 +326,9 @@ define('modules/ui', [
 
                 $.each(assigneeListDrop.find('li[data-setAssignee]'), function() {
                     var self = $(this);
-                    var $_id = self.attr('data-setAssignee');
+                    var id = self.attr('data-setAssignee');
                     self.off('click', setAssigneeClicked);
-                    self.on('click', {_id: $_id}, setAssigneeClicked);
+                    self.on('click', {_id: id}, setAssigneeClicked);
                 });
             }
         });
@@ -376,18 +376,18 @@ define('modules/ui', [
                     details.find('h3').html(name);
                     var a = details.find('a.comment-email-link');
                     var email = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.email;
-                    if (a.length > 0) {
+                    if (a.length > 0) 
                         a.attr('href', 'mailto:' + email).html(email);
-                    } else {
+                     else {
                         a = $('<a></a>').attr('href', 'mailto:' + email).html(email).addClass('comment-email-link uk-text-truncate');
                         details.append(a);
                     }
 
                     var span = details.find('span');
                     var title = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.title;
-                    if (span.length > 0) {
+                    if (span.length > 0) 
                         span.html(title);
-                    } else {
+                     else {
                         span = $('<span></span>').html(title);
                         details.append(span);
                     }
@@ -413,13 +413,13 @@ define('modules/ui', [
         socket.removeAllListeners('updateTicketType');
         socket.on('updateTicketType', function(data) {
             var typeSelect = $('select#tType[data-ticketId="' + data._id + '"] option[value="' + data.type._id + '"]');
-            if (typeSelect.length > 0) {
+            if (typeSelect.length > 0) 
                 typeSelect.prop('selected', true);
-            } else {
+             else {
                 typeSelect = $('div#tType[data-ticketId="' + data._id + '"]');
-                if (typeSelect.length > 0) {
+                if (typeSelect.length > 0) 
                     typeSelect.html(data.type.name);
-                }
+                
             }
         });
     };
@@ -437,9 +437,9 @@ define('modules/ui', [
         socket.removeAllListeners('updateTicketPriority');
         socket.on('updateTicketPriority', function(data) {
             var prioritySelect = $('select#tPriority[data-ticketId="' + data._id + '"] option[value="' + data.priority + '"]');
-            if (prioritySelect.length > 0) {
+            if (prioritySelect.length > 0) 
                 prioritySelect.prop('selected', true);
-            } else {
+             else {
                 prioritySelect = $('div#tPriority[data-ticketId="' + data._id + '"]');
                 if (prioritySelect.length > 0) {
                     var priorityname = 'Normal';
@@ -474,13 +474,13 @@ define('modules/ui', [
         socket.removeAllListeners('updateTicketGroup');
         socket.on('updateTicketGroup', function(data) {
             var groupSelect = $('select#tGroup[data-ticketId="' + data._id + '"] option[value="' + data.group._id + '"]');
-            if (groupSelect.length > 0) {
+            if (groupSelect.length > 0) 
                 groupSelect.prop('selected', true);
-            } else {
+             else {
                 groupSelect = $('div#tGroup[data-ticketId="' + data._id + '"]');
-                if (groupSelect.length > 0) {
+                if (groupSelect.length > 0) 
                     groupSelect.html(data.group.name);
-                }
+                
             }
         });
     };
@@ -566,9 +566,9 @@ define('modules/ui', [
             $ul.empty();
             _.each(ticket.attachments, function(attachment) {
                 var html =  '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a>';
-                if (canRemoveAttachments) {
+                if (canRemoveAttachments) 
                     html += '<a href="#" class="remove-attachment" data-attachmentId="' + attachment._id + '"><i class="fa fa-remove"></i></a></li>';
-                }
+                
 
                 $ul.append(html);
             });
@@ -667,9 +667,9 @@ define('modules/ui', [
                 _.each(ticket.notes, function(i) { i.isNote = true; });
                 combined = _.union(ticket.comments, ticket.notes);
                 allCount = ticket.comments.length + ticket.notes.length;
-            } else {
+            } else 
                 $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').addClass('hide');
-            }
+            
 
             ticket.commentsAndNotes = _.sortBy(combined, 'date');
 
@@ -711,7 +711,7 @@ define('modules/ui', [
                         '<div class="issue-text">' +
                         '<h3>Re: ' + ticket.subject + '</h3>' +
                         '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
-                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, "MMM DD, h:mma") + '</time>' +
+                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, 'MMM DD, h:mma') + '</time>' +
                         '<div class="comment-body"><p>' + item.comment + '</p></div>' +
                         '</div>' +
                         '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + item._id + '" style="margin-bottom: 15px;">' +
@@ -726,12 +726,12 @@ define('modules/ui', [
                         '</form>' +
                         '</div>' +
                         '<div class="comment-actions">';
-                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) 
                         allCommentsHtml += '<div class="remove-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>';
-                    }
-                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+                    
+                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) 
                         allCommentsHtml += '<div class="edit-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE254;</i></div>';
-                    }
+                    
 
                     allCommentsHtml += '</div>' +
                                         '</div>';
@@ -744,7 +744,7 @@ define('modules/ui', [
                         '<div class="issue-text">' +
                         '<h3>Re: ' + ticket.subject + '</h3>' +
                         '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
-                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, "MMM DD, h:mma") + '</time>' +
+                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, 'MMM DD, h:mma') + '</time>' +
                         '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
                         '<div class="comment-body"><p>' + item.note + '</p></div>' +
                         '</div>' +
@@ -760,12 +760,12 @@ define('modules/ui', [
                         '</form>' +
                         '</div>' +
                         '<div class="comment-actions">';
-                    if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+                    if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) 
                         allCommentsHtml += '<div class="remove-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>';
-                    }
-                    if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+                    
+                    if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) 
                         allCommentsHtml += '<div class="edit-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE254;</i></div>';
-                    }
+                    
 
                     allCommentsHtml += '</div>' +
                         '</div>';
@@ -784,7 +784,7 @@ define('modules/ui', [
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a class="comment-email-link" href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
-                    '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, "MMM DD, h:mma") + '</time>' +
+                    '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, 'MMM DD, h:mma') + '</time>' +
                     '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
                     '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
@@ -799,12 +799,12 @@ define('modules/ui', [
                         '</form>' +
                     '</div>' +
                     '<div class="comment-actions">';
-                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+                    if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) 
                         commentsHtml += '<div class="remove-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE5CD;</i></div>';
-                    }
-                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+                    
+                    if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) 
                         commentsHtml += '<div class="edit-comment" data-commentId="' + comment._id + '"><i class="material-icons">&#xE254;</i></div>';
-                    }
+                    
 
                 commentsHtml += '</div>' +
                                 '</div>';
@@ -822,7 +822,7 @@ define('modules/ui', [
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a class="comment-email-link" href="mailto:' + note.owner.email + '">' + note.owner.fullname + ' &lt;' + note.owner.email + '&gt;</a>' +
-                    '<time datetime="' + note.date + '">' + helpers.formatDate(note.date, "MMM DD, h:mma") + '</time>' +
+                    '<time datetime="' + note.date + '">' + helpers.formatDate(note.date, 'MMM DD, h:mma') + '</time>' +
                     '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
                     '<div class="comment-body"><p>' + note.note + '</p></div>' +
                     '</div>' +
@@ -838,12 +838,12 @@ define('modules/ui', [
                     '</form>' +
                     '</div>' +
                     '<div class="comment-actions">';
-                if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+                if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) 
                     notesHtml += '<div class="remove-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE5CD;</i></div>';
-                }
-                if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+                
+                if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) 
                     notesHtml += '<div class="edit-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE254;</i></div>';
-                }
+                
 
                 notesHtml += '</div>' +
                     '</div>';
@@ -889,9 +889,9 @@ define('modules/ui', [
                 html += '<li>' +
                     '<a class="messageNotification" href="/tickets/' + item.data.ticket.uid + '" role="button" data-notificationId="' + item._id + '" >' +
                         '<div class="uk-clearfix">';
-                if (item.unread === true) {
+                if (item.unread === true) 
                     html += '<div class="messageUnread"></div>';
-                }
+                
                 switch (item.type) {
                     case 0:
                         html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>';
@@ -909,7 +909,7 @@ define('modules/ui', [
                         '<span>' + item.message + '</span>' +
                         '</div>' +
                         '<div class="messageDate">' +
-                        '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDThh:mm") + '" class="timestamp">' + helpers.formatDate(item.created, "MMM DD, YYYY") + '</time>' +
+                        '<time datetime="' + helpers.formatDate(item.created, 'YYYY-MM-DDThh:mm') + '" class="timestamp">' + helpers.formatDate(item.created, 'MMM DD, YYYY') + '</time>' +
                         '</div>' +
                         '</div>' +
                         '</a>' +
@@ -954,7 +954,7 @@ define('modules/ui', [
                     html += '</div>';
                     html += '</td>';
                     html += '<td class="date">';
-                    html += '<time datetime="' + helpers.formatDate(item.created, "YYYY-MM-DDThh:mm") + '">' + helpers.formatDate(item.created, "MMM DD, YYYY") + '</time>';
+                    html += '<time datetime="' + helpers.formatDate(item.created, 'YYYY-MM-DDThh:mm') + '">' + helpers.formatDate(item.created, 'MMM DD, YYYY') + '</time>';
                     html += '</td>';
                     html += '</tr>';
 
@@ -973,7 +973,7 @@ define('modules/ui', [
                             helpers.closeNotificationsWindow();
                             History.pushState(null, null, '/tickets/' + $uid);
                         });
-                    })
+                    });
                 });
             }
 
@@ -1025,9 +1025,9 @@ define('modules/ui', [
         socket.removeAllListeners('trudesk:profileImageUpdate');
         socket.on('trudesk:profileImageUpdate', function(data) {
             var profileImage = $('#profileImage[data-userid="' + data.userid + '"]');
-            if (profileImage.length > 0) {
+            if (profileImage.length > 0) 
                 profileImage.attr('src', '/uploads/users/' + data.img + '?r=' + new Date().getTime());
-            }
+            
         });
     };
 

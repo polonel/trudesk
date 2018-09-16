@@ -27,10 +27,10 @@ define('pages/plugins', [
             $searchPluginList.off('keyup');
             $searchPluginList.on('keyup', function() {
                 var value = this.value.toLowerCase();
-                $("table#plugin_list_table").find("tbody").find('tr').each(function() {
-                    var id = $(this).find("td").text().toLowerCase();
+                $('table#plugin_list_table').find('tbody').find('tr').each(function() {
+                    var id = $(this).find('td').text().toLowerCase();
                     $(this).toggle(id.indexOf(value) !== -1);
-                })
+                });
             });
 
             if ($('.plugin-tether').length > 0) {

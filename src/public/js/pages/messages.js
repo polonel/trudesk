@@ -49,7 +49,7 @@ define('pages/messages', [
                     $li = $(target).parents('li');
                 var convoId = $li.attr('data-conversation-id');
                 switch(action.toLowerCase()) {
-                    case "delete":
+                    case 'delete':
                         UIKit.modal.confirm('Are you sure you want to delete this conversation?', function() {
                             //Confirm
                             deleteConversation(convoId);
@@ -103,13 +103,13 @@ define('pages/messages', [
                         if (response.success) {
                             //Check if on conversation
                             var $convo = $('#message-content[data-conversation-id="' + response.conversation._id +'"]');
-                            if ($convo.length > 0) {
+                            if ($convo.length > 0) 
                                 History.pushState(null, null, '/messages', false);
-                            } else {
+                             else {
                                 var $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]');
-                                if ($convoLI.length > 0) {
+                                if ($convoLI.length > 0) 
                                     $convoLI.remove();
-                                }
+                                
                             }
 
                             $.event.trigger('$trudesk:chat:conversation:deleted', {conversation: response.conversation});
@@ -126,12 +126,12 @@ define('pages/messages', [
             function onSearchKeyUp() {
                 var searchTerm = $searchBox.val().toLowerCase();
                 $('.all-user-list li').each(function() {
-                    if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
+                    if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) 
                         $(this).show();
-                    } else {
+                     else 
                         $(this).hide();
-                    }
-                })
+
+                });
             }
 
             function loadMoreMessages() {
@@ -172,7 +172,7 @@ define('pages/messages', [
                    $loading = false;
                 }).error(function(err) {
                     console.log(err);
-                })
+                });
             }
 
             function buildMessageHTML(message) {
@@ -217,9 +217,9 @@ define('pages/messages', [
 
             $(window).on('$trudesk:chat:stoptyping.conversation', function(event, data) {
                 var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]');
-                if (convoListItem.length > 0) {
+                if (convoListItem.length > 0) 
                     convoListItem.find('.message-subject').text($recentMessages[data.cid]);
-                }
+                
             });
 
             //On Chat Message
@@ -233,9 +233,9 @@ define('pages/messages', [
 
                 var html = buildMessageHTML(message);
                 var messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]');
-                if (messageWrapper.length > 0) {
+                if (messageWrapper.length > 0) 
                     messageWrapper.find('#messages').append(html);
-                }
+                
 
                 var convoListItem = $('li[data-conversation-id="' + data.conversation + '"]');
                 if (convoListItem.length > 0) {
@@ -249,9 +249,9 @@ define('pages/messages', [
                     ul.append(li);
 
                     var fromName = message.owner.fullname;
-                    if (message.owner._id.toString() === $loggedInAccountId) {
+                    if (message.owner._id.toString() === $loggedInAccountId) 
                         fromName = 'You';
-                    }
+                    
                     convoListItem.find('.message-subject').text(fromName + ': ' + message.body);
                     $recentMessages[message.conversation] = fromName + ': ' + message.body;
 
@@ -269,8 +269,8 @@ define('pages/messages', [
                             recentMessage: message.owner.fullname + ': ' + message.body
                         });
 
-                        var $injector = angular.injector(["ng", "trudesk"]);
-                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $injector = angular.injector(['ng', 'trudesk']);
+                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                             var $scope = convoUL.prepend(newLI).scope();
                             $compile(convoUL)($scope || $rootScope);
                             $rootScope.$digest();

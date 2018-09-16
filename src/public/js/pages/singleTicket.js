@@ -160,7 +160,7 @@ define('pages/singleTicket', [
                     //helpers.showFlash(res.error, true);
                     helpers.UI.showSnackbar(res.err, true);
                 }
-            })
+            });
         }
     }
 

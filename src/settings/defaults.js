@@ -70,9 +70,9 @@ function showTourSettingDefault(callback) {
 
                 if (_.isFunction(callback)) return callback();
             });
-        } else {
+        } else 
             if (_.isFunction(callback)) return callback();
-        }
+        
     });
 }
 
@@ -147,11 +147,11 @@ function ticketPriorityDefaults(callback) {
     priorities.push(critical);
     async.each(priorities, function(item, next) {
         prioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
-            if (!err && (_.isUndefined(priority) || _.isNull(priority))) {
+            if (!err && (_.isUndefined(priority) || _.isNull(priority))) 
                 return item.save(next);
-            } else {
+             else 
                 return next(err);
-            }
+            
         });
     }, callback);
 }
@@ -161,9 +161,9 @@ function normalizeTags(callback) {
     tagSchema.find({}, function(err, tags) {
         if (err) return callback(err);
         async.each(tags, function(tag, next) {
-            tag.save(next)
+            tag.save(next);
         }, callback);
-    })
+    });
 }
 
 function checkPriorities(callback) {

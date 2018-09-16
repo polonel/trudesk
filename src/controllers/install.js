@@ -52,11 +52,11 @@ installController.existingdb = function(req, res) {
     var data        = req.body;
 
     //Mongo
-    var host        = data['host'];
-    var port        = data['port'];
-    var database    = data['database'];
-    var username    = data['username'];
-    var password    = data['password'];
+    var host        = data.host;
+    var port        = data.port;
+    var database    = data.database;
+    var username    = data.username;
+    var password    = data.password;
 
     //Write Configfile
     var fs = require('fs');

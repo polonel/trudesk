@@ -84,7 +84,7 @@ accountsController.get = function(req, res) {
                         g.members = undefined;
                         g.sendMailTo = undefined;
                         content.data.allGroups = g;
-                        cc(null, grps)
+                        cc(null, grps);
                     });
                 },
                 function(grps, cc) {

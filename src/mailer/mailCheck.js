@@ -30,16 +30,16 @@ mailCheck.inbox = [];
 
 mailCheck.init = function(settings) {
     var s = {};
-    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
-    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
-    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
-    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
-    s.mailerCheckPolling = _.find(settings, function(x) { return x.name === 'mailer:check:polling' });
-    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
-    s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority' });
-    s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount' });
-    s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage' });
+    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable'; });
+    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host'; });
+    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port'; });
+    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username'; });
+    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password'; });
+    s.mailerCheckPolling = _.find(settings, function(x) { return x.name === 'mailer:check:polling'; });
+    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype'; });
+    s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority'; });
+    s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount'; });
+    s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage'; });
 
     s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
     s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
@@ -143,14 +143,14 @@ mailCheck.fetchMail = function() {
                                             simpleParser(buffer, function (err, mail) {
                                                 if (err) winston.warn(err);
 
-                                                if (mail.headers.has('from')) {
+                                                if (mail.headers.has('from')) 
                                                     message.from = mail.headers.get('from').value[0].address;
-                                                }
-                                                if (mail.subject) {
+                                                
+                                                if (mail.subject) 
                                                     message.subject = mail.subject;
-                                                } else {
+                                                 else 
                                                     message.subject = message.from;
-                                                }
+                                                
 
                                                 message.body = mail.textAsHtml;
 
@@ -218,11 +218,11 @@ function handleMessages(messages) {
 
                                     return callback(null, response);
                                 });
-                            } else {
+                            } else 
                                 return callback('No User found.');
-                            }
+                            
                         }
-                    })
+                    });
                 },
                 handleGroup: ['handleUser', function (results, callback) {
                     if (!_.isUndefined(message.group))
@@ -245,8 +245,8 @@ function handleMessages(messages) {
                             mailCheck.fetchMailOptions.defaultTicketType = type._id;
                             message.type = type;
 
-                            return callback(null, type)
-                        })
+                            return callback(null, type);
+                        });
                     } else {
                         ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
                             if (err) return callback(err);
@@ -304,9 +304,9 @@ function handleMessages(messages) {
                     });
                 }]
             }, function (err) {
-                if (err) {
+                if (err) 
                     winston.debug(err);
-                }
+                
 
 
             });

@@ -26,7 +26,7 @@ noticesController.get = function(req, res) {
     }
 
     var content = {};
-    content.title = "Notices";
+    content.title = 'Notices';
     content.nav = 'notices';
 
     content.data = {};
@@ -50,7 +50,7 @@ noticesController.create = function(req, res) {
     }
 
     var content = {};
-    content.title = "Notices - Create";
+    content.title = 'Notices - Create';
     content.nav = 'notices';
 
     content.data = {};
@@ -68,7 +68,7 @@ noticesController.edit = function(req, res) {
     }
 
     var content = {};
-    content.title = "Notices - Edit";
+    content.title = 'Notices - Edit';
     content.nav = 'notices';
 
     content.data = {};
@@ -83,9 +83,9 @@ noticesController.edit = function(req, res) {
 };
 
 function handleError(res, err) {
-    if (err) {
+    if (err) 
         return res.render('error', {layout: false, error: err, message: err.message});
-    }
+    
 }
 
 module.exports = noticesController;

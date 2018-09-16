@@ -19,7 +19,7 @@ var async           = require('async'),
 
     settingSchema   = require('../../../models/setting');
 
-var api_settings = {};
+var apiSettings = {};
 
 
 /**
@@ -51,7 +51,7 @@ var api_settings = {};
      "error": "Invalid Post Data"
  }
  */
-api_settings.updateSetting = function(req, res) {
+apiSettings.updateSetting = function(req, res) {
     var postData = req.body;
     if (_.isUndefined(postData)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
@@ -87,7 +87,7 @@ api_settings.updateSetting = function(req, res) {
     });
 };
 
-api_settings.testMailer = function(req, res) {
+apiSettings.testMailer = function(req, res) {
     var mailer = require('../../../mailer');
     mailer.verify(function(err) {
         if (err) {
@@ -100,4 +100,4 @@ api_settings.testMailer = function(req, res) {
 };
 
 
-module.exports = api_settings;
+module.exports = apiSettings;

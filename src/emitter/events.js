@@ -140,9 +140,9 @@ var notifications       = require('../notifications'); // Load Push Events
                          });
                      }
                  ], function(err) {
-                     if (err) {
+                     if (err) 
                          return winston.warn('[trudesk:events:ticket:created] - Error: ' + err);
-                     }
+                     
 
                      //Send Ticket..
                      util.sendToAllConnectedClients(io, 'ticket:created', ticket);
@@ -340,9 +340,9 @@ var notifications       = require('../notifications'); // Load Push Events
 
                         emails = _.uniq(emails);
 
-                        if (_.size(emails) < 1) {
+                        if (_.size(emails) < 1) 
                             return c();
-                        }
+                        
 
                         var email = new Email({
                             views: {
@@ -367,9 +367,9 @@ var notifications       = require('../notifications'); // Load Push Events
                                     };
 
                                     mailer.sendMail(mailOptions, function(err) {
-                                        if (err) {
+                                        if (err) 
                                             winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err);
-                                        }
+                                        
                                     });
                                 }).catch(function(err) {
                                     winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err);
@@ -408,7 +408,7 @@ var notifications       = require('../notifications'); // Load Push Events
                 tpsUsername: tpsUsername,
                 tpsApiKey: tpsApiKey,
                 hostname: data.hostname
-            }, { type: 4, ticketId: data.ticketId, ticketUid: data.ticketUid, assigneeId: data.assigneeId})
+            }, { type: 4, ticketId: data.ticketId, ticketUid: data.ticketUid, assigneeId: data.assigneeId});
         });
     });
 

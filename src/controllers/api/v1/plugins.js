@@ -20,13 +20,13 @@ var winston = require('winston'),
     mkdirp  = require('mkdirp'),
     tar     = require('tar');
 
-var api_plugins = {};
+var apiPlugins = {};
 
 var pluginPath = path.join(__dirname, '../../../../plugins');
 
 var pluginServerUrl = 'http://plugins.trudesk.io';
 
-api_plugins.installPlugin = function(req, res) {
+apiPlugins.installPlugin = function(req, res) {
     var packageid = req.params.packageid;
 
     request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response) {
@@ -78,7 +78,7 @@ api_plugins.installPlugin = function(req, res) {
     });
 };
 
-api_plugins.removePlugin = function(req, res) {
+apiPlugins.removePlugin = function(req, res) {
     var packageid = req.params.packageid;
 
     request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response, body) {
@@ -95,7 +95,7 @@ api_plugins.removePlugin = function(req, res) {
 
             res.json({success: true});
             restartServer();
-        })
+        });
     });
 };
 
@@ -115,4 +115,4 @@ function restartServer() {
     });
 }
 
-module.exports = api_plugins;
+module.exports = apiPlugins;

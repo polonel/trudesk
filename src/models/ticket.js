@@ -1171,8 +1171,8 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
                         o._id = ticket.group._id;
                         o.name = ticket.group.name;
 
-                        if (!_.filter(a, {'name': o.name}).length)
-                            a.push(o);
+                        if (!_.filter(arr, {'name': o.name}).length)
+                            arr.push(o);
                         else
                             o = null;
 

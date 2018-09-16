@@ -18,7 +18,7 @@ var _               = require('lodash'),
     groupSchema     = require('../../../models/group'),
     ticketSchema    = require('../../../models/ticket');
 
-var api_groups = {};
+var apiGroups = {};
 
 /**
  * @api {get} /api/v1/groups Get Groups
@@ -38,7 +38,7 @@ var api_groups = {};
  * @apiSuccess {array}      groups.members      Array of Users that are members of this group
  *
  */
-api_groups.get = function(req, res) {
+apiGroups.get = function(req, res) {
     var user = req.user;
     var permissions = require('../../../permissions');
     var hasPublic = permissions.canThis(user.role, 'ticket:public');
@@ -76,7 +76,7 @@ api_groups.get = function(req, res) {
  *
  */
 
-api_groups.getAll = function(req, res) {
+apiGroups.getAll = function(req, res) {
     groupSchema.getAllGroups(function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
@@ -102,7 +102,7 @@ api_groups.getAll = function(req, res) {
  * @apiSuccess {array}      groups.members      Array of Users that are members of this group
  *
  */
-api_groups.getSingleGroup = function(req, res) {
+apiGroups.getSingleGroup = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id)) return res.status(400).json({error: 'Invalid Request'});
 
@@ -146,7 +146,7 @@ api_groups.getSingleGroup = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_groups.create = function(req, res) {
+apiGroups.create = function(req, res) {
     var Group = new groupSchema();
 
     Group.name = req.body.name;
@@ -193,7 +193,7 @@ api_groups.create = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_groups.updateGroup = function(req, res) {
+apiGroups.updateGroup = function(req, res) {
     var id = req.params.id;
     var data = req.body;
     if (_.isUndefined(id) || _.isUndefined(data) || !_.isObject(data)) return res.status(400).json({error: 'Invalid Post Data'});
@@ -242,7 +242,7 @@ api_groups.updateGroup = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_groups.deleteGroup = function(req, res) {
+apiGroups.deleteGroup = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id)) return res.status(400).json({success: false, error:'Error: Invalid Group Id.'});
 
@@ -250,13 +250,13 @@ api_groups.deleteGroup = function(req, res) {
         function(next) {
             var grps = [id];
             ticketSchema.getTickets(grps, function(err, tickets) {
-                if (err) {
+                if (err) 
                     return next('Error: ' + err.message);
-                }
+                
 
-                if (_.size(tickets) > 0) {
+                if (_.size(tickets) > 0) 
                     return next('Error: Cannot delete a group with tickets.');
-                }
+                
 
                 return next();
             });
@@ -281,4 +281,4 @@ api_groups.deleteGroup = function(req, res) {
     });
 };
 
-module.exports = api_groups;
+module.exports = apiGroups;

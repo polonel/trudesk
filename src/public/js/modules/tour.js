@@ -60,7 +60,7 @@ define('modules/tour', [
                             'Content-Type': 'application/json'
                         },
                         data: JSON.stringify({
-                            preference: "tourCompleted",
+                            preference: 'tourCompleted',
                             value: true
                         }),
                         success: function() {
@@ -69,7 +69,7 @@ define('modules/tour', [
                         error: function(error) {
                             console.error(error);
                         }
-                    })
+                    });
                 }
             }
         ],

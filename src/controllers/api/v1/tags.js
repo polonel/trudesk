@@ -16,7 +16,7 @@ var _ = require('lodash'),
     async = require('async'),
     tagSchema = require('../../../models/tag');
 
-var api_tags = {};
+var apiTags = {};
 
 /**
  * @api {post} /api/v1/tags/create Creates a tag
@@ -39,7 +39,7 @@ var api_tags = {};
  *
  * @apiError InvalidPostData Invalid Post Data
  */
-api_tags.createTag = function(req, res) {
+apiTags.createTag = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data.tag)) return res.status(400).json({error: 'Invalid Post Data'});
 
@@ -54,10 +54,10 @@ api_tags.createTag = function(req, res) {
     });
 };
 
-api_tags.getTagsWithLimit = function(req, res) {
+apiTags.getTagsWithLimit = function(req, res) {
     var qs = req.query;
-    var limit = qs["limit"] ? qs["limit"] : 25;
-    var page = (qs["page"]) ? qs["page"] : 0;
+    var limit = qs.limit ? qs.limit : 25;
+    var page = (qs.page) ? qs.page : 0;
 
     var tagSchema = require('../../../models/tag');
     try {
@@ -86,7 +86,7 @@ api_tags.getTagsWithLimit = function(req, res) {
  * @apiSuccess {object} tag Updated Tag
  *
  */
-api_tags.updateTag = function(req, res) {
+apiTags.updateTag = function(req, res) {
     var id = req.params.id;
     var data = req.body;
     if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data))
@@ -120,7 +120,7 @@ api_tags.updateTag = function(req, res) {
  * @apiSuccess {boolean} success Successfully?
  *
  */
-api_tags.deleteTag = function(req, res) {
+apiTags.deleteTag = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({success: false, error: 'Invalid Tag Id'});
 
@@ -156,4 +156,4 @@ api_tags.deleteTag = function(req, res) {
     });
 };
 
-module.exports = api_tags;
+module.exports = apiTags;

@@ -184,7 +184,7 @@ var init = function(tickets, callback) {
         }
     ], function(err) {
         $tickets = null;
-        return callback(err, ex)
+        return callback(err, ex);
     });
 };
 

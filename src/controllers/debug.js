@@ -353,10 +353,10 @@ debugController.populatedatabase = function(req, res) {
                 var group = {
                     name: name,
                     __v: 0,
-                    members: _.map(users, function(o) { return o._id})
+                    members: _.map(users, function(o) { return o._id; })
                 };
 
-                groups.push(group)
+                groups.push(group);
             }
 
             groupSchema.collection.insert(groups, done);
@@ -498,7 +498,7 @@ debugController.sendmail = function(req, res) {
     var Email               = require('email-templates');
     var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
 
-    var to = req.query['email'];
+    var to = req.query.email;
     if (to === undefined)
         return res.status(400).send('Invalid Email in querystring "email"');
 

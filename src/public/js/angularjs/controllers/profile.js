@@ -77,7 +77,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                 }).error(function(e) {
                     $log.log('[trudesk:profile:showTour] - ' + e.error.message);
                     helpers.UI.showSnackbar('Error ' + e.error.message, true);
-                })
+                });
             };
 
             $scope.back = function($event) {
@@ -157,9 +157,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                     });
                 } else {
                     generateL2Auth(function(err, key) {
-                        if (err || angular.isUndefined(key)) {
-                           //$window.location.reload();
-                        } else {
+                        // if (err || angular.isUndefined(key)) {
+                        //    //$window.location.reload();
+                        // } else {
                             $timeout(function(){
                                 $scope.otpEnabled = true;
                                 angular.element(event.target).prop('checked', true);
@@ -175,7 +175,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                             $totpPanel.removeClass('hide');
                             fixInputLabels();
                             $totpPanel.slideDown();
-                        }
+                        // }
                     });
                 }
 

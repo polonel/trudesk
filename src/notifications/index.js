@@ -18,20 +18,20 @@ var _                   = require('lodash'),
 
 module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification) {
     var body = {
-        "title": notification.title,
-        "content": notification.content,
-        "data": {
-            "hostname": notification.hostname,
-            "users": notification.data.users
+        'title': notification.title,
+        'content': notification.content,
+        'data': {
+            'hostname': notification.hostname,
+            'users': notification.data.users
         }
     };
 
-    if (notification.data.ticketId) {
+    if (notification.data.ticketId) 
         body.data.ticketId = notification.data.ticketId;
-    }
-    if (notification.data.ticketUid) {
+    
+    if (notification.data.ticketUid) 
         body.data.ticketUid = notification.data.ticketUid;
-    }
+    
 
 
     request({

@@ -38,35 +38,34 @@
  */
 var roles = {
     admin: {
-        id: "admin",
-        name: "Administrator",
-        description: "Administrators",
-        allowedAction: ["*"]
+        id: 'admin',
+        name: 'Administrator',
+        description: 'Administrators',
+        allowedAction: ['*']
     },
     mod: {
-        id: "mod",
-        name: "Moderator",
-        description: "Moderators",
-        allowedAction: ["mod:*", "ticket:create edit view attachment removeAttachment", "comment:*", "notes:*", "reports:view"]
+        id: 'mod',
+        name: 'Moderator',
+        description: 'Moderators',
+        allowedAction: ['mod:*', 'ticket:create edit view attachment removeAttachment', 'comment:*', 'notes:*', 'reports:view']
     },
     support: {
-        id: "support",
-        name: "Support",
-        description: "Support User",
-        allowedAction: ["ticket:*", "accounts:create edit view delete", "comment:editSelf create delete", "notes:create view", "reports:view", "notices:*"]
+        id: 'support',
+        name: 'Support',
+        description: 'Support User',
+        allowedAction: ['ticket:*', 'accounts:create edit view delete', 'comment:editSelf create delete', 'notes:create view', 'reports:view', 'notices:*']
     },
     user: {
-        id: "user",
-        name: "User",
-        description: "User",
-        allowedAction: ["ticket:create editSelf attachment", "comment:create editSelf" ]
+        id: 'user',
+        name: 'User',
+        description: 'User',
+        allowedAction: ['ticket:create editSelf attachment', 'comment:create editSelf' ]
     }
 };
 
 if (typeof exports !== 'undefined') {
-    if (typeof module !== 'undefined' && module.exports) {
+    if (typeof module !== 'undefined' && module.exports) 
         exports = module.exports = roles;
-    }
-} else {
+    
+} else 
     window.ROLES = roles;
-}

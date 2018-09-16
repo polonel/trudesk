@@ -141,7 +141,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 }, function(err) {
                     $log.error('[trudesk.Messages.startNewConversation()] - Error: ');
                     $log.error(err);
-                })
+                });
             };
         });
 });

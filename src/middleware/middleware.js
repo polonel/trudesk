@@ -118,7 +118,7 @@ middleware.cache = function(seconds) {
         res.setHeader('Cache-Control', 'public, max-age=' + seconds);
 
         next();
-    }
+    };
 };
 
 middleware.checkCaptcha = function(req, res, next) {

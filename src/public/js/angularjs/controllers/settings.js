@@ -30,7 +30,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         });
                     });
                 }
-            }
+            };
         })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
             var mdeToolbarItems = [

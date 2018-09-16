@@ -303,6 +303,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 closeWindow: function closeWindow() {
                     UIkit.modal('#ticketFilterModal').hide();
                 }
-            }
+            };
         });
 });
