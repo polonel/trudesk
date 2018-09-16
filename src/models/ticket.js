@@ -1161,12 +1161,12 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
             q.exec(function(err, t) {
                 if (err) return next(err);
 
-                var a = [];
+                var arr = [];
 
                 for (var i = 0; i < t.length; i++) {
                     var ticket = t[i];
                     if (ticket.group) {
-                        ticketsDb.push({ticketId: t[i]._id, groupId: t[i].group._id});
+                        ticketsDb.push({ticketId: ticket._id, groupId: ticket.group._id});
                         var o = {};
                         o._id = ticket.group._id;
                         o.name = ticket.group.name;
@@ -1177,12 +1177,11 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
                             o = null;
 
                     }
+
                     ticket = null;
                 }
 
-                var final = _.uniq(a);
-
-                return next(null, final);
+                return next(null, _.uniq(arr));
             });
         },
         function(grps, next) {
