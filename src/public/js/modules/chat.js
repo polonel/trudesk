@@ -107,7 +107,7 @@ define('modules/chat',[
         socket.removeAllListeners('$trudesk:chat:updateOnlineBubbles');
         socket.on('$trudesk:chat:updateOnlineBubbles', function(data) {
             var $u = _.throttle(function() {
-                UpdateOnlineBubbles(data);
+                updateOnlineBubbles(data);
             }, 1000, {trailing: false});
 
             $u();
@@ -570,7 +570,7 @@ define('modules/chat',[
         socket.emit('$trudesk:chat:updateOnlineBubbles');
     };
 
-    function UpdateOnlineBubbles(usersOnline) {
+    function updateOnlineBubbles(usersOnline) {
         $('span[data-user-status-id]').each(function() {
             $(this).removeClass('user-online user-idle').addClass('user-offline');
         });

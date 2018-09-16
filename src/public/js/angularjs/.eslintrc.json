@@ -8,11 +8,13 @@
   "rules": {
     "no-console": "off",
     "angular/angularelement": "off",
-    "angular/controller-as": "off"
+    "angular/controller-as": "off",
+    "angular/controller-name": "off"
   },
   "globals": {
     "angular": 1,
     "define": 1,
-    "requirejs": 1
+    "requirejs": 1,
+    "History": 1
   }
 }

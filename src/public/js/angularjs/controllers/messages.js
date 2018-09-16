@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, socket, md, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, socket) {
     return angular.module('trudesk.controllers.messages', ['trudesk.services.session'])
         .controller('messagesCtrl', function(SessionService, $scope, $document, $http, $window, $cookies, $timeout, $log) {
 

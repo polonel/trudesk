@@ -16,8 +16,8 @@ var async = require('async'),
     _ = require('lodash'),
     winston = require('winston'),
 
-    conversationSchema = require('../../../models/chat/conversation'),
-    messageSchema = require('../../../models/chat/message');
+    ConversationSchema = require('../../../models/chat/conversation'),
+    MessageSchema = require('../../../models/chat/message');
 
 var apiMessages = {};
 
@@ -45,7 +45,7 @@ var apiMessages = {};
  */
 
 apiMessages.getConversations = function(req, res) {
-    conversationSchema.getConversations(req.user._id, function(err, conversations) {
+    ConversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         return res.json({success: true, conversations: conversations});
@@ -53,7 +53,7 @@ apiMessages.getConversations = function(req, res) {
 };
 
 apiMessages.getRecentConversations = function(req, res) {
-    conversationSchema.getConversations(req.user._id, function(err, conversations) {
+    ConversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         var result = [];
@@ -63,7 +63,7 @@ apiMessages.getRecentConversations = function(req, res) {
             if (idx === -1)
                 return res.status(400).json({success: false, error: 'Unable to attach to userMeta'});
 
-            messageSchema.getMostRecentMessage(item._id, function(err, m) {
+            MessageSchema.getMostRecentMessage(item._id, function(err, m) {
                 if (err) return done(err);
                 var r = item.toObject();
 
@@ -89,13 +89,13 @@ apiMessages.getRecentConversations = function(req, res) {
 };
 
 apiMessages.get = function(req, res) {
-    conversationSchema.getConversations(req.user._id, function(err, conversations) {
+    ConversationSchema.getConversations(req.user._id, function(err, conversations) {
         if (err) return res.status(400).json({success: false, error: err});
         var fullConversations = [];
 
         async.forEach(conversations, function(item, done) {
 
-            messageSchema.getFullConversation(item._id, function(err, messages) {
+            MessageSchema.getFullConversation(item._id, function(err, messages) {
                 if (err) return done(err);
                 fullConversations.push({cId: item._id, p: item.participants, messages: messages});
 
@@ -115,7 +115,7 @@ apiMessages.startConversation = function(req, res) {
     var participants = payload.participants;
 
     //Check if Conversation with these participants exist
-    conversationSchema.getConversations(participants, function(err, convo) {
+    ConversationSchema.getConversations(participants, function(err, convo) {
         if (err) 
             return res.status(400).json({success: false, error: err.message});
         
@@ -136,7 +136,7 @@ apiMessages.startConversation = function(req, res) {
             userMeta.push(meta);
         });
 
-        var Conversation = new conversationSchema({
+        var Conversation = new ConversationSchema({
             participants: participants,
             userMeta: userMeta,
             updatedAt: new Date()
@@ -169,7 +169,7 @@ apiMessages.send = function(req, res) {
     async.waterfall([
         function(done) {
             // Updated conversation to save UpdatedAt field.
-            conversationSchema.findOneAndUpdate({_id: cId}, {updatedAt: new Date()}, {new: false}, function(err, convo) {
+            ConversationSchema.findOneAndUpdate({_id: cId}, {updatedAt: new Date()}, {new: false}, function(err, convo) {
                 if (err) return done(err);
                 if (convo === null || convo === undefined)
                     return done('Invalid Conversation: ' + convo );
@@ -177,7 +177,7 @@ apiMessages.send = function(req, res) {
             });
         },
         function(convo, done) {
-            var Message = new messageSchema({
+            var Message = new MessageSchema({
                 conversation: convo._id,
                 owner: owner,
                 body: message
@@ -214,7 +214,7 @@ apiMessages.getMessagesForConversation = function(req, res) {
     var response = {};
     async.series([
         function(done) {
-            conversationSchema.getConversation(conversation, function(err, convo) {
+            ConversationSchema.getConversation(conversation, function(err, convo) {
                 if (err) return done(err);
                 if (!convo) return done({message: 'Invalid Conversation'});
 
@@ -224,7 +224,7 @@ apiMessages.getMessagesForConversation = function(req, res) {
             });
         },
         function(done) {
-            messageSchema.getConversationWithObject({cid: conversation, page: page, limit: limit, userMeta: response.conversation.userMeta, requestingUser: req.user}, function(err, messages) {
+            MessageSchema.getConversationWithObject({cid: conversation, page: page, limit: limit, userMeta: response.conversation.userMeta, requestingUser: req.user}, function(err, messages) {
                 if (err) return done(err);
 
                 response.messages = messages;
@@ -248,7 +248,7 @@ apiMessages.deleteConversation = function(req, res) {
     if (_.isUndefined(conversation) || _.isNull(conversation))
         return res.status(400).json({success: false, error: 'Invalid Conversation'});
 
-    conversationSchema.getConversation(conversation, function(err, convo) {
+    ConversationSchema.getConversation(conversation, function(err, convo) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         var user = req.user;

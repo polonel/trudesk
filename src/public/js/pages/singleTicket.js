@@ -171,9 +171,9 @@ define('pages/singleTicket', [
 
         var ticketId = $('#__ticketId').html();
         var commentId = self.attr('data-commentId');
-        if (commentId.length > 0 && ticketId.length > 0) {
+        if (commentId.length > 0 && ticketId.length > 0) 
             socketClient.ui.removeComment(ticketId, commentId);
-        }
+        
     }
 
     function onEditCommentClick(e) {
@@ -233,9 +233,9 @@ define('pages/singleTicket', [
 
         var ticketId = $('#__ticketId').html();
         var noteId = self.attr('data-noteid');
-        if (noteId.length > 0 && ticketId.length > 0) {
+        if (noteId.length > 0 && ticketId.length > 0) 
             socketClient.ui.removeNote(ticketId, noteId);
-        }
+        
     }
 
     function onEditIssueClick() {

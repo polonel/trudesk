@@ -221,7 +221,7 @@ accountsController.bindLdap = function(req, res) {
                         _.remove(entries, function(k) { return k.sAMAccountName.toLowerCase() === mappedUsernames[i].toLowerCase(); });
                     }
 
-                    _.remove(entries, function(e) { return _.isUndefined(e.mail)});
+                    _.remove(entries, function(e) { return _.isUndefined(e.mail); });
 
                     return res.json({success: true, addedUsers: entries, updatedUsers: foundUsers});
                 });

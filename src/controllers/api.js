@@ -61,7 +61,7 @@ apiController.plugins = apiPluginsV1;
 apiController.import = function(req, res) {
     var fs = require('fs');
     var path = require('path');
-    var userModel =  require('../models/user');
+    var UserModal =  require('../models/user');
     var groupModel = require('../models/group');
 
     var array = fs.readFileSync(path.join(__dirname, '..', 'import.csv')).toString().split(('\n'));
@@ -79,7 +79,7 @@ apiController.import = function(req, res) {
 
         var groupName = fields[2].replace('\\r', '');
         groupName = _.trim(groupName);
-        var User = new userModel({
+        var User = new UserModal({
             username: fields[0],
             password: 'Password123',
             email: fields[1],

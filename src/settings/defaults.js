@@ -16,8 +16,8 @@ var _               = require('lodash');
 var async           = require('async');
 var winston         = require('winston');
 
-var settingsSchema  = require('../models/setting');
-var prioritySchema  = require('../models/ticketpriority');
+var SettingsSchema  = require('../models/setting');
+var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
 
@@ -49,7 +49,7 @@ settingsDefaults.init = function(callback) {
 };
 
 function showTourSettingDefault(callback) {
-    settingsSchema.getSettingByName('showTour:enable', function(err, setting) {
+    SettingsSchema.getSettingByName('showTour:enable', function(err, setting) {
         if (err) {
             winston.warn(err);
             if (_.isFunction(callback)) return callback(err);
@@ -57,7 +57,7 @@ function showTourSettingDefault(callback) {
         }
 
         if (!setting) {
-            var defaultShowTour = new settingsSchema({
+            var defaultShowTour = new SettingsSchema({
                 name: 'showTour:enable',
                 value: 0
             });
@@ -77,7 +77,7 @@ function showTourSettingDefault(callback) {
 }
 
 function ticketTypeSettingDefault(callback) {
-    settingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
+    SettingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
         if (err) {
             winston.warn(err);
             if (_.isFunction(callback))
@@ -96,7 +96,7 @@ function ticketTypeSettingDefault(callback) {
 
                 var type = _.first(types);
                 // Save default ticket type
-                var defaultTicketType = new settingsSchema({
+                var defaultTicketType = new SettingsSchema({
                     name: 'ticket:type:default',
                     value: type._id
                 });
@@ -122,20 +122,20 @@ function ticketTypeSettingDefault(callback) {
 function ticketPriorityDefaults(callback) {
     var priorities = [];
 
-    var normal = new prioritySchema({
+    var normal = new PrioritySchema({
         name: 'Normal',
         migrationNum: 1,
         default: true
     });
 
-    var urgent = new prioritySchema({
+    var urgent = new PrioritySchema({
         name: 'Urgent',
         migrationNum: 2,
         htmlColor: '#8e24aa',
         default: true
     });
 
-    var critical = new prioritySchema({
+    var critical = new PrioritySchema({
         name: 'Critical',
         migrationNum: 3,
         htmlColor: '#e65100',
@@ -146,7 +146,7 @@ function ticketPriorityDefaults(callback) {
     priorities.push(urgent);
     priorities.push(critical);
     async.each(priorities, function(item, next) {
-        prioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
+        PrioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
             if (!err && (_.isUndefined(priority) || _.isNull(priority))) 
                 return item.save(next);
              else 
@@ -195,7 +195,7 @@ function checkPriorities(callback) {
         async.parallel([
             function(done) {
                 if (!migrateP1) return done();
-                prioritySchema.getByMigrationNum(1, function(err, normal) {
+                PrioritySchema.getByMigrationNum(1, function(err, normal) {
                     if (!err) {
                         winston.debug('Converting Priority: Normal');
                         return ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
@@ -216,7 +216,7 @@ function checkPriorities(callback) {
             },
             function(done) {
                 if (!migrateP2) return done();
-                prioritySchema.getByMigrationNum(2, function(err, urgent) {
+                PrioritySchema.getByMigrationNum(2, function(err, urgent) {
                     if (!err) {
                         winston.debug('Converting Priority: Urgent');
                         return ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
@@ -237,7 +237,7 @@ function checkPriorities(callback) {
             },
             function(done) {
                 if (!migrateP3) return done();
-                prioritySchema.getByMigrationNum(3, function(err, critical) {
+                PrioritySchema.getByMigrationNum(3, function(err, critical) {
                     if (!err) {
                         winston.debug('Converting Priority: Critical');
                         return ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
@@ -263,7 +263,7 @@ function checkPriorities(callback) {
 function addedDefaultPrioritesToTicketTypes(callback) {
     async.waterfall([
         function(next) {
-            prioritySchema.find({default: true})
+            PrioritySchema.find({default: true})
                 .then(function(results) {
                     return next(null, results);
                 })

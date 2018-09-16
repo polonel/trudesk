@@ -499,8 +499,8 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
             if (err) return callback(err);
 
             // Create a group for this user
-            var groupSchema = require('./group');
-            var group = new groupSchema({
+            var GroupSchema = require('./group');
+            var group = new GroupSchema({
                 name: savedUser.email,
                 members: [savedUser._id],
                 sendMailTo: [savedUser._id],

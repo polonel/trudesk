@@ -20,7 +20,7 @@ var emitter             = require('../emitter');
 var util                = require('../helpers/utils');
 var ticketSchema        = require('../models/ticket');
 var userSchema          = require('../models/user');
-var notificationSchema  = require('../models/notification');
+var NotificationSchema  = require('../models/notification');
 var settingsSchema      = require('../models/setting');
 var Email               = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
@@ -232,7 +232,7 @@ var notifications       = require('../notifications'); // Load Push Events
     }
 
     function saveNotification(user, ticket, callback) {
-        var notification = new notificationSchema({
+        var notification = new NotificationSchema({
             owner: user,
             title: 'Ticket #' + ticket.uid + ' Created',
             message: ticket.subject,
@@ -283,7 +283,7 @@ var notifications       = require('../notifications'); // Load Push Events
                     if (ticket.owner._id.toString() === comment.owner.toString()) return cb;
                     if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString()) return cb;
 
-                    var notification = new notificationSchema({
+                    var notification = new NotificationSchema({
                         owner: ticket.owner,
                         title: 'Comment Added to Ticket#' + ticket.uid,
                         message: ticket.subject,
@@ -301,7 +301,7 @@ var notifications       = require('../notifications'); // Load Push Events
                     if (ticket.assignee._id.toString() === comment.owner.toString()) return cb;
                     if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb();
 
-                    var notification = new notificationSchema({
+                    var notification = new NotificationSchema({
                         owner: ticket.assignee,
                         title: 'Comment Added to Ticket#' + ticket.uid,
                         message: ticket.subject,

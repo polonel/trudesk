@@ -102,13 +102,13 @@ apiPlugins.removePlugin = function(req, res) {
 function restartServer() {
     var pm2 = require('pm2');
     pm2.connect(function(err) {
-        if (err) {
+        if (err) 
             winston.error(err);
-        }
+        
         pm2.restart('trudesk', function(err) {
-            if (err) {
+            if (err) 
                 return winston.error(err);
-            }
+            
 
             pm2.disconnect();
         });

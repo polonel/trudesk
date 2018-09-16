@@ -15,7 +15,7 @@
 var _               = require('lodash'),
     async           = require('async'),
 
-    groupSchema     = require('../../../models/group'),
+    GroupSchema     = require('../../../models/group'),
     ticketSchema    = require('../../../models/ticket');
 
 var apiGroups = {};
@@ -43,11 +43,11 @@ apiGroups.get = function(req, res) {
     var permissions = require('../../../permissions');
     var hasPublic = permissions.canThis(user.role, 'ticket:public');
 
-    groupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
+    GroupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         if (hasPublic) {
-            groupSchema.getAllPublicGroups(function (err, grps) {
+            GroupSchema.getAllPublicGroups(function (err, grps) {
                 groups = groups.concat(grps);
 
                 return res.json({success: true, groups: groups});
@@ -77,7 +77,7 @@ apiGroups.get = function(req, res) {
  */
 
 apiGroups.getAll = function(req, res) {
-    groupSchema.getAllGroups(function(err, groups) {
+    GroupSchema.getAllGroups(function(err, groups) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         return res.json({success: true, groups: groups});
@@ -106,7 +106,7 @@ apiGroups.getSingleGroup = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id)) return res.status(400).json({error: 'Invalid Request'});
 
-    groupSchema.getGroupById(id, function(err, group) {
+    GroupSchema.getGroupById(id, function(err, group) {
         if (err) return res.status(400).json({error: err.message});
 
         return res.status(200).json({success: true, group: group});
@@ -147,7 +147,7 @@ apiGroups.getSingleGroup = function(req, res) {
  }
  */
 apiGroups.create = function(req, res) {
-    var Group = new groupSchema();
+    var Group = new GroupSchema();
 
     Group.name = req.body.name;
     Group.members = req.body.members;
@@ -203,7 +203,7 @@ apiGroups.updateGroup = function(req, res) {
     if (!_.isArray(data.sendMailTo))
         data.sendMailTo = [data.sendMailTo];
 
-    groupSchema.getGroupById(id, function(err, group) {
+    GroupSchema.getGroupById(id, function(err, group) {
         if (err) return res.status(400).json({error: err.message});
 
         var members = _.compact(data.members);
@@ -262,7 +262,7 @@ apiGroups.deleteGroup = function(req, res) {
             });
         },
         function(next) {
-            groupSchema.getGroupById(id, function(err, group) {
+            GroupSchema.getGroupById(id, function(err, group) {
                 if (err) return next('Error: ' + err.message);
 
                 if (group.name.toLowerCase() === 'administrators') return next('Error: Unable to delete default Administrators group.');

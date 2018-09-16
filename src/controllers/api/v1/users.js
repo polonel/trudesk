@@ -18,7 +18,7 @@ var async       = require('async'),
     permissions = require('../../../permissions'),
     emitter     = require('../../../emitter'),
 
-    userSchema  = require('../../../models/user'),
+    UserSchema  = require('../../../models/user'),
     groupSchema = require('../../../models/group'),
     notificationSchema = require('../../../models/notification');
 
@@ -60,7 +60,7 @@ apiUsers.getWithLimit = function(req, res) {
 
     async.waterfall([
         function(callback) {
-            userSchema.getUserWithObject(obj, function(err, results) {
+            UserSchema.getUserWithObject(obj, function(err, results) {
                 callback(err, results);
             });
 
@@ -86,7 +86,7 @@ apiUsers.getWithLimit = function(req, res) {
 
                         user.groups = _.map(groups, 'name');
 
-                        result.push(StripUserFields(user));
+                        result.push(stripUserFields(user));
                         return c();
                     }, function(err) {
                         if (err) return callback(err);
@@ -148,7 +148,7 @@ apiUsers.create = function(req, res) {
 
     if (postData.aPass !== postData.aPassConfirm) return res.status(400).json({success: false, error: 'Invalid Password Match'});
 
-    var account = new userSchema({
+    var account = new UserSchema({
         username:   postData.aUsername,
         password:   postData.aPass,
         fullname:   postData.aFullname,
@@ -232,8 +232,8 @@ apiUsers.createPublicAccount = function(req, res) {
 
     async.waterfall([
         function(next) {
-            var userSchema = require('../../../models/user');
-            user = new userSchema({
+            var UserSchema = require('../../../models/user');
+            user = new UserSchema({
                 username: postData.user.email,
                 password: postData.user.password,
                 fullname: postData.user.fullname,
@@ -248,8 +248,8 @@ apiUsers.createPublicAccount = function(req, res) {
             });
         },
         function (savedUser, next) {
-            var groupSchema = require('../../../models/group');
-            group = new groupSchema({
+            var GroupSchema = require('../../../models/group');
+            group = new GroupSchema({
                 name: savedUser.email,
                 members: [savedUser._id],
                 sendMailTo: [savedUser._id],
@@ -325,7 +325,7 @@ apiUsers.update = function(req, res) {
 
     async.parallel({
         user: function(done) {
-                userSchema.getUser(obj._id, function (err, user) {
+                UserSchema.getUser(obj._id, function (err, user) {
                     if (err) return done(err);
 
                     if (!_.isUndefined(obj.password) && !_.isEmpty(obj.password) &&
@@ -343,7 +343,7 @@ apiUsers.update = function(req, res) {
                     user.save(function (err, nUser) {
                         if (err) return done(err);
 
-                        var resUser = StripUserFields(nUser);
+                        var resUser = stripUserFields(nUser);
 
                         done(null, resUser);
                     });
@@ -435,7 +435,7 @@ apiUsers.updatePreferences = function(req, res) {
     var preference = data.preference;
     var value = data.value;
 
-    userSchema.getUserByUsername(username, function(err, user) {
+    UserSchema.getUserByUsername(username, function(err, user) {
         if (err) {
             winston.warn('[API:USERS:UpdatePreferences] Error= ' + err);
             return res.status(400).json({success: false, error: err});
@@ -452,7 +452,7 @@ apiUsers.updatePreferences = function(req, res) {
                 return res.status(400).json({success: false, error: err});
             }
 
-            var resUser = StripUserFields(u);
+            var resUser = stripUserFields(u);
 
             return res.json({success: true, user: resUser});
         });
@@ -486,7 +486,7 @@ apiUsers.deleteUser = function(req, res) {
 
     async.waterfall([
         function(cb) {
-            userSchema.getUserByUsername(username, function(err, user) {
+            UserSchema.getUserByUsername(username, function(err, user) {
                 if (err) return cb(err);
 
                 if (_.isNull(user)) 
@@ -565,7 +565,7 @@ apiUsers.enableUser = function(req, res) {
     var username = req.params.username;
     if(_.isUndefined(username)) return res.status(400).json({error: 'Invalid Request'});
 
-    userSchema.getUserByUsername(username, function(err, user) {
+    UserSchema.getUserByUsername(username, function(err, user) {
         if (err) { winston.debug(err); return res.status(400).json({error: err.message}); }
 
         if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({error: 'Invalid Request'});
@@ -620,12 +620,12 @@ apiUsers.single = function(req, res) {
 
     async.waterfall([
         function(done) {
-            userSchema.getUserByUsername(username, function(err, user) {
+            UserSchema.getUserByUsername(username, function(err, user) {
                 if (err) return done(err);
 
                 if (_.isUndefined(user) || _.isNull(user)) return done('Invalid Request');
 
-                user = StripUserFields(user);
+                user = stripUserFields(user);
                 response.user = user;
 
                 done(null, user);
@@ -669,7 +669,7 @@ apiUsers.single = function(req, res) {
  }
  */
 apiUsers.notificationCount = function(req, res) {
-    userSchema.getUser(req.user._id, function(err, user) {
+    UserSchema.getUser(req.user._id, function(err, user) {
         if (err) return res.status(400).json({error: err.message});
         if (!user) return res.status(200).json({count: ''});
 
@@ -704,7 +704,7 @@ apiUsers.generateApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
 
-    userSchema.getUser(id, function(err, user) {
+    UserSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
         user.addAccessToken(function(err, token) {
@@ -738,7 +738,7 @@ apiUsers.removeApiKey = function(req, res) {
     var id = req.params.id;
     if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({error: 'Invalid Request'});
 
-    userSchema.getUser(id, function(err, user) {
+    UserSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({error: 'Invalid Request', fullError: err});
 
         user.removeAccessToken(function(err) {
@@ -773,7 +773,7 @@ apiUsers.generateL2Auth = function(req, res) {
     if (id.toString() !== req.user._id.toString())
         return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
 
-    userSchema.getUser(id, function(err, user) {
+    UserSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
         user.generateL2Auth(function(err, generatedKey) {
@@ -809,7 +809,7 @@ apiUsers.removeL2Auth = function(req, res) {
     if (id.toString() !== req.user._id.toString())
         return res.status(400).json({success: false, error: 'Invalid Account Owner!'});
 
-    userSchema.getUser(id, function(err, user) {
+    UserSchema.getUser(id, function(err, user) {
         if (err) return res.status(400).json({success: false, error: 'Invalid Request'});
 
         user.removeL2Auth(function(err) {
@@ -853,7 +853,7 @@ apiUsers.checkEmail = function(req, res) {
     if (_.isUndefined(email) || _.isNull(email))
         return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
-    userSchema.getUserByEmail(email, function(err, users) {
+    UserSchema.getUserByEmail(email, function(err, users) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
         if (!_.isNull(users)) return res.json({success: true, exist: true});
@@ -882,13 +882,13 @@ apiUsers.checkEmail = function(req, res) {
  }
  */
 apiUsers.getAssingees = function(req, res) {
-    userSchema.getAssigneeUsers(function(err, users) {
+    UserSchema.getAssigneeUsers(function(err, users) {
         if (err) return res.status(400).json({error: 'Invalid Request'});
 
         var strippedUsers = [];
 
         async.each(users, function(user, cb) {
-            user = StripUserFields(user);
+            user = stripUserFields(user);
             strippedUsers.push(user);
 
             cb();
@@ -956,7 +956,7 @@ apiUsers.uploadProfilePic = function(req, res) {
 
         if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk');
 
-        userSchema.getUserByUsername(object.username, function(err, user) {
+        UserSchema.getUserByUsername(object.username, function(err, user) {
             if (err) return res.status(400).send(err.message);
 
             user.image = object.filename;
@@ -966,7 +966,7 @@ apiUsers.uploadProfilePic = function(req, res) {
 
                 emitter.emit('trudesk:profileImageUpdate', {userid: user._id, img: user.image});
 
-                return res.json({success: true, user: StripUserFields(user)});
+                return res.json({success: true, user: stripUserFields(user)});
             });
         });
     });
@@ -974,7 +974,7 @@ apiUsers.uploadProfilePic = function(req, res) {
     req.pipe(busboy);
 };
 
-function StripUserFields(user) {
+function stripUserFields(user) {
     user.password = undefined;
     user.accessToken = undefined;
     user.__v = undefined;

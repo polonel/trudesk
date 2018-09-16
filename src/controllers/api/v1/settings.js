@@ -17,7 +17,7 @@ var async           = require('async'),
     winston         = require('winston'),
     sanitizeHtml    = require('sanitize-html'),
 
-    settingSchema   = require('../../../models/setting');
+    SettingsSchema   = require('../../../models/setting');
 
 var apiSettings = {};
 
@@ -58,18 +58,18 @@ apiSettings.updateSetting = function(req, res) {
     if (!_.isArray(postData)) postData = [postData];
 
     async.each(postData, function(item, callback) {
-        settingSchema.getSettingByName(item.name, function(err, s) {
+        SettingsSchema.getSettingByName(item.name, function(err, s) {
             if (err) return callback(err.message);
             if (_.isNull(s) || _.isUndefined(s)) {
-                s = new settingSchema({
+                s = new SettingsSchema({
                     name: item.name
                 });
             }
 
             if (s.name === 'legal:privacypolicy')
-                item.value = sanitizeHtml(item.value, {
+                {item.value = sanitizeHtml(item.value, {
                     allowedTags: false
-                });
+                });}
 
             s.value = item.value;
 

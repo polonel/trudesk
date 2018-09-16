@@ -838,7 +838,7 @@ var socketServer = function(ws) {
 
         // CSV
         socket.on('$trudesk:accounts:import:csv', function(data) {
-            var userSchema = require('./models/user');
+            var UserSchema = require('./models/user');
             var authUser = socket.request.user;
             var permissions = require('./permissions');
             if (!permissions.canThis(authUser.role, 'accounts:import')) {
@@ -867,7 +867,7 @@ var socketServer = function(ws) {
 
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
 
-                        var user = new userSchema({
+                        var user = new UserSchema({
                             username: cu.username,
                             fullname: cu.fullname,
                             email: cu.email,
@@ -917,7 +917,7 @@ var socketServer = function(ws) {
                             }
                         };
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
-                        userSchema.getUserByUsername(uu.username, function(err, user) {
+                        UserSchema.getUserByUsername(uu.username, function(err, user) {
                             if (err) 
                                 console.log(err);
                              else {
@@ -954,7 +954,7 @@ var socketServer = function(ws) {
 
         // JSON
         socket.on('$trudesk:accounts:import:json', function(data) {
-            var userSchema = require('./models/user');
+            var UserSchema = require('./models/user');
             var authUser = socket.request.user;
             var permissions = require('./permissions');
             if (!permissions.canThis(authUser.role, 'accounts:import')) {
@@ -983,7 +983,7 @@ var socketServer = function(ws) {
 
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
 
-                        var user = new userSchema({
+                        var user = new UserSchema({
                             username: cu.username,
                             fullname: cu.fullname,
                             email: cu.email,
@@ -1033,7 +1033,7 @@ var socketServer = function(ws) {
                             }
                         };
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
-                        userSchema.getUserByUsername(uu.username, function(err, user) {
+                        UserSchema.getUserByUsername(uu.username, function(err, user) {
                             if (err) 
                                 console.log(err);
                              else {
@@ -1070,7 +1070,7 @@ var socketServer = function(ws) {
 
         // LDAP
         socket.on('$trudesk:accounts:import:ldap', function(data) {
-            var userSchema = require('./models/user');
+            var UserSchema = require('./models/user');
             var authUser = socket.request.user;
             var permissions = require('./permissions');
             if (!permissions.canThis(authUser.role, 'accounts:import')) {
@@ -1099,7 +1099,7 @@ var socketServer = function(ws) {
 
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
 
-                        var user = new userSchema({
+                        var user = new UserSchema({
                             username: lu.sAMAccountName,
                             fullname: lu.displayName,
                             email: lu.mail,
@@ -1141,7 +1141,7 @@ var socketServer = function(ws) {
                             }
                         };
                         utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data);
-                        userSchema.getUser(uu._id, function(err, user) {
+                        UserSchema.getUser(uu._id, function(err, user) {
                             if (err) 
                                 console.log(err);
                              else {

@@ -14,7 +14,7 @@
 
 var _ = require('lodash'),
     async = require('async'),
-    tagSchema = require('../../../models/tag');
+    TagSchema = require('../../../models/tag');
 
 var apiTags = {};
 
@@ -43,7 +43,7 @@ apiTags.createTag = function(req, res) {
     var data = req.body;
     if (_.isUndefined(data.tag)) return res.status(400).json({error: 'Invalid Post Data'});
 
-    var Tag = new tagSchema({
+    var Tag = new TagSchema({
         name: data.tag
     });
 

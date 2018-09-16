@@ -84,10 +84,10 @@ installController.existingdb = function(req, res) {
 
 installController.install = function(req, res) {
     var db                  = require('../database');
-    var userSchema          = require('../models/user');
-    var groupSchema         = require('../models/group');
-    var counters            = require('../models/counters');
-    var ticketTypeSchema    = require('../models/tickettype');
+    var UserSchema          = require('../models/user');
+    var GroupSchema         = require('../models/group');
+    var Counters            = require('../models/counters');
+    var TicketTypeSchema    = require('../models/tickettype');
 
     var data = req.body;
 
@@ -118,7 +118,7 @@ installController.install = function(req, res) {
             }, conuri);
         },
         function(next) {
-            var Counter = new counters({
+            var Counter = new Counters({
                 _id: 'tickets',
                 next: 1001
             });
@@ -126,7 +126,7 @@ installController.install = function(req, res) {
             Counter.save(function(err){return next(err);});
         },
         function(next) {
-            var Counter = new counters({
+            var Counter = new Counters({
                 _id: 'reports',
                 next: 1001
             });
@@ -136,21 +136,21 @@ installController.install = function(req, res) {
             });
         },
         function(next) {
-            var type = new ticketTypeSchema({
+            var type = new TicketTypeSchema({
                 name: 'Issue'
             });
 
             type.save(function(err){return next(err); });
         },
         function(next) {
-            var type = new ticketTypeSchema({
+            var type = new TicketTypeSchema({
                 name: 'Task'
             });
 
             type.save(function(err){return next(err); });
         },
         function(next) {
-            groupSchema.getGroupByName('Administrators', function(err, group) {
+            GroupSchema.getGroupByName('Administrators', function(err, group) {
                 if (err) {
                     winston.error('Database Error: ' + err.message);
                     return next('Database Error:' + err.message);
@@ -160,7 +160,7 @@ installController.install = function(req, res) {
                     return next(null, group);
 
                 //Create Admin Group
-                var adminGroup = new groupSchema({
+                var adminGroup = new GroupSchema({
                     name: 'Administrators',
                     members: []
                 });
@@ -176,7 +176,7 @@ installController.install = function(req, res) {
             });
         },
         function (adminGroup, next) {
-            userSchema.getUserByUsername(user.username, function(err, admin) {
+            UserSchema.getUserByUsername(user.username, function(err, admin) {
                 if (err) {
                     winston.error('Database Error: ' + err.message);
                     return next('Database Error: ' + err.message);
@@ -189,7 +189,7 @@ installController.install = function(req, res) {
                         return next('Passwords do not match!');
 
                     var chance = new Chance();
-                    var adminUser = new userSchema({
+                    var adminUser = new UserSchema({
                         username:   user.username,
                         password:   user.password,
                         fullname:   user.fullname,

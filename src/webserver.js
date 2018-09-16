@@ -96,9 +96,9 @@ var express = require('express'),
             server.listen(port, '0.0.0.0', function() {
                 return callback();
             });
-        } else {
+        } else 
             return callback();
-        }
+        
     };
 
 })(WebServer);

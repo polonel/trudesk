@@ -194,9 +194,9 @@ function buildGraphData(arr, days, callback) {
         return callback(graphData);
     var today = moment().hour(23).minute(59).second(59);
     var timespanArray = [];
-    for (var i=days;i--;) {
+    for (var i=days;i--;) 
         timespanArray.push(i);
-    }
+    
 
     arr = _.map(arr, function(i) {
         return moment(i.date).format('YYYY-MM-DD');

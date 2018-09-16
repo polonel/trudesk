@@ -159,7 +159,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             function clearChecked() {
                 $('#noticesTable input[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
+                    var vm = this,
+                        self = $(vm);
+
                     self.prop('checked', false);
                 });
             }
@@ -167,7 +169,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             function getChecked() {
                 var checkedIds = [];
                 $('#noticesTable input[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
+                    var vm = this,
+                        self = $(vm);
+
                     var $noticeTR = self.parents('tr');
                     if (!_.isUndefined($noticeTR)) {
                         var noticeOId = $noticeTR.attr('data-noticeOId');
@@ -183,7 +187,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             function removeCheckedFromGrid(id) {
                 $('#noticesTable #c_' + id + '[type="checkbox"]:checked').each(function() {
-                    var self = $(this);
+                    var vm = this,
+                        self = $(vm);
+
                     var $noticeTR = self.parents('tr');
                     if (!_.isUndefined($noticeTR)) {
                         $noticeTR.remove();

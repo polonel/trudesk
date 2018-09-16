@@ -14,7 +14,7 @@
 
 var _ = require('lodash'),
     winston = require('winston'),
-    noticeSchema = require('../../../models/notice');
+    NoticeSchema = require('../../../models/notice');
 
 var apiNotices = {};
 
@@ -50,11 +50,11 @@ var apiNotices = {};
  */
 apiNotices.create = function(req, res) {
     var postData = req.body;
-    var notice = new noticeSchema(postData);
+    var notice = new NoticeSchema(postData);
     notice.save(function(err, notice) {
         if (err) {
             winston.debug(err);
-            return res.status(400).send({success: false, error: "Invalid Post Data"});
+            return res.status(400).send({success: false, error: 'Invalid Post Data'});
         }
 
         return res.json(notice);
@@ -96,7 +96,7 @@ apiNotices.create = function(req, res) {
  */
 apiNotices.updateNotice = function(req, res) {
     var id = req.params.id;
-    noticeSchema.getNotice(id, function(err, notice) {
+    NoticeSchema.getNotice(id, function(err, notice) {
         if (err) return res.status(400).json({success: false, error: err});
         notice.update(req.body, function(err) {
             if (err) return res.status(400).json({success: false, error: err});
@@ -127,7 +127,7 @@ apiNotices.updateNotice = function(req, res) {
  }
  */
 apiNotices.clearActive = function(req, res) {
-    noticeSchema.getNotices(function(err, notices) {
+    NoticeSchema.getNotices(function(err, notices) {
         if (err) return res.status(400).json({success: false, error: err});
 
         _.each(notices, function(notice) {
@@ -164,7 +164,7 @@ apiNotices.clearActive = function(req, res) {
  */
 apiNotices.deleteNotice = function(req, res) {
     var id = req.params.id;
-    noticeSchema.getNotice(id, function(err, notice) {
+    NoticeSchema.getNotice(id, function(err, notice) {
         if (err) return res.status(400).json({success: false, error: err});
 
         notice.remove(function(err) {

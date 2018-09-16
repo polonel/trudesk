@@ -42,9 +42,9 @@ var canThis = function(role, a) {
     });
 
     if (_.isUndefined(result) || _.size(result) < 1) return false;
-    if (_.size(result) === 1) {
+    if (_.size(result) === 1) 
         if (result[0] === '*') return true;
-    }
+    
 
     var typePerm = result[0].split(':')[1].split(' ');
     typePerm = _.uniq(typePerm);

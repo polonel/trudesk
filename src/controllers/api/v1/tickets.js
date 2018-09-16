@@ -248,8 +248,8 @@ apiTickets.create = function(req, res) {
         owner: req.user._id
     };
 
-    var ticketModel = require('../../../models/ticket');
-    var ticket = new ticketModel(postData);
+    var TicketSchema = require('../../../models/ticket');
+    var ticket = new TicketSchema(postData);
     if (!_.isUndefined(postData.owner))
         ticket.owner = postData.owner;
     else
@@ -331,10 +331,10 @@ apiTickets.createPublicTicket = function(req, res) {
 
     async.waterfall([
         function(next) {
-            var userSchema = require('../../../models/user');
+            var UserSchema = require('../../../models/user');
             plainTextPass = chance.string({length: 6, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'});
 
-            user = new userSchema({
+            user = new UserSchema({
                 username: postData.user.email,
                 password: plainTextPass,
                 fullname: postData.user.fullname,
@@ -351,8 +351,8 @@ apiTickets.createPublicTicket = function(req, res) {
 
         function(savedUser, next) {
             //Group Creation
-            var groupSchema = require('../../../models/group');
-            group = new groupSchema({
+            var GroupSchema = require('../../../models/group');
+            group = new GroupSchema({
                 name: savedUser.email,
                 members: [savedUser._id],
                 sendMailTo: [savedUser._id],
@@ -384,13 +384,13 @@ apiTickets.createPublicTicket = function(req, res) {
             ticketTypeSchema.getType(defaultTicketType, function(err, ticketType) {
                 if (err) return next(err);
 
-                var ticketSchema = require('../../../models/ticket');
+                var TicketSchema = require('../../../models/ticket');
                 var HistoryItem = {
                     action: 'ticket:created',
                     description: 'Ticket was created.',
                     owner: savedUser._id
                 };
-                ticket = new ticketSchema({
+                ticket = new TicketSchema({
                     owner: savedUser._id,
                     group: group._id,
                     type: ticketType._id,
@@ -1011,8 +1011,8 @@ apiTickets.createPriority = function(req, res) {
     if (!pName)
         return res.status(400).json({success: false, error: 'Invalid Request Data.'});
 
-    var ticketPrioritySchema = require('../../../models/ticketpriority'),
-        P = new ticketPrioritySchema({
+    var TicketPrioritySchema = require('../../../models/ticketpriority'),
+        P = new TicketPrioritySchema({
         name: pName,
         overdueIn: pOverdueIn,
         htmlColor: pHtmlColor
@@ -1358,11 +1358,11 @@ apiTickets.getTicketStatsForUser = function(req, res) {
                 buildAvgResponse(tickets, function(obj) {
                     if (_.isUndefined(obj))
                         return callback(null, r);
-                    else {
-                        r.avgResponse = obj.avgResponse;
 
-                        return callback(null, r);
-                    }
+                    r.avgResponse = obj.avgResponse;
+
+                    return callback(null, r);
+
                 });
             });
         }

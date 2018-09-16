@@ -18,7 +18,7 @@ var mongoose = require('mongoose');
 var COLLECTION = 'tickettypes';
 
 //Needed for Population
-var ticketPriorities = require('./ticketpriority');
+require('./ticketpriority');
 
 /**
  * TicketType Schema

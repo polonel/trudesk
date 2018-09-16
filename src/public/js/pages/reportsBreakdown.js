@@ -95,10 +95,10 @@ define('pages/reportsBreakdown', [
 
                             var pieComplete = $('#pie_complete');
                             pieComplete.text(closedPercent + '/100');
-                            pieComplete.peity("donut", {
+                            pieComplete.peity('donut', {
                                 height: 24,
                                 width: 24,
-                                fill: ["#29b955", "#ccc"]
+                                fill: ['#29b955', '#ccc']
                             });
 
                             var responseTime_text = $('#responseTime_text');

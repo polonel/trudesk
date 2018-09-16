@@ -12,8 +12,7 @@
 
  **/
 
-var _                   = require('lodash'),
-    winston             = require('winston'),
+var winston             = require('winston'),
     request             = require('request');
 
 module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification) {

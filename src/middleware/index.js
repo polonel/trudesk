@@ -88,9 +88,9 @@ module.exports = function(app, db, callback) {
 
             //Load after Passport!!
             app.use('/uploads/tickets', function(req, res, next) {
-                if (!req.user) {
+                if (!req.user) 
                     return res.redirect('/');
-                }
+                
 
                 next();
             });
@@ -140,9 +140,9 @@ function allowCrossDomain(req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
 
-    if (req.method === 'OPTIONS') {
+    if (req.method === 'OPTIONS') 
         res.sendStatus(200);
-    } else {
+     else 
         next();
-    }
+    
 }

@@ -1,3 +1,4 @@
+/* eslint-disable node/exports-style,node/exports-style */
 
 /*
      .                              .o8                     oooo
