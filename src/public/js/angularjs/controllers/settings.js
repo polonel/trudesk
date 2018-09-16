@@ -19,9 +19,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 restrict: 'A',
                 require: '?ngModel',
                 link: function(scope, element, attrs, ngModel) {
-                    var $element;
                     $timeout(function() {
-                        $element = $(element).selectize(scope.$eval(attrs.selectize));
+                        // var $element = $(element).selectize(scope.$eval(attrs.selectize));
                         if(!ngModel) return;
                         $(element).selectize().on('change', function() {
                             scope.$apply(function() {

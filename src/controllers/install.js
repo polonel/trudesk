@@ -16,7 +16,7 @@ var async           = require('async'),
     path            = require('path'),
     _               = require('lodash'),
     winston         = require('winston'),
-    Chance = require('chance');
+    Chance          = require('chance');
 
 var installController = {};
 
@@ -27,23 +27,10 @@ installController.index = function(req, res) {
     content.title = "Install Trudesk";
     content.layout = false;
 
-
     res.render('install', content);
 };
 
 installController.mongotest = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var data = req.body;
     var dbPassword = encodeURIComponent(data.password);
     var CONNECTION_URI = 'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database;
@@ -56,24 +43,12 @@ installController.mongotest = function(req, res) {
         return res.json({success: true});
     });
 
-    child.on('close', function(code, signal) {
+    child.on('close', function() {
         winston.debug('MongoTest process terminated');
     });
 };
 
 installController.existingdb = function(req, res) {
-    var origin = req.headers.origin;
-    var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = shost;
-
-    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var data        = req.body;
 
     //Mongo
@@ -108,18 +83,6 @@ installController.existingdb = function(req, res) {
 };
 
 installController.install = function(req, res) {
-    var origin = req.headers.origin;
-    var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = shost;
-
-    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var db                  = require('../database');
     var userSchema          = require('../models/user');
     var groupSchema         = require('../models/group');
@@ -299,18 +262,6 @@ installController.install = function(req, res) {
 };
 
 installController.restart = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var pm2 = require('pm2');
     pm2.connect(function(err) {
         if (err) {

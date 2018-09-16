@@ -16,7 +16,7 @@ var _ = require('lodash'),
     winston = require('winston'),
     noticeSchema = require('../../../models/notice');
 
-var api_notices = {};
+var apiNotices = {};
 
 
 /**
@@ -48,7 +48,7 @@ var api_notices = {};
      "error": "Invalid Post Data"
  }
  */
-api_notices.create = function(req, res) {
+apiNotices.create = function(req, res) {
     var postData = req.body;
     var notice = new noticeSchema(postData);
     notice.save(function(err, notice) {
@@ -94,7 +94,7 @@ api_notices.create = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_notices.updateNotice = function(req, res) {
+apiNotices.updateNotice = function(req, res) {
     var id = req.params.id;
     noticeSchema.getNotice(id, function(err, notice) {
         if (err) return res.status(400).json({success: false, error: err});
@@ -126,7 +126,7 @@ api_notices.updateNotice = function(req, res) {
      "error": {Error Object}
  }
  */
-api_notices.clearActive = function(req, res) {
+apiNotices.clearActive = function(req, res) {
     noticeSchema.getNotices(function(err, notices) {
         if (err) return res.status(400).json({success: false, error: err});
 
@@ -162,7 +162,7 @@ api_notices.clearActive = function(req, res) {
      "error": {Error Object}
  }
  */
-api_notices.deleteNotice = function(req, res) {
+apiNotices.deleteNotice = function(req, res) {
     var id = req.params.id;
     noticeSchema.getNotice(id, function(err, notice) {
         if (err) return res.status(400).json({success: false, error: err});
@@ -175,4 +175,4 @@ api_notices.deleteNotice = function(req, res) {
     });
 };
 
-module.exports = api_notices;
+module.exports = apiNotices;

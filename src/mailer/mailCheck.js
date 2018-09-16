@@ -158,14 +158,14 @@ mailCheck.fetchMail = function() {
                                             });
                                         });
                                     });
+                                });
 
-                                    f.once('end', function () {
-                                        mailCheck.Imap.closeBox(true, function (err) {
-                                            if (err) winston.warn(err);
+                                f.once('end', function () {
+                                    mailCheck.Imap.closeBox(true, function (err) {
+                                        if (err) winston.warn(err);
 
 
-                                            return next();
-                                        });
+                                        return next();
                                     });
                                 });
                             }

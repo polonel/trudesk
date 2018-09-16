@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator', 'multiselect'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
+        .controller('accountsCtrl', function($scope, $http, $timeout, $window, $log) {
 
             function checkGroupValidation() {
                 var data = {};
@@ -169,7 +169,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
-                    var loggedInAccount = window.trudeskSessionService.getUser();
+                    var loggedInAccount = $window.trudeskSessionService.getUser();
                     if (loggedInAccount == null) return true;
 
                     var $userHeadingContent = $('.user-heading-content');

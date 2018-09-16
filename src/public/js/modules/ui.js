@@ -24,11 +24,10 @@ define('modules/ui', [
 
 ], function($, _, helpers, nav, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
-        socket,
-        loggedInAccount;
+        socket;
 
     socketUi.init = function(sock) {
-        loggedInAccount = window.trudeskSessionService.getUser();
+        // loggedInAccount = window.trudeskSessionService.getUser();
         socketUi.socket = (socket = sock);
 
         this.onReconnect();

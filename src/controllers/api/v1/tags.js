@@ -14,7 +14,6 @@
 
 var _ = require('lodash'),
     async = require('async'),
-    winston = require('winston'),
     tagSchema = require('../../../models/tag');
 
 var api_tags = {};

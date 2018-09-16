@@ -136,7 +136,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                             modal.find('option').prop('selected', false);
                             var $select = modal.find('form').find('select');
                             $select.each(function() {
-                                var self = $(this);
+                                var vm = this;
+                                var self = $(vm);
                                 var $selectize = self[0].selectize;
                                 //$selectize.addOption({value: -1, text: "Select Group..."});
                                 //$selectize.refreshOptions();
@@ -146,7 +147,8 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                             });
                             var $mdInputFilled = modal.find('*.md-input-filled');
                             $mdInputFilled.each(function() {
-                                var self = $(this);
+                                var vm = this;
+                                var self = $(vm);
                                 self.removeClass('md-input-filled');
                             })
                         }

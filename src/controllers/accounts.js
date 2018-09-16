@@ -148,7 +148,7 @@ accountsController.profile = function(req, res) {
     }
 
     var content = {};
-    content.title = "Profile";
+    content.title = 'Profile';
     content.nav = 'profile';
 
     content.data = {};
@@ -241,9 +241,9 @@ accountsController.uploadCSV = function(req, res) {
         }
     });
 
-    var object = {}, error;
+    var object = {};
     var parser = csv();
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    busboy.on('file', function(fieldname, file) {
         object.csv = [];
 
         file.on('readable', function() {
@@ -439,7 +439,7 @@ accountsController.uploadImage = function(req, res) {
         file.pipe(fs.createWriteStream(object.filePath));
     });
 
-    busboy.on('finish', function() {
+    busboy.once('finish', function() {
         if (error) {
             winston.warn(error);
             return res.status(error.status).send(error.message);

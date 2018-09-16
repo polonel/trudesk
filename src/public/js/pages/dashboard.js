@@ -220,7 +220,7 @@ define('pages/dashboard', [
                             },
                             donut: {
                                 label: {
-                                    format: function (value, ratio, id) {
+                                    format: function () {
                                         return '';
                                     }
                                 }

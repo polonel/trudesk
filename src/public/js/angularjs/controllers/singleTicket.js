@@ -15,7 +15,7 @@
 define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'easymde', 'angularjs/services/session', 'history'],
     function(angular, _, $, UIkit, socket, nav, md, helpers, EasyMDE) {
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
-        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q, $log) {
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $timeout, $q, $log) {
 
             $scope.loggedInAccount = SessionService.getUser();
 
@@ -328,7 +328,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                             tagFormField.trigger('chosen:updated');
                             form.find('#tag').val('');
                             if (tagModal.length > 0) UIkit.modal(tagModal).hide();
-                            setTimeout(function() {
+                            $timeout(function() {
                                 $scope.showTags(event);
                             }, 250);
                         })

@@ -269,10 +269,6 @@ define('modules/tour', [
         tour.start();
     };
 
-    function advanceTour() {
-        tour.next();
-    }
-
     function advanceTourDelayed() {
         setTimeout(function() {
             tour.next();

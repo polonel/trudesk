@@ -927,7 +927,7 @@ var socketServer = function(ws) {
                                 if (!_.isUndefined(uu.role))
                                     user.role = uu.role;
 
-                                user.save(function(err, savedUser) {
+                                user.save(function(err) {
                                     if (err) {
                                         console.log(err);
                                         data.item.state = 3;

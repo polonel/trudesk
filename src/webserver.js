@@ -26,12 +26,14 @@ var express = require('express'),
 
     // Load Events
     require('./emitter/events');
+    var routeMiddleware;
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {
         if (p !== undefined) port = p;
         middleware(app, db, function(middleware, store) {
             module.exports.sessionStore = store;
+            routeMiddleware = middleware;
 
             routes(app, middleware);
 
@@ -79,10 +81,10 @@ var express = require('express'),
 
         router.get('/healthz', function (req, res) { res.status(200).send('OK'); });
         router.get('/install', controllers.install.index);
-        router.post('/install', controllers.install.install);
-        router.post('/install/mongotest', controllers.install.mongotest);
-        router.post('/install/existingdb', controllers.install.existingdb);
-        router.post('/install/restart', controllers.install.restart);
+        router.post('/install', routeMiddleware.checkOrigin, controllers.install.install);
+        router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest);
+        router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb);
+        router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart);
 
         app.use('/', router);
 

@@ -47,7 +47,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                             if (p.pluginjson.description) description = p.pluginjson.description;
 
                             var loadedPlugin = _.findWhere($scope.installedPlugins, {'name': p.name});
-                            var hasPluginInstalled = loadedPlugin !== undefined;
+                            var hasPluginInstalled = angular.isDefined(loadedPlugin);
                             var update = false;
                             if (hasPluginInstalled)
                                 update = compareVersions(loadedPlugin.version, '<', p.pluginjson.version);

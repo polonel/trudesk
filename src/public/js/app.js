@@ -63,7 +63,7 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                                 var idleTime = 5 * 60 * 1000;
 
                                 $(document).idleTimer(idleTime);
-                                $(document).on('idle.idleTimer', function(event, elm, obj) {
+                                $(document).on('idle.idleTimer', function() {
                                     socket.chat.setUserIdle();
                                 });
 

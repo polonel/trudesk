@@ -23,8 +23,7 @@ define('pages/messages', [
     'history',
     'isinview'
 
-], function($, _, angular, UIKit, moment, helpers, socketClient) {
-    var ui = socketClient.ui;
+], function($, _, angular, UIKit, moment, helpers) {
     var messagesPage = {};
 
     messagesPage.init = function(callback) {

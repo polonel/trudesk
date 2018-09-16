@@ -33,7 +33,7 @@ middleware.db = function(req, res, next) {
         });
     }
 
-    next();
+    return next();
 };
 
 middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
@@ -139,6 +139,22 @@ middleware.checkCaptcha = function(req, res, next) {
     return next();
 };
 
+middleware.checkOrigin = function(req, res, next) {
+    var origin = req.headers.origin;
+    var host = req.headers.host;
+    if (req.secure) host = 'https://' + host;
+    if (!req.secure) host = 'http://' + host;
+
+    //Firefox Hack - Firefox Bug 1341689
+    //Trudesk Bug #26
+    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
+    if (!origin) origin = host;
+
+    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
+
+    return next();
+};
+
 //API
 middleware.api = function(req, res, next) {
     var accessToken = req.headers.accesstoken;
@@ -182,6 +198,5 @@ middleware.isSupport = function(req, res, next) {
 };
 
 module.exports = function() {
-
     return middleware;
 };
