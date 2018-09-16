@@ -31,7 +31,7 @@ before(function(done) {
                 mongoose.connection.db.dropDatabase(function(err) {
                     expect(err).to.not.exist;
                     cb();
-                })
+                });
             },
             function(cb) {
                 var counter = require('../src/models/counters');

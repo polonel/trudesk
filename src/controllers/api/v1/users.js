@@ -141,7 +141,16 @@ apiUsers.create = function(req, res) {
     response.success = true;
 
     var postData = req.body;
-    if (_.isUndefined(postData) || !_.isObject(postData)) return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    if (_.isUndefined(postData) ||
+        !_.isObject(postData) ||
+        _.isUndefined(postData.aUsername) ||
+        _.isUndefined(postData.aPass) ||
+        _.isUndefined(postData.aPassConfirm) ||
+        _.isUndefined(postData.aFullname) ||
+        _.isUndefined(postData.aEmail) ||
+        _.isUndefined(postData.aRole))
+        return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps))
         return res.status(400).json({success: false, error: 'Invalid Group Array'});
@@ -153,9 +162,11 @@ apiUsers.create = function(req, res) {
         password:   postData.aPass,
         fullname:   postData.aFullname,
         email:      postData.aEmail,
-        role:       postData.aRole,
-        title:      postData.aTitle
+        role:       postData.aRole
     });
+
+    if (postData.aTitle)
+        account.title = postData.aTitle;
 
     account.save(function(err, a) {
         if (err) {
@@ -303,11 +314,11 @@ apiUsers.createPublicAccount = function(req, res) {
  }
  */
 apiUsers.update = function(req, res) {
+    var username = req.params.username;
     var data = req.body;
     // saveGroups - Profile saving where groups are not sent
     var saveGroups = data.saveGroups;
     var obj = {
-        _id:            data.aId,
         username:       data.aUsername,
         fullname:       data.aFullname,
         title:          data.aTitle,
@@ -323,10 +334,12 @@ apiUsers.update = function(req, res) {
     else if (!_.isArray(obj.groups))
         obj.groups = [obj.groups];
 
-    async.parallel({
+    async.series({
         user: function(done) {
-                UserSchema.getUser(obj._id, function (err, user) {
+                UserSchema.getUserByUsername(username, function (err, user) {
                     if (err) return done(err);
+
+                    obj._id = user._id;
 
                     if (!_.isUndefined(obj.password) && !_.isEmpty(obj.password) &&
                         !_.isUndefined(obj.passconfirm) && !_.isEmpty(obj.passconfirm)) {
@@ -334,9 +347,8 @@ apiUsers.update = function(req, res) {
                                 user.password = obj.password;
                     }
 
-                    user.fullname = obj.fullname;
-                    user.email = obj.email;
-
+                    if (!_.isUndefined(obj.fullname) && obj.fullname.length > 0) user.fullname = obj.fullname;
+                    if (!_.isUndefined(obj.email) && obj.email.length > 0) user.email = obj.email;
                     if (!_.isUndefined(obj.title) && obj.title.length > 0) user.title = obj.title;
                     if (!_.isUndefined(obj.role) && obj.role.length > 0) user.role = obj.role;
 
@@ -394,7 +406,7 @@ apiUsers.update = function(req, res) {
     }, function(err, results) {
         if (err) {
             winston.debug(err);
-            return res.status(400).json({error: err});
+            return res.status(400).json({success: false, error: err});
         }
 
         return res.json({success: true, user: results.user});

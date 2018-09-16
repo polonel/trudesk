@@ -28,6 +28,7 @@ var express = require('express'),
     require('./emitter/events');
 
     module.exports.server = server;
+    module.exports.app = app;
     module.exports.init = function(db, callback, p) {
         if (p !== undefined) port = p;
         middleware(app, db, function(middleware, store) {

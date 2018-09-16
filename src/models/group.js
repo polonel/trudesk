@@ -152,7 +152,6 @@ function isMember(arr, id) {
     var matches = _.filter(arr, function (value) {
         if (value._id.toString() === id.toString()) 
             return value;
-        
     });
 
     return matches.length > 0;

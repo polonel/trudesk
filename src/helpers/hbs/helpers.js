@@ -526,11 +526,10 @@ var helpers = {
         if (str.length > 0) {
             if (str[0] === str[0].toUpperCase())
                 return str;
-            else {
-                return str.replace(/\w\S*/g, function (txt) {
-                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-                });
-            }
+
+            return str.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
         }
     },
 

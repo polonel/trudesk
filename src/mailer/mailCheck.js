@@ -207,21 +207,22 @@ function handleMessages(messages) {
                         if (!err && user) {
                             message.owner = user;
                             return callback(null, user);
-                        } else {
-                            //User doesn't exist. Lets create public user... If we want too
-                            if (mailCheck.fetchMailOptions.createAccount) {
-                                userSchema.createUserFromEmail(message.from, function (err, response) {
-                                    if (err) return callback(err);
-
-                                    message.owner = response.user;
-                                    message.group = response.group;
-
-                                    return callback(null, response);
-                                });
-                            } else 
-                                return callback('No User found.');
-                            
                         }
+
+                        //User doesn't exist. Lets create public user... If we want too
+                        if (mailCheck.fetchMailOptions.createAccount) {
+                            userSchema.createUserFromEmail(message.from, function (err, response) {
+                                if (err) return callback(err);
+
+                                message.owner = response.user;
+                                message.group = response.group;
+
+                                return callback(null, response);
+                            });
+                        } else
+                            return callback('No User found.');
+                            
+
                     });
                 },
                 handleGroup: ['handleUser', function (results, callback) {

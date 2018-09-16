@@ -25,39 +25,38 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
                 var form = $('#createTicketForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false))
                     return true;
-                } else {
-                    form.serializeArray().map(function(x){data[x.name] = x.value;});
-                    data.tags = form.find('#tags').val();
-                    data.socketId = socketId;
-                    $http({
-                        method: 'POST',
-                        url: '/api/v1/tickets/create',
-                        data: data,
-                        headers: { 'Content-Type': 'application/json'}
-                    })
-                        .success(function(data) {
-                            if (!data.success) {
-                                if (data.error) {
-                                    helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
-                                    return;
-                                }
 
-                                helpers.UI.showSnackbar({text: 'Error submitting ticket.', actionTextColor: '#B92929'});
+                form.serializeArray().map(function(x){data[x.name] = x.value;});
+                data.tags = form.find('#tags').val();
+                data.socketId = socketId;
+                $http({
+                    method: 'POST',
+                    url: '/api/v1/tickets/create',
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
+                })
+                    .success(function(data) {
+                        if (!data.success) {
+                            if (data.error) {
+                                helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
+                                return;
                             }
 
-                            helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
+                            helpers.UI.showSnackbar({text: 'Error submitting ticket.', actionTextColor: '#B92929'});
+                        }
 
-                            UIkit.modal("#ticketCreateModal").hide();
+                        helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
-                            //History.pushState(null, null, '/tickets/');
+                        UIkit.modal("#ticketCreateModal").hide();
 
-                        }).error(function(err) {
-                            $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
-                            helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
-                    });
-                }
+                        //History.pushState(null, null, '/tickets/');
+
+                    }).error(function(err) {
+                        $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
+                        helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
+                });
             };
 
             $scope.searchBarSubmit = function(event) {

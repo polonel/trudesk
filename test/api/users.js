@@ -43,14 +43,14 @@ describe('api/users.js', function() {
           'aGrps': []
         };
 
-        async.parallel([
+        async.series([
           function(cb) {
-            request.post('/api/v1/users/create')
+              request.post('/api/v1/users/create')
                 .set('accesstoken', tdapikey)
                 .set('Content-Type', 'application/json')
                 .send(user)
                 .set('Accept', 'application/json')
-                .expect(200, {success: true}, cb);
+                .expect(200, cb);
           },
           function(cb) {
             user.aGrps = undefined;
@@ -59,7 +59,10 @@ describe('api/users.js', function() {
                 .set('Content-Type', 'application/json')
                 .send(user)
                 .set('Accept', 'application/json')
-                .expect(400, { success: false }, cb);
+                .expect(400, {
+                    success: false,
+                    error: 'Invalid Group Array'
+                }, cb);
           },
           function(cb) {
             //password mismatch
@@ -76,15 +79,16 @@ describe('api/users.js', function() {
                 }, cb);
           },
           function(cb) {
-            request.post('/api/v1/users/create')
+              request.post('/api/v1/users/create')
                 .set('accesstoken', tdapikey)
-                .send('undefined')
                 .expect(400, {
                   success: false,
                   error: 'Invalid Post Data'
                 }, cb);
           }
         ], function(err) {
+            if (err) throw err;
+
             done();
         });
     });
@@ -93,7 +97,7 @@ describe('api/users.js', function() {
         async.waterfall([
             function(cb) {
                 var userSchema = require('../../src/models/user');
-                userSchema.getUserByUsername('trudesk', function(err, user) {
+                userSchema.getUserByUsername('fake.user', function(err, user) {
                     if (err) return cb(err);
 
                     return cb(null, user);
@@ -101,28 +105,21 @@ describe('api/users.js', function() {
             },
             function(user, cb) {
                 var u = {
-                  aId: user._id,
-                  aUsername: user.username,
-                  aFullname: user.fullname,
-                  aPass: 'password',
-                  aPassConfirm: 'password',
-                  aTitle: 'The Title',
-                  aEmail: user.email,
-                  role: 'support',
-                  groups: []
+                    aTitle: 'The Title',
+                    aRole: 'support'
                 };
 
                 cb(null, u);
             }
         ], function(err, u) {
-          if (err) return done(err)
-          request.put('/api/v1/users/trudesk')
+          if (err) return done(err);
+          request.put('/api/v1/users/fake.user')
               .set('accesstoken', tdapikey)
               .set('Content-Type', 'application/json')
               .send(u)
               .set('Accept', 'application/json')
               .expect(function(res) {
-                if (res.body.success !== true) throw new Error('Unable to update user');
+                  if (res.body.success !== true) throw new Error('Unable to update user');
               })
               .expect(200, done);
         });
@@ -138,7 +135,6 @@ describe('api/users.js', function() {
             userSchema.getUserByUsername('trudesk', function(err, user) {
                 expect(err).to.not.exist;
                 var u = {
-                  aId: user._id,
                   aFullname: user.fullname,
                   aEmail: user.email,
                   aGrps: [group._id],
@@ -150,13 +146,14 @@ describe('api/users.js', function() {
                     .set('Content-Type', 'application/json')
                     .send(u)
                     .set('Accept', 'application/json')
-                    .expect(200, { success: true }, function() {
+                    .expect(200, function() {
                         groupSchema.getGroupByName('TEST', function(err, grp) {
                             expect(err).to.not.exist;
+
                             expect(grp.isMember(user._id)).to.equal(true);
 
                             done();
-                        })
+                        });
                     });
             });
         });
@@ -215,8 +212,20 @@ describe('api/users.js', function() {
             .expect(200, done);
     });
 
+    // it('POST /api/v1/public/account/create - should create public account', function(done) {
+    //     request.post('/api/v1/public/account/create')
+    //         .set('accesstoken', tdapikey)
+    //         .set('Content-Type', 'application/json')
+    //         .send({user: {email: 'public.user@trudesk.io', password: 'password', fullname: 'public.user@trudesk.io'}})
+    //         .expect(function(res) {
+    //             console.log(res);
+    //             expect(res.body.success).to.eq(true);
+    //         })
+    //         .expect(200, done);
+    // });
+
     it('should delete user', function(done) {
-        request.delete('/api/v1/users/fake.user')
+        request.delete('/api/v1/users/deleted.user')
           .set('accesstoken', tdapikey)
           .set('Accept', 'application/json')
           .expect(200, {

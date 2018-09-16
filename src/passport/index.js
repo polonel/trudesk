@@ -39,11 +39,16 @@ module.exports = function() {
                 return done(err);
             
 
-            if (!user || user.deleted) 
+            if (!user || user.deleted) {
+                console.log('No User Found');
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
-            
+            }
 
-            if (!User.validate(password, user.password)) 
+            if (!User.validate(password, user.password))
+                console.log('Invalid Pass');
+
+
+            if (!User.validate(password, user.password))
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
             
 

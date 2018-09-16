@@ -402,11 +402,12 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         commentField.siblings('.editor-statusbar').prepend(mdeError);
 
                     return;
-                } else {
-                    commentField.parent().css('border', 'none');
-                    $mdeError = commentField.parent().find('.mde-error');
-                    if ($mdeError.length > 0) $mdeError.remove();
                 }
+
+                commentField.parent().css('border', 'none');
+                $mdeError = commentField.parent().find('.mde-error');
+                if ($mdeError.length > 0) $mdeError.remove();
+
 
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addcomment', {
@@ -443,11 +444,12 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         noteField.siblings('.editor-statusbar').prepend(mdeError);
 
                     return;
-                } else {
-                    noteField.parent().css('border', 'none');
-                    $mdeError = noteField.parent().find('.mde-error');
-                    if ($mdeError.length > 0) $mdeError.remove();
                 }
+
+                noteField.parent().css('border', 'none');
+                $mdeError = noteField.parent().find('.mde-error');
+                if ($mdeError.length > 0) $mdeError.remove();
+
 
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addnote', {

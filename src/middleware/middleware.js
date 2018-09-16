@@ -64,15 +64,16 @@ middleware.redirectToLogin = function(req, res, next) {
         req.session.l2auth = null;
         req.session.destroy();
         return res.redirect('/');
-    } else {
-        if (req.user.hasL2Auth) {
-            if (req.session.l2auth !== 'totp') 
-                return res.redirect('/');
-            
-        }
-
-        return next();
     }
+
+    if (req.user.hasL2Auth) {
+        if (req.session.l2auth !== 'totp')
+            return res.redirect('/');
+
+    }
+
+    return next();
+
 };
 
 middleware.redirectIfUser = function(req, res, next) {
@@ -81,10 +82,11 @@ middleware.redirectIfUser = function(req, res, next) {
             res.session.redirectUrl = req.url;
 
         return res.redirect('/');
-    } else {
-        if (req.user.role === 'user')
-            return res.redirect(301, '/tickets');
     }
+
+    if (req.user.role === 'user')
+        return res.redirect(301, '/tickets');
+
 
     return next();
 };
@@ -129,6 +131,7 @@ middleware.checkCaptcha = function(req, res, next) {
 
     var captcha = postData.captcha;
     var captchaValue = req.session.captcha;
+    console.log(captchaValue);
     if (captchaValue === undefined) 
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
     

@@ -203,8 +203,9 @@ mainController.forgotL2Auth = function(req, res) {
                         if (err) {
                             winston.warn(err);
                             return res.status(400).send(err);
-                        } else 
-                            return res.send('OK');
+                        }
+
+                        return res.send('OK');
                         
                     });
                 })

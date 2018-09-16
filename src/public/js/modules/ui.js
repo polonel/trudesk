@@ -675,12 +675,12 @@ define('modules/ui', [
 
             var commentsNotesTab = $('.comments-notes-tab[data-ticketid="' + ticket._id + '"]');
 
-            if (ticket.commentsAndNotes.length > 0)
-                commentsNotesTab.removeClass('hide');
-            else {
+            if (ticket.commentsAndNotes.length < 1) {
                 commentsNotesTab.addClass('hide');
                 return true;
             }
+
+            commentsNotesTab.removeClass('hide');
 
             var allCommentsContainer = $('.all-comments[data-ticketId="' + ticket._id + '"]');
             var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]');

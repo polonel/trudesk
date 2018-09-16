@@ -122,7 +122,7 @@ define('modules/chat',[
                     if (err) {
                         console.log('[trudesk:chat:openChatWindow] - Error');
                         console.error(err);
-                        return helpers.UI.showSnackbar('Unable to start chat', true);
+                        helpers.UI.showSnackbar('Unable to start chat', true);
                     } else {
                         var splitPath = window.location.pathname.split('/');
                         if (splitPath.length > 1) {

@@ -411,7 +411,7 @@ ticketsController.print = function(req, res) {
             ticket.notes = [];
 
         content.data.ticket = ticket;
-        content.data.ticket.priorityname = getPriorityName(ticket.priority);
+        content.data.ticket.priorityname = ticket.priority.name;
         content.data.ticket.tagsArray = ticket.tags;
         content.data.ticket.commentCount = _.size(ticket.comments);
         content.layout = 'layout/print';
@@ -479,30 +479,6 @@ ticketsController.single = function(req, res) {
         return res.render('subviews/singleticket', content);
     });
 };
-
-/**
- * Converts the Prioirty Int to Readable Name
- * @memberof ticketsController
- * @instance
- * @param {Number} val Int Value of the Prioirty to convert
- * @returns {string} Readable String for Priority
- */
-function getPriorityName(val) {
-    var p = '';
-    switch(val) {
-        case 1:
-            p = 'Normal';
-            break;
-        case 2:
-            p = 'Urgent';
-            break;
-        case 3:
-            p = 'Critical';
-            break;
-    }
-
-    return p;
-}
 
 ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs');
