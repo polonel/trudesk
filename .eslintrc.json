@@ -2,6 +2,9 @@
   "plugins": ["node"],
   "extends": ["eslint:recommended", "plugin:node/recommended"],
   "root": true,
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
   "env": {
     "browser": true,
     "node": true

@@ -69,7 +69,7 @@ var init = function(tickets, timespan, callback) {
                 return [key, 0];
             })));
 
-            tags = _.fromPairs(_.sortBy(_.toPairs(tags), function(a){ return a[1]}).reverse());
+            tags = _.fromPairs(_.sortBy(_.toPairs(tags), function(a){ return a[1]; }).reverse());
 
             return done();
         }

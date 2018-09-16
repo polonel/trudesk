@@ -303,7 +303,7 @@ userSchema.statics.getUserByUsername = function(user, callback) {
         return callback('Invalid Username - UserSchema.GetUserByUsername()', null);
 
 
-    return this.model(COLLECTION).findOne({username: new RegExp('^" + user + "$', 'i')}).select('+password +accessToken').exec(callback);
+    return this.model(COLLECTION).findOne({username: new RegExp('^' + user + '$', 'i')}).select('+password +accessToken').exec(callback);
 };
 
 /**
@@ -321,7 +321,7 @@ userSchema.statics.getUserByEmail = function(email, callback) {
         return callback('Invalid Email - UserSchema.GetUserByEmail()', null);
 
 
-    return this.model(COLLECTION).findOne({email: new RegExp('^" + email + "$', 'i')}, callback);
+    return this.model(COLLECTION).findOne({email: new RegExp('^' + email + '$', 'i')}, callback);
 };
 
 /**

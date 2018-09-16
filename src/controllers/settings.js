@@ -14,10 +14,8 @@
 
 var async               = require('async');
 var _                   = require('lodash');
-var winston             = require('winston');
 var jsStringEscape      = require('js-string-escape');
 var settingSchema       = require('../models/setting');
-var tagSchema           = require('../models/tag');
 var ticketTypeSchema    = require('../models/tickettype');
 var permissions         = require('../permissions');
 
@@ -29,7 +27,7 @@ settingsController.general = function(req, res) {
     if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-general';
 
@@ -48,7 +46,7 @@ settingsController.ticketSettings = function(req, res) {
     if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-tickets';
 
@@ -67,7 +65,7 @@ settingsController.mailerSettings = function(req, res) {
     if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-mailer';
 
@@ -86,7 +84,7 @@ settingsController.notificationsSettings = function(req, res) {
     if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-notifications';
 
@@ -105,7 +103,7 @@ settingsController.tpsSettings = function(req, res) {
     if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-tps';
 
@@ -124,7 +122,7 @@ settingsController.legal = function(req, res) {
     if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Settings";
+    content.title = 'Settings';
     content.nav = 'settings';
     content.subnav = 'settings-legal';
 
@@ -144,19 +142,19 @@ function getSettings(content, callback) {
         if (err) return callback('Invalid Settings');
 
         var s = {};
-        s.siteUrl = _.find(settings, function(x) { return x.name === 'gen:siteurl'});
+        s.siteUrl = _.find(settings, function(x) { return x.name === 'gen:siteurl'; });
         s.siteUrl = (s.siteUrl === undefined) ? {value: ''} : s.siteUrl;
 
-        s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'});
+        s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'; });
         s.defaultTicketType = (s.defaultTicketType === undefined) ? {value: ''} : s.defaultTicketType;
 
-        s.mailerEnabled = _.find(settings, function(x){return x.name === 'mailer:enable'});
-        s.mailerHost = _.find(settings, function(x) { return x.name === 'mailer:host'});
-        s.mailerSSL = _.find(settings, function(x) { return x.name === 'mailer:ssl'});
-        s.mailerPort = _.find(settings, function(x) { return x.name === 'mailer:port'});
-        s.mailerUsername = _.find(settings, function(x) { return x.name === 'mailer:username'});
-        s.mailerPassword = _.find(settings, function(x) { return x.name === 'mailer:password'});
-        s.mailerFrom = _.find(settings, function(x) { return x.name === 'mailer:from'});
+        s.mailerEnabled = _.find(settings, function(x){return x.name === 'mailer:enable'; });
+        s.mailerHost = _.find(settings, function(x) { return x.name === 'mailer:host'; });
+        s.mailerSSL = _.find(settings, function(x) { return x.name === 'mailer:ssl'; });
+        s.mailerPort = _.find(settings, function(x) { return x.name === 'mailer:port'; });
+        s.mailerUsername = _.find(settings, function(x) { return x.name === 'mailer:username'; });
+        s.mailerPassword = _.find(settings, function(x) { return x.name === 'mailer:password'; });
+        s.mailerFrom = _.find(settings, function(x) { return x.name === 'mailer:from'; });
 
         s.mailerEnabled = (s.mailerEnabled === undefined) ? {value: false} : s.mailerEnabled;
         s.mailerSSL = (s.mailerSSL === undefined) ? {value: false} : s.mailerSSL;
@@ -166,15 +164,15 @@ function getSettings(content, callback) {
         s.mailerPassword = (s.mailerPassword === undefined) ? {value: ''} : s.mailerPassword;
         s.mailerFrom = (s.mailerFrom === undefined) ? {value: ''} : s.mailerFrom;
 
-        s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-        s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
-        s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
-        s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
-        s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
-        s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
-        s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority' });
-        s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount' });
-        s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage' });
+        s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable'; });
+        s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host'; });
+        s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port'; });
+        s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username'; });
+        s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password'; });
+        s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype'; });
+        s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority'; });
+        s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount'; });
+        s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage'; });
 
         s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
         s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
@@ -186,28 +184,28 @@ function getSettings(content, callback) {
         s.mailerCheckCreateAccount = (s.mailerCheckCreateAccount === undefined) ? {value: false} : s.mailerCheckCreateAccount;
         s.mailerCheckDeleteMessage = (s.mailerCheckDeleteMessage === undefined) ? {value: true} : s.mailerCheckDeleteMessage;
 
-        s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable' });
+        s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable'; });
         s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;
 
-        s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable' });
+        s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable'; });
         s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
 
-        s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable' });
+        s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable'; });
         s.tpsEnabled = (s.tpsEnabled === undefined) ? {value: false} : s.tpsEnabled;
 
-        s.tpsUsername = _.find(settings, function(x) { return x.name === 'tps:username'});
+        s.tpsUsername = _.find(settings, function(x) { return x.name === 'tps:username'; });
         s.tpsUsername = (s.tpsUsername === undefined) ? { value: ''} : s.tpsUsername;
 
-        s.tpsApiKey = _.find(settings, function(x) { return x.name === 'tps:apikey'});
+        s.tpsApiKey = _.find(settings, function(x) { return x.name === 'tps:apikey'; });
         s.tpsApiKey = (s.tpsApiKey === undefined) ? { value: ''} : s.tpsApiKey;
 
-        s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable' });
+        s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable'; });
         s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
 
-        s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable' });
+        s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable'; });
         s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
 
-        s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'});
+        s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'; });
         s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
@@ -260,7 +258,7 @@ settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
 
     var content = {};
-    content.title = "Server Logs";
+    content.title = 'Server Logs';
     content.nav = 'settings';
     content.subnav = 'settings-logs';
 
@@ -271,7 +269,7 @@ settingsController.logs = function(req, res) {
     var fs = require('fs'),
         path = require('path'),
         AnsiUp = require('ansi_up'),
-        ansi_up = new AnsiUp.default,
+        ansiUp = new AnsiUp.default,
         file = path.join(__dirname, '../../logs/output.log');
 
     fs.readFile(file, 'utf-8', function(err, data) {
@@ -281,7 +279,7 @@ settingsController.logs = function(req, res) {
         }
 
         content.data.logFileContent = data.toString().trim();
-        content.data.logFileContent = ansi_up.ansi_to_html(content.data.logFileContent);
+        content.data.logFileContent = ansiUp.ansi_to_html(content.data.logFileContent);
 
         return res.render('logs', content);
     });
@@ -299,9 +297,9 @@ function checkPerms(req, role) {
 }
 
 function handleError(res, err) {
-    if (err) {
+    if (err) 
         return res.render('error', {layout: false, error: err, message: err.message});
-    }
+    
 }
 
 module.exports = settingsController;

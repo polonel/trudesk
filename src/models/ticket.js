@@ -395,7 +395,7 @@ ticketSchema.methods.setIssue = function(ownerId, issue, callback) {
  */
 ticketSchema.methods.updateComment = function(ownerId, commentId, commentText, callback) {
     var self = this;
-    var comment = _.find(self.comments, function(c){return c._id.toString() === commentId.toString()});
+    var comment = _.find(self.comments, function(c){return c._id.toString() === commentId.toString(); });
     if (_.isUndefined(comment)) return callback('Invalid Comment', null);
 
     comment.comment = commentText;
@@ -455,7 +455,7 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
  */
 ticketSchema.methods.updateNote = function(ownerId, noteId, noteText, callback) {
     var self = this;
-    var note = _.find(self.notes, function(c){return c._id.toString() === noteId.toString()});
+    var note = _.find(self.notes, function(c){return c._id.toString() === noteId.toString(); });
     if (_.isUndefined(note)) return callback('Invalid Note', null);
 
     note.note = noteText;
@@ -767,7 +767,7 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
     if (!_.isUndefined(object.unassigned) && object.unassigned === true)
         q.where({assignee: {$exists: false}});
 
-    return q.lean().exec(callback)
+    return q.lean().exec(callback);
 };
 
 
