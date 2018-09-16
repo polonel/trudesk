@@ -155,7 +155,7 @@ userSchema.methods.removeL2Auth = function(callback) {
 };
 
 userSchema.methods.addDeviceToken = function(token, type, callback) {
-    if (_.isUndefined(token)) return callback("Invalid token");
+    if (_.isUndefined(token)) return callback('Invalid token');
     var user = this;
     //type 1 = iOS
     //type 2 = Android
@@ -281,9 +281,9 @@ userSchema.statics.findAll = function(callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getUser = function(oId, callback) {
-    if (_.isUndefined(oId)) {
-        return callback("Invalid ObjectId - UserSchema.GetUser()", null);
-    }
+    if (_.isUndefined(oId))
+        return callback('Invalid ObjectId - UserSchema.GetUser()', null);
+
 
     return this.model(COLLECTION).findOne({_id: oId}, callback);
 };
@@ -299,11 +299,11 @@ userSchema.statics.getUser = function(oId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getUserByUsername = function(user, callback) {
-    if (_.isUndefined(user)) {
-        return callback("Invalid Username - UserSchema.GetUserByUsername()", null);
-    }
+    if (_.isUndefined(user))
+        return callback('Invalid Username - UserSchema.GetUserByUsername()', null);
 
-    return this.model(COLLECTION).findOne({username: new RegExp("^" + user + "$", 'i')}).select('+password +accessToken').exec(callback);
+
+    return this.model(COLLECTION).findOne({username: new RegExp('^" + user + "$', 'i')}).select('+password +accessToken').exec(callback);
 };
 
 /**
@@ -317,11 +317,11 @@ userSchema.statics.getUserByUsername = function(user, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getUserByEmail = function(email, callback) {
-    if (_.isUndefined(email)) {
-        return callback("Invalid Email - UserSchema.GetUserByEmail()", null);
-    }
+    if (_.isUndefined(email))
+        return callback('Invalid Email - UserSchema.GetUserByEmail()', null);
 
-    return this.model(COLLECTION).findOne({email: new RegExp("^" + email + "$", 'i')}, callback);
+
+    return this.model(COLLECTION).findOne({email: new RegExp('^" + email + "$', 'i')}, callback);
 };
 
 /**
@@ -335,16 +335,16 @@ userSchema.statics.getUserByEmail = function(email, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getUserByResetHash = function(hash, callback) {
-    if (_.isUndefined(hash)) {
-        return callback("Invalid Hash - UserSchema.GetUserByResetHash()", null);
-    }
+    if (_.isUndefined(hash))
+        return callback('Invalid Hash - UserSchema.GetUserByResetHash()', null);
+
 
     return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, '+resetPassHash +resetPassExpire', callback);
 };
 
 userSchema.statics.getUserByL2ResetHash = function(hash, callback) {
     if (_.isUndefined(hash))
-        return callback("Invalid Hash - UserSchema.GetUserByL2ResetHash()", null);
+        return callback('Invalid Hash - UserSchema.GetUserByL2ResetHash()', null);
 
     return this.model(COLLECTION).findOne({resetL2AuthHash: hash, deleted: false}, '+resetL2AuthHash +resetL2AuthExpire', callback);
 };
@@ -360,17 +360,17 @@ userSchema.statics.getUserByL2ResetHash = function(hash, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getUserByAccessToken = function(token, callback) {
-    if (_.isUndefined(token)) {
-        return callback("Invalid Token - UserSchema.GetUserByAccessToken()", null);
-    }
+    if (_.isUndefined(token))
+        return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null);
+
 
     return this.model(COLLECTION).findOne({accessToken: token, deleted: false}, callback);
 };
 
 userSchema.statics.getUserWithObject = function(object, callback) {
-    if (!_.isObject(object)) {
-        return callback("Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()", null);
-    }
+    if (!_.isObject(object))
+        return callback('Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()', null);
+
 
     var self = this;
 
@@ -385,7 +385,7 @@ userSchema.statics.getUserWithObject = function(object, callback) {
         q.limit(limit);
 
     if (!_.isEmpty(search))
-        q.where({fullname: new RegExp("^" + search.toLowerCase(), 'i') });
+        q.where({fullname: new RegExp('^' + search.toLowerCase(), 'i') });
 
     q.exec(callback);
 };
@@ -450,20 +450,17 @@ userSchema.statics.getUsersByRoles = function(roles, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.createUser = function(data, callback) {
-    if (_.isUndefined(data) || _.isUndefined(data.username)) {
-        return callback("Invalid User Data - UserSchema.CreateUser()", null);
-    }
+    if (_.isUndefined(data) || _.isUndefined(data.username))
+        return callback('Invalid User Data - UserSchema.CreateUser()', null);
+
     var self = this;
 
-    self.model(COLLECTION).find({"username": data.username}, function(err, items) {
-        if (err) {
+    self.model(COLLECTION).find({'username': data.username}, function(err, items) {
+        if (err)
           return callback(err, null);
-        }
 
-        if (_.size(items) > 0) {
-          return callback("Username Already Exists", null);
-        }
-
+        if (_.size(items) > 0)
+          return callback('Username Already Exists', null);
 
         return self.collection.insert(data, callback);
     });
@@ -476,9 +473,9 @@ userSchema.statics.createUser = function(data, callback) {
  * @param callback
  */
 userSchema.statics.createUserFromEmail = function(email, callback) {
-    if (_.isUndefined(email)) {
-        return callback("Invalid User Data - UserSchema.CreatePublicUser()", null);
-    }
+    if (_.isUndefined(email))
+        return callback('Invalid User Data - UserSchema.CreatePublicUser()', null);
+
 
     var self = this;
     var Chance = require('chance'),
@@ -589,9 +586,8 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
 function hasDeviceToken(user, token, type) {
     if (type === 1) {
         var mataches = _.filter(user.iOSDeviceTokens, function(value) {
-            if (value === token) {
+            if (value === token)
                 return value;
-            }
         });
 
         return mataches.length > 0;

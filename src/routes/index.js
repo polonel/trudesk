@@ -239,9 +239,8 @@ function mainRoutes(router, middleware, controllers) {
                     res.json({success: true});
                 });
             });
-        } else {
+        } else
             return res.status(401).json({success: false, error: 'Unauthorized!'});
-        }
     });
 
     if (global.env === 'development') {

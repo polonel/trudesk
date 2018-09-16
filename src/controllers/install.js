@@ -24,7 +24,7 @@ installController.content = {};
 
 installController.index = function(req, res) {
     var content = {};
-    content.title = "Install Trudesk";
+    content.title = 'Install Trudesk';
     content.layout = false;
 
     res.render('install', content);
@@ -119,7 +119,7 @@ installController.install = function(req, res) {
         },
         function(next) {
             var Counter = new counters({
-                _id: "tickets",
+                _id: 'tickets',
                 next: 1001
             });
 
@@ -127,7 +127,7 @@ installController.install = function(req, res) {
         },
         function(next) {
             var Counter = new counters({
-                _id: "reports",
+                _id: 'reports',
                 next: 1001
             });
 
@@ -184,9 +184,9 @@ installController.install = function(req, res) {
                     return next('Database Error: ' + err.message);
                 }
 
-                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin))
                     return next('Username: ' + user.username + ' already exists.');
-                } else {
+                else {
                     if (user.password !== user.passconfirm)
                         return next('Passwords do not match!');
 

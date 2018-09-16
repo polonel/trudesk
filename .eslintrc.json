@@ -8,7 +8,9 @@
   },
   "rules": {
     "node/exports-style": ["error", "module.exports"],
-    "no-console": "off"
+    "no-console": "off",
+    "quotes": ["error", "single"],
+    "curly": ["error", "multi-or-nest"]
   },
   "globals": {
     "angular": 1,
@@ -17,6 +19,7 @@
     "MG": 1,
     "Snackbar": 1,
     "ROLES": 1,
-    "io": 1
+    "io": 1,
+    "d3": 1
   }
 }

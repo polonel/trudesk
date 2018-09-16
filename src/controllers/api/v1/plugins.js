@@ -24,7 +24,7 @@ var api_plugins = {};
 
 var pluginPath = path.join(__dirname, '../../../../plugins');
 
-const pluginServerUrl = 'http://plugins.trudesk.io';
+var pluginServerUrl = 'http://plugins.trudesk.io';
 
 api_plugins.installPlugin = function(req, res) {
     var packageid = req.params.packageid;

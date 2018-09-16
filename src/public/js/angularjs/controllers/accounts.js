@@ -170,7 +170,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
                     var loggedInAccount = $window.trudeskSessionService.getUser();
-                    if (loggedInAccount == null) return true;
+                    if (loggedInAccount === null) return true;
 
                     var $userHeadingContent = $('.user-heading-content');
                     $userHeadingContent.find('.js-username').text(user.username);

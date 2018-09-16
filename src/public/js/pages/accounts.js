@@ -28,7 +28,7 @@ define('pages/accounts', [
     'history'
 
 ], function(_, $, angular, helpers, UIkit, socket) {
-    "use strict";
+    'use strict';
     var accountsPage = {};
 
     String.prototype.capitalizeFirstLetter = function() {
@@ -72,7 +72,7 @@ define('pages/accounts', [
                 }, 280);
             });
 
-            $("#account_list_search").keyup(function(e) {
+            $('#account_list_search').keyup(function(e) {
                 e.preventDefault();
                 var key = e.keyCode || e.which;
 
@@ -94,8 +94,8 @@ define('pages/accounts', [
                                 html += buildUserHTML(u, true);
                             });
 
-                            var $injector = angular.injector(["ng", "trudesk"]);
-                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                            var $injector = angular.injector(['ng', 'trudesk']);
+                            $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                 var $scope = $account_list.append(html).scope();
                                 $compile($account_list)($scope || $rootScope);
                                 $rootScope.$digest();
@@ -123,9 +123,9 @@ define('pages/accounts', [
             });
 
             function getAccounts() {
-                if (!$enabled || $loading) {
+                if (!$enabled || $loading)
                     return false;
-                }
+
                 if (!$filterAll.hasClass('uk-active')) return true;
 
                 $loading = true;
@@ -150,15 +150,15 @@ define('pages/accounts', [
                             $account_list.html('');
                             h = buildUserHTML(u, true);
                             reset = false;
-                        } else {
+                        } else
                             h = buildUserHTML(u, false);
-                        }
+
 
                         if (h.length > 0) html += h;
                     });
 
-                    var $injector = angular.injector(["ng", "trudesk"]);
-                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                    var $injector = angular.injector(['ng', 'trudesk']);
+                    $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                         var $scope = $account_list.append(html).scope();
                         $compile($account_list)($scope || $rootScope);
                         $rootScope.$digest();
@@ -204,15 +204,15 @@ define('pages/accounts', [
             if (user.role === 'admin')
             html    +=          '<div class="tru-card-head tru-card-head-admin">';
             else
-            html    +=          '<div class="tru-card-head ' + (user.deleted ? "tru-card-head-deleted" : "") +'">';
+            html    +=          '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">';
 
             html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">';
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';
             html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="editAccount($event)" class="no-ajaxy">Edit</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action ' + (user.deleted ? "hide" : "") + '">Delete</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="no-ajaxy enable-account-action ' + (!user.deleted ? "hide" : "") + '">Enable</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action ' + (user.deleted ? 'hide' : '') + '">Delete</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="no-ajaxy enable-account-action ' + (!user.deleted ? 'hide' : '') + '">Enable</a></li>';
             html    +=                      '</ul>';
             html    +=                  '</div>';
             html    +=              '</div>';
@@ -251,9 +251,10 @@ define('pages/accounts', [
             html    +=                          '<span class="uk-text-small uk-text-muted uk-text-truncate">';
         _.each(user.groups, function(g) {
             html    +=  g;
-            if (_.size(user.groups) > 1)
-            if (_.last(user.groups) !== g)
-            html    += ', ';
+            if (_.size(user.groups) > 1) {
+                if (_.last(user.groups) !== g)
+                    html += ', ';
+            }
         });
             html    +=                          '</span>';
             html    +=                      '</div>';

@@ -52,7 +52,7 @@ ticketsController.pubNewIssue = function(req, res) {
                 if (err) return handleError(res, err);
 
                 var content = {};
-                content.title = "New Issue";
+                content.title = 'New Issue';
                 content.layout = false;
                 content.data = {};
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
@@ -62,9 +62,8 @@ ticketsController.pubNewIssue = function(req, res) {
 
                 return res.render('pub_createTicket', content);
             });
-        } else {
+        } else
             return res.redirect('/');
-        }
     });
 };
 
@@ -81,7 +80,7 @@ ticketsController.getByStatus = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-';
     processor.renderpage = 'tickets';
@@ -136,7 +135,7 @@ ticketsController.getActive = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-active';
     processor.renderpage = 'tickets';
@@ -165,7 +164,7 @@ ticketsController.getAssigned = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-assigned';
     processor.renderpage = 'tickets';
@@ -196,7 +195,7 @@ ticketsController.getUnassigned = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-unassigned';
     processor.renderpage = 'tickets';
@@ -259,7 +258,7 @@ ticketsController.filter = function(req, res, next) {
     };
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.renderpage = 'tickets';
     processor.pagetype = 'filter';
@@ -381,11 +380,11 @@ ticketsController.processor = function(req, res) {
 ticketsController.print = function(req, res) {
     var user = req.user;
     var uid = req.params.id;
-    if (isNaN(uid)) {
+    if (isNaN(uid))
         return res.redirect('/tickets');
-    }
+
     var content = {};
-    content.title = "Tickets - " + req.params.id;
+    content.title = 'Tickets - ' + req.params.id;
     content.nav = 'tickets';
 
     content.data = {};
@@ -445,12 +444,11 @@ ticketsController.print = function(req, res) {
 ticketsController.single = function(req, res) {
     var user = req.user;
     var uid = req.params.id;
-    if (isNaN(uid)) {
+    if (isNaN(uid))
         return res.redirect('/tickets');
-    }
 
     var content = {};
-    content.title = "Tickets - " + req.params.id;
+    content.title = 'Tickets - ' + req.params.id;
     content.nav = 'tickets';
 
     content.data = {};
@@ -580,10 +578,8 @@ ticketsController.uploadAttachment = function(req, res) {
 
         if (_.isUndefined(object.ticketId) ||
             _.isUndefined(object.ownerId) ||
-            _.isUndefined(object.filePath)) {
-
+            _.isUndefined(object.filePath))
             return res.status(400).send('Invalid Form Data');
-        }
 
         // Everything Checks out lets make sure the file exists and then add it to the attachments array
         if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');

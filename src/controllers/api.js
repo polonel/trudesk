@@ -20,15 +20,15 @@ var async = require('async'),
     userSchema = require('../models/user'),
 
     //Sub APIs
-    api_tickets_v1      = require('./api/v1/tickets'),
-    api_tags_v1         = require('./api/v1/tags'),
-    api_notices_v1      = require('./api/v1/notices'),
-    api_users_v1        = require('./api/v1/users'),
-    api_messages_v1     = require('./api/v1/messages'),
-    api_groups_v1       = require('./api/v1/groups'),
-    api_reports_v1      = require('./api/v1/reports'),
-    api_settings_v1     = require('./api/v1/settings'),
-    api_plugins_v1      = require('./api/v1/plugins');
+    apiTicketsV1      = require('./api/v1/tickets'),
+    apiTagsV1         = require('./api/v1/tags'),
+    apiNoticesV1      = require('./api/v1/notices'),
+    apiUsersV1        = require('./api/v1/users'),
+    apiMessagesV1     = require('./api/v1/messages'),
+    apiGroupsV1       = require('./api/v1/groups'),
+    apiReportsV1      = require('./api/v1/reports'),
+    apiSettingsV1     = require('./api/v1/settings'),
+    apiPluginsV1      = require('./api/v1/plugins');
 
 /**
  * @since 1.0
@@ -48,15 +48,15 @@ var async = require('async'),
  *
  */
 var apiController = {};
-apiController.tickets = api_tickets_v1;
-apiController.tags = api_tags_v1;
-apiController.notices = api_notices_v1;
-apiController.users = api_users_v1;
-apiController.messages = api_messages_v1;
-apiController.groups = api_groups_v1;
-apiController.reports = api_reports_v1;
-apiController.settings = api_settings_v1;
-apiController.plugins = api_plugins_v1;
+apiController.tickets = apiTicketsV1;
+apiController.tags = apiTagsV1;
+apiController.notices = apiNoticesV1;
+apiController.users = apiUsersV1;
+apiController.messages = apiMessagesV1;
+apiController.groups = apiGroupsV1;
+apiController.reports = apiReportsV1;
+apiController.settings = apiSettingsV1;
+apiController.plugins = apiPluginsV1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');
@@ -64,7 +64,7 @@ apiController.import = function(req, res) {
     var userModel =  require('../models/user');
     var groupModel = require('../models/group');
 
-    var array = fs.readFileSync(path.join(__dirname, '..', 'import.csv')).toString().split(("\n"));
+    var array = fs.readFileSync(path.join(__dirname, '..', 'import.csv')).toString().split(('\n'));
     var clean = array.filter(function(e){return e;});
 
     async.eachSeries(clean, function(item, cb) {

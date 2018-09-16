@@ -22,18 +22,16 @@ var express = require('express'),
     port = process.env.PORT || 8118;
 
 (function (app) {
-    "use strict";
+    'use strict';
 
     // Load Events
     require('./emitter/events');
-    var routeMiddleware;
 
     module.exports.server = server;
     module.exports.init = function(db, callback, p) {
         if (p !== undefined) port = p;
         middleware(app, db, function(middleware, store) {
             module.exports.sessionStore = store;
-            routeMiddleware = middleware;
 
             routes(app, middleware);
 
@@ -64,7 +62,7 @@ var express = require('express'),
             bodyParser      = require('body-parser'),
             favicon         = require('serve-favicon');
 
-        require('./middleware/middleware')(app);
+        var routeMiddleware = require('./middleware/middleware')(app);
 
         app.set('views', path.join(__dirname, './views/'));
         app.engine('hbs', hbs.express3({

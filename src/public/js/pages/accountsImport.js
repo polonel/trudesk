@@ -1,11 +1,11 @@
 /**
       .                              .o8                     oooo
-   .o8                             "888                     `888
+   .o8                             '888                     `888
  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+   888   `888''8P `888  `888  d88' `888  d88' `88b d88(  '8  888 .8P'
+   888    888      888   888  888   888  888ooo888 `'Y88b.   888888.
    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+   '888' d888b     `V88V'V8P' `Y8bod88P' `Y8bod8P' 8''888P' o888o o888o
  ========================================================================
  Created:    04/07/2016
  Author:     Chris Brame
@@ -109,7 +109,7 @@ define('pages/accountsImport', [
                 onFinished: function() {
                     location.href = '/accounts';
                 }
-            })
+            });
         }
     };
 
@@ -120,14 +120,14 @@ define('pages/accountsImport', [
                 action: '/accounts/import/csv/upload',
                 allow: '*.csv',
                 loadstart: function() {
-                    bar.css("width", "0%").text("0%");
+                    bar.css('width', '0%').text('0%');
                     progressbar.removeClass('uk-hidden');
                 },
                 progress: function(percent) {
                     percent = Math.ceil(percent);
-                    bar.css("width", percent+"%").text(percent + "%");
+                    bar.css('width', percent+'%').text(percent + '%');
                 },
-                notallowed: function(file) {
+                notallowed: function() {
                     helpers.UI.showSnackbar('Invalid File Type. Please upload a CSV file.', true);
                 },
                 error: function(err) {
@@ -151,7 +151,7 @@ define('pages/accountsImport', [
 
                     console.log(state.csvData);
 
-                    bar.css("width", "100%").text("100%");
+                    bar.css('width', '100%').text('100%');
 
                     setTimeout(function() {
                         progressbar.addClass('uk-hidden');
@@ -232,14 +232,14 @@ define('pages/accountsImport', [
                 action: '/accounts/import/json/upload',
                 allow: '*.json',
                 loadstart: function() {
-                    bar.css("width", "0%").text("0%");
+                    bar.css('width', '0%').text('0%');
                     progressbar.removeClass('uk-hidden');
                 },
                 progress: function(percent) {
                     percent = Math.ceil(percent);
-                    bar.css("width", percent+"%").text(percent + "%");
+                    bar.css('width', percent+'%').text(percent + '%');
                 },
-                notallowed: function(file) {
+                notallowed: function() {
                     helpers.UI.showSnackbar('Invalid File Type. Please upload a JSON file.', true);
                 },
                 error: function(err) {
@@ -261,7 +261,7 @@ define('pages/accountsImport', [
 
                     $('#json-review-list').val(csvReviewRender(response.addedUsers, response.updatedUsers));
 
-                    bar.css("width", "100%").text("100%");
+                    bar.css('width', '100%').text('100%');
 
                     setTimeout(function() {
                         progressbar.addClass('uk-hidden');
@@ -277,7 +277,7 @@ define('pages/accountsImport', [
     };
 
     accountsImportPage.wizard_ldap = function() {
-        var $wizard_ldap = $('#wizard_ldap');
+        var $wizardLdap = $('#wizard_ldap');
         var $connectionForm = $('#wizard_ldap_connection_form');
 
         var ldapSuccess = false;
@@ -285,18 +285,18 @@ define('pages/accountsImport', [
         var addedUsers = [],
             updatedUsers = [];
 
-        if ($wizard_ldap.length) {
-            $wizard_ldap.steps({
+        if ($wizardLdap.length) {
+            $wizardLdap.steps({
                 headerTag: 'h3',
                 bodyTag: 'section',
                 transitionEffect: 'slideLeft',
                 trigger: 'change',
                 cssClass: 'wizard',
                 onInit: function(event, currentIndex) {
-                    content_height($wizard_ldap, currentIndex);
+                    content_height($wizardLdap, currentIndex);
 
-                    // $wizard_ldap.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
-                    $wizard_ldap.find('.button_next > a').html('Connect  <i class=\'material-icons\'>&#xE315;</i>');
+                    // $wizardLdap.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
+                    $wizardLdap.find('.button_next > a').html('Connect  <i class=\'material-icons\'>&#xE315;</i>');
 
                     setTimeout(function() {
                         $(window).resize();
@@ -307,9 +307,9 @@ define('pages/accountsImport', [
                         var verifyStatus = $('#wizard_ldap_verify_text');
                         var data = $connectionForm.serializeObject();
 
-                        $wizard_ldap.find('#wizard_ldap_verify_spinner').removeClass('uk-hidden');
-                        $wizard_ldap.find('#wizard_ldap_verify_icon').addClass('uk-hidden');
-                        $wizard_ldap.find('.button_next > a').html('Next  <i class=\'material-icons\'>&#xE315;</i>');
+                        $wizardLdap.find('#wizard_ldap_verify_spinner').removeClass('uk-hidden');
+                        $wizardLdap.find('#wizard_ldap_verify_icon').addClass('uk-hidden');
+                        $wizardLdap.find('.button_next > a').html('Next  <i class=\'material-icons\'>&#xE315;</i>');
                         setTimeout(function() {
                             $.ajax({
                                 url: '/accounts/import/ldap/bind',
@@ -321,47 +321,47 @@ define('pages/accountsImport', [
                                 dataType: 'json',
                                 data: JSON.stringify(data),
                                 beforeSend: function() {
-                                    // $wizard_ldap.siblings('.card-spinner').removeClass('uk-hidden');
+                                    // $wizardLdap.siblings('.card-spinner').removeClass('uk-hidden');
                                 },
                                 error: function(err) {
                                     console.error(err);
                                     verifyStatus.text('An error occured while trying to bind to the ldap server. Please check connection settings.');
-                                    $wizard_ldap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                    $wizard_ldap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
-                                    // $wizard_ldap.steps('setStep', 0);
+                                    $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
+                                    $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
+                                    // $wizardLdap.steps('setStep', 0);
                                 },
                                 success: function(response) {
                                     if (response.success) {
                                         ldapSuccess = true;
                                         verifyStatus.text('Successfully connected to ldap server. Please click next to review accounts.');
-                                        $wizard_ldap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                        $wizard_ldap.find('#wizard_ldap_verify_icon').removeClass('md-color-red uk-hidden').addClass('md-color-green').find('> i').html('&#xE86C;')
+                                        $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
+                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-red uk-hidden').addClass('md-color-green').find('> i').html('&#xE86C;')
                                         addedUsers = response.addedUsers;
                                         updatedUsers = response.updatedUsers;
 
                                         $('#ldap-review-list').val(ldapReviewRender(response.addedUsers, response.updatedUsers));
                                     } else {
                                         verifyStatus.text('An error occured while trying to bind to the ldap server. Please check connection settings.');
-                                        $wizard_ldap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
-                                        $wizard_ldap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
+                                        $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden');
+                                        $wizardLdap.find('#wizard_ldap_verify_icon').removeClass('md-color-green uk-hidden').addClass('md-color-red').find('> i').html('&#xE000;')
                                     }
                                 },
                                 complete: function() {
                                     setTimeout(function(){
-                                        $wizard_ldap.siblings('.card-spinner').addClass('uk-hidden');
+                                        $wizardLdap.siblings('.card-spinner').addClass('uk-hidden');
                                     }, 800);
                                 }
                             });
                         }, 500);
                     }
 
-                    if (newIndex === 0) {
+                    if (newIndex === 0)
                         ldapSuccess = false;
-                    }
+
 
                     if (currentIndex === 1 && newIndex === 0) {
                         //Verify to Connection
-                        $wizard_ldap.find('.button_next > a').html('Connect  <i class=\'material-icons\'>&#xE315;</i>');
+                        $wizardLdap.find('.button_next > a').html('Connect  <i class=\'material-icons\'>&#xE315;</i>');
                     }
 
                     if (currentIndex === 1 && newIndex === 2) {
@@ -371,8 +371,8 @@ define('pages/accountsImport', [
 
                     if (newIndex === 3) {
 
-                        // $wizard_ldap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
-                        // $wizard_ldap.find('.button_finish').addClass('disabled').attr('aria-disabled', true);
+                        // $wizardLdap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
+                        // $wizardLdap.find('.button_finish').addClass('disabled').attr('aria-disabled', true);
                     }
 
                     return true;
@@ -380,9 +380,9 @@ define('pages/accountsImport', [
                 onStepChanged: function(event, currentIndex) {
                     if (currentIndex === 3) {
                         //Last step Disable all until done.
-                        $wizard_ldap.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
-                        $wizard_ldap.find('.actions ul li').addClass('disabled');
-                        $wizard_ldap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
+                        $wizardLdap.find('.steps ul li').each(function(){ $(this).addClass('disabled'); } );
+                        $wizardLdap.find('.actions ul li').addClass('disabled');
+                        $wizardLdap.find('.button_previous').addClass('disabled').attr('aria-disabled', true);
 
                         var ldapStatusBox = $('#ldap-import-status-box');
                         var ldapStatusUL = ldapStatusBox.find('ul');
@@ -398,7 +398,7 @@ define('pages/accountsImport', [
                     //Disable all future steps when moving backwards
                     $('.steps .current').nextAll().removeClass('done').addClass('disabled');
 
-                    content_height($wizard_ldap, currentIndex);
+                    content_height($wizardLdap, currentIndex);
                 },
                 onFinished: function() {
                     location.href = '/accounts';
@@ -409,7 +409,7 @@ define('pages/accountsImport', [
 
     function disableUIElements() {
         // $(window).on('beforeunload', function() {
-        //     return "Are you sure? We are still importing users.";
+        //     return 'Are you sure? We are still importing users.';
         // });
 
         $('.sidebar').css({width: 0});
