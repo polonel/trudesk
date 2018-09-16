@@ -246,7 +246,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1)
             return;
 
-        Tether({
+        new Tether({
             element: element,
             target: target,
             attachment: 'top left',
