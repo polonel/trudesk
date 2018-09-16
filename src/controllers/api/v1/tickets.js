@@ -21,6 +21,60 @@ var async           = require('async'),
 
 var apiTickets = {};
 
+function buildGraphData(arr, days, callback) {
+    var graphData = [];
+    var today = moment().hour(23).minute(59).second(59);
+    var timespanArray = [];
+    for (var i=days;i--;)
+        timespanArray.push(i);
+
+
+    _.each(timespanArray, function(day) {
+        var obj = {};
+        var d = today.clone().subtract(day, 'd');
+        obj.date = d.format('YYYY-MM-DD');
+
+        var $dateCount = _.filter(arr, function(v) {
+            return (v.date <= d.toDate() && v.date >= d.clone().subtract(1, 'd').toDate());
+        });
+
+        $dateCount = _.size($dateCount);
+        obj.value = $dateCount;
+        graphData.push(obj);
+    });
+
+    if (_.isFunction(callback))
+        return callback(graphData);
+    else
+        return graphData;
+}
+
+function buildAvgResponse(ticketArray, callback) {
+    var cbObj = {};
+    var $ticketAvg = [];
+    _.each(ticketArray, function (ticket) {
+        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return;
+
+        var ticketDate = moment(ticket.date);
+        var firstCommentDate = moment(ticket.comments[0].date);
+
+        var diff = firstCommentDate.diff(ticketDate, 'seconds');
+        $ticketAvg.push(diff);
+    });
+
+    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
+        return m + x;
+    }, 0);
+
+    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
+    cbObj.avgResponse = Math.floor(tvt);
+
+    if (_.isFunction(callback))
+        return callback(cbObj);
+    else
+        return cbObj;
+}
+
 /**
  * @api {get} /api/v1/tickets/ Get Tickets
  * @apiName getTickets
@@ -1362,7 +1416,6 @@ apiTickets.getTicketStatsForUser = function(req, res) {
                     r.avgResponse = obj.avgResponse;
 
                     return callback(null, r);
-
                 });
             });
         }
@@ -1379,61 +1432,6 @@ apiTickets.getTicketStatsForUser = function(req, res) {
         return res.json({success: true, data: data});
     });
 };
-
-
-function buildGraphData(arr, days, callback) {
-    var graphData = [];
-    var today = moment().hour(23).minute(59).second(59);
-    var timespanArray = [];
-    for (var i=days;i--;) 
-        timespanArray.push(i);
-    
-
-    _.each(timespanArray, function(day) {
-        var obj = {};
-        var d = today.clone().subtract(day, 'd');
-        obj.date = d.format('YYYY-MM-DD');
-
-        var $dateCount = _.filter(arr, function(v) {
-            return (v.date <= d.toDate() && v.date >= d.clone().subtract(1, 'd').toDate());
-        });
-
-        $dateCount = _.size($dateCount);
-        obj.value = $dateCount;
-        graphData.push(obj);
-    });
-
-    if (_.isFunction(callback))
-        return callback(graphData);
-    else
-        return graphData;
-}
-
-function buildAvgResponse(ticketArray, callback) {
-    var cbObj = {};
-    var $ticketAvg = [];
-    _.each(ticketArray, function (ticket) {
-        if (_.isUndefined(ticket.comments) || _.size(ticket.comments) < 1) return;
-
-        var ticketDate = moment(ticket.date);
-        var firstCommentDate = moment(ticket.comments[0].date);
-
-        var diff = firstCommentDate.diff(ticketDate, 'seconds');
-        $ticketAvg.push(diff);
-    });
-
-    var ticketAvgTotal = _($ticketAvg).reduce(function (m, x) {
-        return m + x;
-    }, 0);
-
-    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
-    cbObj.avgResponse = Math.floor(tvt);
-
-    if (_.isFunction(callback))
-        return callback(cbObj);
-    else
-        return cbObj;
-}
 
 /**
  * @api {get} /api/v1/tickets/count/tags Get Tags Count
@@ -1648,21 +1646,20 @@ apiTickets.getOverdue = function(req, res) {
 
         if (setting !== null && setting.value === false) 
             return res.json({success: true, error: 'Show Overdue currently disabled.'});
-         else {
-            var ticketSchema = require('../../../models/ticket');
-            var groupSchema = require('../../../models/group');
-            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+
+        var ticketSchema = require('../../../models/ticket');
+        var groupSchema = require('../../../models/group');
+        groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+            if (err) return res.status(400).json({success: false, error: err.message});
+            grps = grps.map(function(g){ return g._id.toString(); });
+            ticketSchema.getOverdue(grps, function (err, objs) {
                 if (err) return res.status(400).json({success: false, error: err.message});
-                grps = grps.map(function(g){ return g._id.toString(); });
-                ticketSchema.getOverdue(grps, function (err, objs) {
-                    if (err) return res.status(400).json({success: false, error: err.message});
 
-                    var sorted = _.sortBy(objs, 'updated').reverse();
+                var sorted = _.sortBy(objs, 'updated').reverse();
 
-                    return res.json({success: true, tickets: sorted});
-                });
+                return res.json({success: true, tickets: sorted});
             });
-        }
+        });
     });
 };
 

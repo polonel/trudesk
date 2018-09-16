@@ -36,7 +36,7 @@ define('pages/reportsBreakdown', [
                     if (typeof callback === 'function')
                         return callback();
 
-                    return;
+                    return true;
                 }
             }
 

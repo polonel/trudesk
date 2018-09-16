@@ -53,7 +53,7 @@ function showTourSettingDefault(callback) {
         if (err) {
             winston.warn(err);
             if (_.isFunction(callback)) return callback(err);
-            return;
+            return false;
         }
 
         if (!setting) {
@@ -202,10 +202,9 @@ function checkPriorities(callback) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {

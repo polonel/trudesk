@@ -188,7 +188,7 @@ userSchema.methods.removeDeviceToken = function(token, type, callback) {
 
 userSchema.methods.addOpenChatWindow = function(convoId, callback) {
     if (convoId === undefined) {
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback('Invalid convoId');
     }
     var user = this;
@@ -197,24 +197,24 @@ userSchema.methods.addOpenChatWindow = function(convoId, callback) {
     }).length > 0);
 
     if (hasChatWindow) {
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback();
     }
     user.preferences.openChatWindows.push(convoId.toString());
     user.save(function(err, u) {
         if (err) {
-            if (!_.isFunction(callback)) return;
+            if (!_.isFunction(callback)) return false;
             return callback(err);
         }
 
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback(null, u.preferences.openChatWindows);
     });
 };
 
 userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
     if (convoId === undefined) {
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback('Invalid convoId');
     }
     var user = this;
@@ -223,7 +223,7 @@ userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
     }).length > 0);
 
     if (!hasChatWindow) {
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback();
     }
     user.preferences.openChatWindows.splice(_.findIndex(user.preferences.openChatWindows, function(item) {
@@ -232,11 +232,11 @@ userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
 
     user.save(function(err, u) {
         if (err) {
-            if (!_.isFunction(callback)) return;
+            if (!_.isFunction(callback)) return false;
             return callback(err);
         }
 
-        if (!_.isFunction(callback)) return;
+        if (!_.isFunction(callback)) return false;
         return callback(null, u.preferences.openChatWindows);
     });
 };

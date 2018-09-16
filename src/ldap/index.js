@@ -28,8 +28,8 @@ ldapClient.bind = function(url, userDN, password, callback) {
     ldapClient.client.on('error', function(err) {
         if (_.isFunction(callback))
             return callback(err);
-        else
-            throw err;
+
+        throw err;
     });
 };
 

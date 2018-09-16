@@ -34,7 +34,7 @@ define('pages/dashboard', [
                 if (typeof callback === 'function')
                     return callback();
 
-                return;
+                return true;
             }
 
             helpers.resizeAll();
@@ -55,8 +55,8 @@ define('pages/dashboard', [
             var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
             if (showOverdue) {
                 var overdueCard = $('#overdue_tickets');
-                var $overdue_table_body = overdueCard.find('table.uk-table > tbody');
-                $overdue_table_body.empty(); // Clear
+                var $overdueTableBody = overdueCard.find('table.uk-table > tbody');
+                $overdueTableBody.empty(); // Clear
                 $.ajax({
                     url: '/api/v1/tickets/overdue',
                     method: 'GET',
@@ -72,7 +72,7 @@ define('pages/dashboard', [
                             html += '</tr>';
                         });
 
-                        $overdue_table_body.append(html);
+                        $overdueTableBody.append(html);
 
                         overdueSpinner.animate({opacity: 0}, 600, function() {
                             $(this).hide();

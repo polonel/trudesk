@@ -22,7 +22,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.sendChatMessage = function(cid, toUserId, event) {
                 var form = $(event.target);
-                if (form.length < 1) return;
+                if (form.length < 1) return false;
 
                 var input = form.find('input[name="chatMessage"]');
 

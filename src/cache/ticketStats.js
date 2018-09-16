@@ -21,6 +21,61 @@ var ticketSchema    = require('../models/ticket');
 
 var ex = {};
 
+function buildGraphData(arr, days, callback) {
+    var graphData = [];
+    if (arr.length < 1)
+        return callback(graphData);
+    var today = moment().hour(23).minute(59).second(59);
+    var timespanArray = [];
+    for (var i=days;i--;)
+        timespanArray.push(i);
+
+
+    arr = _.map(arr, function(i) {
+        return moment(i.date).format('YYYY-MM-DD');
+    });
+
+    var counted = _.countBy(arr);
+
+    for (var k = 0; k < timespanArray.length; k++) {
+        var obj = {};
+        var day = timespanArray[k];
+        var d = today.clone().subtract(day, 'd');
+        obj.date = d.format('YYYY-MM-DD');
+
+        obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date];
+        graphData.push(obj);
+    }
+
+    return callback(graphData);
+}
+
+function buildAvgResponse(ticketArray, callback) {
+    var cbObj = {};
+    var $ticketAvg = [];
+    for (var i = 0; i < ticketArray.length; i++) {
+        var ticket = ticketArray[i];
+        if (ticket.comments === undefined || ticket.comments.length < 1) continue;
+
+        var ticketDate = moment(ticket.date);
+        var firstCommentDate = moment(ticket.comments[0].date);
+
+        var diff = firstCommentDate.diff(ticketDate, 'seconds');
+        $ticketAvg.push(diff);
+
+        ticket = null;
+    }
+
+    var ticketAvgTotal = _.reduce($ticketAvg, function (m, x) {
+        return m + x;
+    }, 0);
+
+    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
+    cbObj.avgResponse = Math.floor(tvt);
+
+    return callback(cbObj);
+}
+
 var init = function(tickets, callback) {
     var $tickets    = [];
     ex.e30          = {};
@@ -187,60 +242,5 @@ var init = function(tickets, callback) {
         return callback(err, ex);
     });
 };
-
-function buildGraphData(arr, days, callback) {
-    var graphData = [];
-    if (arr.length < 1)
-        return callback(graphData);
-    var today = moment().hour(23).minute(59).second(59);
-    var timespanArray = [];
-    for (var i=days;i--;) 
-        timespanArray.push(i);
-    
-
-    arr = _.map(arr, function(i) {
-        return moment(i.date).format('YYYY-MM-DD');
-    });
-
-    var counted = _.countBy(arr);
-
-    for (var k = 0; k < timespanArray.length; k++) {
-        var obj = {};
-        var day = timespanArray[k];
-        var d = today.clone().subtract(day, 'd');
-        obj.date = d.format('YYYY-MM-DD');
-
-        obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date];
-        graphData.push(obj);
-    }
-
-    return callback(graphData);
-}
-
-function buildAvgResponse(ticketArray, callback) {
-    var cbObj = {};
-    var $ticketAvg = [];
-    for (var i = 0; i < ticketArray.length; i++) {
-        var ticket = ticketArray[i];
-        if (ticket.comments === undefined || ticket.comments.length < 1) continue;
-
-        var ticketDate = moment(ticket.date);
-        var firstCommentDate = moment(ticket.comments[0].date);
-
-        var diff = firstCommentDate.diff(ticketDate, 'seconds');
-        $ticketAvg.push(diff);
-
-        ticket = null;
-    }
-
-    var ticketAvgTotal = _.reduce($ticketAvg, function (m, x) {
-        return m + x;
-    }, 0);
-
-    var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours();
-    cbObj.avgResponse = Math.floor(tvt);
-
-    return callback(cbObj);
-}
 
 module.exports = init;

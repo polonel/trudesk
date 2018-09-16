@@ -30,7 +30,7 @@ define('modules/attachmentUpload', [
                     if (val === '') return true;
 
                     var form = $('#attachmentForm');
-                    if (_.isUndefined(form) || _.isNull(form)) return;
+                    if (_.isUndefined(form) || _.isNull(form)) return false;
 
                     var formData = new FormData($(form)[0]);
 
@@ -47,7 +47,7 @@ define('modules/attachmentUpload', [
                             helpers.UI.showSnackbar('Attachment Successfully Uploaded', false);
 
                             //Refresh Attachments - Socket.IO
-                            if (_.isUndefined(data.ticket)) return;
+                            if (_.isUndefined(data.ticket)) return false;
 
                             socket.ui.refreshTicketAttachments(data.ticket._id);
                         },

@@ -407,11 +407,10 @@ viewController.getShowTourSetting = function(request, callback) {
         var userSchema = require('../../models/user');
         userSchema.getUser(request.user._id, function(err, user) {
             var hasTourCompleted = false;
-            if (user.preferences.tourCompleted === undefined) 
-                hasTourCompleted = false;
-             else 
+
+            if (user.preferences.tourCompleted !== undefined)
                 hasTourCompleted = user.preferences.tourCompleted;
-            
+
 
             if (hasTourCompleted) return callback(null, false);
 

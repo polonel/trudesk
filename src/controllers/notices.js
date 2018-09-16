@@ -18,6 +18,11 @@ var permissions     = require('../permissions');
 
 var noticesController = {};
 
+function handleError(res, err) {
+    if (err)
+        return res.render('error', {layout: false, error: err, message: err.message});
+}
+
 noticesController.get = function(req, res) {
     var user = req.user;
     if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
@@ -81,11 +86,5 @@ noticesController.edit = function(req, res) {
         res.render('subviews/editNotice', content);
     });
 };
-
-function handleError(res, err) {
-    if (err) 
-        return res.render('error', {layout: false, error: err, message: err.message});
-    
-}
 
 module.exports = noticesController;

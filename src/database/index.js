@@ -40,15 +40,14 @@ module.exports.init = function(callback, connectionString, opts) {
 
     if (db.connection) 
         return callback(null, db);
-     else {
-        mongoose.Promise = global.Promise;
-        mongoose.connect(CONNECTION_URI, options, function(e) {
-            if (e) return callback(e, null);
-            db.connection = mongoose.connection;
 
-            return callback(e, db);
-        });
-    }
+    mongoose.Promise = global.Promise;
+    mongoose.connect(CONNECTION_URI, options, function(e) {
+        if (e) return callback(e, null);
+        db.connection = mongoose.connection;
+
+        return callback(e, db);
+    });
 };
 
 module.exports.db = db;

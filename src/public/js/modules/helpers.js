@@ -333,9 +333,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.UI.showSnackbar = function() {
         if (arguments.length === 2) 
             return(helpers.UI.showSnackbar__.apply(this, arguments));
-          else 
-            return(helpers.UI.showSnackbar_.apply(this, arguments));
-        
+
+        return(helpers.UI.showSnackbar_.apply(this, arguments));
     };
 
     helpers.UI.showSnackbar_ = function(options) {
@@ -1079,7 +1078,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                     onStop: function(value, to) {
                         if (numCount) {
                             var totalNum = parseInt($(this.el).attr('data-totalNumCount'));
-                            if (totalNum <= 0) return;
+                            if (totalNum <= 0) return false;
                             $(this.el).find('.chart-value').text(totalNum);
                             return true;
                         }
@@ -1090,7 +1089,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
                     onStep: function(from, to, percent) {
                         if (numCount) {
                             var countVal = parseInt($(this.el).attr('data-totalNumCount'));
-                            if (countVal <= 0) return;
+                            if (countVal <= 0) return false;
                             var current = parseInt($(this.el).find('.chart-value').text());
                             if (countVal !== null && countVal > 0 && current !== null) {
                                 var totalCount = Math.round(countVal*(100/Math.round(to)));
@@ -1355,8 +1354,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
         if (helpers.canUser(perm + ':editSelf')) 
             return id.toString() === ownerId.toString();
-         else 
-            return false;
+
+        return false;
         
     };
 

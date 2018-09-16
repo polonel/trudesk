@@ -24,6 +24,11 @@ var accountsController = {};
 
 accountsController.content = {};
 
+function handleError(res, err) {
+    if (err)
+        return res.render('error', {layout: false, error: err, message: err.message});
+}
+
 accountsController.signup = function(req, res) {
     var marked = require('marked');
     var settings = require('../models/setting');
@@ -470,11 +475,5 @@ accountsController.uploadImage = function(req, res) {
 
     req.pipe(busboy);
 };
-
-function handleError(res, err) {
-    if (err)
-        return res.render('error', {layout: false, error: err, message: err.message});
-
-}
 
 module.exports = accountsController;

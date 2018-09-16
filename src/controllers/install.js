@@ -184,47 +184,46 @@ installController.install = function(req, res) {
 
                 if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin))
                     return next('Username: ' + user.username + ' already exists.');
-                else {
-                    if (user.password !== user.passconfirm)
-                        return next('Passwords do not match!');
 
-                    var chance = new Chance();
-                    var adminUser = new UserSchema({
-                        username:   user.username,
-                        password:   user.password,
-                        fullname:   user.fullname,
-                        email:      user.email,
-                        role:       'admin',
-                        title:      'Administrator',
-                        accessToken:chance.hash()
-                    });
+                if (user.password !== user.passconfirm)
+                    return next('Passwords do not match!');
 
-                    adminUser.save(function(err, savedUser) {
+                var chance = new Chance();
+                var adminUser = new UserSchema({
+                    username:   user.username,
+                    password:   user.password,
+                    fullname:   user.fullname,
+                    email:      user.email,
+                    role:       'admin',
+                    title:      'Administrator',
+                    accessToken:chance.hash()
+                });
+
+                adminUser.save(function(err, savedUser) {
+                    if (err) {
+                        winston.error('Database Error: ' + err.message);
+                        return next('Database Error: ' + err.message);
+                    }
+
+                    adminGroup.addMember(savedUser._id, function(err, success) {
                         if (err) {
                             winston.error('Database Error: ' + err.message);
                             return next('Database Error: ' + err.message);
                         }
 
-                        adminGroup.addMember(savedUser._id, function(err, success) {
+                        if (!success)
+                            return next('Unable to add user to Administrator group!');
+
+                        adminGroup.save(function(err) {
                             if (err) {
                                 winston.error('Database Error: ' + err.message);
                                 return next('Database Error: ' + err.message);
                             }
 
-                            if (!success)
-                                return next('Unable to add user to Administrator group!');
-
-                            adminGroup.save(function(err) {
-                                if (err) {
-                                    winston.error('Database Error: ' + err.message);
-                                    return next('Database Error: ' + err.message);
-                                }
-
-                                return next(null);
-                            });
+                            return next(null);
                         });
                     });
-                }
+                });
             });
         },
         function(next) {
