@@ -643,7 +643,8 @@ var socketServer = function(ws) {
             if (usersOnline.hasOwnProperty(user.username.toLowerCase()))
                 exists = true;
 
-            var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
+            // var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
+            var sortedUserList;
 
             if (!exists) {
                 if (user.username.length !== 0) {

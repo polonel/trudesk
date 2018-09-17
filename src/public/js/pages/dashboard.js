@@ -151,7 +151,7 @@ define('pages/dashboard', [
                         //QuickStats
                         var mostRequester = $('#mostRequester');
                         if (_data.mostRequester !== null)
-                        mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
+                            mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
                         var mostCommenter = $('#mostCommenter');
                         if (_data.mostCommenter !== null)
                             mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');

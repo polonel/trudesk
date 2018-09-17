@@ -60,7 +60,6 @@ define('pages/groups', [
                     if(filteredItems){
                         // filter grid items
                         grid.filter(filteredItems);
-                        filteredItems = '';
                     } else {
                         // show all
                         grid.filter('all');

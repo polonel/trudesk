@@ -96,9 +96,6 @@ ticketsController.getByStatus = function(req, res, next) {
     if (_.size(arr) > 2) tType = arr[2];
 
     switch (tType) {
-        case 'new':
-            s = 0;
-            break;
         case 'open':
             s = 1;
             break;
@@ -107,9 +104,6 @@ ticketsController.getByStatus = function(req, res, next) {
             break;
         case 'closed':
             s = 3;
-            break;
-        default:
-            s = 0;
             break;
     }
 

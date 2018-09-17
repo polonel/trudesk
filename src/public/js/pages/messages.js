@@ -48,19 +48,18 @@ define('pages/messages', [
                 if (!$li.is('li'))
                     $li = $(target).parents('li');
                 var convoId = $li.attr('data-conversation-id');
-                switch(action.toLowerCase()) {
-                    case 'delete':
-                        UIKit.modal.confirm('Are you sure you want to delete this conversation?', function() {
-                            //Confirm
-                            deleteConversation(convoId);
-                        }, function() {
-                            //Cancel
-                        }, {
-                            labels: {
-                                'Ok': 'YES'
-                            },
-                            confirmButtonClass: 'md-btn-danger'
-                        });
+                if (action.toLowerCase() === 'delete') {
+                    UIKit.modal.confirm('Are you sure you want to delete this conversation?', function() {
+                        //Confirm
+                        deleteConversation(convoId);
+                    }, function() {
+                        //Cancel
+                    }, {
+                        labels: {
+                            'Ok': 'YES'
+                        },
+                        confirmButtonClass: 'md-btn-danger'
+                    });
                 }
             });
 

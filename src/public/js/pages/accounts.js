@@ -197,14 +197,14 @@ define('pages/accounts', [
 
         var html    =  '<div data-uk-filter="' + user.role + ',' + user.fullname + '">';
             if (addRemove)
-            html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '" data-search-result>';
+                html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '" data-search-result>';
             else
-            html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">';
+                html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">';
 
             if (user.role === 'admin')
-            html    +=          '<div class="tru-card-head tru-card-head-admin">';
+                html    +=          '<div class="tru-card-head tru-card-head-admin">';
             else
-            html    +=          '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">';
+                html    +=          '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">';
 
             html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">';
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
@@ -219,9 +219,9 @@ define('pages/accounts', [
             html    +=              '<div class="uk-text-center">';
             html    +=                  '<div class="account-image relative uk-display-inline-block">';
             if (user.image)
-            html    +=                      '<img src="/uploads/users/' + user.image + '?' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000) + '" alt="Profile Pic" class="tru-card-head-avatar" />';
+                html    +=                      '<img src="/uploads/users/' + user.image + '?' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000) + '" alt="Profile Pic" class="tru-card-head-avatar" />';
             else
-            html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
+                html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
             html    +=                      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' + user._id + '"></span>';
             html    +=                  '</div>';
 
