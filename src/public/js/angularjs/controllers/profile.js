@@ -209,9 +209,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
 
             function removeL2Auth(completed) {
                 var id = SessionService.getUser()._id;
-                if (_.isUndefined(id)) {
+                if (_.isUndefined(id)) 
                     return helpers.UI.showSnackbar('Unable to get user ID.', true);
-                }
+                
 
                 $http.post(
                     '/api/v1/users/' + id + '/removel2auth'

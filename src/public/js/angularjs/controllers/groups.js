@@ -97,7 +97,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 })
                     .success(function() {
                         helpers.UI.showSnackbar('Group Created Successfully', false);
-                        UIkit.modal("#groupCreateModal").hide();
+                        UIkit.modal('#groupCreateModal').hide();
                         //Refresh Grid
                         $timeout(function() {
                             refreshGrid();
@@ -155,8 +155,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                             html += buildHTML(group);
                         });
 
-                        var $injector = angular.injector(["ng", "trudesk"]);
-                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $injector = angular.injector(['ng', 'trudesk']);
+                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                             var $scope = $groupList.append(html).scope();
                             $compile($groupList)($scope || $rootScope);
                             $rootScope.$digest();

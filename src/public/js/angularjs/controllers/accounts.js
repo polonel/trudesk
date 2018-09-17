@@ -73,7 +73,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                         //Refresh UserGrid
                         History.pushState(null,null, '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
 
-                        UIkit.modal("#accountCreateModal").hide();
+                        UIkit.modal('#accountCreateModal').hide();
                     }).error(function(err) {
                         $log.log('[trudesk:accounts:createAccount]', err);
                         helpers.UI.showSnackbar('An error occurred while creating the account. Check Console.', true);
@@ -157,9 +157,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 if (_.isUndefined(username)) return true;
 
                 var $menu = self.parents('.tru-card-head-menu');
-                if (!_.isUndefined($menu)) {
+                if (!_.isUndefined($menu)) 
                     $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active');
-                }
+                
 
                 $http.get(
                     '/api/v1/users/' + username
@@ -279,7 +279,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
 
                         helpers.UI.showSnackbar('Account Saved', false);
 
-                        UIkit.modal("#editAccountModal").hide();
+                        UIkit.modal('#editAccountModal').hide();
 
                         accountsPage.init(null, true);
 

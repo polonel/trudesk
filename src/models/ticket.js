@@ -91,7 +91,8 @@ var ticketSchema = mongoose.Schema({
 ticketSchema.index({deleted: -1, group: 1, status: 1});
 
 ticketSchema.pre('save', function(next) {
-    if (!_.isUndefined(this.uid) || this.uid) return next();
+    if (!_.isUndefined(this.uid) || this.uid)
+        return next();
 
     var c = require('./counters');
     var self = this;
@@ -661,11 +662,10 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (!_.isObject(object))
         return callback('Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()', null);
 
-    var self = this;
-
-    var limit = (object.limit === null ? 10 : object.limit);
-    var page = (object.page === null ? 0 : object.page);
-    var _status = object.status;
+    var self = this,
+        limit = (object.limit === null ? 10 : object.limit),
+        page = (object.page === null ? 0 : object.page),
+        _status = object.status;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
         var g = _.map(grpId, '_id').map(String);
@@ -683,49 +683,54 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
     if (limit !== -1)
         q.skip(page*limit).limit(limit);
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.uid)) {
-        object.filter.uid = parseInt(object.filter.uid);
-        if (!_.isNaN(object.filter.uid))
-            q.or([{uid: object.filter.uid}]);
-    }
-
-    if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0)
+    if (_.isArray(_status) && _.size(_status) > 0)
         q.where({status: {$in: _status}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.priority))
-        q.where({priority: {$in: object.filter.priority}});
+    if (!_.isUndefined(object.filter)) {
+        if (!_.isUndefined(object.filter.uid)) {
+            object.filter.uid = parseInt(object.filter.uid);
+            if (!_.isNaN(object.filter.uid))
+                q.or([{uid: object.filter.uid}]);
+        }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types))
-        q.where({type: {$in: object.filter.types}});
+        if (!_.isUndefined(object.filter.priority))
+            q.where({priority: {$in: object.filter.priority}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.tags))
-        q.where({tags: {$in: object.filter.tags}});
+        if (!_.isUndefined(object.filter.types))
+            q.where({type: {$in: object.filter.types}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee))
-        q.where({assignee: {$in: object.filter.assignee}});
+        if (!_.isUndefined(object.filter.tags))
+            q.where({tags: {$in: object.filter.tags}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.unassigned))
-        q.where({assignee: {$exits: false} });
+        if (!_.isUndefined(object.filter.assignee))
+            q.where({assignee: {$in: object.filter.assignee}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.owner))
-        q.where({owner: {$in: object.filter.owner}});
+        if (!_.isUndefined(object.filter.unassigned))
+            q.where({assignee: {$exits: false} });
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.or([{subject: new RegExp(object.filter.subject, 'i')}]);
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, 'i')}]);
+        if (!_.isUndefined(object.filter.owner))
+            q.where({owner: {$in: object.filter.owner}});
+
+        if (!_.isUndefined(object.filter.subject))
+            q.or([{subject: new RegExp(object.filter.subject, 'i')}]);
+
+        if (!_.isUndefined(object.filter.issue))
+            q.or([{issue: new RegExp(object.filter.issue, 'i')}]);
+
+        if (!_.isUndefined(object.filter.date)) {
+            var startDate = new Date(2000, 0, 1, 0, 0, 1);
+            var endDate = new Date();
+            if (!_.isUndefined(object.filter.date.start))
+                startDate = new Date(object.filter.date.start);
+            if (!_.isUndefined(object.filter.date.end))
+                endDate = new Date(object.filter.date.end);
+
+            q.where({date: {$gte: startDate, $lte: endDate}});
+        }
+    }
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
     if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({assignee: {$exists: false}});
-
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
-        var startDate = new Date(2000, 0, 1, 0, 0, 1);
-        var endDate = new Date();
-        if (!_.isUndefined(object.filter.date.start))
-            startDate = new Date(object.filter.date.start);
-        if (!_.isUndefined(object.filter.date.end))
-            endDate = new Date(object.filter.date.end);
-
-        q.where({date: {$gte: startDate, $lte: endDate}});
-    }
 
     return q.exec(callback);
 };
@@ -1173,12 +1178,8 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 
                         if (!_.filter(arr, {'name': o.name}).length)
                             arr.push(o);
-                        else
-                            o = null;
 
                     }
-
-                    ticket = null;
                 }
 
                 return next(null, _.uniq(arr));

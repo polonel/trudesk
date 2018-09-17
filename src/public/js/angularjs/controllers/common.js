@@ -198,9 +198,9 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                 $timeout(function() {
                     var showTour = ($('#__tourEnabled').text() === 'true');
                     if (showTour) {
-                        if ($window.location.pathname !== '/dashboard') {
+                        if ($window.location.pathname !== '/dashboard') 
                             $window.location.href = '/dashboard';
-                        } else
+                         else
                             tour.init();
                     }
                 }, 0, false);

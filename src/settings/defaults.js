@@ -218,7 +218,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(2, function(err, urgent) {
                     if (!err) {
                         winston.debug('Converting Priority: Urgent');
-                        return ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -274,13 +274,11 @@ function addedDefaultPrioritesToTicketTypes(callback) {
 
                 async.each(types, function(type, done) {
                     var prioritiesToAdd = [];
-                    if (!type.priorities) {
-                        type.priorities = [];
-                        prioritiesToAdd = _.map(priorities, '_id');
-                    } else if (type.priorities.length < 1) {
+                    if (!type.priorities || type.priorities.length < 1) {
                         type.priorities = [];
                         prioritiesToAdd = _.map(priorities, '_id');
                     }
+
                     // } else {
                     //   _.each(priorities, function(priority) {
                     //       if (!_.find(type.priorities, {'_id': priority._id})) {

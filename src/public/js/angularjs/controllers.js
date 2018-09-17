@@ -52,9 +52,9 @@ define([
                 $event.preventDefault();
 
                 var form = $('#' + formName);
-                if (!_.isUndefined(form)) {
+                if (!_.isUndefined(form)) 
                     form.submit();
-                }
+                
             };
         });
 });

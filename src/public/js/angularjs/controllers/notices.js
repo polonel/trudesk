@@ -176,9 +176,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     if (!_.isUndefined($noticeTR)) {
                         var noticeOId = $noticeTR.attr('data-noticeOId');
 
-                        if (!_.isUndefined(noticeOId) && noticeOId.length > 0) {
+                        if (!_.isUndefined(noticeOId) && noticeOId.length > 0) 
                             checkedIds.push(noticeOId);
-                        }
+                        
                     }
                 });
 
@@ -191,9 +191,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                         self = $(vm);
 
                     var $noticeTR = self.parents('tr');
-                    if (!_.isUndefined($noticeTR)) {
+                    if (!_.isUndefined($noticeTR)) 
                         $noticeTR.remove();
-                    }
+                    
                 });
             }
         });

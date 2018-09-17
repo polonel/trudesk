@@ -5,9 +5,9 @@
     var path = require('path');
 
     pm2.connect(true, function(err) {
-       if (err) {
+       if (err) 
            throw err;
-       }
+       
 
        pm2.start({
            name: 'trudesk',
@@ -24,4 +24,4 @@
            pm2.disconnect();
        });
     });
-})();
+}());

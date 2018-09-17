@@ -62,8 +62,6 @@ function buildAvgResponse(ticketArray, callback) {
 
         var diff = firstCommentDate.diff(ticketDate, 'seconds');
         $ticketAvg.push(diff);
-
-        ticket = null;
     }
 
     var ticketAvgTotal = _.reduce($ticketAvg, function (m, x) {

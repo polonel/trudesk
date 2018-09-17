@@ -40,9 +40,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             };
 
             $scope.onKeyDown = function(cid, toUserId, $event) {
-                if ($event.keyCode !== 13) {
+                if ($event.keyCode !== 13) 
                     socket.chat.startTyping(cid, toUserId);
-                }
+                
             };
 
             $scope.showUserList = function($event, callback) {
@@ -135,9 +135,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ]
                 }).then(function(response) {
                     var conversation = response.data.conversation;
-                    if (!_.isUndefined(conversation)) {
+                    if (!_.isUndefined(conversation)) 
                         History.pushState(null, null, '/messages/' + conversation._id );
-                    }
+                    
                 }, function(err) {
                     $log.error('[trudesk.Messages.startNewConversation()] - Error: ');
                     $log.error(err);

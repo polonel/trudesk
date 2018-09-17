@@ -66,15 +66,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
                                 }
                                 else
                                     html += '<td style="text-align: right;"><button class="uk-button uk-button-success uk-button-small" ng-click="installPlugin(\'' + p._id + '\')">Install</button></td>';
-                            } else {
+                            } else 
                                 html += '<td></td>';
-                            }
+                            
 
                             html += '</tr>';
                         });
 
-                        var $injector = angular.injector(["ng", "trudesk"]);
-                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $injector = angular.injector(['ng', 'trudesk']);
+                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                             var $scope = $tableBody.append(html).scope();
                             $compile($tableBody)($scope || $rootScope);
                             $rootScope.$digest();
@@ -157,11 +157,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
 
             function compareVersions(v1, comparator, v2) {
-                "use strict";
+                'use strict';
                 comparator = comparator === '=' ? '==' : comparator;
-                if(['==','===','<','<=','>','>=','!=','!=='].indexOf(comparator) === -1) {
+                if(['==','===','<','<=','>','>=','!=','!=='].indexOf(comparator) === -1) 
                     throw new Error('Invalid comparator. ' + comparator);
-                }
+                
                 var v1parts = v1.split('.'), v2parts = v2.split('.');
                 var maxLen = Math.max(v1parts.length, v2parts.length);
                 var part1, part2;

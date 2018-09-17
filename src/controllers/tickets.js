@@ -31,8 +31,6 @@ var permissions     = require('../permissions');
  * @requires {@link TicketType}
  * @requires {@link Emitter}
  *
- * @todo Redo Submit Ticket static function to submit ticket over API only.
- * @todo Redo Post Comment static function to only allow comments over API.
  */
 var ticketsController = {};
 
