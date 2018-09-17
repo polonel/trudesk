@@ -284,9 +284,8 @@ mainController.forgotPass = function(req, res) {
                         if (err) {
                             winston.warn(err);
                             return res.status(400).send(err);
-                        } else 
-                            return res.status(200).send();
-                        
+                        }
+                        return res.status(200).send();
                     });
                 })
                 .catch(function(err) {

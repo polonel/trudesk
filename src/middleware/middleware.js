@@ -45,10 +45,9 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
             return res.redirect('/tickets');
 
         return res.redirect('/dashboard');
+    }
 
-    } else 
-        return next();
-    
+    return next();
 };
 
 middleware.redirectToLogin = function(req, res, next) {

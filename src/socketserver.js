@@ -42,33 +42,32 @@ var socketServer = function(ws) {
                         data.request.user.logged_in = true;
                         data.token = data.request._query.token;
                         return next(null,  data);
-                    } else {
-                        data.emit('unauthorized');
-                        data.disconnect('Unauthorized');
-                        return next(new Error('Unauthorized'));
                     }
+
+                    data.emit('unauthorized');
+                    data.disconnect('Unauthorized');
+                    return next(new Error('Unauthorized'));
                 });
             },
             function(data, accept) {
                 if (data.request && data.request.user && data.request.user.logged_in) {
                     data.user = data.request.user;
                     return accept(null, true);
-                } else {
-                    return passportSocketIo.authorize({
-                        cookieParser: cookieparser,
-                        key: 'connect.sid',
-                        store: ws.sessionStore,
-                        secret: 'trudesk$123#SessionKeY!2387',
-                        success: onAuthorizeSuccess
-                    })(data, accept);
                 }
+
+                return passportSocketIo.authorize({
+                    cookieParser: cookieparser,
+                    key: 'connect.sid',
+                    store: ws.sessionStore,
+                    secret: 'trudesk$123#SessionKeY!2387',
+                    success: onAuthorizeSuccess
+                })(data, accept);
             }
         ], function(err) {
             if (err) 
                 return accept(new Error(err));
 
             return accept();
-            
         });
     });
 

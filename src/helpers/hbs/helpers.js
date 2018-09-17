@@ -168,7 +168,7 @@ var helpers = {
             throw new Error('Handlebars Helper "compare" needs 2 parameters');
         
 
-        if (options === undefined) {
+        if (_.isUndefined(options)) {
             options = right;
             right = operator;
             operator = '===';
@@ -496,7 +496,7 @@ var helpers = {
     },
 
     fromNow: function(date) {
-        if (date === undefined)
+        if (_.isUndefined(date))
             return 'Never';
         moment.updateLocale('en', {
             relativeTime : {
@@ -591,7 +591,7 @@ var helpers = {
     },
 
     checkPlugin: function(user, permissions, options) {
-        if (user === undefined || permissions === undefined)
+        if (_.isUndefined(user) || _.isUndefined(permissions))
             return options.inverse(this);
         var pluginPermissions = permissions.split(' ');
         var result = false;

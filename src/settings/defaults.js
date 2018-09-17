@@ -198,7 +198,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(1, function(err, normal) {
                     if (!err) {
                         winston.debug('Converting Priority: Normal');
-                        return ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -238,14 +238,13 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(3, function(err, critical) {
                     if (!err) {
                         winston.debug('Converting Priority: Critical');
-                        return ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {
