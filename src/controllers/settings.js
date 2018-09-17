@@ -27,7 +27,7 @@ function initViewContant(view, req) {
     var content = {};
     content.title = 'Settings';
     content.nav = 'settings';
-    content.subnav = 'settings-general';
+    content.subnav = 'settings-' + view;
 
     content.data = {};
     content.data.user = req.user;
@@ -52,76 +52,52 @@ function handleError(res, err) {
         return res.render('error', {layout: false, error: err, message: err.message});
 }
 
+function parseSetting(settings, name, defaultValue) {
+    var s = _.find(settings, function(x) { return x.name === name; });
+    s = _.isUndefined(s) ? {value: defaultValue} : s;
+
+    return s;
+}
+
 function getSettings(content, callback) {
     settingSchema.getSettings(function(err, settings) {
         if (err) return callback('Invalid Settings');
 
         var s = {};
-        s.siteUrl = _.find(settings, function(x) { return x.name === 'gen:siteurl'; });
-        s.siteUrl = (s.siteUrl === undefined) ? {value: ''} : s.siteUrl;
 
-        s.defaultTicketType = _.find(settings, function(x){return x.name === 'ticket:type:default'; });
-        s.defaultTicketType = (s.defaultTicketType === undefined) ? {value: ''} : s.defaultTicketType;
+        s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
 
-        s.mailerEnabled = _.find(settings, function(x){return x.name === 'mailer:enable'; });
-        s.mailerHost = _.find(settings, function(x) { return x.name === 'mailer:host'; });
-        s.mailerSSL = _.find(settings, function(x) { return x.name === 'mailer:ssl'; });
-        s.mailerPort = _.find(settings, function(x) { return x.name === 'mailer:port'; });
-        s.mailerUsername = _.find(settings, function(x) { return x.name === 'mailer:username'; });
-        s.mailerPassword = _.find(settings, function(x) { return x.name === 'mailer:password'; });
-        s.mailerFrom = _.find(settings, function(x) { return x.name === 'mailer:from'; });
+        s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
 
-        s.mailerEnabled = (s.mailerEnabled === undefined) ? {value: false} : s.mailerEnabled;
-        s.mailerSSL = (s.mailerSSL === undefined) ? {value: false} : s.mailerSSL;
-        s.mailerHost = (s.mailerHost === undefined) ? {value: ''} : s.mailerHost;
-        s.mailerPort = (s.mailerPort === undefined) ? {value: 25} : s.mailerPort;
-        s.mailerUsername = (s.mailerUsername === undefined) ? {value: ''} : s.mailerUsername;
-        s.mailerPassword = (s.mailerPassword === undefined) ? {value: ''} : s.mailerPassword;
-        s.mailerFrom = (s.mailerFrom === undefined) ? {value: ''} : s.mailerFrom;
+        s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);
+        s.mailerHost = parseSetting(settings, 'mailer:host', '');
+        s.mailerSSL = parseSetting(settings, 'mailer:ssl', false);
+        s.mailerPort = parseSetting(settings, 'mailer:port', 25);
+        s.mailerUsername = parseSetting(settings, 'mailer:username', '');
+        s.mailerPassword = parseSetting(settings, 'mailer:password', '');
+        s.mailerFrom = parseSetting(settings, 'mailer:from', '');
 
-        s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable'; });
-        s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host'; });
-        s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port'; });
-        s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username'; });
-        s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password'; });
-        s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype'; });
-        s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority'; });
-        s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount'; });
-        s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage'; });
+        s.mailerCheckEnabled = parseSetting(settings, 'mailer:check:enable', false);
+        s.mailerCheckHost = parseSetting(settings, 'mailer:check:host', '');
+        s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143);
+        s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '');
+        s.mailerCheckPassword = parseSetting(settings, 'mailer:check:password', '');
+        s.mailerCheckTicketType = parseSetting(settings, 'mailer:check:ticketype', '');
+        s.mailerCheckTicketPriority = parseSetting(settings, 'mailer:check:ticketpriority', '');
+        s.mailerCheckCreateAccount = parseSetting(settings, 'mailer:check:createaccount', false);
+        s.mailerCheckDeleteMessage = parseSetting(settings, 'mailer:check:deletemessage', true);
 
-        s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
-        s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
-        s.mailerCheckPort = (s.mailerCheckPort === undefined) ? {value: 143} : s.mailerCheckPort;
-        s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
-        s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
-        s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: ''} : s.mailerCheckTicketType;
-        s.mailerCheckTicketPriority = (s.mailerCheckTicketPriority === undefined) ? {value: ''} : s.mailerCheckTicketPriority;
-        s.mailerCheckCreateAccount = (s.mailerCheckCreateAccount === undefined) ? {value: false} : s.mailerCheckCreateAccount;
-        s.mailerCheckDeleteMessage = (s.mailerCheckDeleteMessage === undefined) ? {value: true} : s.mailerCheckDeleteMessage;
+        s.showTour = parseSetting(settings, 'showTour:enable', false);
+        s.showOverdueTickets = parseSetting(settings, 'showOverdueTickets:enable', true);
 
-        s.showTour = _.find(settings, function(x) { return x.name === 'showTour:enable'; });
-        s.showTour = (s.showTour === undefined) ? {value: true} : s.showTour;
+        s.tpsEnabled = parseSetting(settings, 'tps:enable', false);
+        s.tpsUsername = parseSetting(settings, 'tps:username', '');
+        s.tpsApiKey = parseSetting(settings, 'tps:apikey', '');
 
-        s.showOverdueTickets = _.find(settings, function(x) { return x.name === 'showOverdueTickets:enable'; });
-        s.showOverdueTickets = (s.showOverdueTickets === undefined) ? {value: true} : s.showOverdueTickets;
+        s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false);
+        s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false);
 
-        s.tpsEnabled = _.find(settings, function(x) { return x.name === 'tps:enable'; });
-        s.tpsEnabled = (s.tpsEnabled === undefined) ? {value: false} : s.tpsEnabled;
-
-        s.tpsUsername = _.find(settings, function(x) { return x.name === 'tps:username'; });
-        s.tpsUsername = (s.tpsUsername === undefined) ? { value: ''} : s.tpsUsername;
-
-        s.tpsApiKey = _.find(settings, function(x) { return x.name === 'tps:apikey'; });
-        s.tpsApiKey = (s.tpsApiKey === undefined) ? { value: ''} : s.tpsApiKey;
-
-        s.allowPublicTickets = _.find(settings, function(x) { return x.name === 'allowPublicTickets:enable'; });
-        s.allowPublicTickets = (s.allowPublicTickets === undefined) ? {value: false} : s.allowPublicTickets;
-
-        s.allowUserRegistration = _.find(settings, function(x) { return x.name === 'allowUserRegistration:enable'; });
-        s.allowUserRegistration = (s.allowUserRegistration === undefined) ? {value: false} : s.allowUserRegistration;
-
-        s.privacyPolicy = _.find(settings, function(x){return x.name === 'legal:privacypolicy'; });
-        s.privacyPolicy = (s.privacyPolicy === undefined) ? {value: ''} : s.privacyPolicy;
+        s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '');
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
         content.data.settings = s;
