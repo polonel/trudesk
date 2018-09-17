@@ -91,7 +91,7 @@ function ticketTypeSettingDefault(callback) {
                     winston.warn(err);
                     if (_.isFunction(callback))
                         return callback(err);
-                    return;
+                    return false;
                 }
 
                 var type = _.first(types);
@@ -149,8 +149,8 @@ function ticketPriorityDefaults(callback) {
         PrioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
             if (!err && (_.isUndefined(priority) || _.isNull(priority))) 
                 return item.save(next);
-             else 
-                return next(err);
+
+            return next(err);
             
         });
     }, callback);
@@ -222,10 +222,9 @@ function checkPriorities(callback) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {

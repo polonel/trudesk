@@ -52,14 +52,6 @@ function handleError(res, err) {
         return res.render('error', {layout: false, error: err, message: err.message});
 }
 
-function renderView(res, content) {
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-}
-
 function parseSetting(settings, name, defaultValue) {
     var s = _.find(settings, function(x) { return x.name === name; });
     s = _.isUndefined(s) ? {value: defaultValue} : s;
@@ -150,6 +142,14 @@ function getSettings(content, callback) {
 
             return callback();
         });
+    });
+}
+
+function renderView(res, content) {
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
     });
 }
 

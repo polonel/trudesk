@@ -66,8 +66,8 @@ var socketServer = function(ws) {
         ], function(err) {
             if (err) 
                 return accept(new Error(err));
-             else 
-                return accept();
+
+            return accept();
             
         });
     });

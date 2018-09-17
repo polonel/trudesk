@@ -55,8 +55,7 @@ module.exports = function(app, db, callback) {
         if (mongoose.connection.readyState !== 1) {
             var err = new Error('MongoDb Error');
             err.status = 503;
-            next(err);
-            return;
+            return next(err);
         }
 
         return next();

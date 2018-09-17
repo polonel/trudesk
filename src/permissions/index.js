@@ -63,7 +63,7 @@ var getRoles = function(action) {
         var actionType = action.split(':')[0];
         var theAction = action.split(':')[1];
 
-        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return false;
+        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return;
         if (_.indexOf(role.allowedAction, '*') !== -1) {
             rolesWithAction.push(role);
             return;

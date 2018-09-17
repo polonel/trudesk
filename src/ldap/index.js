@@ -41,8 +41,8 @@ ldapClient.search = function(base, filter, callback) {
       ldapClient.client.on('error', function(err) {
           if (_.isFunction(callback))
               return callback(err);
-          else
-              throw err;
+
+          throw err;
       });
 
       ldapClient.client.search(base, {filter: filter, scope: 'sub', attributes: ['dn', 'displayName', 'cn', 'samAccountName', 'title', 'mail']}, function(err, res) {

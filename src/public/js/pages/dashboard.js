@@ -105,8 +105,9 @@ define('pages/dashboard', [
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
                         } else if(_data.data.length < 1) {
                             // No data in graph. Show No Data avaliable
-                            $('#breakdownGraph').empty();
-                            $('#breakdownGraph').append('<div class="no-data-available-text">No Data Available</div>');
+                            var $breakdownGraph = $('#breakdownGraph');
+                            $breakdownGraph.empty();
+                            $breakdownGraph.append('<div class="no-data-available-text">No Data Available</div>');
                         } else {
                             $('#breakdownGraph').empty();
                             parms.data = MG.convert.date(_data.data, 'date');
@@ -140,12 +141,12 @@ define('pages/dashboard', [
                             fill: ['#29b955', '#ccc']
                         });
 
-                        var responseTime_text = $('#responseTime_text');
+                        var $responseTimeText = $('#responseTime_text');
                         //var responseTime_graph = $('#responseTime_graph');
-                        var oldResponseTime = responseTime_text.text() === '--' ? 0 : responseTime_text.text();
+                        var oldResponseTime = $responseTimeText.text() === '--' ? 0 : $responseTimeText.text();
                         var responseTime = _data.ticketAvg;
-                        var responseTime_animation = new CountUp('responseTime_text', parseInt(oldResponseTime), responseTime, 0, 1.5);
-                        responseTime_animation.start();
+                        var responseTimeAnimation = new CountUp('responseTime_text', parseInt(oldResponseTime), responseTime, 0, 1.5);
+                        responseTimeAnimation.start();
 
                         //QuickStats
                         var mostRequester = $('#mostRequester');

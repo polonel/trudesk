@@ -40,12 +40,12 @@ middleware.redirectToDashboardIfLoggedIn = function(req, res, next) {
     if (req.user) {
         if (req.user.hasL2Auth) 
             return middleware.ensurel2Auth(req, res, next);
-         else {
-            if (req.user.role !== 'user')
-                return res.redirect('/dashboard');
-            else
-                return res.redirect('/tickets');
-        }
+
+        if (req.user.role === 'user')
+            return res.redirect('/tickets');
+
+        return res.redirect('/dashboard');
+
     } else 
         return next();
     
@@ -183,22 +183,22 @@ middleware.api = function(req, res, next) {
 middleware.isAdmin = function(req, res, next) {
       if (req.user.role === 'admin')
           return next();
-      else
-          res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
+
+      return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
 };
 
 middleware.isMod = function(req, res, next) {
     if (req.user.role === 'mod' || req.user.role === 'admin')
         return next();
-    else
-        return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
+
+    return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
 };
 
 middleware.isSupport = function(req, res, next) {
     if (req.user.role === 'support' || req.user.role === 'mod' || req.user.role === 'admin')
         return next();
-    else
-        return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
+
+    return res.status(401).json({success: false, error: 'Not Authorized for this API call.'});
 };
 
 module.exports = function() {

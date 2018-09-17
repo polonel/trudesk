@@ -49,7 +49,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                         helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
-                        UIkit.modal("#ticketCreateModal").hide();
+                        UIkit.modal('#ticketCreateModal').hide();
 
                         //History.pushState(null, null, '/tickets/');
 
@@ -64,7 +64,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     var searchBoxText = $('#tickets_Search').val();
                     if (searchBoxText.length < 3) return true;
 
-                    var queryString = "?uid={0}&fs={0}&it={0}".formatUnicorn(searchBoxText);
+                    var queryString = '?uid={0}&fs={0}&it={0}'.formatUnicorn(searchBoxText);
 
                     History.pushState(null, null, '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
                 }
@@ -89,7 +89,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     };
 
                     $http({
-                        method: "POST",
+                        method: 'POST',
                         url: '/api/v1/tags/create',
                         data: data,
                         headers: { 'Content-Type': 'application/json'}
@@ -135,7 +135,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 1
+                            'status': 1
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar({text: 'Ticket status set to open'});
@@ -153,7 +153,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 2
+                            'status': 2
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar('Ticket status set to pending', false);
@@ -171,7 +171,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 3
+                            'status': 3
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar('Ticket status set to closed', false);
@@ -186,8 +186,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 $http.put(
                     '/api/v1/users/' + $scope.username + '/updatepreferences',
                     {
-                        "preference": 'autoRefreshTicketGrid',
-                        "value": $scope.preferences_autoRefreshTicketGrid
+                        'preference': 'autoRefreshTicketGrid',
+                        'value': $scope.preferences_autoRefreshTicketGrid
                     }
                 ).success(function() {
 
@@ -273,9 +273,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     if (!_.isUndefined($ticketTR)) {
                         var ticketOid = $ticketTR.attr('data-ticketOid');
 
-                        if (!_.isUndefined(ticketOid) && ticketOid.length > 0) {
+                        if (!_.isUndefined(ticketOid) && ticketOid.length > 0) 
                             checkedIds.push(ticketOid);
-                        }
+                        
                     }
                 });
 
@@ -287,9 +287,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     var vm = this;
                     var self = $(vm);
                     var $ticketTR = self.parents('tr');
-                    if (!_.isUndefined($ticketTR)) {
+                    if (!_.isUndefined($ticketTR)) 
                         $ticketTR.remove();
-                    }
+                    
                 });
             }
 

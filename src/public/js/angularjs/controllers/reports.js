@@ -39,9 +39,23 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                 });
             });
 
+            function changeView(selector) {
+                var $activeReportType = $('.active_report_type');
+                var $selector = $(selector);
+                if ($selector.hasClass('active_report_type')) return true;
+                $activeReportType.animate({opacity: 0}, 100, function() {
+                    $activeReportType.removeClass('active_report_type');
+                    $activeReportType.addClass('hide');
+                    $selector.css({opacity: 0});
+                    $selector.removeClass('hide');
+                    $selector.addClass('active_report_type');
+                    helpers.resizeFullHeight();
+                    $selector.animate({opacity: 1}, 600);
+                });
+            }
+
             $scope.selectReport = function(event, type) {
                 event.preventDefault();
-
 
                 switch(type.toLowerCase()) {
                     case 'tickets_by_group':
@@ -67,21 +81,6 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                 }
             };
 
-            function changeView(selector) {
-                var $activeReportType = $('.active_report_type');
-                var $selector = $(selector);
-                if ($selector.hasClass('active_report_type')) return true;
-                $activeReportType.animate({opacity: 0}, 100, function() {
-                    $activeReportType.removeClass('active_report_type');
-                    $activeReportType.addClass('hide');
-                    $selector.css({opacity: 0});
-                    $selector.removeClass('hide');
-                    $selector.addClass('active_report_type');
-                    helpers.resizeFullHeight();
-                    $selector.animate({opacity: 1}, 600);
-                });
-            }
-
             $scope.submitGenerateReport = function(event, type) {
                 var form = $(event.target).parents('form');
                 if (!form.isValid(null, null, false)) return true;
@@ -90,8 +89,8 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
 
                 var data = {};
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
-                var startDate = moment(data["filterDate_Start"]);
-                var endDate = moment(data["filterDate_End"]);
+                var startDate = moment(data['filterDate_Start']);
+                var endDate = moment(data['filterDate_End']);
 
                 var groups = [];
 
@@ -109,7 +108,7 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                             },
                             headers: { 'Content-Type' : 'application/json'}
                         }).then(function successCallback(response) {
-                            downloadReport(response, "report_tickets_by_group__" + data["filterDate_Start"]);
+                            downloadReport(response, 'report_tickets_by_group__' + data['filterDate_Start']);
 
                         }, function errorCallback(response) {
                             $log.log(response.statusText);
@@ -250,7 +249,7 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
                 var blob = new Blob([response.data],{type:headers['content-type']});
                 var link = $document.createElement('a');
                 link.href = $window.URL.createObjectURL(blob);
-                link.download = filename + ".csv";
+                link.download = filename + '.csv';
                 link.click();
             }
 

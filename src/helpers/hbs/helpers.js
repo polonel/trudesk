@@ -19,7 +19,6 @@
  */
 'use strict';
 
-
 // node_modules
 var _       = require('lodash');
 var moment  = require('moment');
@@ -38,24 +37,24 @@ var helpers = {
     and: function (a, b, options) {
         if (a && b) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
     gt: function (value, test, options) {
         if (value > test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
     gte: function (value, test, options) {
         if (value >= test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -65,8 +64,8 @@ var helpers = {
         
         if (value === test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -76,16 +75,16 @@ var helpers = {
         
         if (value.toString() === test.toString()) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
     isnot: function (value, test, options) {
         if (value !== test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -95,24 +94,24 @@ var helpers = {
         
         if (value.toString() !== test.toString()) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
     lt: function (value, test, options) {
         if (value < test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
     lte: function (value, test, options) {
         if (value <= test) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -123,8 +122,8 @@ var helpers = {
     or: function (a, b, options) {
         if (a || b) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -136,8 +135,8 @@ var helpers = {
         v = v+1;
         if (v % nr === 0) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -195,8 +194,8 @@ var helpers = {
 
         if (result) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -397,9 +396,8 @@ var helpers = {
         }
         if (success) 
             return content(this);
-         else 
-            return content.inverse(this);
-        
+
+        return content.inverse(this);
     },
 
     /**
@@ -417,8 +415,8 @@ var helpers = {
     ifEven: function (conditional, options) {
         if ((conditional % 2) === 0) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -522,7 +520,7 @@ var helpers = {
     },
 
     firstCap: function(str) {
-        if (_.isUndefined(str)) return;
+        if (_.isUndefined(str)) return '';
         if (str.length > 0) {
             if (str[0] === str[0].toUpperCase())
                 return str;
@@ -544,8 +542,8 @@ var helpers = {
     isNotNull: function(obj, options) {
         if (!(_.isUndefined(obj) || _.isNull(obj))) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -567,8 +565,8 @@ var helpers = {
     isNull: function(obj, options) {
         if((_.isUndefined(obj) || _.isNull(obj))) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -578,8 +576,8 @@ var helpers = {
 
         if (P.canThis(user.role, perm)) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -587,8 +585,8 @@ var helpers = {
         var P = require('../../permissions');
         if (P.canThis(role, perm)) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -604,8 +602,8 @@ var helpers = {
 
         if (result)
             return options.fn(this);
-        else
-            return options.inverse(this);
+
+        return options.inverse(this);
     },
 
     checkEditSelf: function(user, owner, perm, options) {
@@ -613,9 +611,8 @@ var helpers = {
         if (P.canThis(user.role, perm + ':editSelf')) {
             if (user._id.toString() === owner._id.toString()) 
                 return options.fn(this);
-             else 
-                return options.inverse(this);
-            
+
+            return options.inverse(this);
         }
 
         return options.inverse(this);
@@ -628,9 +625,8 @@ var helpers = {
         });
         if (result) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
-        
+
+        return options.inverse(this);
     },
 
     isSubscribed: function(arr, value) {
@@ -644,8 +640,8 @@ var helpers = {
         var result = _id1.toString() === _id2.toString();
         if (result) 
             return options.fn(this);
-         else 
-            return options.inverse(this);
+
+        return options.inverse(this);
         
     },
 
@@ -674,8 +670,8 @@ var helpers = {
 
         if (result)
             return options.fn(this);
-        else
-            return options.inverse(this);
+
+        return options.inverse(this);
 
     },
 
@@ -728,7 +724,6 @@ helpers.inArray    = helpers.hasGroup;
 // Export helpers
 module.exports.helpers = helpers;
 module.exports.register = function (Handlebars) {
-
     for (var helper in helpers) {
         if (helpers.hasOwnProperty(helper)) 
             Handlebars.registerHelper(helper, helpers[helper]);

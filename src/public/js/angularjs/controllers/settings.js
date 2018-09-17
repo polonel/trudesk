@@ -52,7 +52,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     className: 'material-icons mi-title no-ajaxy',
                     title: 'Title'
                 },
-                "|",
+                '|',
                 {
                     name: 'Code',
                     action: EasyMDE.toggleCodeBlock,
@@ -77,14 +77,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     className: 'material-icons mi-numlist no-ajaxy',
                     title: 'Numbered List'
                 },
-                "|",
+                '|',
                 {
                     name: 'Create Link',
                     action: EasyMDE.drawLink,
                     className: 'material-icons mi-link no-ajaxy',
                     title: 'Create Link'
                 },
-                "|",
+                '|',
                 {
                     name: 'Toggle Preview',
                     action: EasyMDE.togglePreview,
@@ -113,7 +113,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         privacyPolicyMDE = new EasyMDE({
                             element: $privacyPolicy[0],
                             forceSync: true,
-                            minHeight: "220px", //Slighty smaller to adjust the scroll
+                            minHeight: '220px', //Slighty smaller to adjust the scroll
                             toolbar: mdeToolbarItems
                         });
 
@@ -214,9 +214,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         if (response.success) {
                             tags = response.tags;
                             // tags = [];
-                            if (tags.length === 0) {
+                            if (tags.length === 0) 
                                 $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
-                            } else {
+                             else {
                                 tags.forEach(function(tag) {
                                     var html = '';
                                     html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
@@ -255,8 +255,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                 });
 
                                 //Bootstrap Angular dynamically...
-                                var $injector = angular.injector(["ng", "trudesk"]);
-                                $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                var $injector = angular.injector(['ng', 'trudesk']);
+                                $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                     var $scope = $tagWrapper.scope();
                                     $compile($tagWrapper)($scope || $rootScope);
                                     $rootScope.$digest();
@@ -322,18 +322,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                         //Show Selected
                         $target.addClass('active');
-                        if (currentTarget.length > 0) {
+                        if (currentTarget.length > 0) 
                             currentTarget.addClass('active');
-                        }
+                        
 
-                        if (settings === 'settings-tickets') {
+                        if (settings === 'settings-tickets') 
                             $target.find('ul>li[data-key]').first().addClass('active');
-                        }
+                        
 
                         if (settings === 'settings-legal') {
-                            if (privacyPolicyMDE) {
+                            if (privacyPolicyMDE) 
                                 privacyPolicyMDE.codemirror.refresh();
-                            }
+                            
                         }
                     }
                 }
@@ -648,17 +648,17 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showCreateTagWindow = function($event) {
                 $event.preventDefault();
                 var createTagModal = $('#createTagModal');
-                if (createTagModal.length > 0) {
+                if (createTagModal.length > 0) 
                     UIkit.modal(createTagModal, {bgclose: false}).show();
-                }
+                
             };
 
             $scope.createTag = function($event) {
                 $event.preventDefault();
                 var form = $('#createTagForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false)) 
                     return true;
-                } else {
+                 else {
                     var tagName = form.find('input[name="tagName"]').val();
                     if (!tagName || tagName.length < 3) return true;
 
@@ -683,9 +683,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showCreateTicketTypeWindow = function($event) {
                 $event.preventDefault();
                 var createTicketTypeModal = $('#createTicketTypeModal');
-                if (createTicketTypeModal.length > 0) {
+                if (createTicketTypeModal.length > 0) 
                     UIkit.modal(createTicketTypeModal, {bgclose: false}).show();
-                }
+                
             };
 
             $scope.switchTicketType = function($event) {
@@ -725,9 +725,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.createTicketType = function(event) {
                 event.preventDefault();
                 var form = $('#createTicketTypeForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false)) 
                     return true;
-                } else {
+                 else {
                     var typeName = form.find('input[name="typeName"]').val();
                     if (!typeName || typeName.length < 3) return true;
 
@@ -807,14 +807,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showDeleteTicketType = function(typeId, hasTickets) {
                 if (hasTickets) {
                     var delTicketTypeModal = $('#deleteTicketTypeModal-' + typeId);
-                    if (delTicketTypeModal.length > 0) {
+                    if (delTicketTypeModal.length > 0) 
                         UIkit.modal(delTicketTypeModal, {bgclose: false}).show();
-                    } else {
+                     else 
                         $log.log('Unable to locate modal window: #deleteTicketTypeModal' + typeId);
-                    }
-                } else {
+                    
+                } else 
                     $scope.submitDeleteTicketType(typeId, undefined);
-                }
+                
             };
 
             $scope.submitDeleteTicketType = function(typeId, event) {
@@ -981,26 +981,26 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                         }
                                     });
 
-                                    var $injector = angular.injector(["ng", "trudesk"]);
-                                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                    var $injector = angular.injector(['ng', 'trudesk']);
+                                    $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                         var $scope = $pLoop.scope();
                                         $compile($pLoop)($scope || $rootScope);
                                         $rootScope.$digest();
                                     }]);
 
-                                    if ($addPriorityToTypeModal.length > 0) {
+                                    if ($addPriorityToTypeModal.length > 0) 
                                         UIkit.modal($addPriorityToTypeModal, {bgclose: false}).show();
-                                    } else {
+                                     else 
                                         $log.error('Unable to locate add priority modal.');
-                                    }
+                                    
                                 })
                                 .error(function(error) {
                                     $log.error(error);
                                     helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
                                 });
-                        } else {
+                        } else 
                             helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
-                        }
+                        
                     })
                     .error(function(error) {
                         $log.error(error);
@@ -1076,8 +1076,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             });
 
                             //Bootstrap Angular dynamically...
-                            var $injector = angular.injector(["ng", "trudesk"]);
-                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                            var $injector = angular.injector(['ng', 'trudesk']);
+                            $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                 var $scope = $prioritiesBox.scope();
                                 $compile($prioritiesBox)($scope || $rootScope);
                                 $rootScope.$digest();
@@ -1126,9 +1126,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (deletePriorityModal.length > 0) {
                     deletePriorityModal.find('form').trigger('reset');
                     UIkit.modal(deletePriorityModal, {bgclose: false}).show();
-                } else {
+                } else 
                     $log.error('Unable to locate delete priority modal.');
-                }
+                
             };
 
             $scope.submitRemovePriority = function(pId, $event) {
@@ -1152,9 +1152,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             // $body.find('div#edit-p-' + pId).remove();
                             $body.find('div[data-pId="' + pId + '"]').remove();
                             var deletePriorityModal = $('#deletePriorityModal-' + pId);
-                            if (deletePriorityModal) {
+                            if (deletePriorityModal) 
                                 UIkit.modal(deletePriorityModal).hide();
-                            }
+                            
                         }, function(err) {
                             $log.error(err);
                             helpers.UI.showSnackbar(err.data.error, true);
@@ -1198,9 +1198,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     createPriorityModal.find('#generateHtmlColor').css({background: '#29B955'});
                     UIkit.modal(createPriorityModal, {bgclose: false}).show();
                     createPriorityModal.find('input[name="p-name"]').focus();
-                } else {
+                } else 
                     $log.error('Unable to locate create priority modal.');
-                }
+                
             };
 
             $scope.createPrioritySubmit = function($event) {
@@ -1292,9 +1292,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                             '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
 
                                         priorities.forEach(function(p) {
-                                            if (p._id.toString() !== savedPriority._id) {
+                                            if (p._id.toString() !== savedPriority._id) 
                                                 html += '<option value="' + p._id + '">' + p.name + '</option>';
-                                            }
+                                            
                                         });
 
                                             html +=
@@ -1317,8 +1317,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                         helpers.UI.selectize();
 
                                         //Bootstrap Angular dynamically...
-                                        var $injector = angular.injector(["ng", "trudesk"]);
-                                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                        var $injector = angular.injector(['ng', 'trudesk']);
+                                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                             var $scope = priorityLoop.scope();
                                             $compile(priorityLoop)($scope || $rootScope);
                                             $rootScope.$digest();
@@ -1326,9 +1326,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                                         helpers.UI.showSnackbar('Priority Created.', false);
                                         var createPriorityModal = $('#createPriorityModal');
-                                        if (createPriorityModal.length > 0) {
+                                        if (createPriorityModal.length > 0) 
                                             UIkit.modal(createPriorityModal).hide();
-                                        }
+                                        
                                     })
                                     .error(function(errorResponse) {
                                         $log.error(errorResponse);
@@ -1394,9 +1394,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             function getRandomColor() {
                 var letters = '0123456789ABCDEF';
                 var color = '#';
-                for (var i = 0; i < 6; i++) {
+                for (var i = 0; i < 6; i++) 
                     color += letters[Math.floor(Math.random() * 16)];
-                }
+                
                 return color;
             }
 
@@ -1417,9 +1417,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 var $form = $($event.currentTarget);
                 var tagId = $form.attr('data-tag-id');
                 var tagName = $form.find('input[name="tag-' + tagId + '-name"]').val();
-                if (tagName.length < 3) {
+                if (tagName.length < 3) 
                     helpers.UI.showSnackbar('Invalid Tag Name', true);
-                } else {
+                 else {
                     $http.put('/api/v1/tags/' + tagId, {
                         name: tagName
                     }, {
@@ -1440,7 +1440,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
             $scope.removeTagClicked = function(tagId) {
                 var tagName = $('#view-tag-' + tagId).find('h5').text();
-                UIkit.modal.confirm("Really delete tag <strong>" + tagName + '</strong><br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
+                UIkit.modal.confirm('Really delete tag <strong>' + tagName + '</strong><br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
                     return $scope.deleteTag(tagId);
                 }, {
                     labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
