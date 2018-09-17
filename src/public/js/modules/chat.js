@@ -419,7 +419,7 @@ define('modules/chat',[
             chatMessageList,
             scroller;
 
-        messageArray = messageArray.reverse();
+        messageArray.reverse();
 
         _.each(messageArray, function(m) {
             if (m.owner._id === to) {

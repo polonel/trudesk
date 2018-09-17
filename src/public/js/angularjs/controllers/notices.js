@@ -89,7 +89,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.activateNotice = function() {
                 var id = getChecked();
-                if (id.length < 0) return true;
+                if (id.length < 1) return true;
                 id = id[0];
                 var $data = {active: true};
 
