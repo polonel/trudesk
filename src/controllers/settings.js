@@ -52,6 +52,14 @@ function handleError(res, err) {
         return res.render('error', {layout: false, error: err, message: err.message});
 }
 
+function renderView(res, content) {
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+}
+
 function parseSetting(settings, name, defaultValue) {
     var s = _.find(settings, function(x) { return x.name === name; });
     s = _.isUndefined(s) ? {value: defaultValue} : s;
@@ -150,11 +158,7 @@ settingsController.general = function(req, res) {
 
     var content = initViewContant('general', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.ticketSettings = function(req, res) {
@@ -162,11 +166,7 @@ settingsController.ticketSettings = function(req, res) {
 
     var content = initViewContant('tickets', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.mailerSettings = function(req, res) {
@@ -174,11 +174,7 @@ settingsController.mailerSettings = function(req, res) {
 
     var content = initViewContant('mailer', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.notificationsSettings = function(req, res) {
@@ -186,11 +182,7 @@ settingsController.notificationsSettings = function(req, res) {
 
     var content = initViewContant('notifications', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.tpsSettings = function(req, res) {
@@ -198,11 +190,7 @@ settingsController.tpsSettings = function(req, res) {
 
     var content = initViewContant('tps', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.legal = function(req, res) {
@@ -210,11 +198,7 @@ settingsController.legal = function(req, res) {
 
     var content = initViewContant('legal', req);
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
+    renderView(res, content);
 };
 
 settingsController.logs = function(req, res) {
