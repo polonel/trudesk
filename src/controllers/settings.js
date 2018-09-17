@@ -23,9 +23,7 @@ var settingsController = {};
 
 settingsController.content = {};
 
-settingsController.general = function(req, res) {
-    if (!checkPerms(req, 'settings:view')) return res.redirect('/');
-
+function initViewContant(view, req) {
     var content = {};
     content.title = 'Settings';
     content.nav = 'settings';
@@ -35,107 +33,24 @@ settingsController.general = function(req, res) {
     content.data.user = req.user;
     content.data.common = req.viewdata;
 
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
+    return content;
+}
 
-        return res.render('settings', content);
-    });
-};
+function checkPerms(req, role) {
+    var user = req.user;
+    if (_.isUndefined(user) || !permissions.canThis(user.role, role)) {
+        req.flash('message', 'Permission Denied.');
 
-settingsController.ticketSettings = function(req, res) {
-    if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
+        return false;
+    }
 
-    var content = {};
-    content.title = 'Settings';
-    content.nav = 'settings';
-    content.subnav = 'settings-tickets';
+    return true;
+}
 
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.mailerSettings = function(req, res) {
-    if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
-
-    var content = {};
-    content.title = 'Settings';
-    content.nav = 'settings';
-    content.subnav = 'settings-mailer';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.notificationsSettings = function(req, res) {
-    if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
-
-    var content = {};
-    content.title = 'Settings';
-    content.nav = 'settings';
-    content.subnav = 'settings-notifications';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.tpsSettings = function(req, res) {
-    if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
-
-    var content = {};
-    content.title = 'Settings';
-    content.nav = 'settings';
-    content.subnav = 'settings-tps';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-};
-
-settingsController.legal = function(req, res) {
-    if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
-
-    var content = {};
-    content.title = 'Settings';
-    content.nav = 'settings';
-    content.subnav = 'settings-legal';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
-
-    getSettings(content, function(err) {
-        if (err) return handleError(res, err);
-
-        return res.render('settings', content);
-    });
-};
+function handleError(res, err) {
+    if (err)
+        return res.render('error', {layout: false, error: err, message: err.message});
+}
 
 function getSettings(content, callback) {
     settingSchema.getSettings(function(err, settings) {
@@ -254,17 +169,82 @@ function getSettings(content, callback) {
     });
 }
 
+settingsController.general = function(req, res) {
+    if (!checkPerms(req, 'settings:view')) return res.redirect('/');
+
+    var content = initViewContant('general', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.ticketSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
+
+    var content = initViewContant('tickets', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.mailerSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
+
+    var content = initViewContant('mailer', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.notificationsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
+
+    var content = initViewContant('notifications', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.tpsSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
+
+    var content = initViewContant('tps', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
+settingsController.legal = function(req, res) {
+    if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
+
+    var content = initViewContant('legal', req);
+
+    getSettings(content, function(err) {
+        if (err) return handleError(res, err);
+
+        return res.render('settings', content);
+    });
+};
+
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
 
-    var content = {};
-    content.title = 'Server Logs';
-    content.nav = 'settings';
-    content.subnav = 'settings-logs';
-
-    content.data = {};
-    content.data.user = req.user;
-    content.data.common = req.viewdata;
+    var content = initViewContant('logs', req);
 
     var fs = require('fs'),
         path = require('path'),
@@ -284,22 +264,5 @@ settingsController.logs = function(req, res) {
         return res.render('logs', content);
     });
 };
-
-function checkPerms(req, role) {
-    var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, role)) {
-        req.flash('message', 'Permission Denied.');
-
-        return false;
-    }
-
-    return true;
-}
-
-function handleError(res, err) {
-    if (err) 
-        return res.render('error', {layout: false, error: err, message: err.message});
-    
-}
 
 module.exports = settingsController;

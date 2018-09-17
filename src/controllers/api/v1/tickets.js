@@ -1222,6 +1222,44 @@ apiTickets.getTicketStats = function(req, res) {
     return res.send(obj);
 };
 
+function parseTicketStats(role, tickets, callback) {
+    if (_.isEmpty(tickets)) return callback({tickets: tickets, tags: {}});
+    var t = [];
+    var tags = {};
+    if (!permissions.canThis(role, 'notes:view')) {
+        _.each(tickets, function(ticket) {
+            ticket.notes = [];
+        });
+    }
+
+    async.each(tickets, function(ticket, cb) {
+        _.each(ticket.tags, function(tag) {
+            t.push(tag.name);
+        });
+
+        t = _.take(t, 10);
+
+        return cb();
+    }, function() {
+        _.mixin({
+            'sortKeysBy': function (obj, comparator) {
+                var keys = _.sortBy(_.keys(obj), function (key) {
+                    return comparator ? comparator(obj[key], key) : key;
+                });
+
+                return _.zipObject(keys, _.map(keys, function (key) {
+                    return obj[key];
+                }));
+            }
+        });
+
+        tags = _.countBy(t, function(k){ return k; });
+        tags = _(tags).toPairs().sortBy(0).fromPairs().value();
+
+        return callback({tickets: tickets, tags: tags});
+    });
+}
+
 /**
  * @api {get} /api/v1/tickets/stats/group/:group Get Ticket Stats For Group
  * @apiName getTicketStatsForGroup
@@ -1248,38 +1286,8 @@ apiTickets.getTicketStatsForGroup = function(req, res) {
         function(callback) {
             ticketModel.getTickets([groupId], function(err, tickets) {
                 if (err) return callback(err);
-                if (_.isEmpty(tickets)) return callback(null, tickets);
-                var t = [];
-
-                if (!permissions.canThis(req.user.role, 'notes:view')) {
-                    _.each(tickets, function(ticket) {
-                        ticket.notes = [];
-                    });
-                }
-
-                async.each(tickets, function(ticket, cb) {
-                    _.each(ticket.tags, function(tag) {
-                        t.push(tag.name);
-                    });
-
-                    t = _.take(t, 10);
-
-                    return cb();
-                }, function() {
-                    _.mixin({
-                        'sortKeysBy': function (obj, comparator) {
-                            var keys = _.sortBy(_.keys(obj), function (key) {
-                                return comparator ? comparator(obj[key], key) : key;
-                            });
-
-                            return _.zipObject(keys, _.map(keys, function (key) {
-                                return obj[key];
-                            }));
-                        }
-                    });
-
-                    tags = _.countBy(t, function(k){ return k; });
-                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
+                parseTicketStats(req.user.role, tickets, function(data) {
+                    tags = data.tags;
 
                     return callback(null, tickets);
                 });
@@ -1354,38 +1362,8 @@ apiTickets.getTicketStatsForUser = function(req, res) {
         function(callback) {
             ticketModel.getTicketsByRequester(userId, function(err, tickets) {
                 if (err) return callback(err);
-                if (_.isEmpty(tickets)) return callback(null, tickets);
-                var t = [];
-
-                if (!permissions.canThis(req.user.role, 'notes:view')) {
-                    _.each(tickets, function(ticket) {
-                        ticket.notes = [];
-                    });
-                }
-
-                async.each(tickets, function(ticket, cb) {
-                    _.each(ticket.tags, function(tag) {
-                        t.push(tag.name);
-                    });
-
-                    t = _.take(t, 10);
-
-                    return cb();
-                }, function() {
-                    _.mixin({
-                        'sortKeysBy': function (obj, comparator) {
-                            var keys = _.sortBy(_.keys(obj), function (key) {
-                                return comparator ? comparator(obj[key], key) : key;
-                            });
-
-                            return _.zipObject(keys, _.map(keys, function (key) {
-                                return obj[key];
-                            }));
-                        }
-                    });
-
-                    tags = _.countBy(t, function(k){ return k; });
-                    tags = _(tags).toPairs().sortBy(0).fromPairs().value();
+                parseTicketStats(req.user.role, tickets, function(data) {
+                    tags = data.tags;
 
                     return callback(null, tickets);
                 });
