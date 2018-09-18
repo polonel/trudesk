@@ -233,7 +233,10 @@ function handleMessages(messages) {
                         if (err) return callback(err);
                         if (!group) return callback('Unknown group for user: ' + message.owner.email);
 
-                        message.group = group;
+                        if (_.isArray(group))
+                            message.group = _.first(group);
+                        else
+                            message.group = group;
 
                         return callback(null, group);
                     });
@@ -307,9 +310,6 @@ function handleMessages(messages) {
             }, function (err) {
                 if (err) 
                     winston.debug(err);
-                
-
-
             });
         }
     });
