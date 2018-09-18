@@ -399,6 +399,7 @@ debugController.populatedatabase = function(req, res) {
                                     if (!_.includes(ticketTags, t._id))
                                         ticketTags.push(t._id);
                                 }
+                                var randomPriority = type.priorities[Math.floor(Math.random() * type.priorities.length)];
                                 var ticket = {
                                     __v: 0,
                                     //uid: res.value.next,
@@ -409,7 +410,7 @@ debugController.populatedatabase = function(req, res) {
                                     type: type._id,
                                     tags: ticketTags,
                                     status: Math.floor(Math.random() * 4),
-                                    priority: Math.floor(Math.random() * 3) + 1,
+                                    priority: randomPriority._id,
                                     subject: _.sample(subjects),
                                     issue: loremIpsum({count: 3, units: 'paragraph'}),
                                     deleted: false
