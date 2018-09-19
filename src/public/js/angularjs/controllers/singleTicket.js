@@ -173,7 +173,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 $scope.priorities = _.sortBy($scope.priorities, 'name');
                 $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
                 if (!$scope.selectedPriority)
-                    UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
+                    UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
                 
             });
 
@@ -199,7 +199,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     $scope.priorities = _.sortBy($scope.priorities, 'name');
                     $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
                     if (_.isUndefined($scope.selectedPriority))
-                        UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
+                        UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
                     
                 }
             };
