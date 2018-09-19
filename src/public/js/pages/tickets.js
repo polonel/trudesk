@@ -73,22 +73,13 @@ define('pages/tickets', [
                 return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
             }
 
-            $('tr.overdue').each(function() {
-                var self = $(this);
-                self.css('background-color', '#b71c1c');
-                self.find('td').css('color', '#fff');
-                setInterval(function() {
-                    var bgColor = self.css('background-color');
-                    bgColor = rgb2hex(bgColor);
-                    if (bgColor === '#b71c1c') {
-                        self.css('background-color', '#ffffff');
-                        self.find('td').css('color', '#55616e');
-                    } else {
-                        self.css('background-color', '#b71c1c');
-                        self.find('td').css('color', '#fff');
-                    }
-                }, 800);
-            });
+            setInterval(function() {
+                var $overDueTR = $('tr.overdue');
+                if ($overDueTR.hasClass('overdue-red'))
+                    $overDueTR.removeClass('overdue-red');
+                else
+                    $overDueTR.addClass('overdue-red');
+            }, 800);
 
             if (typeof callback === 'function')
                 return callback();
