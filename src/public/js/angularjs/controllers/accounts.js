@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator', 'multiselect'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
+        .controller('accountsCtrl', function($scope, $http, $timeout, $window, $log) {
 
             function checkGroupValidation() {
                 var data = {};
@@ -27,13 +27,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
                     $('.aGrps-error-message').removeClass('hide').css('display', 'block').css('color', '#d85030').css('font-weight', 'bold');
                     return false;
-                } else {
-                    $('label[for="caGrps"]').css('color', '#4d4d4d');
-                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
-                    $('.aGrps-error-message').addClass('hide');
-                    return true;
                 }
 
+                $('label[for="caGrps"]').css('color', '#4d4d4d');
+                $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
+                $('.aGrps-error-message').addClass('hide');
+                return true;
             }
 
             $scope.createAccount = function(event) {
@@ -43,12 +42,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 if (!form.isValid(null, null, false)) {
                     checkGroupValidation();
                     return false;
-                } else {
-                    if (!checkGroupValidation()) {
-                        event.preventDefault();
-                        return false;
-                    }
                 }
+
+                if (!checkGroupValidation()) {
+                    event.preventDefault();
+                    return false;
+                }
+
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.aGrps = form.find('select[name="caGrps[]"]').val();
@@ -73,7 +73,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                         //Refresh UserGrid
                         History.pushState(null,null, '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
 
-                        UIkit.modal("#accountCreateModal").hide();
+                        UIkit.modal('#accountCreateModal').hide();
                     }).error(function(err) {
                         $log.log('[trudesk:accounts:createAccount]', err);
                         helpers.UI.showSnackbar('An error occurred while creating the account. Check Console.', true);
@@ -157,9 +157,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 if (_.isUndefined(username)) return true;
 
                 var $menu = self.parents('.tru-card-head-menu');
-                if (!_.isUndefined($menu)) {
+                if (!_.isUndefined($menu)) 
                     $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active');
-                }
+                
 
                 $http.get(
                     '/api/v1/users/' + username
@@ -169,8 +169,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
-                    var loggedInAccount = window.trudeskSessionService.getUser();
-                    if (loggedInAccount == null) return true;
+                    var loggedInAccount = $window.trudeskSessionService.getUser();
+                    if (loggedInAccount === null) return true;
 
                     var $userHeadingContent = $('.user-heading-content');
                     $userHeadingContent.find('.js-username').text(user.username);
@@ -233,10 +233,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     //Profile Picture
                     var aImageUploadForm = $('form#aUploadImageForm');
                     var image = aImageUploadForm.find('img');
-                    var input_id = aImageUploadForm.find('input#imageUpload_id');
-                    var input_username = aImageUploadForm.find('input#imageUpload_username');
-                    input_id.val(user._id);
-                    input_username.val(user.username);
+                    var inputId = aImageUploadForm.find('input#imageUpload_id');
+                    var inputUsername = aImageUploadForm.find('input#imageUpload_username');
+                    inputId.val(user._id);
+                    inputUsername.val(user.username);
                     if (user.image)
                         image.attr('src', '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
                     else
@@ -279,7 +279,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
 
                         helpers.UI.showSnackbar('Account Saved', false);
 
-                        UIkit.modal("#editAccountModal").hide();
+                        UIkit.modal('#editAccountModal').hide();
 
                         accountsPage.init(null, true);
 

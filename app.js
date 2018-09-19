@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
       .                              .o8                     oooo
    .o8                             "888                     `888
@@ -9,8 +10,7 @@
  ========================================================================
  **/
 
-var _           = require('lodash'),
-    async       = require('async'),
+var async       = require('async'),
     path        = require('path'),
     fs          = require('fs'),
     winston     = require('winston'),
@@ -87,16 +87,16 @@ function start() {
                 _db.init(dbCallback);
             }, 10000);
 
-        } else {
+        } else 
             dbCallback(null, db);
-        }
+        
     });
 }
 
 function dbCallback(err, db) {
-    if (err) {
+    if (err) 
         return start();
-    }
+    
 
     var s = require('./src/models/setting');
     s.getSettingByName('installed', function(err, installed) {
@@ -203,7 +203,7 @@ function dbCallback(err, db) {
                 return next();
                     }
                 ], function() {
-            winston.info("trudesk Ready");
+            winston.info('trudesk Ready');
                 });
             });
         }

@@ -90,8 +90,6 @@ if (typeof UIkit !== 'undefined') {
                         }
                         if (dialogReplace.find('input.uk-width-1-1').length) {
                             dialogReplace.find('input.uk-width-1-1').toggleClass('uk-width-1-1 md-input');
-                            // reinitialize md inputs
-                            altair_md.inputs();
                         }
                         if (dialogReplace.find('.uk-form').length) {
                             dialogReplace.find('.uk-form').removeClass('uk-form');

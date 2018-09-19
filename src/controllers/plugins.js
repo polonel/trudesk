@@ -17,7 +17,7 @@ var pluginsController = {};
 
 pluginsController.get = function(req, res) {
     var content = {};
-    content.title = "Plugins";
+    content.title = 'Plugins';
     content.nav = 'plugins';
 
     content.data = {};

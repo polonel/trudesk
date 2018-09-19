@@ -19,9 +19,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 restrict: 'A',
                 require: '?ngModel',
                 link: function(scope, element, attrs, ngModel) {
-                    var $element;
                     $timeout(function() {
-                        $element = $(element).selectize(scope.$eval(attrs.selectize));
+                        // var $element = $(element).selectize(scope.$eval(attrs.selectize));
                         if(!ngModel) return;
                         $(element).selectize().on('change', function() {
                             scope.$apply(function() {
@@ -31,7 +30,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         });
                     });
                 }
-            }
+            };
         })
         .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
             var mdeToolbarItems = [
@@ -53,7 +52,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     className: 'material-icons mi-title no-ajaxy',
                     title: 'Title'
                 },
-                "|",
+                '|',
                 {
                     name: 'Code',
                     action: EasyMDE.toggleCodeBlock,
@@ -78,14 +77,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     className: 'material-icons mi-numlist no-ajaxy',
                     title: 'Numbered List'
                 },
-                "|",
+                '|',
                 {
                     name: 'Create Link',
                     action: EasyMDE.drawLink,
                     className: 'material-icons mi-link no-ajaxy',
                     title: 'Create Link'
                 },
-                "|",
+                '|',
                 {
                     name: 'Toggle Preview',
                     action: EasyMDE.togglePreview,
@@ -114,7 +113,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         privacyPolicyMDE = new EasyMDE({
                             element: $privacyPolicy[0],
                             forceSync: true,
-                            minHeight: "220px", //Slighty smaller to adjust the scroll
+                            minHeight: '220px', //Slighty smaller to adjust the scroll
                             toolbar: mdeToolbarItems
                         });
 
@@ -126,14 +125,20 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                     // Load MailCheckTicketType from settings
                     var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
+                    var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                     if ($mailerCheckTicketTypeSelect.length > 0) {
-                        if ($scope.mailerCheckTicketType !== '') {
+                        if ($scope.mailerCheckTicketType !== '') { //empty string is reading as '? string: ?' ????
                             $mailerCheckTicketTypeSelect.find('option[value="' + $scope.mailerCheckTicketType + '"]').prop('selected', true);
 
-                            var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
                             $selectizeTicketType.setValue($scope.mailerCheckTicketType, true);
                             $selectizeTicketType.refreshItems();
                         } else {
+                            // Set default to first option.....
+                            var first = _.first(_.values($selectizeTicketType.options)).value;
+
+                            $selectizeTicketType.setValue(first, true);
+                            $selectizeTicketType.refreshItems();
+
                             $scope.mailerCheckTicketType = $mailerCheckTicketTypeSelect.val();
                         }
                     }
@@ -150,7 +155,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     var $ticketTagPagination = $('.ticket-tags-pagination');
                     UIkit.pagination($ticketTagPagination, {
                         items: $scope.ticketTagsCount,
-                        itemsOnPage: 25
+                        itemsOnPage: 16
                     });
                     $ticketTagPagination.on('select.uk.pagination', loadTicketTagPagination);
 
@@ -172,7 +177,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                                 var holdPriorityValue = $scope.mailerCheckTicketPriority;
 
-                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString()}))
+                                if (!_.some(type.priorities, function(i) { return i._id.toString() === holdPriorityValue.toString(); }))
                                     holdPriorityValue = _.first(type.priorities)._id;
 
                                 var $selectizeTicketPriority = $mailCheckTicketPrioritySelect[0].selectize;
@@ -198,7 +203,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (e)
                     e.preventDefault();
 
-                $http.get('/api/v1/tickets/tags/limit?page=' + pageIndex)
+                $http.get('/api/v1/tags/limit?limit=16&page=' + pageIndex)
                     .success(function(response) {
                         var tags = [];
                         var $tagWrapper = $('.ticket-tags-wrapper');
@@ -208,23 +213,58 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         $tagWrapper.empty();
                         if (response.success) {
                             tags = response.tags;
-
-                            if (tags.length === 0) {
+                            // tags = [];
+                            if (tags.length === 0) 
                                 $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
-                            } else {
+                             else {
                                 tags.forEach(function(tag) {
                                     var html = '';
-                                    html += '<div class="uk-width-1-3 z-box" style="padding: 10px;">' +
-                                        '<div class="uk-grid uk-grid-collapse">' +
-                                        '<div class="uk-width-1-2 uk-float-left" style="line-height: 31px;">' + tag.name + '</div>' +
-                                        '<div class="uk-width-1-2 uk-float-right uk-text-right pr-10">' +
-                                        '<button type="button" class="md-btn md-btn md-btn-small">Edit</button>' +
-                                        '</div>' +
-                                        '</div>' +
-                                        '</div>';
+                                    html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
+                                        ' <div id="view-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix">\n' +
+                                        '     <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                        '         <div class="uk-width-1-2">\n' +
+                                        '             <h5 class="tag-' + tag._id + '-name" style="font-size: 16px; line-height: 31px; margin: 0; padding: 0; font-weight: 300;">' + tag.name + '</h5>\n' +
+                                        '         </div>\n' +
+                                        '         <div class="uk-width-1-2 uk-text-right">\n' +
+                                        '             <div class="md-btn-group mt-5">\n' +
+                                        '                 <a class="md-btn md-btn-small md-btn-flat" ng-click="editTagClicked(\'' + tag._id + '\', $event);">edit</a>\n' +
+                                        '                 <a class="md-btn md-btn-small md-btn-flat md-btn-flat-danger" ng-click="removeTagClicked(\'' + tag._id + '\', $event);">remove</a>\n' +
+                                        '             </div>\n' +
+                                        '         </div>\n' +
+                                        '     </div>\n' +
+                                        ' </div>\n' +
+                                        ' <div id="edit-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px; border-top: none !important;">\n' +
+                                        '     <form data-tag-id="' + tag._id + '" ng-submit="submitUpdateTag($event);">\n' +
+                                        '         <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                        '             <div class="uk-width-2-3">\n' +
+                                        // '                 <label for="">Name</label>\n' +
+                                        '                 <input type="text" class="md-input" style="padding: 5px;" name="tag-' + tag._id + '-name" value="' + tag.name + '" />\n' +
+                                        '             </div>\n' +
+                                        '             <div class="uk-width-1-3">\n' +
+                                        '                 <div class="md-btn-group uk-float-right uk-text-right" style="margin-top: 2px;">\n' +
+                                        '                     <a class="md-btn md-btn-small md-btn-flat" ng-click="cancelEditTagClicked(\'' + tag._id + '\', $event);">Cancel</a>\n' +
+                                        '                     <button type="submit" class="md-btn md-btn-small md-btn-flat md-btn-flat-success">Save</button>\n' +
+                                        '                 </div>\n' +
+                                        '             </div>\n' +
+                                        '         </div>\n' +
+                                        '     </form>\n' +
+                                        ' </div>\n' +
+                                        ' </div>';
 
                                     $tagWrapper.append(html);
                                 });
+
+                                //Bootstrap Angular dynamically...
+                                var $injector = angular.injector(['ng', 'trudesk']);
+                                $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
+                                    var $scope = $tagWrapper.scope();
+                                    $compile($tagWrapper)($scope || $rootScope);
+                                    $rootScope.$digest();
+                                }]);
+
+                                //Fix filled inputs
+                                helpers.UI.inputs();
+                                helpers.UI.reRenderInputs();
                             }
                         }
                     })
@@ -282,18 +322,18 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                         //Show Selected
                         $target.addClass('active');
-                        if (currentTarget.length > 0) {
+                        if (currentTarget.length > 0) 
                             currentTarget.addClass('active');
-                        }
+                        
 
-                        if (settings === 'settings-tickets') {
+                        if (settings === 'settings-tickets') 
                             $target.find('ul>li[data-key]').first().addClass('active');
-                        }
+                        
 
                         if (settings === 'settings-legal') {
-                            if (privacyPolicyMDE) {
+                            if (privacyPolicyMDE) 
                                 privacyPolicyMDE.codemirror.refresh();
-                            }
+                            
                         }
                     }
                 }
@@ -402,7 +442,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.tpsFormSubmit = function($event) {
@@ -418,7 +458,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     helpers.UI.showSnackbar('TPS Settings Saved', false);
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.$watch('mailerCheckEnabled', function(newVal) {
@@ -430,13 +470,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 $('input#mailerCheckPassword').attr('disabled', !newVal);
                 $('button#mailerCheckSubmit').attr('disabled', !newVal);
                 if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
-                    if (!newVal === true)
+                    if (!newVal)
                         $mailerCheckTicketTypeSelectize.selectize.disable();
                     else
                         $mailerCheckTicketTypeSelectize.selectize.enable();
                 }
                 if (!_.isUndefined($mailerCheckTicketPrioritySelectize)) {
-                    if (!newVal === true)
+                    if (!newVal)
                         $mailerCheckTicketPrioritySelectize.selectize.disable();
                     else
                         $mailerCheckTicketPrioritySelectize.selectize.enable();
@@ -456,9 +496,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     }
                 }).then(function successCallback() {
                     if (!$scope.mailerCheckEnabled) {
-                        UIkit.modal.confirm(
-                            'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
-                            , function() {
+                        UIkit.modal.confirm('Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?', function() {
                                 $http.get(
                                     '/api/v1/admin/restart'
                                 )
@@ -499,9 +537,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 }).then(function successCallback() {
                     helpers.UI.showSnackbar('Mail Check Settings Saved', false);
 
-                    UIkit.modal.confirm(
-                        'Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?'
-                        , function() {
+                    UIkit.modal.confirm('Settings will take affect after server restart. <br /> <br /> Would you like to restart the server now?', function() {
                             $http.get(
                                 '/api/v1/admin/restart'
                             )
@@ -552,7 +588,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
 
                 }, function errorCallback(err) {
                     helpers.UI.showSnackbar(err, true);
-                })
+                });
             };
 
             $scope.showOverdueTicketsChanged = function() {
@@ -612,21 +648,21 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showCreateTagWindow = function($event) {
                 $event.preventDefault();
                 var createTagModal = $('#createTagModal');
-                if (createTagModal.length > 0) {
+                if (createTagModal.length > 0) 
                     UIkit.modal(createTagModal, {bgclose: false}).show();
-                }
+                
             };
 
             $scope.createTag = function($event) {
                 $event.preventDefault();
                 var form = $('#createTagForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false)) 
                     return true;
-                } else {
+                 else {
                     var tagName = form.find('input[name="tagName"]').val();
                     if (!tagName || tagName.length < 3) return true;
 
-                    $http.post('/api/v1/tickets/addtag', {
+                    $http.post('/api/v1/tags/create', {
                         tag: tagName
                     }, {
                         headers: {
@@ -634,8 +670,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         }
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
-
-                        History.pushState(null, null, '/settings/tags/?refresh=1');
+                        var time = new Date().getTime();
+                        History.pushState(null, null, '/settings/tickets/?refresh=' + time);
 
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Unable to create tag. Check console', true);
@@ -647,9 +683,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showCreateTicketTypeWindow = function($event) {
                 $event.preventDefault();
                 var createTicketTypeModal = $('#createTicketTypeModal');
-                if (createTicketTypeModal.length > 0) {
+                if (createTicketTypeModal.length > 0) 
                     UIkit.modal(createTicketTypeModal, {bgclose: false}).show();
-                }
+                
             };
 
             $scope.switchTicketType = function($event) {
@@ -689,9 +725,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.createTicketType = function(event) {
                 event.preventDefault();
                 var form = $('#createTicketTypeForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false)) 
                     return true;
-                } else {
+                 else {
                     var typeName = form.find('input[name="typeName"]').val();
                     if (!typeName || typeName.length < 3) return true;
 
@@ -771,14 +807,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             $scope.showDeleteTicketType = function(typeId, hasTickets) {
                 if (hasTickets) {
                     var delTicketTypeModal = $('#deleteTicketTypeModal-' + typeId);
-                    if (delTicketTypeModal.length > 0) {
+                    if (delTicketTypeModal.length > 0) 
                         UIkit.modal(delTicketTypeModal, {bgclose: false}).show();
-                    } else {
+                     else 
                         $log.log('Unable to locate modal window: #deleteTicketTypeModal' + typeId);
-                    }
-                } else {
+                    
+                } else 
                     $scope.submitDeleteTicketType(typeId, undefined);
-                }
+                
             };
 
             $scope.submitDeleteTicketType = function(typeId, event) {
@@ -821,6 +857,32 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         helpers.UI.showSnackbar('Unable to remove ticket type. Check console.', true);
                     }
                 });
+            };
+
+            $scope.editTagClicked = function(tagId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var $viewBox = $('#view-tag-' + tagId);
+                var $editBox = $('#edit-tag-' + tagId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    $viewBox.addClass('hide');
+                    $editBox.removeClass('hide');
+                }
+            };
+
+            $scope.cancelEditTagClicked = function(tagId, $event) {
+                if ($event)
+                    $event.preventDefault();
+
+                var $viewBox = $('#view-tag-' + tagId);
+                var $editBox = $('#edit-tag-' + tagId);
+                if ($editBox.length > 0 && $viewBox.length > 0) {
+                    if ($event)
+                        $($event.currentTarget).parents('form').trigger('reset');
+                    $viewBox.removeClass('hide');
+                    $editBox.addClass('hide');
+                }
             };
 
             $scope.editPriority = function(pId, $event) {
@@ -919,26 +981,26 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                         }
                                     });
 
-                                    var $injector = angular.injector(["ng", "trudesk"]);
-                                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                                    var $injector = angular.injector(['ng', 'trudesk']);
+                                    $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                         var $scope = $pLoop.scope();
                                         $compile($pLoop)($scope || $rootScope);
                                         $rootScope.$digest();
                                     }]);
 
-                                    if ($addPriorityToTypeModal.length > 0) {
+                                    if ($addPriorityToTypeModal.length > 0) 
                                         UIkit.modal($addPriorityToTypeModal, {bgclose: false}).show();
-                                    } else {
+                                     else 
                                         $log.error('Unable to locate add priority modal.');
-                                    }
+                                    
                                 })
                                 .error(function(error) {
                                     $log.error(error);
                                     helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
                                 });
-                        } else {
+                        } else 
                             helpers.UI.showSnackbar('Unable to load ticket type. Check Console.');
-                        }
+                        
                     })
                     .error(function(error) {
                         $log.error(error);
@@ -1014,8 +1076,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             });
 
                             //Bootstrap Angular dynamically...
-                            var $injector = angular.injector(["ng", "trudesk"]);
-                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                            var $injector = angular.injector(['ng', 'trudesk']);
+                            $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                                 var $scope = $prioritiesBox.scope();
                                 $compile($prioritiesBox)($scope || $rootScope);
                                 $rootScope.$digest();
@@ -1064,9 +1126,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 if (deletePriorityModal.length > 0) {
                     deletePriorityModal.find('form').trigger('reset');
                     UIkit.modal(deletePriorityModal, {bgclose: false}).show();
-                } else {
+                } else 
                     $log.error('Unable to locate delete priority modal.');
-                }
+                
             };
 
             $scope.submitRemovePriority = function(pId, $event) {
@@ -1090,13 +1152,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             // $body.find('div#edit-p-' + pId).remove();
                             $body.find('div[data-pId="' + pId + '"]').remove();
                             var deletePriorityModal = $('#deletePriorityModal-' + pId);
-                            if (deletePriorityModal) {
+                            if (deletePriorityModal) 
                                 UIkit.modal(deletePriorityModal).hide();
-                            }
+                            
                         }, function(err) {
                             $log.error(err);
                             helpers.UI.showSnackbar(err.data.error, true);
-                        })
+                        });
                 }
             };
 
@@ -1136,149 +1198,149 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                     createPriorityModal.find('#generateHtmlColor').css({background: '#29B955'});
                     UIkit.modal(createPriorityModal, {bgclose: false}).show();
                     createPriorityModal.find('input[name="p-name"]').focus();
-                } else {
+                } else 
                     $log.error('Unable to locate create priority modal.');
-                }
+                
             };
 
             $scope.createPrioritySubmit = function($event) {
                 $event.preventDefault();
                 var $form = $($event.currentTarget);
                 if ($form) {
-                    if (!$form.isValid(null, null, false)) {
-                        return true;
-                    } else {
-                        var $priorityName = $form.find('input[name="p-name"]');
-                        var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]');
-                        var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]');
-                        if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1)
-                            return false;
+                    if (!$form.isValid(null, null, false))
+                        return false;
 
-                        var name = $priorityName.val();
-                        var overdueIn = $priorityOverdueIn.val();
-                        var htmlColor = $priorityHtmlColor.val();
+                    var $priorityName = $form.find('input[name="p-name"]');
+                    var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]');
+                    var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]');
+                    if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1)
+                        return false;
 
-                        $http.post('/api/v1/tickets/priority/create', {
-                            name: name,
-                            overdueIn: overdueIn,
-                            htmlColor: htmlColor
-                        }, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(function successCallback(response) {
-                            var savedPriority = response.data.priority;
-                            if (savedPriority) {
-                                var priorityLoop = $('body').find('.all-priorities-loop');
-                                if (priorityLoop) {
-                                    $http.get('/api/v1/tickets/priorities')
-                                        .success(function(pResponse) {
-                                            var priorities = pResponse.priorities;
-                                            var html = '';
-                                            html += '<div id="view-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix">\n' +
-                                                '       <div class="uk-float-left">\n' +
-                                                '           <h5 class="p-' + savedPriority._id + '-name" style="color: ' + savedPriority.htmlColor + '; font-weight: bold;">' + savedPriority.name + '</h5>\n' +
-                                                '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + savedPriority._id + '-overdueIn">' + savedPriority.durationFormatted + '</strong></p>\n' +
-                                                '       </div>\n' +
-                                                '       <div class="uk-float-right">\n' +
-                                                '           <div class="md-btn-group mt-5">\n' +
-                                                '               <a class="md-btn md-btn-small" ng-click="editPriority(\'' + savedPriority._id + '\', $event);">Edit</a>\n' +
-                                                '               <a class="md-btn md-btn-small md-btn-danger" ng-click="removePriorityClicked(\'' + savedPriority._id + '\', $event);">Remove</a>\n' +
-                                                '           </div>\n' +
-                                                '       </div>\n' +
-                                                '    </div>\n' +
-                                                '    <div id="edit-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
-                                                '       <form data-priority-id="' + savedPriority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
-                                                '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
-                                                '               <div class="uk-width-1-4">\n' +
-                                                '                   <label for="">Priority Name</label>\n' +
-                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-name" value="' + savedPriority.name + '" />\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
-                                                '                   <label for="">SLA Overdue (minutes)</label>\n' +
-                                                '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-overdueIn" value="' + savedPriority.overdueIn + '" />\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
-                                                '                   <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + savedPriority.htmlColor + '" ng-click="generateRandomColor(\'' + savedPriority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
-                                                '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
-                                                '                       <label for="">Color</label>\n' +
-                                                '                       <input type="text" class="md-input" name="p-' + savedPriority._id + '-htmlColor" value="' + savedPriority.htmlColor + '" />\n' +
-                                                '                       <span class="md-input-bar"></span>\n' +
-                                                '                   </div>\n' +
-                                                '               </div>\n' +
-                                                '               <div class="uk-width-1-4">\n' +
-                                                '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
-                                                '                       <a class="md-btn md-btn-small" ng-click="cancelEditPriority(\'' + savedPriority._id + '\', $event);">Cancel</a>\n' +
-                                                '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
-                                                '                   </div>\n' +
-                                                '               </div>\n' +
-                                                '           </div>\n' +
-                                                '       </form>\n' +
-                                                '    </div>\n' +
-                                                '<div class="uk-modal" id="deletePriorityModal-'+ savedPriority._id + '" data-pId="' + savedPriority._id + '" ng-controller="settingsCtrl">\n' +
-                                                '    <div class="uk-modal-dialog">\n' +
-                                                '        <form class="uk-form-stacked" id="deletePriorityForm-' + savedPriority._id + '" action="#" method="POST">\n' +
-                                                '            <input type="hidden" id="del_priority_name-' + savedPriority._id + '" name="del_priority_name" value="' + savedPriority.name + '">\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <h2 class="">Remove Priority</h2>\n' +
-                                                '                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>\n' +
-                                                '                <hr style="margin: 10px 0" />\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <div class="uk-float-left" style="width: 100%;">\n' +
-                                                '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
-                                                '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
+                    var name = $priorityName.val();
+                    var overdueIn = $priorityOverdueIn.val();
+                    var htmlColor = $priorityHtmlColor.val();
 
-                                            priorities.forEach(function(p) {
-                                                if (p._id.toString() !== savedPriority._id) {
-                                                    html += '<option value="' + p._id + '">' + p.name + '</option>';
-                                                }
-                                            });
+                    $http.post('/api/v1/tickets/priority/create', {
+                        name: name,
+                        overdueIn: overdueIn,
+                        htmlColor: htmlColor
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback(response) {
+                        var savedPriority = response.data.priority;
+                        if (savedPriority) {
+                            var priorityLoop = $('body').find('.all-priorities-loop');
+                            if (priorityLoop) {
+                                $http.get('/api/v1/tickets/priorities')
+                                    .success(function(pResponse) {
+                                        var priorities = pResponse.priorities;
+                                        var html = '';
+                                        html += '<div id="view-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix">\n' +
+                                            '       <div class="uk-float-left">\n' +
+                                            '           <h5 class="p-' + savedPriority._id + '-name" style="color: ' + savedPriority.htmlColor + '; font-weight: bold;">' + savedPriority.name + '</h5>\n' +
+                                            '           <p class="uk-text-muted">SLA Overdue: <strong class="p-' + savedPriority._id + '-overdueIn">' + savedPriority.durationFormatted + '</strong></p>\n' +
+                                            '       </div>\n' +
+                                            '       <div class="uk-float-right">\n' +
+                                            '           <div class="md-btn-group mt-5">\n' +
+                                            '               <a class="md-btn md-btn-small" ng-click="editPriority(\'' + savedPriority._id + '\', $event);">Edit</a>\n' +
+                                            '               <a class="md-btn md-btn-small md-btn-danger" ng-click="removePriorityClicked(\'' + savedPriority._id + '\', $event);">Remove</a>\n' +
+                                            '           </div>\n' +
+                                            '       </div>\n' +
+                                            '    </div>\n' +
+                                            '    <div id="edit-p-' + savedPriority._id + '" data-pId="' + savedPriority._id + '" class="z-box uk-clearfix hide" style="padding-top: 19px;">\n' +
+                                            '       <form data-priority-id="' + savedPriority._id + '" ng-submit="submitUpdatePriority($event);">\n' +
+                                            '           <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
+                                            '               <div class="uk-width-1-4">\n' +
+                                            '                   <label for="">Priority Name</label>\n' +
+                                            '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-name" value="' + savedPriority.name + '" />\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                            '                   <label for="">SLA Overdue (minutes)</label>\n' +
+                                            '                   <input type="text" class="md-input" name="p-' + savedPriority._id + '-overdueIn" value="' + savedPriority.overdueIn + '" />\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4 uk-padding-small-sides">\n' +
+                                            '                   <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: ' + savedPriority.htmlColor + '" ng-click="generateRandomColor(\'' + savedPriority._id + '\', $event);"><i class="material-icons">refresh</i></button>\n' +
+                                            '                   <div class="md-input-wrapper uk-float-left" style="width: 70%;">\n' +
+                                            '                       <label for="">Color</label>\n' +
+                                            '                       <input type="text" class="md-input" name="p-' + savedPriority._id + '-htmlColor" value="' + savedPriority.htmlColor + '" />\n' +
+                                            '                       <span class="md-input-bar"></span>\n' +
+                                            '                   </div>\n' +
+                                            '               </div>\n' +
+                                            '               <div class="uk-width-1-4">\n' +
+                                            '                   <div class="md-btn-group uk-float-right uk-text-right mt-5">\n' +
+                                            '                       <a class="md-btn md-btn-small" ng-click="cancelEditPriority(\'' + savedPriority._id + '\', $event);">Cancel</a>\n' +
+                                            '                       <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>\n' +
+                                            '                   </div>\n' +
+                                            '               </div>\n' +
+                                            '           </div>\n' +
+                                            '       </form>\n' +
+                                            '    </div>\n' +
+                                            '<div class="uk-modal" id="deletePriorityModal-'+ savedPriority._id + '" data-pId="' + savedPriority._id + '" ng-controller="settingsCtrl">\n' +
+                                            '    <div class="uk-modal-dialog">\n' +
+                                            '        <form class="uk-form-stacked" id="deletePriorityForm-' + savedPriority._id + '" action="#" method="POST">\n' +
+                                            '            <input type="hidden" id="del_priority_name-' + savedPriority._id + '" name="del_priority_name" value="' + savedPriority.name + '">\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <h2 class="">Remove Priority</h2>\n' +
+                                            '                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>\n' +
+                                            '                <hr style="margin: 10px 0" />\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <div class="uk-float-left" style="width: 100%;">\n' +
+                                            '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
+                                            '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
 
-                                                html +=
-                                                '                    </select>\n' +
-                                                '                </div>\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
-                                                '                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>' + savedPriority.name + '</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>\n' +
-                                                '            </div>\n' +
-                                                '            <div class="uk-modal-footer uk-text-right">\n' +
-                                                '                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>\n' +
-                                                '                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority(\'' + savedPriority._id + '\', $event)">Delete</button>\n' +
-                                                '            </div>\n' +
-                                                '        </form>\n' +
-                                                '    </div>\n' +
-                                                '</div>\n';
-
-                                            priorityLoop.append(html);
-
-                                            helpers.UI.selectize();
-
-                                            //Bootstrap Angular dynamically...
-                                            var $injector = angular.injector(["ng", "trudesk"]);
-                                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
-                                                var $scope = priorityLoop.scope();
-                                                $compile(priorityLoop)($scope || $rootScope);
-                                                $rootScope.$digest();
-                                            }]);
-
-                                            helpers.UI.showSnackbar('Priority Created.', false);
-                                            var createPriorityModal = $('#createPriorityModal');
-                                            if (createPriorityModal.length > 0) {
-                                                UIkit.modal(createPriorityModal).hide();
-                                            }
-                                        })
-                                        .error(function(errorResponse) {
-                                            $log.error(errorResponse);
-                                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                                        priorities.forEach(function(p) {
+                                            if (p._id.toString() !== savedPriority._id) 
+                                                html += '<option value="' + p._id + '">' + p.name + '</option>';
+                                            
                                         });
-                                }
+
+                                            html +=
+                                            '                    </select>\n' +
+                                            '                </div>\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
+                                            '                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>' + savedPriority.name + '</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>\n' +
+                                            '            </div>\n' +
+                                            '            <div class="uk-modal-footer uk-text-right">\n' +
+                                            '                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>\n' +
+                                            '                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority(\'' + savedPriority._id + '\', $event)">Delete</button>\n' +
+                                            '            </div>\n' +
+                                            '        </form>\n' +
+                                            '    </div>\n' +
+                                            '</div>\n';
+
+                                        priorityLoop.append(html);
+
+                                        helpers.UI.selectize();
+
+                                        //Bootstrap Angular dynamically...
+                                        var $injector = angular.injector(['ng', 'trudesk']);
+                                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
+                                            var $scope = priorityLoop.scope();
+                                            $compile(priorityLoop)($scope || $rootScope);
+                                            $rootScope.$digest();
+                                        }]);
+
+                                        helpers.UI.showSnackbar('Priority Created.', false);
+                                        var createPriorityModal = $('#createPriorityModal');
+                                        if (createPriorityModal.length > 0) 
+                                            UIkit.modal(createPriorityModal).hide();
+                                        
+                                    })
+                                    .error(function(errorResponse) {
+                                        $log.error(errorResponse);
+                                        helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                                    });
                             }
-                        }, function errorCallback(errorResponse) {
-                            $log.error(errorResponse);
-                            helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
-                        });
-                    }
+                        }
+                    }, function errorCallback(errorResponse) {
+                        $log.error(errorResponse);
+                        helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true);
+                    });
+
                 }
             };
 
@@ -1332,9 +1394,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
             function getRandomColor() {
                 var letters = '0123456789ABCDEF';
                 var color = '#';
-                for (var i = 0; i < 6; i++) {
+                for (var i = 0; i < 6; i++) 
                     color += letters[Math.floor(Math.random() * 16)];
-                }
+                
                 return color;
             }
 
@@ -1351,58 +1413,56 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                 History.pushState(null, null, '/settings/tags/' + id);
             };
 
-            $scope.updateTag = function() {
-                var $tagId = $('#__editTag_TagId');
-                if ($tagId.length < 1) {
-                    //Show invalid Tag Snackbar
+            $scope.submitUpdateTag = function($event) {
+                var $form = $($event.currentTarget);
+                var tagId = $form.attr('data-tag-id');
+                var tagName = $form.find('input[name="tag-' + tagId + '-name"]').val();
+                if (tagName.length < 3) 
+                    helpers.UI.showSnackbar('Invalid Tag Name', true);
+                 else {
+                    $http.put('/api/v1/tags/' + tagId, {
+                        name: tagName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).success(function() {
+                        helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
+                        var $h5 = $('h5.tag-' + tagId + '-name');
+                        if ($h5.length > 0)
+                            $h5.text(tagName);
+                        $scope.cancelEditTagClicked(tagId, null);
+                    }).error(function(err) {
+                        helpers.UI.showSnackbar(err.error);
+                    });
+                }
+            };
+
+            $scope.removeTagClicked = function(tagId) {
+                var tagName = $('#view-tag-' + tagId).find('h5').text();
+                UIkit.modal.confirm('Really delete tag <strong>' + tagName + '</strong><br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
+                    return $scope.deleteTag(tagId);
+                }, {
+                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
+                });
+            };
+
+            $scope.deleteTag = function(tagId) {
+                if (_.isUndefined(tagId) || tagId.length < 1) {
                     helpers.UI.showSnackbar('Unable to get tag ID', true);
                     return true;
                 }
 
-                var id = $tagId.text();
-                var tagName = $('#editTag_Name').val();
-
-                $http.put('/api/v1/tickets/tags/' + id, {
-                    name: tagName
-                }, {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(function successCallback() {
-                    helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false);
-
-                }, function errorCallback(err) {
-                    helpers.UI.showSnackbar(err, true);
-                });
-            };
-
-            $scope.showDeleteTagConfirm = function() {
-                var tagName = $('#__editTag_TagName').text();
-                UIkit.modal.confirm("Really delete tag " + tagName + '<br /><i style="font-size: 13px; color: #e53935;">This will remove the tag from all associated tickets!</i>', function() {
-                    return $scope.deleteTag();
-                }, {
-                    labels: {'Ok': 'Yes', 'Cancel': 'No'}
-                });
-            };
-
-            $scope.deleteTag = function() {
-                var $tagId = $('#__editTag_TagId');
-                if ($tagId.length < 1) {
-                    helpers.UI.showSnackbar('Unable to get tag ID', true);
-                    return true;
-                }
-
-                var id = $tagId.text();
-                var tagName = $('#__editTag_TagName').text();
+                var tagName = $('#view-tag-' + tagId).find('h5').text();
 
                 $http({
                     method: 'DELETE',
-                    url: '/api/v1/tickets/tags/' + id
+                    url: '/api/v1/tags/' + tagId
                 }).then(function successCallback(response) {
                     if (response.data.success) {
                         helpers.UI.showSnackbar('Successfully removed tag: ' + tagName, false);
 
-                        return History.pushState(null, null, '/settings/tags/');
+                        return History.pushState(null, null, '/settings/tickets/?refresh=' + new Date().getTime());
                     }
                 }, function errorCallback(response) {
                     $log.error('[trudesk:settings:deleteTag] Error - ' + response.data.error);

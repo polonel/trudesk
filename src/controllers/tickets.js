@@ -13,11 +13,8 @@ var ticketSchema    = require('../models/ticket');
 var async           = require('async');
 var path            = require('path');
 var _               = require('lodash');
-var flash           = require('connect-flash');
 var winston         = require('winston');
 var groupSchema     = require('../models/group');
-var typeSchema      = require('../models/tickettype');
-var emitter         = require('../emitter');
 var permissions     = require('../permissions');
 
 /**
@@ -34,8 +31,6 @@ var permissions     = require('../permissions');
  * @requires {@link TicketType}
  * @requires {@link Emitter}
  *
- * @todo Redo Submit Ticket static function to submit ticket over API only.
- * @todo Redo Post Comment static function to only allow comments over API.
  */
 var ticketsController = {};
 
@@ -55,7 +50,7 @@ ticketsController.pubNewIssue = function(req, res) {
                 if (err) return handleError(res, err);
 
                 var content = {};
-                content.title = "New Issue";
+                content.title = 'New Issue';
                 content.layout = false;
                 content.data = {};
                 if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
@@ -65,9 +60,8 @@ ticketsController.pubNewIssue = function(req, res) {
 
                 return res.render('pub_createTicket', content);
             });
-        } else {
+        } else
             return res.redirect('/');
-        }
     });
 };
 
@@ -84,7 +78,7 @@ ticketsController.getByStatus = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-';
     processor.renderpage = 'tickets';
@@ -102,9 +96,6 @@ ticketsController.getByStatus = function(req, res, next) {
     if (_.size(arr) > 2) tType = arr[2];
 
     switch (tType) {
-        case 'new':
-            s = 0;
-            break;
         case 'open':
             s = 1;
             break;
@@ -113,9 +104,6 @@ ticketsController.getByStatus = function(req, res, next) {
             break;
         case 'closed':
             s = 3;
-            break;
-        default:
-            s = 0;
             break;
     }
 
@@ -139,7 +127,7 @@ ticketsController.getActive = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-active';
     processor.renderpage = 'tickets';
@@ -168,7 +156,7 @@ ticketsController.getAssigned = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-assigned';
     processor.renderpage = 'tickets';
@@ -199,7 +187,7 @@ ticketsController.getUnassigned = function(req, res, next) {
     if (_.isUndefined(page)) page = 0;
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.subnav = 'tickets-unassigned';
     processor.renderpage = 'tickets';
@@ -262,7 +250,7 @@ ticketsController.filter = function(req, res, next) {
     };
 
     var processor = {};
-    processor.title = "Tickets";
+    processor.title = 'Tickets';
     processor.nav = 'tickets';
     processor.renderpage = 'tickets';
     processor.pagetype = 'filter';
@@ -384,11 +372,11 @@ ticketsController.processor = function(req, res) {
 ticketsController.print = function(req, res) {
     var user = req.user;
     var uid = req.params.id;
-    if (isNaN(uid)) {
+    if (isNaN(uid))
         return res.redirect('/tickets');
-    }
+
     var content = {};
-    content.title = "Tickets - " + req.params.id;
+    content.title = 'Tickets - ' + req.params.id;
     content.nav = 'tickets';
 
     content.data = {};
@@ -415,7 +403,7 @@ ticketsController.print = function(req, res) {
             ticket.notes = [];
 
         content.data.ticket = ticket;
-        content.data.ticket.priorityname = getPriorityName(ticket.priority);
+        content.data.ticket.priorityname = ticket.priority.name;
         content.data.ticket.tagsArray = ticket.tags;
         content.data.ticket.commentCount = _.size(ticket.comments);
         content.layout = 'layout/print';
@@ -448,12 +436,11 @@ ticketsController.print = function(req, res) {
 ticketsController.single = function(req, res) {
     var user = req.user;
     var uid = req.params.id;
-    if (isNaN(uid)) {
+    if (isNaN(uid))
         return res.redirect('/tickets');
-    }
 
     var content = {};
-    content.title = "Tickets - " + req.params.id;
+    content.title = 'Tickets - ' + req.params.id;
     content.nav = 'tickets';
 
     content.data = {};
@@ -485,82 +472,6 @@ ticketsController.single = function(req, res) {
     });
 };
 
-/**
- * Converts the Prioirty Int to Readable Name
- * @memberof ticketsController
- * @instance
- * @param {Number} val Int Value of the Prioirty to convert
- * @returns {string} Readable String for Priority
- */
-function getPriorityName(val) {
-    var p = '';
-    switch(val) {
-        case 1:
-            p = 'Normal';
-            break;
-        case 2:
-            p = 'Urgent';
-            break;
-        case 3:
-            p = 'Critical';
-            break;
-    }
-
-    return p;
-}
-
-//Move to API
-// ticketsController.postcomment = function(req, res, next) {
-//     var Ticket = ticketSchema;
-//     var id = req.body.ticketId;
-//     var comment = req.body.commentReply;
-//     var User = req.user;
-//
-//     //TODO: Error check fields
-//
-//     Ticket.getTicketById(id, function(err, t) {
-//         if (err) return handleError(res, err);
-//         var marked = require('marked');
-//         comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-//         var Comment = {
-//             owner: User._id,
-//             date: new Date(),
-//             comment: marked(comment)
-//         };
-//         t.updated = Date.now();
-//         t.comments.push(Comment);
-//         var HistoryItem = {
-//             action: 'ticket:comment:added',
-//             description: 'Comment was added123',
-//             owner: User._id
-//         };
-//         t.history.push(HistoryItem);
-//
-//         async.series({
-//             subscribers: function(callback) {
-//                 t.addSubscriber(User._id, function (err, _t) {
-//                     if (err) return callback(err);
-//                     emitter.emit('ticket:subscriber:update', {user: User._id, subscribe: true});
-//                     callback();
-//                 });
-//             },
-//             save: function (callback) {
-//                 t.save(function (err, tt) {
-//                     callback(err, tt);
-//                 });
-//             }
-//         }, function(err, T) {
-//             if (err) return handleError(res, err);
-//
-//             ticketSchema.populate(T.save, 'subscribers comments.owner', function() {
-//                 emitter.emit('ticket:comment:added', T.save, Comment, req.headers.host);
-//
-//                 return res.send(T);
-//             });
-//         });
-//     });
-// };
-
 ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs');
     var Busboy = require('busboy');
@@ -574,7 +485,7 @@ ticketsController.uploadAttachment = function(req, res) {
 
     var object = {}, error;
 
-    busboy.on('field', function(fieldname, val, fieldnameTruncated, valTruncated) {
+    busboy.on('field', function(fieldname, val) {
         if (fieldname === 'ticketId') object.ticketId = val;
         if (fieldname === 'ownerId') object.ownerId = val;
     });
@@ -635,10 +546,8 @@ ticketsController.uploadAttachment = function(req, res) {
 
         if (_.isUndefined(object.ticketId) ||
             _.isUndefined(object.ownerId) ||
-            _.isUndefined(object.filePath)) {
-
+            _.isUndefined(object.filePath))
             return res.status(400).send('Invalid Form Data');
-        }
 
         // Everything Checks out lets make sure the file exists and then add it to the attachments array
         if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');

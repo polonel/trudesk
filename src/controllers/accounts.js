@@ -24,6 +24,11 @@ var accountsController = {};
 
 accountsController.content = {};
 
+function handleError(res, err) {
+    if (err)
+        return res.render('error', {layout: false, error: err, message: err.message});
+}
+
 accountsController.signup = function(req, res) {
     var marked = require('marked');
     var settings = require('../models/setting');
@@ -34,7 +39,7 @@ accountsController.signup = function(req, res) {
                 if (err) return handleError(res, err);
 
                 var content = {};
-                content.title = "Create Account";
+                content.title = 'Create Account';
                 content.layout = false;
                 content.data = {};
 
@@ -45,20 +50,19 @@ accountsController.signup = function(req, res) {
 
                 return res.render('pub_signup', content);
             });
-        } else {
+        } else
             return res.redirect('/');
-        }
     });
 };
 
 accountsController.get = function(req, res) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view'))
         return res.redirect('/');
-    }
+
 
     var content = {};
-    content.title = "Accounts";
+    content.title = 'Accounts';
     content.nav = 'accounts';
 
     content.data = {};
@@ -85,7 +89,7 @@ accountsController.get = function(req, res) {
                         g.members = undefined;
                         g.sendMailTo = undefined;
                         content.data.allGroups = g;
-                        cc(null, grps)
+                        cc(null, grps);
                     });
                 },
                 function(grps, cc) {
@@ -123,12 +127,12 @@ accountsController.get = function(req, res) {
 
 accountsController.importPage = function(req, res) {
     var user = req.user;
-    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:import')) {
+    if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:import'))
         return res.redirect('/');
-    }
+
 
     var content = {};
-    content.title = "Accounts - Import";
+    content.title = 'Accounts - Import';
     content.nav = 'accounts';
 
     content.data = {};
@@ -148,7 +152,7 @@ accountsController.profile = function(req, res) {
     }
 
     var content = {};
-    content.title = "Profile";
+    content.title = 'Profile';
     content.nav = 'profile';
 
     content.data = {};
@@ -222,7 +226,7 @@ accountsController.bindLdap = function(req, res) {
                         _.remove(entries, function(k) { return k.sAMAccountName.toLowerCase() === mappedUsernames[i].toLowerCase(); });
                     }
 
-                    _.remove(entries, function(e) { return _.isUndefined(e.mail)});
+                    _.remove(entries, function(e) { return _.isUndefined(e.mail); });
 
                     return res.json({success: true, addedUsers: entries, updatedUsers: foundUsers});
                 });
@@ -241,16 +245,16 @@ accountsController.uploadCSV = function(req, res) {
         }
     });
 
-    var object = {}, error;
+    var object = {};
     var parser = csv();
-    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+    busboy.on('file', function(fieldname, file) {
         object.csv = [];
 
         file.on('readable', function() {
             var data;
-            while((data = file.read()) !== null) {
+            while((data = file.read()) !== null)
                 parser.write(data);
-            }
+
         })
         .on('end', function() {
             parser.end();
@@ -263,9 +267,9 @@ accountsController.uploadCSV = function(req, res) {
 
     parser.on('readable', function() {
         var data;
-        while((data = parser.read()) !== null) {
+        while((data = parser.read()) !== null)
             object.csv.push(data);
-        }
+
     })
     .on('end', function() {
         if (object.csv.length < 1)
@@ -298,11 +302,11 @@ accountsController.uploadCSV = function(req, res) {
             userSchema.getUserByUsername(item.username, function(err, user) {
                 if (err) return next(err);
 
-                if (user) {
+                if (user)
                     updatedUsers.push(item);
-                } else {
+                else
                     addedUsers.push(item);
-                }
+
 
                 return next();
             });
@@ -358,11 +362,11 @@ accountsController.uploadJSON = function(req, res) {
                 userSchema.getUserByUsername(item.username, function(err, user) {
                     if (err) return next(err);
 
-                    if (user) {
+                    if (user)
                         updatedUsers.push(item);
-                    } else {
+                    else
                         addedUsers.push(item);
-                    }
+
 
                     return next();
                 });
@@ -380,9 +384,8 @@ accountsController.uploadJSON = function(req, res) {
     });
 
     busboy.on('finish', function() {
-        if (error) {
+        if (error)
             return res.status(error.status).json({success: false, error: error});
-        }
     });
 
     req.pipe(busboy);
@@ -439,7 +442,7 @@ accountsController.uploadImage = function(req, res) {
         file.pipe(fs.createWriteStream(object.filePath));
     });
 
-    busboy.on('finish', function() {
+    busboy.once('finish', function() {
         if (error) {
             winston.warn(error);
             return res.status(error.status).send(error.message);
@@ -448,10 +451,9 @@ accountsController.uploadImage = function(req, res) {
         if (_.isUndefined(object._id) ||
             _.isUndefined(object.username) ||
             _.isUndefined(object.filePath) ||
-            _.isUndefined(object.filename)) {
-
+            _.isUndefined(object.filename))
             return res.status(400).send('Invalid Form Data');
-        }
+
 
         // Everything Checks out lets make sure the file exists and then add it to the attachments array
         if (!fs.existsSync(object.filePath)) return res.status(400).send('File Failed to Save to Disk');
@@ -473,11 +475,5 @@ accountsController.uploadImage = function(req, res) {
 
     req.pipe(busboy);
 };
-
-function handleError(res, err) {
-    if (err) {
-        return res.render('error', {layout: false, error: err, message: err.message});
-    }
-}
 
 module.exports = accountsController;

@@ -95,8 +95,8 @@ function buildMostRequester(ticketArray, callback) {
     var requesters = _.map(ticketArray, function(m) {
         if (m.owner)
             return m.owner.fullname;
-        else
-            return null;
+
+        return null;
     });
 
     requesters = _.compact(requesters);

@@ -97,7 +97,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 })
                     .success(function() {
                         helpers.UI.showSnackbar('Group Created Successfully', false);
-                        UIkit.modal("#groupCreateModal").hide();
+                        UIkit.modal('#groupCreateModal').hide();
                         //Refresh Grid
                         $timeout(function() {
                             refreshGrid();
@@ -106,7 +106,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     .error(function(err) {
                         $log.log('[trudesk:groups:createGroup] - Error: ' + err);
                         helpers.UI.showSnackbar(err, true);
-                    })
+                    });
             };
 
             $scope.deleteGroup = function(event) {
@@ -115,9 +115,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 var groupID = self.attr('data-group-id');
                 var card = self.parents('.tru-card-wrapper');
                 if (groupID) {
-                    UIkit.modal.confirm(
-                    'Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>'
-                    , function() {
+                    UIkit.modal.confirm('Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>', function() {
                             helpers.showLoader(0.8);
                             $http.delete(
                             '/api/v1/groups/' + groupID
@@ -157,8 +155,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                             html += buildHTML(group);
                         });
 
-                        var $injector = angular.injector(["ng", "trudesk"]);
-                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $injector = angular.injector(['ng', 'trudesk']);
+                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                             var $scope = $groupList.append(html).scope();
                             $compile($groupList)($scope || $rootScope);
                             $rootScope.$digest();
@@ -169,7 +167,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     .error(function(err) {
                         $log.log('[trudesk:groups:refreshGrid] - Error: ' + err.error);
                         helpers.UI.showSnackbar(err.error, true);
-                    })
+                    });
 
             }
 

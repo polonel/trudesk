@@ -34,18 +34,23 @@ module.exports = function() {
         passwordField : 'login-password',
         passReqToCallback : true
     }, function(req, username, password, done) {
-        User.findOne({'username' : new RegExp("^" + username + "$", 'i')}).select('+password +tOTPKey +tOTPPeriod').exec(function(err, user) {
-            if (err) {
+        User.findOne({'username' : new RegExp('^' + username + '$', 'i')}).select('+password +tOTPKey +tOTPPeriod').exec(function(err, user) {
+            if (err) 
                 return done(err);
-            }
+            
 
             if (!user || user.deleted) {
+                console.log('No User Found');
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 
-            if (!User.validate(password, user.password)) {
+            if (!User.validate(password, user.password))
+                console.log('Invalid Pass');
+
+
+            if (!User.validate(password, user.password))
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
-            }
+            
 
             req.user = user;
 

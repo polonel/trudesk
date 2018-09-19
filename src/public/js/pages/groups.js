@@ -32,12 +32,12 @@ define('pages/groups', [
             var filterArray = [];
             $('#group_list').children().each(function() {
                 var thisfilter = $(this).attr('data-uk-filter');
-                if ( $.inArray( thisfilter, filterArray ) === -1) {
+                if ( $.inArray( thisfilter, filterArray ) === -1) 
                     filterArray.push(thisfilter);
-                }
+                
             });
 
-            var filterArray_length = filterArray.length;
+            var filterArrayLength = filterArray.length;
 
             var grid = UIkit.grid($('#group_list'),{
                             controls: '',
@@ -46,21 +46,20 @@ define('pages/groups', [
 
 
             // find user
-            $("#group_list_search").keyup(function(){
+            $('#group_list_search').keyup(function(){
                 var sValue = $(this).val().toLowerCase();
 
                 if(sValue.length > 2) {
                     var filteredItems = '';
-                    for(var $i=0;$i<filterArray_length;$i++) {
-                        if(filterArray[$i].toLowerCase().indexOf(sValue) !== -1) {
+                    for(var $i=0;$i<filterArrayLength;$i++) {
+                        if(filterArray[$i].toLowerCase().indexOf(sValue) !== -1) 
                             filteredItems += (filteredItems.length > 1 ? ',' : '') + filterArray[$i];
-                        }
+                        
                     }
 
                     if(filteredItems){
                         // filter grid items
                         grid.filter(filteredItems);
-                        filteredItems = '';
                     } else {
                         // show all
                         grid.filter('all');

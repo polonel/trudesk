@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'tomarkdown', 'uikit', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, socket, md, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history', 'angularjs/services/session'], function(angular, _, $, helpers, socket) {
     return angular.module('trudesk.controllers.messages', ['trudesk.services.session'])
         .controller('messagesCtrl', function(SessionService, $scope, $document, $http, $window, $cookies, $timeout, $log) {
 
@@ -22,7 +22,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
             $scope.sendChatMessage = function(cid, toUserId, event) {
                 var form = $(event.target);
-                if (form.length < 1) return;
+                if (form.length < 1) return false;
 
                 var input = form.find('input[name="chatMessage"]');
 
@@ -40,9 +40,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             };
 
             $scope.onKeyDown = function(cid, toUserId, $event) {
-                if ($event.keyCode !== 13) {
+                if ($event.keyCode !== 13) 
                     socket.chat.startTyping(cid, toUserId);
-                }
+                
             };
 
             $scope.showUserList = function($event, callback) {
@@ -101,7 +101,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
                     $document[0].querySelector('.search-box > input').value = '';
                     $('.all-user-list li').each(function() {
-                        $(this).show();
+                        var vm = this;
+                        $(vm).show();
                     });
 
                     var actions = $document[0].getElementById('convo-actions').children;
@@ -134,13 +135,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     ]
                 }).then(function(response) {
                     var conversation = response.data.conversation;
-                    if (!_.isUndefined(conversation)) {
+                    if (!_.isUndefined(conversation)) 
                         History.pushState(null, null, '/messages/' + conversation._id );
-                    }
+                    
                 }, function(err) {
                     $log.error('[trudesk.Messages.startNewConversation()] - Error: ');
                     $log.error(err);
-                })
+                });
             };
         });
 });

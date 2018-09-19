@@ -23,22 +23,22 @@ mainController.content = {};
 
 mainController.index = function(req, res) {
     var content = {};
-    content.title = "Login";
+    content.title = 'Login';
     content.layout = false;
     content.flash = req.flash('loginMessage');
 
     var settings = require('../models/setting');
     settings.getSettingByName('allowUserRegistration:enable', function(err, setting) {
-        if (err) {
+        if (err) 
             throw new Error(err);
-        }
+        
 
         if (!_.isNull(setting))
             content.allowUserRegistration = setting.value;
         settings.getSettingByName('mailer:enable', function(err, setting) {
-            if (err) {
+            if (err) 
                 throw new Error(err);
-            }
+            
 
             if (!_.isNull(setting))
                 content.mailerEnabled = setting.value;
@@ -55,7 +55,7 @@ mainController.about = function(req, res) {
     var settings = require('../models/setting');
     settings.getSettingByName('legal:privacypolicy', function(err, privacyPolicy) {
         var content = {};
-        content.title = "About";
+        content.title = 'About';
         content.nav = 'about';
 
         content.data = {};
@@ -63,7 +63,7 @@ mainController.about = function(req, res) {
         content.data.common = req.viewdata;
 
         content.data.version = pkg.version;
-        if (privacyPolicy == null || _.isUndefined(privacyPolicy.value))
+        if (privacyPolicy === null || _.isUndefined(privacyPolicy.value))
             content.data.privacyPolicy = 'No Privacy Policy has been set.';
         else
             content.data.privacyPolicy = marked(privacyPolicy.value);
@@ -74,7 +74,7 @@ mainController.about = function(req, res) {
 
 mainController.dashboard = function(req, res) {
     var content = {};
-    content.title = "Dashboard";
+    content.title = 'Dashboard';
     content.nav = 'dashboard';
 
     content.data = {};
@@ -98,6 +98,9 @@ mainController.loginPost = function(req, res, next) {
             redirectUrl = req.session.redirectUrl;
             req.session.redirectUrl = null;
         }
+
+        if (req.user.role === 'user')
+            redirectUrl = '/tickets';
 
         req.logIn(user, function(err) {
             if (err) {
@@ -149,13 +152,13 @@ mainController.forgotL2Auth = function(req, res) {
     var email = data['forgotl2auth-email'];
     var userSchema = require('../models/user');
     userSchema.getUserByEmail(email, function(err, user) {
-        if (err) {
+        if (err) 
             return res.status(400).send(err.message);
-        }
+        
 
-        if (!user) {
+        if (!user) 
             return res.status(400).send('Invalid Email: Account not found!');
-        }
+        
 
         var Chance = require('chance');
         var chance = new Chance();
@@ -200,24 +203,25 @@ mainController.forgotL2Auth = function(req, res) {
                         if (err) {
                             winston.warn(err);
                             return res.status(400).send(err);
-                        } else {
-                            return res.send('OK');
                         }
+
+                        return res.send('OK');
+                        
                     });
                 })
                 .catch(function(err) {
                     winston.warn(err);
                     return res.status(400).send(err.message);
-                })
+                });
         });
-    })
+    });
 };
 
 mainController.forgotPass = function(req, res) {
     var data = req.body;
-    if (_.isUndefined(data['forgotPass-email'])) {
+    if (_.isUndefined(data['forgotPass-email'])) 
         return res.status(400).send('No Form Data');
-    }
+    
 
     var email = data['forgotPass-email'];
     var userSchema = require('../models/user');
@@ -280,9 +284,8 @@ mainController.forgotPass = function(req, res) {
                         if (err) {
                             winston.warn(err);
                             return res.status(400).send(err);
-                        } else {
-                            return res.status(200).send();
                         }
+                        return res.status(200).send();
                     });
                 })
                 .catch(function(err) {
@@ -315,9 +318,9 @@ mainController.resetl2auth = function(req, res) {
             user.resetL2AuthExpire = undefined;
 
             user.save(function(err, updated) {
-                if (err) {
+                if (err) 
                     return res.status(500).send(err.message);
-                }
+                
 
                 //Send mail
                 var mailer          = require('../mailer');
@@ -359,28 +362,28 @@ mainController.resetl2auth = function(req, res) {
                         return res.status(400).send(err.message);
                     });
             });
-        } else {
+        } else 
             return res.status(400).send('Invalid Link!');
-        }
+        
     });
 };
 
 mainController.resetPass = function(req, res) {
     var hash = req.params.hash;
 
-    if (_.isUndefined(hash)) {
+    if (_.isUndefined(hash)) 
         return res.status(400).send('Invalid Link!');
-    }
+    
 
     var userSchema = require('../models/user');
     userSchema.getUserByResetHash(hash, function(err, user) {
-        if (err) {
+        if (err) 
             return res.status(400).send('Invalid Link!');
-        }
+        
 
-        if (_.isUndefined(user) || _.isEmpty(user)) {
+        if (_.isUndefined(user) || _.isEmpty(user)) 
             return res.status(400).send('Invalid Link!');
-        }
+        
 
         var now = new Date();
         if (now < user.resetPassExpire) {
@@ -393,9 +396,9 @@ mainController.resetPass = function(req, res) {
             user.resetPassExpire = undefined;
 
             user.save(function(err, updated) {
-                if (err) {
+                if (err) 
                     return res.status(500).send(err.message);
-                }
+                
 
                 //Send mail
                 var mailer          = require('../mailer');
@@ -453,14 +456,14 @@ mainController.l2authget = function(req, res) {
     }
 
     var content = {};
-    content.title = "Login";
+    content.title = 'Login';
     content.layout = false;
 
     var settings = require('../models/setting');
     settings.getSettingByName('mailer:enable', function(err, setting) {
-        if (err) {
+        if (err) 
             throw new Error(err);
-        }
+        
 
         if (!_.isNull(setting))
             content.mailerEnabled = setting.value;
@@ -468,19 +471,5 @@ mainController.l2authget = function(req, res) {
         return res.render('login-otp', content);
     });
 };
-
-function parseUrl(href) {
-    var match = href.match(/^(https?\:)\/\/(([^:\/?#]*)(?:\:([0-9]+))?)([\/]{0,1}[^?#]*)(\?[^#]*|)(#.*|)$/);
-    return match && {
-        href: href,
-        protocol: match[1],
-        host: match[2],
-        hostname: match[3],
-        port: match[4],
-        pathname: match[5],
-        search: match[6],
-        hash: match[7]
-    }
-}
 
 module.exports = mainController;

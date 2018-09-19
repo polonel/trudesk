@@ -30,16 +30,16 @@ mailCheck.inbox = [];
 
 mailCheck.init = function(settings) {
     var s = {};
-    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
-    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
-    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
-    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
-    s.mailerCheckPolling = _.find(settings, function(x) { return x.name === 'mailer:check:polling' });
-    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
-    s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority' });
-    s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount' });
-    s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage' });
+    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable'; });
+    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host'; });
+    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port'; });
+    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username'; });
+    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password'; });
+    s.mailerCheckPolling = _.find(settings, function(x) { return x.name === 'mailer:check:polling'; });
+    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype'; });
+    s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority'; });
+    s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount'; });
+    s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage'; });
 
     s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
     s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
@@ -101,7 +101,7 @@ mailCheck.fetchMail = function() {
         });
 
         mailCheck.Imap.once('ready', function() {
-                openInbox(function (err, box) {
+                openInbox(function (err) {
                     if (err) {
                         mailCheck.Imap.end();
                         winston.debug(err);
@@ -132,7 +132,7 @@ mailCheck.fetchMail = function() {
                                     bodies: ''
                                 });
 
-                                f.on('message', function (msg, seqno) {
+                                f.on('message', function (msg) {
                                     msg.on('body', function (stream) {
                                         var buffer = '';
                                         stream.on('data', function (chunk) {
@@ -143,14 +143,14 @@ mailCheck.fetchMail = function() {
                                             simpleParser(buffer, function (err, mail) {
                                                 if (err) winston.warn(err);
 
-                                                if (mail.headers.has('from')) {
+                                                if (mail.headers.has('from')) 
                                                     message.from = mail.headers.get('from').value[0].address;
-                                                }
-                                                if (mail.subject) {
+                                                
+                                                if (mail.subject) 
                                                     message.subject = mail.subject;
-                                                } else {
+                                                 else 
                                                     message.subject = message.from;
-                                                }
+                                                
 
                                                 message.body = mail.textAsHtml;
 
@@ -158,14 +158,14 @@ mailCheck.fetchMail = function() {
                                             });
                                         });
                                     });
+                                });
 
-                                    f.once('end', function () {
-                                        mailCheck.Imap.closeBox(true, function (err) {
-                                            if (err) winston.warn(err);
+                                f.once('end', function () {
+                                    mailCheck.Imap.closeBox(true, function (err) {
+                                        if (err) winston.warn(err);
 
 
-                                            return next();
-                                        });
+                                        return next();
                                     });
                                 });
                             }
@@ -207,22 +207,23 @@ function handleMessages(messages) {
                         if (!err && user) {
                             message.owner = user;
                             return callback(null, user);
-                        } else {
-                            //User doesn't exist. Lets create public user... If we want too
-                            if (mailCheck.fetchMailOptions.createAccount) {
-                                userSchema.createUserFromEmail(message.from, function (err, response) {
-                                    if (err) return callback(err);
-
-                                    message.owner = response.user;
-                                    message.group = response.group;
-
-                                    return callback(null, response);
-                                });
-                            } else {
-                                return callback('No User found.');
-                            }
                         }
-                    })
+
+                        //User doesn't exist. Lets create public user... If we want too
+                        if (mailCheck.fetchMailOptions.createAccount) {
+                            userSchema.createUserFromEmail(message.from, function (err, response) {
+                                if (err) return callback(err);
+
+                                message.owner = response.user;
+                                message.group = response.group;
+
+                                return callback(null, response);
+                            });
+                        } else
+                            return callback('No User found.');
+                            
+
+                    });
                 },
                 handleGroup: ['handleUser', function (results, callback) {
                     if (!_.isUndefined(message.group))
@@ -232,7 +233,10 @@ function handleMessages(messages) {
                         if (err) return callback(err);
                         if (!group) return callback('Unknown group for user: ' + message.owner.email);
 
-                        message.group = group;
+                        if (_.isArray(group))
+                            message.group = _.first(group);
+                        else
+                            message.group = group;
 
                         return callback(null, group);
                     });
@@ -245,8 +249,8 @@ function handleMessages(messages) {
                             mailCheck.fetchMailOptions.defaultTicketType = type._id;
                             message.type = type;
 
-                            return callback(null, type)
-                        })
+                            return callback(null, type);
+                        });
                     } else {
                         ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
                             if (err) return callback(err);
@@ -262,15 +266,15 @@ function handleMessages(messages) {
 
                     if (mailCheck.fetchMailOptions.defaultPriority !== '')
                         return callback(null, mailCheck.fetchMailOptions.defaultPriority);
-                    else {
-                        var firstPriority = _.first(type.priorities);
-                        if (!_.isUndefined(firstPriority))
-                            mailCheck.fetchMailOptions.defaultPriority = firstPriority._id;
-                        else
-                            return callback('Invalid default priority');
 
-                        return callback(null, firstPriority._id);
-                    }
+                    var firstPriority = _.first(type.priorities);
+                    if (!_.isUndefined(firstPriority))
+                        mailCheck.fetchMailOptions.defaultPriority = firstPriority._id;
+                    else
+                        return callback('Invalid default priority');
+
+                    return callback(null, firstPriority._id);
+
                 }],
                 handleCreateTicket: ['handleGroup', 'handlePriority', function (results, callback) {
 
@@ -304,11 +308,8 @@ function handleMessages(messages) {
                     });
                 }]
             }, function (err) {
-                if (err) {
+                if (err) 
                     winston.debug(err);
-                }
-
-
             });
         }
     });

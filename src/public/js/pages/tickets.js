@@ -15,7 +15,6 @@
 define('pages/tickets', [
     'jquery',
     'modules/helpers',
-    'moment',
     'datatables',
     'dt_responsive',
     'dt_grouping',
@@ -23,7 +22,7 @@ define('pages/tickets', [
     'dt_scroller',
     'history'
 
-], function($, helpers, moment) {
+], function($, helpers) {
     var ticketsPage = {};
 
     ticketsPage.init = function(callback) {
@@ -37,15 +36,15 @@ define('pages/tickets', [
                 bInfo: false,
                 scrollY: '100%',
                 columnDefs: [
-                    {"width": "50px", "targets": 0 },
-                    {"width": "100px", "targets": 1 },
-                    {"width": "65px", "targets": 2 },
-                    {"width": "25%", "targets": 3 },
-                    {"width": "110px", "targets": 4 }
+                    {'width': '50px', 'targets': 0 },
+                    {'width': '100px', 'targets': 1 },
+                    {'width': '65px', 'targets': 2 },
+                    {'width': '25%', 'targets': 3 },
+                    {'width': '110px', 'targets': 4 }
                 ],
-                order: [[2, "desc"]],
-                "oLanguage": {
-                    "sEmptyTable": "No tickets to display."
+                order: [[2, 'desc']],
+                'oLanguage': {
+                    'sEmptyTable': 'No tickets to display.'
                 }
             });
 
@@ -62,16 +61,16 @@ define('pages/tickets', [
 
 
             //Overdue Tickets
-            var hexDigits = ["0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"];
+            var hexDigits = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
             //Function to convert hex format to a rgb color
             function rgb2hex(rgb) {
                 rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-                return "#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]).toLowerCase();
+                return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]).toLowerCase();
             }
 
             function hex(x) {
-                return isNaN(x) ? "00" : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+                return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
             }
 
             $('tr.overdue').each(function() {

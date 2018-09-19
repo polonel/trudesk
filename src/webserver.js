@@ -22,12 +22,13 @@ var express = require('express'),
     port = process.env.PORT || 8118;
 
 (function (app) {
-    "use strict";
+    'use strict';
 
     // Load Events
     require('./emitter/events');
 
     module.exports.server = server;
+    module.exports.app = app;
     module.exports.init = function(db, callback, p) {
         if (p !== undefined) port = p;
         middleware(app, db, function(middleware, store) {
@@ -62,7 +63,7 @@ var express = require('express'),
             bodyParser      = require('body-parser'),
             favicon         = require('serve-favicon');
 
-        require('./middleware/middleware')(app);
+        var routeMiddleware = require('./middleware/middleware')(app);
 
         app.set('views', path.join(__dirname, './views/'));
         app.engine('hbs', hbs.express3({
@@ -79,10 +80,10 @@ var express = require('express'),
 
         router.get('/healthz', function (req, res) { res.status(200).send('OK'); });
         router.get('/install', controllers.install.index);
-        router.post('/install', controllers.install.install);
-        router.post('/install/mongotest', controllers.install.mongotest);
-        router.post('/install/existingdb', controllers.install.existingdb);
-        router.post('/install/restart', controllers.install.restart);
+        router.post('/install', routeMiddleware.checkOrigin, controllers.install.install);
+        router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest);
+        router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb);
+        router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart);
 
         app.use('/', router);
 
@@ -96,9 +97,9 @@ var express = require('express'),
             server.listen(port, '0.0.0.0', function() {
                 return callback();
             });
-        } else {
+        } else 
             return callback();
-        }
+        
     };
 
 })(WebServer);

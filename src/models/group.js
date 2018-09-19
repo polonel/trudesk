@@ -36,7 +36,7 @@ var groupSchema = mongoose.Schema({
 });
 
 groupSchema.methods.addMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.AddMember()");
+    if (_.isUndefined(memberId)) return callback('Invalid MemberId - $Group.AddMember()');
 
     if (this.members === null) this.members = [];
 
@@ -49,11 +49,11 @@ groupSchema.methods.addMember = function(memberId, callback) {
 };
 
 groupSchema.methods.removeMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.RemoveMember()");
+    if (_.isUndefined(memberId)) return callback('Invalid MemberId - $Group.RemoveMember()');
 
     if (!isMember(this.members, memberId)) return callback(null, false);
 
-    this.members.splice(_.indexOf(this.members, _.find(this.members, {"_id" : memberId})), 1);
+    this.members.splice(_.indexOf(this.members, _.find(this.members, {'_id' : memberId})), 1);
 
     this.members = _.uniq(this.members);
 
@@ -65,7 +65,7 @@ groupSchema.methods.isMember = function(memberId) {
 };
 
 groupSchema.methods.addSendMailTo = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.AddSendMailTo()");
+    if (_.isUndefined(memberId)) return callback('Invalid MemberId - $Group.AddSendMailTo()');
 
     if (this.sendMailTo === null) this.sendMailTo = [];
 
@@ -78,17 +78,17 @@ groupSchema.methods.addSendMailTo = function(memberId, callback) {
 };
 
 groupSchema.methods.removeSendMailTo = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback("Invalid MemberId - $Group.RemoveSendMailTo()");
+    if (_.isUndefined(memberId)) return callback('Invalid MemberId - $Group.RemoveSendMailTo()');
 
     if (!isMember(this.sendMailTo, memberId)) return callback(null, false);
 
-    this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.find(this.sendMailTo, {"_id" : memberId})), 1);
+    this.sendMailTo.splice(_.indexOf(this.sendMailTo, _.find(this.sendMailTo, {'_id' : memberId})), 1);
 
     return callback(null, true);
 };
 
 groupSchema.statics.getGroupByName = function(name, callback) {
-    if (_.isUndefined(name) || name.length < 1) return callback("Invalid Group Name - GroupSchema.GetGroupByName()");
+    if (_.isUndefined(name) || name.length < 1) return callback('Invalid Group Name - GroupSchema.GetGroupByName()');
 
     var q = this.model(COLLECTION).findOne({name: name})
         .populate('members', '_id username fullname email role preferences image title')
@@ -119,18 +119,18 @@ groupSchema.statics.getAllPublicGroups = function(callback) {
 };
 
 groupSchema.statics.getAllGroupsOfUser = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUser()");
+    if (_.isUndefined(userId)) return callback('Invalid UserId - GroupSchema.GetAllGroupsOfUser()');
 
     var q = this.model(COLLECTION).find({members: userId})
         .populate('members', '_id username fullname email role preferences image title')
         .populate('sendMailTo', '_id username fullname email role preferences image title')
         .sort('name');
 
-    return q.exec(callback)
+    return q.exec(callback);
 };
 
 groupSchema.statics.getAllGroupsOfUserNoPopulate = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback("Invalid UserId - GroupSchema.GetAllGroupsOfUserNoPopulate()");
+    if (_.isUndefined(userId)) return callback('Invalid UserId - GroupSchema.GetAllGroupsOfUserNoPopulate()');
 
     var q = this.model(COLLECTION).find({members: userId})
         .sort('name');
@@ -139,7 +139,7 @@ groupSchema.statics.getAllGroupsOfUserNoPopulate = function(userId, callback) {
 };
 
 groupSchema.statics.getGroupById = function(gId, callback) {
-    if (_.isUndefined(gId)) return callback("Invalid GroupId - GroupSchema.GetGroupById()");
+    if (_.isUndefined(gId)) return callback('Invalid GroupId - GroupSchema.GetGroupById()');
 
     var q = this.model(COLLECTION).findOne({_id: gId})
         .populate('members', '_id username fullname email role preferences image title')
@@ -150,9 +150,8 @@ groupSchema.statics.getGroupById = function(gId, callback) {
 
 function isMember(arr, id) {
     var matches = _.filter(arr, function (value) {
-        if (value._id.toString() === id.toString()) {
+        if (value._id.toString() === id.toString()) 
             return value;
-        }
     });
 
     return matches.length > 0;

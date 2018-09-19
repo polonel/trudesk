@@ -26,7 +26,14 @@ var COLLECTION = 'tags';
  * @property {String} name ```Required``` ```unique``` Name of Tag
  */
 var tagSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true }
+    name:       { type: String, required: true, unique: true },
+    normalized: String
+});
+
+tagSchema.pre('save', function(next) {
+    this.normalized = this.name.toLowerCase();
+
+    return next();
 });
 
 tagSchema.statics.getTag = function(id, callback) {
@@ -45,7 +52,7 @@ tagSchema.statics.getTag = function(id, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 tagSchema.statics.getTags = function(callback) {
-    var q = this.model(COLLECTION).find({});
+    var q = this.model(COLLECTION).find({}).sort('normalized');
 
     return q.exec(callback);
 };
@@ -54,7 +61,7 @@ tagSchema.statics.getTagsWithLimit = function(limit, page, callback) {
     return this.model(COLLECTION).find({})
         .limit(limit)
         .skip(page*limit)
-        .sort('name')
+        .sort('normalized')
         .exec(callback);
 };
 
