@@ -81,18 +81,20 @@ userSchema.set('toObject', {getters: true});
 userSchema.pre('save', function(next) {
     var user = this;
 
-    if (!user.isModified('password')) return next();
-
-    bcrypt.genSalt(SALT_FACTOR, function(err, salt) {
-        if (err) return next(err);
-
-        bcrypt.hash(user.password, salt, function(err, hash) {
+    user.username = user.username.trim();
+    
+    if (user.isModified('password')) {
+        bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
             if (err) return next(err);
 
-            user.password = hash;
-            return next();
+            bcrypt.hash(user.password, salt, function (err, hash) {
+                if (err) return next(err);
+
+                user.password = hash;
+                return next();
+            });
         });
-    });
+    }
 });
 
 userSchema.methods.addAccessToken = function(callback) {
