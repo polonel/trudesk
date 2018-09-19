@@ -215,9 +215,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
     router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
-    router.post('/api/v1/public/users/checkemail', middleware.checkCaptcha, controllers.api.users.checkEmail);
-    router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, controllers.api.tickets.createPublicTicket);
-    router.post('/api/v1/public/account/create', middleware.checkCaptcha, controllers.api.users.createPublicAccount);
+    router.post('/api/v1/public/users/checkemail', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.checkEmail);
+    router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.tickets.createPublicTicket);
+    router.post('/api/v1/public/account/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.createPublicAccount);
 
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {

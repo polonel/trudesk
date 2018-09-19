@@ -226,13 +226,6 @@ apiUsers.create = function(req, res) {
  }
  */
 apiUsers.createPublicAccount = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var response = {};
     response.success = true;
     var postData = req.body;
@@ -856,12 +849,7 @@ apiUsers.removeL2Auth = function(req, res) {
 
 apiUsers.checkEmail = function(req, res) {
     var email = req.body.email;
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
 
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
     if (_.isUndefined(email) || _.isNull(email))
         return res.status(400).json({success: false, error: 'Invalid Post Data'});
 

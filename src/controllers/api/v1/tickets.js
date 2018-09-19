@@ -364,13 +364,6 @@ apiTickets.create = function(req, res) {
  }
  */
 apiTickets.createPublicTicket = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var Chance = require('chance'),
         chance = new Chance();
     var response = {};

@@ -130,12 +130,12 @@ middleware.checkCaptcha = function(req, res, next) {
 
     var captcha = postData.captcha;
     var captchaValue = req.session.captcha;
-    console.log(captchaValue);
+
     if (captchaValue === undefined) 
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
     
 
-    if (captchaValue.toString().toLowerCase() !== captcha.toString().toLowerCase())
+    if (captchaValue.toString() !== captcha.toString())
         return res.status(400).json({success: false, error: 'Invalid Captcha'});
 
     return next();
@@ -145,7 +145,7 @@ middleware.checkOrigin = function(req, res, next) {
     var origin = req.headers.origin;
     var host = req.protocol + '://' + req.headers.host;
 
-    //Firefox Hack - Firefox Bug 1341689
+    //Firefox Hack - Firefox Bug 1341689 & 1424076
     //Trudesk Bug #26
     //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
     if (!origin)
