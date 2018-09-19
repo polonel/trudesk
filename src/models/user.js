@@ -82,7 +82,7 @@ userSchema.pre('save', function(next) {
     var user = this;
 
     user.username = user.username.trim();
-    
+
     if (user.isModified('password')) {
         bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
             if (err) return next(err);
@@ -95,6 +95,8 @@ userSchema.pre('save', function(next) {
             });
         });
     }
+
+    return next();
 });
 
 userSchema.methods.addAccessToken = function(callback) {
