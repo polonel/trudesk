@@ -94,9 +94,8 @@ userSchema.pre('save', function(next) {
                 return next();
             });
         });
-    }
-
-    return next();
+    } else
+        return next();
 });
 
 userSchema.methods.addAccessToken = function(callback) {
