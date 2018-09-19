@@ -142,27 +142,6 @@ ticketSchema.virtual('statusFormatted').get(function() {
     return formatted;
 });
 
-ticketSchema.virtual('priorityFormatted').get(function() {
-    var p = this.priority;
-    var formatted;
-
-    switch(p) {
-        case 1:
-            formatted = 'Normal';
-            break;
-        case 2:
-            formatted = 'Urgent';
-            break;
-        case 3:
-            formatted = 'Critical';
-            break;
-        default:
-            formatted = 'Normal';
-    }
-
-    return formatted;
-});
-
 ticketSchema.virtual('commentsAndNotes').get(function() {
     _.each(this.comments, function(i) { i.isComment = true; });
     _.each(this.notes, function(i) { i.isNote = true; });

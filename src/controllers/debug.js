@@ -445,55 +445,6 @@ function randomDate(start, end) {
     return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
 }
 
-// debugController.testexport = function(req, res) {
-//     var ticketSchema = require('../models/ticket');
-//     var csv          = require('csv');
-//     var moment       = require('moment');
-//     ticketSchema.getAll(function(err, tickets) {
-//         if (err) return res.status(500).send(err);
-//
-//         var input = [];
-//         for (var i = 0; i < 11; i++) {
-//             var ticket = tickets[i];
-//             var t = [];
-//             t.push(ticket.uid);
-//             t.push(ticket.priorityFormatted);
-//             t.push(ticket.statusFormatted);
-//             t.push(moment(ticket.date).format('MMM DD, YY HH:mm:ss'));
-//             t.push(ticket.subject);
-//             t.push(ticket.owner.fullname);
-//             t.push(ticket.group.name);
-//             if (ticket.assignee)
-//                 t.push(ticket.assignee.fullname);
-//             else
-//                 t.push('');
-//
-//             input.push(t);
-//         }
-//
-//         tickets = null;
-//
-//         var headers = {
-//             uid: 'uid',
-//             priority: 'priority',
-//             status: 'status',
-//             created: 'created',
-//             subject: 'subject',
-//             requester: 'requester',
-//             group: 'group',
-//             assignee: 'assignee'
-//         };
-//
-//        csv.stringify(input, { header: true, columns: headers }, function(err, output) {
-//            if (err) return res.status(500).send(err);
-//
-//            res.setHeader('Content-disposition', 'attachment; filename=report_output.csv');
-//            res.set('Content-Type', 'text/csv');
-//            res.send(output);
-//        });
-//     })
-// };
-
 debugController.sendmail = function(req, res) {
     var mailer              = require('../mailer');
     var Email               = require('email-templates');
