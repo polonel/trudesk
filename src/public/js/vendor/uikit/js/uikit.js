@@ -2762,11 +2762,11 @@
 
         onconfirm = UI.$.isFunction(onconfirm) ? onconfirm : function(){};
         oncancel  = UI.$.isFunction(oncancel) ? oncancel : function(){};
-        options   = UI.$.extend(true, {bgclose:false, keyboard:false, modal:false, cancel: true, labels:UI.modal.labels, confirmButtonClass: ''}, UI.$.isFunction(options) ? {}:options);
+        options   = UI.$.extend(true, {bgclose:false, keyboard:false, modal:false, labels:UI.modal.labels, confirmButtonClass: '', cancelButtonClass: ''}, UI.$.isFunction(options) ? {}:options);
 
         var modal = UI.modal.dialog(([
             '<div class="uk-margin uk-modal-content">'+String(content)+'</div>',
-            '<div class="uk-modal-footer uk-text-right"><button class="uk-button js-modal-confirm-cancel' + (options.cancel) ? '' : 'uk-hidden' + '">'+options.labels.Cancel+'</button> <button class="uk-button uk-button-primary js-modal-confirm ' + options.confirmButtonClass + '">'+options.labels.Ok+'</button></div>'
+            '<div class="uk-modal-footer uk-text-right"><button class="uk-button js-modal-confirm-cancel ' + options.cancelButtonClass + '">'+options.labels.Cancel+'</button> <button class="uk-button uk-button-primary js-modal-confirm ' + options.confirmButtonClass + '">'+options.labels.Ok+'</button></div>'
         ]).join(""), options);
 
         modal.element.find(".js-modal-confirm, .js-modal-confirm-cancel").on("click", function(){

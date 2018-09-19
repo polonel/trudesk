@@ -167,14 +167,17 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     $log.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
+            function showSelectPriorityConfirm() {
+                UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>', function(){}, {cancelButtonClass: 'uk-hidden'});
+            }
+
             $q.all([ticketTypes]).then(function() {
                 $scope.selectedType = _.findWhere($scope.types, {_id: $scope.ticketType});
                 $scope.priorities = $scope.selectedType.priorities;
                 $scope.priorities = _.sortBy($scope.priorities, 'name');
                 $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
                 if (!$scope.selectedPriority)
-                    UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
-                
+                    showSelectPriorityConfirm();
             });
 
             var groupHttpGet = $http.get('/api/v1/groups').
@@ -199,7 +202,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     $scope.priorities = _.sortBy($scope.priorities, 'name');
                     $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
                     if (_.isUndefined($scope.selectedPriority))
-                        UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
+                        showSelectPriorityConfirm();
                     
                 }
             };
