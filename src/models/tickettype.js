@@ -42,6 +42,12 @@ var autoPopulatePriorities = function(next) {
 ticketTypeSchema.pre('find', autoPopulatePriorities);
 ticketTypeSchema.pre('findOne', autoPopulatePriorities);
 
+ticketTypeSchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    return next();
+});
+
 /**
  * Return all Ticket Types
  *

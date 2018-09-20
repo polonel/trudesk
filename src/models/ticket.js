@@ -91,6 +91,8 @@ var ticketSchema = mongoose.Schema({
 ticketSchema.index({deleted: -1, group: 1, status: 1});
 
 ticketSchema.pre('save', function(next) {
+    this.subject = this.subject.trim();
+
     if (!_.isUndefined(this.uid) || this.uid)
         return next();
 

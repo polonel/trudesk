@@ -22,4 +22,10 @@ var attachmentSchema = mongoose.Schema({
     type:       { type: String, required: true }
 });
 
+attachmentSchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    return next();
+});
+
 module.exports = attachmentSchema;

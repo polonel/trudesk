@@ -214,9 +214,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                         if (response.success) {
                             tags = response.tags;
                             // tags = [];
-                            if (tags.length === 0) 
-                                $tagWrapper.append('<div><h3>No Tags Found</h3></div>');
-                             else {
+                            if (tags.length === 0) {
+                                $tagWrapper.append('<div style="width: 100%; padding: 55px; text-align: center;"><h3 style="font-size: 24px; font-weight: 300;">No Tags Found</h3></div>');
+                                $('.ticket-tags-pagination').hide();
+                            } else {
                                 tags.forEach(function(tag) {
                                     var html = '';
                                     html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
@@ -330,10 +331,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             $target.find('ul>li[data-key]').first().addClass('active');
                         
 
-                        if (settings === 'settings-legal') {
-                            if (privacyPolicyMDE) 
-                                privacyPolicyMDE.codemirror.refresh();
-                            
+                        if (settings === 'settings-legal' && privacyPolicyMDE) {
+                            privacyPolicyMDE.codemirror.refresh();
                         }
                     }
                 }
@@ -1294,7 +1293,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                         priorities.forEach(function(p) {
                                             if (p._id.toString() !== savedPriority._id) 
                                                 html += '<option value="' + p._id + '">' + p.name + '</option>';
-                                            
                                         });
 
                                             html +=
