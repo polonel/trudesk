@@ -82,9 +82,9 @@ userSchema.pre('save', function(next) {
     var user = this;
 
     user.username = user.username.trim();
-    user.title = user.title.trim();
     user.email = user.email.trim();
-    user.fullname = user.fullname.trim();
+    if (user.fullname) user.fullname = user.fullname.trim();
+    if (user.title) user.title = user.title.trim();
 
     if (!user.isModified('password'))
         return next();

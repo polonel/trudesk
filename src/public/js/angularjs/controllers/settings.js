@@ -331,9 +331,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             $target.find('ul>li[data-key]').first().addClass('active');
                         
 
-                        if (settings === 'settings-legal' && privacyPolicyMDE) {
+                        if (settings === 'settings-legal' && privacyPolicyMDE)
                             privacyPolicyMDE.codemirror.refresh();
-                        }
                     }
                 }
             };
