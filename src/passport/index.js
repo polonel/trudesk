@@ -12,6 +12,7 @@
 
  **/
 
+var _            = require('lodash');
 var passport     = require('passport');
 var Local        = require('passport-local').Strategy;
 var TotpStrategy = require('passport-totp').Strategy;
@@ -67,7 +68,7 @@ module.exports = function() {
             User.findOne({_id: user._id}, '+tOTPKey +tOTPPeriod', function(err, user) {
                 if (err) return done(err);
 
-                if (user.tOTPPeriod === null || user.tOTPPeriod === undefined)
+                if (!user.tOTPPeriod)
                     user.tOTPPeriod = 30;
 
                 return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod);
