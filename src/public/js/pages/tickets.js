@@ -15,6 +15,7 @@
 define('pages/tickets', [
     'jquery',
     'modules/helpers',
+    'velocity',
     'datatables',
     'dt_responsive',
     'dt_grouping',
@@ -22,7 +23,7 @@ define('pages/tickets', [
     'dt_scroller',
     'history'
 
-], function($, helpers) {
+], function($, helpers, velocity) {
     var ticketsPage = {};
 
     ticketsPage.init = function(callback) {
@@ -73,13 +74,11 @@ define('pages/tickets', [
                 return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
             }
 
-            setInterval(function() {
-                var $overDueTR = $('tr.overdue');
-                if ($overDueTR.hasClass('overdue-red'))
-                    $overDueTR.removeClass('overdue-red');
-                else
-                    $overDueTR.addClass('overdue-red');
-            }, 800);
+            $('tr.overdue td').velocity({backgroundColor: '#b71c1c', color: '#ffffff'}, {
+                loop: true,
+                easing: [1],
+                duration: 800
+            });
 
             if (typeof callback === 'function')
                 return callback();

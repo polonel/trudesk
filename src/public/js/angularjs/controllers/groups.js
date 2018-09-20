@@ -111,7 +111,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
 
             $scope.deleteGroup = function(event) {
                 event.preventDefault();
-                var self = $(event.target);
+                var self = $(event.currentTarget);
                 var groupID = self.attr('data-group-id');
                 var card = self.parents('.tru-card-wrapper');
                 if (groupID) {

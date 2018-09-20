@@ -150,22 +150,22 @@ define('pages/dashboard', [
 
                         //QuickStats
                         var mostRequester = $('#mostRequester');
-                        if (_data.mostRequester !== null)
+                        if (_data.mostRequester)
                             mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
                         var mostCommenter = $('#mostCommenter');
-                        if (_data.mostCommenter !== null)
+                        if (_data.mostCommenter)
                             mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
                         else
                             mostCommenter.text('--');
 
                         var mostAssignee = $('#mostAssignee');
-                        if (_data.mostAssignee !== null)
+                        if (_data.mostAssignee)
                             mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
                         else
                             mostAssignee.text('--');
 
                         var mostActiveTicket = $('#mostActiveTicket');
-                        if (_data.mostActiveTicket !== null)
+                        if (_data.mostActiveTicket)
                             mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
                     },
                     error: function(err) {
