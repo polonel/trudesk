@@ -40,6 +40,12 @@ var noticeSchema = mongoose.Schema({
     alertWindow:{ type: Boolean, default: false }
 });
 
+noticeSchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    return next();
+});
+
 noticeSchema.statics.getNotices = function(callback) {
     return this.model(COLLECTION).find({}).exec(callback);
 };

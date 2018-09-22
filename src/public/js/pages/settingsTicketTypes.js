@@ -36,12 +36,12 @@ define('pages/settingsTicketTypes', [
                 scrollY: '100%',
                 order: [[1, 'desc']],
                 columnDefs: [
-                    {"width": "50px", "targets": 0},
-                    {"width": "100%", "targets": 1}
+                    {'width': '50px', 'targets': 0},
+                    {'width': '100%', 'targets': 1}
                     // {"width": "15%", "targets": 2}
                 ],
-                "oLanguage": {
-                    "sEmptyTable": "No tags to display."
+                'oLanguage': {
+                    'sEmptyTable': 'No tags to display.'
                 }
             });
 

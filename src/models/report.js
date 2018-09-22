@@ -99,13 +99,13 @@ reportSchema.statics.getReports = function(callback) {
 // };
 
 reportSchema.statics.getReportByType = function(type, callback) {
-    if (_.isUndefined(type) || _.isNull(type)) return callback("Invalid Report Type - ReportSchema.GetReportByType();", null);
+    if (_.isUndefined(type) || _.isNull(type)) return callback('Invalid Report Type - ReportSchema.GetReportByType();', null);
 
     return this.model(COLLECTION).find({type: type}).exec(callback);
 };
 
 reportSchema.statics.getReportByStatus = function(status, callback) {
-    if (_.isUndefined(status) || _.isNull(status)) return callback("Invalid Report Status - ReportSchema.GetReportByStatus();", null);
+    if (_.isUndefined(status) || _.isNull(status)) return callback('Invalid Report Status - ReportSchema.GetReportByStatus();', null);
 
     return this.model(COLLECTION).find({status: status}).exec(callback);
 };

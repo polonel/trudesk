@@ -1,3 +1,4 @@
+/* eslint-disable node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require,node/no-missing-require,node/no-unpublished-require */
 //This gets loaded for accessing require from outside Webpack bundle.
 var allMods = {
     jquery: function() { return require('jquery'); },

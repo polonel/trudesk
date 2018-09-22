@@ -69,12 +69,12 @@ class Sidebar extends React.Component {
                                     href={item.menu.main.link}
                                     active={activeSubItem === item.name}
                                 />
-                            )
+                            );
                         })}
                     </Submenu>
                 }
             </SidebarItem>
-        )
+        );
     }
 
     render() {
@@ -135,7 +135,7 @@ class Sidebar extends React.Component {
                 }
                 <SidebarItem href="/about" icon="help" text="About" active={(activeItem === 'about')} />
             </ul>
-        )
+        );
     }
 }
 

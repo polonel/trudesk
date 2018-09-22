@@ -17,9 +17,9 @@ var async           = require('async'),
     winston         = require('winston'),
     sanitizeHtml    = require('sanitize-html'),
 
-    settingSchema   = require('../../../models/setting');
+    SettingsSchema   = require('../../../models/setting');
 
-var api_settings = {};
+var apiSettings = {};
 
 
 /**
@@ -51,25 +51,25 @@ var api_settings = {};
      "error": "Invalid Post Data"
  }
  */
-api_settings.updateSetting = function(req, res) {
+apiSettings.updateSetting = function(req, res) {
     var postData = req.body;
     if (_.isUndefined(postData)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
     if (!_.isArray(postData)) postData = [postData];
 
     async.each(postData, function(item, callback) {
-        settingSchema.getSettingByName(item.name, function(err, s) {
+        SettingsSchema.getSettingByName(item.name, function(err, s) {
             if (err) return callback(err.message);
             if (_.isNull(s) || _.isUndefined(s)) {
-                s = new settingSchema({
+                s = new SettingsSchema({
                     name: item.name
                 });
             }
 
             if (s.name === 'legal:privacypolicy')
-                item.value = sanitizeHtml(item.value, {
+                {item.value = sanitizeHtml(item.value, {
                     allowedTags: false
-                });
+                });}
 
             s.value = item.value;
 
@@ -87,7 +87,7 @@ api_settings.updateSetting = function(req, res) {
     });
 };
 
-api_settings.testMailer = function(req, res) {
+apiSettings.testMailer = function(req, res) {
     var mailer = require('../../../mailer');
     mailer.verify(function(err) {
         if (err) {
@@ -100,4 +100,4 @@ api_settings.testMailer = function(req, res) {
 };
 
 
-module.exports = api_settings;
+module.exports = apiSettings;

@@ -93,8 +93,13 @@ var init = function(tickets, callback) {
 
 function buildMostRequester(ticketArray, callback) {
     var requesters = _.map(ticketArray, function(m) {
-        return m.owner.fullname;
+        if (m.owner)
+            return m.owner.fullname;
+
+        return null;
     });
+
+    requesters = _.compact(requesters);
 
     var r = _.countBy(requesters, function(k) { return k; });
     r = _(r).value();

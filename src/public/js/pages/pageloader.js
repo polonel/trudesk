@@ -72,5 +72,5 @@ define('pages/pageloader', ['async', 'jquery'], function(async, $) {
         });
     };
 
-    return pageLoader
+    return pageLoader;
 });

@@ -1,0 +1,37 @@
+.settings-wrap
+  padding: 20px 25px
+  margin-bottom: 25px
+  div[data-settings-id]
+    display: none
+    &.active
+      display: block !important
+
+.settings-categories
+  @extend .message-items
+
+  li
+    height: 50px
+    padding: 10px 20px
+    &:after
+      font-family: "Material Icons"
+      position: absolute
+      right: 10px
+      top: 15px
+      content: "arrow_forward_ios"
+      font-size: 18px
+      color: #ccc
+    &.active
+      background: white
+      &:before
+        border-left: none
+      &:after
+        color: $accent_color
+
+  .setting-category
+    @extend .convo-info
+    margin-left: 0 !important
+    height: auto !important
+    max-height: none !important
+    h3
+      font-size: 16px
+      font-weight: normal

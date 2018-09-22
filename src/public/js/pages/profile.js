@@ -33,9 +33,9 @@ define('pages/profile', [
         var $totp = $('#totp-qrcode');
         var hasKey = $totp.attr('data-hasKey');
         var key = $totp.attr('data-totpkey');
-        if (hasKey === 'true') {
+        if (hasKey === 'true') 
             $totp.qrcode({width: 242, height: 242, text: key});
-        } else {
+         else {
             $('input#tOTPKey').addClass('hide');
             $('.totp-settings-wrap .panel-body2').addClass('hide');
         }

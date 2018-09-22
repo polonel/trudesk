@@ -8,7 +8,7 @@ module.exports = {
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
-        "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
+        'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js')
     },
     output: {
         filename: '[name].js',
@@ -25,6 +25,7 @@ module.exports = {
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
             jscookie:       'vendor/jscookie/js.cookie.js',
+            easing:         'vendor/jquery/jquery.easing',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -71,6 +72,7 @@ module.exports = {
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether.min',
             shepherd:       'vendor/shepherd/js/shepherd.min',
+            easymde:        'vendor/easymde/dist/easymde.min',
             snackbar:       'plugins/snackbar',
 
             sass:           path.resolve(__dirname, 'src/sass'),
@@ -103,11 +105,11 @@ module.exports = {
             jQuery: 'jquery',
             Cookies: 'jscookie',
             Tether: 'tether',
-            "window.Tether": 'tether',
-            "window.jQuery": 'jquery',
-            "window.$": 'jquery',
+            'window.Tether': 'tether',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery',
             Modernizr: 'modernizr',
-            "window.Modernizr": 'modernizr',
+            'window.Modernizr': 'modernizr',
             moment: 'moment',
             'window.moment': 'moment',
             setImmediate: 'async'
@@ -128,7 +130,7 @@ module.exports = {
         })
     ],
     performance: {
-        hints: "warning",
+        hints: 'warning',
         maxEntrypointSize: 400000,
         maxAssetSize: 1000000
     }

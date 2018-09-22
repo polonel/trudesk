@@ -192,7 +192,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   background: #fff;
   &:hover, &:focus {
     background: #fff
-  },
+  }
   &:active {
     background: #fff;
   }
@@ -320,6 +320,18 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 
 .md-btn + .md-btn-group {
   margin-left: 16px;
+}
+
+.md-btn-group {
+  display: inline-block;
+  vertical-align: top;
+  position: relative;
+  font-size: 0;
+  white-space: nowrap;
+
+  .md-btn {
+    margin-left: 0;
+  }
 }
 
 /***************

@@ -22,14 +22,14 @@
           <div class="input-label">
             Type
           </div>
-          <select ng-model="selected.ticketType" ng-options="type._id as type.name for type in ticketTypes">
+          <select ng-model="selected.ticketType" ng-options="type as type.name for type in ticketTypes">
           </select>
         </label>
         <label class="item item-input item-select">
           <div class="input-label">
             Priority
           </div>
-          <select ng-model="selected.priority" ng-options="priority.value as priority.name for priority in priorities"></select>
+          <select ng-model="selected.priority._id" ng-options="priority._id as priority.name for priority in selected.ticketType.priorities"></select>
         </label>
         <label class="item item-input item-stacked-label">
           <span class="input-label">Issue</span>

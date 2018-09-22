@@ -54,9 +54,9 @@
                             data-validation="length"
                             data-validation-length="min1"
                     >
-                        <option value="1">Normal</option>
-                        <option value="2">Urgent</option>
-                        <option value="3">Critical</option>
+                        {{#each data.priorities}}
+                            <option value="{{_id}}">{{name}}</option>
+                        {{/each}}
                     </select>
                 </div>
                 <div class="uk-margin-medium-bottom">

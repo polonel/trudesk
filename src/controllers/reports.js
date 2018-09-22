@@ -27,7 +27,7 @@ reportsController.overview = function(req, res) {
     }
 
     var content = {};
-    content.title = "Overview";
+    content.title = 'Overview';
     content.nav = 'reports';
     content.subnav = 'reports-overview';
 
@@ -57,7 +57,12 @@ reportsController.generate = function(req, res) {
     content.data.user = req.user;
     content.data.common = req.viewdata;
 
-    return res.render('subviews/reports/generate', content);
+    var prioritySchema = require('../models/ticketpriority');
+    prioritySchema.getPriorities(function(err, priorities) {
+        content.data.priorities = priorities;
+
+        return res.render('subviews/reports/generate', content);
+    });
 };
 
 reportsController.breakdownGroup = function(req, res) {
@@ -68,7 +73,7 @@ reportsController.breakdownGroup = function(req, res) {
     }
 
     var content = {};
-    content.title = "Group Breakdown";
+    content.title = 'Group Breakdown';
     content.nav = 'reports';
     content.subnav = 'reports-breakdown-group';
 
@@ -91,7 +96,7 @@ reportsController.breakdownUser = function(req, res) {
     }
 
     var content = {};
-    content.title = "User Breakdown";
+    content.title = 'User Breakdown';
     content.nav = 'reports';
     content.subnav = 'reports-breakdown-user';
 

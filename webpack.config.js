@@ -8,7 +8,7 @@ module.exports = {
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
-        "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
+        'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js')
     },
     output: {
         filename: '[name].js',
@@ -24,7 +24,8 @@ module.exports = {
             //client side
             jquery:         'vendor/jquery/jquery',
             jquery_scrollTo:'vendor/jquery/jquery.scrollTo.min',
-            jscookie:       'vendor/jscookie/js.cookie.js',
+            jscookie:       'vendor/jscookie/js.cookie',
+            easing:         'vendor/jquery/jquery.easing',
             angular:        'vendor/angular/angular.min',
             angularRoute:   'vendor/angular/angular-route.min',
             angularCookies: 'vendor/angular/angular-cookies.min',
@@ -71,12 +72,13 @@ module.exports = {
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
             tether:         'vendor/tether/tether',
             shepherd:       'vendor/shepherd/js/shepherd.min',
+            easymde:        'vendor/easymde/dist/easymde.min',
             snackbar:       'plugins/snackbar',
 
             sass:           path.resolve(__dirname, 'src/sass'),
             Components:     path.resolve(__dirname, 'src/client/Components')
         },
-        extensions: [".js", ".jsx"]
+        extensions: ['.js', '.jsx']
     },
     externals: {
         //These are bunbled already
@@ -89,10 +91,10 @@ module.exports = {
             { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
             { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'), use: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
-                use: [{loader: 'css-loader', options: {minimize: true}}, 'sass-loader'],
+                use: [{loader: 'css-loader', options: {minimize: false}}, 'sass-loader'],
                 publicPath: '/public/css'
             })},
-            { test: /\.jsx$/, exclude: /node_modules/, loader: "babel-loader?cacheDirectory" }
+            { test: /\.jsx$/, exclude: /node_modules/, loader: 'babel-loader?cacheDirectory' }
         ]
     },
     plugins: [
@@ -101,13 +103,13 @@ module.exports = {
             jQuery: 'jquery',
             Cookies: 'jscookie',
             Tether: 'tether',
-            "window.Tether": 'tether',
-            "window.jQuery": 'jquery',
-            "window.$": 'jquery',
+            'window.Tether': 'tether',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery',
             Modernizr: 'modernizr',
-            "window.Modernizr": 'modernizr',
+            'window.Modernizr': 'modernizr',
             moment: 'moment',
-            "window.moment": 'moment',
+            'window.moment': 'moment',
             setImmediate: 'async'
         }),
         new webpack.optimize.CommonsChunkPlugin({
@@ -122,7 +124,7 @@ module.exports = {
         })
     ],
     performance: {
-        hints: "warning",
+        hints: 'warning',
         maxEntrypointSize: 10000000,
         maxAssetSize: 80000000
     }

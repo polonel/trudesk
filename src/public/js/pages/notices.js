@@ -38,14 +38,14 @@ define('pages/notices', [
                 scrollY: '100%',
                 order: [[3, 'desc']],
                 columnDefs: [
-                    {"width": "50px", "targets": 0},
-                    {"width": "20%", "targets": 1},
-                    {"width": "50%", "targets": 2},
-                    {"width": "20%", "targets": 3},
-                    {"width": "50px", "targets": 4}
+                    {'width': '50px', 'targets': 0},
+                    {'width': '20%', 'targets': 1},
+                    {'width': '50%', 'targets': 2},
+                    {'width': '20%', 'targets': 3},
+                    {'width': '50px', 'targets': 4}
                 ],
-                "oLanguage": {
-                    "sEmptyTable": "No notices to display."
+                'oLanguage': {
+                    'sEmptyTable': 'No notices to display.'
                 }
             });
 //                .rowGrouping({

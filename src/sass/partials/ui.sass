@@ -237,6 +237,29 @@ label.md-label
   padding: 0 6px
   font-size: 11px
 
+.md-btn-small
+  line-height: 27px !important
+  min-width: 14px
+  font-size: 11px !important
+
+.md-btn-group
+  display: inline-block
+  vertical-align: top
+  position: relative
+  font-size: 0
+  white-space: nowrap
+  .md-btn
+    vertical-align: top
+    margin-left: 0 !important
+    &:first-child
+      border-top-right-radius: 0
+      border-bottom-right-radius: 0
+    &:not(:first-child):not(:last-child)
+      border-radius: 0
+    &:last-child
+      border-top-left-radius: 0
+      border-bottom-left-radius: 0
+
 .md-color-white
   color: white !important
 .md-color-green
@@ -262,6 +285,13 @@ label.md-label
   > i
     font-size: 128px
 
+.uk-accordion-title-small
+  font-size: 13px
+  padding: 5px 24px 5px 10px
+  color: white
+  &:after
+    top: 5px
+    color: white
 
 .uk-grid-small
   margin-top: 15px !important
@@ -350,6 +380,16 @@ label.md-label
     color: white
     background: lighten($accent_color, 5%)
 
+.uk-color-button
+  padding: 0
+  float: left
+  display: inline-block
+  i.material-icons
+    font-size: 22px
+    vertical-align: middle
+    padding: 3px 4px
+    margin: 0
+
 .uk-tooltip-left:after
   display: block !important
   left: 100%
@@ -376,6 +416,20 @@ label.md-label
     &:after
       display: none !important
 
+.uk-tooltip.long-text
+  text-align: left
+  .uk-tooltip-inner
+    white-space: normal
+    overflow: visible
+    line-height: 18px
+    padding: 4px 0
+
+.uk-pagination>li.uk-active>a,
+.uk-pagination>li.uk-active>span
+  background: $accent_color
+
+.uk-pagination>li>a:hover
+  background: lighten($accent_color, 35%)
 
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
@@ -504,3 +558,41 @@ textarea.review-list
   font: 400 14px/22px Roboto, sans-serif
   padding: 7px
   resize: none
+
+.no-data-available-text
+  font-size: 2em
+  color: grey
+  font-weight: 300
+  position: absolute
+  top: 50%
+  left: 50%
+  transform: translate(-50%, -50%)
+
+.danger-zone,
+.zone
+  border: 1px solid #ccc
+  +borderRadius(3px)
+  h2
+    font-weight: 300
+  h5
+    font-weight: 600
+    font-size: 14px
+    line-height: 1.5
+    color: #24292e
+    margin: 0
+  .z-box,
+  .dz-box
+    padding: 16px
+    border-top: 1px solid #ccc
+    margin-top: -1px
+    &:first-of-type
+      border-top: none
+    p
+      font-size: 13px
+      line-height: 1.5
+      color: #24292e
+      margin-top: 0
+      margin-bottom: 10px
+
+.danger-zone
+  border: 1px solid $accent_danger

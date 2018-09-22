@@ -20,12 +20,10 @@ define('modules/socket.io/accountsImporter', [
 ], function($, helpers) {
     var accountsImporter = {};
 
-    var socket,
-        loggedInAccount;
+    var socket;
 
     accountsImporter.init = function(sock) {
         socket = sock;
-        loggedInAccount = window.trudeskSessionService.getUser();
 
         socket.removeAllListeners('$trudesk:accounts:import:error');
         socket.on('$trudesk:accounts:import:error', function(data) {
@@ -46,9 +44,9 @@ define('modules/socket.io/accountsImporter', [
             onStatusChange(type, item, percent);
 
             //See if we are done
-            if (completedCount >= totalCount) {
+            if (completedCount >= totalCount) 
                 finishImport(type, completedCount);
-            }
+            
         });
     };
 
@@ -61,9 +59,9 @@ define('modules/socket.io/accountsImporter', [
     function onStatusChange(type, item, percent) {
         var $statusBox = $('#' + type + '-import-status-box > ul');
         if (item) {
-            if (item.state === 1) {
+            if (item.state === 1) 
                 $statusBox.append('<li><div data-import-username="' + item.username + '" style="display:flex;">Importing ' + item.username + '<span>...</span></div></li>');
-            } else if (item.state === 2) {
+             else if (item.state === 2) {
                 var span = $statusBox.find('div[data-import-username="' + item.username + '"] > span');
                 if (span.length > 0) {
                     span.css({display: 'inline-flex', marginLeft: '5px'});

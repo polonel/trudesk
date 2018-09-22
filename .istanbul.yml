@@ -1,0 +1,5 @@
+instrumentation:
+  root: .
+  extensions:
+    - .js
+  excludes: ['**/src/controllers/*.js']

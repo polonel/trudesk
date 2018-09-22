@@ -1,4 +1,4 @@
-<div class="uk-modal" id="editAccountModal" style="padding-top: 0px;">
+<div class="uk-modal" id="editAccountModal" style="padding-top: 0;">
     <div class="uk-modal-dialog nopadding" style="padding-bottom: 30px !important;">
         <div class="user-heading" style="min-height: 130px; background: #1976d2; padding: 24px;">
             <div style="width: 100%;">
@@ -44,10 +44,7 @@
         <div style="margin: 24px 24px 0 24px;">
             <form class="uk-form-stacked" id="editAccountForm">
                 <input type="hidden" id="aId" name="aId" />
-                <!--<div class="uk-margin-medium-bottom">-->
-                    <!--<label for="aUsername">Username</label>-->
-                    <!--<input type="text" class="md-input" id="aUsername" name="aUsername"/>-->
-                <!--</div>-->
+                <input type="hidden" class="md-input" id="aUsername" name="aUsername"/>
                 <div class="uk-margin-medium-bottom uk-clearfix">
                     <div class="left" style="width: 50%; padding-right: 20px;">
                         <label for="aFullname">Name</label>
@@ -94,7 +91,7 @@
                 </div>
                 <div class="uk-modal-footer uk-text-right">
                     <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                    <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
+                    <button id="aSaveButton" type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
                 </div>
             </form>
         </div>

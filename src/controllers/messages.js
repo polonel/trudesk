@@ -24,7 +24,7 @@ messagesController.content = {};
 
 messagesController.get = function(req, res) {
     var content = {};
-    content.title = "Messages";
+    content.title = 'Messages';
     content.nav = 'messages';
     content.data = {};
     content.data.user = req.user;
@@ -42,9 +42,9 @@ messagesController.get = function(req, res) {
             var c = convo.toObject();
 
             var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
-            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) 
                 return done();
-            }
+            
 
             messageSchema.getMostRecentMessage(c._id, function(err, rm) {
                 if (err) return done(err);
@@ -57,20 +57,20 @@ messagesController.get = function(req, res) {
                 rm = _.first(rm);
 
                 if (!_.isUndefined(rm)) {
-                    if (String(c.partner._id) === String(rm.owner._id)) {
+                    if (String(c.partner._id) === String(rm.owner._id)) 
                         c.recentMessage = c.partner.fullname + ': ' + rm.body;
-                    } else {
-                        c.recentMessage = 'You: ' + rm.body
-                    }
-                } else {
+                     else 
+                        c.recentMessage = 'You: ' + rm.body;
+                    
+                } else 
                     c.recentMessage = 'New Conversation';
-                }
+                
 
                 content.data.conversations.push(c);
 
 
                 return done();
-            })
+            });
         }, function(err) {
             if (err) {
                 winston.debug(err);
@@ -87,7 +87,7 @@ messagesController.getConversation = function(req, res) {
     if (_.isUndefined(cid)) return handleError(res, 'Invalid Conversation ID!');
 
     var content = {};
-    content.title = "Messages";
+    content.title = 'Messages';
     content.nav = 'messages';
     content.data = {};
     content.data.user = req.user;
@@ -101,9 +101,9 @@ messagesController.getConversation = function(req, res) {
 
                 async.eachSeries(convos, function(convo, done) {
                     var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
-                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt && req.params.convoid.toString() !== convo._id.toString()) {
+                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt && req.params.convoid.toString() !== convo._id.toString()) 
                         return done();
-                    }
+                    
 
                     var c = convo.toObject();
                     messageSchema.getMostRecentMessage(c._id, function(err, rm) {
@@ -117,14 +117,14 @@ messagesController.getConversation = function(req, res) {
                         rm = _.first(rm);
 
                         if (!_.isUndefined(rm)) {
-                            if (String(c.partner._id) === String(rm.owner._id)) {
+                            if (String(c.partner._id) === String(rm.owner._id)) 
                                 c.recentMessage = c.partner.fullname + ': ' + rm.body;
-                            } else {
-                                c.recentMessage = 'You: ' + rm.body
-                            }
-                        } else {
+                             else 
+                                c.recentMessage = 'You: ' + rm.body;
+                            
+                        } else 
                             c.recentMessage = 'New Conversation';
-                        }
+                        
 
                         if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && !_.isUndefined(rm) && rm.createdAt < userMeta.deletedAt)
                             c.recentMessage = 'New Conversation';
@@ -132,7 +132,7 @@ messagesController.getConversation = function(req, res) {
                         content.data.conversations.push(c);
 
                         return done();
-                    })
+                    });
                 }, function(err) {
                     if (err) return next(err);
 
@@ -154,9 +154,9 @@ messagesController.getConversation = function(req, res) {
                     if (err) return next(err);
 
                     _.each(c.participants, function(p) {
-                        if (p._id.toString() !== req.user._id.toString()) {
+                        if (p._id.toString() !== req.user._id.toString()) 
                             c.partner = p;
-                        }
+                        
                     });
 
                     c.requestingUserMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === req.user._id.toString(); })];
@@ -165,7 +165,7 @@ messagesController.getConversation = function(req, res) {
                     content.data.conversation.messages = messages.reverse();
 
                     return next();
-                })
+                });
             });
         }
     ], function(err) {

@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/accounts', 'history', 'selectize', 'formvalidator', 'multiselect'], function(angular, _, $, helpers, UIkit, accountsPage) {
     return angular.module('trudesk.controllers.accounts', [])
-        .controller('accountsCtrl', function($scope, $http, $timeout, $log) {
+        .controller('accountsCtrl', function($scope, $http, $timeout, $window, $log) {
 
             function checkGroupValidation() {
                 var data = {};
@@ -27,13 +27,12 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030');
                     $('.aGrps-error-message').removeClass('hide').css('display', 'block').css('color', '#d85030').css('font-weight', 'bold');
                     return false;
-                } else {
-                    $('label[for="caGrps"]').css('color', '#4d4d4d');
-                    $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
-                    $('.aGrps-error-message').addClass('hide');
-                    return true;
                 }
 
+                $('label[for="caGrps"]').css('color', '#4d4d4d');
+                $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid rgba(0,0,0,.12)');
+                $('.aGrps-error-message').addClass('hide');
+                return true;
             }
 
             $scope.createAccount = function(event) {
@@ -43,12 +42,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 if (!form.isValid(null, null, false)) {
                     checkGroupValidation();
                     return false;
-                } else {
-                    if (!checkGroupValidation()) {
-                        event.preventDefault();
-                        return false;
-                    }
                 }
+
+                if (!checkGroupValidation()) {
+                    event.preventDefault();
+                    return false;
+                }
+
                 event.preventDefault();
                 form.serializeArray().map(function(x){data[x.name] = x.value;});
                 data.aGrps = form.find('select[name="caGrps[]"]').val();
@@ -73,7 +73,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                         //Refresh UserGrid
                         History.pushState(null,null, '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
 
-                        UIkit.modal("#accountCreateModal").hide();
+                        UIkit.modal('#accountCreateModal').hide();
                     }).error(function(err) {
                         $log.log('[trudesk:accounts:createAccount]', err);
                         helpers.UI.showSnackbar('An error occurred while creating the account. Check Console.', true);
@@ -157,9 +157,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 if (_.isUndefined(username)) return true;
 
                 var $menu = self.parents('.tru-card-head-menu');
-                if (!_.isUndefined($menu)) {
+                if (!_.isUndefined($menu)) 
                     $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active');
-                }
+                
 
                 $http.get(
                     '/api/v1/users/' + username
@@ -169,9 +169,40 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     var user = data.user;
                     if (_.isUndefined(user) || _.isNull(user)) return true;
 
+                    var loggedInAccount = $window.trudeskSessionService.getUser();
+                    if (loggedInAccount === null) return true;
+
                     var $userHeadingContent = $('.user-heading-content');
                     $userHeadingContent.find('.js-username').text(user.username);
-                    $userHeadingContent.find('.js-user-title').text(user.title);
+                    if (!user.title)
+                        $userHeadingContent.find('.js-user-title').text('');
+                    else
+                        $userHeadingContent.find('.js-user-title').text(user.title);
+
+                    var isEditingSelf = false;
+                    if (user.username === loggedInAccount.username)
+                        isEditingSelf = true;
+
+                    if (!isEditingSelf && (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') && (user.role === 'admin' || user.role === 'mod')) {
+                        //Disable editing user with higher roles.
+                        form.find('#aPass').parent().hide();
+                        form.find('#aPassConfirm').parent().hide();
+                        form.find('#aRole').parent().hide();
+                        form.find('#aFullname').attr('disabled', 'disabled');
+                        form.find('#aTitle').attr('disabled', 'disabled');
+                        form.find('#aEmail').attr('disabled', 'disabled');
+                        form.find('#aGrps').attr('disabled', 'disabled');
+                        form.find('#aSaveButton').addClass('disabled').attr('disabled', 'disabled');
+                    } else {
+                        form.find('#aPass').parent().show();
+                        form.find('#aPassConfirm').parent().show();
+                        form.find('#aRole').parent().show();
+                        form.find('#aFullname').attr('disabled', false);
+                        form.find('#aTitle').attr('disabled', false);
+                        form.find('#aEmail').attr('disabled', false);
+                        form.find('#aGrps').attr('disabled', false);
+                        form.find('#aSaveButton').removeClass('disabled').attr('disabled', false);
+                    }
 
                     form.find('#aId').val(user._id);
                     form.find('#aUsername').val(user.username).prop('disabled', true).parent().addClass('md-input-filled');
@@ -179,31 +210,33 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                     form.find('#aTitle').val(user.title).parent().addClass('md-input-filled');
                     form.find('#aEmail').val(user.email).parent().addClass('md-input-filled');
                     form.find('#aRole option[value="' + user.role + '"]').prop('selected', true);
-                    var $selectizeRole = form.find('#aRole')[0].selectize;
-                    $selectizeRole.setValue(user.role, true);
-                    $selectizeRole.refreshItems();
+                    if (form.find('#aRole').length > 0) {
+                        var $selectizeRole = form.find('#aRole')[0].selectize;
+                        $selectizeRole.setValue(user.role, true);
 
-                   // _.each(data.groups, function(i) {
-                        form.find('#aGrps').multiSelect('deselect_all');
-                        form.find('#aGrps').multiSelect('select', data.groups);
-                    //});
+                        if (loggedInAccount.role === 'support' || loggedInAccount.role === 'user') {
+                            $selectizeRole.removeOption('admin');
+                            $selectizeRole.removeOption('mod');
+                        }
 
-                    // var $selectizeGrps = form.find('#aGrps')[0].selectize;
-                    // var groups = data.groups;
-                    //
-                    // _.each(groups, function(i) {
-                    //     $selectizeGrps.addItem(i, true);
-                    // });
-                    //
-                    // $selectizeGrps.refreshItems();
+                        if (loggedInAccount.role === 'mod')
+                            $selectizeRole.removeOption('admin');
+
+                        $selectizeRole.refreshItems();
+                    }
+
+                    form.find('#aGrps').multiSelect('deselect_all');
+                    form.find('#aGrps').multiSelect('select', data.groups);
+                    form.find('#aGrps').multiSelect('refresh');
+
 
                     //Profile Picture
                     var aImageUploadForm = $('form#aUploadImageForm');
                     var image = aImageUploadForm.find('img');
-                    var input_id = aImageUploadForm.find('input#imageUpload_id');
-                    var input_username = aImageUploadForm.find('input#imageUpload_username');
-                    input_id.val(user._id);
-                    input_username.val(user.username);
+                    var inputId = aImageUploadForm.find('input#imageUpload_id');
+                    var inputUsername = aImageUploadForm.find('input#imageUpload_username');
+                    inputId.val(user._id);
+                    inputUsername.val(user.username);
                     if (user.image)
                         image.attr('src', '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000));
                     else
@@ -224,6 +257,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
                 data.aUsername = form.find('#aUsername').val();
                 data.aGrps = form.find('#aGrps').val();
                 data.saveGroups = true;
+                data.aRole = (form.find('#aRole').val().length > 0) ? form.find('#aRole').val() : undefined;
+                data.aPass = (form.find('#aPass').val().length > 0) ? form.find('#aPass').val() : undefined;
+                data.aPassConfirm = (form.find('#aPassConfirm').val().length > 0) ? form.find('#aPassConfirm').val() : undefined;
 
                 $http({
                     method: 'PUT',
@@ -243,7 +279,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'pages/ac
 
                         helpers.UI.showSnackbar('Account Saved', false);
 
-                        UIkit.modal("#editAccountModal").hide();
+                        UIkit.modal('#editAccountModal').hide();
 
                         accountsPage.init(null, true);
 

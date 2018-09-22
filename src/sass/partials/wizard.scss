@@ -1,0 +1,373 @@
+.wizard, .tabcontrol {
+  display: block;
+  width: 100%;
+  overflow: hidden;
+}
+
+.wizard a, .tabcontrol a {
+  outline: 0;
+}
+
+.wizard ul, .tabcontrol ul {
+  list-style: none !important;
+  padding: 0;
+  margin: 0;
+}
+
+.wizard ul > li, .tabcontrol ul > li {
+  display: block;
+  padding: 0;
+}
+
+.wizard > .steps .current-info, .tabcontrol > .steps .current-info, .wizard .content > .title, .tabcontrol .content > .title {
+  position: absolute;
+  left: -999em;
+}
+
+.wizard > .steps {
+  position: relative;
+  display: block;
+  width: 100%;
+  background: #2196f3;
+}
+
+.wizard-green > .steps {
+  background: #4caf50;
+}
+
+.wizard-blue-gray > .steps {
+  background: #607D8B;
+}
+
+.wizard > .steps {
+  .number {
+    font-size: 14px;
+    border: 2px solid #fff;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    margin-top: -14px;
+}
+  .title {
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: top;
+    white-space: nowrap;
+    overflow: hidden;
+    width: 100%;
+    padding-left: 46px;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+}
+  > ul > li {
+    display: block;
+    + li a {
+      border-top: 1px solid rgba(0, 0, 0, 0.15);
+  }
+    a {
+      position: relative;
+      display: block;
+      width: auto;
+      padding: 12px 8px;
+      text-decoration: none;
+      color: #fff;
+      &:hover, &:active {
+        display: block;
+        width: auto;
+        padding: 12px 8px;
+        text-decoration: none;
+        color: #fff;
+    }
+  }
+    &.disabled a {
+      color: #fff;
+      cursor: default;
+      &:hover, &:active {
+        color: #fff;
+        cursor: default;
+    }
+  }
+    &.current a {
+      background: #51adf6;
+      color: #fff;
+      cursor: default;
+      &:hover, &:active {
+        background: #51adf6;
+        color: #fff;
+        cursor: default;
+    }
+  }
+    &.done a {
+      background: #1976d2;
+      color: #fff;
+      &:hover, &:active {
+        background: #1976d2;
+        color: #fff;
+    }
+  }
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard > .steps .number {
+  font-size: 16px;
+  width: 32px;
+  height: 32px;
+  line-height: 32px;
+  margin-top: -18px;
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard > .steps > ul > li {
+  float: left;
+  width: 25%;
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard > .steps > ul > li + li a {
+  border-top: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard > .steps > ul > li a {
+  padding: 16px;
+  &:hover, &:active {
+    padding: 16px;
+}
+}
+}
+
+.wizard-green > .steps > ul > li {
+  &.current a {
+    background: #66C96A;
+    &:hover, &:active {
+      background: #66C96A;
+  }
+}
+  &.done a {
+    background: #339637;
+    &:hover, &:active {
+      background: #339637;
+  }
+}
+}
+
+.wizard-blue-gray > .steps > ul > li {
+  &.current a {
+    background: #7A97A5;
+    &:hover, &:active {
+      background: #7A97A5;
+  }
+}
+  &.done a {
+    background: #476472;
+    &:hover, &:active {
+      background: #476472;
+  }
+}
+}
+
+.wizard {
+> {
+  .steps > ul > li.error a {
+    background: #c62828;
+    color: #fff;
+    &:hover, &:active {
+      background: #c62828;
+      color: #fff;
+  }
+}
+  .content {
+    display: block;
+    min-height: 360px;
+    overflow: hidden;
+    position: relative;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    > .body {
+      padding: 48px 24px 64px;
+      width: 100%;
+      position: absolute;
+      -webkit-box-sizing: border-box;
+      box-sizing: border-box;
+      ul {
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        > li {
+          padding: 0;
+          margin: 0;
+          list-style: none;
+      }
+    }
+      .uk-form-label {
+        display: block;
+        font-weight: 500;
+        font-size: 13px;
+        margin: -4px 0;
+    }
+      .icheck-inline {
+        margin: 4px 16px 0 0;
+        + .parsley-errors-list {
+          margin-top: 2px;
+      }
+    }
+      > iframe {
+        border: 0 none;
+        width: 100%;
+        height: 100%;
+    }
+      pre[class*="language-"] {
+        max-height: inherit;
+    }
+  }
+}
+  .actions {
+    display: block;
+    background: rgba(0, 0, 0, 0.085);
+    padding: 8px 24px;
+    .material-icons {
+      font-size: 18px;
+      vertical-align: -4px;
+  }
+    > ul > li {
+      &.button_previous {
+        float: left;
+    }
+      &.button_next, &.button_finish {
+        float: right;
+    }
+  }
+    a {
+      color: #212121;
+      display: block;
+      padding: 0 16px;
+      min-width: 80px;
+      text-align: center;
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 31px;
+      text-transform: uppercase;
+      &:hover, &:active {
+        color: #212121;
+        display: block;
+        padding: 0 16px;
+        min-width: 80px;
+        text-align: center;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 31px;
+        text-transform: uppercase;
+    }
+      .material-icons {
+        color: #212121;
+    }
+  }
+    .disabled {
+      a {
+        color: #aaa;
+        &:hover, &:active {
+          color: #aaa;
+      }
+    }
+      .material-icons {
+        color: #aaa;
+    }
+  }
+}
+}
+  &.vertical > {
+    .content {
+      display: block;
+      background: #fff;
+  }
+    .actions {
+      display: block;
+      clear: both;
+  }
+}
+}
+
+@media only screen and (max-width: 479px) {
+.wizard > .actions > ul > li {
+  + li {
+    margin-top: 8px;
+}
+  &.button_previous, &.button_next, &.button_finish {
+    float: none;
+}
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard.vertical > .steps {
+  width: 25%;
+  float: left;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 8px;
+}
+}
+
+@media only screen and (min-width: 1220px) {
+.wizard.vertical > .steps {
+  width: 20%;
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard.vertical > .steps {
+  > ul > li {
+    float: none;
+    width: 100%;
+    + li {
+      margin-top: 8px;
+  }
+    a {
+      padding: 12px;
+      border: none;
+      border-radius: 4px;
+  }
+}
+  .number {
+    font-size: 12px;
+    border: 2px solid #fff;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    border-radius: 50%;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    margin-top: -14px;
+}
+}
+}
+
+@media only screen and (min-width: 960px) {
+.wizard.vertical > .content {
+  width: 75%;
+  float: left;
+  .body {
+    padding: 16px 32px;
+}
+}
+}
+
+@media only screen and (min-width: 1220px) {
+.wizard.vertical > .content {
+  width: 80%;
+}
+}

@@ -2,6 +2,8 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createTicketTypeForm" ng-submit="createTicketType($event)">
             <div class="">
+                <h2 class="nomargin mb-5">Create Ticket Type</h2>
+                <p class="uk-text-small uk-text-muted">Create a ticket type</p>
                 <label for="typeName">Type Name</label>
                 <input type="text" class="md-input" id="typeName" name="typeName"
                        data-validation="length"
@@ -10,7 +12,7 @@
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitCreateTicketType" ng-click="createTicketType($event)">Create</button>
+                <button type="button" class="md-btn md-btn md-btn-success" id="submitCreateTicketType" ng-click="createTicketType($event)">Create</button>
             </div>
         </form>
     </div>

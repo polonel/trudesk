@@ -34,7 +34,7 @@ define('pages/dashboard', [
                 if (typeof callback === 'function')
                     return callback();
 
-                return;
+                return true;
             }
 
             helpers.resizeAll();
@@ -42,7 +42,7 @@ define('pages/dashboard', [
             var parms = {
                 full_width: true,
                 height: 250,
-                target: '#test',
+                target: '#breakdownGraph',
                 x_accessor: 'date',
                 y_accessor: 'value',
                 y_extended_ticks: true,
@@ -55,8 +55,8 @@ define('pages/dashboard', [
             var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
             if (showOverdue) {
                 var overdueCard = $('#overdue_tickets');
-                var $overdue_table_body = overdueCard.find('table.uk-table > tbody');
-                $overdue_table_body.empty(); // Clear
+                var $overdueTableBody = overdueCard.find('table.uk-table > tbody');
+                $overdueTableBody.empty(); // Clear
                 $.ajax({
                     url: '/api/v1/tickets/overdue',
                     method: 'GET',
@@ -72,7 +72,7 @@ define('pages/dashboard', [
                             html += '</tr>';
                         });
 
-                        $overdue_table_body.append(html);
+                        $overdueTableBody.append(html);
 
                         overdueSpinner.animate({opacity: 0}, 600, function() {
                             $(this).hide();
@@ -103,7 +103,13 @@ define('pages/dashboard', [
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
                             helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
+                        } else if(_data.data.length < 1) {
+                            // No data in graph. Show No Data avaliable
+                            var $breakdownGraph = $('#breakdownGraph');
+                            $breakdownGraph.empty();
+                            $breakdownGraph.append('<div class="no-data-available-text">No Data Available</div>');
                         } else {
+                            $('#breakdownGraph').empty();
                             parms.data = MG.convert.date(_data.data, 'date');
                             MG.data_graphic(parms);
                         }
@@ -129,37 +135,37 @@ define('pages/dashboard', [
 
                         var pieComplete = $('#pie_complete');
                         pieComplete.text(closedPercent + '/100');
-                        pieComplete.peity("donut", {
+                        pieComplete.peity('donut', {
                             height: 24,
                             width: 24,
-                            fill: ["#29b955", "#ccc"]
+                            fill: ['#29b955', '#ccc']
                         });
 
-                        var responseTime_text = $('#responseTime_text');
+                        var $responseTimeText = $('#responseTime_text');
                         //var responseTime_graph = $('#responseTime_graph');
-                        var oldResponseTime = responseTime_text.text() === '--' ? 0 : responseTime_text.text();
+                        var oldResponseTime = $responseTimeText.text() === '--' ? 0 : $responseTimeText.text();
                         var responseTime = _data.ticketAvg;
-                        var responseTime_animation = new CountUp('responseTime_text', parseInt(oldResponseTime), responseTime, 0, 1.5);
-                        responseTime_animation.start();
+                        var responseTimeAnimation = new CountUp('responseTime_text', parseInt(oldResponseTime), responseTime, 0, 1.5);
+                        responseTimeAnimation.start();
 
                         //QuickStats
                         var mostRequester = $('#mostRequester');
-                        if (_data.mostRequester !== null)
-                        mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
+                        if (_data.mostRequester)
+                            mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')');
                         var mostCommenter = $('#mostCommenter');
-                        if (_data.mostCommenter !== null)
+                        if (_data.mostCommenter)
                             mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')');
                         else
                             mostCommenter.text('--');
 
                         var mostAssignee = $('#mostAssignee');
-                        if (_data.mostAssignee !== null)
+                        if (_data.mostAssignee)
                             mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')');
                         else
                             mostAssignee.text('--');
 
                         var mostActiveTicket = $('#mostActiveTicket');
-                        if (_data.mostActiveTicket !== null)
+                        if (_data.mostActiveTicket)
                             mostActiveTicket.attr('href', '/tickets/' + _data.mostActiveTicket.uid).text('T#' + _data.mostActiveTicket.uid);
                     },
                     error: function(err) {
@@ -210,12 +216,12 @@ define('pages/dashboard', [
                                 columns: arr,
                                 type: 'donut',
                                 colors: c,
-                                empty: { label: { text: "No Data Available" } }
+                                empty: { label: { text: 'No Data Available' } }
 
                             },
                             donut: {
                                 label: {
-                                    format: function (value, ratio, id) {
+                                    format: function () {
                                         return '';
                                     }
                                 }
@@ -273,11 +279,11 @@ define('pages/dashboard', [
                                 columns: arr,
                                 type: 'pie',
                                 colors: c,
-                                empty: { label: { text: "No Data Available" } }
+                                empty: { label: { text: 'No Data Available' } }
                             },
                             donut: {
                                 label: {
-                                    format: function (value, ratio, id) {
+                                    format: function () {
                                         return '';
                                     }
                                 }

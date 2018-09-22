@@ -73,7 +73,8 @@ module.exports = function(grunt) {
                         'src/public/js/vendor/shepherd/css/shepherd-theme-arrows.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-arrows-fix.css',
                         'src/public/js/vendor/shepherd/css/shepherd-theme-square.css',
-                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css'
+                        'src/public/js/vendor/shepherd/css/shepherd-theme-square-dark.css',
+                        'src/public/js/vendor/easymde/dist/easymde.min.css'
                     ]
                 }
             },
@@ -131,9 +132,9 @@ module.exports = function(grunt) {
         }
     });
 
-    grunt.registerTask('buildcss', ['cssmin']);
+    grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin']);
     grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['uglify:uikit', 'shell:webpackDist', 'buildcss']);
+    grunt.registerTask('build', ['buildcss', 'shell:webpackDist']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('default', ['server']);
 };

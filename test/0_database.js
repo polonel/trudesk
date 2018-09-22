@@ -8,7 +8,7 @@ var path      = require('path');
 winston.setLevels(winston.config.cli.levels);
 winston.remove(winston.transports.Console);
 var database, db;
-var CONNECTION_URI = 'mongodb://localhost/polonel_trudesk31908899';
+var CONNECTION_URI = 'mongodb://localhost:27017/polonel_trudesk31908899';
 
 //Global Setup for tests
 before(function(done) {
@@ -43,6 +43,13 @@ before(function(done) {
 
                     cb();
                 });
+            },
+            function(cb) {
+                var typeSchema = require('../src/models/tickettype');
+                typeSchema.insertMany([{name: 'Task'}, {name: 'Issue'}], cb);
+            },
+            function(cb) {
+                require('../src/settings/defaults').init(cb);
             },
             function(cb) {
                 var userSchema = require('../src/models/user');
@@ -123,7 +130,7 @@ before(function(done) {
 //Global Teardown for tests
 after(function(done) {
     this.timeout(5000);
-    mongoose.connection.db.dropDatabase(function() {
+    mongoose.connection.dropDatabase(function() {
         mongoose.connection.close(function() {
             server.close();
 

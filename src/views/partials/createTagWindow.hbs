@@ -2,6 +2,9 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag($event)">
             <div class="">
+                <h2 class="nomargin mb-5">Create a tag</h2>
+                <p class="uk-text-small uk-text-muted">Tags categorize tickets, making it easy to identify issues</p>
+
                 <label for="typeName">Tag Name</label>
                 <input type="text" class="md-input" id="tagName" name="tagName"
                        data-validation="length"
@@ -10,7 +13,7 @@
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitCreateTicketType" ng-click="createTag($event)">Create</button>
+                <button type="submit" class="md-btn md-btn-flat md-btn-flat-success" id="submitCreateTagBtn">Create</button>
             </div>
         </form>
     </div>

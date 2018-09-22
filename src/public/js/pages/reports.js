@@ -97,10 +97,10 @@ define('pages/reports', [
 
                             var pieComplete = $('#pie_complete');
                             pieComplete.text(closedPercent + '/100');
-                            pieComplete.peity("donut", {
+                            pieComplete.peity('donut', {
                                 height: 24,
                                 width: 24,
-                                fill: ["#29b955", "#ccc"]
+                                fill: ['#29b955', '#ccc']
                             });
 
                             var responseTime_text = $('#responseTime_text');
@@ -160,7 +160,7 @@ define('pages/reports', [
                                 columns: arr,
                                 type: 'donut',
                                 colors: c,
-                                empty: { label: { text: "No Data Available" } }
+                                empty: { label: { text: 'No Data Available' } }
                             },
                             donut: {
                                 label: {
@@ -218,7 +218,7 @@ define('pages/reports', [
                                 columns: arr,
                                 type: 'pie',
                                 colors: c,
-                                empty: { label: { text: "No Data Available" } }
+                                empty: { label: { text: 'No Data Available' } }
                             },
                             donut: {
                                 label: {

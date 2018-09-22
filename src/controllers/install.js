@@ -16,7 +16,7 @@ var async           = require('async'),
     path            = require('path'),
     _               = require('lodash'),
     winston         = require('winston'),
-    Chance = require('chance');
+    Chance          = require('chance');
 
 var installController = {};
 
@@ -24,26 +24,13 @@ installController.content = {};
 
 installController.index = function(req, res) {
     var content = {};
-    content.title = "Install Trudesk";
+    content.title = 'Install Trudesk';
     content.layout = false;
-
 
     res.render('install', content);
 };
 
 installController.mongotest = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var data = req.body;
     var dbPassword = encodeURIComponent(data.password);
     var CONNECTION_URI = 'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database;
@@ -56,32 +43,20 @@ installController.mongotest = function(req, res) {
         return res.json({success: true});
     });
 
-    child.on('close', function(code, signal) {
+    child.on('close', function() {
         winston.debug('MongoTest process terminated');
-    })
+    });
 };
 
 installController.existingdb = function(req, res) {
-    var origin = req.headers.origin;
-    var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = shost;
-
-    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var data        = req.body;
 
     //Mongo
-    var host        = data['host'];
-    var port        = data['port'];
-    var database    = data['database'];
-    var username    = data['username'];
-    var password    = data['password'];
+    var host        = data.host;
+    var port        = data.port;
+    var database    = data.database;
+    var username    = data.username;
+    var password    = data.password;
 
     //Write Configfile
     var fs = require('fs');
@@ -108,23 +83,11 @@ installController.existingdb = function(req, res) {
 };
 
 installController.install = function(req, res) {
-    var origin = req.headers.origin;
-    var shost = req.headers.host;
-    if (req.secure) shost = 'https://' + shost;
-    if (!req.secure) shost = 'http://' + shost;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = shost;
-
-    if (origin !== shost) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var db                  = require('../database');
-    var userSchema          = require('../models/user');
-    var groupSchema         = require('../models/group');
-    var counters            = require('../models/counters');
-    var ticketTypeSchema    = require('../models/tickettype');
+    var UserSchema          = require('../models/user');
+    var GroupSchema         = require('../models/group');
+    var Counters            = require('../models/counters');
+    var TicketTypeSchema    = require('../models/tickettype');
 
     var data = req.body;
 
@@ -155,16 +118,16 @@ installController.install = function(req, res) {
             }, conuri);
         },
         function(next) {
-            var Counter = new counters({
-                _id: "tickets",
+            var Counter = new Counters({
+                _id: 'tickets',
                 next: 1001
             });
 
             Counter.save(function(err){return next(err);});
         },
         function(next) {
-            var Counter = new counters({
-                _id: "reports",
+            var Counter = new Counters({
+                _id: 'reports',
                 next: 1001
             });
 
@@ -173,97 +136,94 @@ installController.install = function(req, res) {
             });
         },
         function(next) {
-            var type = new ticketTypeSchema({
+            var type = new TicketTypeSchema({
                 name: 'Issue'
             });
 
             type.save(function(err){return next(err); });
         },
         function(next) {
-            var type = new ticketTypeSchema({
+            var type = new TicketTypeSchema({
                 name: 'Task'
             });
 
             type.save(function(err){return next(err); });
         },
         function(next) {
-            groupSchema.getGroupByName('Administrators', function(err, group) {
+            GroupSchema.getGroupByName('Administrators', function(err, group) {
                 if (err) {
                     winston.error('Database Error: ' + err.message);
                     return next('Database Error:' + err.message);
                 }
 
-                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
-                    // Already Exists Create Admin
+                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group))
                     return next(null, group);
-                } else {
-                    //Create Admin Group
-                    var adminGroup = new groupSchema({
-                        name: 'Administrators',
-                        members: []
-                    });
 
-                    adminGroup.save(function(err) {
-                        if (err) {
-                            winston.error('Database Error:' + err.message);
-                            return next('Database Error:' + err.message);
-                        }
+                //Create Admin Group
+                var adminGroup = new GroupSchema({
+                    name: 'Administrators',
+                    members: []
+                });
 
-                        return next(null, adminGroup);
-                    });
-                }
+                adminGroup.save(function(err) {
+                    if (err) {
+                        winston.error('Database Error:' + err.message);
+                        return next('Database Error:' + err.message);
+                    }
+
+                    return next(null, adminGroup);
+                });
             });
         },
         function (adminGroup, next) {
-            userSchema.getUserByUsername(user.username, function(err, admin) {
+            UserSchema.getUserByUsername(user.username, function(err, admin) {
                 if (err) {
                     winston.error('Database Error: ' + err.message);
                     return next('Database Error: ' + err.message);
                 }
 
-                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin)) {
+                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin))
                     return next('Username: ' + user.username + ' already exists.');
-                } else {
-                    if (user.password !== user.passconfirm)
-                        return next('Passwords do not match!');
 
-                    var chance = new Chance();
-                    var adminUser = new userSchema({
-                        username:   user.username,
-                        password:   user.password,
-                        fullname:   user.fullname,
-                        email:      user.email,
-                        role:       'admin',
-                        title:      'Administrator',
-                        accessToken:chance.hash()
-                    });
+                if (user.password !== user.passconfirm)
+                    return next('Passwords do not match!');
 
-                    adminUser.save(function(err, savedUser) {
+                var chance = new Chance();
+                var adminUser = new UserSchema({
+                    username:   user.username,
+                    password:   user.password,
+                    fullname:   user.fullname,
+                    email:      user.email,
+                    role:       'admin',
+                    title:      'Administrator',
+                    accessToken:chance.hash()
+                });
+
+                adminUser.save(function(err, savedUser) {
+                    if (err) {
+                        winston.error('Database Error: ' + err.message);
+                        return next('Database Error: ' + err.message);
+                    }
+
+                    adminGroup.addMember(savedUser._id, function(err, success) {
                         if (err) {
                             winston.error('Database Error: ' + err.message);
                             return next('Database Error: ' + err.message);
                         }
 
-                        adminGroup.addMember(savedUser._id, function(err, success) {
+                        if (!success)
+                            return next('Unable to add user to Administrator group!');
+
+                        adminGroup.save(function(err) {
                             if (err) {
                                 winston.error('Database Error: ' + err.message);
                                 return next('Database Error: ' + err.message);
                             }
 
-                            if (!success)
-                                return next('Unable to add user to Administrator group!');
-
-                            adminGroup.save(function(err) {
-                                if (err) {
-                                    winston.error('Database Error: ' + err.message);
-                                    return next('Database Error: ' + err.message);
-                                }
-
-                                return next(null);
-                            });
+                            return next(null);
                         });
                     });
-                }
+                });
             });
         },
         function(next) {
@@ -299,18 +259,6 @@ installController.install = function(req, res) {
 };
 
 installController.restart = function(req, res) {
-    var origin = req.headers.origin;
-    var host = req.headers.host;
-    if (req.secure) host = 'https://' + host;
-    if (!req.secure) host = 'http://' + host;
-
-    //Firefox Hack - Firefox Bug 1341689
-    //Trudesk Bug #26
-    //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
-    if (!origin) origin = host;
-
-    if (origin !== host) return res.status(400).json({success: false, error: 'Invalid Origin!'});
-
     var pm2 = require('pm2');
     pm2.connect(function(err) {
         if (err) {
