@@ -86,6 +86,7 @@ class Sidebar extends React.Component {
                     <Submenu id="tickets">
                         <SubmenuItem text="Active" icon="timer" href="/tickets/active" active={activeSubItem === 'tickets-active'} />
                         <SubmenuItem text="Assigned" icon="assignment_ind" href="/tickets/assigned" active={activeSubItem === 'tickets-assigned'} />
+                        <SubmenuItem text="Unassigned" icon="person_add_disabled" href="/tickets/unassigned" active={activeSubItem === 'tickets-unassigned'} />
                         <NavSeperator />
                         <SubmenuItem text="New" icon="&#xE24D;" href="/tickets/new" active={activeSubItem === 'tickets-new'} />
                         <SubmenuItem text="Pending" icon="&#xE629;" href="/tickets/pending" active={activeSubItem === 'tickets-pending'} />
@@ -121,11 +122,11 @@ class Sidebar extends React.Component {
                     <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>
                         <Submenu id="settings">
                             <SubmenuItem text="General" icon="tune" href="/settings" active={activeSubItem === 'settings-general'} />
+                            <SubmenuItem text="Tickets" icon="assignment" href="/settings/tickets" active={activeSubItem === 'settings-tickets'} />
+                            <SubmenuItem text="Mailer" icon="email" href="/settings/mailer" active={activeSubItem === 'settings-mailer'} />
+                            {/*<SubmenuItem text="Notifications" icon="" href="/settings/notifications" active={activeSubItem === 'settings-notifications'} />*/}
+                            <SubmenuItem text="Push Service" icon="mobile_friendly" href="/settings/tps" active={activeSubItem === 'settings-tps'} />
                             <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={activeSubItem === 'settings-legal'} />
-                            <NavSeperator/>
-                            <SubmenuItem text="Tags" icon="style" href="/settings/tags" active={activeSubItem === 'settings-tags'}/>
-                            <SubmenuItem text="Ticket Types" icon="text_fields" href="/settings/tickettypes" active={activeSubItem === 'settings-tickettypes'}/>
-
                             {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') &&
                                 <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={activeSubItem === 'settings-logs'} />
                             }
