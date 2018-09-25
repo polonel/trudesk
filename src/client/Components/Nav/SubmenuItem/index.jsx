@@ -15,11 +15,11 @@ class SubmenuItem extends React.Component {
                     </a>
                 </li>
             </div>
-        )
+        );
     }
 }
 
-SubmenuItem.proptypes = {
+SubmenuItem.propTypes = {
     href: PropTypes.string.isRequired,
     text: PropTypes.string.isRequired,
     icon: PropTypes.string.isRequired,

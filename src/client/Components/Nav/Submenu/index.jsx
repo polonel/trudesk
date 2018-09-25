@@ -62,7 +62,7 @@ class Submenu extends Component {
             <ul id={"side-nav-accordion-" + this.props.id} className={"side-nav-sub side-nav-accordion" + ((this.props.subMenuOpen === true) ? ' subMenuOpen' : '')}>
                 {this.props.children}
             </ul>
-        )
+        );
     }
 }
 

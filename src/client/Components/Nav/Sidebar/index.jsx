@@ -22,10 +22,8 @@ class Sidebar extends React.Component {
 
             plugins: null
         };
-    }
 
-    componentWillMount() {
-        global.react.updateSidebar = (data) => {
+        window.react.updateSidebar = (data) => {
             this.setState(data);
         };
     }

@@ -3,7 +3,7 @@
   "extends": ["eslint:recommended", "plugin:node/recommended"],
   "root": true,
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 2015
   },
   "env": {
     "browser": true,

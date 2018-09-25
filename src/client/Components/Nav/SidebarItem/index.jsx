@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 
-import Helpers from 'modules/helpers'
+import Helpers from 'modules/helpers';
 
-import './style.sass'
+import './style.sass';
 
 class NavButton extends Component {
     constructor(props) {
@@ -21,7 +21,7 @@ class NavButton extends Component {
                 <i className="material-icons">{this.props.icon}</i>
                 {this.props.text}
             </a>
-        )
+        );
     }
 
     render() {
@@ -35,14 +35,14 @@ class NavButton extends Component {
                     {this.renderAnchorLink()}
                     {this.props.children}
                 </li>
-            )
+            );
         } else {
             return (
                 <li className={(this.props.active) ? ' active ' : ''}>
                     {this.renderAnchorLink()}
                     {this.props.children}
                 </li>
-            )
+            );
         }
     }
 }
@@ -53,7 +53,8 @@ NavButton.propTypes = {
     text: PropTypes.string.isRequired,
     class: PropTypes.string,
     hasSubmenu: PropTypes.bool,
-    subMenuTarget: PropTypes.string
+    subMenuTarget: PropTypes.string,
+    active: PropTypes.bool
 };
 
 export default NavButton;

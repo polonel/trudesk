@@ -4,7 +4,7 @@ class NavSeperator extends React.Component {
     render() {
         return (
             <hr />
-        )
+        );
     }
 }
 
