@@ -89,9 +89,8 @@ module.exports = function(app, db, callback) {
             app.use('/uploads/tickets', function(req, res, next) {
                 if (!req.user) 
                     return res.redirect('/');
-                
 
-                next();
+                return next();
             });
 
             //CORS
@@ -112,7 +111,7 @@ module.exports = function(app, db, callback) {
                var fs = require('fs');
                if (fs.existsSync(path.join(dir, 'plugin.json'))) {
                    var plugin = require(path.join(dir, 'plugin.json'));
-                   if (_.find(global.plugins, {'name': plugin.name}) !== undefined)
+                   if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
                        throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
 
                    global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});

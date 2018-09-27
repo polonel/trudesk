@@ -31,7 +31,8 @@ var tagSchema = mongoose.Schema({
 });
 
 tagSchema.pre('save', function(next) {
-    this.normalized = this.name.toLowerCase();
+    this.name = this.name.trim();
+    this.normalized = this.name.toLowerCase().trim();
 
     return next();
 });

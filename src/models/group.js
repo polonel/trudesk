@@ -35,6 +35,12 @@ var groupSchema = mongoose.Schema({
     public:     { type: Boolean, required: true, default: false }
 });
 
+groupSchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    next();
+});
+
 groupSchema.methods.addMember = function(memberId, callback) {
     if (_.isUndefined(memberId)) return callback('Invalid MemberId - $Group.AddMember()');
 

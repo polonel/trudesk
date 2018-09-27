@@ -18,6 +18,7 @@ var jsStringEscape      = require('js-string-escape');
 var settingSchema       = require('../models/setting');
 var ticketTypeSchema    = require('../models/tickettype');
 var permissions         = require('../permissions');
+var settingsUtil        = require('../settings/settingsUtil');
 
 var settingsController = {};
 
@@ -52,102 +53,14 @@ function handleError(res, err) {
         return res.render('error', {layout: false, error: err, message: err.message});
 }
 
-function parseSetting(settings, name, defaultValue) {
-    var s = _.find(settings, function(x) { return x.name === name; });
-    s = _.isUndefined(s) ? {value: defaultValue} : s;
-
-    return s;
-}
-
-function getSettings(content, callback) {
-    settingSchema.getSettings(function(err, settings) {
-        if (err) return callback('Invalid Settings');
-
-        var s = {};
-
-        s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
-
-        s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
-
-        s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);
-        s.mailerHost = parseSetting(settings, 'mailer:host', '');
-        s.mailerSSL = parseSetting(settings, 'mailer:ssl', false);
-        s.mailerPort = parseSetting(settings, 'mailer:port', 25);
-        s.mailerUsername = parseSetting(settings, 'mailer:username', '');
-        s.mailerPassword = parseSetting(settings, 'mailer:password', '');
-        s.mailerFrom = parseSetting(settings, 'mailer:from', '');
-
-        s.mailerCheckEnabled = parseSetting(settings, 'mailer:check:enable', false);
-        s.mailerCheckHost = parseSetting(settings, 'mailer:check:host', '');
-        s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143);
-        s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '');
-        s.mailerCheckPassword = parseSetting(settings, 'mailer:check:password', '');
-        s.mailerCheckTicketType = parseSetting(settings, 'mailer:check:ticketype', '');
-        s.mailerCheckTicketPriority = parseSetting(settings, 'mailer:check:ticketpriority', '');
-        s.mailerCheckCreateAccount = parseSetting(settings, 'mailer:check:createaccount', false);
-        s.mailerCheckDeleteMessage = parseSetting(settings, 'mailer:check:deletemessage', true);
-
-        s.showTour = parseSetting(settings, 'showTour:enable', false);
-        s.showOverdueTickets = parseSetting(settings, 'showOverdueTickets:enable', true);
-
-        s.tpsEnabled = parseSetting(settings, 'tps:enable', false);
-        s.tpsUsername = parseSetting(settings, 'tps:username', '');
-        s.tpsApiKey = parseSetting(settings, 'tps:apikey', '');
-
-        s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false);
-        s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false);
-
-        s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '');
-        s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
-
-        content.data.settings = s;
-
-        async.parallel([
-            function(done) {
-                ticketTypeSchema.getTypes(function(err, types) {
-                    if (err) return done(err);
-
-                    content.data.ticketTypes = _.sortBy(types, function(o){ return o.name; });
-                    _.each(content.data.ticketTypes, function(type) {
-                        type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name']);
-                    });
-
-                    return done();
-                });
-            },
-            function(done) {
-                var ticketPrioritySchema = require('../models/ticketpriority');
-                ticketPrioritySchema.getPriorities(function(err, priorities) {
-                    if (err) return done(err);
-
-                    content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name']);
-
-                    return done();
-                });
-            },
-            function(done) {
-                var tagSchema = require('../models/tag');
-                tagSchema.getTagCount(function(err, count) {
-                    if (err) return done(err);
-
-                    content.data.tags = {
-                        count: count
-                    };
-
-                    return done();
-                });
-            }
-        ], function(err) {
-            if (err) return callback(err);
-
-            return callback();
-        });
-    });
-}
-
 function renderView(res, content) {
-    getSettings(content, function(err) {
+    settingsUtil.getSettings(function(err, returnedContent) {
         if (err) return handleError(res, err);
+
+        content.data.settings = returnedContent.data.settings;
+        content.data.ticketTypes = returnedContent.data.ticketTypes;
+        content.data.priorities = returnedContent.data.priorities;
+        content.data.tags = returnedContent.data.tags;
 
         return res.render('settings', content);
     });

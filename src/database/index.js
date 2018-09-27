@@ -12,9 +12,10 @@
 
  **/
 
-var mongoose = require('mongoose'),
-    nconf = require('nconf'),
-    winston = require('winston');
+var _           = require('lodash'),
+    mongoose    = require('mongoose'),
+    nconf       = require('nconf'),
+    winston     = require('winston');
 
 var db = {};
 
@@ -35,7 +36,7 @@ var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true };
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
     if (opts) options = opts;
-    if (process.env.MONGOHQ_URL !== undefined) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
+    if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
     if (db.connection) 
         return callback(null, db);

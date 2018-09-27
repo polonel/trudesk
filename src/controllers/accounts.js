@@ -210,8 +210,9 @@ accountsController.bindLdap = function(req, res) {
 
                     mappedUsernames = _.map(foundUsers, 'username');
 
-                    for (var i = 0; i < mappedUsernames.length; i++) {
-                        var u = _.find(entries, function(f) { return f.sAMAccountName.toLowerCase() === mappedUsernames[i].toLowerCase(); });
+
+                    _.each(mappedUsernames, function(mappedUsername) {
+                        var u = _.find(entries, function(f) { return f.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase(); });
 
                         if (u) {
                             var clonedUser = _.find(foundUsers, function(g) { return g.username.toLowerCase() === u.sAMAccountName.toLowerCase();});
@@ -223,8 +224,8 @@ accountsController.bindLdap = function(req, res) {
                             }
                         }
 
-                        _.remove(entries, function(k) { return k.sAMAccountName.toLowerCase() === mappedUsernames[i].toLowerCase(); });
-                    }
+                        _.remove(entries, function(k) { return k.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase(); });
+                    });
 
                     _.remove(entries, function(e) { return _.isUndefined(e.mail); });
 
@@ -234,6 +235,19 @@ accountsController.bindLdap = function(req, res) {
         });
     });
 };
+
+function processUsers(addedUserArray, updatedUserArray, item, callback) {
+    userSchema.getUserByUsername(item.username, function(err, user) {
+        if (err) return callback(err);
+
+        if (user)
+            updatedUserArray.push(item);
+        else
+            addedUserArray.push(item);
+
+        return callback();
+    });
+}
 
 accountsController.uploadCSV = function(req, res) {
     var csv = require('fast-csv');
@@ -299,17 +313,7 @@ accountsController.uploadCSV = function(req, res) {
         var updatedUsers = [];
 
         async.each(object.csv, function(item, next) {
-            userSchema.getUserByUsername(item.username, function(err, user) {
-                if (err) return next(err);
-
-                if (user)
-                    updatedUsers.push(item);
-                else
-                    addedUsers.push(item);
-
-
-                return next();
-            });
+            return processUsers(addedUsers, updatedUsers, item, next);
         }, function(err) {
             if (err) {
                 winston.warn(err.message);
@@ -318,8 +322,6 @@ accountsController.uploadCSV = function(req, res) {
 
             return res.json({success: true, contents: object.csv, addedUsers: addedUsers, updatedUsers: updatedUsers});
         });
-
-
     });
 
     req.pipe(busboy);
@@ -359,17 +361,7 @@ accountsController.uploadJSON = function(req, res) {
                 return res.status(400).json({success: false, error: 'No accounts defined in JSON file.'});
 
             async.eachSeries(accounts, function(item, next) {
-                userSchema.getUserByUsername(item.username, function(err, user) {
-                    if (err) return next(err);
-
-                    if (user)
-                        updatedUsers.push(item);
-                    else
-                        addedUsers.push(item);
-
-
-                    return next();
-                });
+                return processUsers(addedUsers, updatedUsers, item, next);
             }, function(err) {
                 if (err)
                     return res.status(400).json({success: false, error: err});

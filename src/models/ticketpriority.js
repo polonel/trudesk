@@ -32,6 +32,12 @@ var prioritySchema = mongoose.Schema({
     }
 });
 
+prioritySchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    return next();
+});
+
 prioritySchema.virtual('durationFormatted').get(function() {
     var priority = this;
     return moment.duration(priority.overdueIn, 'minutes').format('Y [year], M [month], d [day], h [hour], m [min]', {trim: 'both'});
