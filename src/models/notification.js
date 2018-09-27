@@ -15,7 +15,7 @@
 var mongoose = require('mongoose');
 var _ = require('lodash');
 
-var COLLECTION = "notification";
+var COLLECTION = 'notification';
 
 //Types
 // Type 0 : Green Check
@@ -39,17 +39,17 @@ notificationSchema.methods.markRead = function(callback) {
 };
 
 notificationSchema.statics.getNotification = function(id, callback) {
-    if (_.isUndefined(id)) {
-        return callback("Invalid ObjectId - NotificationSchema.GetNotification()", null);
-    }
+    if (_.isUndefined(id)) 
+        return callback('Invalid ObjectId - NotificationSchema.GetNotification()', null);
+    
 
     return this.model(COLLECTION).findOne({_id: id}, callback);
 };
 
 notificationSchema.statics.findAllForUser = function(oId, callback) {
-    if (_.isUndefined(oId)) {
-        return callback("Invalid ObjectId - NotificationSchema.FindAllForUser()", null);
-    }
+    if (_.isUndefined(oId)) 
+        return callback('Invalid ObjectId - NotificationSchema.FindAllForUser()', null);
+    
 
     var q = this.model(COLLECTION).find({owner: oId}).sort({created: -1});
 
@@ -57,25 +57,25 @@ notificationSchema.statics.findAllForUser = function(oId, callback) {
 };
 
 notificationSchema.statics.getCount = function(oId, callback) {
-    if (_.isUndefined(oId)) {
-        return callback("Invalid ObjectId - NotificationSchema.GetCount()", null);
-    }
+    if (_.isUndefined(oId)) 
+        return callback('Invalid ObjectId - NotificationSchema.GetCount()', null);
+    
 
-    return this.model(COLLECTION).count({owner: oId}, callback);
+    return this.model(COLLECTION).countDocuments({owner: oId}, callback);
 };
 
 notificationSchema.statics.getUnreadCount = function(oId, callback) {
-    if (_.isUndefined(oId)) {
-        return callback("Invalid ObjectId - NotificationSchema.GetUnreadCount()", null);
-    }
+    if (_.isUndefined(oId)) 
+        return callback('Invalid ObjectId - NotificationSchema.GetUnreadCount()', null);
+    
 
-    return this.model(COLLECTION).count({owner: oId, unread: true}, callback);
+    return this.model(COLLECTION).countDocuments({owner: oId, unread: true}, callback);
 };
 
 notificationSchema.statics.clearNotifications = function(oId, callback) {
-    if (_.isUndefined(oId)) {
-        return callback("Invalid UserId - NotificationSchema.ClearNotifications()", null);
-    }
+    if (_.isUndefined(oId)) 
+        return callback('Invalid UserId - NotificationSchema.ClearNotifications()', null);
+    
 
     return this.model(COLLECTION).remove({owner: oId}, callback);
 };

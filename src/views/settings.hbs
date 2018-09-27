@@ -1,4 +1,5 @@
-<div ng-controller="settingsCtrl" ng-init="
+<div class="uk-grid uk-grid-collapse" ng-controller="settingsCtrl" ng-init="
+    siteUrl='{{data.settings.siteUrl.value}}';
     defaultTicketType='{{data.settings.defaultTicketType.value}}';
     mailerEnabled={{data.settings.mailerEnabled.value}};
     mailerHost='{{data.settings.mailerHost.value}}';
@@ -14,6 +15,9 @@
     mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
     mailerCheckPassword='{{data.settings.mailerCheckPassword.value}}';
     mailerCheckTicketType='{{data.settings.mailerCheckTicketType.value}}';
+    mailerCheckTicketPriority='{{data.settings.mailerCheckTicketPriority.value}}';
+    mailerCheckCreateAccount={{data.settings.mailerCheckCreateAccount.value}};
+    mailerCheckDeleteMessage={{data.settings.mailerCheckDeleteMessage.value}};
 
     showTour={{data.settings.showTour.value}};
     showOverdueTickets={{data.settings.showOverdueTickets.value}};
@@ -22,270 +26,738 @@
     tpsEnabled={{data.settings.tpsEnabled.value}};
     tpsUsername='{{data.settings.tpsUsername.value}}';
     tpsApiKey='{{data.settings.tpsApiKey.value}}';
+
+    privacyPolicy='{{data.settings.privacyPolicy.value}}';
+
+    ticketTagsCount={{data.tags.count}};
+
     init();
 ">
-    <div class="nopadding settings">
-        <div class="uk-width-1-1 page-title noshadow" style="padding-left: 25px !important; border-bottom: 1px solid #dadada;">
-            <p class="left">{{title}}</p>
+    <div class="uk-width-1-6 message-list full-height" data-offset="68">
+        <div class="page-title noshadow nopadding-right" style="border-top: none !important; height: 68px !important; padding-left: 20px !important;">
+            <div class="page-title-border-right1" style="position:relative;">
+                <p style="font-size: 24px;">Settings</p>
+            </div>
+
         </div>
-        <!--Content Here-->
+
+        <div id="" class="page-content-left noborder full-height">
+            <ul class="settings-categories scrollable">
+                <li {{#ifeq subnav compare='settings-general'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-general');">
+                    <div class="setting-category">
+                        <h3>General</h3>
+                    </div>
+                </li>
+                <li {{#ifeq subnav compare='settings-tickets'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-tickets');">
+                    <div class="setting-category">
+                        <h3>Tickets</h3>
+                    </div>
+                </li>
+                <li {{#ifeq subnav compare='settings-mailer'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-mailer');">
+                    <div class="setting-category">
+                        <h3>Mailer</h3>
+                    </div>
+                </li>
+                <!--<li {{#ifeq subnav compare='settings-notifications'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-notifications');">-->
+                    <!--<div class="setting-category">-->
+                        <!--<h3>Notifications</h3>-->
+                    <!--</div>-->
+                <!--</li>-->
+                <li {{#ifeq subnav compare='settings-tps'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-tps');">
+                    <div class="setting-category">
+                        <h3>Push Service</h3>
+                    </div>
+                </li>
+                <li {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-legal');">
+                    <div class="setting-category">
+                        <h3>Legal</h3>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="uk-width-5-6">
+        <div class="page-title-right noshadow page-title-border-bottom" style="border-top: none !important; height: 69px !important;"></div>
         <div class="page-wrapper full-height scrollable no-overflow-x">
-            <div id="page-content-inner">
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Default Ticket Type</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Default ticket type for newly created tickets.
-                            </h5>
+            <div class="settings-wrap">
+                <div data-settings-id="settings-general" {{#ifeq subnav compare='settings-general'}} class="active" {{/ifeq}}>
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Site Url</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Publicly accessible URL of this site. <i>ex: {{data.common.hosturl}} </i>
+                                </h5>
+                            </div>
+                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                                <div class="uk-width-3-4 uk-float-left" style="padding-right: 10px;">
+                                    <input id="siteUrl" class="md-input md-input-width-medium" name="siteUrl" type="text" ng-model="siteUrl" />
+                                </div>
+                                <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveSiteUrlClicked();">Save</button>
+                                </div>
+                            </div>
                         </div>
-                        <div class="right" style="position:relative; padding-top: 5px;">
-                            <div class="uk-float-left" style="padding-right: 11px; min-width: 130px; width: 100%;">
-                                <select class="selectize-white" name="type" id="type"  ng-model="defaultTicketType" data-md-selectize-inline2 selectize>
-                                    {{#each data.common.ticketTypes}}
-                                        <option value="{{{_id}}}">{{name}}</option>
-                                    {{/each}}
-                                </select>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Tour the user interface on initial login.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow User Registration</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Allow users to create accounts on the login screen.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged()" ng-model="allowUserRegistration">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Tour the user interface on initial login.
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">
-                                    <span class="lever"></span>
-                                </label>
+                <div data-settings-id="settings-tickets" {{#ifeq subnav compare='settings-tickets'}} class="active" {{/ifeq}}>
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">
+                                    Default Ticket Type
+                                </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Default ticket type for newly created tickets.
+                                </h5>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Flash tickets that have been idle for a length of time.
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow Public Tickets</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Allow the creation of tickets by users that are unregistered
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow User Registration</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Allow users to create accounts on the login screen.
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged()" ng-model="allowUserRegistration">
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Preferences for trudesk to send email notifications to users.
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input id="mailerEnabled" name="mailerEnabled" type="checkbox" ng-model="mailerEnabled" ng-change="mailerEnabledChange()">
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <hr class="nomargin-top clear">
-                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
-                            <div class="uk-position-relative">
-                                <div class="uk-margin-medium-bottom">
-                                    <div class="right">
-                                        <div class="md-switch md-green" style="position: absolute; top: 5px; right: -15px; z-index: 99;">
-                                            <label>
-                                                Use SSLv3
-                                                <input id="mailerSSL" name="mailerSSL" type="checkbox" ng-model="mailerSSL" ng-change="mailerSSLChange()">
-                                                <span class="lever"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                    <label for="mailerHost">Mail Server</label>
-                                    <input id="mailerHost" class="md-input md-input-width-medium" name="mailerHost" type="text" ng-model="mailerHost" />
-
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerPort">Port</label>
-                                    <input id="mailerPort" class="md-input md-input-width-medium" name="mailerPort" type="text" value="25" ng-model="mailerPort" />
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerUsername">Auth Username</label>
-                                    <input id="mailerUsername" class="md-input md-input-width-medium" name="mailerUsername" type="text" ng-model="mailerUsername" />
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerPassword">Auth Password</label>
-                                    <input id="mailerPassword" class="md-input md-input-width-medium" name="mailerPassword" type="password" ng-model="mailerPassword" />
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerFrom">From Address</label>
-                                    <input id="mailerFrom" class="md-input md-input-width-medium" name="mailerFrom" type="email" ng-model="mailerFrom" />
-                                </div>
-
-                                <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-left md-btn md-btn-flat md-btn-flat-primary md-btn-wave-light" id="mailerTest" ng-click="submitTestMailer($event)">Test Settings</button>
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerSubmit" ng-click="mailerFormSubmit($event);">Apply</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="setting-item-wrap uk-margin-medium-bottom">
-                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                        <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer Check</h6>
-                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Trudesk will periodically check a mailbox for emails to convert to tickets. (Over IMAP)
-                            </h5>
-                        </div>
-                        <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input id="mailerCheckEnabled" name="mailerCheckEnabled" type="checkbox" ng-model="mailerCheckEnabled" ng-change="mailerCheckEnabledChange()" />
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
-                        </div>
-                        <hr class="nomargin-top clear">
-                        <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
-                            <div class="">
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerCheckHost">Mail Server</label>
-                                    <input id="mailerCheckHost" class="md-input md-input-width-medium" name="mailerCheckHost" type="text" ng-model="mailerCheckHost"/>
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerCheckPort">Port</label>
-                                    <input id="mailerCheckPort" class="md-input md-input-width-medium" name="mailerCheckPort" type="text" value="143" ng-model="mailerCheckPort"/>
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerCheckUsername">Username</label>
-                                    <input id="mailerCheckUsername" class="md-input md-input-width-medium" name="mailerCheckUsername" type="text" ng-model="mailerCheckUsername"/>
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerCheckPassword">Password</label>
-                                    <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="mailerCheckTicketType">Default Ticket Type</label>
-                                    <select name="mailerCheckTicketType" id="mailerCheckTicketType" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                            <div class="right" style="position:relative; padding-top: 5px;">
+                                <div class="uk-float-left" style="padding-right: 11px; min-width: 130px; width: 100%;">
+                                    <select class="selectize-white" name="type" id="type" ng-model="defaultTicketType" ng-change="defaultTicketTypeChanged()"
+                                            data-md-selectize-inline2 selectize>
                                         {{#each data.common.ticketTypes}}
                                             <option value="{{{_id}}}">{{name}}</option>
                                         {{/each}}
                                     </select>
                                 </div>
-                                <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Allow Public Tickets</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Allow the creation of tickets by users that are unregistered. (<a href="/newissue" class="no-ajaxy">{{data.common.hosturl}}/newissue</a>)
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Overdue Tickets
+                                    <i class="material-icons"
+                                       style="color: #888;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            line-height: 3px;"
+                                       data-uk-tooltip="{cls:'long-text'}" title="If disabled, priority SLA times will not mark tickets overdue.">help</i>
+                                </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Enable/Disable flashing of tickets based on SLA time of type priority.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Ticket Types-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Ticket Types</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Create / Modify Ticket Types
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <div style="margin: 12px 15px 0 0;">
+                                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateTicketTypeWindow($event);">Create</button>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="">
+                                <div class="uk-grid uk-grid-collapse">
+                                    <div class="uk-width-1-4 scrollable" style="background: #f7f8fa; min-height: 400px; max-height: 2000px; border-right: 1px solid #ccc;">
+                                        <ul class="settings-categories " style="border: none; height: auto;">
+                                            {{#forEach data.ticketTypes}}
+                                                <li data-key="{{_id}}" {{#ifeq isFirst compare=true}}class="active"{{/ifeq}} ng-click="switchTicketType($event);">
+                                                    <div class="setting-category">
+                                                        <h3>{{name}}</h3>
+                                                    </div>
+                                                </li>
+                                            {{/forEach}}
+                                        </ul>
+                                    </div>
+                                    <div class="uk-width-3-4" style="padding: 20px 15px 15px 15px;">
+                                        {{#each data.ticketTypes}}
+                                            <div data-ticket-type-id="{{_id}}" {{#ifeq isFirst compare=true}}class="active" {{else}} class="hide"{{/ifeq}} style="{{#ifeq isFirst compare=true}}opacity: 1; {{else}}opacity: 0; {{/ifeq}} height: 100%;">
+                                                <div class="ticket-type-general-wrapper">
+                                                    <h2 class="text-light">General</h2>
+                                                    <hr style="margin: 5px 0 25px 0;" />
+
+                                                    <form ng-submit="submitUpdateTicketType($event, '{{_id}}');">
+                                                        <div class="uk-input-group">
+                                                            <div class="md-input-wrapper">
+                                                                <label for="ticket-type-name-{{_id}}">Type Name</label>
+                                                                <input id="ticket-type-name-{{_id}}" type="text" class="md-input" value="{{name}}">
+                                                            </div>
+                                                            <span class="uk-input-group-addon">
+                                                                <button type="submit" class="md-btn md-btn-small">Rename</button>
+                                                            </span>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <div class="priorities-wrapper uk-margin-medium-top">
+                                                    <h2 class="text-light uk-display-inline-block">Priorities
+                                                        <i class="material-icons"
+                                                            style="color: #888;
+                                                            font-size: 16px;
+                                                            cursor: pointer;
+                                                            line-height: 18px;"
+                                                            data-uk-tooltip="{cls:'long-text'}" title="Priorities linked to this type. <br /> Editing a priority will update all types linked.">help</i>
+                                                    </h2>
+                                                    <div class="uk-float-right">
+                                                        <button type="button" class="md-btn md-btn-flat md-btn-flat-success" ng-click="showAddPriorityToType('{{_id}}', $event);">Add</button>
+                                                    </div>
+                                                    <hr style="margin: 5px 0 25px 0;" />
+                                                    <div class="priority-loop zone">
+                                                        {{#forEach priorities}}
+                                                            <div id="t-{{../_id}}-view-p-{{_id}}" data-pId="{{_id}}" class="z-box uk-clearfix">
+                                                                <div class="uk-float-left">
+                                                                    <h5 class="p-{{_id}}-name" style="color: {{htmlColor}}; font-weight: bold;">{{name}}</h5>
+                                                                    <p class="uk-text-muted">SLA Overdue: <strong class="p-{{_id}}-overdueIn">{{durationFormat overdueIn 'minutes'}}</strong></p>
+                                                                </div>
+                                                                <div class="uk-float-right">
+                                                                    <div class="md-btn-group mt-5">
+                                                                        <a class="md-btn md-btn-small" ng-click="editTicketTypePriority('{{../_id}}', '{{_id}}', $event);">Edit</a>
+                                                                        <a class="md-btn md-btn-small md-btn-danger {{#ifeq default compare=true}}1disabled {{/ifeq}}" ng-click="submitRemoveTicketTypePriority('{{../_id}}', '{{_id}}', $event);">Remove</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div id="t-{{../_id}}-edit-p-{{_id}}" data-pId="{{_id}}" class="z-box uk-clearfix hide" style="padding-top: 19px;">
+                                                                <form data-priority-id="{{_id}}" ng-submit="submitUpdatePriority($event);">
+                                                                    <div class="uk-grid uk-grid-collapse uk-clearfix">
+                                                                        <div class="uk-width-1-4">
+                                                                            <label for="">Priority Name</label>
+                                                                            <input type="text" class="md-input" name="p-{{_id}}-name" value="{{name}}" />
+                                                                        </div>
+                                                                        <div class="uk-width-1-4 uk-padding-small-sides">
+                                                                            <label for="">SLA Overdue (minutes)</label>
+                                                                            <input type="text" class="md-input" name="p-{{_id}}-overdueIn" value="{{overdueIn}}" />
+                                                                        </div>
+                                                                        <div class="uk-width-1-4 uk-padding-small-sides">
+                                                                            <button type="button" class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                                            <div class="md-input-wrapper uk-float-left" style="width: 70%;">
+                                                                                <label for="">Color</label>
+                                                                                <input type="text" class="md-input" name="p-{{_id}}-htmlColor" value="{{htmlColor}}" />
+                                                                                <span class="md-input-bar"></span>
+                                                                            </div>
+                                                                        </div>
+                                                                        <div class="uk-width-1-4">
+                                                                            <div class="md-btn-group uk-float-right uk-text-right mt-5">
+                                                                                <a class="md-btn md-btn-small" ng-click="cancelEditTicketTypePriority('{{../_id}}','{{_id}}', $event);">Cancel</a>
+                                                                                <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </form>
+                                                            </div>
+                                                        {{/forEach}}
+                                                    </div>
+                                                </div>
+
+                                                <div style="margin-top: 25px;">
+                                                    <h2 class="text-light">Danger Zone</h2>
+                                                    <div class="danger-zone">
+                                                        <div class="dz-box uk-clearfix">
+                                                            <div class="uk-float-left">
+                                                                <h5>Delete this type</h5>
+                                                                <p>Once you delete a ticket type, there is no going back. Please be certain.</p>
+                                                            </div>
+                                                            <div class="uk-float-right" style="padding-top: 10px;">
+                                                                <button class="md-btn md-btn-small md-btn-danger" ng-click="showDeleteTicketType('{{_id}}', true)">Delete</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {{> addPriorityToTypeWindow}}
+                                            {{> deleteTicketTypeWindow}}
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{> createTicketTypeWindow}}
+                    </div>
+
+                    <!--Ticket Priorities-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Ticket Priorities</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Ticket priorities set the level of SLAs for each ticket.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <div style="margin: 12px 15px 0 0;">
+                                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreatePriorityWindow($event);">Create</button>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="uk-position-relative">
+                                    <div class="all-priorities-loop zone">
+                                        {{#each data.priorities}}
+                                            <div id="view-p-{{_id}}" data-pId="{{_id}}" class="z-box uk-clearfix">
+                                                <div class="uk-float-left">
+                                                    <h5 class="p-{{_id}}-name" style="color: {{htmlColor}}; font-weight: bold;">{{name}}</h5>
+                                                    <p class="uk-text-muted">SLA Overdue: <strong class="p-{{_id}}-overdueIn">{{durationFormat overdueIn 'minutes'}}</strong></p>
+                                                </div>
+                                                <div class="uk-float-right">
+                                                    <div class="md-btn-group mt-5">
+                                                        <a class="md-btn md-btn-small" ng-click="editPriority('{{_id}}', $event);">Edit</a>
+                                                        <a class="md-btn md-btn-small md-btn-danger {{#ifeq default compare=true}}disabled {{/ifeq}}" ng-click="removePriorityClicked('{{_id}}', $event);">Remove</a>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="edit-p-{{_id}}" data-pId="{{_id}}" class="z-box uk-clearfix hide" style="padding-top: 19px;">
+                                                <form data-priority-id="{{_id}}" ng-submit="submitUpdatePriority($event);">
+                                                    <div class="uk-grid uk-grid-collapse uk-clearfix">
+                                                        <div class="uk-width-1-4">
+                                                            <label for="">Priority Name</label>
+                                                            <input type="text" class="md-input" name="p-{{_id}}-name" value="{{name}}" />
+                                                        </div>
+                                                        <div class="uk-width-1-4 uk-padding-small-sides">
+                                                            <label for="">SLA Overdue (minutes)</label>
+                                                            <input type="text" class="md-input" name="p-{{_id}}-overdueIn" value="{{overdueIn}}" />
+                                                        </div>
+                                                        <div class="uk-width-1-4 uk-padding-small-sides">
+                                                            <button class="uk-button uk-button-small uk-color-button mr-5 mt-10" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                            <div class="md-input-wrapper uk-float-left" style="width: 70%;">
+                                                                <label for="">Color</label>
+                                                                <input type="text" class="md-input" name="p-{{_id}}-htmlColor" value="{{htmlColor}}" />
+                                                                <span class="md-input-bar"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="uk-width-1-4">
+                                                            <div class="md-btn-group uk-float-right uk-text-right mt-5">
+                                                                <a class="md-btn md-btn-small" ng-click="cancelEditPriority('{{_id}}', $event);">Cancel</a>
+                                                                <button type="submit" class="md-btn md-btn-small md-btn-success">Save</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </form>
+                                            </div>
+
+                                            {{> deletePriorityWindow}}
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{> createPriorityWindow}}
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Ticket Tags</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Create / Modify Ticket Tags
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <div style="margin: 12px 15px 0 0;">
+                                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateTagWindow($event);">Create</button>
+                                </div>
+                                <!--<div class="uk-width-1-1">-->
+                                    <!--<form class="search-form flat" style="margin: 10px 10px 0 0; border: 1px solid #ccc; width: 250px;">-->
+                                        <!--<input type="search" value="" placeholder="Search" class="search-input" style="width: 200px;">-->
+                                        <!--<button type="submit" class="search-button">-->
+                                            <!--<svg class="submit-button">-->
+                                                <!--<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#search"></use>-->
+                                            <!--</svg>-->
+                                        <!--</button>-->
+                                        <!--&lt;!&ndash;<div class="search-option">&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<input name="type" type="radio" value="type-users" id="type-users">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<label for="type-users">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<svg class="edit-pen-title">&ndash;&gt;-->
+                                                        <!--&lt;!&ndash;<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#user"></use>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;</svg>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span>Users</span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+
+                                            <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<input name="type" type="radio" value="type-posts" id="type-posts">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<label for="type-posts">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<svg class="edit-pen-title">&ndash;&gt;-->
+                                                        <!--&lt;!&ndash;<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#post"></use>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;</svg>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span>Posts</span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<input name="type" type="radio" value="type-images" id="type-images">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<label for="type-images">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<svg class="edit-pen-title">&ndash;&gt;-->
+                                                        <!--&lt;!&ndash;<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#images"></use>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;</svg>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span>Images</span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;<div>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<input name="type" type="radio" value="type-special" id="type-special" checked="">&ndash;&gt;-->
+                                                <!--&lt;!&ndash;<label for="type-special">&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<svg class="edit-pen-title">&ndash;&gt;-->
+                                                        <!--&lt;!&ndash;<use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#special"></use>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;</svg>&ndash;&gt;-->
+                                                    <!--&lt;!&ndash;<span>Special</span>&ndash;&gt;-->
+                                                <!--&lt;!&ndash;</label>&ndash;&gt;-->
+                                            <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                        <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                                    <!--</form>-->
+
+                                    <!--<svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" display="none">-->
+                                        <!--<symbol id="search" viewBox="0 0 32 32">-->
+                                            <!--<path d="M 19.5 3 C 14.26514 3 10 7.2651394 10 12.5 C 10 14.749977 10.810825 16.807458 12.125 18.4375 L 3.28125 27.28125 L 4.71875 28.71875 L 13.5625 19.875 C 15.192542 21.189175 17.250023 22 19.5 22 C 24.73486 22 29 17.73486 29 12.5 C 29 7.2651394 24.73486 3 19.5 3 z M 19.5 5 C 23.65398 5 27 8.3460198 27 12.5 C 27 16.65398 23.65398 20 19.5 20 C 15.34602 20 12 16.65398 12 12.5 C 12 8.3460198 15.34602 5 19.5 5 z" />-->
+                                        <!--</symbol>-->
+                                        <!--<symbol id="user" viewBox="0 0 32 32">-->
+                                            <!--<path d="M 16 4 C 12.145852 4 9 7.1458513 9 11 C 9 13.393064 10.220383 15.517805 12.0625 16.78125 C 8.485554 18.302923 6 21.859881 6 26 L 8 26 C 8 21.533333 11.533333 18 16 18 C 20.466667 18 24 21.533333 24 26 L 26 26 C 26 21.859881 23.514446 18.302923 19.9375 16.78125 C 21.779617 15.517805 23 13.393064 23 11 C 23 7.1458513 19.854148 4 16 4 z M 16 6 C 18.773268 6 21 8.2267317 21 11 C 21 13.773268 18.773268 16 16 16 C 13.226732 16 11 13.773268 11 11 C 11 8.2267317 13.226732 6 16 6 z" /></symbol>-->
+                                        <!--<symbol id="images" viewbox="0 0 32 32">-->
+                                            <!--<path d="M 2 5 L 2 6 L 2 26 L 2 27 L 3 27 L 29 27 L 30 27 L 30 26 L 30 6 L 30 5 L 29 5 L 3 5 L 2 5 z M 4 7 L 28 7 L 28 20.90625 L 22.71875 15.59375 L 22 14.875 L 21.28125 15.59375 L 17.46875 19.40625 L 11.71875 13.59375 L 11 12.875 L 10.28125 13.59375 L 4 19.875 L 4 7 z M 24 9 C 22.895431 9 22 9.8954305 22 11 C 22 12.104569 22.895431 13 24 13 C 25.104569 13 26 12.104569 26 11 C 26 9.8954305 25.104569 9 24 9 z M 11 15.71875 L 20.1875 25 L 4 25 L 4 22.71875 L 11 15.71875 z M 22 17.71875 L 28 23.71875 L 28 25 L 23.03125 25 L 18.875 20.8125 L 22 17.71875 z" />-->
+                                        <!--</symbol>-->
+                                        <!--<symbol id="post" viewbox="0 0 32 32">-->
+                                            <!--<path d="M 3 5 L 3 6 L 3 23 C 3 25.209804 4.7901961 27 7 27 L 25 27 C 27.209804 27 29 25.209804 29 23 L 29 13 L 29 12 L 28 12 L 23 12 L 23 6 L 23 5 L 22 5 L 4 5 L 3 5 z M 5 7 L 21 7 L 21 12 L 21 13 L 21 23 C 21 23.73015 21.221057 24.41091 21.5625 25 L 7 25 C 5.8098039 25 5 24.190196 5 23 L 5 7 z M 7 9 L 7 10 L 7 13 L 7 14 L 8 14 L 18 14 L 19 14 L 19 13 L 19 10 L 19 9 L 18 9 L 8 9 L 7 9 z M 9 11 L 17 11 L 17 12 L 9 12 L 9 11 z M 23 14 L 27 14 L 27 23 C 27 24.190196 26.190196 25 25 25 C 23.809804 25 23 24.190196 23 23 L 23 14 z M 7 15 L 7 17 L 12 17 L 12 15 L 7 15 z M 14 15 L 14 17 L 19 17 L 19 15 L 14 15 z M 7 18 L 7 20 L 12 20 L 12 18 L 7 18 z M 14 18 L 14 20 L 19 20 L 19 18 L 14 18 z M 7 21 L 7 23 L 12 23 L 12 21 L 7 21 z M 14 21 L 14 23 L 19 23 L 19 21 L 14 21 z" />-->
+                                        <!--</symbol>-->
+                                        <!--<symbol id="special" viewbox="0 0 32 32">-->
+                                            <!--<path d="M 4 4 L 4 5 L 4 27 L 4 28 L 5 28 L 27 28 L 28 28 L 28 27 L 28 5 L 28 4 L 27 4 L 5 4 L 4 4 z M 6 6 L 26 6 L 26 26 L 6 26 L 6 6 z M 16 8.40625 L 13.6875 13.59375 L 8 14.1875 L 12.3125 18 L 11.09375 23.59375 L 16 20.6875 L 20.90625 23.59375 L 19.6875 18 L 24 14.1875 L 18.3125 13.59375 L 16 8.40625 z M 16 13.3125 L 16.5 14.40625 L 17 15.5 L 18.1875 15.59375 L 19.40625 15.6875 L 18.5 16.5 L 17.59375 17.3125 L 17.8125 18.40625 L 18.09375 19.59375 L 17 19 L 16 18.40625 L 15 19 L 14 19.59375 L 14.3125 18.40625 L 14.5 17.3125 L 13.59375 16.5 L 12.6875 15.6875 L 13.90625 15.59375 L 15.09375 15.5 L 15.59375 14.40625 L 16 13.3125 z" />-->
+                                        <!--</symbol>-->
+                                    <!--</svg>-->
+                                <!--</div>-->
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="uk-position-relative">
+                                    <div class="uk-margin-medium-bottom">
+                                        <div class="ticket-tags-wrapper uk-grid uk-grid-collapse zone uk-margin-medium-bottom">
+
+                                        </div>
+                                        <ul class="uk-pagination ticket-tags-pagination"></ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {{> createTagWindow}}
+                    </div>
+
+                </div>
+
+                <div data-settings-id="settings-mailer" {{#ifeq subnav compare='settings-mailer'}} class="active" {{/ifeq}}>
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Preferences for trudesk to send email notifications to users.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input id="mailerEnabled" name="mailerEnabled" type="checkbox" ng-model="mailerEnabled" ng-change="mailerEnabledChange()">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="uk-position-relative">
+                                    <div class="uk-margin-medium-bottom">
+                                        <div class="right">
+                                            <div class="md-switch md-green" style="position: absolute; top: 5px; right: -15px; z-index: 99;">
+                                                <label>
+                                                    Use SSLv3
+                                                    <input id="mailerSSL" name="mailerSSL" type="checkbox" ng-model="mailerSSL" ng-change="mailerSSLChange()">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <label for="mailerHost">Mail Server</label>
+                                        <input id="mailerHost" class="md-input md-input-width-medium" name="mailerHost" type="text" ng-model="mailerHost" />
+
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerPort">Port</label>
+                                        <input id="mailerPort" class="md-input md-input-width-medium" name="mailerPort" type="text" value="25" ng-model="mailerPort" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerUsername">Auth Username</label>
+                                        <input id="mailerUsername" class="md-input md-input-width-medium" name="mailerUsername" type="text" ng-model="mailerUsername" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerPassword">Auth Password</label>
+                                        <input id="mailerPassword" class="md-input md-input-width-medium" name="mailerPassword" type="password" ng-model="mailerPassword" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerFrom">From Address</label>
+                                        <input id="mailerFrom" class="md-input md-input-width-medium" name="mailerFrom" type="email" ng-model="mailerFrom" />
+                                    </div>
+
+                                    <div class="uk-clearfix">
+                                        <button type="submit" class="uk-float-left md-btn md-btn-flat md-btn-flat-primary md-btn-wave-light" id="mailerTest" ng-click="submitTestMailer($event)">Test Settings</button>
+                                        <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerSubmit" ng-click="mailerFormSubmit($event);">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!--Mail Check-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Mailer Check</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Trudesk will periodically check a mailbox for emails to convert to tickets. (Over IMAP) - <em>Settings are applied after server restart</em>
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input id="mailerCheckEnabled" name="mailerCheckEnabled" type="checkbox" ng-model="mailerCheckEnabled" ng-change="mailerCheckEnabledChange()" />
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="">
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckHost">Mail Server</label>
+                                        <input id="mailerCheckHost" class="md-input md-input-width-medium" name="mailerCheckHost" type="text" ng-model="mailerCheckHost"/>
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckPort">Port</label>
+                                        <input id="mailerCheckPort" class="md-input md-input-width-medium" name="mailerCheckPort" type="text" value="143" ng-model="mailerCheckPort"/>
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckUsername">Username</label>
+                                        <input id="mailerCheckUsername" class="md-input md-input-width-medium" name="mailerCheckUsername" type="text" ng-model="mailerCheckUsername"/>
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckPassword">Password</label>
+                                        <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
+                                    </div>
+                                    <div class="uk-clearfix uk-margin-medium-bottom">
+                                        <div class="left">
+                                            <h6 style="padding: 0; margin: 5px 0 0 0; font-size: 16px; line-height: 14px;">Create Account</h6>
+                                            <h5 style="padding: 0 0 10px 0; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Create a user account if account does not exist.
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 10px 0 0 0;">
+                                                <label>
+                                                    Enable
+                                                    <input type="checkbox" id="mailerCheckCreateAccount" name="mailerCheckCreateAccount" ng-model="mailerCheckCreateAccount">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <hr style="float: left; background: #ccc; margin-top: 10px;" />
+                                    </div>
+                                    <div class="uk-clearfix uk-margin-medium-bottom">
+                                        <div class="left">
+                                            <h6 style="padding: 0; margin: 5px 0 0 0; font-size: 16px; line-height: 14px;">Delete Message</h6>
+                                            <h5 style="padding: 0 0 10px 0; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Delete email message from INBOX once processed?
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 10px 0 0 0;">
+                                                <label>
+                                                    Enable
+                                                    <input type="checkbox" id="mailerCheckDeleteMessage" name="mailerCheckDeleteMessage" ng-model="mailerCheckDeleteMessage">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <hr style="float: left; background: #ccc; margin-top: 10px;" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckTicketType">Default Ticket Type</label>
+                                        <select name="mailerCheckTicketType" id="mailerCheckTicketType" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
+                                                ng-model="mailerCheckTicketType"
+                                                ng-change="mailerCheckTicketTypeChanged()"
+                                        >
+                                            {{#each data.common.ticketTypes}}
+                                                <option value="{{{_id}}}">{{name}}</option>
+                                            {{/each}}
+                                        </select>
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="mailerCheckTicketPriority">Default Priority</label>
+                                        <select name="mailerCheckTicketPriority" id="mailerCheckTicketPriority" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
+                                                ng-model="mailerCheckTicketPriority"
+                                        >
+
+                                        </select>
+                                    </div>
+                                    <div class="uk-clearfix">
+                                        <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="mailerCheckSubmit" ng-click="mailerCheckFormSubmit($event)">Apply</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="setting-item-wrap uk-margin-medium-bottom">
+                <div data-settings-id="settings-notifications" {{#ifeq subnav compare='settings-notifcations'}} class="active" {{/ifeq}}>
+
+                </div>
+
+                <div data-settings-id="settings-tps" {{#ifeq subnav compare='settings-tps'}} class="active" {{/ifeq}}>
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">TPS</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Trudesk Push Server authentication for push notifications. <a href="http://push.trudesk.io/signup" target="_blank">Get API Key</a>
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="tpsEnabled" ng-change="tpsEnabledChange()">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="">
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="tpsUsername">Username</label>
+                                        <input id="tpsUsername" class="md-input md-input-width-medium" name="tpsUsername" type="text" ng-model="tpsUsername" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="tspAPIKey">API Key</label>
+                                        <input id="tspAPIKey" class="md-input md-input-width-medium" name="tpsApiKey" type="text" ng-model="tpsApiKey" />
+                                    </div>
+                                    <div class="uk-clearfix">
+                                        <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="tpsSubmit" ng-click="tpsFormSubmit($event);">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div data-settings-id="settings-legal" {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}}>
                     <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
                         <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">TPS</h6>
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Privacy Policy</h6>
                             <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Trudesk Push Server authentication for push notifications. <a href="http://push.trudesk.io/signup" target="_blank">Get API Key</a>
+                                Paste in HTML / Text of your privacy policy.
                             </h5>
                         </div>
                         <div class="right" style="position:relative;">
-                            <!-- Switch -->
-                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                <label>
-                                    Enable
-                                    <input id="tpsEnabled" name="tpsEnabled" type="checkbox" ng-model="tpsEnabled" ng-change="tpsEnabledChange()">
-                                    <span class="lever"></span>
-                                </label>
-                            </div>
                         </div>
-                        <hr class="nomargin-top clear">
+                        <hr class="nomargin-top">
                         <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
-                            <div class="">
+                            <div class="uk-position-relative">
                                 <div class="uk-margin-medium-bottom">
-                                    <label for="tpsUsername">Username</label>
-                                    <input id="tpsUsername" class="md-input md-input-width-medium" name="tpsUsername" type="text" ng-model="tpsUsername" />
-                                </div>
-                                <div class="uk-margin-medium-bottom">
-                                    <label for="tspAPIKey">API Key</label>
-                                    <input id="tspAPIKey" class="md-input md-input-width-medium" name="tpsApiKey" type="text" ng-model="tpsApiKey" />
+                                    <textarea name="privacyPolicy" id="privacyPolicy" wrap="soft" ng-model="privacyPolicy"
+                                              style="
+                                              height: 350px;
+                                              width: 100%;
+                                              padding: 15px;
+                                              font-size: 12px;
+                                              resize: none;
+                                              overflow: auto;
+                                              overflow-wrap: normal;
+                                              white-space: pre;
+                                    "></textarea>
                                 </div>
                                 <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="tpsSubmit" ng-click="tpsFormSubmit($event);">Apply</button>
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="privacyPolicySubmit" ng-click="savePrivacyPolicy($event);">Save</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>

@@ -7,14 +7,12 @@ var superagent  = require('superagent');
 describe('api/api.js', function() {
 
     var agent   = superagent.agent();
-    var unauthAgent = superagent.agent();
-    var user = { "login-username": 'trudesk', "login-password": '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW'};
 
     it('should return 401 for failed login', function(done) {
         var user = { username: 'test', password: '' };
         agent.post('http://localhost:3111/api/v1/login')
             .send(user)
-            .end(function(err) {
+            .end(function(err,res) {
                 expect(err).to.exist;
                 expect(err.status).to.equal(401);
 
@@ -29,18 +27,6 @@ describe('api/api.js', function() {
             .expect(200, done);
     });
 
-    it('should gain a session', function(done) {
-        agent.post('http://localhost:3111/login')
-            .type('json')
-            .send(user)
-            .end(function(err, res) {
-                should.not.exist(err);
-                expect(res.status).to.equal(200);
-                //expect(res.user).to.exist;
-
-                done();
-            });
-    });
 
     //it('should have access token', function(done) {
     //    var userSchema = require('../../src/models/user');

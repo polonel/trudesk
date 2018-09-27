@@ -19,8 +19,9 @@ var _            = require('lodash'),
     csv          = require('csv'),
     moment       = require('moment');
 
-var api_reports = {};
-api_reports.generate = {};
+var apiReports = {
+    generate: {}
+};
 
 /**
  * @api {post} /api/v1/reports/generate/tickets_by_group Generate Report - Groups
@@ -52,7 +53,7 @@ api_reports.generate = {};
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByGroup = function(req, res) {
+apiReports.generate.ticketsByGroup = function(req, res) {
     var postData = req.body;
 
     ticketSchema.getTicketsWithObject(postData.groups, {
@@ -106,7 +107,7 @@ api_reports.generate.ticketsByGroup = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByPriority = function(req, res) {
+apiReports.generate.ticketsByPriority = function(req, res) {
     var postData = req.body;
 
     async.waterfall([
@@ -115,9 +116,9 @@ api_reports.generate.ticketsByPriority = function(req, res) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
-            } else {
+            } else 
                 return done(null, postData.groups);
-            }
+            
         },
         function(grps, done) {
             ticketSchema.getTicketsWithObject(grps, {
@@ -140,7 +141,7 @@ api_reports.generate.ticketsByPriority = function(req, res) {
         if (err) return res.status(400).json({success: false, error: err});
 
         return processResponse(res, input);
-    })
+    });
 };
 
 /**
@@ -174,7 +175,7 @@ api_reports.generate.ticketsByPriority = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByStatus = function(req, res) {
+apiReports.generate.ticketsByStatus = function(req, res) {
     var postData = req.body;
 
     async.waterfall([
@@ -183,9 +184,9 @@ api_reports.generate.ticketsByStatus = function(req, res) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
-            } else {
+            } else 
                 return done(null, postData.groups);
-            }
+            
         },
         function(grps, done) {
             ticketSchema.getTicketsWithObject(grps, {
@@ -246,7 +247,7 @@ api_reports.generate.ticketsByStatus = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByTags = function(req, res) {
+apiReports.generate.ticketsByTags = function(req, res) {
     var postData = req.body;
 
     async.waterfall([
@@ -255,9 +256,9 @@ api_reports.generate.ticketsByTags = function(req, res) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
-            } else {
+            } else 
                 return done(null, postData.groups);
-            }
+            
         },
         function(grps, done) {
             ticketSchema.getTicketsWithObject(grps, {
@@ -318,7 +319,7 @@ api_reports.generate.ticketsByTags = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByType = function(req, res) {
+apiReports.generate.ticketsByType = function(req, res) {
     var postData = req.body;
     async.waterfall([
         function(done) {
@@ -326,9 +327,9 @@ api_reports.generate.ticketsByType = function(req, res) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
-            } else {
+            } else 
                 return done(null, postData.groups);
-            }
+            
         },
         function(grps, done) {
             ticketSchema.getTicketsWithObject(grps, {
@@ -389,7 +390,7 @@ api_reports.generate.ticketsByType = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-api_reports.generate.ticketsByUser = function(req, res) {
+apiReports.generate.ticketsByUser = function(req, res) {
     var postData = req.body;
     async.waterfall([
         function(done) {
@@ -397,9 +398,9 @@ api_reports.generate.ticketsByUser = function(req, res) {
                 groupSchema.getAllGroupsNoPopulate(function(err, grps) {
                     return done(null, grps);
                 });
-            } else {
+            } else 
                 return done(null, postData.groups);
-            }
+            
         },
         function(grps, done) {
             ticketSchema.getTicketsWithObject(grps, {
@@ -437,7 +438,7 @@ function processReportData(tickets) {
         var t = [];
         t.push(ticket.uid);
         t.push(ticket.type.name);
-        t.push(ticket.priorityFormatted);
+        t.push(ticket.priority.name);
         t.push(ticket.statusFormatted);
         t.push(moment(ticket.date).format('MMM DD, YY HH:mm:ss'));
         t.push(ticket.subject);
@@ -488,4 +489,4 @@ function processResponse(res, input) {
 }
 
 
-module.exports = api_reports;
+module.exports = apiReports;

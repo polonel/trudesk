@@ -19,15 +19,16 @@ var moment              = require('moment');
 var hash                = require('object-hash');
 // var redisCache          = require('../cache/rediscache');
 
-//Needed - Even if unused!
+//Needed - For Population
 var groupSchema         = require('./group');
-var ticketTypeSchema    = require('./tickettype');
+                          require('./tickettype');
 var userSchema          = require('./user');
 var commentSchema       = require('./comment');
 var noteSchema          = require('./note');
 var attachmentSchema    = require('./attachment');
 var historySchema       = require('./history');
-var tagSchema           = require('./tag');
+                          require('./tag');
+                          require('./ticketpriority');
 
 var COLLECTION = 'tickets';
 
@@ -74,7 +75,8 @@ var ticketSchema = mongoose.Schema({
     deleted:    { type: Boolean, default: false, required: true, index: true },
     type:       { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'tickettypes' },
     status:     { type: Number, default: 0, required: true, index: true },
-    priority:   { type: Number, required: true },
+
+    priority:   { type: mongoose.Schema.Types.ObjectId, ref: 'priorities', required: true },
     tags:       [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
     subject:    { type: String, required: true },
     issue:      { type: String, required: true },
@@ -89,7 +91,10 @@ var ticketSchema = mongoose.Schema({
 ticketSchema.index({deleted: -1, group: 1, status: 1});
 
 ticketSchema.pre('save', function(next) {
-    if (!_.isUndefined(this.uid) || this.uid) return next();
+    this.subject = this.subject.trim();
+
+    if (!_.isUndefined(this.uid) || this.uid)
+        return next();
 
     var c = require('./counters');
     var self = this;
@@ -106,6 +111,15 @@ ticketSchema.pre('save', function(next) {
         return next();
     });
 });
+
+var autoPopulatePriority = function(next) {
+    this.populate('priority');
+    next();
+};
+
+ticketSchema.
+    pre('findOne', autoPopulatePriority).
+    pre('find', autoPopulatePriority);
 
 ticketSchema.virtual('statusFormatted').get(function() {
     var s = this.status;
@@ -125,27 +139,6 @@ ticketSchema.virtual('statusFormatted').get(function() {
             break;
         default:
             formatted = 'New';
-    }
-
-    return formatted;
-});
-
-ticketSchema.virtual('priorityFormatted').get(function() {
-    var p = this.priority;
-    var formatted;
-
-    switch(p) {
-        case 1:
-            formatted = 'Normal';
-            break;
-        case 2:
-            formatted = 'Urgent';
-            break;
-        case 3:
-            formatted = 'Critical';
-            break;
-        default:
-            formatted = 'Normal';
     }
 
     return formatted;
@@ -182,11 +175,10 @@ ticketSchema.methods.setStatus = function(ownerId, status, callback) {
 
     var self = this;
 
-    if (status === 3) {
+    if (status === 3)
         self.closedDate = new Date();
-    } else {
+    else
         self.closedDate = null;
-    }
 
     self.status = status;
     var historyItem = {
@@ -289,18 +281,20 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isNaN(priority)) return callback('Priority must be a number.', null);
+    if (_.isUndefined(priority)) return callback('Priority must be a Object.', null);
 
     var self = this;
-    self.priority = priority;
+    self.priority = priority._id;
     var historyItem = {
         action: 'ticket:set:priority',
-        description: 'Ticket Priority set to: ' + priority,
+        description: 'Ticket Priority set to: ' + priority.name,
         owner: ownerId
     };
     self.history.push(historyItem);
 
-    callback(null, self);
+    self.populate('priority').execPopulate()
+        .then(function(updatedSelf){ return callback(null, updatedSelf); })
+        .catch(function(err) { return callback(err, null); });
 };
 
 /**
@@ -383,8 +377,8 @@ ticketSchema.methods.setIssue = function(ownerId, issue, callback) {
  */
 ticketSchema.methods.updateComment = function(ownerId, commentId, commentText, callback) {
     var self = this;
-    var comment = _.find(self.comments, function(c){return c._id.toString() === commentId.toString()});
-    if (_.isUndefined(comment)) return callback("Invalid Comment", null);
+    var comment = _.find(self.comments, function(c){return c._id.toString() === commentId.toString(); });
+    if (_.isUndefined(comment)) return callback('Invalid Comment', null);
 
     comment.comment = commentText;
 
@@ -443,8 +437,8 @@ ticketSchema.methods.removeComment = function(ownerId, commentId, callback) {
  */
 ticketSchema.methods.updateNote = function(ownerId, noteId, noteText, callback) {
     var self = this;
-    var note = _.find(self.notes, function(c){return c._id.toString() === noteId.toString()});
-    if (_.isUndefined(note)) return callback("Invalid Note", null);
+    var note = _.find(self.notes, function(c){return c._id.toString() === noteId.toString(); });
+    if (_.isUndefined(note)) return callback('Invalid Note', null);
 
     note.note = noteText;
 
@@ -603,13 +597,11 @@ ticketSchema.statics.getAllByStatus = function(status, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTickets = function(grpIds, callback) {
-    if (_.isUndefined(grpIds)) {
-        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-    }
+    if (_.isUndefined(grpIds))
+        return callback('Invalid GroupId - TicketSchema.GetTickets()', null);
 
-    if (!_.isArray(grpIds)) {
-        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
-    }
+    if (!_.isArray(grpIds))
+        return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null);
 
     var self = this;
 
@@ -642,23 +634,19 @@ ticketSchema.statics.getTickets = function(grpIds, callback) {
  * }
  */
 ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
-    if (_.isUndefined(grpId)) {
-        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-    }
+    if (_.isUndefined(grpId))
+        return callback('Invalid GroupId - TicketSchema.GetTickets()', null);
 
-    if (!_.isArray(grpId)) {
-        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
-    }
+    if (!_.isArray(grpId))
+        return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()', null);
 
-    if (!_.isObject(object)) {
-        return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
-    }
+    if (!_.isObject(object))
+        return callback('Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()', null);
 
-    var self = this;
-
-    var limit = (object.limit === null ? 10 : object.limit);
-    var page = (object.page === null ? 0 : object.page);
-    var _status = object.status;
+    var self = this,
+        limit = (object.limit === null ? 10 : object.limit),
+        page = (object.page === null ? 0 : object.page),
+        _status = object.status;
 
     if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
         var g = _.map(grpId, '_id').map(String);
@@ -673,71 +661,70 @@ ticketSchema.statics.getTicketsWithObject = function(grpId, object, callback) {
         .populate('group.sendMailTo', 'username fullname email role image title')
         .sort('-uid');
 
-    if (limit !== -1) {
+    if (limit !== -1)
         q.skip(page*limit).limit(limit);
-    }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.uid)) {
-        object.filter.uid = parseInt(object.filter.uid);
-        if (!_.isNaN(object.filter.uid))
-            q.or([{uid: object.filter.uid}]);
-    }
-
-    if (!_.isUndefined(_status) && !_.isNull(_status) && _.isArray(_status) && _.size(_status) > 0) {
+    if (_.isArray(_status) && _.size(_status) > 0)
         q.where({status: {$in: _status}});
-    }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.priority)) {
-        q.where({priority: {$in: object.filter.priority}});
-    }
+    if (!_.isUndefined(object.filter)) {
+        if (!_.isUndefined(object.filter.uid)) {
+            object.filter.uid = parseInt(object.filter.uid);
+            if (!_.isNaN(object.filter.uid))
+                q.or([{uid: object.filter.uid}]);
+        }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
-        q.where({type: {$in: object.filter.types}});
-    }
+        if (!_.isUndefined(object.filter.priority))
+            q.where({priority: {$in: object.filter.priority}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.tags)) {
-        q.where({tags: {$in: object.filter.tags}});
-    }
+        if (!_.isUndefined(object.filter.types))
+            q.where({type: {$in: object.filter.types}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
-        q.where({assignee: {$in: object.filter.assignee}});
-    }
+        if (!_.isUndefined(object.filter.tags))
+            q.where({tags: {$in: object.filter.tags}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.owner)) {
-        q.where({owner: {$in: object.filter.owner}});
-    }
+        if (!_.isUndefined(object.filter.assignee))
+            q.where({assignee: {$in: object.filter.assignee}});
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.or([{subject: new RegExp(object.filter.subject, "i")}]);
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.issue)) q.or([{issue: new RegExp(object.filter.issue, "i")}]);
+        if (!_.isUndefined(object.filter.unassigned))
+            q.where({assignee: {$exits: false} });
+
+        if (!_.isUndefined(object.filter.owner))
+            q.where({owner: {$in: object.filter.owner}});
+
+        if (!_.isUndefined(object.filter.subject))
+            q.or([{subject: new RegExp(object.filter.subject, 'i')}]);
+
+        if (!_.isUndefined(object.filter.issue))
+            q.or([{issue: new RegExp(object.filter.issue, 'i')}]);
+
+        if (!_.isUndefined(object.filter.date)) {
+            var startDate = new Date(2000, 0, 1, 0, 0, 1);
+            var endDate = new Date();
+            if (!_.isUndefined(object.filter.date.start))
+                startDate = new Date(object.filter.date.start);
+            if (!_.isUndefined(object.filter.date.end))
+                endDate = new Date(object.filter.date.end);
+
+            q.where({date: {$gte: startDate, $lte: endDate}});
+        }
+    }
 
     if (!_.isUndefined(object.assignedSelf) && !_.isNull(object.assignedSelf)) q.where('assignee', object.user);
-
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.date)) {
-        var startDate = new Date(2000, 0, 1, 0, 0, 1);
-        var endDate = new Date();
-        if (!_.isUndefined(object.filter.date.start))
-            startDate = new Date(object.filter.date.start);
-        if (!_.isUndefined(object.filter.date.end))
-            endDate = new Date(object.filter.date.end);
-
-        q.where({date: {$gte: startDate, $lte: endDate}});
-    }
+    if (!_.isUndefined(object.unassigned) && !_.isNull(object.unassigned)) q.where({assignee: {$exists: false}});
 
     return q.exec(callback);
 };
 
 ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
-    if (_.isUndefined(grpId)) {
-        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-    }
+    if (_.isUndefined(grpId))
+        return callback('Invalid GroupId - TicketSchema.GetTickets()', null);
 
-    if (!_.isArray(grpId)) {
-        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()", null);
-    }
+    if (!_.isArray(grpId))
+        return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()', null);
 
-    if (!_.isObject(object)) {
-        return callback("Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()", null);
-    }
+    if (!_.isObject(object))
+        return callback('Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()', null);
 
     var self = this;
 
@@ -746,27 +733,27 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
         grpId = _.intersection(object.filter.groups, g);
     }
 
-    var q = self.model(COLLECTION).count({group: {$in: grpId}, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({group: {$in: grpId}, deleted: false});
     if (!_.isUndefined(object.status) && _.isArray(object.status)) {
         var status = object.status.map(Number);
         q.where({status: {$in: status} });
     }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee)) {
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.assignee))
         q.where({assignee: {$in: object.filter.assignee}});
-    }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types)) {
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.types))
         q.where({type: {$in: object.filter.types}});
-    }
 
-    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, "i")});
+    if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.subject)) q.where({subject: new RegExp(object.filter.subject, 'i')});
 
-    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf === true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId)) {
+    if (!_.isUndefined(object.assignedSelf) && object.assignedSelf === true && !_.isUndefined(object.assignedUserId) && !_.isNull(object.assignedUserId))
         q.where('assignee', object.assignedUserId);
-    }
 
-    return q.lean().exec(callback)
+    if (!_.isUndefined(object.unassigned) && object.unassigned === true)
+        q.where({assignee: {$exists: false}});
+
+    return q.lean().exec(callback);
 };
 
 
@@ -782,13 +769,11 @@ ticketSchema.statics.getCountWithObject = function(grpId, object, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
-    if (_.isUndefined(grpId)) {
-        return callback("Invalid GroupId - TicketSchema.GetTickets()", null);
-    }
+    if (_.isUndefined(grpId))
+        return callback('Invalid GroupId - TicketSchema.GetTickets()', null);
 
-    if (!_.isArray(grpId)) {
-        return callback("Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()", null);
-    }
+    if (!_.isArray(grpId))
+        return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTickets()', null);
 
     var self = this;
 
@@ -810,7 +795,7 @@ ticketSchema.statics.getTicketsByStatus = function(grpId, status, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketByUid = function(uid, callback) {
-    if (_.isUndefined(uid)) return callback("Invalid Uid - TicketSchema.GetTicketByUid()", null);
+    if (_.isUndefined(uid)) return callback('Invalid Uid - TicketSchema.GetTicketByUid()', null);
 
     var self = this;
 
@@ -831,7 +816,7 @@ ticketSchema.statics.getTicketByUid = function(uid, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketById = function(id, callback) {
-    if (_.isUndefined(id)) return callback("Invalid Id - TicketSchema.GetTicketById()", null);
+    if (_.isUndefined(id)) return callback('Invalid Id - TicketSchema.GetTicketById()', null);
 
     var self = this;
 
@@ -868,7 +853,7 @@ ticketSchema.statics.getTicketById = function(id, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback("Invalid Requester Id - TicketSchema.GetTicketsByRequester()", null);
+    if (_.isUndefined(userId)) return callback('Invalid Requester Id - TicketSchema.GetTicketsByRequester()', null);
 
     var self = this;
 
@@ -896,7 +881,7 @@ ticketSchema.statics.getTicketsByRequester = function(userId, callback) {
 };
 
 ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callback) {
-    if (_.isUndefined(grps) || _.isUndefined(search)) return callback("Invalid Post Data - TicketSchema.GetTicketsWithSearchString()", null);
+    if (_.isUndefined(grps) || _.isUndefined(search)) return callback('Invalid Post Data - TicketSchema.GetTicketsWithSearchString()', null);
 
     var self = this;
 
@@ -906,7 +891,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, $where: '/^' + search + '.*/.test(this.uid)'})
                 .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-                .populate('type tags group')
+                .populate('type tags group');
+
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -917,7 +903,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, subject: { $regex: search, $options: 'i'}})
                 .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-                .populate('type tags group')
+                .populate('type tags group');
+
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -928,7 +915,8 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
         function(callback) {
             var q = self.model(COLLECTION).find({group: {$in: grps}, deleted: false, issue: { $regex: search, $options: 'i'}})
                 .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
-                .populate('type tags group')
+                .populate('type tags group');
+
             q.exec(function(err, results) {
                 if (err) return callback(err);
                 tickets.push(results);
@@ -955,7 +943,7 @@ ticketSchema.statics.getTicketsWithSearchString = function(grps, search, callbac
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getOverdue = function(grpId, callback) {
-    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetOverdue()", null);
+    if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetOverdue()', null);
 
     var self = this;
     var grpHash = hash(grpId);
@@ -963,9 +951,8 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
     var cache = global.cache;
     if (cache) {
         var overdue = cache.get('tickets:overdue:' + grpHash);
-        if (overdue) {
+        if (overdue)
             return callback(null, overdue);
-        }
     }
 
     var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
@@ -1025,8 +1012,8 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getTicketsByTag = function(grpId, tagId, callback) {
-    if (_.isUndefined(grpId)) return callback("Invalid Group Ids - TicketSchema.GetTicketsByTag()", null);
-    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTicketsByTag()", null);
+    if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetTicketsByTag()', null);
+    if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTicketsByTag()', null);
 
     var self = this;
 
@@ -1045,13 +1032,13 @@ ticketSchema.statics.getTicketsByTag = function(grpId, tagId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getAllTicketsByTag = function(tagId, callback) {
-    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetAllTicketsByTag()", null);
+    if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetAllTicketsByTag()', null);
 
     var self = this;
 
     var q = self.model(COLLECTION).find({tags: tagId, deleted: false});
 
-    return q.lean().exec(callback);
+    return q.exec(callback);
 };
 
 /**
@@ -1066,8 +1053,8 @@ ticketSchema.statics.getAllTicketsByTag = function(tagId, callback) {
  * @param {Boolean} limit Should Limit results?
  */
 ticketSchema.statics.getTicketsByType = function(grpId, typeId, callback, limit) {
-    if (_.isUndefined(grpId)) return callback("Invalid Group Ids = TicketSchema.GetTicketsByType()", null);
-    if (_.isUndefined(typeId)) return callback("Invalid Ticket Type Id - TicketSchema.GetTicketsByType()", null);
+    if (_.isUndefined(grpId)) return callback('Invalid Group Ids = TicketSchema.GetTicketsByType()', null);
+    if (_.isUndefined(typeId)) return callback('Invalid Ticket Type Id - TicketSchema.GetTicketsByType()', null);
 
     var self = this;
 
@@ -1088,7 +1075,7 @@ ticketSchema.statics.getTicketsByType = function(grpId, typeId, callback, limit)
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.getAllTicketsByType = function(typeId, callback) {
-    if (_.isUndefined(typeId)) return callback("Invalid Ticket Type Id - TicketSchema.GetAllTicketsByType()", null);
+    if (_.isUndefined(typeId)) return callback('Invalid Ticket Type Id - TicketSchema.GetAllTicketsByType()', null);
 
     var self = this;
     var q = self.model(COLLECTION).find({type: typeId});
@@ -1098,18 +1085,18 @@ ticketSchema.statics.getAllTicketsByType = function(typeId, callback) {
 
 ticketSchema.statics.updateType = function(oldTypeId, newTypeId, callback) {
     if (_.isUndefined(oldTypeId) || _.isUndefined(newTypeId))
-        return callback("Invalid IDs - TicketSchema.UpdateType()", null);
+        return callback('Invalid IDs - TicketSchema.UpdateType()', null);
 
     var self = this;
     return self.model(COLLECTION).update({type: oldTypeId}, {$set: {type: newTypeId}}, {multi: true, new: false}, callback);
 };
 
-ticketSchema.statics.getAssigned = function(user_id, callback) {
-    if (_.isUndefined(user_id)) return callback("Invalid Id - TicketSchema.GetAssigned()", null);
+ticketSchema.statics.getAssigned = function(userId, callback) {
+    if (_.isUndefined(userId)) return callback('Invalid Id - TicketSchema.GetAssigned()', null);
 
     var self = this;
 
-    var q = self.model(COLLECTION).find({assignee: user_id, deleted: false, status: {$ne: 3}})
+    var q = self.model(COLLECTION).find({assignee: userId, deleted: false, status: {$ne: 3}})
         .populate('owner assignee comments.owner notes.owner subscribers history.owner', 'username fullname email role image title')
         .populate('type tags group');
 
@@ -1160,28 +1147,23 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
             q.exec(function(err, t) {
                 if (err) return next(err);
 
-                var a = [];
+                var arr = [];
 
                 for (var i = 0; i < t.length; i++) {
                     var ticket = t[i];
                     if (ticket.group) {
-                        ticketsDb.push({ticketId: t[i]._id, groupId: t[i].group._id});
+                        ticketsDb.push({ticketId: ticket._id, groupId: ticket.group._id});
                         var o = {};
                         o._id = ticket.group._id;
                         o.name = ticket.group.name;
 
-                        if (!_.filter(a, {'name': o.name}).length)
-                            a.push(o);
-                        else
-                            o = null;
+                        if (!_.filter(arr, {'name': o.name}).length)
+                            arr.push(o);
 
                     }
-                    ticket = null;
                 }
 
-                var final = _.uniq(a);
-
-                return next(null, final);
+                return next(null, _.uniq(arr));
             });
         },
         function(grps, next) {
@@ -1211,21 +1193,21 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 };
 
 ticketSchema.statics.getTagCount = function(tagId, callback) {
-    if (_.isUndefined(tagId)) return callback("Invalid Tag Id - TicketSchema.GetTagCount()", null);
+    if (_.isUndefined(tagId)) return callback('Invalid Tag Id - TicketSchema.GetTagCount()', null);
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({tags: tagId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({tags: tagId, deleted: false});
 
     return q.exec(callback);
 };
 
 ticketSchema.statics.getTypeCount = function(typeId, callback) {
-    if (_.isUndefined(typeId)) return callback("Invalid Type Id - TicketSchema.GetTypeCount()", null);
+    if (_.isUndefined(typeId)) return callback('Invalid Type Id - TicketSchema.GetTypeCount()', null);
 
     var self = this;
 
-    var q = self.model(COLLECTION).count({type: typeId, deleted: false});
+    var q = self.model(COLLECTION).countDocuments({type: typeId, deleted: false});
 
     return q.exec(callback);
 };
@@ -1242,7 +1224,7 @@ ticketSchema.statics.getTypeCount = function(typeId, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 ticketSchema.statics.softDelete = function(oId, callback) {
-    if (_.isUndefined(oId)) return callback("Invalid ObjectID - TicketSchema.SoftDelete()", null);
+    if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.SoftDelete()', null);
 
     var self = this;
 

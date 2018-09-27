@@ -41,22 +41,61 @@
             <ul class="all-user-list message-items scrollable">
                 {{#each data.common.users}}
                     {{#compare username '!=' ../data.common.loggedInAccount.username}}
-                        <li data-search-term="{{lowercase fullname}}" ng-click="startNewConversation('{{_id}}');">
-                            <div class="profile-pic">
-                                {{#if image}}
-                                    <img src="/uploads/users/{{image}}" class="uk-border-circle profileImage"/>
-                                {{else}}
-                                    <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage"/>
-                                {{/if}}
-                                <span class="user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
-                            </div>
-                            <div class="convo-info">
-                                <span class="message-from">{{fullname}}</span>
-                                <span class="message-date">{{group.name}}</span>
-                                <span class="message-subject">{{email}}</span>
-                            </div>
-                        </li>
+                        {{#compare ../data.common.loggedInAccount.role '==' 'user'}}
+                            <!-- Only allow 'user' role to see 'support' and 'admin' -->
+                            {{#compare role '==' 'support'}}
+                                <li data-search-term="{{lowercase fullname}}" ng-click="startNewConversation('{{_id}}');">
+                                    <div class="profile-pic">
+                                        {{#if image}}
+                                            <img src="/uploads/users/{{image}}" class="uk-border-circle profileImage"/>
+                                        {{else}}
+                                            <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage"/>
+                                        {{/if}}
+                                        <span class="user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
+                                    </div>
+                                    <div class="convo-info">
+                                        <span class="message-from">{{fullname}}</span>
+                                        <span class="message-date">{{group.name}}</span>
+                                        <span class="message-subject">{{email}}</span>
+                                    </div>
+                                </li>
+                            {{/compare}}
+                            <!-- Only allow 'user' role to see 'support' and 'admin' -->
+                            {{#compare role '==' 'admin'}}
+                                <li data-search-term="{{lowercase fullname}}" ng-click="startNewConversation('{{_id}}');">
+                                    <div class="profile-pic">
+                                        {{#if image}}
+                                            <img src="/uploads/users/{{image}}" class="uk-border-circle profileImage"/>
+                                        {{else}}
+                                            <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage"/>
+                                        {{/if}}
+                                        <span class="user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
+                                    </div>
+                                    <div class="convo-info">
+                                        <span class="message-from">{{fullname}}</span>
+                                        <span class="message-date">{{group.name}}</span>
+                                        <span class="message-subject">{{email}}</span>
+                                    </div>
+                                </li>
+                            {{/compare}}
 
+                        {{else}}
+                            <li data-search-term="{{lowercase fullname}}" ng-click="startNewConversation('{{_id}}');">
+                                <div class="profile-pic">
+                                    {{#if image}}
+                                        <img src="/uploads/users/{{image}}" class="uk-border-circle profileImage"/>
+                                    {{else}}
+                                        <img src="/uploads/users/defaultProfile.jpg" class="uk-border-circle profileImage"/>
+                                    {{/if}}
+                                    <span class="user-offline uk-border-circle" data-user-status-id="{{_id}}"></span>
+                                </div>
+                                <div class="convo-info">
+                                    <span class="message-from">{{fullname}}</span>
+                                    <span class="message-date">{{group.name}}</span>
+                                    <span class="message-subject">{{email}}</span>
+                                </div>
+                            </li>
+                        {{/compare}}
                     {{/compare}}
                 {{/each}}
             </ul>
@@ -82,13 +121,13 @@
                                          src="/uploads/users/{{owner.image}}"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
                                 {{else}}
                                     <img class="profileImage"
                                          src="/uploads/users/defaultProfile.jpg"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}"/>
+                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
                                 {{/if}}
                                 <div class="message-body">
                                     <p>{{{body}}}</p>
@@ -96,7 +135,7 @@
                             </div>
                         {{else}}
                             <div class="message message-right">
-                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{owner.fullname}} - {{formatDate createdAt 'h:mma'}}">
+                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{formatDate createdAt 'MM/DD/YY h:mma'}}">
                                     <p>{{{body}}}</p>
                                 </div>
                             </div>

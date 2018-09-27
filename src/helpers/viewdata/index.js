@@ -26,13 +26,32 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+            viewdata.hostname = request.hostname;
+            viewdata.hosturl = request.protocol + '://' + request.get('host');
+
+            // If hosturl setting is not set. Let's set it.
+              var settingSchema = require('../../models/setting');
+              settingSchema.getSetting('gen:siteurl', function(err, setting) {
+                  if (!err && !setting) {
+                      settingSchema.create({
+                          name: 'gen:siteurl',
+                          value: viewdata.hosturl
+                      }, function() {
+                          return callback();
+                      });
+                  } else 
+                      return callback();
+                  
+              });
+          },
+          function(callback) {
               viewController.getActiveNotice(function(err, data) {
                   if (err) return callback(err);
                   viewdata.notice = data;
                   viewdata.noticeCookieName = undefined;
 
                   if (!_.isUndefined(data) && !_.isNull(data))
-                    viewdata.noticeCookieName = data.name + "_" + moment(data.activeDate).format("MMMDDYYYY_HHmmss");
+                    viewdata.noticeCookieName = data.name + '_' + moment(data.activeDate).format('MMMDDYYYY_HHmmss');
 
                   return callback();
               });
@@ -43,7 +62,7 @@ viewController.getData = function(request, cb) {
 
                   viewdata.notifications.items = data;
                   return callback();
-              })
+              });
           },
           function(callback) {
               viewController.getUnreadNotificationsCount(request, function(err, count) {
@@ -93,6 +112,24 @@ viewController.getData = function(request, cb) {
               });
           },
           function(callback) {
+            viewController.getDefaultTicketType(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.defaultTicketType = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
+            viewController.getPriorities(request, function(err, data) {
+                if (err) return callback();
+
+                viewdata.priorities = data;
+
+                return callback();
+            });
+          },
+          function(callback) {
               viewController.getTags(request, function(err, data) {
                   if (err) return callback();
 
@@ -127,9 +164,9 @@ viewController.getData = function(request, cb) {
             });
           }
       ], function(err) {
-          if (err) {
+          if (err) 
               winston.warn('Error: ' + err);
-          }
+          
 
           return cb(viewdata);
       });
@@ -158,7 +195,7 @@ viewController.getUserNotifications = function(request, callback) {
         // data = _.take(data, 5);
 
         return callback(null, data);
-    })
+    });
 };
 
 viewController.getUnreadNotificationsCount = function(request, callback) {
@@ -188,9 +225,9 @@ viewController.getConversations = function(request, callback) {
             var c = convo.toObject();
 
             var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === request.user._id.toString(); })];
-            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
+            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) 
                 return done();
-            }
+            
 
             messageSchema.getMostRecentMessage(c._id, function(err, rm) {
                 if (err) return done(err);
@@ -203,19 +240,19 @@ viewController.getConversations = function(request, callback) {
                 rm = _.first(rm);
 
                 if (!_.isUndefined(rm)) {
-                    if (String(c.partner._id) === String(rm.owner._id)) {
+                    if (String(c.partner._id) === String(rm.owner._id)) 
                         c.recentMessage = c.partner.fullname + ': ' + rm.body;
-                    } else {
-                        c.recentMessage = 'You: ' + rm.body
-                    }
-                } else {
+                     else 
+                        c.recentMessage = 'You: ' + rm.body;
+                    
+                } else 
                     c.recentMessage = 'New Conversation';
-                }
+                
 
                 convos.push(c);
 
                 return done();
-            })
+            });
 
         }, function(err) {
             return callback(err, convos);
@@ -250,9 +287,9 @@ viewController.getUsers = function(request, callback) {
 viewController.loggedInAccount = function(request, callback) {
     var userSchema = require('../../models/user');
     userSchema.getUser(request.user._id, function(err, data) {
-        if (err) {
+        if (err) 
             return callback(err);
-        }
+        
 
         return callback(data);
     });
@@ -295,6 +332,40 @@ viewController.getTypes = function(request, callback) {
     });
 };
 
+viewController.getDefaultTicketType = function(request, callback) {
+    var settingSchema = require('../../models/setting');
+    settingSchema.getSetting('ticket:type:default', function(err, defaultType) {
+        if (err) {
+            winston.debug('Error viewController:getDefaultTicketType: ', err);
+            return callback(err);
+        }
+
+        var typeSchema = require('../../models/tickettype');
+        typeSchema.getType(defaultType.value, function(err, type) {
+            if (err) {
+                winston.debug('Error viewController:getDefaultTicketType: ', err);
+                return callback(err);
+            }
+
+            return callback(null, type);
+        });
+    });
+};
+
+viewController.getPriorities = function(request, callback) {
+    var ticketPrioritySchema = require('../../models/ticketpriority');
+    ticketPrioritySchema.getPriorities(function(err, priorities) {
+        if (err) {
+            winston.debug('Error viewController:getPriorities: ' + err);
+            return callback(err);
+        }
+
+        priorities = _.sortBy(priorities, ['migrationNum', 'name']);
+
+        return callback(null, priorities);
+    });
+};
+
 viewController.getTags = function(request, callback) {
     var tagSchema = require('../../models/tag');
 
@@ -304,7 +375,7 @@ viewController.getTags = function(request, callback) {
             return callback(err);
         }
 
-        data = _.sortBy(data, 'name');
+        // data = _.sortBy(data, 'name');
 
         return callback(null, data);
     });
@@ -336,11 +407,10 @@ viewController.getShowTourSetting = function(request, callback) {
         var userSchema = require('../../models/user');
         userSchema.getUser(request.user._id, function(err, user) {
             var hasTourCompleted = false;
-            if (user.preferences.tourCompleted === undefined) {
-                hasTourCompleted = false;
-            } else {
+
+            if (user.preferences.tourCompleted)
                 hasTourCompleted = user.preferences.tourCompleted;
-            }
+
 
             if (hasTourCompleted) return callback(null, false);
 
@@ -348,7 +418,7 @@ viewController.getShowTourSetting = function(request, callback) {
 
             return callback(null, data.value);
         });
-    })
+    });
 };
 
 viewController.getPluginsInfo = function(request, callback) {

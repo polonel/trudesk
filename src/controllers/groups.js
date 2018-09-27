@@ -30,7 +30,7 @@ groupsController.get = function(req, res) {
     }
 
     var content = {};
-    content.title = "Groups";
+    content.title = 'Groups';
     content.nav = 'groups';
 
     content.data = {};
@@ -62,7 +62,7 @@ groupsController.getCreate = function(req, res) {
     }
 
     var content = {};
-    content.title = "Groups";
+    content.title = 'Groups';
     content.nav = 'groups';
 
     content.data = {};
@@ -74,7 +74,7 @@ groupsController.getCreate = function(req, res) {
     userSchema.findAll(function(err, users) {
         if (err) return handleError(res, err);
 
-        content.data.users = _.sortBy(users, "fullname");
+        content.data.users = _.sortBy(users, 'fullname');
 
         res.render('subviews/createGroup', content);
     });
@@ -88,7 +88,7 @@ groupsController.edit = function(req, res) {
     }
 
     var content = {};
-    content.title = "Groups";
+    content.title = 'Groups';
     content.nav = 'groups';
 
     content.data = {};
@@ -124,9 +124,9 @@ groupsController.edit = function(req, res) {
 };
 
 function handleError(res, err) {
-    if (err) {
+    if (err) 
         return res.render('error', {layout: false, error: err, message: err.message});
-    }
+    
 }
 
 module.exports = groupsController;

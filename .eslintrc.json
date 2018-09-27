@@ -2,13 +2,25 @@
   "plugins": ["node"],
   "extends": ["eslint:recommended", "plugin:node/recommended"],
   "root": true,
+  "parserOptions": {
+    "ecmaVersion": 5
+  },
   "env": {
     "browser": true,
     "node": true
   },
   "rules": {
     "node/exports-style": ["error", "module.exports"],
-    "no-console": "off"
+    "no-console": "off",
+//    "new-cap": "error",
+    "quotes": ["error", "single"],
+    "curly": ["error", "multi-or-nest"],
+    "complexity": ["error", 20],
+    "wrap-iife": ["error", "outside"],
+    "semi": ["error", "always"],
+    "no-extra-semi": "error",
+    "no-func-assign": "error",
+    "no-redeclare": "error"
   },
   "globals": {
     "angular": 1,
@@ -17,6 +29,7 @@
     "MG": 1,
     "Snackbar": 1,
     "ROLES": 1,
-    "io": 1
+    "io": 1,
+    "d3": 1
   }
 }

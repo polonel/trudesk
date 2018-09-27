@@ -49,5 +49,7 @@ private/
 config.local.json
 public/css/app.min.css
 public/css/app.css
-config.json.aws
-config.json.local
+*.aws
+*.local
+sonar-project.properties
+.scannerwork/

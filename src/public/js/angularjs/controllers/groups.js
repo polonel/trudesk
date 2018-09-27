@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'], function(angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'multiselect'], function(angular, _, $, helpers, UIkit) {
     return angular.module('trudesk.controllers.groups', [])
         .controller('groupsCtrl', function($scope, $http, $timeout, $log) {
 
@@ -30,21 +30,13 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                         var form = $('#editGroupForm');
                         form.find('#__EditId').text(group._id);
                         form.find('#gName').val(group.name).parent().addClass('md-input-filled');
-                        var $members = form.find('#gMembers')[0].selectize;
-                        var $sendMailTo = form.find('#gSendMailTo')[0].selectize;
+                        var mappedMembers = _.map(group.members, '_id');
+                        var mappedSendMailTo = _.map(group.sendMailTo, '_id');
 
-                        _.each(group.members, function(i) {
-                            if (i)
-                                $members.addItem(i._id, true);
-                        });
-
-                        _.each(group.sendMailTo, function(i) {
-                            if (i)
-                                $sendMailTo.addItem(i._id, true);
-                        });
-
-                        $members.refreshItems();
-                        $sendMailTo.refreshItems();
+                        form.find('#gMembers').multiSelect('deselect_all');
+                        form.find('#gMembers').multiSelect('select', mappedMembers);
+                        form.find('#gSendMailTo').multiSelect('deselect_all');
+                        form.find('#gSendMailTo').multiSelect('select', mappedSendMailTo);
 
                         UIkit.modal('#groupEditModal').show();
                     })
@@ -60,11 +52,15 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     helpers.UI.showSnackbar('Unable to get Group ID', true);
                     return false;
                 }
-                var formData = $('#editGroupForm').serializeObject();
+                var $form = $('#editGroupForm');
+                var formData = $form.serializeObject();
+                var members = $form.find('#gMembers').val();
+                var sendMailTo = $form.find('#gSendMailTo').val();
+
                 var apiData = {
                     name: formData.gName,
-                    members: formData.gMembers,
-                    sendMailTo: formData.gSendMailTo
+                    members: members,
+                    sendMailTo: sendMailTo
                 };
 
                 $http({
@@ -101,7 +97,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                 })
                     .success(function() {
                         helpers.UI.showSnackbar('Group Created Successfully', false);
-                        UIkit.modal("#groupCreateModal").hide();
+                        UIkit.modal('#groupCreateModal').hide();
                         //Refresh Grid
                         $timeout(function() {
                             refreshGrid();
@@ -110,18 +106,16 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     .error(function(err) {
                         $log.log('[trudesk:groups:createGroup] - Error: ' + err);
                         helpers.UI.showSnackbar(err, true);
-                    })
+                    });
             };
 
             $scope.deleteGroup = function(event) {
                 event.preventDefault();
-                var self = $(event.target);
+                var self = $(event.currentTarget);
                 var groupID = self.attr('data-group-id');
                 var card = self.parents('.tru-card-wrapper');
                 if (groupID) {
-                    UIkit.modal.confirm(
-                    'Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>'
-                    , function() {
+                    UIkit.modal.confirm('Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>', function() {
                             helpers.showLoader(0.8);
                             $http.delete(
                             '/api/v1/groups/' + groupID
@@ -161,8 +155,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                             html += buildHTML(group);
                         });
 
-                        var $injector = angular.injector(["ng", "trudesk"]);
-                        $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
+                        var $injector = angular.injector(['ng', 'trudesk']);
+                        $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
                             var $scope = $groupList.append(html).scope();
                             $compile($groupList)($scope || $rootScope);
                             $rootScope.$digest();
@@ -173,7 +167,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history'
                     .error(function(err) {
                         $log.log('[trudesk:groups:refreshGrid] - Error: ' + err.error);
                         helpers.UI.showSnackbar(err.error, true);
-                    })
+                    });
 
             }
 

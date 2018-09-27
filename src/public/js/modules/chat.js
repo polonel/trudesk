@@ -56,11 +56,11 @@ define('modules/chat',[
             var isUserRole = loggedInAccount.role === 'user';
             var filteredData = _.filter(data, function(item) { return item.user.username !== username; });
             var activeNow = $('.active-now');
-            if (_.size(filteredData) < 1) {
+            if (_.size(filteredData) < 1) 
                 activeNow.hide();
-            } else {
+             else 
                 activeNow.show();
-            }
+            
             onlineList.html('');
             var activeCount = 0;
             _.each(filteredData, function(v) {
@@ -107,7 +107,7 @@ define('modules/chat',[
         socket.removeAllListeners('$trudesk:chat:updateOnlineBubbles');
         socket.on('$trudesk:chat:updateOnlineBubbles', function(data) {
             var $u = _.throttle(function() {
-                UpdateOnlineBubbles(data);
+                updateOnlineBubbles(data);
             }, 1000, {trailing: false});
 
             $u();
@@ -122,7 +122,7 @@ define('modules/chat',[
                     if (err) {
                         console.log('[trudesk:chat:openChatWindow] - Error');
                         console.error(err);
-                        return helpers.UI.showSnackbar('Unable to start chat', true);
+                        helpers.UI.showSnackbar('Unable to start chat', true);
                     } else {
                         var splitPath = window.location.pathname.split('/');
                         if (splitPath.length > 1) {
@@ -132,9 +132,9 @@ define('modules/chat',[
                             History.pushState(null, null, '/messages/' + convo._id, true);
                     }
                 });
-            } else {
+            } else 
                 chatClient.openChatWindow(data);
-            }
+            
         });
 
         socket.removeAllListeners('chatMessage');
@@ -188,8 +188,8 @@ define('modules/chat',[
             var scroller = chatBox.find('.chat-box-messages');
             if (scroller.length > 0)
                 // Only scroll if the scroller is on bottom
-                if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight)
-                    helpers.scrollToBottom(scroller);
+                {if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight)
+                    helpers.scrollToBottom(scroller);}
 
             scroller = $('#message-content');
             if (scroller.length > 0) {
@@ -211,15 +211,15 @@ define('modules/chat',[
 
         $(window).on('$trudesk:chat:stoptyping.chatSystem', function(event, data) {
             var chatBox = [];
-            var scroller = undefined;
+            var scroller;
             chatBox[0] = $('#message-content[data-conversation-id="' + data.cid + '"]');
             chatBox[1] = $('.chat-box[data-conversation-id="' + data.cid + '"]');
             for (var i = 0; i < chatBox.length; i++) {
                 chatBox[i].find('.user-is-typing-wrapper').addClass('hide');
                 scroller = chatBox[i].find('.chat-box-messages');
                 if (scroller.length > 0)
-                    if (scroller.scrollTop() === scroller[0].scrollHeight)
-                        helpers.scrollToBottom(scroller);
+                    {if (scroller.scrollTop() === scroller[0].scrollHeight)
+                        helpers.scrollToBottom(scroller);}
             }
 
             scroller = $('#message-content');
@@ -335,7 +335,7 @@ define('modules/chat',[
 
         $chatBoxText.off('click');
         $chatBoxText.click(function(e) {
-            if ($(this).children('textarea').is(":focus")) {
+            if ($(this).children('textarea').is(':focus')) {
                 e.stopPropagation();
                 return false;
             }
@@ -372,9 +372,9 @@ define('modules/chat',[
 
     //Make this return messages with single HTTP request
     function startConversation(owner, receiver, callback) {
-        if (owner === receiver) {
+        if (owner === receiver) 
             return callback('Invalid Participants');
-        } else {
+         else {
             $.ajax({
                 url: '/api/v1/messages/conversation/start',
                 type: 'POST',
@@ -392,14 +392,14 @@ define('modules/chat',[
                         url: '/api/v1/messages/conversation/' + data.conversation._id,
                         type: 'GET',
                         success: function(d) {
-                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() === owner.toString()})];
+                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() === owner.toString(); })];
                             if (userMeta && userMeta.deletedAt) {
                                 d.messages = _.filter(d.messages, function(message) {
                                     return moment(message.createdAt) > moment(userMeta.deletedAt);
                                 });
                             }
                             data.conversation.messages = d.messages;
-                            return callback(null, data.conversation)
+                            return callback(null, data.conversation);
                         },
                         error: function(err) {
                             return callback(err);
@@ -419,7 +419,7 @@ define('modules/chat',[
             chatMessageList,
             scroller;
 
-        messageArray = messageArray.reverse();
+        messageArray.reverse();
 
         _.each(messageArray, function(m) {
             if (m.owner._id === to) {
@@ -490,9 +490,9 @@ define('modules/chat',[
             return true;
         }
         var loggedInAccountId = loggedInAccount._id;
-        if (_.isUndefined(loggedInAccountId)) {
+        if (_.isUndefined(loggedInAccountId)) 
             return helpers.UI.showSnackbar('Unable to start chat', true);
-        }
+        
 
         startConversation(loggedInAccountId, user._id, function(err, convo) {
             if (err) {
@@ -570,7 +570,7 @@ define('modules/chat',[
         socket.emit('$trudesk:chat:updateOnlineBubbles');
     };
 
-    function UpdateOnlineBubbles(usersOnline) {
+    function updateOnlineBubbles(usersOnline) {
         $('span[data-user-status-id]').each(function() {
             $(this).removeClass('user-online user-idle').addClass('user-offline');
         });
@@ -594,7 +594,7 @@ define('modules/chat',[
 
                 self.removeClass('user-offline user-online').addClass('user-idle');
             });
-        })
+        });
     }
 
     function createChatMessageDiv(message) {

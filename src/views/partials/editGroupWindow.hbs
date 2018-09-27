@@ -6,22 +6,38 @@
                 <label for="gName">Group Name</label>
                 <input type="text" class="md-input" id="gName" name="gName"/>
             </div>
-            <div class="uk-margin-small-bottom">
+            <div class="uk-margin-medium-bottom">
                 <label for="gMembers" class="uk-form-label nopadding">Members</label>
-                <select class="selectize-white" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">
-                    {{#each data.users}}
-                        <option value="{{id}}">{{fullname}}</option>
-                    {{/each}}
-                </select>
-            </div>
-            <div class="uk-margin-small-bottom">
-                <label for="gSendMailTo" class="uk-form-label nopadding">Send Mail To</label>
-                <select name="gSendMailTo" id="gSendMailTo" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                <select multiple="multiple" name="gMembers[]" id="gMembers" class="multiselect">
                     {{#each data.users}}
                         <option value="{{_id}}">{{fullname}}</option>
                     {{/each}}
                 </select>
             </div>
+            <div class="uk-margin-small-bottom">
+                <label for="gSendMailTo" class="uk-form-label nopadding">Send Notifications To</label>
+                <select multiple="multiple" name="gSendMailTo[]" id="gSendMailTo" class="multiselect">
+                    {{#each data.users}}
+                        <option value="{{_id}}">{{fullname}}</option>
+                    {{/each}}
+                </select>
+            </div>
+            <!--<div class="uk-margin-small-bottom">-->
+                <!--<label for="gMembers" class="uk-form-label nopadding">Members</label>-->
+                <!--<select class="selectize-white" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">-->
+                    <!--{{#each data.users}}-->
+                        <!--<option value="{{id}}">{{fullname}}</option>-->
+                    <!--{{/each}}-->
+                <!--</select>-->
+            <!--</div>-->
+            <!--<div class="uk-margin-small-bottom">-->
+                <!--<label for="gSendMailTo" class="uk-form-label nopadding">Send Mail To</label>-->
+                <!--<select name="gSendMailTo" id="gSendMailTo" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">-->
+                    <!--{{#each data.users}}-->
+                        <!--<option value="{{_id}}">{{fullname}}</option>-->
+                    <!--{{/each}}-->
+                <!--</select>-->
+            <!--</div>-->
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
                 <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitEditGroup" ng-click="saveEditGroup($event)">Save Changes</button>

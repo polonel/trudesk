@@ -44,6 +44,7 @@
       &.top-bar-icon a
         font-size: 30px
         font-family: "FontAwesome", sans-serif
+        max-height: 75px
 
         &:hover
           color: $topbar_icons_hover !important
@@ -73,7 +74,7 @@
           font-size: 30px
           fill: $topbar_icons
           &.material-icons
-            margin-top: 5px
+            margin-top: 2px
             line-height: 70px
         svg
           width: 32px !important
@@ -197,20 +198,21 @@
     padding: 0
     font-size: 12px
 
-div.actions
-  width: 100%
-  height: auto
-  border-bottom: 1px solid rgba(100,100,100,0.4)
-  line-height: 24px
-  font-size: 12px
-  color: #000
-  font-family: "Roboto", sans-serif
-  a
+.notifications
+  .actions
     width: 100%
-    padding: 5px 10px
+    height: auto
+    border-bottom: 1px solid rgba(100,100,100,0.4)
+    line-height: 24px
+    font-size: 12px
+    color: #000
+    font-family: "Roboto", sans-serif
+    a
+      width: 100%
+      padding: 5px 10px
 
-  strong
-    margin-left: 8px
+    strong
+      margin-left: 8px
 
 //Message Notification
 #mail-notifications,

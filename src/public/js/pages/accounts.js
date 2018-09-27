@@ -28,33 +28,38 @@ define('pages/accounts', [
     'history'
 
 ], function(_, $, angular, helpers, UIkit, socket) {
-    "use strict";
+    'use strict';
     var accountsPage = {};
 
     String.prototype.capitalizeFirstLetter = function() {
         return this.charAt(0).toUpperCase() + this.slice(1);
     };
 
-    accountsPage.init = function(callback) {
+    accountsPage.init = function(callback, reset) {
         $(document).ready(function() {
-            var $account_list   = $('#account_list'),
-                $scroller       = $account_list.parents('.scrollable'),
+            var $accountList   = $('#account_list'),
+                $scroller       = $accountList.parents('.scrollable'),
                 $scrollspy      = $('#scrollspy'),
                 $spinner        = $scrollspy.find('i'),
                 $filterAll      = $('.filter-all'),
 
-                $nextPage       = 2,
+                $nextPage       = 1,
                 $enabled        = true,
                 $loading        = false;
 
-            UIkit.grid($account_list,{
+            if (reset) {
+                $nextPage = 0;
+                getAccounts();
+            }
+
+            UIkit.grid($accountList,{
                 controls: '#account_list_filter',
                 gutter: 20
             });
 
             $scroller.scroll(function() {
                 if ($scrollspy.isInView($scroller)) {
-                    var run = _.throttle(getAccounts, 100);
+                    var run = _.throttle(getAccounts, 500);
                     run();
                 }
             });
@@ -67,9 +72,9 @@ define('pages/accounts', [
                 }, 280);
             });
 
-            $("#account_list_search").keyup(function(e) {
+            $('#account_list_search').keyup(function(e) {
                 e.preventDefault();
-                var key = event.keyCode || event.which;
+                var key = e.keyCode || e.which;
 
                 var sValue = $(this).val().toLowerCase();
 
@@ -82,17 +87,17 @@ define('pages/accounts', [
                     $.ajax({
                         url: '/api/v1/users?search=' + sValue,
                         success: function(data) {
-                            $account_list.children().css('display', 'none');
+                            $accountList.children().css('display', 'none');
                             var users = data.users;
                             var html = '';
                             _.each(users, function(u) {
                                 html += buildUserHTML(u, true);
                             });
 
-                            var $injector = angular.injector(["ng", "trudesk"]);
-                            $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
-                                var $scope = $account_list.append(html).scope();
-                                $compile($account_list)($scope || $rootScope);
+                            var $injector = angular.injector(['ng', 'trudesk']);
+                            $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
+                                var $scope = $accountList.append(html).scope();
+                                $compile($accountList)($scope || $rootScope);
                                 $rootScope.$digest();
                             }]);
 
@@ -118,16 +123,16 @@ define('pages/accounts', [
             });
 
             function getAccounts() {
-                if (!$enabled || $loading) {
+                if (!$enabled || $loading)
                     return false;
-                }
+
                 if (!$filterAll.hasClass('uk-active')) return true;
 
                 $loading = true;
                 $spinner.removeClass('uk-hidden');
 
                 $.ajax({
-                    url: '/api/v1/users?page=' + $nextPage
+                    url: '/api/v1/users?limit=20&page=' + $nextPage
                 }).done(function (data) {
                     $spinner.addClass('uk-hidden');
                     var users = data.users;
@@ -140,14 +145,22 @@ define('pages/accounts', [
                     var html = '';
 
                     _.each(users, function (u) {
-                        var h = buildUserHTML(u, false);
+                        var h = null;
+                        if (reset) {
+                            $accountList.html('');
+                            h = buildUserHTML(u, true);
+                            reset = false;
+                        } else
+                            h = buildUserHTML(u, false);
+
+
                         if (h.length > 0) html += h;
                     });
 
-                    var $injector = angular.injector(["ng", "trudesk"]);
-                    $injector.invoke(["$compile", "$rootScope", function ($compile, $rootScope) {
-                        var $scope = $account_list.append(html).scope();
-                        $compile($account_list)($scope || $rootScope);
+                    var $injector = angular.injector(['ng', 'trudesk']);
+                    $injector.invoke(['$compile', '$rootScope', function ($compile, $rootScope) {
+                        var $scope = $accountList.append(html).scope();
+                        $compile($accountList)($scope || $rootScope);
                         $rootScope.$digest();
                     }]);
 
@@ -184,31 +197,31 @@ define('pages/accounts', [
 
         var html    =  '<div data-uk-filter="' + user.role + ',' + user.fullname + '">';
             if (addRemove)
-            html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '" data-search-result>';
+                html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '" data-search-result>';
             else
-            html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">';
+                html    +=      '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">';
 
             if (user.role === 'admin')
-            html    +=          '<div class="tru-card-head tru-card-head-admin">';
+                html    +=          '<div class="tru-card-head tru-card-head-admin">';
             else
-            html    +=          '<div class="tru-card-head ' + (user.deleted ? "tru-card-head-deleted" : "") +'">';
+                html    +=          '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">';
 
             html    +=              '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">';
             html    +=                  '<i class="material-icons tru-icon">&#xE5D4;</i>';
             html    +=                  '<div class="uk-dropdown uk-dropdown-small">';
             html    +=                      '<ul class="uk-nav">';
             html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="editAccount($event)" class="no-ajaxy">Edit</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action ' + (user.deleted ? "hide" : "") + '">Delete</a></li>';
-            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="no-ajaxy enable-account-action ' + (!user.deleted ? "hide" : "") + '">Enable</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action ' + (user.deleted ? 'hide' : '') + '">Delete</a></li>';
+            html    +=                          '<li><a href="#" data-username="' + user.username + '" ng-click="enableAccount($event)" class="no-ajaxy enable-account-action ' + (!user.deleted ? 'hide' : '') + '">Enable</a></li>';
             html    +=                      '</ul>';
             html    +=                  '</div>';
             html    +=              '</div>';
             html    +=              '<div class="uk-text-center">';
             html    +=                  '<div class="account-image relative uk-display-inline-block">';
             if (user.image)
-            html    +=                      '<img src="/uploads/users/' + user.image + '" alt="Profile Pic" class="tru-card-head-avatar" />';
+                html    +=                      '<img src="/uploads/users/' + user.image + '?' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000) + '" alt="Profile Pic" class="tru-card-head-avatar" />';
             else
-            html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
+                html    +=                      '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />';
             html    +=                      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' + user._id + '"></span>';
             html    +=                  '</div>';
 
@@ -238,9 +251,10 @@ define('pages/accounts', [
             html    +=                          '<span class="uk-text-small uk-text-muted uk-text-truncate">';
         _.each(user.groups, function(g) {
             html    +=  g;
-            if (_.size(user.groups) > 1)
-            if (_.last(user.groups) !== g)
-            html    += ', ';
+            if (_.size(user.groups) > 1) {
+                if (_.last(user.groups) !== g)
+                    html += ', ';
+            }
         });
             html    +=                          '</span>';
             html    +=                      '</div>';

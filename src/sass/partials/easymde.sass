@@ -1,0 +1,81 @@
+.CodeMirror
+  height: 250px
+  border-radius: 0
+.CodeMirror-fullscreen
+  z-index: 10 !important
+
+.editor-preview-side
+  z-index: 10 !important
+
+.editor-toolbar
+  border-radius: 0
+  border-color: #ddd !important
+  &:hover
+    button
+      transition: opacity linear 0.4ms
+      opacity: 1
+  button
+    width: 26px
+    height: 26px
+    margin-right: 2px
+    opacity: 0.8
+    &:focus
+      background-color: #fff
+  i.separator
+    margin: 3px 6px
+    vertical-align: top
+  &:after
+    margin-top: 0
+
+.mi-bold:after,
+.mi-italic:after,
+.mi-title:after,
+.mi-code:after,
+.mi-quote:after,
+.mi-list:after,
+.mi-numlist:after,
+.mi-link:after,
+.mi-image:after,
+.mi-preview:after,
+.mi-columns:after,
+.mi-fullscreen:after
+  content: "format_bold"
+  font-family: "Material Icons", sans-serif
+  font-size: 24px
+  height: 24px
+  width: 24px
+  margin-left: 0 !important
+  color: #757575
+
+.mi-italic:after
+  content: "format_italic"
+
+.mi-title:after
+  content: 'title'
+
+.mi-code:after
+  content: 'code'
+
+.mi-quote:after
+  content: 'format_quote'
+
+.mi-list:after
+  content: 'format_list_bulleted'
+
+.mi-numlist:after
+  content: 'format_list_numbered'
+
+.mi-link:after
+  content: 'link'
+
+.mi-image:after
+  content: 'image'
+
+.mi-preview:after
+  content: 'remove_red_eye'
+
+.mi-columns:after
+  content: 'chrome_reader_mode'
+
+.mi-fullscreen:after
+  content: 'fullscreen'

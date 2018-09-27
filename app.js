@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
       .                              .o8                     oooo
    .o8                             "888                     `888
@@ -9,8 +10,7 @@
  ========================================================================
  **/
 
-var _           = require('lodash'),
-    async       = require('async'),
+var async       = require('async'),
     path        = require('path'),
     fs          = require('fs'),
     winston     = require('winston'),
@@ -49,7 +49,7 @@ winston.err = function (err) {
 
 process.on('message', function(msg) {
     if (msg === 'shutdown') {
-        console.log('Closing all connections...');
+        winston.debug('Closing all connections...');
 
         if (ws.server)
             ws.server.close();
@@ -67,7 +67,7 @@ if (!process.env.FORK) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('TruDesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
+    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Time: ' + new Date());
@@ -76,16 +76,16 @@ if (!process.env.FORK) {
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
 
-if (nconf.get('config')) {
+if (nconf.get('config')) 
     configFile = path.resolve(__dirname, nconf.get('config'));
-}
+
 configExists = fs.existsSync(configFile);
 
 if (process.env.HEROKU) {
     //Build Config for Heroku
     var configHeroku = {
-        "url": "http://localhost:8118",
-        "port": "8118"
+        'url': 'http://localhost:8118',
+        'port': '8118'
     };
 
     winston.info('Creating heroku config file...');
@@ -103,13 +103,11 @@ if (nconf.get('install') || !configExists && !process.env.HEROKU) {
     ws.installServer(function() {
         return winston.info('Trudesk Install Server Running...');
     });
-
-    return;
 }
 
-if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
+if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) 
     start();
-}
+
 
 function loadConfig() {
     nconf.file({
@@ -134,16 +132,16 @@ function start() {
                 _db.init(dbCallback);
             }, 10000);
 
-        } else {
+        } else 
             dbCallback(err, db);
-        }
+        
     });
 }
 
 function dbCallback(err, db) {
-    if (err) {
+    if (err) 
         return start();
-    }
+    
 
     ws.init(db, function(err) {
         if (err) {
@@ -159,18 +157,20 @@ function dbCallback(err, db) {
             function(next) {
                 //Start Check Mail
                 var settingSchema = require('./src/models/setting');
-                settingSchema.getSettings(function(err, settings) {
-                   if (err) {
-                       winston.warn(err);
-                       return next();
-                   }
+                settingSchema.getSetting('mailer:check:enable', function(err, mailCheckEnabled) {
+                    if (err) {
+                        winston.warn(err);
+                        return next();
+                    }
 
-                    var mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-                    mailerCheckEnabled = (mailerCheckEnabled === undefined) ? {value: false} : mailerCheckEnabled;
-                    if (mailerCheckEnabled.value) {
-                        var mailCheck = require('./src/mailer/mailCheck');
-                        winston.debug('Starting MailCheck...');
-                        mailCheck.init(settings);
+                    if (mailCheckEnabled && mailCheckEnabled.value) {
+                        settingSchema.getSettings(function(err, settings) {
+                            if (err) return next();
+
+                            var mailCheck = require('./src/mailer/mailCheck');
+                            winston.debug('Starting MailCheck...');
+                            mailCheck.init(settings);
+                        });
                     }
 
                     return next();
@@ -237,7 +237,7 @@ function dbCallback(err, db) {
                 return next();
             }
         ], function() {
-            winston.info("TruDesk Ready");
+            winston.info('trudesk Ready');
         });
     });
 }

@@ -50,9 +50,9 @@ redisCache.setCache = function(key, value, callback, ttl) {
             return callback();
         });
 
-    } else {
-        return client.set(key, value)
-    }
+    } else 
+        return client.set(key, value);
+    
 };
 
 redisCache.getCache = function(key, callback) {

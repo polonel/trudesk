@@ -26,7 +26,15 @@ var COLLECTION = 'tags';
  * @property {String} name ```Required``` ```unique``` Name of Tag
  */
 var tagSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true }
+    name:       { type: String, required: true, unique: true },
+    normalized: String
+});
+
+tagSchema.pre('save', function(next) {
+    this.name = this.name.trim();
+    this.normalized = this.name.toLowerCase().trim();
+
+    return next();
 });
 
 tagSchema.statics.getTag = function(id, callback) {
@@ -45,9 +53,17 @@ tagSchema.statics.getTag = function(id, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 tagSchema.statics.getTags = function(callback) {
-    var q = this.model(COLLECTION).find({});
+    var q = this.model(COLLECTION).find({}).sort('normalized');
 
     return q.exec(callback);
+};
+
+tagSchema.statics.getTagsWithLimit = function(limit, page, callback) {
+    return this.model(COLLECTION).find({})
+        .limit(limit)
+        .skip(page*limit)
+        .sort('normalized')
+        .exec(callback);
 };
 
 tagSchema.statics.getTagByName = function(tagName, callback) {
@@ -57,7 +73,13 @@ tagSchema.statics.getTagByName = function(tagName, callback) {
 };
 
 tagSchema.statics.tagExist = function(tagName, callback) {
-    var q = this.model(COLLECTION).count({name: tagName});
+    var q = this.model(COLLECTION).countDocuments({name: tagName});
+
+    return q.exec(callback);
+};
+
+tagSchema.statics.getTagCount = function(callback) {
+    var q = this.model(COLLECTION).countDocuments({}).lean();
 
     return q.exec(callback);
 };

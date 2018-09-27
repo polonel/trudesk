@@ -8,7 +8,7 @@ var superagent  = require('superagent');
 describe('sessions', function() {
     var agent   = superagent.agent();
     var unauthAgent = superagent.agent();
-    var user = { "login-username": 'trudesk', "login-password": '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW'};
+    var user = { 'login-username': 'trudesk', 'login-password': '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW'};
 
     it('should gain a session', function(done) {
         agent.post('http://localhost:3111/login')

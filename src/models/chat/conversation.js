@@ -15,7 +15,7 @@
 var mongoose        = require('mongoose');
 var _               = require('lodash');
 
-var COLLECTION = "conversations";
+var COLLECTION = 'conversations';
 
 /*
     {

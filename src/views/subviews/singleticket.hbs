@@ -1,6 +1,6 @@
 <div ng-init="
     ticketType='{{data.ticket.type._id}}';
-    ticketPriority={{data.ticket.priority}};
+    ticketPriority='{{data.ticket.priority._id}}';
     ticketGroup='{{data.ticket.group._id}}';
     subscribed={{isSubscribed data.ticket.subscribers data.common.loggedInAccount._id}};
     user='{{data.common.loggedInAccount._id}}';">
@@ -41,7 +41,7 @@
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
                             {{/canUser}}
                         {{/is}}
-                        <span class="drop-icon material-icons" style="left: auto; right: 20px; bottom: -18px">keyboard_arrow_down</span>
+                        <span class="drop-icon material-icons" style="left: auto; right: 22px; bottom: -18px">keyboard_arrow_down</span>
                         <div id="statusSelect" close-mouse-up class="hide">
                             <ul>
                                 <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
@@ -118,7 +118,7 @@
                                         <span>Type</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tType" id="tType" class="chosen-select1"
-                                                    ng-model="selected_type"
+                                                    ng-model="selectedType"
                                                     ng-options="t.name for t in types track by t._id"
                                                     ng-change="updateTicketType()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
@@ -133,8 +133,8 @@
                                         <span>Priority</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tPriority" id="tPriority"
-                                                    ng-model="selected_priority"
-                                                    ng-options="p.name for p in priorities track by p.value"
+                                                    ng-model="selectedPriority"
+                                                    ng-options="p.name for p in selectedType.priorities track by p._id"
                                                     ng-change="updateTicketPriority()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
 
@@ -149,7 +149,7 @@
                                         <span>Group</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tGroup" id="tGroup"
-                                                    ng-model="selected_group"
+                                                    ng-model="selectedGroup"
                                                     ng-options="g.name for g in groups track by g._id"
                                                     ng-change="updateTicketGroup()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
@@ -208,9 +208,6 @@
             <div class="page-message nopadding" style="margin-left: 360px;">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        <!--<a href="#" class="btn no-ajaxy" data-ticketId="{{data.ticket._id}}" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">-->
-                            <!--{{data.ticket.commentCount}} Comment{{#unless_eq data.ticket.commentCount compare=1}}s{{/unless_eq}}-->
-                        <!--</a>-->
                         <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
                             Add Comment
                         </a>
@@ -668,11 +665,13 @@
                                                       data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
                                                       style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                         </div>
-                                        <div class="uk-float-right">
-                                            <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
-                                                    data-action="scrolltobottom"
-                                                    data-targetScroll=".page-content-right"
-                                                    data-preventDefault="false">Post Comment</button>
+                                        <div class="uk-width-1-1">
+                                            <div class="uk-float-right">
+                                                <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
+                                                        data-action="scrolltobottom"
+                                                        data-targetScroll=".page-content-right"
+                                                        data-preventDefault="false">Post Comment</button>
+                                            </div>
                                         </div>
                                     </form>
                                 </div>

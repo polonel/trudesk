@@ -77,7 +77,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                 }).error(function(e) {
                     $log.log('[trudesk:profile:showTour] - ' + e.error.message);
                     helpers.UI.showSnackbar('Error ' + e.error.message, true);
-                })
+                });
             };
 
             $scope.back = function($event) {
@@ -139,6 +139,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                             'Are you sure you want to disable two factor authentication?'
                         , function() {
                             removeL2Auth(function(err) {
+                                if (err)
+                                    $log.error(err);
+
                                 angular.element(event.target).attr('checked', false);
                                 $totpPanel.slideUp(400, function() {
                                     $totpPanel.css({overflow: 'hidden', margin: 0});
@@ -154,9 +157,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                     });
                 } else {
                     generateL2Auth(function(err, key) {
-                        if (err || angular.isUndefined(key)) {
-                           //$window.location.reload();
-                        } else {
+                        // if (err || angular.isUndefined(key)) {
+                        //    //$window.location.reload();
+                        // } else {
                             $timeout(function(){
                                 $scope.otpEnabled = true;
                                 angular.element(event.target).prop('checked', true);
@@ -172,7 +175,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
                             $totpPanel.removeClass('hide');
                             fixInputLabels();
                             $totpPanel.slideDown();
-                        }
+                        // }
                     });
                 }
 
@@ -206,9 +209,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'qrcode',
 
             function removeL2Auth(completed) {
                 var id = SessionService.getUser()._id;
-                if (_.isUndefined(id)) {
+                if (_.isUndefined(id)) 
                     return helpers.UI.showSnackbar('Unable to get user ID.', true);
-                }
+                
 
                 $http.post(
                     '/api/v1/users/' + id + '/removel2auth'

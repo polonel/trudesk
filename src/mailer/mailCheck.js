@@ -30,19 +30,27 @@ mailCheck.inbox = [];
 
 mailCheck.init = function(settings) {
     var s = {};
-    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable' });
-    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host' });
-    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port' });
-    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username' });
-    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password' });
-    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype' });
+    s.mailerCheckEnabled = _.find(settings, function(x) { return x.name === 'mailer:check:enable'; });
+    s.mailerCheckHost = _.find(settings, function(x) { return x.name === 'mailer:check:host'; });
+    s.mailerCheckPort = _.find(settings, function(x) { return x.name === 'mailer:check:port'; });
+    s.mailerCheckUsername = _.find(settings, function(x) { return x.name === 'mailer:check:username'; });
+    s.mailerCheckPassword = _.find(settings, function(x) { return x.name === 'mailer:check:password'; });
+    s.mailerCheckPolling = _.find(settings, function(x) { return x.name === 'mailer:check:polling'; });
+    s.mailerCheckTicketType = _.find(settings, function(x) { return x.name === 'mailer:check:ticketype'; });
+    s.mailerCheckTicketPriority = _.find(settings, function(x) { return x.name === 'mailer:check:ticketpriority'; });
+    s.mailerCheckCreateAccount = _.find(settings, function(x) { return x.name === 'mailer:check:createaccount'; });
+    s.mailerCheckDeleteMessage = _.find(settings, function(x) { return x.name === 'mailer:check:deletemessage'; });
 
     s.mailerCheckEnabled = (s.mailerCheckEnabled === undefined) ? {value: false} : s.mailerCheckEnabled;
     s.mailerCheckHost = (s.mailerCheckHost === undefined) ? {value: ''} : s.mailerCheckHost;
     s.mailerCheckPort = (s.mailerCheckPort === undefined) ? {value: 143} : s.mailerCheckPort;
     s.mailerCheckUsername = (s.mailerCheckUsername === undefined) ? {value: ''} : s.mailerCheckUsername;
     s.mailerCheckPassword = (s.mailerCheckPassword === undefined) ? {value: ''} : s.mailerCheckPassword;
+    s.mailerCheckPolling = (s.mailerCheckPolling === undefined) ? {value: 600000} : s.mailerCheckPolling; //10 min
     s.mailerCheckTicketType = (s.mailerCheckTicketType === undefined) ? {value: 'Issue'} : s.mailerCheckTicketType;
+    s.mailerCheckTicketPriority = (s.mailerCheckTicketPriority === undefined) ? {value: ''} : s.mailerCheckTicketPriority;
+    s.mailerCheckCreateAccount = (s.mailerCheckCreateAccount === undefined) ? {value: false} : s.mailerCheckCreateAccount;
+    s.mailerCheckDeleteMessage = (s.mailerCheckDeleteMessage === undefined) ? {value: false} : s.mailerCheckDeleteMessage;
 
     var MAILERCHECK_ENABLED = s.mailerCheckEnabled.value;
     var MAILERCHECK_HOST = s.mailerCheckHost.value;
@@ -50,8 +58,7 @@ mailCheck.init = function(settings) {
     var MAILERCHECK_PASS = s.mailerCheckPassword.value;
     var MAILERCHECK_PORT = s.mailerCheckPort.value;
     var MAILERCHECK_TLS = (s.mailerCheckPort.value === '993') ? {value: true} : false;
-    var POLLING_INTERVAL = 600000; //10 min
-    var DEFAULT_TICKET_TYPE = s.mailerCheckTicketType.value;
+    var POLLING_INTERVAL = s.mailerCheckPolling.value;
 
     if (!MAILERCHECK_ENABLED) return true;
 
@@ -63,212 +70,253 @@ mailCheck.init = function(settings) {
         tls: MAILERCHECK_TLS
     });
 
-    mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
-    setInterval(function() {
-        mailCheck.fetchMail(DEFAULT_TICKET_TYPE);
+    mailCheck.fetchMailOptions = {
+        defaultTicketType: s.mailerCheckTicketType.value,
+        defaultPriority: s.mailerCheckTicketPriority.value,
+        createAccount: s.mailerCheckCreateAccount.value,
+        deleteMessage: s.mailerCheckDeleteMessage.value
+    };
+
+    mailCheck.fetchMail(mailCheck.fetchMailOptions);
+    mailCheck.checkTimer = setInterval(function() {
+        mailCheck.fetchMail(mailCheck.fetchMailOptions);
     }, POLLING_INTERVAL);
 };
 
-mailCheck.fetchMail = function(DEFAULT_TICKET_TYPE) {
-    mailCheck.Imap.connect();
-    mailCheck.Imap.once('error', function(err) {
-        winston.warn(err);
-    });
+mailCheck.refetch = function() {
+    mailCheck.fetchMail(mailCheck.fetchMailOptions);
+};
 
-    mailCheck.Imap.once('ready', function() {
-        openInbox(function(err) {
-            if (err) {
-                mailCheck.Imap.end();
-                winston.debug(err);
-                //throw err;
-            }
+mailCheck.fetchMail = function() {
+    try {
+        if (_.isUndefined(mailCheck.fetchMailOptions)) {
+            winston.warn('Mailcheck.fetchMail() running before Mailcheck.init(); please run Mailcheck.init() prior');
+            return;
+        }
 
-            async.waterfall([
-                function(next) {
-                    mailCheck.Imap.search(['UNSEEN'], next);
-                },
-                function(results, next) {
-                    if (_.size(results) < 1) {
-                        winston.debug('MailCheck: Nothing to Fetch.');
-                        return next();
-                    }
+        var messages = [];
 
-                    winston.debug('Processed %s Mail > Ticket', _.size(results));
+        mailCheck.Imap.once('error', function(err) {
+            winston.debug(err);
+        });
 
-                    var message = {};
+        mailCheck.Imap.once('ready', function() {
+                openInbox(function (err) {
+                    if (err) {
+                        mailCheck.Imap.end();
+                        winston.debug(err);
+                    } else {
+                        async.waterfall([
+                            function (next) {
+                                mailCheck.Imap.search(['UNSEEN'], next);
+                            },
+                            function (results, next) {
+                                if (_.size(results) < 1) {
+                                    winston.debug('MailCheck: Nothing to Fetch.');
+                                    return next();
+                                }
 
-                    var f = mailCheck.Imap.fetch(results, {
-                        //markSeen: true,
-                       // bodies: ['HEADER.FIELDS (FROM SUBJECT CONTENT-TYPE)','TEXT']
-                        bodies: ''
-                    });
+                                winston.debug('Processed %s Mail > Ticket', _.size(results));
 
-                    f.on('message', function(msg, seqno) {
-                        msg.on('body', function(stream) {
-                            var buffer = '';
-                            stream.on('data', function(chunk) {
-                                buffer += chunk.toString('utf8');
-                            });
+                                var flag = '\\Seen';
+                                if (mailCheck.fetchMailOptions.deleteMessage)
+                                    flag = '\\Deleted';
 
-                            stream.once('end', function() {
-                                simpleParser(buffer, function(err, mail) {
+                                mailCheck.Imap.addFlags(results, flag, function (err) {
                                     if (err) winston.warn(err);
-
-                                    if (mail.headers.has('from')) {
-                                        message.from = mail.headers.get('from').value[0].address;
-                                    }
-                                    if (mail.subject) {
-                                        message.subject = mail.subject;
-                                    } else {
-                                        message.subject = message.from;
-                                    }
-
-                                    message.body = mail.textAsHtml;
                                 });
 
-                                // if (info.which !== 'TEXT') {
-                                //     var header = Imap.parseHeader(buffer);
-                                //     if (_.isArray(header.subject) && _.size(header.subject) > 0)
-                                //         message.subject = header.subject[0];
-                                //     if (_.isArray(header.from) && _.size(header.from) > 0)
-                                //         message.from = parseEmail(header.from[0]);
-                                //     if (_.isArray(header['content-type']) && _.size(header['content-type']) > 0)
-                                //         message.contentType = header['content-type'][0];
-                                // } else
-                                //     message.body = buffer;
-                            });
-                        });
+                                var message = {};
 
-                        async.series([
-                            function(cb) {
-                                msg.once('end', function() {
-                                    mailCheck.Imap.seq.addFlags(seqno, '\\Seen', function(err){
-                                        if (err) winston.warn(err);
-                                        userSchema.getUserByEmail(message.from, function(err, user) {
-                                            if (err) winston.warn(err);
-                                            if (!err && user) {
-                                                message.owner = user;
-                                                if (!_.isUndefined(message.from) && !_.isEmpty(message.from) &&
-                                                    !_.isUndefined(message.subject) && !_.isEmpty(message.subject)) {
+                                var f = mailCheck.Imap.fetch(results, {
+                                    bodies: ''
+                                });
 
-                                                    groupSchema.getAllGroupsOfUser(message.owner._id, function(err, group) {
-                                                        if (err) return cb(err);
-                                                        if (!group) return cb("Unknown Group for user.");
+                                f.on('message', function (msg) {
+                                    msg.on('body', function (stream) {
+                                        var buffer = '';
+                                        stream.on('data', function (chunk) {
+                                            buffer += chunk.toString('utf8');
+                                        });
 
-                                                        if (_.size(group) < 1) return cb();
+                                        stream.once('end', function () {
+                                            simpleParser(buffer, function (err, mail) {
+                                                if (err) winston.warn(err);
 
-                                                        async.waterfall([
-                                                            function(d) {
-                                                                if (DEFAULT_TICKET_TYPE !== 'Issue') return d(null, null);
-                                                                ticketTypeSchema.getTypeByName(DEFAULT_TICKET_TYPE, function(err, t) {
-                                                                    if (err) return d(err);
+                                                if (mail.headers.has('from')) 
+                                                    message.from = mail.headers.get('from').value[0].address;
+                                                
+                                                if (mail.subject) 
+                                                    message.subject = mail.subject;
+                                                 else 
+                                                    message.subject = message.from;
+                                                
 
-                                                                    return d(null, t);
-                                                                });
-                                                            },
-                                                            function(type, d) {
-                                                                if (type !== null) return d(null, type);
-                                                                ticketTypeSchema.getType(DEFAULT_TICKET_TYPE, function(err, t) {
-                                                                    if (err) return d(err);
+                                                message.body = mail.textAsHtml;
 
-                                                                    return d(null, t);
-                                                                });
-                                                            }
-                                                        ], function(err, type) {
-                                                            if (err || type === null) return cb(err);
-
-                                                            var HistoryItem = {
-                                                                action: 'ticket:created',
-                                                                description: 'Ticket was created.',
-                                                                owner: message.owner._id
-                                                            };
-
-                                                            //Create the Ticket Here
-                                                            Ticket.create({
-                                                                owner: message.owner._id,
-                                                                "group": group[0]._id,
-                                                                "type": type._id,
-                                                                status: 0,
-                                                                priority: 1,
-                                                                subject: message.subject,
-                                                                issue: message.body,
-                                                                history: [HistoryItem]
-                                                            }, function(err, t) {
-                                                                if (err) {
-                                                                    winston.warn('Failed to Create ticket from Email: ' + err);
-                                                                    return cb(err);
-                                                                }
-
-                                                                emitter.emit('ticket:created', {socketId: '', ticket: t});
-
-                                                                return cb();
-                                                            });
-                                                        });
-                                                    });
-
-                                                } else
-                                                    return cb();
-
-                                            } else {
-                                                mailCheck.Imap.seq.addFlags(seqno, '\\Deleted', function(err) {
-                                                    if (err) winston.warn(err);
-
-                                                    return cb();
-                                                });
-                                            }
+                                                messages.push(message);
+                                            });
                                         });
                                     });
                                 });
+
+                                f.once('end', function () {
+                                    mailCheck.Imap.closeBox(true, function (err) {
+                                        if (err) winston.warn(err);
+
+
+                                        return next();
+                                    });
+                                });
                             }
-                        ], function(err) {
+                        ], function (err) {
                             if (err) winston.warn(err);
 
-                            f.once('error', function(err) {
-                                winston.error('Fetch error: ' + err);
-                                return next(err);
-                            });
-
-                            f.once('end', function() {
-                                return next();
-                            });
+                            mailCheck.Imap.end();
                         });
-                    });
-                }
-            ], function(err) {
-                if (err) winston.warn(err);
-                mailCheck.Imap.closeBox(true, function(err) {
-                    if (err) winston.debug(err);
-                    mailCheck.Imap.end();
+                    }
                 });
-            });
+
         });
-    });
+
+        mailCheck.Imap.once('end', function() {
+            handleMessages(messages);
+        });
+
+
+        // Call Connect Last
+        mailCheck.Imap.connect();
+
+    } catch (err) {
+        winston.warn(err);
+        mailCheck.Imap.end();
+    }
 };
 
-// function parseEmail(email) {
-//     var strArray1 = email.split('<');
-//     var strArray2 = strArray1[1].split('>');
-//     var actualEmail = strArray2[0];
-//
-//     if (validateEmail(actualEmail))
-//         return actualEmail;
-//     else
-//         return '';
-// }
-//
-// function parseBody(body) {
-//     body = body.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
-//     return marked(body);
-// }
 
-// function validateEmail(email) {
-//     var re = /^([\w-]+(?:\.[\w-]+)*)@((?:[\w-]+\.)*\w[\w-]{0,66})\.([a-z]{2,6}(?:\.[a-z]{2})?)$/i;
-//     return re.test(email);
-// }
+function handleMessages(messages) {
+    messages.forEach(function(message) {
+        if (!_.isUndefined(message.from) && !_.isEmpty(message.from) &&
+            !_.isUndefined(message.subject) && !_.isEmpty(message.subject) &&
+            !_.isUndefined(message.body) && !_.isEmpty(message.body)) {
 
-function openInbox(cb) {
-    mailCheck.Imap.openBox('INBOX', false, cb);
+            async.auto({
+                handleUser: function (callback) {
+                    userSchema.getUserByEmail(message.from, function (err, user) {
+                        if (err) winston.warn(err);
+                        if (!err && user) {
+                            message.owner = user;
+                            return callback(null, user);
+                        }
+
+                        //User doesn't exist. Lets create public user... If we want too
+                        if (mailCheck.fetchMailOptions.createAccount) {
+                            userSchema.createUserFromEmail(message.from, function (err, response) {
+                                if (err) return callback(err);
+
+                                message.owner = response.user;
+                                message.group = response.group;
+
+                                return callback(null, response);
+                            });
+                        } else
+                            return callback('No User found.');
+                            
+
+                    });
+                },
+                handleGroup: ['handleUser', function (results, callback) {
+                    if (!_.isUndefined(message.group))
+                        return callback();
+
+                    groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
+                        if (err) return callback(err);
+                        if (!group) return callback('Unknown group for user: ' + message.owner.email);
+
+                        if (_.isArray(group))
+                            message.group = _.first(group);
+                        else
+                            message.group = group;
+
+                        return callback(null, group);
+                    });
+                }],
+                handleTicketType: function (callback) {
+                    if (mailCheck.fetchMailOptions.defaultTicketType === 'Issue') {
+                        ticketTypeSchema.getTypeByName('Issue', function (err, type) {
+                            if (err) return callback(err);
+
+                            mailCheck.fetchMailOptions.defaultTicketType = type._id;
+                            message.type = type;
+
+                            return callback(null, type);
+                        });
+                    } else {
+                        ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
+                            if (err) return callback(err);
+
+                            message.type = type;
+
+                            return callback(null, type);
+                        });
+                    }
+                },
+                handlePriority: ['handleTicketType', function (result, callback) {
+                    var type = result.handleTicketType;
+
+                    if (mailCheck.fetchMailOptions.defaultPriority !== '')
+                        return callback(null, mailCheck.fetchMailOptions.defaultPriority);
+
+                    var firstPriority = _.first(type.priorities);
+                    if (!_.isUndefined(firstPriority))
+                        mailCheck.fetchMailOptions.defaultPriority = firstPriority._id;
+                    else
+                        return callback('Invalid default priority');
+
+                    return callback(null, firstPriority._id);
+
+                }],
+                handleCreateTicket: ['handleGroup', 'handlePriority', function (results, callback) {
+
+                    var HistoryItem = {
+                        action: 'ticket:created',
+                        description: 'Ticket was created.',
+                        owner: message.owner._id
+                    };
+
+                    Ticket.create({
+                        owner: message.owner._id,
+                        group: message.group._id,
+                        type: message.type._id,
+                        status: 0,
+                        priority: results.handlePriority,
+                        subject: message.subject,
+                        issue: message.body,
+                        history: [HistoryItem]
+                    }, function (err, ticket) {
+                        if (err) {
+                            winston.warn('Failed to create ticket from email: ' + err);
+                            return callback(err);
+                        }
+
+                        emitter.emit('ticket:created', {
+                            socketId: '',
+                            ticket: ticket
+                        });
+
+                        return callback();
+                    });
+                }]
+            }, function (err) {
+                if (err) 
+                    winston.debug(err);
+            });
+        }
+    });
 }
 
+function openInbox(cb) {
+    mailCheck.Imap.openBox('INBOX', cb);
+}
 module.exports = mailCheck;
 
