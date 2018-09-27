@@ -98,6 +98,8 @@
   "devDependencies": {
     "@commitlint/cli": "7.1.2",
     "@commitlint/config-conventional": "7.1.2",
+    "@semantic-release/changelog": "3.0.0",
+    "@semantic-release/git": "7.0.4",
     "chai": "*",
     "codacy-coverage": "^3.0.0",
     "cross-env": "^5.2.0",
@@ -119,6 +121,10 @@
     "supertest": "3.1.0"
   },
   "release": {
+    "prepare": [
+      "@semantic-release/changelog",
+      "@semantic-release/git"
+    ],
     "publish": [
       "@semantic-release/github"
     ]
