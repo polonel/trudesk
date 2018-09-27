@@ -93,7 +93,8 @@
     "unzip": "0.1.11",
     "util": "0.11.0",
     "webpack": "3.11.0",
-    "winston": "2.4.4"
+    "winston": "2.4.4",
+    "yarn": "1.10.1"
   },
   "devDependencies": {
     "@commitlint/cli": "7.1.2",
