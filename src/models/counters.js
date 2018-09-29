@@ -27,7 +27,7 @@ countersSchema.statics.increment = function (counter, callback) {
 
 countersSchema.statics.setCounter = function(counter, count, callback) {
     return this.collection.findOneAndUpdate({_id: counter}, {$set: {next: count}}, callback);
-}
+};
     
 countersSchema.statics.findByCounter = function(counter, callback) {
     return this.model(COLLECTION).findOne({_id: counter}).exec(callback);
