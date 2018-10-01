@@ -30,25 +30,23 @@ module.exports.init = function(callback, connectionString, opts) {
     if (opts) options = opts;
     if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
-    mongoose.connection.once('error', function(e) {
-        winston.error('Oh no, something went wrong with DB! - ' + e.message);
-        db.connection = null;
-        return callback(e, null);
-    });
-
-    mongoose.connection.once('connected', function() {
-        if (!process.env.FORK)
-            winston.info('Connected to MongoDB');
-
-        db.connection = mongoose.connection;
-        return callback(null, db);
-    });
-
     if (db.connection) 
         return callback(null, db);
 
     mongoose.Promise = global.Promise;
-    mongoose.connect(CONNECTION_URI, options).catch(function(e) { return callback(e, null); });
+    mongoose.connect(CONNECTION_URI, options).then(function() {
+        if (!process.env.FORK)
+            winston.info('Connected to MongoDB');
+
+        db.connection = mongoose.connection;
+
+        return callback(null, db);
+    }).catch(function(e) {
+        winston.error('Oh no, something went wrong with DB! - ' + e.message);
+        db.connection = null;
+
+        return callback(e, null);
+    });
 };
 
 module.exports.db = db;
