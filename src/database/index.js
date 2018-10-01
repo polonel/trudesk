@@ -23,15 +23,6 @@ var dbPassword = encodeURIComponent(nconf.get('mongo:password'));
 
 var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + dbPassword + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
 
-mongoose.connection.on('error', function(e) {
-    winston.error('Oh no, something went wrong with DB! - ' + e.message);
-});
-
-mongoose.connection.on('connected', function() {
-    if (!process.env.FORK)
-        winston.info('Connected to MongoDB');
-});
-
 var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true };
 
 module.exports.init = function(callback, connectionString, opts) {
@@ -39,16 +30,25 @@ module.exports.init = function(callback, connectionString, opts) {
     if (opts) options = opts;
     if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
+    mongoose.connection.once('error', function(e) {
+        winston.error('Oh no, something went wrong with DB! - ' + e.message);
+        db.connection = null;
+        return callback(e, null);
+    });
+
+    mongoose.connection.once('connected', function() {
+        if (!process.env.FORK)
+            winston.info('Connected to MongoDB');
+
+        db.connection = mongoose.connection;
+        return callback(null, db);
+    });
+
     if (db.connection) 
         return callback(null, db);
 
     mongoose.Promise = global.Promise;
-    mongoose.connect(CONNECTION_URI, options, function(e) {
-        if (e) return callback(e, null);
-        db.connection = mongoose.connection;
-
-        return callback(e, db);
-    });
+    mongoose.connect(CONNECTION_URI, options).catch(function(e) { return callback(e, null); });
 };
 
 module.exports.db = db;
