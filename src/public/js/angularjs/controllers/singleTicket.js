@@ -15,7 +15,7 @@
 define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/navigation', 'tomarkdown', 'modules/helpers', 'easymde', 'angularjs/services/session', 'history'],
     function(angular, _, $, UIkit, socket, nav, md, helpers, EasyMDE) {
     return angular.module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
-        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $q, $log) {
+        .controller('singleTicket', function(SessionService, $rootScope, $scope, $http, $timeout, $q, $log) {
 
             $scope.loggedInAccount = SessionService.getUser();
 
@@ -38,7 +38,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     className: 'material-icons mi-title no-ajaxy',
                     title: 'Title'
                 },
-                "|",
+                '|',
                 {
                     name: 'Code',
                     action: EasyMDE.toggleCodeBlock,
@@ -63,14 +63,14 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     className: 'material-icons mi-numlist no-ajaxy',
                     title: 'Numbered List'
                 },
-                "|",
+                '|',
                 {
                     name: 'Create Link',
                     action: EasyMDE.drawLink,
                     className: 'material-icons mi-link no-ajaxy',
                     title: 'Create Link'
                 },
-                "|",
+                '|',
                 {
                     name: 'Toggle Preview',
                     action: EasyMDE.togglePreview,
@@ -85,17 +85,17 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 commentMDE = new EasyMDE({
                     element: $commentReply[0],
                     forceSync: true,
-                    minHeight: "220px", //Slighty smaller to adjust the scroll
+                    minHeight: '220px', //Slighty smaller to adjust the scroll
                     toolbar: mdeToolbarItems,
                 });
 
-                commentMDE.codemirror.setOption("extraKeys", {
-                    "Ctrl-Enter": function(cm) {
+                commentMDE.codemirror.setOption('extraKeys', {
+                    'Ctrl-Enter': function(cm) {
                         var $submitButton = $(cm.display.wrapper).parents('form').find('#comment-reply-submit-button');
                         if ($submitButton)
                             $submitButton.click();
                     }
-                })
+                });
             }
 
             var $ticketNote = $('#ticket-note');
@@ -147,9 +147,9 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
 
             $scope.clearAssignee = function() {
                 var id = $('#__ticketId').html();
-                if (id.length > 0) {
+                if (id.length > 0) 
                     socket.ui.clearAssignee(id);
-                }
+                
             };
 
             $scope.types = [];
@@ -167,14 +167,17 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                     $log.log('[trudesk:singleTicket:ticketTypes] - ' + e);
                                 });
 
+            function showSelectPriorityConfirm() {
+                UIkit.modal.confirm('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>', function(){}, {cancelButtonClass: 'uk-hidden'});
+            }
+
             $q.all([ticketTypes]).then(function() {
-                $scope.selected_type = _.findWhere($scope.types, {_id: $scope.ticketType});
-                $scope.priorities = $scope.selected_type.priorities;
+                $scope.selectedType = _.findWhere($scope.types, {_id: $scope.ticketType});
+                $scope.priorities = $scope.selectedType.priorities;
                 $scope.priorities = _.sortBy($scope.priorities, 'name');
-                $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
-                if (!$scope.selected_priority) {
-                    UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
-                }
+                $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
+                if (!$scope.selectedPriority)
+                    showSelectPriorityConfirm();
             });
 
             var groupHttpGet = $http.get('/api/v1/groups').
@@ -188,35 +191,35 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                                 });
 
             $q.all([groupHttpGet]).then(function() {
-                $scope.selected_group = _.findWhere($scope.groups, {_id: $scope.ticketGroup});
+                $scope.selectedGroup = _.findWhere($scope.groups, {_id: $scope.ticketGroup});
             });
 
             $scope.updateTicketType = function() {
                 var id = $('#__ticketId').html();
                 if (id.length > 0) {
-                    socket.ui.setTicketType(id, $scope.selected_type);
-                    $scope.priorities = $scope.selected_type.priorities;
+                    socket.ui.setTicketType(id, $scope.selectedType);
+                    $scope.priorities = $scope.selectedType.priorities;
                     $scope.priorities = _.sortBy($scope.priorities, 'name');
-                    $scope.selected_priority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
-                    if (_.isUndefined($scope.selected_priority)) {
-                        UIkit.modal.alert('Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>');
-                    }
+                    $scope.selectedPriority = _.findWhere($scope.priorities, {_id: $scope.ticketPriority});
+                    if (_.isUndefined($scope.selectedPriority))
+                        showSelectPriorityConfirm();
+                    
                 }
             };
 
             $scope.updateTicketPriority = function() {
                 var id = $('#__ticketId').html();
-                if (id.length > 0 && $scope.selected_priority) {
-                    socket.ui.setTicketPriority(id, $scope.selected_priority._id);
-                    $scope.ticketPriority = $scope.selected_priority._id;
+                if (id.length > 0 && $scope.selectedPriority) {
+                    socket.ui.setTicketPriority(id, $scope.selectedPriority._id);
+                    $scope.ticketPriority = $scope.selectedPriority._id;
                 }
             };
 
             $scope.updateTicketGroup = function() {
                 var id = $('#__ticketId').html();
-                if (id.length > 0) {
-                    socket.ui.setTicketGroup(id, $scope.selected_group);
-                }
+                if (id.length > 0) 
+                    socket.ui.setTicketGroup(id, $scope.selectedGroup);
+                
             };
 
             $scope.updateTicketIssue = function() {
@@ -253,9 +256,9 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 $event.preventDefault();
                 var self = $($event.currentTarget);
                 var inputField = self.parents('form').find('input.attachmentInput');
-                if (inputField.length > 0) {
+                if (inputField.length > 0) 
                     $(inputField).trigger('click');
-                }
+                
             };
 
             $scope.SubscriberChange = function() {
@@ -263,8 +266,8 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 $http.put(
                     '/api/v1/tickets/' + id + '/subscribe',
                     {
-                        "user" : $scope.user,
-                        "subscribe": $scope.subscribed
+                        'user' : $scope.user,
+                        'subscribe': $scope.subscribed
                     }
                 ).success(function() {
 
@@ -277,9 +280,9 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
             $scope.showCreateTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#createTagModal');
-                if (tagModal.length > 0) {
+                if (tagModal.length > 0) 
                     UIkit.modal(tagModal, {bgclose: false}).show();
-                }
+                
             };
 
             $scope.showTags = function(event) {
@@ -289,10 +292,11 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     tagModal.find('option').prop('selected', false);
                     var selectedItems = [];
                     $('.__TAG_SELECTED').each(function() {
-                        var i = $(this).text();
-                        if (i.length > 0) {
+                        var vm = this;
+                        var i = $(vm).text();
+                        if (i.length > 0) 
                             selectedItems.push(i);
-                        }
+                        
                     });
                     _.each(selectedItems, function(item) {
                         var option = tagModal.find('#tags').find('option[value="' + item + '"]');
@@ -315,8 +319,8 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     };
 
                     $http({
-                        method: "POST",
-                        url: '/api/v1/tickets/addtag',
+                        method: 'POST',
+                        url: '/api/v1/tags/create',
                         data: data,
                         headers: { 'Content-Type': 'application/json'}
                     })
@@ -328,7 +332,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                             tagFormField.trigger('chosen:updated');
                             form.find('#tag').val('');
                             if (tagModal.length > 0) UIkit.modal(tagModal).hide();
-                            setTimeout(function() {
+                            $timeout(function() {
                                 $scope.showTags(event);
                             }, 250);
                         })
@@ -349,7 +353,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 //var user = form.find('input[name="from"]').val();
                 $http.put('/api/v1/tickets/' + id,
                     {
-                        "tags": tagField.val()
+                        'tags': tagField.val()
 
                     }).success(function() {
                         helpers.UI.showSnackbar('Tags have been added.', false);
@@ -369,7 +373,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                 var id = $('#__ticketId').text();
                 $http.put('/api/v1/tickets/' + id,
                     {
-                        "tags": []
+                        'tags': []
                     }
                 ).success(function() {
                     socket.ui.refreshTicketTags(id);
@@ -402,17 +406,18 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         commentField.siblings('.editor-statusbar').prepend(mdeError);
 
                     return;
-                } else {
-                    commentField.parent().css('border', 'none');
-                    $mdeError = commentField.parent().find('.mde-error');
-                    if ($mdeError.length > 0) $mdeError.remove();
                 }
+
+                commentField.parent().css('border', 'none');
+                $mdeError = commentField.parent().find('.mde-error');
+                if ($mdeError.length > 0) $mdeError.remove();
+
 
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addcomment', {
-                        "comment": commentMDE.value(),
-                        "_id": id.val().toString(),
-                        "ownerId": $scope.loggedInAccount._id
+                        'comment': commentMDE.value(),
+                        '_id': id.val().toString(),
+                        'ownerId': $scope.loggedInAccount._id
                     }).success(function() {
                         commentField.val('');
                         if (commentMDE)
@@ -443,17 +448,18 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         noteField.siblings('.editor-statusbar').prepend(mdeError);
 
                     return;
-                } else {
-                    noteField.parent().css('border', 'none');
-                    $mdeError = noteField.parent().find('.mde-error');
-                    if ($mdeError.length > 0) $mdeError.remove();
                 }
+
+                noteField.parent().css('border', 'none');
+                $mdeError = noteField.parent().find('.mde-error');
+                if ($mdeError.length > 0) $mdeError.remove();
+
 
                 if (form.isValid(null, null, false)) {
                     $http.post('/api/v1/tickets/addnote', {
-                        "note": noteField.val(),
-                        "ticketid": id,
-                        "owner": $scope.loggedInAccount._id
+                        'note': noteField.val(),
+                        'ticketid': id,
+                        'owner': $scope.loggedInAccount._id
                     }).success(function() {
                         noteField.val('');
                         if (noteMDE)
@@ -488,15 +494,13 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                         var target = $event.target.offsetParent;
                         if ($(target).length > 0 && $(target).hasClass('floating-ticket-status')) return false;
 
-                        if (!element.hasClass('hide')) {
+                        if (!element.hasClass('hide')) 
                             element.addClass('hide');
-                        }
 
-                        if (element.hasClass('shown')) {
+                        if (element.hasClass('shown')) 
                             element.removeClass('shown');
-                        }
                     }
                 }
-            }
+            };
         }]);
 });

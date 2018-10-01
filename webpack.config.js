@@ -8,7 +8,7 @@ module.exports = {
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
         truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
-        "trudesk.min": path.resolve(__dirname, 'src/public/js/app.js')
+        'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js')
     },
     output: {
         filename: '[name].js',
@@ -98,13 +98,13 @@ module.exports = {
             jQuery: 'jquery',
             Cookies: 'jscookie',
             Tether: 'tether',
-            "window.Tether": 'tether',
-            "window.jQuery": 'jquery',
-            "window.$": 'jquery',
+            'window.Tether': 'tether',
+            'window.jQuery': 'jquery',
+            'window.$': 'jquery',
             Modernizr: 'modernizr',
-            "window.Modernizr": 'modernizr',
+            'window.Modernizr': 'modernizr',
             moment: 'moment',
-            "window.moment": 'moment',
+            'window.moment': 'moment',
             setImmediate: 'async'
         }),
         new webpack.optimize.CommonsChunkPlugin({
@@ -119,7 +119,7 @@ module.exports = {
         })
     ],
     performance: {
-        hints: "warning",
+        hints: 'warning',
         maxEntrypointSize: 10000000,
         maxAssetSize: 80000000
     }

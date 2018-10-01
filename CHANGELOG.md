@@ -1,3 +1,18 @@
+# 1.0.0 (2018-09-27)
+
+
+### Bug Fixes
+
+* package.json & .snyk to reduce vulnerabilities ([590ddef](https://github.com/polonel/trudesk/commit/590ddef))
+* package.json & .snyk to reduce vulnerabilities ([0394893](https://github.com/polonel/trudesk/commit/0394893))
+* package.json to reduce vulnerabilities ([42783e1](https://github.com/polonel/trudesk/commit/42783e1))
+* package.json to reduce vulnerabilities ([4940ef1](https://github.com/polonel/trudesk/commit/4940ef1))
+* **group:** undefined text when deleting group ([6f432db](https://github.com/polonel/trudesk/commit/6f432db))
+* **mobile:** updated ([1ace577](https://github.com/polonel/trudesk/commit/1ace577))
+* **settings:** tag display on no tags ([6929cc1](https://github.com/polonel/trudesk/commit/6929cc1))
+* **test:** updated test for priority changes ([cdf0a4d](https://github.com/polonel/trudesk/commit/cdf0a4d))
+* **user:** crash fix for undefined title ([5e2b38c](https://github.com/polonel/trudesk/commit/5e2b38c))
+
 # Change Log
 
 ## [Unreleased](https://github.com/polonel/trudesk/tree/HEAD)

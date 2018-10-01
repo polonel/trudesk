@@ -118,7 +118,7 @@
                                         <span>Type</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tType" id="tType" class="chosen-select1"
-                                                    ng-model="selected_type"
+                                                    ng-model="selectedType"
                                                     ng-options="t.name for t in types track by t._id"
                                                     ng-change="updateTicketType()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
@@ -133,8 +133,8 @@
                                         <span>Priority</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tPriority" id="tPriority"
-                                                    ng-model="selected_priority"
-                                                    ng-options="p.name for p in selected_type.priorities track by p._id"
+                                                    ng-model="selectedPriority"
+                                                    ng-options="p.name for p in selectedType.priorities track by p._id"
                                                     ng-change="updateTicketPriority()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>
 
@@ -149,7 +149,7 @@
                                         <span>Group</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tGroup" id="tGroup"
-                                                    ng-model="selected_group"
+                                                    ng-model="selectedGroup"
                                                     ng-options="g.name for g in groups track by g._id"
                                                     ng-change="updateTicketGroup()"
                                                     data-ticketId="{{data.ticket._id}}" {{#compare data.ticket.status '==' 3}}disabled{{/compare}}>

@@ -16,8 +16,8 @@ var _               = require('lodash');
 var async           = require('async');
 var winston         = require('winston');
 
-var settingsSchema  = require('../models/setting');
-var prioritySchema  = require('../models/ticketpriority');
+var SettingsSchema  = require('../models/setting');
+var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
 
@@ -38,6 +38,9 @@ settingsDefaults.init = function(callback) {
         },
         function(done) {
             return checkPriorities(done);
+        },
+        function(done) {
+            return normalizeTags(done);
         }
     ], function() {
         if (_.isFunction(callback))
@@ -46,15 +49,15 @@ settingsDefaults.init = function(callback) {
 };
 
 function showTourSettingDefault(callback) {
-    settingsSchema.getSettingByName('showTour:enable', function(err, setting) {
+    SettingsSchema.getSettingByName('showTour:enable', function(err, setting) {
         if (err) {
             winston.warn(err);
             if (_.isFunction(callback)) return callback(err);
-            return;
+            return false;
         }
 
         if (!setting) {
-            var defaultShowTour = new settingsSchema({
+            var defaultShowTour = new SettingsSchema({
                 name: 'showTour:enable',
                 value: 0
             });
@@ -67,14 +70,14 @@ function showTourSettingDefault(callback) {
 
                 if (_.isFunction(callback)) return callback();
             });
-        } else {
+        } else 
             if (_.isFunction(callback)) return callback();
-        }
+        
     });
 }
 
 function ticketTypeSettingDefault(callback) {
-    settingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
+    SettingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
         if (err) {
             winston.warn(err);
             if (_.isFunction(callback))
@@ -88,12 +91,12 @@ function ticketTypeSettingDefault(callback) {
                     winston.warn(err);
                     if (_.isFunction(callback))
                         return callback(err);
-                    return;
+                    return false;
                 }
 
                 var type = _.first(types);
                 // Save default ticket type
-                var defaultTicketType = new settingsSchema({
+                var defaultTicketType = new SettingsSchema({
                     name: 'ticket:type:default',
                     value: type._id
                 });
@@ -119,20 +122,20 @@ function ticketTypeSettingDefault(callback) {
 function ticketPriorityDefaults(callback) {
     var priorities = [];
 
-    var normal = new prioritySchema({
+    var normal = new PrioritySchema({
         name: 'Normal',
         migrationNum: 1,
         default: true
     });
 
-    var urgent = new prioritySchema({
+    var urgent = new PrioritySchema({
         name: 'Urgent',
         migrationNum: 2,
         htmlColor: '#8e24aa',
         default: true
     });
 
-    var critical = new prioritySchema({
+    var critical = new PrioritySchema({
         name: 'Critical',
         migrationNum: 3,
         htmlColor: '#e65100',
@@ -143,14 +146,24 @@ function ticketPriorityDefaults(callback) {
     priorities.push(urgent);
     priorities.push(critical);
     async.each(priorities, function(item, next) {
-        prioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
-            if (!err && (_.isUndefined(priority) || _.isNull(priority))) {
+        PrioritySchema.findOne({migrationNum: item.migrationNum}, function(err, priority) {
+            if (!err && (_.isUndefined(priority) || _.isNull(priority))) 
                 return item.save(next);
-            } else {
-                return next(err);
-            }
+
+            return next(err);
+            
         });
     }, callback);
+}
+
+function normalizeTags(callback) {
+    var tagSchema = require('../models/tag');
+    tagSchema.find({}, function(err, tags) {
+        if (err) return callback(err);
+        async.each(tags, function(tag, next) {
+            tag.save(next);
+        }, callback);
+    });
 }
 
 function checkPriorities(callback) {
@@ -182,17 +195,16 @@ function checkPriorities(callback) {
         async.parallel([
             function(done) {
                 if (!migrateP1) return done();
-                prioritySchema.getByMigrationNum(1, function(err, normal) {
+                PrioritySchema.getByMigrationNum(1, function(err, normal) {
                     if (!err) {
                         winston.debug('Converting Priority: Normal');
-                        return ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {
@@ -203,17 +215,16 @@ function checkPriorities(callback) {
             },
             function(done) {
                 if (!migrateP2) return done();
-                prioritySchema.getByMigrationNum(2, function(err, urgent) {
+                PrioritySchema.getByMigrationNum(2, function(err, urgent) {
                     if (!err) {
                         winston.debug('Converting Priority: Urgent');
-                        return ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {
@@ -224,17 +235,16 @@ function checkPriorities(callback) {
             },
             function(done) {
                 if (!migrateP3) return done();
-                prioritySchema.getByMigrationNum(3, function(err, critical) {
+                PrioritySchema.getByMigrationNum(3, function(err, critical) {
                     if (!err) {
                         winston.debug('Converting Priority: Critical');
-                        return ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
-                                else {
-                                    winston.warn(res.message);
-                                    return done(res.message);
-                                }
+
+                                winston.warn(res.message);
+                                return done(res.message);
                             }
                         });
                     } else {
@@ -250,7 +260,7 @@ function checkPriorities(callback) {
 function addedDefaultPrioritesToTicketTypes(callback) {
     async.waterfall([
         function(next) {
-            prioritySchema.find({default: true})
+            PrioritySchema.find({default: true})
                 .then(function(results) {
                     return next(null, results);
                 })
@@ -264,13 +274,11 @@ function addedDefaultPrioritesToTicketTypes(callback) {
 
                 async.each(types, function(type, done) {
                     var prioritiesToAdd = [];
-                    if (!type.priorities) {
-                        type.priorities = [];
-                        prioritiesToAdd = _.map(priorities, '_id');
-                    } else if (type.priorities.length < 1) {
+                    if (!type.priorities || type.priorities.length < 1) {
                         type.priorities = [];
                         prioritiesToAdd = _.map(priorities, '_id');
                     }
+
                     // } else {
                     //   _.each(priorities, function(priority) {
                     //       if (!_.find(type.priorities, {'_id': priority._id})) {

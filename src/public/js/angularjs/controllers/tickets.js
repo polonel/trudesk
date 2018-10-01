@@ -25,39 +25,38 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 var socketId = socket.ui.socket.io.engine.id;
                 var data = {};
                 var form = $('#createTicketForm');
-                if (!form.isValid(null, null, false)) {
+                if (!form.isValid(null, null, false))
                     return true;
-                } else {
-                    form.serializeArray().map(function(x){data[x.name] = x.value;});
-                    data.tags = form.find('#tags').val();
-                    data.socketId = socketId;
-                    $http({
-                        method: 'POST',
-                        url: '/api/v1/tickets/create',
-                        data: data,
-                        headers: { 'Content-Type': 'application/json'}
-                    })
-                        .success(function(data) {
-                            if (!data.success) {
-                                if (data.error) {
-                                    helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
-                                    return;
-                                }
 
-                                helpers.UI.showSnackbar({text: 'Error submitting ticket.', actionTextColor: '#B92929'});
+                form.serializeArray().map(function(x){data[x.name] = x.value;});
+                data.tags = form.find('#tags').val();
+                data.socketId = socketId;
+                $http({
+                    method: 'POST',
+                    url: '/api/v1/tickets/create',
+                    data: data,
+                    headers: { 'Content-Type': 'application/json'}
+                })
+                    .success(function(data) {
+                        if (!data.success) {
+                            if (data.error) {
+                                helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
+                                return;
                             }
 
-                            helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
+                            helpers.UI.showSnackbar({text: 'Error submitting ticket.', actionTextColor: '#B92929'});
+                        }
 
-                            UIkit.modal("#ticketCreateModal").hide();
+                        helpers.UI.showSnackbar({text:   'Ticket Created Successfully'});
 
-                            //History.pushState(null, null, '/tickets/');
+                        UIkit.modal('#ticketCreateModal').hide();
 
-                        }).error(function(err) {
-                            $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
-                            helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
-                    });
-                }
+                        //History.pushState(null, null, '/tickets/');
+
+                    }).error(function(err) {
+                        $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message);
+                        helpers.UI.showSnackbar({text: 'Error: ' + err.error.message, actionTextColor: '#B92929'});
+                });
             };
 
             $scope.searchBarSubmit = function(event) {
@@ -65,7 +64,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     var searchBoxText = $('#tickets_Search').val();
                     if (searchBoxText.length < 3) return true;
 
-                    var queryString = "?uid={0}&fs={0}&it={0}".formatUnicorn(searchBoxText);
+                    var queryString = '?uid={0}&fs={0}&it={0}'.formatUnicorn(searchBoxText);
 
                     History.pushState(null, null, '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1);
                 }
@@ -90,8 +89,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     };
 
                     $http({
-                        method: "POST",
-                        url: '/api/v1/tickets/addtag',
+                        method: 'POST',
+                        url: '/api/v1/tags/create',
                         data: data,
                         headers: { 'Content-Type': 'application/json'}
                     })
@@ -136,7 +135,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 1
+                            'status': 1
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar({text: 'Ticket status set to open'});
@@ -154,7 +153,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 2
+                            'status': 2
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar('Ticket status set to pending', false);
@@ -172,7 +171,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     $http.put(
                         '/api/v1/tickets/' + id,
                         {
-                            "status": 3
+                            'status': 3
                         }
                     ).success(function() {
                         helpers.UI.showSnackbar('Ticket status set to closed', false);
@@ -187,8 +186,8 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 $http.put(
                     '/api/v1/users/' + $scope.username + '/updatepreferences',
                     {
-                        "preference": 'autoRefreshTicketGrid',
-                        "value": $scope.preferences_autoRefreshTicketGrid
+                        'preference': 'autoRefreshTicketGrid',
+                        'value': $scope.preferences_autoRefreshTicketGrid
                     }
                 ).success(function() {
 
@@ -274,9 +273,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     if (!_.isUndefined($ticketTR)) {
                         var ticketOid = $ticketTR.attr('data-ticketOid');
 
-                        if (!_.isUndefined(ticketOid) && ticketOid.length > 0) {
+                        if (!_.isUndefined(ticketOid) && ticketOid.length > 0) 
                             checkedIds.push(ticketOid);
-                        }
+                        
                     }
                 });
 
@@ -288,9 +287,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                     var vm = this;
                     var self = $(vm);
                     var $ticketTR = self.parents('tr');
-                    if (!_.isUndefined($ticketTR)) {
+                    if (!_.isUndefined($ticketTR)) 
                         $ticketTR.remove();
-                    }
+                    
                 });
             }
 
@@ -303,6 +302,6 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                 closeWindow: function closeWindow() {
                     UIkit.modal('#ticketFilterModal').hide();
                 }
-            }
+            };
         });
 });

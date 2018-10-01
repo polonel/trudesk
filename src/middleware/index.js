@@ -55,8 +55,7 @@ module.exports = function(app, db, callback) {
         if (mongoose.connection.readyState !== 1) {
             var err = new Error('MongoDb Error');
             err.status = 503;
-            next(err);
-            return;
+            return next(err);
         }
 
         return next();
@@ -88,11 +87,10 @@ module.exports = function(app, db, callback) {
 
             //Load after Passport!!
             app.use('/uploads/tickets', function(req, res, next) {
-                if (!req.user) {
+                if (!req.user) 
                     return res.redirect('/');
-                }
 
-                next();
+                return next();
             });
 
             //CORS
@@ -113,7 +111,7 @@ module.exports = function(app, db, callback) {
                var fs = require('fs');
                if (fs.existsSync(path.join(dir, 'plugin.json'))) {
                    var plugin = require(path.join(dir, 'plugin.json'));
-                   if (_.find(global.plugins, {'name': plugin.name}) !== undefined)
+                   if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
                        throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
 
                    global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
@@ -140,9 +138,9 @@ function allowCrossDomain(req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken');
 
-    if (req.method === 'OPTIONS') {
+    if (req.method === 'OPTIONS') 
         res.sendStatus(200);
-    } else {
+     else 
         next();
-    }
+    
 }

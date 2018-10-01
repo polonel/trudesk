@@ -2272,9 +2272,16 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
 
       Tickets.update($scope.ticket).then(function successCallback(response) {
           $scope.ticket = response.data.ticket;
+                    
           $scope.hasAssignee = 'hide';
           if ($scope.ticket.assignee !== undefined) $scope.hasAssignee = 'show';
           if ($scope.ticket.assignee !== undefined && $scope.ticket.assignee.image === undefined) $scope.ticket.assignee.image = 'defaultProfile.jpg';
+
+          if ($scope.isSupport)
+            $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date');
+          else
+            $scope.ticket.commentsMerged = $scope.ticket.comments;
+
           $scope.setAssigneeModal.hide();
       }, function errorCallback(response) {
           console.log(response.data);

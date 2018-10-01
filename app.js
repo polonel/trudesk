@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 /*
       .                              .o8                     oooo
    .o8                             "888                     `888
@@ -9,8 +10,7 @@
  ========================================================================
  **/
 
-var _           = require('lodash'),
-    async       = require('async'),
+var async       = require('async'),
     path        = require('path'),
     fs          = require('fs'),
     winston     = require('winston'),
@@ -76,16 +76,16 @@ if (!process.env.FORK) {
 var configFile = path.join(__dirname, '/config.json'),
     configExists;
 
-if (nconf.get('config')) {
+if (nconf.get('config')) 
     configFile = path.resolve(__dirname, nconf.get('config'));
-}
+
 configExists = fs.existsSync(configFile);
 
 if (process.env.HEROKU) {
     //Build Config for Heroku
     var configHeroku = {
-        "url": "http://localhost:8118",
-        "port": "8118"
+        'url': 'http://localhost:8118',
+        'port': '8118'
     };
 
     winston.info('Creating heroku config file...');
@@ -103,13 +103,11 @@ if (nconf.get('install') || !configExists && !process.env.HEROKU) {
     ws.installServer(function() {
         return winston.info('Trudesk Install Server Running...');
     });
-
-    return;
 }
 
-if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
+if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) 
     start();
-}
+
 
 function loadConfig() {
     nconf.file({
@@ -134,16 +132,16 @@ function start() {
                 _db.init(dbCallback);
             }, 10000);
 
-        } else {
+        } else 
             dbCallback(err, db);
-        }
+        
     });
 }
 
 function dbCallback(err, db) {
-    if (err) {
+    if (err) 
         return start();
-    }
+    
 
     ws.init(db, function(err) {
         if (err) {
@@ -243,7 +241,7 @@ function dbCallback(err, db) {
                 return next();
             }
         ], function() {
-            winston.info("trudesk Ready");
+            winston.info('trudesk Ready');
         });
     });
 }

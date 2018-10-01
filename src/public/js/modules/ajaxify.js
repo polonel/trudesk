@@ -67,9 +67,9 @@ define('modules/ajaxify', [
         document = window.document;
 
     // Check to see if History.js is enabled for our Browser
-    if ( !History.enabled ) {
+    if ( !History.enabled ) 
         return false;
-    }
+    
 
     // Wait for Document
     $(function(){
@@ -94,9 +94,9 @@ define('modules/ajaxify', [
             };
 
         // Ensure Content
-        if ( $content.length === 0 ) {
+        if ( $content.length === 0 ) 
             $content = $body;
-        }
+        
 
         // Internal Helper
         $.expr[':'].internal = function(obj){
@@ -140,7 +140,7 @@ define('modules/ajaxify', [
                     title = $this.attr('title')||null;
 
                 // Continue as normal for cmd clicks etc
-                if ( event.which === 2 || event.metaKey ) { return true; }
+                if ( event.which === 2 || event.metaKey )  return true; 
 
                 // Ajaxify this link
                 History.pushState(null,title,url);
@@ -185,9 +185,9 @@ define('modules/ajaxify', [
 
                     // Fetch the scripts
                     $scripts = $dataContent.find('.document-script');
-                    if ( $scripts.length ) {
+                    if ( $scripts.length ) 
                         $scripts.detach();
-                    }
+                    
 
                     // Fetch the content
                     contentHtml = $dataContent.html();
@@ -231,14 +231,14 @@ define('modules/ajaxify', [
                         }
                         catch ( Exception ) {
                             //Should be an empty block
-                            console.log('[AJAXIFY] ERROR: SHOULD HAVE NOT HAPPENED!')
+                            console.log('[AJAXIFY] ERROR: SHOULD HAVE NOT HAPPENED!');
                         }
 
                         // Add the scripts
                         $scripts.each(function(){
                             var $script = $(this), scriptText = $script.text(), scriptNode = document.createElement('script');
                             if ( $script.attr('src') ) {
-                                if ( !$script[0].async ) { scriptNode.async = false; }
+                                if ( !$script[0].async )  scriptNode.async = false; 
                                 scriptNode.src = $script.attr('src');
                             }
                             scriptNode.appendChild(document.createTextNode(scriptText));
@@ -248,14 +248,14 @@ define('modules/ajaxify', [
                         //helpers.removeAllScrollers();
 
                         // Complete the change
-                        if ( $body.ScrollTo||false ) { $body.ScrollTo(scrollOptions); } /* http://balupton.com/projects/jquery-scrollto */
+                        if ( $body.ScrollTo||false )  $body.ScrollTo(scrollOptions);  /* http://balupton.com/projects/jquery-scrollto */
                         $body.removeClass('loading');
                         $window.trigger(completedEventName);
 
                         // Inform Google Analytics of the change
-                        if ( typeof window._gaq !== 'undefined' ) {
+                        if ( typeof window._gaq !== 'undefined' ) 
                             window._gaq.push(['_trackPageview', relativeUrl]);
-                        }
+                        
                     });
 
                 },

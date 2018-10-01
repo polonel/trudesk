@@ -12,10 +12,10 @@
 
  **/
 
-var _               = require('lodash');
+// var _               = require('lodash');
 var mongoose        = require('mongoose');
 var moment          = require('moment');
-var durationFormat  = require('moment-duration-format');
+                      require('moment-duration-format');
 
 var COLLECTION = 'priorities';
 
@@ -30,6 +30,12 @@ var prioritySchema = mongoose.Schema({
     toJSON: {
         virtuals: true
     }
+});
+
+prioritySchema.pre('save', function(next) {
+    this.name = this.name.trim();
+
+    return next();
 });
 
 prioritySchema.virtual('durationFormatted').get(function() {

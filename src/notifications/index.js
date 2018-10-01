@@ -12,26 +12,25 @@
 
  **/
 
-var _                   = require('lodash'),
-    winston             = require('winston'),
+var winston             = require('winston'),
     request             = require('request');
 
 module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification) {
     var body = {
-        "title": notification.title,
-        "content": notification.content,
-        "data": {
-            "hostname": notification.hostname,
-            "users": notification.data.users
+        'title': notification.title,
+        'content': notification.content,
+        'data': {
+            'hostname': notification.hostname,
+            'users': notification.data.users
         }
     };
 
-    if (notification.data.ticketId) {
+    if (notification.data.ticketId) 
         body.data.ticketId = notification.data.ticketId;
-    }
-    if (notification.data.ticketUid) {
+    
+    if (notification.data.ticketUid) 
         body.data.ticketUid = notification.data.ticketUid;
-    }
+    
 
 
     request({
@@ -42,7 +41,7 @@ module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification)
             'accesstoken': tpsApiKey
         },
         body: JSON.stringify(body)
-    }, function(err, response, body) {
+    }, function(err, response) {
         if (err)
             winston.debug(err);
         else {
@@ -52,7 +51,7 @@ module.exports.pushNotification = function(tpsUsername, tpsApiKey, notification)
     });
 };
 
-module.exports.init = function(emitter) {
+module.exports.init = function() {
     // emitter.on('ticket:created', onTicketCreate);
     // emitter.on('notification:count:update', onNotificationCountUpdate);
 };

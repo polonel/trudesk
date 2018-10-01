@@ -42,11 +42,11 @@ define(['angular'], function(angular) {
                 SessionService.prototype.getUser = function() { return sessionUser; };
 
                 return SessionService;
-            })();
+            }());
 
-            if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) {
+            if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) 
                 $window.trudeskSessionService = new SessionService();
-            }
+            
 
             return $window.trudeskSessionService;
         });

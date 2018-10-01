@@ -19,7 +19,6 @@
  */
 'use strict';
 
-
 // node_modules
 var _       = require('lodash');
 var moment  = require('moment');
@@ -29,91 +28,91 @@ require('moment-duration-format');
 var helpers = {
 
     contains: function (str, pattern, options) {
-        if (str.indexOf(pattern) !== -1) {
+        if (str.indexOf(pattern) !== -1) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
     and: function (a, b, options) {
-        if (a && b) {
+        if (a && b) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     gt: function (value, test, options) {
-        if (value > test) {
+        if (value > test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     gte: function (value, test, options) {
-        if (value >= test) {
+        if (value >= test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     is: function (value, test, options) {
-        if (value === null || value === 'undefined') {
+        if (value === null || value === 'undefined') 
             return options.inverse(this);
-        }
-        if (value === test) {
+        
+        if (value === test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     isAsString: function (value, test, options) {
-        if (value === null || value === 'undefined') {
+        if (value === null || value === 'undefined') 
             return options.inverse(this);
-        }
-        if (value.toString() === test.toString()) {
+        
+        if (value.toString() === test.toString()) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     isnot: function (value, test, options) {
-        if (value !== test) {
+        if (value !== test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     isNotAsString: function (value, test, options) {
-        if (value === null || value === 'undefined') {
+        if (value === null || value === 'undefined') 
             return options.inverse(this);
-        }
-        if (value.toString() !== test.toString()) {
+        
+        if (value.toString() !== test.toString()) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     lt: function (value, test, options) {
-        if (value < test) {
+        if (value < test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     lte: function (value, test, options) {
-        if (value <= test) {
+        if (value <= test) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     /*
@@ -121,11 +120,11 @@ var helpers = {
      * Conditionally render a block if one of the values is truthy.
      */
     or: function (a, b, options) {
-        if (a || b) {
+        if (a || b) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     /*
@@ -134,11 +133,11 @@ var helpers = {
      */
     ifNth: function (nr, v, options) {
         v = v+1;
-        if (v % nr === 0) {
+        if (v % nr === 0) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     /**
@@ -165,11 +164,11 @@ var helpers = {
     compare: function(left, operator, right, options) {
         /*jshint eqeqeq: false*/
 
-        if (arguments.length < 3) {
+        if (arguments.length < 3) 
             throw new Error('Handlebars Helper "compare" needs 2 parameters');
-        }
+        
 
-        if (options === undefined) {
+        if (_.isUndefined(options)) {
             options = right;
             right = operator;
             operator = '===';
@@ -187,17 +186,17 @@ var helpers = {
             'typeof': function(l, r) {return typeof l === r; }
         };
 
-        if (!operators[operator]) {
+        if (!operators[operator]) 
             throw new Error('Handlebars Helper "compare" doesn\'t know the operator ' + operator);
-        }
+        
 
         var result = operators[operator](left, right);
 
-        if (result) {
+        if (result) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
 
@@ -213,9 +212,9 @@ var helpers = {
      * @example: {{if_eq this compare=that}}
      */
     if_eq: function (context, options) {
-        if (context === options.hash.compare) {
+        if (context === options.hash.compare) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
@@ -230,9 +229,9 @@ var helpers = {
      * @example: {{unless_eq this compare=that}}
      */
     unless_eq: function (context, options) {
-        if (context === options.hash.compare) {
+        if (context === options.hash.compare) 
             return options.inverse(this);
-        }
+        
         return options.fn(this);
     },
 
@@ -247,9 +246,9 @@ var helpers = {
      * @example: {{if_gt this compare=that}}
      */
     if_gt: function (context, options) {
-        if (context > options.hash.compare) {
+        if (context > options.hash.compare) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
@@ -264,9 +263,9 @@ var helpers = {
      * @example: {{unless_gt this compare=that}}
      */
     unless_gt: function (context, options) {
-        if (context > options.hash.compare) {
+        if (context > options.hash.compare) 
             return options.inverse(this);
-        }
+        
         return options.fn(this);
     },
 
@@ -281,9 +280,9 @@ var helpers = {
      * @example: {{if_lt this compare=that}}
      */
     if_lt: function (context, options) {
-        if (context < options.hash.compare) {
+        if (context < options.hash.compare) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
@@ -298,9 +297,9 @@ var helpers = {
      * @example: {{unless_lt this compare=that}}
      */
     unless_lt: function (context, options) {
-        if (context < options.hash.compare) {
+        if (context < options.hash.compare) 
             return options.inverse(this);
-        }
+        
         return options.fn(this);
     },
 
@@ -315,9 +314,9 @@ var helpers = {
      * @example: {{if_gteq this compare=that}}
      */
     if_gteq: function (context, options) {
-        if (context >= options.hash.compare) {
+        if (context >= options.hash.compare) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
@@ -332,9 +331,9 @@ var helpers = {
      * @example: {{unless_gteq this compare=that}}
      */
     unless_gteq: function (context, options) {
-        if (context >= options.hash.compare) {
+        if (context >= options.hash.compare) 
             return options.inverse(this);
-        }
+        
         return options.fn(this);
     },
 
@@ -349,9 +348,9 @@ var helpers = {
      * @example: {{if_lteq this compare=that}}
      */
     if_lteq: function (context, options) {
-        if (context <= options.hash.compare) {
+        if (context <= options.hash.compare) 
             return options.fn(this);
-        }
+        
         return options.inverse(this);
     },
 
@@ -366,9 +365,9 @@ var helpers = {
      * @example: {{unless_lteq this compare=that}}
      */
     unless_lteq: function (context, options) {
-        if (context <= options.hash.compare) {
+        if (context <= options.hash.compare) 
             return options.inverse(this);
-        }
+        
         return options.fn(this);
     },
 
@@ -395,11 +394,10 @@ var helpers = {
             }
             i += 1;
         }
-        if (success) {
+        if (success) 
             return content(this);
-        } else {
-            return content.inverse(this);
-        }
+
+        return content.inverse(this);
     },
 
     /**
@@ -415,11 +413,11 @@ var helpers = {
      * @example: {{ifEven @index}}
      */
     ifEven: function (conditional, options) {
-        if ((conditional % 2) === 0) {
+        if ((conditional % 2) === 0) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     /**
@@ -444,17 +442,17 @@ var helpers = {
      */
     forEach: function (array, fn) {
         var total = array.length;
-        var buffer = "";
+        var buffer = '';
         // Better performance: http://jsperf.com/for-vs-forEach/2
         var i = 0;
         while (i < total) {
             // stick an index property onto the item, starting
             // with 1, may make configurable later
             var item = array[i];
-            item['index'] = i + 1;
-            item['_total'] = total;
-            item['isFirst'] = i === 0;
-            item['isLast'] = i === (total - 1);
+            item.index = i + 1;
+            item._total = total;
+            item.isFirst = i === 0;
+            item.isLast = i === (total - 1);
             // show the inside of the block
             buffer += fn.fn(item);
             i++;
@@ -464,7 +462,7 @@ var helpers = {
     },
 
     formatNumber: function(num) {
-          return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+          return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     },
 
     now: function() {
@@ -498,23 +496,23 @@ var helpers = {
     },
 
     fromNow: function(date) {
-        if (date === undefined)
+        if (_.isUndefined(date))
             return 'Never';
         moment.updateLocale('en', {
             relativeTime : {
-                future: "in %s",
-                past:   "%s ago",
-                s:  "a few seconds",
-                m:  "1m",
-                mm: "%dm",
-                h:  "1h",
-                hh: "%dh",
-                d:  "1d",
-                dd: "%dd",
-                M:  "1mo",
-                MM: "%dmos",
-                y:  "1y",
-                yy: "%dyrs"
+                future: 'in %s',
+                past:   '%s ago',
+                s:  'a few seconds',
+                m:  '1m',
+                mm: '%dm',
+                h:  '1h',
+                hh: '%dh',
+                d:  '1d',
+                dd: '%dd',
+                M:  '1mo',
+                MM: '%dmos',
+                y:  '1y',
+                yy: '%dyrs'
             }
         });
 
@@ -522,15 +520,14 @@ var helpers = {
     },
 
     firstCap: function(str) {
-        if (_.isUndefined(str)) return;
+        if (_.isUndefined(str)) return '';
         if (str.length > 0) {
             if (str[0] === str[0].toUpperCase())
                 return str;
-            else {
-                return str.replace(/\w\S*/g, function (txt) {
-                    return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-                });
-            }
+
+            return str.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
         }
     },
 
@@ -543,17 +540,17 @@ var helpers = {
     },
 
     isNotNull: function(obj, options) {
-        if (!(_.isUndefined(obj) || _.isNull(obj))) {
+        if (!(_.isUndefined(obj) || _.isNull(obj))) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     split: function(arr, sep) {
-        var str = "";
+        var str = '';
         _.each(arr, function(obj) {
-            str += obj + " " + sep + " ";
+            str += obj + ' ' + sep + ' ';
         });
 
         return str;
@@ -561,40 +558,40 @@ var helpers = {
 
     trim: function(string) {
         if (_.isUndefined(string) || _.isNull(string) || string.length < 1 || typeof(string) === 'object')
-            return "";
+            return '';
         return string.trim();
     },
 
     isNull: function(obj, options) {
-        if((_.isUndefined(obj) || _.isNull(obj))) {
+        if((_.isUndefined(obj) || _.isNull(obj))) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     checkPerm: function(user, perm, options) {
         var P = require('../../permissions');
         if (_.isUndefined(user)) return options.inverse(this);
 
-        if (P.canThis(user.role, perm)) {
+        if (P.canThis(user.role, perm)) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     checkRole: function(role, perm, options) {
         var P = require('../../permissions');
-        if (P.canThis(role, perm)) {
+        if (P.canThis(role, perm)) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     checkPlugin: function(user, permissions, options) {
-        if (user === undefined || permissions === undefined)
+        if (_.isUndefined(user) || _.isUndefined(permissions))
             return options.inverse(this);
         var pluginPermissions = permissions.split(' ');
         var result = false;
@@ -605,18 +602,17 @@ var helpers = {
 
         if (result)
             return options.fn(this);
-        else
-            return options.inverse(this);
+
+        return options.inverse(this);
     },
 
     checkEditSelf: function(user, owner, perm, options) {
         var P = require('../../permissions');
         if (P.canThis(user.role, perm + ':editSelf')) {
-            if (user._id.toString() === owner._id.toString()) {
+            if (user._id.toString() === owner._id.toString()) 
                 return options.fn(this);
-            } else {
-                return options.inverse(this);
-            }
+
+            return options.inverse(this);
         }
 
         return options.inverse(this);
@@ -627,11 +623,10 @@ var helpers = {
             if (_.isUndefined(i) || _.isUndefined(value)) return false;
             return i._id.toString() === value.toString();
         });
-        if (result) {
+        if (result) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
     },
 
     isSubscribed: function(arr, value) {
@@ -643,11 +638,11 @@ var helpers = {
 
     match_id: function(_id1, _id2, options) {
         var result = _id1.toString() === _id2.toString();
-        if (result) {
+        if (result) 
             return options.fn(this);
-        } else {
-            return options.inverse(this);
-        }
+
+        return options.inverse(this);
+        
     },
 
     json: function(str) {
@@ -675,8 +670,8 @@ var helpers = {
 
         if (result)
             return options.fn(this);
-        else
-            return options.inverse(this);
+
+        return options.inverse(this);
 
     },
 
@@ -729,10 +724,9 @@ helpers.inArray    = helpers.hasGroup;
 // Export helpers
 module.exports.helpers = helpers;
 module.exports.register = function (Handlebars) {
-
     for (var helper in helpers) {
-        if (helpers.hasOwnProperty(helper)) {
+        if (helpers.hasOwnProperty(helper)) 
             Handlebars.registerHelper(helper, helpers[helper]);
-        }
+        
     }
 };

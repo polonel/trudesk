@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Trudesk</title>
+    <style>
+        h1,h2,h3,h4,h5,h6 {
+            margin-bottom: 2px;
+        }
+        hr {
+            display: block;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            background: #ccc;
+            height: 3px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+<div>
+    <p>Dear {{user.fullname}},</p>
+    <p>Welcome to Trudesk. Please click the link below to login with the following details:</p>
+    <p>
+        <a href="{{baseUrl}}">{{baseUrl}}</a> <br /><br />
+        <strong>Username: {{user.username}}</strong> <br />
+        <strong>Password: {{plainTextPassword}}</strong>
+    </p>
+</div>
+</body>
+</html>

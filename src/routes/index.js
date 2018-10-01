@@ -21,7 +21,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/healthz', function(req, res) { return res.status(200).send('OK'); });
     router.get('/version', function(req, res) { return res.json({version: packagejson.version }); });
     router.get('/install', function(req, res){ return res.redirect('/'); });
-    router.get('/dashboard', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.dashboard);
+    router.get('/dashboard', middleware.redirectToLogin, middleware.redirectIfUser, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', function(req, res) { return res.redirect('/');});
     router.post('/login', controllers.main.loginPost);
@@ -109,10 +109,6 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
-    router.get('/settings/tags', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tags);
-    router.get('/settings/tags/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTag);
-    router.get('/settings/tickettypes', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketTypes);
-    router.get('/settings/tickettypes/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.editTicketType);
 
     //Plugins
     router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get);
@@ -140,13 +136,10 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities);
     router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority);
 
-    router.post('/api/v1/tickets/addtag', middleware.api, controllers.api.tickets.addTag);
     router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue);
     router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment);
     router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote);
     router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags);
-    router.put('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.updateTag);
-    router.delete('/api/v1/tickets/tags/:id', middleware.api, controllers.api.tickets.deleteTag);
     router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount);
     router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats);
@@ -163,6 +156,11 @@ function mainRoutes(router, middleware, controllers) {
     router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete);
     router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe);
     router.delete('/api/v1/tickets/:tid/attachments/remove/:aid', middleware.api, controllers.api.tickets.removeAttachment);
+
+    router.post('/api/v1/tags/create', middleware.api, controllers.api.tags.createTag);
+    router.get('/api/v1/tags/limit', middleware.api, controllers.api.tags.getTagsWithLimit);
+    router.put('/api/v1/tags/:id', middleware.api, controllers.api.tags.updateTag);
+    router.delete('/api/v1/tags/:id', middleware.api, controllers.api.tags.deleteTag);
 
     router.get('/api/v1/groups', middleware.api, controllers.api.groups.get);
     router.get('/api/v1/groups/all', middleware.api, controllers.api.groups.getAll);
@@ -217,9 +215,9 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
     router.delete('/api/v1/plugins/remove/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.removePlugin);
 
-    router.post('/api/v1/public/users/checkemail', middleware.checkCaptcha, controllers.api.users.checkEmail);
-    router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, controllers.api.tickets.createPublicTicket);
-    router.post('/api/v1/public/account/create', middleware.checkCaptcha, controllers.api.users.createPublicAccount);
+    router.post('/api/v1/public/users/checkemail', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.checkEmail);
+    router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.tickets.createPublicTicket);
+    router.post('/api/v1/public/account/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.createPublicAccount);
 
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
@@ -241,16 +239,20 @@ function mainRoutes(router, middleware, controllers) {
                     res.json({success: true});
                 });
             });
-        } else {
+        } else
             return res.status(401).json({success: false, error: 'Unauthorized!'});
-        }
     });
 
     if (global.env === 'development') {
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);
-        //router.get('/api/v1/import', middleware.api, controllers.api.import);
+        router.get('/debug/mailcheck/refetch', function(req, res) {
+            var mailCheck = require('../mailer/mailCheck');
+            mailCheck.refetch();
+            res.send('OK');
+        });
+
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('lodash');
 

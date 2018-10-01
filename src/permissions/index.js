@@ -42,9 +42,9 @@ var canThis = function(role, a) {
     });
 
     if (_.isUndefined(result) || _.size(result) < 1) return false;
-    if (_.size(result) === 1) {
+    if (_.size(result) === 1) 
         if (result[0] === '*') return true;
-    }
+    
 
     var typePerm = result[0].split(':')[1].split(' ');
     typePerm = _.uniq(typePerm);
@@ -63,7 +63,7 @@ var getRoles = function(action) {
         var actionType = action.split(':')[0];
         var theAction = action.split(':')[1];
 
-        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return false;
+        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return;
         if (_.indexOf(role.allowedAction, '*') !== -1) {
             rolesWithAction.push(role);
             return;

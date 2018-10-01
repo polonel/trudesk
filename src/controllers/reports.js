@@ -27,7 +27,7 @@ reportsController.overview = function(req, res) {
     }
 
     var content = {};
-    content.title = "Overview";
+    content.title = 'Overview';
     content.nav = 'reports';
     content.subnav = 'reports-overview';
 
@@ -73,7 +73,7 @@ reportsController.breakdownGroup = function(req, res) {
     }
 
     var content = {};
-    content.title = "Group Breakdown";
+    content.title = 'Group Breakdown';
     content.nav = 'reports';
     content.subnav = 'reports-breakdown-group';
 
@@ -96,7 +96,7 @@ reportsController.breakdownUser = function(req, res) {
     }
 
     var content = {};
-    content.title = "User Breakdown";
+    content.title = 'User Breakdown';
     content.nav = 'reports';
     content.subnav = 'reports-breakdown-user';
 

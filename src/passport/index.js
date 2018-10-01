@@ -12,6 +12,7 @@
 
  **/
 
+var _            = require('lodash');
 var passport     = require('passport');
 var Local        = require('passport-local').Strategy;
 var TotpStrategy = require('passport-totp').Strategy;
@@ -34,18 +35,23 @@ module.exports = function() {
         passwordField : 'login-password',
         passReqToCallback : true
     }, function(req, username, password, done) {
-        User.findOne({'username' : new RegExp("^" + username + "$", 'i')}).select('+password +tOTPKey +tOTPPeriod').exec(function(err, user) {
-            if (err) {
+        User.findOne({'username' : new RegExp('^' + username + '$', 'i')}).select('+password +tOTPKey +tOTPPeriod').exec(function(err, user) {
+            if (err) 
                 return done(err);
-            }
+            
 
             if (!user || user.deleted) {
+                console.log('No User Found');
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 
-            if (!User.validate(password, user.password)) {
+            if (!User.validate(password, user.password))
+                console.log('Invalid Pass');
+
+
+            if (!User.validate(password, user.password))
                 return done(null, false, req.flash('loginMessage', 'Incorrect Password.'));
-            }
+            
 
             req.user = user;
 
@@ -62,7 +68,7 @@ module.exports = function() {
             User.findOne({_id: user._id}, '+tOTPKey +tOTPPeriod', function(err, user) {
                 if (err) return done(err);
 
-                if (user.tOTPPeriod === null || user.tOTPPeriod === undefined)
+                if (!user.tOTPPeriod)
                     user.tOTPPeriod = 30;
 
                 return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod);

@@ -28,5 +28,13 @@ describe('premissions.js', function() {
         expect(result).to.be.true;
 
         done();
-    })
+    });
+
+    it('should get roles with action', function(done) {
+        var results = permissions.getRoles('ticket:create');
+
+        expect(results).to.have.length(4);
+
+        done();
+    });
 });

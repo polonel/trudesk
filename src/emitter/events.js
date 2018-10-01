@@ -20,7 +20,7 @@ var emitter             = require('../emitter');
 var util                = require('../helpers/utils');
 var ticketSchema        = require('../models/ticket');
 var userSchema          = require('../models/user');
-var notificationSchema  = require('../models/notification');
+var NotificationSchema  = require('../models/notification');
 var settingsSchema      = require('../models/setting');
 var Email               = require('email-templates');
 var templateDir         = path.resolve(__dirname, '..', 'mailer', 'templates');
@@ -140,9 +140,9 @@ var notifications       = require('../notifications'); // Load Push Events
                          });
                      }
                  ], function(err) {
-                     if (err) {
+                     if (err) 
                          return winston.warn('[trudesk:events:ticket:created] - Error: ' + err);
-                     }
+                     
 
                      //Send Ticket..
                      util.sendToAllConnectedClients(io, 'ticket:created', ticket);
@@ -232,7 +232,7 @@ var notifications       = require('../notifications'); // Load Push Events
     }
 
     function saveNotification(user, ticket, callback) {
-        var notification = new notificationSchema({
+        var notification = new NotificationSchema({
             owner: user,
             title: 'Ticket #' + ticket.uid + ' Created',
             message: ticket.subject,
@@ -283,7 +283,7 @@ var notifications       = require('../notifications'); // Load Push Events
                     if (ticket.owner._id.toString() === comment.owner.toString()) return cb;
                     if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString()) return cb;
 
-                    var notification = new notificationSchema({
+                    var notification = new NotificationSchema({
                         owner: ticket.owner,
                         title: 'Comment Added to Ticket#' + ticket.uid,
                         message: ticket.subject,
@@ -301,7 +301,7 @@ var notifications       = require('../notifications'); // Load Push Events
                     if (ticket.assignee._id.toString() === comment.owner.toString()) return cb;
                     if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb();
 
-                    var notification = new notificationSchema({
+                    var notification = new NotificationSchema({
                         owner: ticket.assignee,
                         title: 'Comment Added to Ticket#' + ticket.uid,
                         message: ticket.subject,
@@ -340,9 +340,9 @@ var notifications       = require('../notifications'); // Load Push Events
 
                         emails = _.uniq(emails);
 
-                        if (_.size(emails) < 1) {
+                        if (_.size(emails) < 1) 
                             return c();
-                        }
+                        
 
                         var email = new Email({
                             views: {
@@ -367,9 +367,9 @@ var notifications       = require('../notifications'); // Load Push Events
                                     };
 
                                     mailer.sendMail(mailOptions, function(err) {
-                                        if (err) {
+                                        if (err) 
                                             winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err);
-                                        }
+                                        
                                     });
                                 }).catch(function(err) {
                                     winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err);
@@ -408,7 +408,7 @@ var notifications       = require('../notifications'); // Load Push Events
                 tpsUsername: tpsUsername,
                 tpsApiKey: tpsApiKey,
                 hostname: data.hostname
-            }, { type: 4, ticketId: data.ticketId, ticketUid: data.ticketUid, assigneeId: data.assigneeId})
+            }, { type: 4, ticketId: data.ticketId, ticketUid: data.ticketUid, assigneeId: data.assigneeId});
         });
     });
 

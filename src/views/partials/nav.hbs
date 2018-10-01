@@ -1,9 +1,11 @@
 <div class="sidebar nopadding " style="{{#if data.common.notice}}top: 105px;{{/if}} overflow-x: hidden;" data-scroll-opacitymax="0.1">
     <div class="side-nav-container" style="min-height: 100%; padding-bottom: 50px;">
         <ul class="side-nav">
-            <li {{#is nav 'dashboard'}} class='active' {{/is}}>
-                <a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a>
-            </li>
+            {{#compare data.common.loggedInAccount.role '!=' 'user'}}
+                <li {{#is nav 'dashboard'}} class='active' {{/is}}>
+                    <a class="navHome" href="/dashboard"><i class="material-icons">dashboard</i><span class="show-for-large-up">Dashboard</span></a>
+                </li>
+            {{/compare}}
             <li class="hasSubMenu{{#is nav 'tickets'}} active {{/is}}" data-nav-id="tickets" style="position: relative;" data-nav-accordion data-nav-accordion-target="side-nav-accordion-tickets">
                 <a class="navTickets no-ajaxy" href="/tickets"><i class="material-icons">assignment</i>Tickets</a>
 
@@ -108,7 +110,7 @@
                         <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
                         <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">assignment</i><span>Tickets</span></a></li>
                         <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">email</i><span>Mailer</span></a></li>
-                        <li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon"></i><span>Notifications</span></a></li>
+                        <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon"></i><span>Notifications</span></a></li>-->
                         <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">mobile_friendly</i><span>Push Service</span></a></li>
                         <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
 
@@ -155,17 +157,17 @@
         <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
         <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">style</i><span>Tickets</span></a></li>
         <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">style</i><span>Mailer</span></a></li>
-        <li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon">style</i><span>Notifications</span></a></li>
+        <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon">style</i><span>Notifications</span></a></li>-->
         <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">style</i><span>Push Service</span></a></li>
         <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">style</i><span>Legal</span></a></li>
 
 
         <!--<li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>-->
         <!--<li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>-->
-        <!--{{#canUser data.user "settings:logs"}}-->
-            <!--<hr />-->
-            <!--<li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>-->
-        <!--{{/canUser}}-->
+        {{#canUser data.user "settings:logs"}}
+            <hr />
+            <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
+        {{/canUser}}
         <!--<li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>-->
     </ul>
 </div>

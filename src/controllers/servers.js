@@ -20,7 +20,7 @@ serversController.content = {};
 
 serversController.get = function(req, res) {
     var content = {};
-    content.title = "Servers";
+    content.title = 'Servers';
     content.nav = 'servers';
     content.data = {};
     content.data.user = req.user;
