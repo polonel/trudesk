@@ -14,26 +14,71 @@
 
 var _               = require('lodash');
 var async           = require('async');
+var nconf           = require('nconf');
 var winston         = require('winston');
 var elasticsearch   = require('elasticsearch');
 
 var ES = {};
 
-ES.init = function() {
-    winston.debug('Initializing Elasticsearch...');
-    ES.esclient = new elasticsearch.Client({
-        host: '192.168.1.221:9200'
-    });
+function checkConnection(callback) {
+    if (!ES.esclient)
+        return callback('Client not initialized');
 
     ES.esclient.ping({
         requestTimeout: 10000
-    }, function(error) {
-        if (error) {
-            // winston.error(error);
-            winston.warn('Could not connect to Elasticsearch: 192.168.1.221:9200');
-            return false;
-        } else
-            winston.info('Elasticsearch Running... Connected.');
+    }, function(err) {
+        if (err)
+            return callback('Could not connect to Elasticsearch: ' + ES.host);
+
+        return callback();
+    });
+}
+
+ES.testConnection = function(callback) {
+    if (process.env.ELATICSEARCH_URI)
+        ES.host = process.env.ELATICSEARCH_URI;
+    else
+        ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port');
+
+    ES.esclient = new elasticsearch.Client({
+        host: ES.host
+    });
+
+    checkConnection(callback);
+};
+
+ES.init = function(callback) {
+    var ENABLED = (!_.isUndefined(nconf.get('elasticsearch:enable'))) ? nconf.get('elasticsearch:enable') : false;
+    if (!ENABLED) {
+        if (_.isFunction(callback))
+            return callback();
+
+        return false;
+    }
+
+    winston.debug('Initializing Elasticsearch...');
+    if (process.env.ELATICSEARCH_URI)
+        ES.host = process.env.ELATICSEARCH_URI;
+    else
+        ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port');
+
+    ES.esclient = new elasticsearch.Client({
+        host: ES.host
+    });
+
+    async.series([
+        function(next) {
+            checkConnection(function(err) {
+                if (err)
+                    return next(err);
+
+                winston.info('Elasticsearch Running... Connected.');
+                return next();
+            });
+        }
+    ], function(err) {
+        if (err && _.isFunction(callback))
+            return callback(err);
     });
 
     ES.esclient.indices.exists({
@@ -46,24 +91,27 @@ ES.init = function() {
                 ES.esclient.indices.create({
                     index: 'trudesk',
                     body: {
-                        "settings" : {
-                            "analysis" : {
-                                "filter" : {
-                                    "email" : {
-                                        "type" : "pattern_capture",
-                                        "preserve_original" : true,
-                                        "patterns" : [
-                                            "([^@]+)",
-                                            "(\\p{L}+)",
-                                            "(\\d+)",
-                                            "@(.+)"
+                        'settings' : {
+                            'index': {
+                                'number_of_replicas': 0
+                            },
+                            'analysis' : {
+                                'filter' : {
+                                    'email' : {
+                                        'type' : 'pattern_capture',
+                                        'preserve_original' : true,
+                                        'patterns' : [
+                                            '([^@]+)',
+                                            '(\\p{L}+)',
+                                            '(\\d+)',
+                                            '@(.+)'
                                         ]
                                     }
                                 },
-                                "analyzer" : {
-                                    "email" : {
-                                        "tokenizer" : "uax_url_email",
-                                        "filter" : [ "email", "lowercase",  "unique" ]
+                                'analyzer' : {
+                                    'email' : {
+                                        'tokenizer' : 'uax_url_email',
+                                        'filter' : [ 'email', 'lowercase',  'unique' ]
                                     }
                                 }
                             }
@@ -72,15 +120,15 @@ ES.init = function() {
                             ticket: {
                                 properties: {
                                     uid: {
-                                        type: "text"
+                                        type: 'text'
                                     },
                                     comments: {
                                         properties: {
                                             owner: {
                                                 properties: {
                                                     email: {
-                                                        type: "text",
-                                                        analyzer: "email"
+                                                        type: 'text',
+                                                        analyzer: 'email'
                                                     }
                                                 }
                                             }
@@ -91,8 +139,8 @@ ES.init = function() {
                                             owner: {
                                                 properties: {
                                                     email: {
-                                                        type: "text",
-                                                        analyzer: "email"
+                                                        type: 'text',
+                                                        analyzer: 'email'
                                                     }
                                                 }
                                             }
@@ -101,8 +149,8 @@ ES.init = function() {
                                     owner: {
                                         properties: {
                                             email: {
-                                                type: "text",
-                                                analyzer: "email"
+                                                type: 'text',
+                                                analyzer: 'email'
                                             }
                                         }
                                     }
@@ -117,9 +165,9 @@ ES.init = function() {
                         winston.debug('Starting Crawl...');
                         var userSchema = require('../models/user');
                         userSchema.find({}, function(err, users) {
-                            if (err) {
+                            if (err) 
                                 winston.error(err);
-                            } else {
+                             else {
                                 var body = [];
                                 users.forEach(function(user) {
                                     body.push({
@@ -140,12 +188,6 @@ ES.init = function() {
                                     );
                                 });
 
-                                // ES.esclient.bulk({
-                                //     index: 'trudesk',
-                                //     type: 'user',
-                                //     body: body
-                                // });
-
                                 var indexName = 'trudesk';
                                 var typeName = 'ticket';
 
@@ -160,11 +202,11 @@ ES.init = function() {
                                         ES.esclient.bulk({
                                             body: bulk
                                         }, function (err) {
-                                            if (err) {
+                                            if (err) 
                                                 winston.error(err);
-                                            } else {
+                                             else 
                                                 winston.debug('Sent ' + bulk.length + ' documents to Elasticsearch!');
-                                            }
+                                            
                                         });
                                     }
 
@@ -191,7 +233,7 @@ ES.init = function() {
                                                     role: c.owner.role,
                                                     title: c.owner.title
                                                 }
-                                            })
+                                            });
                                         });
                                     }
                                     bulk.push({
@@ -223,9 +265,9 @@ ES.init = function() {
                                         tags: doc.tags
                                     });
 
-                                    if (count % 500 === 1) {
+                                    if (count % 500 === 1) 
                                         sendAndEmptyQueue();
-                                    }
+                                    
                                 })
                                 .on('err', function(err) {
                                     winston.error(err);
@@ -235,50 +277,6 @@ ES.init = function() {
                                     winston.debug('Duration is: ' + (new Date().getTime() - startTime));
                                     sendAndEmptyQueue();
                                 });
-
-
-                                // var ticketSchema = require('../models/ticket');
-                                // ticketSchema.find({}).limit(100).exec(function(err, tickets) {
-                                //     if (err) {
-                                //         winston.error(err);
-                                //     } else {
-                                //         body = [];
-                                //         tickets.forEach(function(ticket) {
-                                //             ticket.populate('priority owner type comments.owner tags', function(err, ticket) {
-                                //                 if (err) {
-                                //                     winston.warn(err);
-                                //                 } else {
-                                //                     body.push({
-                                //                             index: {
-                                //                                 _index: 'trudesk',
-                                //                                 _type: 'ticket',
-                                //                                 _id: ticket._id
-                                //                             }
-                                //                         },
-                                //                         {
-                                //                             owner: ticket.owner,
-                                //                             issue: ticket.issue,
-                                //                             subject: ticket.subject,
-                                //                             date: ticket.date,
-                                //                             priority: ticket.priority,
-                                //                             type: {_id: ticket.type._id, name: ticket.type.name},
-                                //                             deleted: ticket.deleted,
-                                //                             comments: ticket.comments,
-                                //                             notes: ticket.notes,
-                                //                             tags: ticket.tags
-                                //                         }
-                                //                     );
-                                //
-                                //                     ES.esclient.bulk({
-                                //                         index: 'trudesk',
-                                //                         type: 'ticket',
-                                //                         body: body
-                                //                     });
-                                //                 }
-                                //             });
-                                //         });
-                                //     }
-                                // });
                             }
                         });
                     }

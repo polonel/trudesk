@@ -82,6 +82,7 @@ var express = require('express'),
         router.get('/install', controllers.install.index);
         router.post('/install', routeMiddleware.checkOrigin, controllers.install.install);
         router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest);
+        router.post('/install/elastictest', routeMiddleware.checkOrigin, controllers.install.elastictest);
         router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb);
         router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart);
 

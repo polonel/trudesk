@@ -20,17 +20,17 @@
                 <!-- Right Nav Section -->
                 <div class="top-menu uk-float-right">
                     <ul class="uk-subnav uk-margin-bottom-remove">
-                        <!--<li class="top-bar-icon"><a href="/tickets/create/"><i class="material-icons">&#xE145;</i></a></li>-->
                         {{#canUser data.user "ticket:create"}}
                             <li class="top-bar-icon nopadding tour-addTicket"><button class="anchor" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}"><i class="material-icons">&#xE145;</i></button></li>
                             <li class="top-bar-icon nopadding">
                                 <i class="material-icons">more_vert</i>
                             </li>
                         {{/canUser}}
+                        <!--<li class="top-bar-icon">-->
+                            <!--<a href="#" class="no-ajaxy uk-vertical-align"><i class="material-icons">search</i></a>-->
+                        <!--</li>-->
                         <li class="top-bar-icon tour-messagesNotification">
-                            <a id="btn_mail-notifications" href="#" class="no-ajaxy uk-vertical-align" data-notifications="mail-notifications"><i class="material-icons">sms</i>
-                                <!--<span class="alert uk-border-circle label"></span>-->
-                            </a>
+                            <a id="btn_mail-notifications" href="#" class="no-ajaxy uk-vertical-align" data-notifications="mail-notifications"><i class="material-icons">sms</i></a>
                         </li>
                         <li class="top-bar-icon tour-ticketNotifications">
                             <a id="btn_notifications" href="#" class="no-ajaxy uk-vertical-align" data-updateUi="notifications" data-notifications="notifications"><i class="material-icons">&#xE88E;</i>

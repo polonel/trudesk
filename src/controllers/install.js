@@ -30,6 +30,23 @@ installController.index = function(req, res) {
     res.render('install', content);
 };
 
+installController.elastictest = function(req, res) {
+    var data = req.body;
+    var CONNECTION_URI = data.host + ':' + data.port;
+
+    var child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), { env: { FORK: 1, NODE_ENV: global.env, ELATICSEARCH_URI: CONNECTION_URI }});
+    global.forks.push({name: 'elastictest', fork: child});
+
+    child.on('message', function(data) {
+        if (data.error) return res.status(400).json({success: false, error: data.error});
+        return res.json({success: true});
+    });
+
+    child.on('close', function() {
+        winston.debug('ElasticSearchTest process terminated.');
+    });
+};
+
 installController.mongotest = function(req, res) {
     var data = req.body;
     var dbPassword = encodeURIComponent(data.password);
@@ -58,6 +75,11 @@ installController.existingdb = function(req, res) {
     var username    = data.username;
     var password    = data.password;
 
+    //ElasticSearch
+    var eEnable     = data.elasticEnable,
+        eHost       = data.elasticHost,
+        ePort       = data.elasticPort;
+
     //Write Configfile
     var fs = require('fs');
     var configFile = path.join(__dirname, '../../config.json');
@@ -69,6 +91,11 @@ installController.existingdb = function(req, res) {
             username: username,
             password: password,
             database: database
+        },
+        elasticsearch: {
+            enable: eEnable,
+            host: eHost,
+            port: ePort
         }
     };
 
@@ -97,6 +124,10 @@ installController.install = function(req, res) {
     var database = data['mongo[database]'];
     var username = data['mongo[username]'];
     var password = data['mongo[password]'];
+
+    //ElasticSearch
+    var eHost       = data['elastic[host]'];
+    var ePort       = data['elastic[port]'];
 
     //Account
     var user = {
@@ -238,6 +269,10 @@ installController.install = function(req, res) {
                     username: username,
                     password: password,
                     database: database
+                },
+                elasticsearch: {
+                    host: eHost,
+                    port: ePort
                 }
             };
 
