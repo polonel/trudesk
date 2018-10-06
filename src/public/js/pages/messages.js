@@ -253,8 +253,8 @@ define('pages/messages', [
                     
                     convoListItem.find('.message-subject').text(fromName + ': ' + message.body);
                     $recentMessages[message.conversation] = fromName + ': ' + message.body;
-
-                    convoListItem.find('.message-date').text(moment().calendar());
+                    var timezone = helpers.getTimezone();
+                    convoListItem.find('.message-date').text(moment.utc().tz(timezone).calendar());
                 } else {
                     var convoUL = $('#convo-list > ul.message-items');
                     if (convoUL.length > 0) {

@@ -12,7 +12,7 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'easymde', 'velocity', 'history'], function(angular, _, $, helpers, ui, UIkit, EasyMDE) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uikit', 'easymde', 'moment', 'moment_timezone', 'velocity', 'history'], function(angular, _, $, helpers, ui, UIkit, EasyMDE, moment) {
     return angular.module('trudesk.controllers.settings', ['ngSanitize'])
         .directive('selectize', function($timeout) {
             return {
@@ -107,6 +107,22 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                                 s.addClass('md-input-filled');
                         }
                     });
+
+                    //TimeZones
+                    $scope.timeZones = moment.tz.names().map(function(name) {
+                        var year = new Date().getUTCFullYear();
+                        var timezoneAtBeginningOfyear = moment.tz(year + '-01-01', name);
+                        return {
+                            utc: timezoneAtBeginningOfyear.utcOffset(),
+                            label: '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
+                            value: name
+                        };
+                    }).sort(function(a, b) { return a.utc - b.utc; });
+
+                    $timeout(function() {
+                        // Call in next cycle - Timezones generated dynamically
+                        helpers.UI.selectize($('select#tz').parent());
+                    }, 0);
 
                     var $privacyPolicy = $('#privacyPolicy');
                     if ($privacyPolicy.length > 0) {
@@ -335,6 +351,22 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/ui', 'uik
                             privacyPolicyMDE.codemirror.refresh();
                     }
                 }
+            };
+
+            $scope.timezoneChanged = function() {
+                $http.put('/api/v1/settings', {
+                    name: 'gen:timezone',
+                    value: $scope.selectedTimezone.replace('string:', '')
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback() {
+                    helpers.UI.showSnackbar('Timezone Updated. Please restart server.', false);
+                }, function errorCallback(err) {
+                   helpers.UI.showSnackbar('Error: ' + err, true);
+                    $log.error(err);
+                });
             };
 
             $scope.saveSiteUrlClicked = function() {

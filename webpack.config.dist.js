@@ -31,6 +31,7 @@ module.exports = {
             angularCookies: 'vendor/angular/angular-cookies.min',
             angularSanitize:'vendor/angular/angular-sanitize.min',
             moment:         'vendor/moment/moment',
+            moment_timezone:'vendor/moment/moment-timezone-with-data',
             uikit:          'vendor/uikit/js/uikit_combined.min',
             modernizr:      'vendor/modernizr/modernizr',
             fastclick:      'vendor/fastclick/fastclick',

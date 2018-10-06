@@ -12,11 +12,13 @@
 
  **/
 
-var async   = require('async'),
-    _       = require('lodash'),
-    winston = require('winston'),
-    moment  = require('moment'),
-    permissions     = require('../../permissions');
+var async           = require('async'),
+    _               = require('lodash'),
+    winston         = require('winston'),
+    moment          = require('moment'),
+    permissions     = require('../../permissions'),
+    settingSchema   = require('../../models/setting');
+
 
 var viewController = {};
 var viewdata = {};
@@ -30,7 +32,6 @@ viewController.getData = function(request, cb) {
             viewdata.hosturl = request.protocol + '://' + request.get('host');
 
             // If hosturl setting is not set. Let's set it.
-              var settingSchema = require('../../models/setting');
               settingSchema.getSetting('gen:siteurl', function(err, setting) {
                   if (!err && !setting) {
                       settingSchema.create({
@@ -43,6 +44,16 @@ viewController.getData = function(request, cb) {
                       return callback();
                   
               });
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:timezone', function(err, timezone) {
+                if (!err && timezone)
+                    viewdata.timezone = timezone.value;
+                else
+                    viewdata.timezone = 'America/New_York';
+
+                return callback();
+            });
           },
           function(callback) {
               viewController.getActiveNotice(function(err, data) {
