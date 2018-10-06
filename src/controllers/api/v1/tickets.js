@@ -14,7 +14,7 @@
 
 var async           = require('async'),
     _               = require('lodash'),
-    moment          = require('moment'),
+    moment          = require('moment-timezone'),
     winston         = require('winston'),
     permissions     = require('../../../permissions'),
     emitter         = require('../../../emitter');
@@ -1211,8 +1211,17 @@ apiTickets.getTicketStats = function(req, res) {
     obj.mostActiveTicket = cache.get('quickstats:mostActiveTicket');
 
     obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
+    var settingsUtil = require('../../../settings/settingsUtil');
+    settingsUtil.getSettings(function(err, context) {
+        if (err)
+            return res.send(obj);
 
-    return res.send(obj);
+        var tz = context.data.settings.timezone.value;
+        obj.lastUpdated = moment.utc(obj.lastUpdated).tz(tz).format('MM-DD-YYYY hh:mm:ssa');
+
+        return res.send(obj);
+    });
+    // return res.send(obj);
 };
 
 function parseTicketStats(role, tickets, callback) {

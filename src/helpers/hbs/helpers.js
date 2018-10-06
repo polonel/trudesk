@@ -21,7 +21,7 @@
 
 // node_modules
 var _       = require('lodash');
-var moment  = require('moment');
+var moment  = require('moment-timezone');
 require('moment-duration-format');
 
 // The module to be exported
@@ -466,15 +466,15 @@ var helpers = {
     },
 
     now: function() {
-        return new moment();
+        return new moment.utc();
     },
 
     formatDate: function(date, format) {
-        return moment(date).format(format);
+        return moment.utc(date).tz(global.timezone).format(format);
     },
 
     formatDateParse: function(date, parseFormat, returnFormat) {
-        return moment(date, parseFormat).format(returnFormat);
+        return moment.utc(date, parseFormat).tz(global.timezone).format(returnFormat);
     },
 
     durationFormat: function(duration, parseFormat) {
@@ -492,7 +492,7 @@ var helpers = {
                 sameElse: 'L'
             }
         });
-        return moment(date).calendar();
+        return moment.utc(date).tz(global.timezone).calendar();
     },
 
     fromNow: function(date) {
@@ -516,7 +516,7 @@ var helpers = {
             }
         });
 
-        return moment(date).fromNow();
+        return moment.utc(date).tz(global.timezone).fromNow();
     },
 
     firstCap: function(str) {

@@ -1,5 +1,6 @@
 <div class="uk-grid uk-grid-collapse" ng-controller="settingsCtrl" ng-init="
     siteUrl='{{data.settings.siteUrl.value}}';
+    selectedTimezone='{{data.settings.timezone.value}}';
     defaultTicketType='{{data.settings.defaultTicketType.value}}';
     mailerEnabled={{data.settings.mailerEnabled.value}};
     mailerHost='{{data.settings.mailerHost.value}}';
@@ -95,6 +96,31 @@
                                 </div>
                                 <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
                                     <button class="md-btn md-btn-small" ng-click="saveSiteUrlClicked();">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Time Zone
+                                    <i class="material-icons"
+                                       style="color: #888;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            line-height: 3px;"
+                                       data-uk-tooltip title="Requires Server Restart">error</i>
+                                </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Set the local timezone for date display
+                                </h5>
+                            </div>
+                            <div class="right uk-width-1-2 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                                <div class="uk-width-3-4 uk-float-right" style="padding-right: 10px;">
+                                    <select class="selectize-white" name="tz" id="tz" ng-model="selectedTimezone" ng-change="timezoneChanged()"
+                                            ng-options="v.value as v.label for v in timeZones" data-md-selectize-bottom>
+                                    </select>
                                 </div>
                             </div>
                         </div>
