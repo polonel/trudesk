@@ -22,36 +22,6 @@ var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
 
-settingsDefaults.init = function(callback) {
-    winston.debug('Checking Default Settings...');
-    async.series([
-        function(done) {
-            return timezoneDefault(done);
-        },
-        function(done) {
-            return showTourSettingDefault(done);
-        },
-        function(done) {
-            return ticketTypeSettingDefault(done);
-        },
-        function(done) {
-            return ticketPriorityDefaults(done);
-        },
-        function(done) {
-            return addedDefaultPrioritesToTicketTypes(done);
-        },
-        function(done) {
-            return checkPriorities(done);
-        },
-        function(done) {
-            return normalizeTags(done);
-        }
-    ], function() {
-        if (_.isFunction(callback))
-            return callback();
-    });
-};
-
 function timezoneDefault(callback) {
     SettingsSchema.getSettingByName('gen:timezone', function(err, setting) {
         if (err) {
@@ -339,5 +309,35 @@ function addedDefaultPrioritesToTicketTypes(callback) {
         }
     ], callback);
 }
+
+settingsDefaults.init = function(callback) {
+    winston.debug('Checking Default Settings...');
+    async.series([
+        function(done) {
+            return timezoneDefault(done);
+        },
+        function(done) {
+            return showTourSettingDefault(done);
+        },
+        function(done) {
+            return ticketTypeSettingDefault(done);
+        },
+        function(done) {
+            return ticketPriorityDefaults(done);
+        },
+        function(done) {
+            return addedDefaultPrioritesToTicketTypes(done);
+        },
+        function(done) {
+            return checkPriorities(done);
+        },
+        function(done) {
+            return normalizeTags(done);
+        }
+    ], function() {
+        if (_.isFunction(callback))
+            return callback();
+    });
+};
 
 module.exports = settingsDefaults;

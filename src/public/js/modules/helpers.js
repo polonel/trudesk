@@ -1228,16 +1228,19 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.setTimezone = function() {
         var $timezone = $('#__timezone');
+        var timezone;
         if ($timezone.length < 1) 
             Cookies.set('$trudesk:timezone', 'America/New_York');
          else {
-            var timezone = Cookies.get('$trudesk:timezone');
+            timezone = Cookies.get('$trudesk:timezone');
             var __timezone = $timezone.text();
-            if (!timezone) 
+            if (!timezone)
                 Cookies.set('$trudesk:timezone', __timezone);
-             else if (timezone !== __timezone) 
+             else if (timezone !== __timezone)
                 Cookies.set('$trudesk:timezone',__timezone);
         }
+
+        timezone = Cookies.get('$trudesk:timezone');
 
         moment.tz.setDefault(timezone);
         $timezone.remove();
