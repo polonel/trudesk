@@ -233,7 +233,6 @@ var socketServer = function(ws) {
                     t.save(function(err) {
                         if (err) return true;
 
-                        emitter.emit('ticket:updated', ticketId);
                         utils.sendToAllConnectedClients(io, 'updateTicketStatus', {tid: t._id, status: status});
                     });
                 });
@@ -297,7 +296,7 @@ var socketServer = function(ws) {
 
                             emitter.emit('ticket:subscriber:update', {user: userId, subscribe: true});
                             emitter.emit('ticket:setAssignee', {assigneeId: ticket.assignee._id, ticketId: ticket._id, ticketUid: ticket.uid, hostname: socket.handshake.headers.host});
-                            emitter.emit('ticket:updated', ticketId);
+
                             utils.sendToAllConnectedClients(io, 'updateAssignee', ticket);
                         });
                     });
@@ -324,7 +323,6 @@ var socketServer = function(ws) {
                         ticketSchema.populate(tt, 'type', function(err) {
                             if (err) return true;
 
-                            emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateTicketType', tt);
                         });
                     });
@@ -350,7 +348,6 @@ var socketServer = function(ws) {
                         t.save(function(err, tt) {
                             if (err) return true;
 
-                            emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt);
                         });
                     });
@@ -371,7 +368,6 @@ var socketServer = function(ws) {
                     t.save(function(err, tt) {
                         if (err) return true;
 
-                        emitter.emit('ticket:updated', ticketId);
                         utils.sendToAllConnectedClients(io, 'updateAssignee', tt);
                     });
                 });
@@ -398,7 +394,6 @@ var socketServer = function(ws) {
                         ticketSchema.populate(tt, 'group', function(err) {
                             if (err) return true;
 
-                            emitter.emit('ticket:updated', ticketId);
                             utils.sendToAllConnectedClients(io, 'updateTicketGroup', tt);
                         });
                     });

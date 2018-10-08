@@ -105,6 +105,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
     router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
+    router.get('/settings/elasticsearch', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.elasticsearchSettings);
     router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
     router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);

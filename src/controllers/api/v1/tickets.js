@@ -669,7 +669,7 @@ apiTickets.delete = function(req, res) {
     ticketModel.softDelete(oId, function(err) {
         if (err) return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
-        emitter.emit('ticket:deleted', oId);
+        emitter.emit('ticket:deleted', {_id: oId});
         res.json({success: true, error: null});
     });
 };

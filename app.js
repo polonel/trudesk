@@ -150,7 +150,9 @@ function dbCallback(err, db) {
 
         async.series([
             function(next) {
-                require('./src/elasticsearch').init();
+                var es = require('./src/elasticsearch');
+                es.init();
+                es.setupHooks();
                 return next();
             },
             function(next) {

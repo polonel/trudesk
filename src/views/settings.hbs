@@ -64,6 +64,11 @@
                         <!--<h3>Notifications</h3>-->
                     <!--</div>-->
                 <!--</li>-->
+                <li {{#ifeq subnav compare='settings-elasticsearch'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-elasticsearch');">
+                    <div class="setting-category">
+                        <h3>Elasticsearch</h3>
+                    </div>
+                </li>
                 <li {{#ifeq subnav compare='settings-tps'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-tps');">
                     <div class="setting-category">
                         <h3>Push Service</h3>
@@ -706,6 +711,11 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <!--Elasticsearch-->
+                <div data-settings-id="settings-elasticsearch" {{#ifeq subnav compare='settings-elasticsearch'}} class="active" {{/ifeq}}>
+
                 </div>
 
                 <div data-settings-id="settings-notifications" {{#ifeq subnav compare='settings-notifcations'}} class="active" {{/ifeq}}>

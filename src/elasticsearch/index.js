@@ -17,6 +17,7 @@ var async           = require('async');
 var nconf           = require('nconf');
 var winston         = require('winston');
 var elasticsearch   = require('elasticsearch');
+var emitter         = require('../emitter');
 
 var ES = {};
 
@@ -45,6 +46,117 @@ ES.testConnection = function(callback) {
     });
 
     checkConnection(callback);
+};
+
+ES.setupHooks = function() {
+    var ENABLED = (!_.isUndefined(nconf.get('elasticsearch:enable'))) ? nconf.get('elasticsearch:enable') : false;
+    if (!ENABLED)
+        return false;
+
+    var ticketSchema = require('../models/ticket');
+    emitter.on('ticket:deleted', function(data) {
+       if (_.isUndefined(data._id))
+           return false;
+
+       ES.esclient.index({
+           index: 'trudesk',
+           type: 'ticket',
+           id: data._id.toString(),
+           refresh: 'true',
+           body: {deleted: true}
+       }, function (err) {
+           if (err)
+               winston.warn('Elasticsearch Error: ' + err);
+       });
+    });
+    emitter.on('ticket:updated', function(data) {
+        if (_.isUndefined(data._id))
+            return;
+
+        ticketSchema.getTicketById(data._id.toString(), function(err, ticket) {
+            if (err) {
+                winston.warn('Elasticsearch Error: ' + err);
+                return false;
+            }
+
+            var cleanedTicket = {
+                uid: ticket.uid,
+                subject: ticket.subject,
+                issue: ticket.issue,
+                date: ticket.date,
+                owner: ticket.owner,
+                assignee: ticket.assignee,
+                group: {
+                    _id: ticket.group._id,
+                    name: ticket.group.name
+                },
+                comments: ticket.comments,
+                notes: ticket.notes,
+                deleted: ticket.deleted,
+                priority: ticket.priority,
+                type: {
+                    _id: ticket.type._id,
+                    name: ticket.type.name
+                },
+                status: ticket.status,
+                tags: ticket.tags
+            };
+
+            ES.esclient.index({
+                index: 'trudesk',
+                type: 'ticket',
+                id: ticket._id.toString(),
+                refresh: 'true',
+                body: cleanedTicket
+            }, function (err) {
+                if (err)
+                    winston.warn('Elasticsearch Error: ' + err);
+            });
+        });
+    });
+
+    emitter.on('ticket:created', function(data) {
+        ticketSchema.getTicketById(data.ticket._id, function(err, ticket) {
+            if (err) {
+                winston.warn('Elasticsearch Error: ' + err);
+                return false;
+            }
+
+            var _id = ticket._id.toString();
+            var cleanedTicket = {
+                uid: ticket.uid,
+                subject: ticket.subject,
+                issue: ticket.issue,
+                date: ticket.date,
+                owner: ticket.owner,
+                assignee: ticket.assignee,
+                group: {
+                    _id: ticket.group._id,
+                    name: ticket.group.name
+                },
+                comments: ticket.comments,
+                notes: ticket.notes,
+                deleted: ticket.deleted,
+                priority: ticket.priority,
+                type: {
+                    _id: ticket.type._id,
+                    name: ticket.type.name
+                },
+                status: ticket.status,
+                tags: ticket.tags
+            };
+
+            ES.esclient.index({
+                index: 'trudesk',
+                type: 'ticket',
+                id: _id,
+                body: cleanedTicket
+            }, function(err) {
+                if (err)
+                    winston.warn('Elasticsearch Error: ' + err);
+            });
+        });
+    });
 };
 
 ES.init = function(callback) {

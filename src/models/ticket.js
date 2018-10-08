@@ -92,6 +92,7 @@ ticketSchema.index({deleted: -1, group: 1, status: 1});
 
 ticketSchema.pre('save', function(next) {
     this.subject = this.subject.trim();
+    this.wasNew = this.isNew;
 
     if (!_.isUndefined(this.uid) || this.uid)
         return next();
@@ -110,6 +111,13 @@ ticketSchema.pre('save', function(next) {
 
         return next();
     });
+});
+
+ticketSchema.post('save', function(savedTicket) {
+    if (!this.wasNew) {
+        var emitter = require('../emitter');
+        emitter.emit('ticket:updated', savedTicket);
+    }
 });
 
 var autoPopulatePriority = function(next) {

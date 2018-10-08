@@ -90,6 +90,14 @@ settingsController.mailerSettings = function(req, res) {
     renderView(res, content);
 };
 
+settingsController.elasticsearchSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:elasticsearch')) return res.redirect('/settings');
+
+    var content = initViewContant('elasticsearch', req);
+
+    renderView(res, content);
+};
+
 settingsController.notificationsSettings = function(req, res) {
     if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
 
