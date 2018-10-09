@@ -42,6 +42,11 @@ if you like what you see here, and want to help support the work being done, you
 + [![alt tag](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=USPWFP6P6RTKC) Or you can buy me a cup of cofee or even dinner :)
 
 
+### Sponsors
+<a href="https://www.browserstack.com"><img src="https://trudesk.io/images/browserstack-logo-600x315.png" width="115" /></a>
+
+Trudesk is tested with confidence using [BrowserStack](https://browserstack.com).
+
 ### License
 
     Copyright 2014-2018 Chris Brame
