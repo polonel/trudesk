@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/polonel/trudesk/compare/v1.0.0...v1.0.1) (2018-09-27)
+
+
+### Bug Fixes
+
+* **package.json:** update version number on release ([229ab07](https://github.com/polonel/trudesk/commit/229ab07))
+
 # 1.0.0 (2018-09-27)
 
 
