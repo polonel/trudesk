@@ -66,37 +66,37 @@
                 </li>
             {{/canUser}}
 
-            <li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}} >
-                <a href="/plugins"><i class="material-icons">select_all</i>Plugins</a>
-                <ul id="side-nav-sub-plugins" class="side-nav-sub {{#is nav 'plugins'}} subMenuOpen {{/is}}">
-                    {{#each data.common.plugins}}
-                        {{#hasPluginPerm ../data.user permissions}}
-                            <li {{#is ../subnav name}} class='active' {{/is}}><a href="{{menu.main.link}}"><i class="fa-sub-icon {{menu.main.class}}">{{menu.main.icon}}</i><span>{{menu.main.name}}</span></a></li>
-                            {{#compare (size menu.sub) '>' 0}}
-                                {{#is ../subnav name}}
-                                    <ul class="side-nav-sub level-2 {{#is ../nav 'plugins'}} subMenuOpen {{/is}}" style="margin: 0; padding: 0;">
-                                        {{#each menu.sub.items}}
-                                            <li {{#is ../../childnav id}} class='active' {{/is}} style="margin: 0; padding: 0;">
-                                                <a href="{{url}}" style="font-size: 12px; padding-left: 30px;">
-                                                    {{#isNotNull icon}}
-                                                        <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">{{icon}}</i>
-                                                    {{else}}
-                                                        <i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>
-                                                    {{/isNotNull}}
-                                                    <span>{{title}}</span>
-                                                </a>
-                                            </li>
-                                        {{/each}}
-                                    </ul>
-                                {{/is}}
-                            {{/compare}}
-                            {{#unless @last}}
-                                <hr style="background: #ccc;"/>
-                            {{/unless}}
-                        {{/hasPluginPerm}}
-                    {{/each}}
-                </ul>
-            </li>
+            <!--<li {{#is nav 'plugins'}} class='active tether-plugins' {{/is}} >-->
+                <!--<a href="/plugins"><i class="material-icons">select_all</i>Plugins</a>-->
+                <!--<ul id="side-nav-sub-plugins" class="side-nav-sub {{#is nav 'plugins'}} subMenuOpen {{/is}}">-->
+                    <!--{{#each data.common.plugins}}-->
+                        <!--{{#hasPluginPerm ../data.user permissions}}-->
+                            <!--<li {{#is ../subnav name}} class='active' {{/is}}><a href="{{menu.main.link}}"><i class="fa-sub-icon {{menu.main.class}}">{{menu.main.icon}}</i><span>{{menu.main.name}}</span></a></li>-->
+                            <!--{{#compare (size menu.sub) '>' 0}}-->
+                                <!--{{#is ../subnav name}}-->
+                                    <!--<ul class="side-nav-sub level-2 {{#is ../nav 'plugins'}} subMenuOpen {{/is}}" style="margin: 0; padding: 0;">-->
+                                        <!--{{#each menu.sub.items}}-->
+                                            <!--<li {{#is ../../childnav id}} class='active' {{/is}} style="margin: 0; padding: 0;">-->
+                                                <!--<a href="{{url}}" style="font-size: 12px; padding-left: 30px;">-->
+                                                    <!--{{#isNotNull icon}}-->
+                                                        <!--<i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">{{icon}}</i>-->
+                                                    <!--{{else}}-->
+                                                        <!--<i class="fa-sub-icon material-icons" style="font-size: 16px; margin-left: 3px;">label_outline</i>-->
+                                                    <!--{{/isNotNull}}-->
+                                                    <!--<span>{{title}}</span>-->
+                                                <!--</a>-->
+                                            <!--</li>-->
+                                        <!--{{/each}}-->
+                                    <!--</ul>-->
+                                <!--{{/is}}-->
+                            <!--{{/compare}}-->
+                            <!--{{#unless @last}}-->
+                                <!--<hr style="background: #ccc;"/>-->
+                            <!--{{/unless}}-->
+                        <!--{{/hasPluginPerm}}-->
+                    <!--{{/each}}-->
+                <!--</ul>-->
+            <!--</li>-->
 
             {{#canUser data.user "notices:view"}}
                 <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
