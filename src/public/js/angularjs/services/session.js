@@ -46,7 +46,6 @@ define(['angular'], function(angular) {
 
             if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) 
                 $window.trudeskSessionService = new SessionService();
-            
 
             return $window.trudeskSessionService;
         });

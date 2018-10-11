@@ -220,6 +220,50 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.createPublicAccount);
 
+    router.get('/api/v1/admin/elasticsearch/rebuild', middleware.api, middleware.isAdmin, function(req, res) {
+        var es = require('../elasticsearch');
+        es.rebuildIndex();
+
+        return res.send('OK');
+    });
+    router.get('/api/v1/admin/elasticsearch/set', function(req, res) {
+        var es = require('../elasticsearch');
+        es.getIndexCount(function(err, response) {
+            return res.json(response);
+        });
+    });
+    router.get('/api/v1/admin/elasticsearch/status', middleware.api, middleware.isAdmin, function(req, res) {
+        var _ = require('lodash');
+        var async = require('async');
+        var es = require('../elasticsearch');
+        var response = {
+            esStatus: global.esStatus
+        };
+
+        async.parallel([
+            function(done) {
+                es.getIndexCount(function(err, data) {
+                    if (err) return done(err);
+                    response.indexCount = (!_.isUndefined(data.count) ? data.count : 0);
+                    return done();
+                });
+            },
+            function(done) {
+                var ticketSchmea = require('../models/ticket');
+                ticketSchmea.getCount(function(err, count) {
+                    if (err) return done(err);
+                    response.dbCount = count;
+                    return done();
+                });
+            }
+        ], function(err) {
+            if (err) return res.status(500).json({success: false, error: err});
+
+            response.inSync = response.dbCount === response.indexCount;
+            
+            res.json({success: true, status: response });
+        });
+    });
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
         if (req.user.role === 'admin') {

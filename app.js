@@ -152,7 +152,6 @@ function dbCallback(err, db) {
             function(next) {
                 var es = require('./src/elasticsearch');
                 es.init();
-                es.setupHooks();
                 return next();
             },
             function(next) {

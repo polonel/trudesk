@@ -13,11 +13,13 @@
  **/
 
 var _               = require('lodash');
+var path            = require('path');
 var async           = require('async');
 var nconf           = require('nconf');
 var winston         = require('winston');
 var elasticsearch   = require('elasticsearch');
 var emitter         = require('../emitter');
+var settingUtil     = require('../settings/settingsUtil');
 
 var ES = {};
 
@@ -49,10 +51,6 @@ ES.testConnection = function(callback) {
 };
 
 ES.setupHooks = function() {
-    var ENABLED = (!_.isUndefined(nconf.get('elasticsearch:enable'))) ? nconf.get('elasticsearch:enable') : false;
-    if (!ENABLED)
-        return false;
-
     var ticketSchema = require('../models/ticket');
     emitter.on('ticket:deleted', function(data) {
        if (_.isUndefined(data._id))
@@ -159,242 +157,85 @@ ES.setupHooks = function() {
     });
 };
 
-ES.init = function(callback) {
-    var ENABLED = (!_.isUndefined(nconf.get('elasticsearch:enable'))) ? nconf.get('elasticsearch:enable') : false;
-    if (!ENABLED) {
-        if (_.isFunction(callback))
-            return callback();
-
-        return false;
-    }
-
-    winston.debug('Initializing Elasticsearch...');
-    if (process.env.ELATICSEARCH_URI)
-        ES.host = process.env.ELATICSEARCH_URI;
-    else
-        ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port');
-
-    ES.esclient = new elasticsearch.Client({
-        host: ES.host
-    });
-
-    async.series([
-        function(next) {
-            checkConnection(function(err) {
-                if (err)
-                    return next(err);
-
-                winston.info('Elasticsearch Running... Connected.');
-                return next();
-            });
+ES.rebuildIndex = function() {
+    settingUtil.getSettings(function(err, settings) {
+        if (err) {
+            winston.warn(err);
+            return false;
         }
-    ], function(err) {
-        if (err && _.isFunction(callback))
-            return callback(err);
+        if (!settings.data.settings.elasticSearchConfigured.value)
+            return false;
+
+        var s = settings.data.settings;
+
+        var ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value;
+
+        global.esStatus = 'Rebuilding...';
+
+        var fork = require('child_process').fork;
+        var esFork = fork(path.join(__dirname, 'rebuildIndexChild.js'), { env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: ELASTICSEARCH_URI, MONGODB_URI: global.CONNECTION_URI } } );
+
+        global.forks.push({name: 'elasticsearchRebuild', fork: esFork});
+
+        esFork.once('message', function(data) {
+            global.esStatus = (data.success) ? 'Connected' : 'Error';
+        });
     });
+};
 
-    ES.esclient.indices.exists({
+ES.getIndexCount = function(callback) {
+    if (_.isUndefined(ES.esclient))
+        return callback('Elasticsearch has not initialized');
+
+    ES.esclient.count({
         index: 'trudesk'
-    }, function(err, exists) {
-        if (err)
-            winston.error(err);
-        else {
-            if (!exists) {
-                ES.esclient.indices.create({
-                    index: 'trudesk',
-                    body: {
-                        'settings' : {
-                            'index': {
-                                'number_of_replicas': 0
-                            },
-                            'analysis' : {
-                                'filter' : {
-                                    'email' : {
-                                        'type' : 'pattern_capture',
-                                        'preserve_original' : true,
-                                        'patterns' : [
-                                            '([^@]+)',
-                                            '(\\p{L}+)',
-                                            '(\\d+)',
-                                            '@(.+)'
-                                        ]
-                                    }
-                                },
-                                'analyzer' : {
-                                    'email' : {
-                                        'tokenizer' : 'uax_url_email',
-                                        'filter' : [ 'email', 'lowercase',  'unique' ]
-                                    }
-                                }
-                            }
-                        },
-                        mappings: {
-                            ticket: {
-                                properties: {
-                                    uid: {
-                                        type: 'text'
-                                    },
-                                    comments: {
-                                        properties: {
-                                            owner: {
-                                                properties: {
-                                                    email: {
-                                                        type: 'text',
-                                                        analyzer: 'email'
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    notes: {
-                                        properties: {
-                                            owner: {
-                                                properties: {
-                                                    email: {
-                                                        type: 'text',
-                                                        analyzer: 'email'
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    },
-                                    owner: {
-                                        properties: {
-                                            email: {
-                                                type: 'text',
-                                                analyzer: 'email'
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }, function(err, response) {
-                    if (err)
-                        winston.error(err);
-                    else {
-                        winston.debug('Starting Crawl...');
-                        var userSchema = require('../models/user');
-                        userSchema.find({}, function(err, users) {
-                            if (err) 
-                                winston.error(err);
-                             else {
-                                var body = [];
-                                users.forEach(function(user) {
-                                    body.push({
-                                        index: {
-                                            _index: 'trudesk',
-                                            _type: 'user',
-                                            _id: user._id
-                                        }},
-                                        {
-                                            username: user.username,
-                                            id: user._id,
-                                            fullname: user.fullname,
-                                            email: user.email,
-                                            title: user.title,
-                                            role: user.role,
-                                            deleted: user.delete
-                                        }
-                                    );
-                                });
+    }, callback);
+};
 
-                                var indexName = 'trudesk';
-                                var typeName = 'ticket';
+ES.init = function(callback) {
+    global.esStatus = 'Not Configured';
+    settingUtil.getSettings(function(err, s) {
+        var settings = s.data.settings;
 
-                                var Model = require('../models/ticket');
-                                var count = 0;
-                                var startTime = new Date().getTime();
-                                var stream = Model.find({}).populate('owner group comments.owner notes.owner tags priority type').lean().cursor();
+        var ENABLED = settings.elasticSearchConfigured;
+        if (!ENABLED) {
+            if (_.isFunction(callback))
+                return callback();
 
-                                var bulk = [];
-                                var sendAndEmptyQueue = function() {
-                                    if (bulk.length > 0) {
-                                        ES.esclient.bulk({
-                                            body: bulk
-                                        }, function (err) {
-                                            if (err) 
-                                                winston.error(err);
-                                             else 
-                                                winston.debug('Sent ' + bulk.length + ' documents to Elasticsearch!');
-                                            
-                                        });
-                                    }
+            return false;
+        }
 
-                                    bulk = [];
-                                };
+        winston.debug('Initializing Elasticsearch...');
+        global.esStatus = 'Initializing';
 
-                                stream.on('data', function(doc) {
-                                    count += 1;
+        ES.setupHooks();
 
-                                    bulk.push({ index: { _index: indexName, _type: typeName, _id: doc._id }});
-                                    var comments = [];
-                                    if (doc.comments !== undefined) {
-                                        doc.comments.forEach(function (c) {
-                                            comments.push({
-                                                comment: c.comment,
-                                                _id: c._id,
-                                                deleted: c.deleted,
-                                                date: c.date,
-                                                owner: {
-                                                    _id: c.owner._id,
-                                                    fullname: c.owner.fullname,
-                                                    username: c.owner.username,
-                                                    email: c.owner.email,
-                                                    role: c.owner.role,
-                                                    title: c.owner.title
-                                                }
-                                            });
-                                        });
-                                    }
-                                    bulk.push({
-                                        uid: doc.uid,
-                                        owner: {
-                                            _id: doc.owner._id,
-                                            fullname: doc.owner.fullname,
-                                            username: doc.owner.username,
-                                            email: doc.owner.email,
-                                            role: doc.owner.role,
-                                            title: doc.owner.title
-                                        },
-                                        group: {
-                                            _id: doc.group._id,
-                                            name: doc.group.name
-                                        },
-                                        status: doc.status,
-                                        issue: doc.issue,
-                                        subject: doc.subject,
-                                        date: doc.date,
-                                        priority: {
-                                            _id: doc.priority._id,
-                                            name: doc.priority.name
-                                        },
-                                        type: {_id: doc.type._id, name: doc.type.name},
-                                        deleted: doc.deleted,
-                                        comments: comments,
-                                        notes: doc.notes,
-                                        tags: doc.tags
-                                    });
+        if (process.env.ELATICSEARCH_URI)
+            ES.host = process.env.ELATICSEARCH_URI;
+        else
+            ES.host = settings.elasticSearchHost.value + ':' + settings.elasticSearchPort.value;
 
-                                    if (count % 500 === 1) 
-                                        sendAndEmptyQueue();
-                                    
-                                })
-                                .on('err', function(err) {
-                                    winston.error(err);
-                                })
-                                .on('close', function() {
-                                    winston.debug('Document Count: ' + count);
-                                    winston.debug('Duration is: ' + (new Date().getTime() - startTime));
-                                    sendAndEmptyQueue();
-                                });
-                            }
-                        });
-                    }
+        ES.esclient = new elasticsearch.Client({
+            host: ES.host
+        });
+
+        async.series([
+            function(next) {
+                checkConnection(function(err) {
+                    if (err) return next(err);
+
+                    winston.info('Elasticsearch Running... Connected.');
+                    global.esStatus = 'Connected';
+                    return next();
                 });
             }
-        }
+        ], function(err) {
+            if (err)
+                global.esStatus = 'Error';
+
+            if (_.isFunction(callback))
+                return callback(err);
+        });
     });
 };
 

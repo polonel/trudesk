@@ -44,7 +44,7 @@ define([
                     }
                 };
             })
-            .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
+            .controller('settingsCtrl', function($scope, $http, $document, $timeout, $log) {
                 var mdeToolbarItems = [
                     {
                         name: 'bold',
@@ -106,6 +106,24 @@ define([
                 ];
 
                 var privacyPolicyMDE = null;
+
+                function toggleAnimation(forceState, state) {
+                    var animateItems = $('.setting-item-wrap.animate-in');
+                    var docElemStyle = $document[0].documentElement.style;
+                    var transitionProp = angular.isString(docElemStyle.transition) ? 'transition' : 'WebkitTransition';
+
+                    for (var i = 0; i < animateItems.length; i++) {
+                        var item = animateItems[i];
+                        item.style[ transitionProp + 'Delay' ] = ( i * 50 ) + 'ms';
+                        if (forceState) {
+                            if (state)
+                                item.classList.add('is-in');
+                            else
+                                item.classList.remove('is-in');
+                        } else
+                            item.classList.toggle('is-in');
+                    }
+                }
 
                 $scope.init = function() {
                     //Fix Inputs if input is preloaded with a value

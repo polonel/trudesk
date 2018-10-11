@@ -72,6 +72,12 @@ util.getSettings = function(callback) {
         s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '');
         s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value);
 
+        // Elasticsearch
+        s.elasticSearchEnabled = parseSetting(settings, 'es:enable', false);
+        s.elasticSearchHost = parseSetting(settings, 'es:host', '');
+        s.elasticSearchPort = parseSetting(settings, 'es:port', 9200);
+        s.elasticSearchConfigured = { value: ((s.elasticSearchEnabled.value !== false) && (!_.isEmpty(s.elasticSearchHost.value))) };
+
         content.data.settings = s;
 
         async.parallel([

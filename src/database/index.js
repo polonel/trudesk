@@ -28,10 +28,13 @@ var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true };
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
     if (opts) options = opts;
+    if (!_.isUndefined(process.env.MONGODB_URI)) CONNECTION_URI = process.env.MONGODB_URI.trim();
     if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim();
 
     if (db.connection) 
         return callback(null, db);
+
+    global.CONNECTION_URI = CONNECTION_URI;
 
     mongoose.Promise = global.Promise;
     mongoose.connect(CONNECTION_URI, options).then(function() {

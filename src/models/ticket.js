@@ -1220,6 +1220,11 @@ ticketSchema.statics.getTypeCount = function(typeId, callback) {
     return q.exec(callback);
 };
 
+ticketSchema.statics.getCount = function(callback) {
+    var q = this.model(COLLECTION).countDocuments({deleted: false}).lean();
+    return q.exec(callback);
+};
+
 /**
  * Mark a ticket as deleted in MongoDb <br/><br/>
  * *Ticket has its ```deleted``` flag set to true*

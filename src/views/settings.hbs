@@ -714,7 +714,134 @@
                 </div>
 
                 <!--Elasticsearch-->
-                <div data-settings-id="settings-elasticsearch" {{#ifeq subnav compare='settings-elasticsearch'}} class="active" {{/ifeq}}>
+                <div data-settings-id="settings-elasticsearch" {{#ifeq subnav compare='settings-elasticsearch'}} class="active" {{/ifeq}} ng-controller="settingsElasticSearchCtrl"
+                     ng-init="
+                     elasticSearchEnable={{data.settings.elasticSearchEnabled.value}};
+                     esServer='{{data.settings.elasticSearchHost.value}}';
+                     esPort='{{data.settings.elasticSearchPort.value}}';
+                     init();"
+
+                >
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Elastic Search - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Enable the Elasticsearch engine.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="elasticSearchEnable" name="elasticSearchEnable" ng-change="elasticSearchEnableChange()" ng-model="elasticSearchEnable">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom animate-in">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Connection Status</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Current connection status to the configure Elasticsearch server.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <h4 class="text-{[{esStatusClass}]} mt-20 mr-15" ng-model="esStatus">{[{esStatus}]}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom animate-in">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Indexed Documents</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Current count of indexed documents.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <h4 class="font-light mt-20 mr-15">{[{indexCountFormatted}]}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom animate-in">
+                        <div class="panel trupanel nopadding no-hover-shadow {[{inSyncClass}]}" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Index Status</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Current status of the index. If the status is not green, the index may need rebuilding.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <h4 class="mt-20 mr-15">{[{inSyncText}]}</h4>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom animate-in">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Elasticsearch Server Connection
+                                    <i class="material-icons"
+                                       style="color: #888;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            line-height: 3px;"
+                                       data-uk-tooltip="{cls:'long-text'}" title="Changing server settings will require a rebuild of the index">error</i>
+                                </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    The connection settings to the Elasticsearch server.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="">
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="esServer">Server</label>
+                                        <input id="esServer" class="md-input md-input-width-medium" name="esServer" type="text" ng-model="esServer" />
+                                    </div>
+                                    <div class="uk-margin-medium-bottom">
+                                        <label for="esPort">Port</label>
+                                        <input id="esPort" class="md-input md-input-width-medium" name="esPort" type="text" value="9200" ng-model="esPort" />
+                                    </div>
+                                    <div class="uk-clearfix">
+                                        <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="esServerSubmit" ng-click="esServerFormSubmit($event);">Apply</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom animate-in">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">
+                                    Rebuild Index
+                                    <i class="material-icons"
+                                       style="color: #888;
+                                            font-size: 16px;
+                                            cursor: pointer;
+                                            line-height: 3px;"
+                                       data-uk-tooltip="{cls:'long-text'}" title="Rebuilding the index should only occur if its out of sync with the database. Rebuilding will take some time.">error</i>
+                                </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Wipe index and rebuild
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <button class="md-btn md-btn-primary md-btn-wave mr-15" style="margin-top: 13px;" ng-click="rebuildIndexClicked($event);">REBUILD</button>
+                            </div>
+                        </div>
+                    </div>
 
                 </div>
 
