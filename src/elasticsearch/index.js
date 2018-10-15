@@ -19,6 +19,7 @@ var nconf           = require('nconf');
 var winston         = require('winston');
 var elasticsearch   = require('elasticsearch');
 var emitter         = require('../emitter');
+var moment          = require('moment-timezone');
 var settingUtil     = require('../settings/settingsUtil');
 
 var ES = {};
@@ -91,18 +92,19 @@ ES.setupHooks = function() {
                 comments: ticket.comments,
                 notes: ticket.notes,
                 deleted: ticket.deleted,
-                priority: ticket.priority,
-                type: {
-                    _id: ticket.type._id,
-                    name: ticket.type.name
+                priority: {
+                    _id: ticket.priority._id,
+                    name: ticket.priority.name,
+                    htmlColor: ticket.priority.htmlColor
                 },
+                type: {_id: ticket.type._id, name: ticket.type.name},
                 status: ticket.status,
                 tags: ticket.tags
             };
 
             ES.esclient.index({
                 index: 'trudesk',
-                type: 'ticket',
+                type: 'doc',
                 id: ticket._id.toString(),
                 refresh: 'true',
                 body: cleanedTicket
@@ -126,6 +128,7 @@ ES.setupHooks = function() {
                 subject: ticket.subject,
                 issue: ticket.issue,
                 date: ticket.date,
+                dateFormatted: moment.utc(ticket.date).tz(ES.timezone).format('MMMM D YYYY'),
                 owner: ticket.owner,
                 assignee: ticket.assignee,
                 group: {
@@ -135,18 +138,19 @@ ES.setupHooks = function() {
                 comments: ticket.comments,
                 notes: ticket.notes,
                 deleted: ticket.deleted,
-                priority: ticket.priority,
-                type: {
-                    _id: ticket.type._id,
-                    name: ticket.type.name
+                priority: {
+                    _id: ticket.priority._id,
+                    name: ticket.priority.name,
+                    htmlColor: ticket.priority.htmlColor
                 },
+                type: {_id: ticket.type._id, name: ticket.type.name},
                 status: ticket.status,
                 tags: ticket.tags
             };
 
             ES.esclient.index({
                 index: 'trudesk',
-                type: 'ticket',
+                type: 'doc',
                 id: _id,
                 body: cleanedTicket
             }, function(err) {
@@ -154,6 +158,17 @@ ES.setupHooks = function() {
                     winston.warn('Elasticsearch Error: ' + err);
             });
         });
+    });
+};
+
+ES.buildClient = function(host) {
+    if (ES.esclient) {
+        ES.esclient.close();
+    }
+    ES.esclient = new elasticsearch.Client({
+        host: host,
+        pingTimeout: 10000,
+        maxRetries: 5
     });
 };
 
@@ -169,6 +184,8 @@ ES.rebuildIndex = function() {
         var s = settings.data.settings;
 
         var ELASTICSEARCH_URI = s.elasticSearchHost.value + ':' + s.elasticSearchPort.value;
+
+        ES.buildClient(ELASTICSEARCH_URI);
 
         global.esStatus = 'Rebuilding...';
 
@@ -197,7 +214,7 @@ ES.init = function(callback) {
     settingUtil.getSettings(function(err, s) {
         var settings = s.data.settings;
 
-        var ENABLED = settings.elasticSearchConfigured;
+        var ENABLED = settings.elasticSearchConfigured.value;
         if (!ENABLED) {
             if (_.isFunction(callback))
                 return callback();
@@ -207,6 +224,7 @@ ES.init = function(callback) {
 
         winston.debug('Initializing Elasticsearch...');
         global.esStatus = 'Initializing';
+        ES.timezone = settings.timezone.value;
 
         ES.setupHooks();
 
@@ -215,9 +233,7 @@ ES.init = function(callback) {
         else
             ES.host = settings.elasticSearchHost.value + ':' + settings.elasticSearchPort.value;
 
-        ES.esclient = new elasticsearch.Client({
-            host: ES.host
-        });
+        ES.buildClient(ES.host);
 
         async.series([
             function(next) {

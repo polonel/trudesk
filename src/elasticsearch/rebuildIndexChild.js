@@ -1,6 +1,7 @@
 var async = require('async');
 var elasticsearch = require('elasticsearch');
 var winston = require('winston');
+var moment = require('moment-timezone');
 var database = require('../database');
 
 global.env = process.env.NODE_ENV || 'production';
@@ -18,6 +19,21 @@ winston.add(winston.transports.Console, {
 
 var ES = {};
 
+function setupTimezone(callback) {
+    var settingsSchema = require('../models/setting');
+    settingsSchema.getSettingByName('gen:timezone', function(err, setting) {
+        if (err) return callback(err);
+
+        var tz = 'UTC';
+        if (setting && setting.value)
+            tz = setting.value;
+
+        ES.timezone = tz;
+
+        return callback(null, tz);
+    });
+}
+
 function setupDatabase(callback) {
     database.init(function(err, db) {
         if (err) return callback(err);
@@ -30,7 +46,9 @@ function setupDatabase(callback) {
 
 function setupClient() {
     ES.esclient = new elasticsearch.Client({
-        host: process.env.ELASTICSEARCH_URI
+        host: process.env.ELASTICSEARCH_URI,
+        pingTimeout: 10000,
+        maxRetries: 5
     });
 }
 
@@ -62,6 +80,11 @@ function createIndex(callback) {
                 },
                 'analysis' : {
                     'filter' : {
+                        'leadahead' : {
+                            'type': 'edge_ngram',
+                            'min_gram': 1,
+                            'max_gram': 20
+                        },
                         'email' : {
                             'type' : 'pattern_capture',
                             'preserve_original' : true,
@@ -74,6 +97,11 @@ function createIndex(callback) {
                         }
                     },
                     'analyzer' : {
+                        'leadahead': {
+                            'type': 'custom',
+                            'tokenizer': 'standard',
+                            'filter': [ 'lowercase', 'leadahead']
+                        },
                         'email' : {
                             'tokenizer' : 'uax_url_email',
                             'filter' : [ 'email', 'lowercase',  'unique' ]
@@ -82,13 +110,35 @@ function createIndex(callback) {
                 }
             },
             mappings: {
-                ticket: {
+                doc: {
                     properties: {
                         uid: {
-                            type: 'text'
+                            type: 'text',
+                            analyzer: 'leadahead',
+                            search_analyzer: 'standard'
+                        },
+                        subject: {
+                            type: 'text',
+                            analyzer: 'leadahead',
+                            search_analyzer: 'standard'
+                        },
+                        issue: {
+                            type: 'text',
+                            analyzer: 'leadahead',
+                            search_analyzer: 'standard'
+                        },
+                        dateFormatted: {
+                            type: 'text',
+                            analyzer: 'leadahead',
+                            search_analyzer: 'standard'
                         },
                         comments: {
                             properties: {
+                                comment: {
+                                    type: 'text',
+                                    analyzer: 'leadahead',
+                                    search_analyzer: 'standard'
+                                },
                                 owner: {
                                     properties: {
                                         email: {
@@ -101,6 +151,11 @@ function createIndex(callback) {
                         },
                         notes: {
                             properties: {
+                                note: {
+                                    type: 'text',
+                                    analyzer: 'leadahead',
+                                    search_analyzer: 'standard'
+                                },
                                 owner: {
                                     properties: {
                                         email: {
@@ -126,6 +181,61 @@ function createIndex(callback) {
     }, callback);
 }
 
+function sendAndEmptyQueue(bulk) {
+    if (bulk.length > 0) {
+        ES.esclient.bulk({
+            body: bulk,
+            timeout: '2m'
+        }, function (err) {
+            if (err) {
+                process.send({success: false});
+                throw err;
+            }
+            else
+                winston.debug('Sent ' + bulk.length + ' documents to Elasticsearch!');
+        });
+    }
+
+    return [];
+}
+
+function crawlUsers(callback) {
+    var Model = require('../models/user');
+    var count = 0;
+    var startTime = new Date().getTime();
+    var stream = Model.find({deleted: false}).lean().cursor();
+
+    var bulk = [];
+
+    stream.on('data', function(doc) {
+        count += 1;
+        bulk.push({ index: { _index: 'trudesk', _type: 'doc', _id: doc._id }});
+        bulk.push({
+            datatype: 'user',
+            username: doc.username,
+            email: doc.email,
+            fullname: doc.fullname,
+            title: doc.title,
+            role: doc.role
+        });
+
+        if (count % 200 === 1)
+            bulk = sendAndEmptyQueue(bulk);
+    })
+    .on('error', function(err) {
+        winston.error(err);
+        // Send Error Occurred - Kill Process
+        throw err;
+    })
+    .on('close', function() {
+        winston.debug('Document Count: ' + count);
+        winston.debug('Duration is: ' + (new Date().getTime() - startTime));
+        bulk = sendAndEmptyQueue(bulk);
+
+        return callback();
+    });
+}
+
 function crawlTickets(callback) {
     var Model = require('../models/ticket');
     var count = 0;
@@ -133,28 +243,11 @@ function crawlTickets(callback) {
     var stream = Model.find({deleted: false}).populate('owner group comments.owner notes.owner tags priority type').lean().cursor();
 
     var bulk = [];
-    var sendAndEmptyQueue = function() {
-        if (bulk.length > 0) {
-            ES.esclient.bulk({
-                body: bulk,
-                timeout: '1m'
-            }, function (err) {
-                if (err) {
-                    process.send({success: false});
-                    throw err;
-                }
-                else
-                    winston.debug('Sent ' + bulk.length + ' documents to Elasticsearch!');
-            });
-        }
-
-        bulk = [];
-    };
 
     stream.on('data', function(doc) {
         count += 1;
 
-        bulk.push({ index: { _index: 'trudesk', _type: 'ticket', _id: doc._id }});
+        bulk.push({ index: { _index: 'trudesk', _type: 'doc', _id: doc._id }});
         var comments = [];
         if (doc.comments !== undefined) {
             doc.comments.forEach(function (c) {
@@ -175,6 +268,7 @@ function crawlTickets(callback) {
             });
         }
         bulk.push({
+            datatype: 'ticket',
             uid: doc.uid,
             owner: {
                 _id: doc.owner._id,
@@ -192,9 +286,11 @@ function crawlTickets(callback) {
             issue: doc.issue,
             subject: doc.subject,
             date: doc.date,
+            dateFormatted: moment.utc(doc.date).tz(ES.timezone).format('MMMM D YYYY'),
             priority: {
                 _id: doc.priority._id,
-                name: doc.priority.name
+                name: doc.priority.name,
+                htmlColor: doc.priority.htmlColor
             },
             type: {_id: doc.type._id, name: doc.type.name},
             deleted: doc.deleted,
@@ -203,8 +299,8 @@ function crawlTickets(callback) {
             tags: doc.tags
         });
 
-        if (count % 500 === 1)
-            sendAndEmptyQueue();
+        if (count % 200 === 1)
+            bulk = sendAndEmptyQueue(bulk);
 
     })
         .on('err', function(err) {
@@ -215,9 +311,7 @@ function crawlTickets(callback) {
         .on('close', function() {
             winston.debug('Document Count: ' + count);
             winston.debug('Duration is: ' + (new Date().getTime() - startTime));
-            sendAndEmptyQueue();
-
-            // Send to Main
+            bulk = sendAndEmptyQueue(bulk);
 
             return callback();
         });
@@ -230,6 +324,9 @@ function rebuild(callback) {
             setupDatabase(next);
         },
         function(next) {
+            setupTimezone(next);
+        },
+        function(next) {
             deleteIndex(next);
         },
         function (next) {
@@ -239,6 +336,7 @@ function rebuild(callback) {
             crawlTickets(next);
         }
     ], function(err) {
+        if (err) winston.debug(err);
         callback(err);
     });
 }

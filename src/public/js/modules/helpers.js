@@ -74,6 +74,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         self.UI.setupSidebarTether();
         self.UI.bindAccordion();
 
+        self.UI.setupDataTethers();
+
         self.UI.fabToolbar();
         self.UI.fabSheet();
         self.UI.inputs();
@@ -92,6 +94,43 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         $(window).resize(layout);
 
         self.loaded = true;
+    };
+
+    helpers.util = {};
+    helpers.util.options = function(string) {
+
+        if ($.type(string)!=='string') return string;
+
+        if (string.indexOf(':') !== -1 && string.trim().substr(-1) !== '}')
+            string = '{'+string+'}';
+        
+
+        var start = (string ? string.indexOf('{') : -1), options = {};
+
+        if (start !== -1) {
+            try {
+                options = helpers.util.str2json(string.substr(start));
+            } catch (e) {
+
+            }
+        }
+
+        return options;
+    };
+
+    helpers.util.str2json = function(str, notevil) {
+        try {
+            if (notevil) {
+                return JSON.parse(str
+                    // wrap keys without quote with valid double quote
+                        .replace(/([$\w]+)\s*:/g, function(_, $1){return '"'+$1+'":';})
+                        // replacing single quote wrapped ones to double quote
+                        .replace(/'([^']+)'/g, function(_, $1){return '"'+$1+'"';})
+                );
+            } else 
+                return (new Function('', 'var json = ' + str + '; return JSON.parse(JSON.stringify(json));'))();
+            
+        } catch(e) { return false; }
     };
 
     helpers.countUpMe = function() {
@@ -199,6 +238,27 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.UI.tooltipSidebar = function() {
         $('.sidebar').find('a[data-uk-tooltip]').each(function() {
             $(this).attr('style', 'padding: 0 !important; font-size: 0 !important;');
+        });
+    };
+
+    helpers.UI.setupDataTethers = function() {
+        var $elements = $('*[data-tether]');
+
+        $elements.each(function() {
+            var $this = $(this);
+            var obj = helpers.util.options($this.attr('data-tether'));
+            if (_.isObject(obj)) {
+                var $target = $(obj.target);
+                if ($target.length > 0) {
+                    new Tether({
+                        element: $this,
+                        target: $target,
+                        attachment: obj.pos,
+                        targetAttachment: obj.targetAttachment,
+                        offset: obj.offset
+                    });
+                }
+            }
         });
     };
 

@@ -111,7 +111,8 @@ if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nc
 
 function loadConfig() {
     nconf.file({
-        file: configFile
+        file: configFile,
+        readOnly: false
     });
 
     nconf.defaults({

@@ -1,4 +1,4 @@
-<div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
+<div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}'; init();" ng-controller="ticketsCtrl">
     <div class="nopadding ticketContent">
         <div class="page-title noshadow uk-clearfix">
             <p class="uk-display-inline-block">Tickets</p>
@@ -88,11 +88,29 @@
                     </ul>
                 </div>
                 <div class="search-box" style="float: left; border: none; margin-top: 9px; padding-left: 0;">
-                    <input id="tickets_Search" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                    <input id="tickets_Search" class="non-es-search hide" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
                            ng-keypress="searchBarSubmit($event)"
                            value="{{data.filter.subject}}">
+                    <input id="es-ticket-search" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                        ng-model="searchTerm"
+                    >
                 </div>
             </div>
+
+            <div class="search-results-container animate-in" data-tether="{target: '.search-box', pos: 'top right', targetAttachment: 'bottom right', offset: '0 8px'}">
+                <h4 ng-hide="hideNoResults" class="uk-width-1-1 uk-text-center text-light mt-15">No Results</h4>
+                <ul class="search-results-list">
+                    <li class="search-results-item status-{[{item._source.status}]}" ng-repeat="item in searchResults">
+                        <a href="/tickets/{[{item._source.uid}]}" ng-click="searchResultClicked($event);">
+                            <span class="priority" style="background: {[{item._source.priority.htmlColor}]}"></span>
+                            <span class="uid">{[{item._source.uid}]}</span>
+                            <span class="subject">{[{item._source.subject}]}</span>
+                            <span class="issue">{[{item._source.issue | htmlToPlainText}]}</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
 
 

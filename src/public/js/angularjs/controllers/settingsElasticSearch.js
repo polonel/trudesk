@@ -12,9 +12,9 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history'], function(angular, _, $, helpers, socketClient, Uikit) {
-     return angular.module('trudesk.controllers.settingsElasticSearch', [])
-         .controller('settingsElasticSearchCtrl', function($scope, $http, $timeout, $document, $log) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit', 'history', 'angularjs/services'], function(angular, _, $, helpers, socketClient, Uikit) {
+     return angular.module('trudesk.controllers.settingsElasticSearch', ['trudesk.services.settings'])
+         .controller('settingsElasticSearchCtrl', function(SettingsService, $scope, $http, $timeout, $document, $log) {
 
              // Local Functions
              function toggleAnimation(forceState, state) {
@@ -36,6 +36,14 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
              }
 
              function getStatus() {
+                 console.log(SettingsService.getSettings().elasticSearchConfigured.value);
+                 if (!SettingsService.getSettings().elasticSearchConfigured.value) {
+                     $scope.esStatus = 'Not Configured';
+                     $scope.indexCount = '0';
+                     $scope.inSyncText = 'Not Configured';
+                     return false;
+                 }
+
                  // Get Elastic Search Status
                  $http.get('/api/v1/admin/elasticsearch/status')
                      .then(function success(response) {
@@ -58,8 +66,10 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                          }
 
                         // Refresh on Rebuild every 5s
-                        if ($scope.esStatus.toLowerCase() === 'rebuilding...')
+                        if ($scope.esStatus.toLowerCase() === 'rebuilding...') {
                             $timeout(getStatus, 5000);
+                            $('#es-rebuild-btn').attr('disabled', true);
+                        }
                      }, function error(err) {
                          $log.error(err);
                          $scope.esStatus = 'Error';
@@ -118,6 +128,9 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                          'Content-Type': 'application/json'
                      }
                  }).then(function successCallback() {
+                     SettingsService.getSettings().elasticSearchConfigured.value = true;
+                     SettingsService.getSettings().elasticSearchHost.value = $scope.esServer;
+                     SettingsService.getSettings().elasticSearchPort.value = $scope.esPort;
                      helpers.UI.showSnackbar('Settings Saved', false);
                  }, function errorCallback(err) {
                      helpers.UI.showSnackbar('Error: ' + err, true);
@@ -135,6 +148,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
                              $scope.esStatus = 'Rebuilding...';
                              $scope.esStatusClass = 'text-warning';
                              helpers.UI.showSnackbar('Rebuilding Index...', false);
+                             $($event.currentTarget).attr('disabled', true);
                              $timeout(function() {
                                  getStatus();
                              }, 3000);

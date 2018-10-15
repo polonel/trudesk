@@ -131,26 +131,26 @@
                         </div>
                     </div>
 
-                    <div class="setting-item-wrap uk-margin-medium-bottom">
-                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                            <div class="left">
-                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
-                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                    Tour the user interface on initial login.
-                                </h5>
-                            </div>
-                            <div class="right" style="position:relative;">
-                                <!-- Switch -->
-                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                    <label>
-                                        Enable
-                                        <input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">
-                                        <span class="lever"></span>
-                                    </label>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                    <!--<div class="setting-item-wrap uk-margin-medium-bottom">-->
+                        <!--<div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">-->
+                            <!--<div class="left">-->
+                                <!--<h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>-->
+                                <!--<h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">-->
+                                    <!--Tour the user interface on initial login.-->
+                                <!--</h5>-->
+                            <!--</div>-->
+                            <!--<div class="right" style="position:relative;">-->
+                                <!--&lt;!&ndash; Switch &ndash;&gt;-->
+                                <!--<div class="md-switch md-green" style="margin: 20px 0 0 0;">-->
+                                    <!--<label>-->
+                                        <!--Enable-->
+                                        <!--<input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">-->
+                                        <!--<span class="lever"></span>-->
+                                    <!--</label>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
 
                     <div class="setting-item-wrap uk-margin-medium-bottom">
                         <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
@@ -831,14 +831,14 @@
                                             font-size: 16px;
                                             cursor: pointer;
                                             line-height: 3px;"
-                                       data-uk-tooltip="{cls:'long-text'}" title="Rebuilding the index should only occur if its out of sync with the database. Rebuilding will take some time.">error</i>
+                                       data-uk-tooltip="{cls:'long-text'}" title="Rebuilding the index should only occur if the index is out of sync with the database, or has not been initialized. Rebuilding will take some time.">error</i>
                                 </h6>
                                 <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
                                     Wipe index and rebuild
                                 </h5>
                             </div>
                             <div class="right" style="position:relative;">
-                                <button class="md-btn md-btn-primary md-btn-wave mr-15" style="margin-top: 13px;" ng-click="rebuildIndexClicked($event);">REBUILD</button>
+                                <button id="es-rebuild-btn" class="md-btn md-btn-primary md-btn-wave mr-15" style="margin-top: 13px;" ng-click="rebuildIndexClicked($event);">REBUILD</button>
                             </div>
                         </div>
                     </div>

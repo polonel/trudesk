@@ -20,15 +20,16 @@ var async = require('async'),
     userSchema = require('../models/user'),
 
     //Sub APIs
-    apiTicketsV1      = require('./api/v1/tickets'),
-    apiTagsV1         = require('./api/v1/tags'),
-    apiNoticesV1      = require('./api/v1/notices'),
-    apiUsersV1        = require('./api/v1/users'),
-    apiMessagesV1     = require('./api/v1/messages'),
-    apiGroupsV1       = require('./api/v1/groups'),
-    apiReportsV1      = require('./api/v1/reports'),
-    apiSettingsV1     = require('./api/v1/settings'),
-    apiPluginsV1      = require('./api/v1/plugins');
+    apiTicketsV1        = require('./api/v1/tickets'),
+    apiTagsV1           = require('./api/v1/tags'),
+    apiNoticesV1        = require('./api/v1/notices'),
+    apiUsersV1          = require('./api/v1/users'),
+    apiMessagesV1       = require('./api/v1/messages'),
+    apiGroupsV1         = require('./api/v1/groups'),
+    apiReportsV1        = require('./api/v1/reports'),
+    apiSettingsV1       = require('./api/v1/settings'),
+    apiPluginsV1        = require('./api/v1/plugins'),
+    apiElasticsearchV1  = require('./api/v1/elasticsearch');
 
 /**
  * @since 1.0
@@ -57,6 +58,7 @@ apiController.groups = apiGroupsV1;
 apiController.reports = apiReportsV1;
 apiController.settings = apiSettingsV1;
 apiController.plugins = apiPluginsV1;
+apiController.elasticsearch = apiElasticsearchV1;
 
 apiController.import = function(req, res) {
     var fs = require('fs');
