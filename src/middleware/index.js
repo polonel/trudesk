@@ -98,9 +98,8 @@ module.exports = function(app, db, callback) {
             //Mobile
             app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')));
 
-            app.use('/uploads/tickets', middleware.redirectToLogin, express.static(path.resolve(__dirname, '/public/uploads/tickets')));
-            app.use('/uploads/users', middleware.redirectToLogin, express.static(path.resolve(__dirname, '/public/uploads/users')));
-            
+            app.use('/uploads', middleware.redirectToLogin, express.static(path.resolve(__dirname, '/public/uploads')));
+
             app.use(express.static(path.join(__dirname, '../../', 'public')));
 
             //Remove to enable plugins
