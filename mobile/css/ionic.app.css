@@ -19,7 +19,7 @@ $dark:                            #444 !default;
   Ionicons, v2.0.1
   Created by Ben Sperry for the Ionic Framework, http://ionicons.com/
   https://twitter.com/benjsperry  https://twitter.com/ionicframework
-  MIT License: https://github.com/driftyco/ionicons
+  MIT License: https://github.com/ionic-team/ionicons
 
   Android-style icons originally built by Google’s
   Material Design Icons: https://github.com/google/material-design-icons
@@ -6604,6 +6604,9 @@ button.item.item-button-right {
     align-items: center; }
     .item-options .button:before {
       margin: 0 auto; }
+  .item-options ion-option-button:last-child {
+    padding-right: calc(constant(safe-area-inset-right) + 12px);
+    padding-right: calc(env(safe-area-inset-right) + 12px); }
 
 /**
  * Lists
@@ -9599,28 +9602,57 @@ a.button {
  * Platform specific tweaks
  */
 .platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) {
-  height: 64px; }
+  height: 64px;
+  height: calc(constant(safe-area-inset-top) + 44px);
+  height: calc(env(safe-area-inset-top) + 44px); }
   .platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader).item-input-inset .item-input-wrapper {
     margin-top: 19px !important; }
   .platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > * {
-    margin-top: 20px; }
+    margin-top: 20px;
+    margin-top: constant(safe-area-inset-top);
+    margin-top: env(safe-area-inset-top); }
 
-.platform-ios.platform-cordova:not(.fullscreen) .tabs-top > .tabs,
-.platform-ios.platform-cordova:not(.fullscreen) .tabs.tabs-top {
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header {
+  padding-left: calc( constant(safe-area-inset-left) + 5px);
+  padding-left: calc(env(safe-area-inset-left) + 5px);
+  padding-right: calc(constant(safe-area-inset-right) + 5px);
+  padding-right: calc(env(safe-area-inset-right) + 5px); }
+  .platform-ios.platform-cordova:not(.fullscreen) .bar-header .buttons:last-child {
+    right: calc(constant(safe-area-inset-right) + 5px);
+    right: calc(env(safe-area-inset-right) + 5px); }
+
+.platform-ios.platform-cordova:not(.fullscreen) .has-tabs, .platform-ios.platform-cordova:not(.fullscreen) .bar-footer.has-tabs {
+  bottom: calc(constant(safe-area-inset-bottom) + 49px);
+  bottom: calc(env(safe-area-inset-bottom) + 49px); }
+
+.platform-ios.platform-cordova:not(.fullscreen) .tabs-top > .tabs, .platform-ios.platform-cordova:not(.fullscreen) .tabs.tabs-top {
   top: 64px; }
 
-.platform-ios.platform-cordova:not(.fullscreen) .has-header,
-.platform-ios.platform-cordova:not(.fullscreen) .bar-subheader {
-  top: 64px; }
+.platform-ios.platform-cordova:not(.fullscreen) .tabs {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+  height: calc(constant(safe-area-inset-bottom) + 49px);
+  height: calc(env(safe-area-inset-bottom) + 49px); }
+
+.platform-ios.platform-cordova:not(.fullscreen) .has-header, .platform-ios.platform-cordova:not(.fullscreen) .bar-subheader {
+  top: 64px;
+  top: calc(constant(safe-area-inset-top) + 44px);
+  top: calc(env(safe-area-inset-top) + 44px); }
 
 .platform-ios.platform-cordova:not(.fullscreen) .has-subheader {
-  top: 108px; }
+  top: 108px;
+  top: calc(constant(safe-area-inset-top) + 88px);
+  top: calc(env(safe-area-inset-top) + 88px); }
 
 .platform-ios.platform-cordova:not(.fullscreen) .has-header.has-tabs-top {
-  top: 113px; }
+  top: 113px;
+  top: calc(93px + constant(safe-area-inset-top));
+  top: calc(93px + env(safe-area-inset-top)); }
 
 .platform-ios.platform-cordova:not(.fullscreen) .has-header.has-subheader.has-tabs-top {
-  top: 157px; }
+  top: 157px;
+  top: calc(137px + constant(safe-area-inset-right));
+  top: calc(137px + env(safe-area-inset-right)); }
 
 .platform-ios.platform-cordova .popover .bar-header:not(.bar-subheader) {
   height: 44px; }
@@ -9629,8 +9661,7 @@ a.button {
   .platform-ios.platform-cordova .popover .bar-header:not(.bar-subheader) > * {
     margin-top: 0; }
 
-.platform-ios.platform-cordova .popover .has-header,
-.platform-ios.platform-cordova .popover .bar-subheader {
+.platform-ios.platform-cordova .popover .has-header, .platform-ios.platform-cordova .popover .bar-subheader {
   top: 44px; }
 
 .platform-ios.platform-cordova .popover .has-subheader {
@@ -9640,6 +9671,34 @@ a.button {
   margin-bottom: 20px; }
 
 @media (orientation: landscape) {
+  .item {
+    padding: 16px calc(constant(safe-area-inset-right) + 16px); }
+    .item .badge {
+      right: calc(constant(safe-area-inset-right) + 32px); }
+  .item-icon-left {
+    padding-left: calc(constant(safe-area-inset-left) + 54px); }
+    .item-icon-left .icon {
+      left: calc(constant(safe-area-inset-left) + 11px); }
+  .item-icon-right {
+    padding-right: calc(constant(safe-area-inset-right) + 54px); }
+    .item-icon-right .icon {
+      right: calc(constant(safe-area-inset-right) + 11px); }
+  .item-complex,
+  a.item.item-complex,
+  button.item.item-complex {
+    padding: 0; }
+    .item-complex .item-content, a.item.item-complex .item-content, button.item.item-complex .item-content {
+      padding: 16px calc(constant(safe-area-inset-right) + 49px) 16px calc(constant(safe-area-inset-left) + 16px); }
+  .item-left-edit.visible.active {
+    -webkit-transform: translate3d(calc(constant(safe-area-inset-left) + 8px), 0, 0);
+    transform: translate3d(calc(constant(safe-area-inset-left) + 8px), 0, 0); }
+  .list-left-editing .item-left-editable .item-content,
+  .item-left-editing.item-left-editable .item-content {
+    -webkit-transform: translate3d(calc(constant(safe-area-inset-left) + 50px), 0, 0);
+    transform: translate3d(calc(constant(safe-area-inset-left) + 50px), 0, 0); }
+  .item-right-edit {
+    right: constant(safe-area-inset-right);
+    right: env(safe-area-inset-right); }
   .platform-ios.platform-browser.platform-ipad {
     position: fixed; } }
 
