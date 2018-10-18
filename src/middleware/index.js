@@ -47,7 +47,7 @@ module.exports = function(app, db, callback) {
     app.set('view engine', 'hbs');
     hbsHelpers.register(hbs.handlebars);
 
-    app.use(favicon(path.join(__dirname, '../../', 'public/img/favicon.ico')));
+    // app.use(favicon(nconf.get('base_dir') + '/public/img/favicon.ico'));
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use(cookieParser());

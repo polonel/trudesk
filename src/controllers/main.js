@@ -15,7 +15,8 @@
 var _               = require('lodash'),
     path            = require('path'),
     passport        = require('passport'),
-    winston         = require('winston');
+    winston         = require('winston'),
+    nconf           = require('nconf');
 
 var mainController = {};
 
@@ -470,6 +471,143 @@ mainController.l2authget = function(req, res) {
 
         return res.render('login-otp', content);
     });
+};
+
+mainController.uploadFavicon = function(req, res) {
+    var fs = require('fs');
+    var settingUtil = require('../settings/settingsUtil');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limit: {
+            file: 1,
+            fileSize: (1024*1024) * 1
+        }
+    });
+
+    var object = {}, error;
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') === -1) {
+            error = {
+                status: 400,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = nconf.get('base_dir') + '/public/uploads/assets';
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        object.filePath = path.join(savePath, 'favicon' + path.extname(filename));
+        object.filename = 'favicon' + path.extname(filename);
+        object.mimetype = mimetype;
+
+        file.on('limit', function() {
+            error = {
+                stats: 400,
+                message: 'File size too large. File size limit: 1mb'
+            };
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) {
+            winston.warn(error);
+            return res.status(error.status).send(error.message);
+        }
+
+        if (_.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename))
+            return res.status(400).send('Invalid image data');
+
+        if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk');
+
+        settingUtil.setSetting('gen:customfavicon', true, function(err) {
+            if (err) return res.status(400).send('Failed to save setting to database');
+
+            settingUtil.setSetting('gen:customfaviconfilename', object.filename, function(err) {
+                if (err) return res.status(400).send('Failed to save setting to database');
+
+                return res.send(object.filename);
+            });
+        });
+    });
+
+    req.pipe(busboy);
+};
+
+mainController.uploadLogo = function(req, res) {
+    var fs = require('fs');
+    var settingUtil = require('../settings/settingsUtil');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: (1024*1024) * 3 // 3mb
+        }
+    });
+
+    var object = {}, error;
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') === -1) {
+            error = {
+                status: 400,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = nconf.get('base_dir') + '/public/uploads/assets';
+        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+
+        object.filePath = path.join(savePath, 'topLogo' + path.extname(filename));
+        object.filename = 'topLogo' + path.extname(filename);
+        object.mimetype = mimetype;
+
+        file.on('limit', function() {
+            error = {
+                stats: 400,
+                message: 'File size too large. File size limit: 3mb'
+            };
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.once('finish', function() {
+        if (error) {
+            winston.warn(error);
+            return res.status(error.status).send(error.message);
+        }
+
+        if (_.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename))
+            return res.status(400).send('Invalid image data');
+
+        if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk');
+
+        settingUtil.setSetting('gen:customlogo', true, function(err) {
+            if (err) return res.status(400).send('Failed to save setting to database');
+
+            settingUtil.setSetting('gen:customlogofilename', object.filename, function(err) {
+                if (err) return res.status(400).send('Failed to save setting to database');
+
+                return res.send(object.filename);
+            });
+        });
+    });
+
+    req.pipe(busboy);
 };
 
 module.exports = mainController;

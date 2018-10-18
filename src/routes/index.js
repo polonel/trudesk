@@ -48,6 +48,22 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/register', controllers.accounts.signup);
     router.get('/signup', controllers.accounts.signup);
 
+    router.get('/logoimage', function(req, res) {
+        var s = require('../models/setting');
+        var _ = require('lodash');
+        s.getSettingByName('gen:customlogo', function(err, hasCustomLogo) {
+            if (!err && hasCustomLogo && hasCustomLogo.value)
+                s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
+                    if (!err && logoFilename && !_.isUndefined(logoFilename))
+                        return res.send('/assets/topLogo.png');
+                    else
+                        return res.send('/img/defaultLogoLight.png');
+                });
+            else
+                return res.send('/img/defaultLogoLight.png');
+        });
+    });
+
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
     router.get('/tickets/filter', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.filter, controllers.tickets.processor);
@@ -103,6 +119,8 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
     router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.post('/settings/general/uploadlogo', middleware.redirectToLogin, controllers.main.uploadLogo);
+    router.post('/settings/general/uploadfavicon', middleware.redirectToLogin, controllers.main.uploadFavicon);
     router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
     router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);

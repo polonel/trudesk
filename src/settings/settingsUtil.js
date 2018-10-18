@@ -27,6 +27,15 @@ function parseSetting(settings, name, defaultValue) {
     return s;
 }
 
+util.setSetting = function(setting, value, callback) {
+    var s = {
+        name: setting,
+        value: value
+    };
+
+    settingSchema.update({name: s.name}, s, {upsert: true}, callback);
+};
+
 util.getSettings = function(callback) {
     settingSchema.getSettings(function(err, settings) {
         if (err) return callback('Invalid Settings');
@@ -38,6 +47,8 @@ util.getSettings = function(callback) {
 
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
+        s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
+        s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false);
 
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
 

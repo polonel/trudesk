@@ -44,7 +44,7 @@ define([
                     }
                 };
             })
-            .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
+            .controller('settingsCtrl', function($scope, $http, $timeout, $log, $window) {
                 var mdeToolbarItems = [
                     {
                         name: 'bold',
@@ -108,6 +108,51 @@ define([
                 var privacyPolicyMDE = null;
 
                 $scope.init = function() {
+                    var $uploadButton = $('#logo-upload-select').parent();
+                    var uploadLogoSettings = {
+                        action: '/settings/general/uploadlogo',
+                        allow: '*.(jpg|jpeg|gif|png)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $uploadButton.text('Upload Logo');
+                            $uploadButton.attr('disabled', false);
+                            $uploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#logo-upload-select'), uploadLogoSettings);
+
+                    var uploadFaviconSettings = {
+                        action: '/settings/general/uploadfavicon',
+                        allow: '*.(jpg|jpeg|gif|png|ico)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $uploadButton.text('Upload Logo');
+                            $uploadButton.attr('disabled', false);
+                            $uploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#favicon-upload-select'), uploadFaviconSettings);
+
                     //Fix Inputs if input is preloaded with a value
                     $timeout(function() {
                         $('input.md-input').each(function() {
@@ -134,7 +179,7 @@ define([
                         $timeout(function() {
                             // Call in next cycle - Timezones generated dynamically
                             helpers.UI.selectize($('select#tz').parent());
-                        }, 0);
+                        });
 
                         var $privacyPolicy = $('#privacyPolicy');
                         if ($privacyPolicy.length > 0) {
@@ -391,6 +436,40 @@ define([
                         }
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Site URL saved successfully.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomLogo = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:customlogo',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomFavicon = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:customfavicon',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Error: ' + err, true);
                         $log.error(err);
