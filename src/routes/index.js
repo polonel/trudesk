@@ -119,6 +119,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
     router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/appearance', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.appearance);
     router.post('/settings/general/uploadlogo', middleware.redirectToLogin, controllers.main.uploadLogo);
     router.post('/settings/general/uploadfavicon', middleware.redirectToLogin, controllers.main.uploadFavicon);
     router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);

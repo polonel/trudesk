@@ -49,6 +49,11 @@
                         <h3>General</h3>
                     </div>
                 </li>
+                <li {{#ifeq subnav compare='settings-appearance'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-appearance');">
+                    <div class="setting-category">
+                        <h3>Appearance</h3>
+                    </div>
+                </li>
                 <li {{#ifeq subnav compare='settings-tickets'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-tickets');">
                     <div class="setting-category">
                         <h3>Tickets</h3>
@@ -205,6 +210,47 @@
                             </div>
                         </div>
                     </div>
+                </div>
+
+                <div data-settings-id="settings-appearance" {{#ifeq subnav compare='settings-appearance'}} class="active" {{/ifeq}}>
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Site Logo</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Upload site logo to display in top navigation. <i>Note: Image will resize to a max width of 140px</i>
+                                </h5>
+                            </div>
+                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                                <div class="uk-width-1-1 uk-float-right" style="margin-top: 10px; text-align: right;">
+                                    <form class="uk-form-stacked" id="logo-upload-form">
+                                        <button id="remove-custom-logo-btn" class="md-btn md-btn-danger md-btn-small right {{#if data.common.hasCustomLogo}} {{else}} hide{{/if}}" ng-click="removeCustomLogo($event);">X</button>
+                                        <button class="uk-form-file md-btn md-btn-small right" style="text-transform: none;">Upload Logo<input id="logo-upload-select" type="file"></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Favicon</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Upload a custom favicon
+                                </h5>
+                            </div>
+                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                                <div class="uk-width-1-1 uk-float-right" style="margin-top: 10px; text-align: right;">
+                                    <form class="uk-form-stacked" id="favicon-upload-form">
+                                        <button id="remove-custom-favicon-btn" class="md-btn md-btn-danger md-btn-small right {{#if data.common.hasCustomFavicon}} {{else}} hide{{/if}}" ng-click="removeCustomFavicon($event);">X</button>
+                                        <button class="uk-form-file md-btn md-btn-small right" style="text-transform: none;">Upload Favicon<input id="favicon-upload-select" type="file"></button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
 
                 <div data-settings-id="settings-tickets" {{#ifeq subnav compare='settings-tickets'}} class="active" {{/ifeq}}>
