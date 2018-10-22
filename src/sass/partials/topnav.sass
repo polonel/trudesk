@@ -15,6 +15,7 @@
 
 .top-bar
   padding: 0 15px
+  border-bottom: $topbar_border
 
 .top-menu
   height: 75px
@@ -23,8 +24,8 @@
   ul
     li
       background: $topbar_bg
-      height: 75px
-      line-height: 75px
+      height: 74px
+      line-height: 74px
       color: $topbar_text_color
       position: relative
 
@@ -44,7 +45,8 @@
       &.top-bar-icon a
         font-size: 30px
         font-family: "FontAwesome", sans-serif
-        max-height: 75px
+        overflow: hidden
+        max-height: 74px
 
         &:hover
           color: $topbar_icons_hover !important
@@ -107,7 +109,7 @@
 .top-bar-section ul li.profile-area
   font-family: $fontFamily
   font-size: 18px
-  color: $topbar_user_text !important
+  color: $topbar_text_color !important
   //background: url("/img/midDots.png") no-repeat
   //background-position: 0 50%
   margin-left: 10px
@@ -125,7 +127,7 @@
   span
     display: inline-block
     margin: 0 20px 0 15px
-    color: #ffffff !important
+    color: $topbar_text_color !important
     &:hover
       color: inherit
 
@@ -243,7 +245,7 @@
     max-height: 80px
     line-height: normal
     &:hover
-      background: #f3f5f9 !important
+      background: darken(#fff, 4%) !important
     &:last-child
       border-bottom: none
 

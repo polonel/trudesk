@@ -17,7 +17,7 @@
   border-bottom: $datatables_head_border_bottom
   &.stripe
     tr:nth-of-type(even)
-      background: darken(white, 3%)
+      background: darken($page_content_bg, 1%)
       &:hover
         cursor: pointer
         background: $page_content_bg
@@ -27,13 +27,13 @@
     padding-right: 15px
   tbody
     tr
-      background: white
+      background: lighten($page_content_bg, 3%)
       &:hover
         cursor: pointer
-        background: #f5f5f6
+        background: $page_content_bg
       &.ticket-new
         td
-          font-weight: 600
+          font-weight: 600 !important
       &.ticket-closed
         td
           font-weight: 300
@@ -79,13 +79,13 @@ table.dataTable
     tr
       th
         font-size: 12px
-        color: #55616e
+        color: $text_color
         font-weight: 400
   tbody
     tr
       td
         font-family: $fontFamily
-        color: #55616e
+        color: $text_color
         font-weight: normal
         font-size: 14px
 

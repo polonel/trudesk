@@ -73,7 +73,7 @@
       padding: 0
     .message-subject
       margin-top: 3px
-      color: lighten($text_color, 40%)
+      color: lighten($text_color, 20%)
       margin-right: 15px
       text-overflow: ellipsis
       white-space: nowrap
@@ -196,7 +196,7 @@
     font-size: 30px
     font-family: $fontFamily
     font-weight: 300
-    color: #3d4854
+    color: $text_color
     margin-bottom: 5px
 
   h5
@@ -344,12 +344,12 @@ input[type="checkbox"]:checked.poloCheckbox + label
 .search-box
   position: relative
   padding: 10px
-  border-top: 1px solid #ddd
-  border-right: $sidebar_border_right
+  border-top: 1px solid $page_content_border_color
+  border-right: 1px solid $page_content_border_color
   input
     width: 100%
-    border: none
-    background: lighten(#ddd, 8%)
+    border: 1px solid $page_content_border_color
+    background: lighten($page_bg_color, 20%)
     padding: 5px 15px
     color: #222
     font-size: 13px

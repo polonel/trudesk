@@ -28,6 +28,12 @@
     tpsUsername='{{data.settings.tpsUsername.value}}';
     tpsApiKey='{{data.settings.tpsApiKey.value}}';
 
+    colorHeaderBG='{{data.settings.colorHeaderBG.value}}';
+    colorHeaderPrimary='{{data.settings.colorHeaderPrimary.value}}';
+    colorPrimary='{{data.settings.colorPrimary.value}}';
+    colorTertiary='{{data.settings.colorTertiary.value}}';
+    colorQuaternary='{{data.settings.colorQuaternary.value}}';
+
     privacyPolicy='{{data.settings.privacyPolicy.value}}';
 
     ticketTagsCount={{data.tags.count}};
@@ -35,7 +41,7 @@
     init();
 ">
     <div class="uk-width-1-6 message-list full-height" data-offset="68">
-        <div class="page-title noshadow nopadding-right" style="border-top: none !important; height: 68px !important; padding-left: 20px !important;">
+        <div class="page-title noshadow nopadding-right" style="border-top: none !important; border-bottom: none !important; height: 68px !important; padding-left: 20px !important;">
             <div class="page-title-border-right1" style="position:relative;">
                 <p style="font-size: 24px;">Settings</p>
             </div>
@@ -101,44 +107,6 @@
                                 </div>
                                 <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
                                     <button class="md-btn md-btn-small" ng-click="saveSiteUrlClicked();">Save</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="setting-item-wrap uk-margin-medium-bottom">
-                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                            <div class="left">
-                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Site Logo</h6>
-                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                    Upload site logo to display in top navigation. <i>Note: Image will resize to a max width of 140px</i>
-                                </h5>
-                            </div>
-                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
-                                <div class="uk-width-1-1 uk-float-right" style="margin-top: 10px; text-align: right;">
-                                    <form class="uk-form-stacked" id="logo-upload-form">
-                                        <button id="remove-custom-logo-btn" class="md-btn md-btn-danger md-btn-small right {{#if data.common.hasCustomLogo}} {{else}} hide{{/if}}" ng-click="removeCustomLogo($event);">X</button>
-                                        <button class="uk-form-file md-btn md-btn-small right" style="text-transform: none;">Upload Logo<input id="logo-upload-select" type="file"></button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="setting-item-wrap uk-margin-medium-bottom">
-                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
-                            <div class="left">
-                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Favicon</h6>
-                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                    Upload a custom favicon
-                                </h5>
-                            </div>
-                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
-                                <div class="uk-width-1-1 uk-float-right" style="margin-top: 10px; text-align: right;">
-                                    <form class="uk-form-stacked" id="favicon-upload-form">
-                                        <button id="remove-custom-favicon-btn" class="md-btn md-btn-danger md-btn-small right {{#if data.common.hasCustomFavicon}} {{else}} hide{{/if}}" ng-click="removeCustomFavicon($event);">X</button>
-                                        <button class="uk-form-file md-btn md-btn-small right" style="text-transform: none;">Upload Favicon<input id="favicon-upload-select" type="file"></button>
-                                    </form>
                                 </div>
                             </div>
                         </div>
@@ -249,6 +217,133 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Color Scheme</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Select the colors for your color scheme.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <div style="margin: 12px 15px 0 0;">
+                                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="saveColorScheme($event);">Save</button>
+                                </div>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="uk-position-relative">
+                                    <div class="zone">
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Header Background</h5>
+                                                <p class="uk-text-muted">Background color of the header</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="headerBGColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorHeaderBG" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorHeaderBG', '#42464d');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Header Primary</h5>
+                                                <p class="uk-text-muted">Text and icon color within the header</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="headerPrimaryColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorHeaderPrimary" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorHeaderPrimary', '#f6f7fa');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Primary</h5>
+                                                <p class="uk-text-muted">Most text and icons. Choose a darker color.</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="primaryColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorPrimary" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorPrimary', '#545a63');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Secondary</h5>
+                                                <p class="uk-text-muted">The main background color</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="primaryColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorPrimary" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorPrimary', '#545a63');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Tertiary</h5>
+                                                <p class="uk-text-muted">Accent color, used for links, some buttons, and notifications</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="tertiaryColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorTertiary" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorTertiary', '#E74C3C');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Quaternary</h5>
+                                                <p class="uk-text-muted">Sidebar background color</p>
+                                            </div>
+                                            <div class="uk-float-right uk-clearfix uk-width-1-4">
+                                                <div class="uk-float-right">
+                                                    <button id="quaternaryColorBtn" class="uk-button uk-button-small uk-color-button mr-5 mt-10 uk-float-left" style="background: {{htmlColor}}" ng-click="generateRandomColor('{{_id}}', $event);"><i class="material-icons">refresh</i></button>
+                                                    <div class="md-input-wrapper uk-float-left" style="width: 50%">
+                                                        <label for="">Color</label>
+                                                        <input type="text" class="md-input" ng-model="colorQuaternary" />
+                                                        <span class="md-input-bar"></span>
+                                                    </div>
+                                                    <button class="md-btn md-btn-small md-btn-flat mr-5 mt-10 uk-float-right" ng-click="revertColor('colorQuaternary', '#E6E7E8');">Revert</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{> createPriorityWindow}}
                     </div>
 
                 </div>

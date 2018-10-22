@@ -50,6 +50,13 @@ util.getSettings = function(callback) {
         s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
         s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false);
 
+        s.colorHeaderBG = parseSetting(settings, 'color:headerbg', '#42464d');
+        s.colorHeaderPrimary = parseSetting(settings, 'color:headerprimary', '#f6f7fa');
+        s.colorPrimary = parseSetting(settings, 'color:primary', '#545A63');
+        s.colorSecondary = parseSetting(settings, 'color:secondary', '#f7f8fa');
+        s.colorTertiary = parseSetting(settings, 'color:tertiary', '#E74C3C');
+        s.colorQuaternary = parseSetting(settings, 'color:quaternary', '#E6E7E8');
+
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
 
         s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);

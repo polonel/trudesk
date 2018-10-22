@@ -34,7 +34,7 @@
   .tru-card-head-text
     padding: 8px 16px 16px
     font: 500 16px/22px $fontFamily
-    color: #212121
+    color: $text_color
     margin: 0
     -ms-word-break: break-all
     word-break: break-all
@@ -91,7 +91,7 @@
   height: 32px !important
   width: 32px !important
   -webkit-tap-highlight-color: transparent
-  color: #727272
+  color: $text_color
   +borderRadius(50%)
   cursor: pointer
   //position: absolute
@@ -101,7 +101,7 @@
   transition: background 280ms ease-out, color 280ms ease-out
   &:hover, &:focus
     background: rgba(0, 0, 0, .08)
-    color: #212121
+    color: darken($text_color, 3%)
 
 .tru-card.tru-card-overlay-active
   .tru-card-overlay-content

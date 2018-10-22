@@ -308,6 +308,9 @@ label.md-label
   >.uk-active > *
     background: $accent_color
 
+.uk-text-muted
+  color: automatic-text-color($page_content_bg, 'muted') !important
+
 .uk-badge
   background: $accent_color
   padding: 2px 6px
@@ -408,7 +411,7 @@ label.md-label
   //&:after
   //  border-right-color: $topbar_bg
   .uk-tooltip-inner
-    color: $topbar_user_text
+    color: #f6f7fa
 
 .uk-tooltip-modal
   z-index: 99999
@@ -578,7 +581,7 @@ textarea.review-list
     font-weight: 600
     font-size: 14px
     line-height: 1.5
-    color: #24292e
+    color: darken($text_color, 2%)
     margin: 0
   .z-box,
   .dz-box

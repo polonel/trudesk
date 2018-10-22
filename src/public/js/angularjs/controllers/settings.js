@@ -1501,13 +1501,54 @@ define([
                     }
                 };
 
+                // Colors watch
+                function setApperanceColorBtn(selector, color) {
+                    var $button = $(selector);
+                    var fgColor = getContrast(color);
+                    $button.css({background: color, color: fgColor});
+                }
+
+                $scope.$watch('colorHeaderBG', function() { setApperanceColorBtn('#headerBGColorBtn', $scope.colorHeaderBG); });
+                $scope.$watch('colorHeaderPrimary', function() { setApperanceColorBtn('#headerPrimaryColorBtn', $scope.colorHeaderPrimary); });
+                $scope.$watch('colorPrimary', function() { setApperanceColorBtn('#primaryColorBtn', $scope.colorPrimary); });
+                $scope.$watch('colorTertiary', function() { setApperanceColorBtn('#tertiaryColorBtn', $scope.colorTertiary); });
+                $scope.$watch('colorQuaternary', function() { setApperanceColorBtn('#quaternaryColorBtn', $scope.colorQuaternary); });
+
+                $scope.saveColorScheme = function($event) {
+                    $event.preventDefault();
+                    $http.put('/api/v1/settings', [
+                        {name: 'color:headerbg', value: $scope.colorHeaderBG},
+                        {name: 'color:headerprimary', value: $scope.colorHeaderPrimary},
+                        {name: 'color:primary', value: $scope.colorPrimary},
+                        {name: 'color:tertiary', value: $scope.colorTertiary},
+                        {name: 'color:quaternary', value: $scope.colorQuaternary}
+                    ], {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Color Scheme Saved', false);
+                        $timeout(function() { $window.location.reload(); }, 1000);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                };
+
+                $scope.revertColor = function(model, defaultColor) {
+                    $scope[model] = defaultColor;
+                };
+
                 $scope.generateRandomColor = function(id, $event) {
                     $event.preventDefault();
                     var $currentTarget = $($event.currentTarget);
                     if ($currentTarget.length > 0) {
                         var color = getRandomColor();
-                        $currentTarget.css({background: color});
+                        var fgColor = getContrast(color.substring(1));
+                        $currentTarget.css({background: color, color: fgColor});
                         $currentTarget.next().find('input').val(color);
+                        if ($currentTarget.next().find('input').attr('ng-model')) 
+                            $scope[$currentTarget.next().find('input').attr('ng-model')] = color;
+                        
                     }
                 };
 
@@ -1518,6 +1559,19 @@ define([
                         color += letters[Math.floor(Math.random() * 16)];
 
                     return color;
+                }
+
+                function getContrast(hexcolor){
+                    hexcolor = hexcolor.replace('#', '');
+                    if (hexcolor.length === 3) {
+                        var v = hexcolor[0];
+                        hexcolor = hexcolor + v + v + v;
+                    }
+                    var r = parseInt(hexcolor.substr(0,2),16);
+                    var g = parseInt(hexcolor.substr(2,2),16);
+                    var b = parseInt(hexcolor.substr(4,2),16);
+                    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+                    return (yiq >= 128) ? '#444' : '#f7f8fa';
                 }
 
                 $scope.editTag = function($event) {

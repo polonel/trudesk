@@ -31,6 +31,8 @@
   border: none !important
 .no-border-top
   border-top: 0 !important
+.no-border-bottom
+  border-bottom: none !important
 
 .nomargin,
 .nm
@@ -118,6 +120,8 @@
 
 .text-white
   color: #fff !important
+.bg-white
+  background: #fff !important
 
 .font-weight-300,
 .font-light,
@@ -152,7 +156,7 @@
   margin: 0
 
 a.blackLink
-  color: #000000 !important
+  color: #222 !important
 
 a.hoverUnderline
   &:hover
@@ -177,9 +181,9 @@ a.hoverUnderline
 
 .page-title,
 .page-title-right
-  height: 70px
+  height: 69px
   background: $page_content_title_bg
-  border-top: $page_content_border_accent
+  border-bottom: 1px solid $page_content_border_color
   //+boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
   box-shadow: $page_content_title_shadow
   padding: 0 15px 0 35px
@@ -189,7 +193,7 @@ a.hoverUnderline
     font-size: 30px
     margin: 0
     line-height: 68px
-    color: $p_color
+    color: $page_content_title_text
     font-weight: 300
     &.left
       line-height: 68px
@@ -214,13 +218,12 @@ a.hoverUnderline
 
 .page-content-right
   background: $page_content_right_bg
-  border-top: $page_content_border_top
 //overflow: auto
 
 .page-content-left
   background: $page_content_left_bg
-  border-top: $page_content_border_top
-  border-right: $page_content_border_top
+  border-top: 1px solid $page_content_border_color
+  border-right: 1px solid $page_content_border_color
 
 .fa-large
   font-size: 24px
@@ -254,6 +257,7 @@ button:focus,
 .button:hover,
 .button:focus
   background-color: darken($accent_color, 5%)
+
 
 button,
 a.button
@@ -363,6 +367,7 @@ a.button
     float: none !important
     width: 100% !important
     background: #f5f5f5 !important
+    color: #444
     line-height: 1.4em !important
     height: auto !important
   a
@@ -614,7 +619,7 @@ div.hoverAction
   textarea
     font-family: $fontFamily
     font-size: 14px
-    color: #3d4854
+    color: $text_color
     resize: none
     background: #f3f5f9
     border: 1px solid #dfe4ef
