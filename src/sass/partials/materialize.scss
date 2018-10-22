@@ -184,10 +184,12 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   &:hover, &:focus {
     //background: rgba(153, 153, 153, 0.2);
     background: darken($page_bg_color, 5%);
+    color: $text_color;
   }
   &:active {
     //background: rgba(153, 153, 153, 0.4);
     background: darken($page_bg_color, 8%);
+    color: $text_color;
   }
 }
 

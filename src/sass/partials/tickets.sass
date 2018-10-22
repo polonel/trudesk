@@ -71,8 +71,8 @@ div#accountsTable_wrapper
   top: 28px
   left: -5px
   padding: 0
-  background: #ffffff
-  border: 1px solid #bec4d0
+  background: $page_content_right_bg
+  border: 1px solid $page_content_border_color
   +borderRadius(3px)
   z-index: 999
   ul
@@ -388,15 +388,16 @@ div#accountsTable_wrapper
       font-size: 14px
       line-height: normal
       cursor: pointer
-      display: none
-      color: #8699ac
+      color: lighten($text_color, 20%)
+      opacity: 0.25
+      transition: opacity ease 200ms
     .add-attachment
       right: 55px
     &:hover
       .comment-actions,
       .edit-issue,
       .add-attachment
-        display: block
+        opacity: 1
     .comment-actions div
       float: right
       display: inline-block
@@ -499,5 +500,5 @@ form.form
     resize: none
 
 input[type="text"][disabled]
-  color: gray
+  color: automatic-text-color($page_content_bg, 'muted')
   background: darken(#eceff6, 5%)

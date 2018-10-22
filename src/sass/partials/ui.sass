@@ -141,7 +141,7 @@ textarea.md-input
     &:after
       right: 50%
   > label
-    color: #727272
+    color: automatic-text-color($page_content_bg, 'muted')
     position: absolute
     top: 16px
     left: 4px
@@ -431,8 +431,13 @@ label.md-label
 .uk-pagination>li.uk-active>span
   background: $accent_color
 
-.uk-pagination>li>a:hover
-  background: lighten($accent_color, 35%)
+.uk-pagination>li>a,
+.uk-pagination>li>span
+  color: automatic-text-color($page_content_bg)
+
+.uk-pagination>li>a:hover,.uk-pagination>li>a:active
+  background: darken($page_content_bg, 10%)
+  color: automatic-text-color($page_content_bg)
 
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
@@ -548,7 +553,7 @@ body.shepherd-active
   position: absolute
   left: 20px
   bottom: -18px
-  color: #ddd
+  color: lighten($page_content_bg, 10%)
   font-size: 20px
   margin: 0
   padding: 0
@@ -557,7 +562,7 @@ body.shepherd-active
 textarea.review-list
   width: 100%
   height: 250px
-  border: 1px solid #ccc
+  border: 1px solid $page_content_border_color
   font: 400 14px/22px Roboto, sans-serif
   padding: 7px
   resize: none
@@ -573,7 +578,7 @@ textarea.review-list
 
 .danger-zone,
 .zone
-  border: 1px solid #ccc
+  border: 1px solid rgba(0,0,0,0.175)
   +borderRadius(3px)
   h2
     font-weight: 300
@@ -586,14 +591,14 @@ textarea.review-list
   .z-box,
   .dz-box
     padding: 16px
-    border-top: 1px solid #ccc
+    border-top: 1px solid rgba(0,0,0,0.175)
     margin-top: -1px
     &:first-of-type
       border-top: none
     p
       font-size: 13px
       line-height: 1.5
-      color: #24292e
+      color: $text_color
       margin-top: 0
       margin-bottom: 10px
 

@@ -77,6 +77,7 @@ viewController.getData = function(request, cb) {
                         header_background: settings.colorHeaderBG.value,
                         header_primary: settings.colorHeaderPrimary.value,
                         primary: settings.colorPrimary.value,
+                        secondary: settings.colorSecondary.value,
                         tertiary: settings.colorTertiary.value,
                         quaternary: settings.colorQuaternary.value
                     }, function(result) {

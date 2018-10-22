@@ -293,7 +293,7 @@ define([
                                 } else {
                                     tags.forEach(function(tag) {
                                         var html = '';
-                                        html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
+                                        html += '<div class="uk-width-1-2 br bb">\n' +
                                             ' <div id="view-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix">\n' +
                                             '     <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
                                             '         <div class="uk-width-1-2">\n' +
@@ -1511,6 +1511,7 @@ define([
                 $scope.$watch('colorHeaderBG', function() { setApperanceColorBtn('#headerBGColorBtn', $scope.colorHeaderBG); });
                 $scope.$watch('colorHeaderPrimary', function() { setApperanceColorBtn('#headerPrimaryColorBtn', $scope.colorHeaderPrimary); });
                 $scope.$watch('colorPrimary', function() { setApperanceColorBtn('#primaryColorBtn', $scope.colorPrimary); });
+                $scope.$watch('colorSecondary', function() { setApperanceColorBtn('#secondaryColorBtn', $scope.colorSecondary); });
                 $scope.$watch('colorTertiary', function() { setApperanceColorBtn('#tertiaryColorBtn', $scope.colorTertiary); });
                 $scope.$watch('colorQuaternary', function() { setApperanceColorBtn('#quaternaryColorBtn', $scope.colorQuaternary); });
 
@@ -1520,6 +1521,7 @@ define([
                         {name: 'color:headerbg', value: $scope.colorHeaderBG},
                         {name: 'color:headerprimary', value: $scope.colorHeaderPrimary},
                         {name: 'color:primary', value: $scope.colorPrimary},
+                        {name: 'color:secondary', value: $scope.colorSecondary},
                         {name: 'color:tertiary', value: $scope.colorTertiary},
                         {name: 'color:quaternary', value: $scope.colorQuaternary}
                     ], {
