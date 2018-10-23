@@ -91,6 +91,16 @@ viewController.getData = function(request, cb) {
             });
           },
           function(callback) {
+            settingSchema.getSetting('gen:sitetitle', function(err, setting) {
+                if (!err && setting && setting.value)
+                    viewdata.siteTitle = setting.value;
+                else
+                    viewdata.siteTitle = 'Trudesk';
+
+                return callback();
+            });
+          },
+          function(callback) {
             viewdata.hostname = request.hostname;
             viewdata.hosturl = request.protocol + '://' + request.get('host');
 
@@ -136,6 +146,25 @@ viewController.getData = function(request, cb) {
                     return callback();
                 });
             });
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:custompagelogo', function(err, hasCustomPageLogo) {
+                  viewdata.hasCustomPageLogo = !!(!err && hasCustomPageLogo && hasCustomPageLogo.value);
+
+                  if (!viewdata.hasCustomPageLogo) {
+                      viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+                      return callback();
+                  }
+
+                  settingSchema.getSetting('gen:custompagelogofilename', function(err, logoFileName) {
+                      if (!err && logoFileName && !_.isUndefined(logoFileName.value))
+                          viewdata.pageLogoImage = '/assets/' + logoFileName.value;
+                      else
+                          viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+
+                      return callback();
+                  });
+              });
           },
           function(callback) {
               settingSchema.getSetting('gen:customfavicon', function(err, hasCustomFavicon) {

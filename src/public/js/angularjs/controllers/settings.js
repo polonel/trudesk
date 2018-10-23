@@ -131,6 +131,29 @@ define([
 
                     UIkit.uploadSelect($('#logo-upload-select'), uploadLogoSettings);
 
+                    var $pageUploadButton = $('#page-logo-upload-select').parent();
+                    var pageUploadLogoSettings = {
+                        action: '/settings/general/uploadpagelogo',
+                        allow: '*.(jpg|jpeg|gif|png)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $pageUploadButton.text('Upload Logo');
+                            $pageUploadButton.attr('disabled', false);
+                            $pageUploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-page-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#page-logo-upload-select'), pageUploadLogoSettings);
+
                     var uploadFaviconSettings = {
                         action: '/settings/general/uploadfavicon',
                         allow: '*.(jpg|jpeg|gif|png|ico)',
@@ -426,6 +449,22 @@ define([
                     });
                 };
 
+                $scope.saveSiteTitleClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:sitetitle',
+                        value: $scope.siteTitle
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Site title saved successfully.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
                 $scope.saveSiteUrlClicked = function() {
                     $http.put('/api/v1/settings', {
                         name: 'gen:siteurl',
@@ -446,6 +485,23 @@ define([
                     event.preventDefault();
                     $http.put('/api/v1/settings', {
                         name: 'gen:customlogo',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomPageLogo = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:custompagelogo',
                         value: false
                     }, {
                         headers: {
@@ -1316,7 +1372,7 @@ define([
                         helpers.UI.inputs();
                         helpers.UI.reRenderInputs();
                         createPriorityModal.find('form').trigger('reset');
-                        createPriorityModal.find('#generateHtmlColor').css({background: '#29B955'});
+                        createPriorityModal.find('.generateHtmlColorBtn').css({background: '#29B955'});
                         UIkit.modal(createPriorityModal, {bgclose: false}).show();
                         createPriorityModal.find('input[name="p-name"]').focus();
                     } else
@@ -1529,7 +1585,7 @@ define([
                             'Content-Type': 'application/json'
                         }
                     }).then(function successCallback() {
-                        helpers.UI.showSnackbar('Color Scheme Saved', false);
+                        helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false);
                         $timeout(function() { $window.location.reload(); }, 1000);
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar(err, true);

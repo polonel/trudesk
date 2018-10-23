@@ -203,10 +203,20 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   }
 }
 
-.md-btn-flat-danger {
-  color: #e53935;
+.md-btn-flat-accent {
+  color: $accent_color;
   &:hover, &:focus, &:active {
-    color: #e53935;
+    color: $accent_color;
+  }
+  &:hover, &:focus, &:active {
+    background: automatic-text-color($accent_color)
+  }
+}
+
+.md-btn-flat-danger {
+  color: $accent_danger;
+  &:hover, &:focus, &:active {
+    color: $accent_color;
   }
   &:hover, &:focus, &:active {
     background: #fceaea;

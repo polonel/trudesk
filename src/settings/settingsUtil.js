@@ -45,10 +45,15 @@ util.getSettings = function(callback) {
                 data: {}
             };
 
+        s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk');
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
         s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
+        s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '');
+        s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false);
+        s.customPageLogoFilename = parseSetting(settings, 'gen:custompagelogofilename', '');
         s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false);
+        s.customFaviconFilename = parseSetting(settings, 'gen:customfaviconfilename', '');
 
         s.colorHeaderBG = parseSetting(settings, 'color:headerbg', '#42464d');
         s.colorHeaderPrimary = parseSetting(settings, 'color:headerprimary', '#f6f7fa');

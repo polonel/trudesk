@@ -1,7 +1,8 @@
 <div class="nopadding page-content" ng-controller="commonCtrl">
     <!--Content Here-->
     <div class="uk-grid full-height scrollable" style="padding: 0 15px">
-        <div class="uk-width-1-2" style="padding:25px 0 0 0;">
+        <div class="uk-width-1-2 uk-position-relative" style="padding:25px 0 0 0;">
+            <span style="position:absolute; top: 7px; left: 35px; font-size: 11px;" class="uk-text-muted">Powered by</span>
             <!--<img class="uk-responsive-width" src="img/TD_Black.png" alt="">-->
             <svg version="1.1" id="logosvg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
          viewBox="0 0 288.9 70.1" xml:space="preserve" style="width: 150px; margin-bottom: 25px; margin-left: 40px;">
@@ -55,9 +56,9 @@
     <circle class="st1" cx="284.9" cy="64.7" r="4"></circle>
     </svg>
             <div style="padding-left: 40px;">
-                <h6 style="color: #55616e;">Trudesk version {{data.version}} <span style="font-size: 10px;"></span>
+                <h6>Trudesk version {{data.version}}
                 </h6>
-                <p style="color: #55616e; font-size: 12px;">
+                <p style="font-size: 12px;">
                     Copyright &copy;2014-2018 Chris Brame <br> <br>
 
                     <a href="http://trudesk.io/v1/guide" class="no-ajaxy" target="_blank">General Documentation</a> <br>
@@ -81,7 +82,7 @@
                     <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=USPWFP6P6RTKC"
                        target="_blank">Donate</a>
                 </p>
-                <hr style="width: 100%; height: 1px; background: #e74c3c">
+                <hr style="width: 100%; height: 1px;" class="bg-accent">
                 <p style="color: #55616e; font-size: 12px; margin-bottom: 5px;">
                     This software uses the following third party plugins:
                 </p>

@@ -24,6 +24,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/dashboard', middleware.redirectToLogin, middleware.redirectIfUser, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', function(req, res) { return res.redirect('/');});
+    router.get('/logint', controllers.main.index);
     router.post('/login', controllers.main.loginPost);
     router.get('/l2auth', controllers.main.l2authget);
     router.post('/l2auth', controllers.main.l2AuthPost);
@@ -121,6 +122,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
     router.get('/settings/appearance', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.appearance);
     router.post('/settings/general/uploadlogo', middleware.redirectToLogin, controllers.main.uploadLogo);
+    router.post('/settings/general/uploadpagelogo', middleware.redirectToLogin, controllers.main.uploadPageLogo);
     router.post('/settings/general/uploadfavicon', middleware.redirectToLogin, controllers.main.uploadFavicon);
     router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
