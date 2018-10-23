@@ -18,3 +18,9 @@
     @return darken($accent_color, 40%)
   @else
     @return $accent_color
+
+@function pace-color()
+  @if ($topbar_bg == #42464d)
+    @return #ffffff
+  @else
+    @return $accent_color

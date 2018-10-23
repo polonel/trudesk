@@ -56,7 +56,6 @@ module.exports = function(grunt) {
                         'public/css/plugins/datatables/dataTables.scroller.css',
                         'public/css/plugins/datatables/dataTables.foundation.css',
                         'src/public/js/vendor/chosen/chosen.css',
-                        'src/public/js/vendor/pace/pace.theme.css',
                         'src/public/js/vendor/enjoyhint/enjoyhint.css',
                         'src/public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',

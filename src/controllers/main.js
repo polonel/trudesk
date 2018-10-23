@@ -33,7 +33,7 @@ mainController.index = function(req, res) {
         if (err) throw new Error(err);
         var settings = s.data.settings;
         content.siteTitle = settings.siteTitle.value;
-        console.log(content.siteTitle);
+
         content.allowUserRegistration = settings.allowUserRegistration.value;
         content.mailerEnabled = settings.mailerEnabled.value;
 
