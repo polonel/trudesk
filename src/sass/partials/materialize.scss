@@ -89,7 +89,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   position: relative;
   width: 40px;
   height: 15px;
-  background-color: #ccc;
+  background-color: darken($page_content_bg, 5%);
   border-radius: 15px;
   margin-right: 10px;
   transition: background 0.3s ease;
@@ -103,7 +103,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   display: inline-block;
   width: 21px;
   height: 21px;
-  background-color: #fff;
+  background-color: lighten($page_content_bg, 15%);
   border-radius: 21px;
   box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
   left: -5px;
@@ -162,6 +162,15 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     text-decoration: none;
     color: #444;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  }
+}
+
+.md-btn {
+  background: lighten($page_content_bg, 15%);
+  color: automatic-text-color(lighten($page_content_bg, 15%));
+  &:hover, &:focus, &:active {
+    background: lighten($page_content_bg, 18%);
+    color: automatic-text-color(lighten($page_content_bg, 18%));
   }
 }
 

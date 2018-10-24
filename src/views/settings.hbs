@@ -399,7 +399,7 @@
                             </div>
                             <div class="right" style="position:relative; padding-top: 5px;">
                                 <div class="uk-float-left" style="padding-right: 11px; min-width: 130px; width: 100%;">
-                                    <select class="selectize-white" name="type" id="type" ng-model="defaultTicketType" ng-change="defaultTicketTypeChanged()"
+                                    <select class="selectize" name="type" id="type" ng-model="defaultTicketType" ng-change="defaultTicketTypeChanged()"
                                             data-md-selectize-inline2 selectize>
                                         {{#each data.common.ticketTypes}}
                                             <option value="{{{_id}}}">{{name}}</option>
@@ -833,7 +833,7 @@
                                     </div>
                                     <div class="uk-margin-medium-bottom">
                                         <label for="mailerCheckTicketType">Default Ticket Type</label>
-                                        <select name="mailerCheckTicketType" id="mailerCheckTicketType" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
+                                        <select name="mailerCheckTicketType" id="mailerCheckTicketType" class="selectize selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
                                                 ng-model="mailerCheckTicketType"
                                                 ng-change="mailerCheckTicketTypeChanged()"
                                         >
@@ -844,7 +844,7 @@
                                     </div>
                                     <div class="uk-margin-medium-bottom">
                                         <label for="mailerCheckTicketPriority">Default Priority</label>
-                                        <select name="mailerCheckTicketPriority" id="mailerCheckTicketPriority" class="selectize-white selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
+                                        <select name="mailerCheckTicketPriority" id="mailerCheckTicketPriority" class="selectize selectize-noremove" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12"
                                                 ng-model="mailerCheckTicketPriority"
                                         >
 

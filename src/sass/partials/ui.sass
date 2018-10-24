@@ -285,6 +285,10 @@ label.md-label
   > i
     font-size: 128px
 
+.uk-modal-dialog
+  background: $page_content_right_bg
+
+
 .uk-accordion-title-small
   font-size: 13px
   padding: 5px 24px 5px 10px
@@ -299,11 +303,13 @@ label.md-label
 .uk-subnav-pill
   li
     a
+      color: automatic-text-color($page_content_bg)
       transition: background-color .5s ease
       +borderRadius(3px)
 
   li:not(.uk-active) > a:hover
-    background: white
+    background: lighten($page_content_bg, 10%)
+    color: automatic-text-color(lighten($page_content_bg, 10%))
 
   >.uk-active > *
     background: $accent_color
@@ -604,3 +610,23 @@ textarea.review-list
 
 .danger-zone
   border: 1px solid $accent_danger
+
+.ms-container
+  .ms-selectable
+    background: lighten($page_content_right_bg, 5%)
+    li.ms-elem-selectable, li.ms-elem-selectable>span
+      border-color: $page_content_border_color !important
+      color: automatic-text-color(lighten($page_content_right_bg, 5%))
+      &.ms-hover
+        span
+          color: white
+  .ms-selection
+    background: lighten($page_content_right_bg, 5%)
+    li.ms-elem-selection, li.ms-elem-selection>span
+      border-color: $page_content_border_color
+      color: automatic-text-color(lighten($page_content_right_bg, 5%))
+      &.ms-hover
+        span
+          color: white
+  .ms-list
+    border-color: $page_content_border_color !important
