@@ -1573,6 +1573,36 @@ define([
 
                 $scope.saveColorScheme = function($event) {
                     $event.preventDefault();
+                    if ($scope.colorHeaderBG[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Header BG Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorHeaderPrimary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Header Primary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorPrimary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Primary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorSecondary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Secondary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorTertiary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Tertiary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorQuaternary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Quaternary Color', true);
+                        return false;
+                    }
+
                     $http.put('/api/v1/settings', [
                         {name: 'color:headerbg', value: $scope.colorHeaderBG},
                         {name: 'color:headerprimary', value: $scope.colorHeaderPrimary},
