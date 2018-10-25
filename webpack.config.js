@@ -41,6 +41,8 @@ module.exports = {
             app:            'app',
 
             async:          'vendor/async/async',
+            i18next:        'vendor/i18next/i18next',
+            i18nextXHR :    'vendor/i18next/i18nextXHRBackend.min',
             jquery_custom:  'plugins/jquery.custom',
             datatables:     'vendor/datatables/jquery.dataTables',
             dt_responsive:  'vendor/datatables/dataTables.responsive',

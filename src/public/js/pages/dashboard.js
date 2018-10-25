@@ -118,7 +118,7 @@ define('pages/dashboard', [
 
                         var ticketCount = $('#ticketCount');
                         var oldTicketCount = ticketCount.text() === '--' ? 0 : ticketCount.text();
-                        var totalTicketText = 'Total Tickets (last ' + timespan + 'd)';
+                        var totalTicketText = window.i18next.t('Total_Tickets_last_x', {days: timespan});
                         // if (timespan == 0)
                         //     totalTicketText = 'Total Tickets (lifetime)';
                         ticketCount.parents('.tru-card-content').find('span.uk-text-small').text(totalTicketText);

@@ -74,7 +74,7 @@ mainController.about = function(req, res) {
 
 mainController.dashboard = function(req, res) {
     var content = {};
-    content.title = 'Dashboard';
+    content.title = global.i18next.t('common:Dashboard');
     content.nav = 'dashboard';
 
     content.data = {};

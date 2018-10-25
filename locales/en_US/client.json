@@ -1,0 +1,6 @@
+{
+  "Last_x_Days": "Last {{days}} Days",
+  "Last_Updated": "Last Updated:",
+  "Cache_Still_Loading": "Cache Still Loading...",
+  "Total_Tickets_last_x": "Total Tickets (last {{days}}d)"
+}

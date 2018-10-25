@@ -15,7 +15,11 @@
 var _               = require('lodash'),
     path            = require('path'),
     async           = require('async'),
+    nconf           = require('nconf'),
     express         = require('express'),
+    i18next         = require('i18next'),
+    i18nextMiddleware=require('i18next-express-middleware'),
+    i18nextBackend  = require('i18next-node-fs-backend'),
     mongoose        = require('mongoose'),
     HandleBars      = require('handlebars').create(),
     hbs             = require('express-hbs'),
@@ -36,6 +40,26 @@ module.exports = function(app, db, callback) {
     middleware = require('./middleware')(app);
     app.disable('x-powered-by');
 
+    i18next
+        .use(i18nextBackend)
+        .use(i18nextMiddleware.LanguageDetector)
+        .init({
+            backend: {
+                loadPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.json'),
+                addPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.missing.json')
+            },
+            // lng: 'en_US',
+            // lng: 'de',
+            lng: nconf.get('locale'),
+            preload: ['en_US', 'de'],
+            ns: ['client', 'common'],
+            defaultNS: 'client',
+            saveMissing: true
+        });
+
+    app.use(i18nextMiddleware.handle(i18next));
+    app.use('/locales/', express.static(path.join(__dirname, '../../locales')));
+
     app.set('views', path.join(__dirname, '../views/'));
     global.HandleBars = HandleBars;
     app.engine('hbs', hbs.express4({
@@ -50,6 +74,16 @@ module.exports = function(app, db, callback) {
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use(cookieParser());
+
+    // i18n
+    global.i18next = i18next;
+    hbs.handlebars.registerHelper('__', function(key, options) {
+        return new hbs.handlebars.SafeString(i18next.t(key, options.hash));
+    });
+
+    hbs.handlebars.registerHelper('t', function(key, options) {
+        return new hbs.handlebars.SafeString(i18next.t(key, options.hash));
+    });
 
     app.use(function(req, res, next) {
         if (mongoose.connection.readyState !== 1) {

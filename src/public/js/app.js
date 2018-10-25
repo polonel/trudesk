@@ -39,6 +39,8 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                     'underscore',
                     'modules/navigation',
                     'modules/socket',
+                    'i18next',
+                    'i18nextXHR',
                     'uikit',
                     'modules/ajaxify',
                     'modernizr',
@@ -48,7 +50,18 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                     'easypiechart',
                     'idletimer'
 
-                ], function(_, nav, socket) {
+                ], function(_, nav, socket, i18next, i18nextXHR) {
+                    i18next
+                        .use(i18nextXHR)
+                        .init({
+                            backend: {
+                                loadPath: '/locales/{{lng}}/{{ns}}.json'
+                            },
+                            // lng: 'de',
+                            ns: ['client','common'],
+                            defaultNS: 'client'
+                        });
+                    window.i18next = i18next;
                     //Page loading (init)
                     require(['pages/pageloader'], function(pl) {
                         pl.init(function() {

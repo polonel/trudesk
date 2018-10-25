@@ -1,0 +1,20 @@
+{
+  "Dashboard": "Instrumententafel",
+  "Active": "Active",
+  "Assigned": "Zugewiesen",
+  "Unassigned": "Nicht zugewiesen",
+  "New": "Neu",
+  "Open": "Öffnen",
+  "Closed": "Closed",
+  "Messages": "Messages",
+  "Accounts": "Accounts",
+  "Groups": "Groups",
+  "Reports": "Reports",
+  "General": "General",
+  "About": "About",
+  "Pending": "Pending",
+
+  "hours": "hours",
+  "Stat": "Stat",
+  "Value": "Value"
+}

@@ -5,18 +5,20 @@
         <div class="right clearfix" style="min-width: 250px;">
             <div style="margin-top: 8px;">
                 <select id="select_timespan" name="select_timespan" data-md-selectize>
-                    <option value="30" selected>Last 30 Days</option>
-                    <option value="60">Last 60 Days</option>
-                    <option value="90">Last 90 Days</option>
-                    <option value="180">Last 180 Days</option>
-                    <option value="365">Last 365 Days</option>
+                    <option value="30" selected>{{t 'Last_x_Days' days=30}}</option>
+                    <option value="60">{{t 'Last_x_Days' days=60}}</option>
+                    <option value="90">{{t 'Last_x_Days' days=90}}</option>
+                    <option value="180">{{t 'Last_x_Days' days=180}}</option>
+                    <option value="365">{{t 'Last_x_Days' days=365 }}</option>
                     <!--<option value="0">Lifetime</option>-->
                 </select>
             </div>
         </div>
 
-        <div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;"><strong>Last
-            Updated:</strong> <span>Cache Still Loading...</span></div>
+        <div id="lastUpdated" class="right uk-text-muted uk-text-small" style="margin:23px 25px 0 0;">
+            <strong>{{t 'Last_Updated'}}:</strong>
+            <span>{{t 'Cache_Still_Loading'}}</span>
+        </div>
     </div>
     <!--Content Here-->
     <div class="page-wrapper full-height scrollable no-overflow-x">
@@ -28,7 +30,7 @@
                             <div class="right uk-margin-top uk-margin-small-right">
                                 <span class="peity-bar">5,3,9,6,5,9,7</span>
                             </div>
-                            <span class="uk-text-muted uk-text-small">Total Tickets (last 30d)</span>
+                            <span class="uk-text-muted uk-text-small"></span>
 
                             <h2 class="uk-margin-remove">
                                 <span id="ticketCount">--</span>
@@ -43,7 +45,7 @@
                             <div class="right uk-margin-top ukmargin-small-right">
                                 <span id="pie_complete" class="peity-pie">0/100</span>
                             </div>
-                            <span class="uk-text-muted uk-text-small">Tickets Completed</span>
+                            <span class="uk-text-muted uk-text-small">{{t 'Tickets_Completed' 'Tickets Completed'}}</span>
 
                             <h2 class="uk-margin-remove">
                                 <span id="text_complete">--</span>%
@@ -57,10 +59,10 @@
                             <div class="right uk-margin-top ukmargin-small-right">
                                 <span id="responseTime_graph" class="peity-line">5,3,9,6,5,9,7,3,5,2</span>
                             </div>
-                            <span class="uk-text-muted uk-text-small">Avg Response Time</span>
+                            <span class="uk-text-muted uk-text-small">{{t 'Avg_Response_Time'}}</span>
 
                             <h2 class="uk-margin-remove">
-                                <span id="responseTime_text">--</span> hours
+                                <span id="responseTime_text">--</span> {{t 'common:hours'}}
                             </h2>
                         </div>
                     </div>
@@ -70,7 +72,7 @@
             <div class="breakdown-wrap uk-margin-medium-bottom">
                 <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 300px;">
                     <div class="left">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Ticket Breakdown</h6>
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">{{t 'Ticket_Breakdown'}}</h6>
                     </div>
                     <div class="right" style="position:relative;">
                         <!--<button class="action-link"><i class="material-icons">refresh</i></button>-->
@@ -99,7 +101,7 @@
             <div class="uk-grid uk-margin-small-bottom">
                 <div class="uk-width-1-2">
                     <div class="panel trupanel nopadding" style="position: relative; min-height: 265px;">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 5 Groups</h6>
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">{{t 'Top_x_Groups' count=5}}</h6>
                         <hr class="nomargin">
                         <div class="card-spinner">
                             <div class="spinner"></div>
@@ -109,7 +111,7 @@
                 </div>
                 <div class="uk-width-1-2">
                     <div class="panel trupanel nopadding" style="position: relative; min-height: 265px;">
-                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">Top 10 Tags</h6>
+                        <h6 style="padding: 15px; margin: 0; font-size: 14px;">{{t 'Top_x_Tags' count=10}}</h6>
                         <hr class="nomargin">
                         <div class="card-spinner">
                             <div class="spinner"></div>
@@ -128,7 +130,7 @@
                         <div class="uk-grid" data-uk-grid-margin data-uk-grid-match="{target:'.tru-card-content'}">
                             <div class="uk-width-medium-1-1">
                                 <div id="overdue_tickets" class="tru-card tru-card-hover" style="position: relative; min-height: 245px;">
-                                    <h6 style="padding: 15px; margin: 0; font-size: 14px;">Overdue Tickets</h6>
+                                    <h6 style="padding: 15px; margin: 0; font-size: 14px;">{{t 'Overdue_Tickets' 'Overdue Tickets'}}</h6>
                                     <hr class="nomargin">
                                     <div class="card-spinner">
                                         <div class="spinner"></div>
@@ -138,10 +140,10 @@
                                             <table class="uk-table">
                                                 <thead>
                                                 <tr>
-                                                    <th class="uk-text-nowrap">Ticket</th>
-                                                    <th class="uk-text-nowrap">Status</th>
-                                                    <th class="uk-text-nowrap">Subject</th>
-                                                    <th class="uk-text-nowrap uk-text-right">Last Updated</th>
+                                                    <th class="uk-text-nowrap">{{t 'Ticket'}}</th>
+                                                    <th class="uk-text-nowrap">{{t 'Status'}}</th>
+                                                    <th class="uk-text-nowrap">{{t 'Subject'}}</th>
+                                                    <th class="uk-text-nowrap uk-text-right">{{t 'Last_Updated'}}</th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -172,36 +174,36 @@
                     <div class="uk-grid" data-uk-grid-margin>
                         <div class="uk-width-1-1">
                             <div class="tru-card tru-card-hover" data-match-height="#overdue_tickets2">
-                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">Quick Stats (Lifetime)</h6>
+                                <h6 style="padding: 15px; margin: 0; font-size: 14px;">{{t 'Quick_Stats_Lifetime'}}</h6>
                                 <hr class="nomargin">
                                 <div class="tru-card-content">
                                     <div class="uk-overflow-container">
                                         <table class="uk-table">
                                             <thead>
                                             <tr>
-                                                <th class="uk-text-nowrap">Stat</th>
-                                                <th class="uk-text-nowrap uk-text-right">Value</th>
+                                                <th class="uk-text-nowrap">{{t 'common:Stat'}}</th>
+                                                <th class="uk-text-nowrap uk-text-right">{{t 'common:Value'}}</th>
                                             </tr>
                                             </thead>
                                             <tbody>
 
                                             <tr class="uk-table-middle">
-                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most tickets by...</td>
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">{{t 'Most_tickets_by'}}</td>
                                                 <td id="mostRequester" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
                                             </tr>
 
                                             <tr class="uk-table-middle">
-                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most comments by....</td>
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">{{t 'Most_comments_by'}}</td>
                                                 <td id="mostCommenter" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
                                             </tr>
 
                                             <tr class="uk-table-middle">
-                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most assigned support user....</td>
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">{{t 'Most_assigned_agent'}}</td>
                                                 <td id="mostAssignee" class="uk-width-4-10 uk-text-right  uk-text-small">--</td>
                                             </tr>
 
                                             <tr class="uk-table-middle">
-                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">Most active ticket...</td>
+                                                <td class="uk-width-6-10 uk-text-nowrap uk-text-muted uk-text-small">{{t 'Most_active_ticket'}}</td>
                                                 <td class="uk-width-4-10 uk-text-right  uk-text-small"><a id="mostActiveTicket" href="#">--</a></td>
                                             </tr>
 

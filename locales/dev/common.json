@@ -1,0 +1,21 @@
+{
+  "Dashboard": "Dashboard",
+  "Tickets": "Tickets",
+  "Active": "Active",
+  "Assigned": "Assigned",
+  "Unassigned": "Unassigned",
+  "New": "New",
+  "Open": "Open",
+  "Closed": "Closed",
+  "Messages": "Messages",
+  "Accounts": "Accounts",
+  "Groups": "Groups",
+  "Reports": "Reports",
+  "General": "General",
+  "About": "About",
+  "Pending": "Pending",
+
+  "hours": "hours",
+  "Stat": "Stat",
+  "Value": "Value"
+}
