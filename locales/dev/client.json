@@ -18,5 +18,12 @@
   "Overdue_Tickets": "Overdue Tickets",
   "Ticket": "Ticket",
   "Status": "Status",
-  "Subject": "Subject"
+  "Subject": "Subject",
+  "No_Data_Available": "No Data Available",
+  "_t": "Thu Oct 25 2018 03:29:44 GMT-0400 (Eastern Daylight Time)",
+  "No_tickets_to_display": "No tickets to display",
+  "Forgot_Password": "Forgot password",
+  "Back_to_Login": "Back to Login",
+  "General_Documentation": "General Documentation",
+  "Select_Import_Type": "Select Import Type"
 }

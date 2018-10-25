@@ -17,7 +17,13 @@
   "Most_active_ticket": "Die meisten aktiven Ticket...",
   "Overdue_Tickets": "Überfällige Elemente",
   "Ticket": "Fahrkarte",
-  "Tickets": "Tickets",
   "Status": "Status",
-  "Subject": "Betreff"
+  "Subject": "Betreff",
+  "No_Data_Available": "No Data Available",
+  "_t": "Thu Oct 25 2018 03:29:44 GMT-0400 (Eastern Daylight Time)",
+  "No_tickets_to_display": "No_tickets_to_display",
+  "Forgot_Password": "Forgot password",
+  "Back_to_Login": "Back to Login",
+  "General_Documentation": "General Documentation",
+  "Select_Import_Type": "Select Import Type"
 }

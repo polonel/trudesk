@@ -45,15 +45,23 @@ module.exports = function(app, db, callback) {
         .use(i18nextMiddleware.LanguageDetector)
         .init({
             backend: {
-                loadPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.json'),
-                addPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.missing.json')
+                loadPath: path.join(__dirname, '../../locales/{{lng}}/{{ns}}.json')
             },
             // lng: 'en_US',
             // lng: 'de',
             lng: nconf.get('locale'),
-            preload: ['en_US', 'de'],
-            ns: ['client', 'common'],
+            preload: ['en', 'de'],
+            ns: ['account', 'client', 'common'],
             defaultNS: 'client',
+            missingKeyHandler: function(lng, ns, key, fallbackValue) {
+                var fs = require('fs');
+                var lngFile = path.join(__dirname, '../../locales/' + lng + '/' + ns + '.json');
+                var obj = JSON.parse(fs.readFileSync(lngFile));
+                var kObj = {};
+                kObj[key] = fallbackValue;
+                var k = _.extend(obj, kObj);
+                fs.writeFileSync(lngFile, JSON.stringify(k, null, 2));
+            },
             saveMissing: true
         });
 

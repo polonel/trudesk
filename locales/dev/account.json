@@ -1,0 +1,9 @@
+{
+  "Find_Account": "Find Account",
+  "Role": "Role",
+  "Import_accounts_from_csv": "Import accounts from csv file",
+  "Import_accounts_from_json": "Import accounts from json file",
+  "Import_accounts_from_ldap": "Import accounts from a ldap server",
+  "CSV_Account_Import_Wizard": "CSV Account Import Wizard",
+  "wizard_import_csv_desc": "This wizard will walk you through importing accounts from a csv file."
+}

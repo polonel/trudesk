@@ -49,7 +49,7 @@ define('pages/dashboard', [
                 show_tooltips: false,
                 aggregate_rollover: true,
                 transition_on_update: false,
-                colors: ['#2196f3', 'red']
+                colors: ['#2196f3']
             };
 
             var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
@@ -66,7 +66,7 @@ define('pages/dashboard', [
                         _.each(_data.tickets, function(ticket) {
                             html += '<tr class="uk-table-middle">';
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/'+ ticket.uid + '">T#' + ticket.uid + '</a></td>';
-                            html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>';
+                            html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">' + window.i18next.t('common:Open') + '</span></td>';
                             html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
                             html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
                             html += '</tr>';
@@ -102,12 +102,12 @@ define('pages/dashboard', [
 
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');
-                            helpers.UI.showSnackbar('Error - Invalid Graph Data', true);
+                            helpers.UI.showSnackbar(window.i18next.t('common:Error') + ' - ' + window.i18next.t('Invalid_Graph_Data'), true);
                         } else if(_data.data.length < 1) {
                             // No data in graph. Show No Data avaliable
                             var $breakdownGraph = $('#breakdownGraph');
                             $breakdownGraph.empty();
-                            $breakdownGraph.append('<div class="no-data-available-text">No Data Available</div>');
+                            $breakdownGraph.append('<div class="no-data-available-text">' + window.i18next.t('No_Data_Available') + '</div>');
                         } else {
                             $('#breakdownGraph').empty();
                             parms.data = MG.convert.date(_data.data, 'date');
@@ -216,7 +216,7 @@ define('pages/dashboard', [
                                 columns: arr,
                                 type: 'donut',
                                 colors: c,
-                                empty: { label: { text: 'No Data Available' } }
+                                empty: { label: { text: window.i18next.t('No_Data_Available') } }
 
                             },
                             donut: {
@@ -279,7 +279,7 @@ define('pages/dashboard', [
                                 columns: arr,
                                 type: 'pie',
                                 colors: c,
-                                empty: { label: { text: 'No Data Available' } }
+                                empty: { label: { text: window.i18next.t('No_Data_Available') } }
                             },
                             donut: {
                                 label: {

@@ -244,6 +244,18 @@ function mainRoutes(router, middleware, controllers) {
     });
 
     if (global.env === 'development') {
+        router.post('/debug/locales/add/:lng/:ns', function(req, res) {
+            var fs = require('fs');
+            var path = require('path');
+            var _ = require('lodash');
+            var lngFile = path.join(__dirname, '../../locales/' + req.params.lng + '/' + req.params.ns + '.json');
+            var obj = JSON.parse(fs.readFileSync(lngFile));
+            var k = _.extend(obj, req.body);
+            fs.writeFileSync(lngFile, JSON.stringify(k, null, 2));
+
+            return res.send();
+        });
+
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);

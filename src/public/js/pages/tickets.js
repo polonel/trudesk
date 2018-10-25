@@ -45,7 +45,7 @@ define('pages/tickets', [
                 ],
                 order: [[2, 'desc']],
                 'oLanguage': {
-                    'sEmptyTable': 'No tickets to display.'
+                    'sEmptyTable': window.i18next.t('No_tickets_to_display') + '.'
                 }
             });
 

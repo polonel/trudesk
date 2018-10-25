@@ -218,35 +218,34 @@
     <div class="loginForm">
         <form method="post" action="/login" class="uk-form-stacked uk-clearfix">
             <div class="uk-margin-medium-bottom">
-                <label for="login-username">Username</label>
+                <label for="login-username">{{t 'common:Username'}}</label>
                 <input id="login-username" name="login-username" class="md-input" type="text" />
             </div>
             <div class="uk-margin-medium-bottom">
-                <label for="login-password">Password</label>
+                <label for="login-password">{{t 'common:Password'}}</label>
                 <input id="login-password" name="login-password" class="md-input md-waves-light" type="password" />
             </div>
-            <button class="btn md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Login</button>
+            <button class="btn md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">{{t 'common:Login'}}</button>
         </form>
         {{#if allowUserRegistration}}
             <hr>
-            <a id="allowUserRegistration" href="/signup" class="no-ajaxy left">Create an Account.</a>
+            <a id="allowUserRegistration" href="/signup" class="no-ajaxy left">{{t 'Create_an_account'}}</a>
         {{/if}}
         {{#if mailerEnabled}}
-            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">Forgot your password?</a>
+            <a id="forgotPass" href="#" class="no-ajaxy right" style="display: block; clear: right;">{{t 'Forgot_Password?'}}</a>
         {{/if}}
     </div>
 
     <div class="forgotPassForm" style="display: none;">
         <form id="forgotPassForm" method="post" action="/">
             <div class="uk-margin-medium-bottom">
-                <label for="forgotPass-email">Email</label>
+                <label for="forgotPass-email">{{t 'common:Email'}}</label>
                 <input id="forgotPass-email" name="forgotPass-email" type="text" class="md-input" />
             </div>
-            <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
-            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Forgot Password</button>
+            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">{{t 'Forgot_Password'}}</button>
         </form>
 
-        <a id="backToLogin" href="#" class="no-ajaxy">Back to Login</a>
+        <a id="backToLogin" href="#" class="no-ajaxy">{{t 'Back_to_Login'}}</a>
     </div>
 
 </div>

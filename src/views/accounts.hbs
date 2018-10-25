@@ -2,7 +2,7 @@
     <div id="__accounts-page" class="hide">{{data.page}}</div>
     <div class="accountContent" style="background: #f6f8fb;">
         <div class="uk-grid uk-grid-collapse page-title noshadow dt-borderBottom" style="padding-left: 24px;">
-            <p class="left uk-width-2-10">Accounts</p>
+            <p class="left uk-width-2-10">{{t 'common:Accounts'}}</p>
             <div class="uk-width-8-10 right">
                 <div class="md-fab-wrapper">
                     <div class="md-fab md-fab-accent md-fab-sheet">
@@ -10,12 +10,12 @@
                         <div class="md-fab-sheet-actions">
                             <a href="#" class="text-white no-ajaxy" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
                                 <i class="material-icons">person_add</i>
-                                Create
+                                {{t 'common:Create'}}
                             </a>
                             {{#canUser data.common.loggedInAccount 'accounts:import'}}
                                 <a href="/accounts/import" class="text-white">
                                     <i class="material-icons">cloud_upload</i>
-                                    Import
+                                    {{t 'common:Import'}}
                                 </a>
                             {{/canUser}}
                         </div>
@@ -48,7 +48,7 @@
                         <div class="uk-vertical-align">
                             <div class="uk-vertical-align-middle">
                                 <ul id="account_list_filter" class="uk-subnav uk-subnav-pill">
-                                    <li class="uk-active filter-all uk-margin-remove" data-uk-filter=""><a href="#" class="no-ajaxy">All</a>
+                                    <li class="uk-active filter-all uk-margin-remove" data-uk-filter=""><a href="#" class="no-ajaxy">{{t 'common:All'}}</a>
                                     </li>
                                     <li class="uk-margin-remove" data-uk-filter="admin"><a href="#" class="no-ajaxy">Administrators</a>
                                     </li>
@@ -56,7 +56,7 @@
                                     </li>
                                     <li class="uk-margin-remove" data-uk-filter="support"><a href="#" class="no-ajaxy">Support</a>
                                     </li>
-                                    <li class="uk-margin-remove" data-uk-filter="user"><a href="#" class="no-ajaxy">Users</a>
+                                    <li class="uk-margin-remove" data-uk-filter="user"><a href="#" class="no-ajaxy">{{t 'common:Users'}}</a>
                                     </li>
                                 </ul>
                             </div>
@@ -64,7 +64,7 @@
                     </div>
                     <div class="uk-width-medium-1-2">
                         <div class="md-input-wrapper" style="margin-top: 10px;">
-                            <label for="account_list_search">Find Account</label>
+                            <label for="account_list_search">{{t 'account:Find_Account'}}</label>
                             <input type="text" class="md-input uk-margin-remove" id="account_list_search"/>
 
                             <div class="md-input-bar"></div>
@@ -88,11 +88,11 @@
 
                                         <div class="uk-dropdown uk-dropdown-small">
                                             <ul class="uk-nav">
-                                                <li><a href="#" class="no-ajaxy" data-username="{{username}}" ng-click="editAccount($event)">Edit</a></li>
+                                                <li><a href="#" class="no-ajaxy" data-username="{{username}}" ng-click="editAccount($event)">{{t 'common:Edit'}}</a></li>
                                                 <li><a href="#" data-username="{{username}}"
-                                                       ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action {{#compare deleted '==' true}}hide{{/compare}}">Delete</a></li>
+                                                       ng-click="deleteAccount($event)" class="no-ajaxy delete-account-action {{#compare deleted '==' true}}hide{{/compare}}">{{t 'common:Delete'}}</a></li>
                                                 <li><a href="#" data-username="{{username}}"
-                                                       ng-click="enableAccount($event)" class="no-ajaxy enable-account-action {{#compare deleted '==' false}}hide{{/compare}}">Enable</a></li>
+                                                       ng-click="enableAccount($event)" class="no-ajaxy enable-account-action {{#compare deleted '==' false}}hide{{/compare}}">{{t 'common:Enable'}}</a></li>
 
                                             </ul>
                                         </div>
@@ -119,20 +119,20 @@
                                     <ul class="tru-list">
                                         <li>
                                             <div class="tru-list-content">
-                                                <span class="tru-list-heading">Role</span>
+                                                <span class="tru-list-heading">{{t 'account:Role'}}</span>
                                                 <span class="uk-text-small uk-text-muted">{{firstCap role}}</span>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="tru-list-content">
-                                                <span class="tru-list-heading">Email</span>
+                                                <span class="tru-list-heading">{{t 'common:Email'}}</span>
                                             <span class="uk-text-small uk-text-muted uk-text-truncate"><a
                                                     href="mailto:{{email}}">{{email}}</a></span>
                                             </div>
                                         </li>
                                         <li>
                                             <div class="tru-list-content">
-                                                <span class="tru-list-heading">Groups</span>
+                                                <span class="tru-list-heading">{{t 'common:Groups'}}</span>
                                             <span class="uk-text-small uk-text-muted uk-text-truncate">
                                                 {{#each groups}}
                                                     {{this}}{{#compare (size ../groups) '>' 1}}, {{/compare}}

@@ -55,11 +55,13 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                         .use(i18nextXHR)
                         .init({
                             backend: {
-                                loadPath: '/locales/{{lng}}/{{ns}}.json'
+                                loadPath: '/locales/{{lng}}/{{ns}}.json',
+                                addPath: '/debug/locales/add/{{lng}}/{{ns}}'
                             },
                             // lng: 'de',
-                            ns: ['client','common'],
-                            defaultNS: 'client'
+                            ns: ['account', 'ticket', 'client','common'],
+                            defaultNS: 'client',
+                            saveMissing: true
                         });
                     window.i18next = i18next;
                     //Page loading (init)
