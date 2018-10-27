@@ -59,7 +59,7 @@ require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, h
                                 addPath: '/debug/locales/add/{{lng}}/{{ns}}'
                             },
                             // lng: 'de',
-                            ns: ['account', 'ticket', 'client','common'],
+                            ns: ['install', 'account', 'ticket', 'group', 'messages', 'client', 'common'],
                             defaultNS: 'client',
                             saveMissing: true
                         });

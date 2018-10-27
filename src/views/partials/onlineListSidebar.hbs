@@ -1,17 +1,17 @@
 <div id="online-list-sidebar" class="online-list-sidebar uk-offcanvas">
     <div class="uk-offcanvas-bar uk-offcanvas-bar-flip scrollable">
-        <div class="online-list-head"><h3>Online Users</h3></div>
+        <div class="online-list-head"><h3>{{t 'account:Online_Users'}}</h3></div>
         <div class="active-now">
-            <h5>Active Now</h5>
+            <h5>{{t 'common:Active_Now'}}</h5>
             <div class="online-list-wrapper">
                 <ul class="online-list"></ul>
             </div>
         </div>
 
-        <h5>More Conversations</h5>
+        <h5>{{t 'messages:More_Conversations'}}</h5>
         <div class="user-list-wrapper">
             <div class="online-list-search-box search-box">
-                <input type="text" placeholder="Search" style="background: #f6f6f6; border: 1px solid #ccc;" />
+                <input type="text" placeholder="{{t 'common:Search'}}" style="background: #f6f6f6; border: 1px solid #ccc;" />
             </div>
             <ul class="user-list">
                 {{#each data.common.users}}

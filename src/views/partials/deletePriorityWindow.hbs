@@ -3,13 +3,13 @@
         <form class="uk-form-stacked" id="deletePriorityForm-{{_id}}" action="#" method="POST">
             <input type="hidden" id="del_priority_name-{{_id}}" name="del_priority_name" value="{{name}}">
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <h2 class="">Remove Priority</h2>
-                <span>Please select the priority you wish to reassign tickets to in order to delete the this priority.</span>
+                <h2 class="">{{t 'ticket:Remove_Priority'}}</h2>
+                <span>{{t 'ticket:remove_priority_desc'}}</span>
                 <hr style="margin: 10px 0" />
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="width: 100%;">
-                    <label for="priority" class="uk-form-label">Priority</label>
+                    <label for="priority" class="uk-form-label">{{t 'common:Priority'}}</label>
                     <select class="selectize-white" name="priority" data-md-selectize-inline>
                         {{#each @root.data.common.priorities}}
                             {{#isnot name ../name}}
@@ -20,11 +20,11 @@
                 </div>
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <span class="uk-text-danger">WARNING: This will change all tickets with a priority of: <strong>{{name}}</strong> to the selected priority above. <br /><strong>This is permanent!</strong></span>
+                <span class="uk-text-danger">{{t 'common:WARNING'}}: {{t 'ticket:This_will_change_all_tickets_with_a_priority_of'}}: <strong>{{name}}</strong> {{t 'ticket:to_the_selected_priority_above'}}. <br /><strong>{{t 'common:This_is_permanent'}}</strong></span>
             </div>
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority('{{_id}}', $event)">Delete</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Cancel'}}</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitRemovePriority('{{_id}}', $event)">{{t 'common:Delete'}}</button>
             </div>
         </form>
     </div>

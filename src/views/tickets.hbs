@@ -1,11 +1,11 @@
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
     <div class="nopadding ticketContent">
         <div class="page-title noshadow uk-clearfix">
-            <p class="uk-display-inline-block">Tickets</p>
+            <p class="uk-display-inline-block">{{t 'common:Tickets'}}</p>
             <div class="uk-float-right">
                 <div class="autorefresh uk-float-left uk-clearfix"></div>
                 <div class="pagination uk-float-left uk-clearfix">
-                    <span class="pagination-info">{{formatNumber data.pagination.start}} - {{formatNumber data.pagination.end}} of {{formatNumber data.pagination.total}}</span>
+                    <span class="pagination-info">{{formatNumber data.pagination.start}} - {{formatNumber data.pagination.end}} {{t 'common:of'}} {{formatNumber data.pagination.total}}</span>
                     <ul class="button-group">
                         {{#is data.pagination.prevEnabled true}}
 
@@ -62,23 +62,23 @@
                                 <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
-                                        <li><a href="#" class="no-ajaxy" role="button" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}">Create</a></li>
+                                        <li><a href="#" class="no-ajaxy" role="button" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}">{{t 'common:Create'}}</a></li>
                                         <li><hr style="margin: 5px 0;"></li>
                                         {{#canUser data.user "ticket:Edit"}}
-                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">Set Open</a></li>
-                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setPendingTickets()">Set Pending</a></li>
-                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
+                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">{{t 'common:Set'}} {{t 'common:Open'}}</a></li>
+                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setPendingTickets()">{{t 'common:Set'}} {{t 'common:Pending'}}</a></li>
+                                            <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">{{t 'common:Set'}} {{t 'common:Closed'}}</a></li>
                                         {{else}}
                                             {{#canUser data.user "ticket:editSelf"}}
-                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">Set Open</a></li>
+                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">{{t 'common:Set'}} {{t 'common:Open'}}</a></li>
                                                 <!--<li><a href="#" class="no-ajaxy" role="button" ng-click="setPendingTickets()">Set Pending</a></li>-->
-                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
+                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">{{t 'common:Set'}} {{t 'common:Closed'}}</a></li>
                                             {{/canUser}}
                                         {{/canUser}}
                                         {{#canUser data.user "ticket:delete"}}
                                             <li><hr style="margin: 5px 0;"></li>
                                             <li>
-                                                <a class="no-ajaxy" href="#" role="button" style="color: red;" ng-click="deleteTickets()">Delete</a>
+                                                <a class="no-ajaxy" href="#" role="button" style="color: red;" ng-click="deleteTickets()">{{t 'common:Delete'}}</a>
                                             </li>
                                         {{/canUser}}
                                     </ul>
@@ -103,14 +103,14 @@
                     <thead>
                     <tr>
                         <th></th>
-                        <th>Status</th>
-                        <th>#</th>
-                        <th>Subject</th>
-                        <th>Created</th>
-                        <th>Requester</th>
-                        <th>Group</th>
-                        <th>Assignee</th>
-                        <th>Updated</th>
+                        <th>{{t 'common:Status'}}</th>
+                        <th>{{t '#'}}</th>
+                        <th>{{t 'common:Subject'}}</th>
+                        <th>{{t 'common:Created'}}</th>
+                        <th>{{t 'common:Requester'}}</th>
+                        <th>{{t 'common:Group'}}</th>
+                        <th>{{t 'common:Assignee'}}</th>
+                        <th>{{t 'common:Updated'}}</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -121,7 +121,7 @@
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
                                     <label for="c_{{_id}}"></label>
                                 </td>
-                                <td class="ticket-status ticket-new"><span>New</span></td>
+                                <td class="ticket-status ticket-new"><span>{{t 'common:New'}}</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
                                 <td>{{{formatDate date "MMM DD, YY"}}}</td>
@@ -149,7 +149,7 @@
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
-                                <td class="ticket-status ticket-open"><span>Open</span></td>
+                                <td class="ticket-status ticket-open"><span>{{t 'common:Open'}}</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
                                 <td>{{{formatDate date "MMM DD, YY"}}}</td>
@@ -177,7 +177,7 @@
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
-                                <td class="ticket-status ticket-pending"><span>Pending</span></td>
+                                <td class="ticket-status ticket-pending"><span>{{t 'common:Pending'}}</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
                                 <td>{{{formatDate date "MMM DD, YY"}}}</td>
@@ -205,7 +205,7 @@
                                     <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
                                     <label for="c_{{_id}}"></label>
                                 </td>
-                                <td class="ticket-status ticket-closed"><span>Closed</span></td>
+                                <td class="ticket-status ticket-closed"><span>{{t 'common:Closed'}}</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
                                 <td>{{{formatDate date "MMM DD, YY"}}}</td>

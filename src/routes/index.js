@@ -256,6 +256,14 @@ function mainRoutes(router, middleware, controllers) {
             return res.send();
         });
 
+        router.get('/debug/lng/:lng', function(req, res) {
+            global.i18next.changeLanguage(req.params.lng, function(err) {
+                if (err) return res.status(400).json({success: false, error: err});
+
+                return res.json({success: true, lng: req.params.lng, message: 'Locale changed to: ' + req.params.lng});
+            });
+        });
+
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);

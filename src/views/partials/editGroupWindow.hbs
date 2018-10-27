@@ -3,11 +3,11 @@
         <form class="uk-form-stacked" id="editGroupForm" action="#" method="POST">
             <div id="__EditId" class="hide">{{id}}</div>
             <div class="uk-margin-medium-bottom">
-                <label for="gName">Group Name</label>
+                <label for="gName">{{t 'group:Group_Name'}}</label>
                 <input type="text" class="md-input" id="gName" name="gName"/>
             </div>
             <div class="uk-margin-medium-bottom">
-                <label for="gMembers" class="uk-form-label nopadding">Members</label>
+                <label for="gMembers" class="uk-form-label nopadding">{{t 'group:Members'}}</label>
                 <select multiple="multiple" name="gMembers[]" id="gMembers" class="multiselect">
                     {{#each data.users}}
                         <option value="{{_id}}">{{fullname}}</option>
@@ -15,7 +15,7 @@
                 </select>
             </div>
             <div class="uk-margin-small-bottom">
-                <label for="gSendMailTo" class="uk-form-label nopadding">Send Notifications To</label>
+                <label for="gSendMailTo" class="uk-form-label nopadding">{{t 'group:Send_Notifications_To'}}</label>
                 <select multiple="multiple" name="gSendMailTo[]" id="gSendMailTo" class="multiselect">
                     {{#each data.users}}
                         <option value="{{_id}}">{{fullname}}</option>
@@ -39,8 +39,8 @@
                 <!--</select>-->
             <!--</div>-->
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitEditGroup" ng-click="saveEditGroup($event)">Save Changes</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitEditGroup" ng-click="saveEditGroup($event)">{{t 'common:Save'}}</button>
             </div>
         </form>
     </div>

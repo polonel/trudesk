@@ -59,9 +59,9 @@
                                     <div class="nopadding-left nopadding-right uk-dropdown uk-dropdown-small uk-margin-top-remove">
                                         <ul class="uk-nav uk-topbar" style="margin: 0 !important;">
                                             <li class="uk-nav-header">{{data.user.fullname}}</li>
-                                            <li class="uk-dropdown-close"><a href="/profile" close-uk-dropdown>Profile</a></li>
+                                            <li class="uk-dropdown-close"><a href="/profile" close-uk-dropdown>{{t 'account:Profile'}}</a></li>
                                             <li><hr style="margin: 5px 0;" /></li>
-                                            <li class="uk-dropdown-close"><a href="/logout">Logout</a></li>
+                                            <li class="uk-dropdown-close"><a href="/logout">{{t 'common:Logout'}}</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -69,7 +69,7 @@
                         </li>
                     </ul>
                     <div id="online-Users" data-scroll="online-Users-List" class="notifications p-dropdown" data-top-offset="-5" data-left-offset="4">
-                        <div class="actions"><span style="padding-left: 5px;">Online Users</span>
+                        <div class="actions"><span style="padding-left: 5px;">{{t 'account:Online_Users'}}</span>
                             <!--<div class="right"><a class="hoverUnderline" href="#">Settings</a></div>-->
                         </div>
                         <div id="online-Users-List" class="notifications-Messages">

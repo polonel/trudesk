@@ -19,8 +19,8 @@
                 </div>
                 <div class="user-heading-content">
                     <h2>
-                        <span class="uk-text-truncate js-username">Username</span>
-                        <span class="sub-heading js-user-title">User title</span>
+                        <span class="uk-text-truncate js-username">{{t 'common:Username'}}</span>
+                        <span class="sub-heading js-user-title">{{t 'account:User_title'}}</span>
                     </h2>
                 </div>
             </div>
@@ -47,11 +47,11 @@
                 <input type="hidden" class="md-input" id="aUsername" name="aUsername"/>
                 <div class="uk-margin-medium-bottom uk-clearfix">
                     <div class="left" style="width: 50%; padding-right: 20px;">
-                        <label for="aFullname">Name</label>
+                        <label for="aFullname">{{t 'common:Name'}}</label>
                         <input type="text" class="md-input" id="aFullname" name="aFullname"/>
                     </div>
                     <div class="left" style="width: 50%;">
-                        <label for="aTitle" class="uk-form-label">Title</label>
+                        <label for="aTitle" class="uk-form-label">{{t 'common:Title'}}</label>
                         <input type="text" class="md-input" id="aTitle" name="aTitle"/>
                     </div>
                 </div>
@@ -61,20 +61,20 @@
                 <!--</div>-->
                 <div class="uk-margin-medium-bottom uk-clearfix">
                     <div class="left" style="width: 50%; padding-right: 20px;">
-                        <label for="aPass" class="uk-form-label">Password</label>
+                        <label for="aPass" class="uk-form-label">{{t 'common:Password'}}</label>
                         <input type="password" class="md-input" id="aPass" name="aPass"/>
                     </div>
                     <div class="left" style="width: 50%;">
-                        <label for="aPassConfirm" class="uk-form-label">Confirm Password</label>
+                        <label for="aPassConfirm" class="uk-form-label">{{t 'account:Confirm_Password'}}</label>
                         <input type="password" class="md-input" id="aPassConfirm" name="aPassConfirm"/>
                     </div>
                 </div>
                 <div class="uk-margin-medium-bottom">
-                    <label for="aEmail" class="uk-form-label">Email</label>
+                    <label for="aEmail" class="uk-form-label">{{t 'common:Email'}}</label>
                     <input type="email" class="md-input" id="aEmail" name="aEmail"/>
                 </div>
                 <div class="uk-margin-medium-bottom">
-                    <label for="aRole" class="uk-form-label">Role</label>
+                    <label for="aRole" class="uk-form-label">{{t 'account:Role'}}</label>
                     <select class="selectize-white" name="aRole" id="aRole" data-md-selectize-inline>
                         {{#each data.common.roles}}
                             <option value="{{id}}">{{name}}</option>
@@ -82,7 +82,7 @@
                     </select>
                 </div>
                 <div class="uk-margin-medium-bottom">
-                    <label for="aGrps" class="uk-form-label">Groups</label>
+                    <label for="aGrps" class="uk-form-label">{{t 'common:Groups'}}</label>
                     <select multiple="multiple" class="multiselect" id="aGrps" name="aGrps[]">
                         {{#each data.allGroups}}
                             <option value="{{_id}}">{{name}}</option>
@@ -90,8 +90,8 @@
                     </select>
                 </div>
                 <div class="uk-modal-footer uk-text-right">
-                    <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                    <button id="aSaveButton" type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">Save Account</button>
+                    <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                    <button id="aSaveButton" type="button" class="md-btn md-btn-flat md-btn-flat-primary" ng-click="saveAccount()">{{t 'common:Save'}}</button>
                 </div>
             </form>
         </div>

@@ -14,7 +14,7 @@
                     <div class="uk-width-medium-1-2"></div>
                     <div class="uk-width-medium-1-2">
                         <div class="md-input-wrapper" style="margin-top: 10px;">
-                            <label for="group_list_search">Find Group</label>
+                            <label for="group_list_search">{{t 'group:Find_Group'}}</label>
                             <input type="text" class="md-input uk-margin-remove" id="group_list_search"/>
 
                             <div class="md-input-bar"></div>
@@ -38,14 +38,14 @@
 
                                     <div class="uk-dropdown uk-dropdown-small">
                                         <ul class="uk-nav">
-                                            <li><a href="#" class="no-ajaxy" data-group-id="{{_id}}" ng-click="editGroup($event)">Edit</a></li>
-                                            <li><a href="#" class="no-ajaxy" data-group-id="{{_id}}" ng-click="deleteGroup($event)">Remove</a></li>
+                                            <li><a href="#" class="no-ajaxy" data-group-id="{{_id}}" ng-click="editGroup($event)">{{t 'common:Edit'}}</a></li>
+                                            <li><a href="#" class="no-ajaxy" data-group-id="{{_id}}" ng-click="deleteGroup($event)">{{t 'common:Remove'}}</a></li>
                                         </ul>
                                     </div>
                                 </div>
                                 <h3 class="tru-card-head-text uk-text-center" style="padding-top: 60px;" data-group-name="{{name}}">
                                     {{name}}
-                                    <span class="uk-text-truncate">{{size members}} member{{#compare (size members) '>' 1}}s {{/compare}}</span>
+                                    <span class="uk-text-truncate">{{t 'group:Members_with_count' count=(size members)}}</span>
                                 </h3>
                             </div>
                         </div>

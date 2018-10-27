@@ -219,29 +219,29 @@
     <div class="level2auth" style="margin-top: 25px;">
         <form action="/l2auth" id="level2auth" method="post">
             <div class="uk-margin-medium-bottom">
-                <label for="code">Code</label>
+                <label for="code">{{t 'common:Code'}}</label>
                 <input type="text" id="code" class="md-input" name="code" />
             </div>
 
-            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Send</button>
+            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">{{t 'common:Send'}}</button>
         </form>
         {{#if mailerEnabled}}
             <hr>
-            <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">Can't login?</a>
+            <a id="cantlogin" href="#" class="no-ajaxy right" style="display: block; clear: right;">{{t 'Cant_login'}}</a>
         {{/if}}
     </div>
 
     <div class="forgotl2auth" style="display: none;">
         <form id="forgotl2auth" method="post" action="/">
             <div class="uk-margin-medium-bottom">
-                <label for="forgotl2auth-email">Email</label>
+                <label for="forgotl2auth-email">{{t 'common:Email'}}</label>
                 <input id="forgotl2auth-email" name="forgotl2auth-email" type="text" class="md-input" />
             </div>
             <!--<input id="login-password" name="login-password" type="password" placeholder="Password" />-->
-            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">Recover Account</button>
+            <button class="btn no-ajaxy md-btn md-btn-flat md-btn-wave md-btn-flat-danger" type="submit">{{t 'account:Recover_Account'}}</button>
         </form>
 
-        <a id="backToLogin" href="#" class="no-ajaxy">Back to Login</a>
+        <a id="backToLogin" href="#" class="no-ajaxy">{{t 'Back_to_Login'}}</a>
     </div>
 </div>
 

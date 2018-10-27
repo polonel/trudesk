@@ -96,6 +96,8 @@ var async   = require('async'),
         app.set('view engine', 'hbs');
         hbsHelpers.register(hbs.handlebars);
 
+        require('./middleware/i18n').register(app, hbs.handlebars);
+
         app.use(express.static(path.join(__dirname, '../', 'public')));
         app.use(favicon(path.join(__dirname, '../', 'public/img/favicon.ico')));
         app.use(bodyParser.urlencoded({ extended: false }));

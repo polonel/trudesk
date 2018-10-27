@@ -2,18 +2,18 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag($event)">
             <div class="">
-                <h2 class="nomargin mb-5">Create a tag</h2>
-                <p class="uk-text-small uk-text-muted">Tags categorize tickets, making it easy to identify issues</p>
+                <h2 class="nomargin mb-5">{{t 'ticket:Create_a_tag'}}</h2>
+                <p class="uk-text-small uk-text-muted">{{t 'ticket:create_a_tag_desc'}}</p>
 
-                <label for="typeName">Tag Name</label>
+                <label for="typeName">{{t 'ticket:Tag_Name'}}</label>
                 <input type="text" class="md-input" id="tagName" name="tagName"
                        data-validation="length"
                        data-validation-length="min3"
-                       data-validation-error-msg="Please enter a valid tag name. Tag name must contain at least 3 characters." />
+                       data-validation-error-msg="{{t 'ticket:invalid_tag_name_text'}}" />
             </div>
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="submit" class="md-btn md-btn-flat md-btn-flat-success" id="submitCreateTagBtn">Create</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                <button type="submit" class="md-btn md-btn-flat md-btn-flat-success" id="submitCreateTagBtn">{{t 'common:Create'}}</button>
             </div>
         </form>
     </div>

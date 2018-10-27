@@ -2,17 +2,17 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createTicketTypeForm" ng-submit="createTicketType($event)">
             <div class="">
-                <h2 class="nomargin mb-5">Create Ticket Type</h2>
-                <p class="uk-text-small uk-text-muted">Create a ticket type</p>
-                <label for="typeName">Type Name</label>
+                <h2 class="nomargin mb-5">{{t 'ticket:Create_Ticket_Type'}}</h2>
+                <p class="uk-text-small uk-text-muted">{{t 'ticket:create_ticket_type_desc'}}</p>
+                <label for="typeName">{{t 'ticket:Type_Name'}}</label>
                 <input type="text" class="md-input" id="typeName" name="typeName"
                        data-validation="length"
                        data-validation-length="min3"
-                       data-validation-error-msg="Please enter a valid type name. Type name must contain at least 3 characters." />
+                       data-validation-error-msg="{{t 'ticket:invalid_type_name_text'}}" />
             </div>
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn md-btn-success" id="submitCreateTicketType" ng-click="createTicketType($event)">Create</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                <button type="button" class="md-btn md-btn md-btn-success" id="submitCreateTicketType" ng-click="createTicketType($event)">{{t 'common:Create'}}</button>
             </div>
         </form>
     </div>

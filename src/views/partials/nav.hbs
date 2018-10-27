@@ -54,11 +54,11 @@
 
                     <ul id="side-nav-accordion-reports" class="side-nav-sub side-nav-accordion">
                         <!--<li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i><span>Overview</span></a></li>-->
-                        <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i><span>Generate</span></a></li>
+                        <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i><span>{{t 'common:Generate'}}</span></a></li>
                         <hr/>
                         <!--<li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown">< i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>-->
-                        <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i><span>Group Breakdown</span></a></li>
-                        <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i><span>User Breakdown</span></a></li>
+                        <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i><span>{{t 'group:Group_Breakdown'}}</span></a></li>
+                        <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i><span>{{t 'account:User_Breakdown'}}</span></a></li>
                         <!--<li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>-->
                         <!--<li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>-->
                         <!--<li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>-->
@@ -99,7 +99,7 @@
             <!--</li>-->
 
             {{#canUser data.user "notices:view"}}
-                <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>Notices</a></li>
+                <li {{#is nav 'notices'}} class='active' {{/is}}><a href="/notices"><i class="fa fa-exclamation-triangle fa-large"></i>{{t 'common:Notices'}}</a></li>
             {{/canUser}}
 
             <hr>
@@ -109,15 +109,15 @@
                     <ul id="side-nav-accordion-settings" class="side-nav-sub side-nav-accordion">
                         <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>{{t 'common:General'}}</span></a></li>
                         <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">assignment</i><span>{{t 'common:Tickets'}}</span></a></li>
-                        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">email</i><span>Mailer</span></a></li>
+                        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">email</i><span>{{t 'common:Mailer'}}</span></a></li>
                         <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon"></i><span>Notifications</span></a></li>-->
-                        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">mobile_friendly</i><span>Push Service</span></a></li>
-                        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>
+                        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">mobile_friendly</i><span>{{t 'settings:Push_Service'}}</span></a></li>
+                        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>{{t 'common:Legal'}}</span></a></li>
 
 
                         {{#canUser data.user "settings:logs"}}
                             <hr>
-                            <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
+                            <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>{{t 'common:Logs'}}</span></a></li>
                         {{/canUser}}
                     </ul>
                 </li>
@@ -128,45 +128,45 @@
     </div>
     <div class="side-nav-bottom-panel" style="position: fixed; bottom: 0; left: 0;">
        <!--<a href="http://trudesk.io/feedback" target="_blank"><i class="material-icons">speaker_phone</i>Feedback</a>-->
-        <a id="expand-menu" class="no-ajaxy" href="#"><i class="material-icons">menu</i>Collapse Menu</a>
+        <a id="expand-menu" class="no-ajaxy" href="#"><i class="material-icons">menu</i>{{t 'common:Collapse_Menu'}}</a>
     </div>
 </div>
 <div class="sidebar-to-right">
     <ul id="side-nav-sub-tickets" class="side-nav-sub side-nav-floating">
-        <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><span>Active</span></a></li>
-        <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}><a href="/tickets/assigned"><span>Assigned</span></a></li>
-        <li {{#is subnav 'tickets-unassigned'}} class='active' {{/is}}><a href="/tickets/unassigned"><span>Unassigned</span></a></li>
+        <li {{#is subnav 'tickets-active'}} class='active' {{/is}}><a href="/tickets/active"><span>{{t 'common:Active'}}</span></a></li>
+        <li {{#is subnav 'tickets-assigned'}} class='active' {{/is}}><a href="/tickets/assigned"><span>{{t 'common:Assigned'}}</span></a></li>
+        <li {{#is subnav 'tickets-unassigned'}} class='active' {{/is}}><a href="/tickets/unassigned"><span>{{t 'common:Unassigned'}}</span></a></li>
         <hr/>
-        <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><span>New</span></a></li>
-        <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><span>Pending</span></a></li>
-        <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><span>Open</span></a></li>
-        <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><span>Closed</span></a></li>
+        <li {{#is subnav 'tickets-new'}} class='active' {{/is}}><a href="/tickets/new"><span>{{t 'common:New'}}</span></a></li>
+        <li {{#is subnav 'tickets-pending'}} class='active' {{/is}}><a href="/tickets/pending"><span>{{t 'common:Pending'}}</span></a></li>
+        <li {{#is subnav 'tickets-open'}} class='active' {{/is}}><a href="/tickets/open"><span>{{t 'common:Open'}}</span></a></li>
+        <li {{#is subnav 'tickets-closed'}} class='active' {{/is}}><a href="/tickets/closed"><span>{{t 'common:Closed'}}</span></a></li>
     </ul>
     <ul id="side-nav-sub-reports" class="side-nav-sub side-nav-floating">
         <!--<li {{#is subnav 'reports-overview'}} class='active' {{/is}}><a href="/reports/overview"><i class="fa fa-th fa-sub-icon"></i><span>Overview</span></a></li>-->
-        <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i><span>Generate</span></a></li>
+        <li {{#is subnav 'reports-generate'}} class='active' {{/is}}><a href="/reports/generate"><i class="fa fa-cogs fa-sub-icon"></i><span>{{t 'common:Generate'}}</span></a></li>
         <hr/>
         <!--<li {{#is subnav 'reports-breakdown'}} class="active" {{/is}}><a href="/reports/breakdown">< i class="material-icons fa-sub-icon fa-sub-icon">note_add</i>Create</a></li>-->
-        <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i><span>Group Breakdown</span></a></li>
-        <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i><span>User Breakdown</span></a></li>
+        <li {{#is subnav 'reports-breakdown-group'}} class="active" {{/is}}><a href="/reports/breakdown/group"><i class="material-icons fa-sub-icon">poll</i><span>{{t 'group:Group_Breakdown'}}</span></a></li>
+        <li {{#is subnav 'reports-breakdown-user'}} class="active" {{/is}}><a href="/reports/breakdown/user"><i class="material-icons fa-sub-icon">transfer_within_a_station</i><span>{{t 'account:User_Breakdown'}}</span></a></li>
         <!--<li {{#is subnav 'reports-active'}} class='active' {{/is}}><a href="/reports/active"><i class="fa fa-refresh fa-sub-icon"></i>Active</a></li>-->
         <!--<li {{#is subnav 'reports-inactive'}} class='active' {{/is}}><a href="/reports/inactive"><i class="fa fa-times-circle fa-sub-icon"></i>Inactive</a></li>-->
         <!--<li {{#is subnav 'reports-completed'}} class='active' {{/is}}><a href="/reports/completed"><i class="fa fa-check-circle fa-sub-icon"></i>Completed</a></li>-->
     </ul>
     <ul id="side-nav-sub-settings" class="side-nav-sub side-nav-floating">
-        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>General</span></a></li>
-        <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">style</i><span>Tickets</span></a></li>
-        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">style</i><span>Mailer</span></a></li>
+        <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>{{t 'common:General'}}</span></a></li>
+        <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">style</i><span>{{t 'common:Tickets'}}</span></a></li>
+        <li {{#is subnav 'settings-mailer'}} class="active" {{/is}}><a href="/settings/mailer"><i class="material-icons fa-sub-icon">style</i><span>{{t 'common:Mailer'}}</span></a></li>
         <!--<li {{#is subnav 'settings-notifications'}} class="active" {{/is}}><a href="/settings/notifications"><i class="material-icons fa-sub-icon">style</i><span>Notifications</span></a></li>-->
-        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">style</i><span>Push Service</span></a></li>
-        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">style</i><span>Legal</span></a></li>
+        <li {{#is subnav 'settings-tps'}} class="active" {{/is}}><a href="/settings/tps"><i class="material-icons fa-sub-icon">style</i><span>{{t 'settings:Push_Service'}}</span></a></li>
+        <li {{#is subnav 'settings-legal'}} class="active" {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">style</i><span>{{t 'common:Legal'}}</span></a></li>
 
 
         <!--<li {{#is subnav 'settings-tags'}} class='active' {{/is}}><a href="/settings/tags"><i class="material-icons fa-sub-icon">style</i><span>Tags</span></a></li>-->
         <!--<li {{#is subnav 'settings-tickettypes'}} class='active' {{/is}}><a href="/settings/tickettypes"><i class="material-icons fa-sub-icon">text_fields</i><span>Ticket Types</span></a></li>-->
         {{#canUser data.user "settings:logs"}}
             <hr />
-            <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>Logs</span></a></li>
+            <li {{#is subnav 'settings-logs'}} class='active' {{/is}}><a href="/settings/logs"><i class="material-icons fa-sub-icon">remove_from_queue</i><span>{{t 'common:Logs'}}</span></a></li>
         {{/canUser}}
         <!--<li {{#is subnav 'settings-legal'}} class='active' {{/is}}><a href="/settings/legal"><i class="material-icons fa-sub-icon">gavel</i><span>Legal</span></a></li>-->
     </ul>

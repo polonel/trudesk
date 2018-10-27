@@ -2,7 +2,7 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createPriorityForm" action="#" method="POST" ng-submit="createPrioritySubmit($event);">
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <h2 class="">Create Priority</h2>
+                <h2 class="">{{t 'ticket:Create_Priority'}}</h2>
                 <span></span>
             </div>
 
@@ -11,15 +11,15 @@
                     <form>
                         <div class="z-box uk-grid uk-grid-collapse uk-clearfix">
                             <div class="uk-width-1-3">
-                                <label for="">Priority Name</label>
+                                <label for="">{{t 'ticket:Priority_Name'}}</label>
                                 <input type="text" class="md-input" name="p-name"
                                        data-validation="length"
                                        data-validation-length="min3"
-                                       data-validation-error-msg="Invalid name (at least 3 characters)"
+                                       data-validation-error-msg="{{t 'ticket:invalid_priority_name_text'}}'"
                                 />
                             </div>
                             <div class="uk-width-1-3 uk-padding-small-sides">
-                                <label for="">SLA Overdue (minutes)</label>
+                                <label for="">{{t 'settings:SLA Overdue'}} ({{t 'common:minutes'}})</label>
                                 <input type="text" class="md-input" name="p-overdueIn" value="2880"
                                        data-validation="number"
                                        data-validation-allowing="range[1;525600]"
@@ -39,8 +39,8 @@
                             </div>
                         </div>
                         <div class="uk-modal-footer uk-text-right">
-                            <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                            <button type="submit" class="md-btn md-btn-flat md-btn-flat-success">Create</button>
+                            <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                            <button type="submit" class="md-btn md-btn-flat md-btn-flat-success">{{t 'common:Create'}}</button>
                         </div>
                     </form>
                 </div>
