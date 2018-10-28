@@ -14,6 +14,8 @@
   "invalid_type_name_text": "Please enter a valid type name. Type name must contain at least 3 characters.",
   "invalid_ticket_subject_text": "Please enter a valid Subject. Subject must contain at least 10 characters.",
   "invalid_ticket_issue_text": "Please enter a valid Issue. Issue must contain at least 10 characters.",
+  "invalid_comment_text": "Please enter a valid comment. Comment must contain at least 5 characters.",
+  "invalid_note_text": "Please enter a valid note. Notes must contain at least 5 characters.",
   "ticket_issue_desc": "Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.",
   "Remove_Priority": "Remove Priority",
   "remove_priority_desc": "Please select the priority you wish to reassign tickets to in order to delete the this priority.",
@@ -23,5 +25,8 @@
   "remove_ticket_type_desc": "Please select the ticket type you wish to reassign tickets to in order to delete the ticket type.",
   "This_will_change_all_tickets_with_type": "This will change all tickets with type",
   "to_the_selected_ticket_type_above": "to the selected ticket type above",
-  "Assignee": "Assignee"
+  "Assignee": "Assignee",
+  "Add_Comment": "Add Comment",
+  "No_Tags_Found_for": "No Tags Found for",
+  "Create_Tag": "Create Tag"
 }

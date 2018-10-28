@@ -95,5 +95,18 @@
   "Date_Start": "Date Start",
   "Date_End": "Date End",
   "Apply_Filter": "Apply Filter",
-  "Logout": "Logout"
+  "Logout": "Logout",
+  "Token": "Token",
+  "Select": "Select",
+  "Clear": "Clear",
+  "LOADING": "LOADING",
+  "History": "History",
+  "Comments": "Comments",
+  "Notes": "Notes",
+  "NOTE": "NOTE",
+  "Comment": "Comment",
+  "Internal": "Internal",
+  "Note": "Note",
+  "Post": "Post",
+  "You": "You"
 }

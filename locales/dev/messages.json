@@ -5,5 +5,7 @@
   "Type_your_message": "Type your message...",
   "Delete_Message": "Delete Message",
   "Start_Conversation": "Start Conversation",
-  "More_Conversations": "More Conversations"
+  "More_Conversations": "More Conversations",
+  "Conversation_deleted_at": "Conversation deleted at",
+  "New_Conversation": "New Conversation"
 }

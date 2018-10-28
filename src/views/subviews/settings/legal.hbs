@@ -14,9 +14,9 @@
                 <div class="setting-item-wrap uk-margin-medium-bottom">
                     <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
                         <div class="left">
-                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Privacy Policy</h6>
+                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">{{t 'common:Privacy_Policy'}}</h6>
                             <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                Paste in HTML / Text of your privacy policy.
+                                {{t 'settings:privacy_policy_desc'}}
                             </h5>
                         </div>
                         <div class="right" style="position:relative;">
@@ -38,7 +38,7 @@
                                     "></textarea>
                                 </div>
                                 <div class="uk-clearfix">
-                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="privacyPolicySubmit" ng-click="savePrivacyPolicy($event);">Save</button>
+                                    <button type="submit" class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" id="privacyPolicySubmit" ng-click="savePrivacyPolicy($event);">{{t 'common:Save'}}</button>
                                 </div>
                             </div>
                         </div>

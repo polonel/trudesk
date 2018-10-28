@@ -15,39 +15,39 @@
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>{{t 'common:New'}}</span></div>
                             {{else}}
-                                <div class="ticket-status ticket-new"><span>New</span></div>
+                                <div class="ticket-status ticket-new"><span>{{t 'common:New'}}</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>{{t 'common:Open'}}</span></div>
                             {{else}}
-                                <div class="ticket-status ticket-open"><span>Open</span></div>
+                                <div class="ticket-status ticket-open"><span>{{t 'common:Open'}}</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>{{t 'common:Pending'}}</span></div>
                             {{else}}
-                                <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                                <div class="ticket-status ticket-pending"><span>{{t 'common:Pending'}}</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>{{t 'common:Closed'}}</span></div>
                             {{else}}
-                                <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                                <div class="ticket-status ticket-closed"><span>{{t 'common:Closed'}}</span></div>
                             {{/canUser}}
                         {{/is}}
                         <span class="drop-icon material-icons" style="left: auto; right: 22px; bottom: -18px">keyboard_arrow_down</span>
                         <div id="statusSelect" close-mouse-up class="hide">
                             <ul>
-                                <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>New</span></li>
-                                <li class="ticket-status ticket-open" ng-click="changeStatus(1)"><span>Open</span></li>
-                                <li class="ticket-status ticket-pending" ng-click="changeStatus(2)"><span>Pending</span></li>
-                                <li class="ticket-status ticket-closed" ng-click="changeStatus(3)"><span>Closed</span></li>
+                                <li class="ticket-status ticket-new" ng-click="changeStatus(0)"><span>{{t 'common:New'}}</span></li>
+                                <li class="ticket-status ticket-open" ng-click="changeStatus(1)"><span>{{t 'common:Open'}}</span></li>
+                                <li class="ticket-status ticket-pending" ng-click="changeStatus(2)"><span>{{t 'common:Pending'}}</span></li>
+                                <li class="ticket-status ticket-closed" ng-click="changeStatus(3)"><span>{{t 'common:Closed'}}</span></li>
                             </ul>
                         </div>
                     </div>
@@ -55,7 +55,7 @@
                 <div class="page-content-left full-height scrollable">
                     <div class="ticket-details-wrap uk-clearfix">
                         <div class="ticket-assignee-wrap uk-clearfix" style="padding-right: 30px;">
-                            <h4>Assignee</h4>
+                            <h4>{{t 'ticket:Assignee'}}</h4>
                             {{#if data.ticket.assignee}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
@@ -92,7 +92,7 @@
                                         <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
                                     </a>
                                     <div class="ticket-assignee-details">
-                                        <h3>No User Assigned</h3>
+                                        <h3>{{t 'ticket:No_User_Assigned'}}</h3>
                                     </div>
                                 </div>
                             {{/if}}
@@ -103,10 +103,10 @@
                                  data-top-offset="200"
                                  class="notifications p-dropdown p-dropdown-left"
                                  style="display: block !important;">
-                                <div class="actions"><strong>Select Assignee</strong><div class="right"><a role="button" class="no-ajaxy" ng-click="clearAssignee()">Clear Assignee</a></div></div>
+                                <div class="actions"><strong>{{t 'common:Select'}} {{t 'ticket:Assignee'}}</strong><div class="right"><a role="button" class="no-ajaxy" ng-click="clearAssignee()">{{t 'common:Clear'}} {{t 'ticket:Assignee'}}</a></div></div>
                                 <div id="assigneeDropdown-content" class="" style="height: 215px;">
                                     <ul>
-                                        <li style="width: 295px; text-align: center; font-size: 16px; padding-top: 80px; background: white !important;">LOADING...</li>
+                                        <li style="width: 295px; text-align: center; font-size: 16px; padding-top: 80px; background: white !important;">{{t 'common:LOADING'}}...</li>
                                     </ul>
                                 </div>
                             </div>
@@ -115,7 +115,7 @@
                             <div class="tru-card ticket-details uk-clearfix" style="background: #fff;">
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginright5">
-                                        <span>Type</span>
+                                        <span>{{t 'common:Type'}}</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tType" id="tType" class="chosen-select1"
                                                     ng-model="selectedType"
@@ -130,7 +130,7 @@
                                 </div>
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginleft5">
-                                        <span>Priority</span>
+                                        <span>{{t 'common:Priority'}}</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tPriority" id="tPriority"
                                                     ng-model="selectedPriority"
@@ -146,7 +146,7 @@
                                 </div>
 
                                 <div class="uk-width-1-1 nopadding uk-clearfix">
-                                        <span>Group</span>
+                                        <span>{{t 'common:Group'}}</span>
                                         {{#canUser data.user "ticket:edit"}}
                                             <select name="tGroup" id="tGroup"
                                                     ng-model="selectedGroup"
@@ -160,10 +160,10 @@
                                         {{/canUser}}
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
-                                    <span>Tags
+                                    <span>{{t 'common:Tags'}}
                                         {{#canUser data.user "ticket:edit"}}
                                             <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
-                                                <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
+                                                <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">{{t 'common:Edit'}} {{t 'common:Tags'}}</a>
                                             </div>
                                         {{else}}
                                             <!-- Once a new modal is in place to prevent adding of tags -->
@@ -188,7 +188,7 @@
                         {{#canUser data.user "ticket:viewHistory"}}
                             <div class="uk-width-1-1 padding-left-right-15">
                                 <div class="tru-card ticket-details" style="background: #fff;height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
-                                    Ticket History
+                                    {{t 'common:Ticket'}} {{t 'common:History'}}
                                     <hr style="padding: 0; margin: 0;"/>
                                     <div class="history-items scrollable" style="padding-top: 12px;">
                                         {{#each data.ticket.history}}
@@ -209,7 +209,7 @@
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
                         <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
-                            Add Comment
+                            {{t 'ticket:Add_Comment'}}
                         </a>
                     </div>
                     <div class="onoffswitch subscribeSwitch uk-float-right" style="margin-right: 10px; position: relative; top: 18px;">
@@ -269,12 +269,12 @@
                                             <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                       data-validation="length"
                                                       data-validation-length="min10"
-                                                      data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
+                                                      data-validation-error-msg="{{t 'ticket:invalid_ticket_issue_text'}}"
                                             ></textarea>
                                         </div>
                                         <div class="right">
-                                            <button class="uk-button" type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
-                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                            <button class="uk-button" type="reset" ng-click="editIssueCancelClicked($event)">{{t 'common:Cancel'}}</button>
+                                            <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                         </div>
                                     </form>
                                 </div>
@@ -287,12 +287,12 @@
                                                 <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                           data-validation="length"
                                                           data-validation-length="min10"
-                                                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
+                                                          data-validation-error-msg="invalid_ticket_issue_text"
                                                 ></textarea>
                                             </div>
                                             <div class="right">
-                                                <button type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
-                                                <button type="submit" data-preventDefault="false">Save</button>
+                                                <button type="reset" ng-click="editIssueCancelClicked($event)">{{t 'common:Cancel'}}</button>
+                                                <button type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -309,13 +309,13 @@
                         </div>
                         <div class="tru-tabs comments-notes-tab uk-clearfix {{#compare (size data.ticket.commentsAndNotes) '<' 1}} hide {{/compare}}" style="padding: 20px 0 !important;" data-ticketId="{{data.ticket._id}}">
                             <div class="tru-tab-selectors" style="margin-left: 110px;">
-                                <a id="tab-all-comments" href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0" data-ticketid="{{data.ticket._id}}">All
+                                <a id="tab-all-comments" href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0" data-ticketid="{{data.ticket._id}}">{{t 'common:All'}}
                                     <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.commentsAndNotes}}</span>
                                 </a>
-                                <a id="tab-public-comments" href="#" class="tru-tab-selector no-ajaxy" data-tabid="1" data-ticketid="{{data.ticket._id}}">Comments
+                                <a id="tab-public-comments" href="#" class="tru-tab-selector no-ajaxy" data-tabid="1" data-ticketid="{{data.ticket._id}}">{{t 'common:Comments'}}
                                     <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.comments}}</span>
                                 </a>
-                                <a id="tab-internal-notes" href="#" class="tru-tab-selector no-ajaxy" data-tabid="2" data-ticketid="{{data.ticket._id}}">Notes
+                                <a id="tab-internal-notes" href="#" class="tru-tab-selector no-ajaxy" data-tabid="2" data-ticketid="{{data.ticket._id}}">{{t 'common:Notes'}}
                                     <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.notes}}</span>
                                 </a>
 
@@ -342,7 +342,7 @@
                                                     <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
                                                     <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
                                                     {{#is isNote true}}
-                                                        <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                        <span class="uk-badge uk-badge-small nomargin-left-right">{{t 'common:NOTE'}}</span>
                                                     {{/is}}
                                                     <div class="comment-body">
                                                         {{#is isNote true}}
@@ -359,12 +359,12 @@
                                                     <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                               data-validation="length"
                                                               data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                              data-validation-error-msg="{{t 'ticket:invalid_comment_text'}}"
                                                     ></textarea>
                                                             </div>
                                                             <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -376,12 +376,12 @@
                                                         <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                                   data-validation="length"
                                                                   data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
-                                                        ></textarea>
+                                                                  data-validation-error-msg="{{t 'ticket:invalid_comment_text'}}">
+                                                        </textarea>
                                                                 </div>
                                                                 <div class="right">
-                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                    <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                    <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -419,7 +419,7 @@
                                                     <h3>Re: {{../data.ticket.subject}}</h3>
                                                     <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
                                                     <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                                    <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                    <span class="uk-badge uk-badge-small nomargin-left-right">{{t 'common:NOTE'}}</span>
                                                     <div class="comment-body">
                                                         <p>{{{note}}}</p>
                                                     </div>
@@ -431,12 +431,12 @@
                                                     <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                               data-validation="length"
                                                               data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
+                                                              data-validation-error-msg="{{t 'ticket:invalid_note_text'}}">
                                                     </textarea>
                                                             </div>
                                                             <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -448,12 +448,12 @@
                                                         <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                                   data-validation="length"
                                                                   data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
+                                                                  data-validation-error-msg="{{t 'ticket:invalid_note_text'}}"
                                                         ></textarea>
                                                                 </div>
                                                                 <div class="right">
-                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                    <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                    <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                                 </div>
                                                             </form>
                                                         </div>
@@ -508,12 +508,12 @@
                                                     <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                               data-validation="length"
                                                               data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                              data-validation-error-msg="{{t 'ticket:invalid_comment_text'}}"
                                                     ></textarea>
                                                         </div>
                                                         <div class="right">
-                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                            <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -525,12 +525,12 @@
                                                         <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                                   data-validation="length"
                                                                   data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
+                                                                  data-validation-error-msg="{{t 'ticket:invalid_comment_text'}}"
                                                         ></textarea>
                                                             </div>
                                                             <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -574,7 +574,7 @@
                                                 <h3>Re: {{../data.ticket.subject}}</h3>
                                                 <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
                                                 <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                                <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                <span class="uk-badge uk-badge-small nomargin-left-right">{{t 'common:NOTE'}}</span>
                                                 <div class="comment-body">
                                                     <p>{{{note}}}</p>
                                                 </div>
@@ -586,12 +586,12 @@
                                                     <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                               data-validation="length"
                                                               data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
+                                                              data-validation-error-msg="{{t 'ticket:invalid_note_text'}}">
                                                     </textarea>
                                                         </div>
                                                         <div class="right">
-                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                            <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                            <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                         </div>
                                                     </form>
                                                 </div>
@@ -603,12 +603,12 @@
                                                         <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
                                                                   data-validation="length"
                                                                   data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
+                                                                  data-validation-error-msg="{{t 'ticket:invalid_note_text'}}"
                                                         ></textarea>
                                                             </div>
                                                             <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
+                                                                <button class="uk-button resetForm" type="reset">{{t 'common:Cancel'}}</button>
+                                                                <button class="uk-button" type="submit" data-preventDefault="false">{{t 'common:Save'}}</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -645,9 +645,9 @@
                             {{/if}}
                             <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
                                 <div class="tru-tab-selectors">
-                                    <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">Comment</a>
+                                    <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">{{t 'common:Comment'}}</a>
                                     {{#canUser data.common.loggedInAccount 'notes:create'}}
-                                        <a href="#" class="tru-tab-selector no-ajaxy" data-tabid="1">Internal Note</a>
+                                        <a href="#" class="tru-tab-selector no-ajaxy" data-tabid="1">{{t 'common:Internal'}} {{t 'common:Note'}}</a>
                                     {{/canUser}}
 
                                     <span class="tru-tab-highlighter"></span>
@@ -662,7 +662,7 @@
                                                       data-keyBindSubmit="#comment-reply-submit-button"
                                                       data-validation="length"
                                                       data-validation-length="min5"
-                                                      data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
+                                                      data-validation-error-msg="{{t 'ticket:invalid_comment_text'}}"
                                                       style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                         </div>
                                         <div class="uk-width-1-1">
@@ -670,7 +670,7 @@
                                                 <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
                                                         data-action="scrolltobottom"
                                                         data-targetScroll=".page-content-right"
-                                                        data-preventDefault="false">Post Comment</button>
+                                                        data-preventDefault="false">{{t 'common:Post'}} {{t 'common:Comment'}}</button>
                                             </div>
                                         </div>
                                     </form>
@@ -686,14 +686,14 @@
                                                           data-keyBindSubmit="#internal-note-submit-button"
                                                           data-validation="length"
                                                           data-validation-length="min5"
-                                                          data-validation-error-msg="Please enter a valid note. Notes must contain at least 5 characters."
+                                                          data-validation-error-msg="{{t 'ticket:invalid_note_text'}}"
                                                           style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                             </div>
                                             <div class="uk-float-right">
                                                 <button id="internal-note-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
                                                         data-action="scrolltobottom"
                                                         data-targetScroll=".page-content-right"
-                                                        data-preventDefault="false">Save Note</button>
+                                                        data-preventDefault="false">{{t 'common:Save'}} {{t 'common:Note'}}</button>
                                             </div>
                                         </form>
                                     </div>
@@ -708,13 +708,13 @@
         <div id="addTagModal" class="uk-modal" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
             <div class="uk-modal-dialog uk-clearfix">
                 <a class="uk-modal-close uk-close no-ajaxy"></a>
-                <h5 style="font-weight: 300;">Add Tags</h5>
+                <h5 style="font-weight: 300;">{{t 'common:Add'}} {{t 'common:Tags'}}</h5>
                 <div>
                     <form id="addTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddTags($event)">
                         <!--<label for="tags">Tag:</label>-->
                         <div class="search-container">
                             <!--<input type="text" name="tags" id="tags" />-->
-                            <select name="tags" id="tags" class="chosen-select" multiple data-placeholder=" " data-noresults="No Tags Found for ">
+                            <select name="tags" id="tags" class="chosen-select" multiple data-placeholder=" " data-noresults="{{t 'ticket:No_Tags_Found_for'}} ">
                                 {{#each data.common.ticketTags}}
                                     <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                                 {{/each}}
@@ -723,11 +723,11 @@
                         </div>
 
                         <div class="left" style="margin-top: 15px;">
-                            <button class="uk-button red nomargin" type="button" ng-click="clearTags($event)">Clear</button>
+                            <button class="uk-button red nomargin" type="button" ng-click="clearTags($event)">{{t 'common:Clear'}}</button>
                         </div>
                         <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button uk-button-secondary cancel nomargin uk-modal-close" type="button">Cancel</button>
-                            <button class="uk-button uk-button-success nomargin" type="submit">Save Tags</button>
+                            <button class="uk-button uk-button-secondary cancel nomargin uk-modal-close" type="button">{{t 'common:Cancel'}}</button>
+                            <button class="uk-button uk-button-success nomargin" type="submit">{{t 'common:Save'}} {{t 'common:Tags'}}</button>
                         </div>
                     </form>
                 </div>
@@ -737,13 +737,13 @@
         <div id="createTagModal" class="uk-modal" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
             <div class="uk-modal-dialog uk-clearfix">
                 <a class="uk-modal-close uk-close no-ajaxy"></a>
-                <h5 style="font-weight: 300;">Create Tag</h5>
+                <h5 style="font-weight: 300;">{{t 'ticket:Create_Tag'}}</h5>
                 <div>
                     <form id="createTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddNewTag($event)">
                         <input type="text" id="tag" name="tag" class="md-input" />
 
                         <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button uk-button-success nomargin" type="submit">Create Tag</button>
+                            <button class="uk-button uk-button-success nomargin" type="submit">{{t 'ticket:Create_Tag'}}</button>
                         </div>
                     </form>
                 </div>

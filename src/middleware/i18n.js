@@ -19,7 +19,7 @@ obj.register = function(app, handlebars) {
             // lng: 'de',
             lng: nconf.get('locale') ? nconf.get('locale') : 'dev',
             preload: ['en', 'de'],
-            ns: ['install', 'account', 'ticket', 'group', 'messages', 'settings', 'client', 'common'],
+            ns: ['install', 'account', 'ticket', 'group', 'messages', 'settings', 'client', 'common', 'error'],
             defaultNS: 'client',
             missingKeyHandler: function(lng, ns, key, fallbackValue) {
                 var fs = require('fs');

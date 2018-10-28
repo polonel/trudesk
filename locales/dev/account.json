@@ -17,5 +17,14 @@
   "Confirm_Password": "Confirm Password",
   "User_Breakdown": "User Breakdown",
   "Online_Users": "Online Users",
-  "Profile": "Profile"
+  "Profile": "Profile",
+  "Upload_Profile_Image": "Upload Profile Image",
+  "upload_profile_image_desc": "Image must be square and at least 256x256",
+  "Two_Factor_Authentication": "Two Factor Authentication",
+  "Extra_account_security": "Extra account security",
+  "Shared_Key": "Shared Key",
+  "User_Information": "User Information",
+  "Your_profile_information": "Your profile information",
+  "Mobile_API_Token": "Mobile API Token",
+  "mobile_api_token_desc": "API Token for the trudesk mobile app"
 }

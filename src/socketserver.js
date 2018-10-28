@@ -138,10 +138,10 @@ var socketServer = function(ws) {
                             if (String(c.partner._id) === String(rm.owner._id)) 
                                 c.recentMessage = c.partner.fullname + ': ' + rm.body;
                              else 
-                                c.recentMessage = 'You: ' + rm.body;
+                                c.recentMessage = global.i18next.t('common:You') + ': ' + rm.body;
                             
                         } else 
-                            c.recentMessage = 'New Conversation';
+                            c.recentMessage = global.i18next.t('messages:New_Conversation');
                         
 
                         convos.push(c);
@@ -843,8 +843,8 @@ var socketServer = function(ws) {
             var permissions = require('./permissions');
             if (!permissions.canThis(authUser.role, 'accounts:import')) {
                 //Send Error Socket Emit
-                winston.warn('[$trudesk:accounts:import:csv] - Error: Invalid permissions.');
-                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: 'Invalid Permissions. Check Console.'});
+                winston.warn('[$trudesk:accounts:import:csv] - Error: ' + global.i18next.t('error:Invalid_permissions'));
+                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: global.i18next.t('error:Invalid_permissions') + global.i18next.t('error:Check_Console')});
                 return;
             }
 
@@ -871,7 +871,7 @@ var socketServer = function(ws) {
                             username: cu.username,
                             fullname: cu.fullname,
                             email: cu.email,
-                            password: 'Password1!'
+                            password: 'password'
                         });
 
                         if (!_.isUndefined(cu.role)) 
@@ -987,7 +987,7 @@ var socketServer = function(ws) {
                             username: cu.username,
                             fullname: cu.fullname,
                             email: cu.email,
-                            password: 'Password1!'
+                            password: 'password'
                         });
 
                         if (!_.isUndefined(cu.role)) 
@@ -1075,8 +1075,8 @@ var socketServer = function(ws) {
             var permissions = require('./permissions');
             if (!permissions.canThis(authUser.role, 'accounts:import')) {
                 //Send Error Socket Emit
-                winston.warn('[$trudesk:accounts:import:ldap] - Error: Invalid permissions.');
-                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: 'Invalid Permissions. Check Console.'});
+                winston.warn('[$trudesk:accounts:import:ldap] - ' + global.i18next.t('common:Error') + ' : ' + global.i18next.t('error:Invalid_permissions'));
+                utils.sendToSelf(socket, '$trudesk:accounts:import:error', {error: global.i18next.t('error:Invalid_permissions') + ' ' + global.i18next.t('error:Check_Console') });
                 return;
             }
 
@@ -1105,7 +1105,7 @@ var socketServer = function(ws) {
                             email: lu.mail,
                             title: lu.title,
                             role: 'user',
-                            password: 'Password1!'
+                            password: 'password'
                         });
 
                         user.save(function(err) {
@@ -1243,8 +1243,6 @@ function sortByKeys(obj) {
 }
 
 function onAuthorizeSuccess(data, accept) {
-    'use strict';
-
     winston.debug('User successfully connected: ' + data.user.username);
 
     accept();
