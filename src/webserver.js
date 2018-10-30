@@ -12,6 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+var _ = require('lodash')
 var async = require('async')
 var express = require('express')
 var WebServer = express()
@@ -60,24 +61,29 @@ var port = process.env.PORT || 8118
         }
       ],
       function () {
-        server.on('error', function (err) {
-          if (err.code === 'EADDRINUSE') {
-            winston.error('Address in use, exiting...')
-            server.close()
-          } else {
-            winston.error(err.message)
-            throw err
-          }
-        })
-
-        server.listen(port, '0.0.0.0', function () {
-          global.TRUDESK_PORT = port
-          winston.info('TruDesk is now listening on port: ' + port)
-
-          callback()
-        })
+        return callback()
       }
     )
+  }
+
+  module.exports.listen = function (callback, p) {
+    if (!_.isUndefined(p)) port = p
+
+    server.on('error', function (err) {
+      if (err.code === 'EADDRINUSE') {
+        winston.error('Address in use, exiting...')
+        server.close()
+      } else {
+        winston.error(err.message)
+        throw err
+      }
+    })
+
+    server.listen(port, '0.0.0.0', function () {
+      winston.info('TruDesk is now listening on port: ' + port)
+
+      if (_.isFunction(callback)) return callback()
+    })
   }
 
   module.exports.installServer = function (callback) {
