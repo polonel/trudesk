@@ -156,6 +156,27 @@ util.getSettings = function (callback) {
 
             return done()
           })
+        },
+        function (done) {
+          var roleSchema = require('../models/role')
+          var roleOrderSchema = require('../models/roleorder')
+          roleSchema.getRoles(function (err, roles) {
+            if (err) return done(err)
+            roleOrderSchema.getOrder(function (err, roleOrder) {
+              if (err) return done(err)
+              roleOrder = roleOrder.order
+
+              if (_.size(roleOrder) > 0) {
+                var arr = _.map(roleOrder, function (roID) {
+                  return _.find(roles, { _id: roID })
+                })
+
+                content.data.roles = arr
+              } else content.data.roles = roles
+
+              return done()
+            })
+          })
         }
       ],
       function (err) {
