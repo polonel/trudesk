@@ -22,7 +22,7 @@ var roleSchema = mongoose.Schema({
     description:    String,
     grants:         { type: Object, required: true, default: {} }
 }, {
-    toObject: { virtuals: true },
+    toObject: { getters: true, virtuals: true },
     toJSON: { virtuals: true }
 });
 

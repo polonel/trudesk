@@ -158,4 +158,28 @@ apiSettings.buildsass = function (req, res) {
   })
 }
 
+apiSettings.updateRoleOrder = function (req, res) {
+  if (!req.body.roleOrder) return res.status(400).json({ success: false, error: 'Invalid PUT Data' })
+  var RoleOrderSchema = require('../../../models/roleorder')
+  RoleOrderSchema.getOrder(function (err, order) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+    if (!order) {
+      order = new RoleOrderSchema({
+        order: req.body.roleOrder
+      })
+      order.save(function (err, order) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        return res.json({ success: true, roleOrder: order })
+      })
+    } else {
+      order.updateOrder(req.body.roleOrder, function (err, order) {
+        if (err) return res.status(400).json({ success: false, error: err.message })
+
+        return res.json({ success: true, roleOrder: order })
+      })
+    }
+  })
+}
+
 module.exports = apiSettings

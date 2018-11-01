@@ -164,6 +164,12 @@ function dbCallback (err, db) {
     async.series(
       [
         function (next) {
+          require('./src/settings/defaults').init(next)
+        },
+        // function(next) {
+        //     require('./src/permissions').register(next);
+        // },
+        function (next) {
           require('./src/socketserver')(ws)
           return next()
         },
@@ -190,7 +196,7 @@ function dbCallback (err, db) {
           })
         },
         function (next) {
-          require('./src/settings/defaults').init(next)
+          require('./src/migration').run(next)
         },
         function (next) {
           winston.debug('Building dynamic sass...')
@@ -254,12 +260,14 @@ function dbCallback (err, db) {
             }
           })
 
-                return next();
-            }
-        ], function() {
-            ws.listen(function() {
-                winston.info('trudesk Ready');
-            });
-        });
-    });
+          return next()
+        }
+      ],
+      function () {
+        ws.listen(function () {
+          winston.info('trudesk Ready')
+        })
+      }
+    )
+  })
 }

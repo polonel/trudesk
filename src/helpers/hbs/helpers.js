@@ -641,6 +641,12 @@ var helpers = {
     return options.inverse(this)
   },
 
+  isOwner: function (user, owner, options) {
+    if (user._id.toString() === owner._id.toString()) return options.fn(this)
+
+    return options.inverse(this)
+  },
+
   checkPerm: function (user, perm, options) {
     var P = require('../../permissions')
     if (_.isUndefined(user)) return options.inverse(this)

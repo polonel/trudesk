@@ -24,6 +24,166 @@ var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
 
+function rolesDefault (callback) {
+  var roleSchema = require('../models/role')
+  var userGrants = [
+    { role: 'user', resource: 'ticket', action: 'create:own', attributes: '*, !notes' },
+    { role: 'user', resource: 'ticket', action: 'read:own', attributes: '*, !notes, !history' },
+    { role: 'user', resource: 'ticket', action: 'update:own', attributes: '*, !notes' },
+
+    { role: 'user', resource: 'ticket:public', action: 'create:own', attributes: '*, !notes' },
+    { role: 'user', resource: 'ticket:public', action: 'read:own', attributes: '*, !notes, !history' },
+    { role: 'user', resource: 'ticket:public', action: 'update:own', attributes: '*, !notes' },
+
+    { role: 'user', resource: 'api:tickets', action: 'create:own', attributes: '*, !notes' },
+    { role: 'user', resource: 'api:tickets', action: 'read:own', attributes: '*, !notes' },
+    { role: 'user', resource: 'api:tickets', action: 'update:own', attributes: '*, !notes' }
+  ]
+
+  var supportGrants = [
+    { role: 'support', resource: 'agent', action: 'read:any', attributes: '*' },
+
+    { role: 'support', resource: 'ticket', action: 'create:any', attributes: '*' },
+    { role: 'support', resource: 'ticket', action: 'read:any', attributes: '*' },
+    { role: 'support', resource: 'ticket', action: 'update:any', attributes: '*' },
+
+    { role: 'support', resource: 'account', action: 'create:any', attributes: '*' },
+    { role: 'support', resource: 'account', action: 'read:any', attributes: '*' },
+    { role: 'support', resource: 'account', action: 'update:any', attributes: '*' },
+    { role: 'support', resource: 'account', action: 'delete:any', attributes: '*' }
+  ]
+
+  var adminGrants = [
+    { role: 'admin', resource: 'admin', action: 'read:any', attributes: '*' },
+    { role: 'admin', resource: 'agent', action: 'read:any', attributes: '*' },
+    { role: 'admin', resource: 'hierarcy', action: 'read:any', attributes: '*' },
+    { role: 'admin', resource: 'settings', action: 'read:any', attributes: '*' },
+
+    { role: 'admin', resource: 'ticket', action: 'create:any', attributes: '*' },
+    { role: 'admin', resource: 'ticket', action: 'read:any', attributes: ['*', '!notes'] },
+    { role: 'admin', resource: 'ticket', action: 'update:any', attributes: '*' },
+    { role: 'admin', resource: 'ticket', action: 'delete:any', attributes: '*' },
+
+    { role: 'admin', resource: 'account', action: 'create:any', attributes: '*' },
+    { role: 'admin', resource: 'account', action: 'read:any', attributes: '*' },
+    { role: 'admin', resource: 'account', action: 'update:any', attributes: '*' },
+    { role: 'admin', resource: 'account', action: 'delete:any', attributes: '*' }
+  ]
+
+  async.series(
+    [
+      function (done) {
+        roleSchema.getRoleByName('User', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+
+          roleSchema.create(
+            {
+              name: 'User',
+              description: 'Default role for users',
+              grants: userGrants
+            },
+            done
+          )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Support', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+
+          roleSchema.create(
+            {
+              name: 'Support',
+              description: 'Default role for agents',
+              grants: supportGrants
+            },
+            done
+          )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Admin', function (err, role) {
+          if (err) return done(err)
+          if (role) role.updateGrants(adminGrants, done)
+          else {
+            roleSchema.create(
+              {
+                name: 'Admin',
+                description: 'Default role for admins',
+                grants: adminGrants
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        var roleOrderSchema = require('../models/roleorder')
+        roleOrderSchema.getOrder(function (err, roleOrder) {
+          if (err) return done(err)
+          if (roleOrder) return done()
+
+          roleSchema.getRoles(function (err, roles) {
+            if (err) return done(err)
+
+            var roleOrder = []
+            roleOrder.push(_.find(roles, { name: 'Admin' })._id)
+            roleOrder.push(_.find(roles, { name: 'Support' })._id)
+            roleOrder.push(_.find(roles, { name: 'User' })._id)
+
+            roleOrderSchema.create(
+              {
+                order: roleOrder
+              },
+              done
+            )
+          })
+        })
+      }
+    ],
+    function (err) {
+      if (err) throw err
+      return callback()
+    }
+  )
+}
+
+function saveVersion (callback) {
+  SettingsSchema.getSettingByName('gen:version', function (err, setting) {
+    if (err) {
+      winston.warn(err)
+      if (_.isFunction(callback)) return callback(err)
+      return false
+    }
+
+    if (!setting) {
+      var s = new SettingsSchema({
+        name: 'gen:version',
+        value: require('../../package.json').version
+      })
+      s.save(function (err) {
+        if (err) {
+          if (_.isFunction(callback)) return callback(err)
+          return false
+        }
+
+        if (_.isFunction(callback)) return callback()
+      })
+    } else {
+      setting.value = require('../../package').version
+      setting.save(function (err) {
+        if (err) {
+          if (_.isFunction(callback)) return callback(err)
+          return false
+        }
+
+        if (_.isFunction(callback)) return callback()
+      })
+    }
+  })
+}
+
 function createDirectories (callback) {
   async.parallel(
     [
@@ -444,10 +604,16 @@ settingsDefaults.init = function (callback) {
   async.series(
     [
       function (done) {
+        return saveVersion(done)
+      },
+      function (done) {
         return createDirectories(done)
       },
       function (done) {
-        downloadWin32MongoDBTools(done)
+        return downloadWin32MongoDBTools(done)
+      },
+      function (done) {
+        return rolesDefault(done)
       },
       function (done) {
         return timezoneDefault(done)
@@ -475,9 +641,7 @@ settingsDefaults.init = function (callback) {
       }
     ],
     function () {
-      if (_.isFunction(callback)) {
-        return callback()
-      }
+      if (_.isFunction(callback)) return callback()
     }
   )
 }

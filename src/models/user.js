@@ -51,7 +51,7 @@ var userSchema = mongoose.Schema({
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  role: { type: String, required: true },
+        role:       { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
   lastOnline: Date,
   title: String,
   image: String,
@@ -77,9 +77,17 @@ var userSchema = mongoose.Schema({
 })
 
 userSchema.set('toObject', { getters: true })
+var autoPopulateRole = function(next) {
+    this.populate('role');
+    next();
+};
 
-userSchema.pre('save', function (next) {
-  var user = this
+userSchema.
+    pre('findOne', autoPopulateRole).
+    pre('find', autoPopulateRole);
+
+userSchema.pre('save', function(next) {
+    var user = this;
 
   user.username = user.username.trim()
   user.email = user.email.trim()
