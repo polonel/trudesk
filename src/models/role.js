@@ -21,6 +21,19 @@ var roleSchema = mongoose.Schema({
     normalized:     String,
     description:    String,
     grants:         { type: Object, required: true, default: {} }
+}, {
+    toObject: { virtuals: true },
+    toJSON: { virtuals: true }
+});
+
+roleSchema.virtual('isAdmin').get(function() {
+    if (!global.ac) return false;
+    return global.ac.can(this.normalized).readAny('admin').granted;
+});
+
+roleSchema.virtual('isAgent').get(function() {
+    if (!global.ac) return false;
+    return global.ac.can(this.normalized).readAny('agent').granted;
 });
 
 roleSchema.pre('save', function(next) {
@@ -29,6 +42,11 @@ roleSchema.pre('save', function(next) {
 
     return next();
 });
+
+roleSchema.methods.updateGrants = function(grants, callback) {
+    this.grants = grants;
+    this.save(callback);
+};
 
 roleSchema.statics.getRoles = function(callback) {
     return this.model(COLLECTION).find({}).exec(callback);

@@ -107,8 +107,6 @@ util.getSettings = function (callback) {
     s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '')
     s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
 
-    content.data.settings = s
-
     async.parallel(
       [
         function (done) {
@@ -181,6 +179,7 @@ util.getSettings = function (callback) {
       ],
       function (err) {
         if (err) return callback(err)
+        content.data.settings = s
 
         return callback(null, content)
       }

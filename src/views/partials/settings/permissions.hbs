@@ -1,0 +1,191 @@
+<div data-settings-id="settings-permissions" {{#ifeq subnav compare='settings-permissions'}} class="active" {{/ifeq}}>
+    <!-- Permissions -->
+    <div class="setting-item-wrap uk-margin-medium-bottom">
+        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+            <div class="left">
+                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Permissions
+                    <i class="material-icons"
+                       style="color: #888;
+                              font-size: 16px;
+                              cursor: pointer;
+                              line-height: 18px;"
+                       data-uk-tooltip="{cls:'long-text'}" title="Permission order is top down. ex: Admins at top; Users at bottom">help</i>
+                </h6>
+                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                    Create / Modify User Permissions
+                </h5>
+            </div>
+            <div class="right" style="position:relative;">
+                <div style="margin: 12px 15px 0 0;">
+                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateRoleWindow($event);">Create</button>
+                </div>
+            </div>
+            <hr class="nomargin-top clear">
+            <div class="panel-body2" style="">
+                <div class="uk-grid uk-grid-collapse">
+                    <div class="uk-width-1-4 scrollable" style="background: #f7f8fa; min-height: 400px; max-height: 2000px; border-right: 1px solid #ccc;">
+                        <ul id="permissionList" class="settings-categories" style="border: none; height: auto;">
+                            {{#forEach data.roles}}
+                                <li data-key="{{_id}}" class="nopadding {{#ifeq isFirst compare=true}} active {{/ifeq}}" ng-click="switchRoles($event);">
+                                    <div class="setting-category clearfix" style="padding: 10px 20px">
+                                        <span class="drag-handle uk-display-inline-block uk-float-left mr-10" style="padding-top: 2px;"><i class="material-icons">drag_handle</i></span>
+                                        <h3>{{name}}</h3>
+                                    </div>
+                                </li>
+                            {{/forEach}}
+                        </ul>
+                    </div>
+                    <div class="uk-width-3-4" style="padding: 20px 15px 15px 15px;">
+                        {{#each data.roles}}
+                            <div data-role-id="{{_id}}" {{#ifeq isFirst compare=true}}class="active" {{else}} class="hide"{{/ifeq}} style="{{#ifeq isFirst compare=true}}opacity: 1; {{else}}opacity: 0; {{/ifeq}} height: 100%;">
+                                <div class="setting-item-wrap uk-margin-medium-bottom">
+                                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                        <div class="left">
+                                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Admin
+                                                <i class="material-icons"
+                                                   style="color: #888;
+                                                          font-size: 16px;
+                                                          cursor: pointer;
+                                                          line-height: 18px;"
+                                                   data-uk-tooltip="{cls:'long-text'}" title="Role is considered an admin. Enabling management of the trudesk instance.">help</i>
+                                            </h6>
+                                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Is this role defined as an admin role?
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                <label>
+                                                    Yes
+                                                    <input type="checkbox" id="permIsAdmin-{{_id}}" name="permIsAdmin-{{_id}}" {{#compare isAdmin '===' true}} checked {{/compare}}>
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setting-item-wrap uk-margin-medium-bottom">
+                                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                        <div class="left">
+                                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Support Agent
+                                                <i class="material-icons"
+                                                   style="color: #888;
+                                                          font-size: 16px;
+                                                          cursor: pointer;
+                                                          line-height: 18px;"
+                                                   data-uk-tooltip="{cls:'long-text'}" title="Role is considered an agent role. Enabling agent views and displaying in agent lists.">help</i>
+                                            </h6>
+                                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Is this role defined as an agent role?
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                <label>
+                                                    Yes
+                                                    <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setting-item-wrap uk-margin-medium-bottom">
+                                    <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                        <div class="left">
+                                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Enable Hierarchy</h6>
+                                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Allow this role to manage resources owned by roles defined under it
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                <label>
+                                                    Enabled
+                                                    <input type="checkbox" id="allowPublicTickets" name="allowPublicTickets" ng-change="allowPublicTicketsChanged()" ng-model="allowPublicTickets">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="setting-item-wrap uk-margin-medium-bottom">
+                                    <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                                        <div class="left">
+                                            <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Tickets</h6>
+                                            <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                Ticket Permissions
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;"></div>
+                                        <hr class="nomargin-top clear">
+                                        <!-- View Tickets-->
+                                        <div class="panel-body2" style="padding: 0 10px;">
+                                            <div class="uk-clearfix">
+                                                <div class="left">
+                                                    <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">View Any Ticket</h6>
+                                                </div>
+                                                <div class="right" style="position:relative;">
+                                                    <!-- Switch -->
+                                                    <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                        <label>
+                                                            Allow
+                                                            <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged11()" ng-model="allowUserRegistration11">
+                                                            <span class="lever"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <hr class="nomargin-top clear">
+
+                                        <!--Update Tickets-->
+                                        <div class="panel-body2" style="padding: 0 10px;">
+                                            <div class="uk-clearfix">
+                                                <div class="left">
+                                                    <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">View Tickets</h6>
+                                                </div>
+                                                <div class="right" style="position:relative;">
+                                                    <!-- Switch -->
+                                                    <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                        <label>
+                                                            Allow
+                                                            <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged11()" ng-model="allowUserRegistration11">
+                                                            <span class="lever"></span>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-top: 25px;">
+                                    <h2 class="text-light">Danger Zone</h2>
+                                    <div class="danger-zone">
+                                        <div class="dz-box uk-clearfix">
+                                            <div class="uk-float-left">
+                                                <h5>Delete this Role</h5>
+                                                <p>Once you delete this permission role, there is no going back. <br /> All users with this role will need a new role during deletion.</p>
+                                            </div>
+                                            <div class="uk-float-right" style="padding-top: 10px;">
+                                                <button class="md-btn md-btn-small md-btn-danger" ng-click="showDeleteTicketType('{{_id}}', true)">Delete</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{> createTicketTypeWindow}}
+    </div>
+</div>

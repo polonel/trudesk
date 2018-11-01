@@ -254,12 +254,12 @@ function dbCallback (err, db) {
             }
           })
 
-          return next()
-        }
-      ],
-      function () {
-        winston.info('trudesk Ready')
-      }
-    )
-  })
+                return next();
+            }
+        ], function() {
+            ws.listen(function() {
+                winston.info('trudesk Ready');
+            });
+        });
+    });
 }

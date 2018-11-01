@@ -346,6 +346,7 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/api/v1/tickets/priority/:id/delete', middleware.api, controllers.api.tickets.deletePriority)
   router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities)
   router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority)
+    router.put('/api/v1/settings/updateroleorder', middleware.api, controllers.api.settings.updateRoleOrder);
 
   router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue)
   router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment)
