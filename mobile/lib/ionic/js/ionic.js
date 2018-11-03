@@ -2,7 +2,7 @@
  * Copyright 2015 Drifty Co.
  * http://drifty.com/
  *
- * Ionic, v1.3.1
+ * Ionic, v1.3.5
  * A powerful HTML5 mobile app framework.
  * http://ionicframework.com/
  *
@@ -18,7 +18,7 @@
 // build processes may have already created an ionic obj
 window.ionic = window.ionic || {};
 window.ionic.views = {};
-window.ionic.version = '1.3.1';
+window.ionic.version = '1.3.5';
 
 (function (ionic) {
 
@@ -2390,7 +2390,7 @@ window.ionic.version = '1.3.1';
     /**
      * @ngdoc method
      * @name ionic.Platform#showStatusBar
-     * @description Shows or hides the device status bar (in Cordova). Requires `cordova plugin add org.apache.cordova.statusbar`
+     * @description Shows or hides the device status bar (in Cordova). Requires `ionic plugin add cordova-plugin-statusbar`
      * @param {boolean} shouldShow Whether or not to show the status bar.
      */
     showStatusBar: function(val) {
@@ -2417,7 +2417,7 @@ window.ionic.version = '1.3.1';
      * @name ionic.Platform#fullScreen
      * @description
      * Sets whether the app is fullscreen or not (in Cordova).
-     * @param {boolean=} showFullScreen Whether or not to set the app to fullscreen. Defaults to true. Requires `cordova plugin add org.apache.cordova.statusbar`
+     * @param {boolean=} showFullScreen Whether or not to set the app to fullscreen. Defaults to true. Requires `ionic plugin add cordova-plugin-statusbar`
      * @param {boolean=} showStatusBar Whether or not to show the device's status bar. Defaults to false.
      */
     fullScreen: function(showFullScreen, showStatusBar) {
@@ -2666,7 +2666,7 @@ window.ionic.version = '1.3.1';
  * - Works with labels surrounding inputs
  * - Does not fire off a click if the user moves the pointer too far
  * - Adds and removes an 'activated' css class
- * - Multiple [unit tests](https://github.com/driftyco/ionic/blob/master/test/unit/utils/tap.unit.js) for each scenario
+ * - Multiple [unit tests](https://github.com/ionic-team/ionic/blob/1.x/test/unit/utils/tap.unit.js) for each scenario
  *
  */
 /*
@@ -2977,7 +2977,7 @@ function tapMouseDown(e) {
     e.stopPropagation();
 
     if (!ionic.Platform.isEdge() && (!ionic.tap.isTextInput(e.target) || tapLastTouchTarget !== e.target) &&
-      !isSelectOrOption(e.target.tagName) && !ionic.tap.isVideo(e.target)) {
+      !isSelectOrOption(e.target.tagName) && !e.target.isContentEditable && !ionic.tap.isVideo(e.target)) {
       // If you preventDefault on a text input then you cannot move its text caret/cursor.
       // Allow through only the text input default. However, without preventDefault on an
       // input the 300ms delay can change focus on inputs after the keyboard shows up.
@@ -3098,6 +3098,10 @@ function tapIgnoreEvent(e) {
   e.isTapHandled = true;
 
   if(ionic.tap.isElementTapDisabled(e.target)) {
+    return true;
+  }
+
+  if(e.target.tagName == 'SELECT') {
     return true;
   }
 
@@ -3567,7 +3571,7 @@ ionic.DomUtil.ready(function() {
  * which can cause layout issues such as pushing headers up and out of view.
  *
  * The keyboard fixes work best in conjunction with the
- * [Ionic Keyboard Plugin](https://github.com/driftyco/ionic-plugins-keyboard),
+ * [Ionic Keyboard Plugin](https://github.com/ionic-team/ionic-plugins-keyboard),
  * although it will perform reasonably well without.  However, if you are using
  * Cordova there is no reason not to use the plugin.
  *
@@ -3598,7 +3602,7 @@ ionic.DomUtil.ready(function() {
  *
  * ### Plugin Usage
  * Information on using the plugin can be found at
- * [https://github.com/driftyco/ionic-plugins-keyboard](https://github.com/driftyco/ionic-plugins-keyboard).
+ * [https://github.com/ionic-team/ionic-plugins-keyboard](https://github.com/ionic-team/ionic-plugins-keyboard).
  *
  * ----------
  *
@@ -7001,6 +7005,8 @@ ionic.scroll = {
 
       if(options.startY >= 0 || options.startX >= 0) {
         ionic.requestAnimationFrame(function() {
+          self.__originalContainerHeight = self.el.getBoundingClientRect().height;
+
           self.el.scrollTop = options.startY || 0;
           self.el.scrollLeft = options.startX || 0;
 
@@ -7533,14 +7539,13 @@ ionic.scroll = {
       var self = this;
       var container = self.__container;
 
-      container.removeEventListener('resetScrollView', self.resetScrollView);
       container.removeEventListener('scroll', self.onScroll);
-
       container.removeEventListener('scrollChildIntoView', self.scrollChildIntoView);
-      container.removeEventListener('resetScrollView', self.resetScrollView);
 
       container.removeEventListener(ionic.EVENTS.touchstart, self.handleTouchMove);
       container.removeEventListener(ionic.EVENTS.touchmove, self.handleTouchMove);
+
+      document.removeEventListener('resetScrollView', self.resetScrollView);
 
       ionic.tap.removeClonedInputs(container, self);
 

@@ -557,7 +557,7 @@ ticketSchema.statics.getAll = function(callback) {
 
 ticketSchema.statics.getForCache = function(callback) {
     var self = this;
-    var t365 = moment().hour(23).minute(59).second(59).subtract(365, 'd').toDate();
+    var t365 = moment.utc().hour(23).minute(59).second(59).subtract(365, 'd').toDate();
     self.model(COLLECTION).find({date: {$gte: t365}, deleted: false})
         .select('_id uid date status history comments assignee owner tags')
         .sort('date')
@@ -1128,7 +1128,7 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 
     var self = this;
 
-    var today = moment().hour(23).minute(59).second(59);
+    var today = moment.utc().hour(23).minute(59).second(59);
     var tsDate = today.clone().subtract(timespan, 'd');
     var query = {date: {$gte: tsDate.toDate(), $lte: today.toDate()}, deleted: false};
     if (timespan === -1)

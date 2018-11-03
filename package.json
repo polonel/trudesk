@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "engines": {
     "node": ">=9.10.0"
@@ -60,6 +60,7 @@
     "mkdirp": "0.5.1",
     "moment": "2.22.2",
     "moment-duration-format": "2.2.2",
+    "moment-timezone": "0.5.21",
     "mongoose": "5.2.6",
     "nconf": "0.10.0",
     "netmask": "1.0.6",

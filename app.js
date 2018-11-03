@@ -70,7 +70,7 @@ if (!process.env.FORK) {
     winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
-    winston.info('Time: ' + new Date());
+    winston.info('Server Time: ' + new Date());
 }
 
 start();
@@ -96,7 +96,6 @@ function start() {
 function dbCallback(err, db) {
     if (err) 
         return start();
-    
 
     var s = require('./src/models/setting');
     s.getSettingByName('installed', function(err, installed) {

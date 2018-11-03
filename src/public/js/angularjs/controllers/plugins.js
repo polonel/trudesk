@@ -19,7 +19,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
 
             $scope.installedPlugins = [];
 
-            var pluginUrl = 'http://plugins.trudesk.io';
+            var pluginUrl = 'http://_plugins.trudesk.io';
 
             $scope.init = function() {
                 $scope.installedPlugins = angular.fromJson($scope.installedPlugins);

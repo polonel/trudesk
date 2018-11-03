@@ -49,7 +49,7 @@ angular.module('trudesk', [
       if (jsonData.notification.payload && jsonData.notification.payload.additionalData) {
         var ticketUid = jsonData.notification.payload.additionalData.ticketUid;
         if (ticketUid) {
-          console.log('Moving to ticket: ' + ticketUid);
+//          console.log('Moving to ticket: ' + ticketUid);
           $state.go('tab.tickets')
           setTimeout(function() {
             return $state.go('tab.tickets-details', { ticketuid: ticketUid})

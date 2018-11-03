@@ -228,7 +228,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     var form = $('form#edit-issue-form');
                     if (!form.isValid(null, null, false)) return true;
                     var issue = form.find('textarea#issueText').val();
-                    issue = '<p>' + issue + '</p>';
+
                     socket.ui.setTicketIssue(id, issue);
                 }
             };
