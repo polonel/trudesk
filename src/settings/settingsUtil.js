@@ -37,6 +37,7 @@ util.getSettings = function(callback) {
             };
 
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
+        s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
 
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
 

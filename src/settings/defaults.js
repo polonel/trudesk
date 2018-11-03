@@ -15,38 +15,46 @@
 var _               = require('lodash');
 var async           = require('async');
 var winston         = require('winston');
+var moment          = require('moment-timezone');
 
 var SettingsSchema  = require('../models/setting');
 var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
 
-settingsDefaults.init = function(callback) {
-    winston.debug('Checking Default Settings...');
-    async.series([
-        function(done) {
-            return showTourSettingDefault(done);
-        },
-        function(done) {
-            return ticketTypeSettingDefault(done);
-        },
-        function(done) {
-            return ticketPriorityDefaults(done);
-        },
-        function(done) {
-            return addedDefaultPrioritesToTicketTypes(done);
-        },
-        function(done) {
-            return checkPriorities(done);
-        },
-        function(done) {
-            return normalizeTags(done);
+function timezoneDefault(callback) {
+    SettingsSchema.getSettingByName('gen:timezone', function(err, setting) {
+        if (err) {
+            winston.warn(err);
+            if (_.isFunction(callback)) return callback(err);
+            return false;
         }
-    ], function() {
-        if (_.isFunction(callback))
-            return callback();
+
+        if (!setting) {
+            var defaultTimezone = new SettingsSchema({
+                name: 'gen:timezone',
+                value: 'America/New_York'
+            });
+
+            defaultTimezone.save(function(err, setting) {
+                if (err) {
+                    winston.warn(err);
+                    if (_.isFunction(callback)) return callback(err);
+                }
+
+                winston.debug('Timezone set to ' + setting.value);
+                moment.tz.setDefault(setting.value);
+
+                if (_.isFunction(callback)) return callback();
+            });
+        } else {
+            winston.debug('Timezone set to ' + setting.value);
+            moment.tz.setDefault(setting.value);
+
+            if (_.isFunction(callback)) return callback();
+        }
     });
-};
+}
 
 function showTourSettingDefault(callback) {
     SettingsSchema.getSettingByName('showTour:enable', function(err, setting) {
@@ -301,5 +309,35 @@ function addedDefaultPrioritesToTicketTypes(callback) {
         }
     ], callback);
 }
+
+settingsDefaults.init = function(callback) {
+    winston.debug('Checking Default Settings...');
+    async.series([
+        function(done) {
+            return timezoneDefault(done);
+        },
+        function(done) {
+            return showTourSettingDefault(done);
+        },
+        function(done) {
+            return ticketTypeSettingDefault(done);
+        },
+        function(done) {
+            return ticketPriorityDefaults(done);
+        },
+        function(done) {
+            return addedDefaultPrioritesToTicketTypes(done);
+        },
+        function(done) {
+            return checkPriorities(done);
+        },
+        function(done) {
+            return normalizeTags(done);
+        }
+    ], function() {
+        if (_.isFunction(callback))
+            return callback();
+    });
+};
 
 module.exports = settingsDefaults;
