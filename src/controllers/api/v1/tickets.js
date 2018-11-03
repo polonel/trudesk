@@ -441,7 +441,7 @@ apiTickets.createPublicTicket = function(req, res) {
                     owner: savedUser._id,
                     group: group._id,
                     type: ticketType._id,
-                    priority: 1,
+                    priority: _.first(ticketType.priorities)._id, //TODO: change when priority order is complete!
                     subject: postData.ticket.subject,
                     issue: postData.ticket.issue,
                     history: [HistoryItem],
