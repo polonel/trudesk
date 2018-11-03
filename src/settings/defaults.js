@@ -56,7 +56,7 @@ function rolesDefault(callback) {
 
     var userGrants = ['ticket:create editSelf attachment', 'comment:create editSelf' ];
     var supportGrants = ['ticket:*', 'account:create edit view delete import', 'comment:editSelf create delete', 'note:create view', 'report:view', 'notice:*'];
-    var adminGrants = ['admin:*', 'agent:*', 'ticket:*', 'account:*', 'group:*', 'team:*', 'department:*', 'comment:*', 'note:*', 'report:*', 'notice:*', 'setting:*', 'api:*'];
+    var adminGrants = ['admin:*', 'agent:*', 'chat:*', 'ticket:*', 'account:*', 'group:*', 'team:*', 'department:*', 'comment:*', 'note:*', 'report:*', 'notice:*', 'setting:*', 'api:*'];
 
   async.series(
     [
