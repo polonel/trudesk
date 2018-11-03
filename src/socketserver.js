@@ -412,7 +412,10 @@ var socketServer = function(ws) {
             var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
-            issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
             var markedIssue = marked(issue);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
@@ -438,7 +441,11 @@ var socketServer = function(ws) {
             var comment = data.commentText;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
-            comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
+
             var markedComment = marked(comment);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
@@ -485,7 +492,10 @@ var socketServer = function(ws) {
             var note = data.noteText;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note)) return true;
-            note = note.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
             var markedNote = marked(note);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
