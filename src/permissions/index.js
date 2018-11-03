@@ -22,22 +22,26 @@ var roles = require('./roles')
  * @returns {boolean}
  */
 
-var canThis = function (role, a) {
-  if (_.isUndefined(role)) return false
+var canThis = function(role, a) {
+    if (_.isUndefined(role)) return false;
+    console.log(role.normalized);
 
-  var rolePerm = _.find(roles, { id: role })
-  if (_.isUndefined(rolePerm)) return false
+    var roles = global.roles;
+    if (_.isUndefined(roles)) return false;
+    if (_.hasIn(role, '_id'))
+        role = role._id;
+    var rolePerm = _.find(roles, {'_id': role});
+    if (_.isUndefined(rolePerm)) return false;
+    if (_.indexOf(rolePerm.grants, '*') !== -1) return true;
 
-  if (_.indexOf(rolePerm.allowedAction, '*') !== -1) return true
-
-  var actionType = a.split(':')[0]
-  var action = a.split(':')[1]
+    var actionType = a.split(':')[0];
+    var action = a.split(':')[1];
 
   if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-  var result = _.filter(rolePerm.allowedAction, function (value) {
-    if (_.startsWith(value, actionType + ':')) return value
-  })
+    var result = _.filter(rolePerm.grants, function(value) {
+        if (_.startsWith(value, actionType + ':')) return value;
+    });
 
   if (_.isUndefined(result) || _.size(result) < 1) return false
   if (_.size(result) === 1) {
@@ -98,7 +102,6 @@ var getRoles = function (action) {
 }
 
 module.exports = {
-  roles: roles,
-  canThis: canThis,
-  getRoles: getRoles
-}
+    canThis: canThis,
+    getRoles: getRoles
+};

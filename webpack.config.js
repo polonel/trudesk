@@ -32,9 +32,6 @@ module.exports = {
   resolve: {
     modules: [path.resolve(__dirname, 'src/public/js/'), 'node_modules'],
     alias: {
-      // server side
-      roles: path.resolve(__dirname, 'src/permissions/roles'),
-
       // client side
       handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',

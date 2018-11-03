@@ -519,4 +519,8 @@ var notifications = require('../notifications') // Load Push Events
   emitter.on('trudesk:profileImageUpdate', function (data) {
     io.sockets.emit('trudesk:profileImageUpdate', data)
   })
+
+  emitter.on('$trudesk:flushRoles', function () {
+    io.sockets.emit('$trudesk:flushRoles')
+  })
 })()

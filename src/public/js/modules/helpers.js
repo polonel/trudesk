@@ -23,7 +23,6 @@ define([
   'waves',
   'selectize',
   'snackbar',
-  'roles',
   'jscookie',
   'tether',
   'formvalidator',
@@ -34,9 +33,8 @@ define([
   'peity',
   'multiselect',
   'moment_timezone'
-], function ($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
+], function ($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
   var helpers = {}
-
   var easingSwiftOut = [0.4, 0, 0.2, 1]
 
   helpers.loaded = false
@@ -1607,6 +1605,37 @@ define([
     }
 
     return false
+  }
+
+  helpers.hasHierarchyEnabled = function (roleId) {
+    var roles = window.trudeskSessionService.getRoles()
+    var role = _.find(roles, function (o) {
+      return o._id.toString() === roleId.toString()
+    })
+    if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) throw new Error('Invalid Role: ' + roleId)
+    return role.hierarchy
+  }
+
+  helpers.parseRoleHierarchy = function (roleId) {
+    var roleOrder = window.trudeskSessionService.getRoleOrder()
+    if (_.isUndefined(roleOrder)) return []
+
+    var idx = _.findIndex(roleOrder, function (i) {
+      return i.toString() === roleId.toString()
+    })
+    if (idx === -1) return []
+
+    return _.rest(roleOrder, idx)
+  }
+
+  helpers.hasPermOverRole = function (ownRole, extRole) {
+    var roles = helpers.parseRoleHierarchy(ownRole)
+
+    var i = _.find(roles, function (o) {
+      return o.toString() === extRole.toString()
+    })
+
+    return !_.isUndefined(i)
   }
 
   helpers.setupContextMenu = function (selector, complete) {

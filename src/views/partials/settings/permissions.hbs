@@ -123,7 +123,16 @@
                                                 Ticket Permissions
                                             </h5>
                                         </div>
-                                        <div class="right" style="position:relative;"></div>
+                                        <div class="right" style="position:relative;">
+                                            <!-- Switch -->
+                                            <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                <label>
+                                                    All
+                                                    <input type="checkbox" id="allowUserRegistration" name="allowUserRegistration" ng-change="allowUserRegistrationChanged11()" ng-model="allowUserRegistration11">
+                                                    <span class="lever"></span>
+                                                </label>
+                                            </div>
+                                        </div>
                                         <hr class="nomargin-top clear">
                                         <!-- View Tickets-->
                                         <div class="panel-body2" style="padding: 0 10px;">

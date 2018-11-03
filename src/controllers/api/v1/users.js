@@ -549,11 +549,8 @@ apiUsers.deleteUser = function (req, res) {
             return cb({ message: 'Cannot remove yourself!' })
           }
 
-          if (req.user.role.toLowerCase() === 'support' || req.user.role.toLowerCase() === 'user') {
-            if (user.role.toLowerCase() === 'mod' || user.role.toLowerCase() === 'admin') {
-              return cb({ message: 'Insufficient permissions' })
-            }
-          }
+                if (!permissions.canThis(req.user.role, 'account:delete'))
+                    return cb({message: 'Access Denied'});
 
           return cb(null, user)
         })

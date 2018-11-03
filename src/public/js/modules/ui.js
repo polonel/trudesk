@@ -31,6 +31,7 @@ define('modules/ui', [
     // loggedInAccount = window.trudeskSessionService.getUser();
     socketUi.socket = socket = sock
 
+        this.flushRoles();
     this.onReconnect()
     this.onDisconnect()
     // this.updateUsers()
@@ -105,6 +106,16 @@ define('modules/ui', [
   socketUi.fetchServerLogs = function () {
     socket.emit('logs:fetch')
   }
+    socketUi.flushRoles = function() {
+        socket.removeAllListeners('$trudesk:flushRoles');
+        socket.on('$trudesk:flushRoles', function() {
+            helpers.flushRoles();
+        });
+    };
+
+    socketUi.sendUpdateTicketStatus = function(id, status) {
+        socket.emit('updateTicketStatus', {ticketId: id, status: status});
+    };
 
   socketUi.onReconnect = function () {
     socket.removeAllListeners('reconnect')

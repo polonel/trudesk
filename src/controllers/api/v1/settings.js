@@ -12,8 +12,9 @@
 
  **/
 
-var async = require('async')
 var _ = require('lodash')
+var async = require('async')
+var emitter = require('../../../emitter')
 var winston = require('winston')
 var sanitizeHtml = require('sanitize-html')
 var SettingsSchema = require('../../../models/setting')
@@ -170,11 +171,15 @@ apiSettings.updateRoleOrder = function (req, res) {
       order.save(function (err, order) {
         if (err) return res.status(500).json({ success: false, error: err.message })
 
+        emitter.emit('$trudesk:flushRoles')
+
         return res.json({ success: true, roleOrder: order })
       })
     } else {
       order.updateOrder(req.body.roleOrder, function (err, order) {
         if (err) return res.status(400).json({ success: false, error: err.message })
+
+        emitter.emit('$trudesk:flushRoles')
 
         return res.json({ success: true, roleOrder: order })
       })

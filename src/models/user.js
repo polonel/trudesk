@@ -78,7 +78,7 @@ var userSchema = mongoose.Schema({
 
 userSchema.set('toObject', { getters: true })
 var autoPopulateRole = function(next) {
-    this.populate('role');
+    this.populate('role', 'name description normalized _id');
     next();
 };
 
@@ -441,14 +441,14 @@ userSchema.statics.getUserWithObject = function (object, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getAssigneeUsers = function (callback) {
-  var permissions = require('../permissions')
-  var roles = permissions.roles
-  var assigneeRoles = []
-  async.each(roles, function (role) {
-    if (permissions.canThis(role.id, 'ticket:assignee')) {
-      assigneeRoles.push(role.id)
-    }
-  })
+    var roles = global.roles;
+    if (_.isUndefined(roles)) return callback(null, []);
+
+    var assigneeRoles = [];
+    async.each(roles, function(role) {
+        if (role.isAgent)
+            assigneeRoles.push(role._id);
+    });
 
   assigneeRoles = _.uniq(assigneeRoles)
   this.model(COLLECTION).find({ role: { $in: assigneeRoles }, deleted: false }, function (err, users) {
@@ -457,9 +457,9 @@ userSchema.statics.getAssigneeUsers = function (callback) {
       return callback(err, null)
     }
 
-    callback(null, users)
-  })
-}
+        return callback(null, _.sortBy(users, 'fullname'));
+    });
+};
 
 /**
  * Gets users based on roles

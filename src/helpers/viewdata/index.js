@@ -304,8 +304,18 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        viewdata.roles = permissions.roles
-        return callback()
+        var roleSchmea = require('../../models/role')
+        var roleOrder = require('../../models/roleorder')
+        roleSchmea.getRoles(function (err, roles) {
+          if (err) return callback(err)
+
+          roleOrder.getOrder(function (err, ro) {
+            if (err) return callback(err)
+
+            viewdata.roles = roles
+            return callback()
+          })
+        })
       },
       function (callback) {
         viewController.getShowTourSetting(request, function (err, data) {

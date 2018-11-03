@@ -17,6 +17,8 @@ var async = require('async')
 var jsStringEscape = require('js-string-escape')
 var settingSchema = require('../models/setting')
 var ticketTypeSchema = require('../models/tickettype')
+var roleSchema = require('../models/role')
+var roleOrderSchema = require('../models/roleorder')
 
 var util = {}
 
@@ -156,8 +158,6 @@ util.getSettings = function (callback) {
           })
         },
         function (done) {
-          var roleSchema = require('../models/role')
-          var roleOrderSchema = require('../models/roleorder')
           roleSchema.getRoles(function (err, roles) {
             if (err) return done(err)
             roleOrderSchema.getOrder(function (err, roleOrder) {
@@ -165,11 +165,9 @@ util.getSettings = function (callback) {
               roleOrder = roleOrder.order
 
               if (_.size(roleOrder) > 0) {
-                var arr = _.map(roleOrder, function (roID) {
+                content.data.roles = _.map(roleOrder, function (roID) {
                   return _.find(roles, { _id: roID })
                 })
-
-                content.data.roles = arr
               } else content.data.roles = roles
 
               return done()

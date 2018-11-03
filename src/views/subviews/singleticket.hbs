@@ -504,7 +504,7 @@
                             <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
                                 <div class="tru-tab-selectors">
                                     <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">Comment</a>
-                                    {{#canUser data.common.loggedInAccount 'notes:create'}}
+                                    {{#canUser data.common.loggedInAccount 'note:create'}}
                                         <a href="#" class="tru-tab-selector no-ajaxy" data-tabid="1">Internal Note</a>
                                     {{/canUser}}
 
@@ -531,7 +531,7 @@
                                     </form>
                                 </div>
 
-                                {{#canUser data.common.loggedInAccount 'notes:create'}}
+                                {{#canUser data.common.loggedInAccount 'note:create'}}
                                     <div class="tru-tab-section hidden" data-tabid="1">
                                         <form id="internal-note" action="#" method="post" class="uk-form-stacked" ng-submit="submitInternalNote($event);">
                                             <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>

@@ -4,23 +4,25 @@
         <div class="uk-grid uk-grid-collapse page-title noshadow dt-borderBottom" style="padding-left: 24px;">
             <p class="left uk-width-2-10">Accounts</p>
             <div class="uk-width-8-10 right">
-                <div class="md-fab-wrapper">
-                    <div class="md-fab md-fab-accent md-fab-sheet">
-                        <i class="material-icons text-white">person</i>
-                        <div class="md-fab-sheet-actions">
-                            <a href="#" class="text-white no-ajaxy" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">
-                                <i class="material-icons">person_add</i>
-                                Create
-                            </a>
-                            {{#canUser data.common.loggedInAccount 'accounts:import'}}
-                                <a href="/accounts/import" class="text-white">
-                                    <i class="material-icons">cloud_upload</i>
-                                    Import
+                {{#canUser data.common.loggedInAccount 'account:create'}}
+                    <div class="md-fab-wrapper">
+                        <div class="md-fab md-fab-accent md-fab-sheet">
+                            <i class="material-icons text-white">person</i>
+                            <div class="md-fab-sheet-actions">
+                                <a href="#" class="text-white no-ajaxy" ng-click="spawnCreateAccountWindow($event);">
+                                    <i class="material-icons">person_add</i>
+                                    Create
                                 </a>
-                            {{/canUser}}
+                                {{#canUser data.common.loggedInAccount 'account:import'}}
+                                    <a href="/accounts/import" class="text-white">
+                                        <i class="material-icons">cloud_upload</i>
+                                        Import
+                                    </a>
+                                {{/canUser}}
+                            </div>
                         </div>
                     </div>
-                </div>
+                {{/canUser}}
                 <!--<div class="md-fab-wrapper">-->
                     <!--<a class="md-fab md-fab-accent no-ajaxy" href="#" data-uk-modal="{target:'#accountCreateModal',bgclose:false}">-->
                         <!--<i class="material-icons" style="color: white;">add</i>-->
@@ -80,9 +82,9 @@
             <div class="account-list-wrapper" style="padding-top: 24px; padding-bottom: 100px;">
                 <div id="account_list" class="uk-grid-width-small-1-2 uk-grid-width-medium-1-3 uk-grid-width-large-1-4 uk-grid-width-xlarge-1-5">
                     {{#each data.accounts}}
-                        <div data-uk-filter="{{role}},{{fullname}}">
+                        <div data-uk-filter="{{role.normalized}},{{fullname}}">
                             <div class="tru-card tru-card-hover" data-card-username="{{username}}">
-                                <div class="tru-card-head {{#compare role '==' 'admin'}} tru-card-head-admin {{/compare}} {{#compare deleted '==' true}} tru-card-head-deleted {{/compare}}">
+                                <div class="tru-card-head {{#canUserRole role 'admin:*'}} tru-card-head-admin {{/canUserRole}} {{#compare deleted '==' true}} tru-card-head-deleted {{/compare}}">
                                     <div class="tru-card-head-menu" data-uk-dropdown="{pos: 'bottom-right', mode:'click'}">
                                         <i class="material-icons tru-icon">&#xE5D4;</i>
 
@@ -120,7 +122,7 @@
                                         <li>
                                             <div class="tru-list-content">
                                                 <span class="tru-list-heading">Role</span>
-                                                <span class="uk-text-small uk-text-muted">{{firstCap role}}</span>
+                                                <span class="uk-text-small uk-text-muted">{{firstCap role.name}}</span>
                                             </div>
                                         </li>
                                         <li>

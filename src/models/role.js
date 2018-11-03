@@ -13,6 +13,7 @@
  **/
 
 var mongoose = require('mongoose');
+var _        = require('lodash');
 
 var COLLECTION = 'roles';
 
@@ -20,20 +21,23 @@ var roleSchema = mongoose.Schema({
     name:           { type: String, required: true, unique: true },
     normalized:     String,
     description:    String,
-    grants:         { type: Object, required: true, default: {} }
+    grants:         [{ type: String, required: true, default: '' }],
+    hierarchy:      { type: Boolean, required: true, default: true }
 }, {
-    toObject: { getters: true, virtuals: true },
-    toJSON: { virtuals: true }
+    toObject: { getters: true },
+    toJSON: { virtuals: false }
 });
 
 roleSchema.virtual('isAdmin').get(function() {
-    if (!global.ac) return false;
-    return global.ac.can(this.normalized).readAny('admin').granted;
+    if (_.isUndefined(global.roles)) return false;
+    var role = _.find(global.roles, {normalized: this.normalized});
+    return _.indexOf(role.grants, 'admin:*') !== -1;
 });
 
 roleSchema.virtual('isAgent').get(function() {
-    if (!global.ac) return false;
-    return global.ac.can(this.normalized).readAny('agent').granted;
+    if (_.isUndefined(global.roles)) return false;
+    var role = _.find(global.roles, {normalized: this.normalized});
+    return _.indexOf(role.grants, 'agent:*') !== -1;
 });
 
 roleSchema.pre('save', function(next) {
