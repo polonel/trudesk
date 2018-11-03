@@ -24,7 +24,6 @@ var roles = require('./roles')
 
 var canThis = function(role, a) {
     if (_.isUndefined(role)) return false;
-    console.log(role.normalized);
 
     var roles = global.roles;
     if (_.isUndefined(roles)) return false;
@@ -59,21 +58,23 @@ var canThis = function(role, a) {
 var getRoles = function (action) {
   if (_.isUndefined(action)) return false
 
-  var rolesWithAction = []
+    var rolesWithAction = [];
+    var roles = global.roles;
+    if (_.isUndefined(roles)) return [];
 
   _.each(roles, function (role) {
     var actionType = action.split(':')[0]
     var theAction = action.split(':')[1]
 
-    if (_.isUndefined(actionType) || _.isUndefined(theAction)) return
-    if (_.indexOf(role.allowedAction, '*') !== -1) {
-      rolesWithAction.push(role)
-      return
-    }
+        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return;
+        if (_.indexOf(role.grants, '*') !== -1) {
+            rolesWithAction.push(role);
+            return;
+        }
 
-    var result = _.filter(role.allowedAction, function (value) {
-      if (_.startsWith(value, actionType + ':')) return value
-    })
+        var result = _.filter(role.grants, function(value) {
+            if (_.startsWith(value, actionType + ':')) return value;
+        });
 
     if (_.isUndefined(result) || _.size(result) < 1) return
     if (_.size(result) === 1) {
@@ -101,7 +102,32 @@ var getRoles = function (action) {
   return rolesWithAction
 }
 
+function hasHierarchyEnabled(roleId) {
+    var role = _.find(global.roles, function(o) { return o._id.toString() === roleId.toString(); });
+    if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) return true;
+    return role.hierarchy;
+}
+
+function parseRoleHierarchy(roleId) {
+    var roleOrder = global.roleOrder;
+    var idx = _.findIndex(roleOrder, function(i) { return i.toString() === roleId.toString(); });
+    if (idx === -1) return  [];
+
+    return _.rest(roleOrder, idx);
+}
+
+function hasPermOverRole(ownRole, extRole) {
+    var roles = parseRoleHierarchy(ownRole);
+
+    var i = _.find(roles, function(o) { return o.toString() === extRole.toString(); });
+
+    return !_.isUndefined(i);
+}
+
 module.exports = {
     canThis: canThis,
+    parseRoleHierarchy: parseRoleHierarchy,
+    hasPermOverRole: hasPermOverRole,
+
     getRoles: getRoles
 };
