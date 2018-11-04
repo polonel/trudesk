@@ -371,13 +371,13 @@ define([
                 }
 
                 $scope.$watch('mailerEnabled', function(newVal) {
-                    $('input#mailerHost').attr('disabled', !newVal);
-                    $('input#mailerSSL').attr('disabled', !newVal);
-                    $('input#mailerPort').attr('disabled', !newVal);
-                    $('input#mailerUsername').attr('disabled', !newVal);
-                    $('input#mailerPassword').attr('disabled', !newVal);
-                    $('input#mailerFrom').attr('disabled', !newVal);
-                    $('button#mailerSubmit').attr('disabled', !newVal);
+                    $('input#mailerHost').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerSSL').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerPort').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerUsername').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerPassword').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerFrom').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('button#mailerSubmit').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
                 });
 
                 $scope.defaultTicketTypeChanged = function() {
@@ -641,11 +641,12 @@ define([
                 $scope.$watch('mailerCheckEnabled', function(newVal) {
                     var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                     var $mailerCheckTicketPrioritySelectize = $('select#mailerCheckTicketPriority').selectize()[0];
-                    $('input#mailerCheckHost').attr('disabled', !newVal);
-                    $('input#mailerCheckPort').attr('disabled', !newVal);
-                    $('input#mailerCheckUsername').attr('disabled', !newVal);
-                    $('input#mailerCheckPassword').attr('disabled', !newVal);
-                    $('button#mailerCheckSubmit').attr('disabled', !newVal);
+
+                    $('input#mailerCheckHost').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckPort').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckUsername').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckPassword').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('button#mailerCheckSubmit').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
                     if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
                         if (!newVal)
                             $mailerCheckTicketTypeSelectize.selectize.disable();
@@ -1616,6 +1617,7 @@ define([
                         }
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false);
+                        // Call rebuild of app.min.css
                         $timeout(function() { $window.location.reload(); }, 1000);
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar(err, true);
