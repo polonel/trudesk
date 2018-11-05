@@ -336,7 +336,7 @@ label.md-label
   &.uk-badge-danger
     background: #e53935
   &.uk-badge-grey
-    background: #ccc
+    background: darken($page_content_right_bg, 5%)
   &.uk-badge-small
     font-size: 10px
     padding: 2px 4px
@@ -362,7 +362,9 @@ label.md-label
   padding-right: 12px !important
 
 .uk-dropdown
-  background: #f5f5f5
+  background: $page_content_button_color
+  & >ul > li > a
+    color: $page_content_button_text_color
 
 .uk-dropdown.uk-datepicker
   opacity: 1
@@ -575,12 +577,18 @@ textarea.review-list
 
 .no-data-available-text
   font-size: 2em
-  color: grey
+  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
   font-weight: 300
   position: absolute
   top: 50%
   left: 50%
   transform: translate(-50%, -50%)
+
+.c3 text, .c3-text.c3-empty
+  fill: $text_color !important
+
+.uk-table thead th
+  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
 
 .danger-zone,
 .zone

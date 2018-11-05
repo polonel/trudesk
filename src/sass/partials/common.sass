@@ -344,7 +344,7 @@ a.button
     font-size: 24px
     font-weight: 500
     line-height: 30px
-    color: #444
+    color: automatic-text-color(lighten($page_content_right_bg, 10%))
 
 .action-link
   background: transparent
@@ -379,20 +379,20 @@ a.button
   li
     float: none !important
     width: 100% !important
-    background: #f5f5f5 !important
-    color: #444
+    background: $page_content_button_color !important
+    color: $page_content_button_text_color !important
     line-height: 1.4em !important
     height: auto !important
   a
     display: block
     width: 100%
-    background: #f5f5f5 !important
+    background: $page_content_button_color !important
     line-height: 1.4em !important
     padding: 5px 15px !important
-    color: #212121 !important
+    color: $page_content_button_text_color !important
     &:hover
       background: rgba(0,0,0, 0.085) !important
-      color: #212121 !important
+      color: $page_content_button_text_color !important
 
 .disconnected
   z-index: 10000
@@ -675,6 +675,15 @@ div.hoverAction
   padding: 10px 15px
   background: lighten($page_content_title_bg, 10%)
   border-top: $page_content_border_top
+
+.search-box input.ticket-top-search
+  background: $page_content_button_color
+  height: 30px
+  border: 1px solid $page_content_button_color
+  border-radius: 5px
+  color: $page_content_button_text_color
+  &::placeholder
+    color: automatic-text-color($page_content_button_color, 'muted')
 
 .pagination
   margin-right: 8px
