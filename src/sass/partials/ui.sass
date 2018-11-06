@@ -361,6 +361,25 @@ label.md-label
   padding-left: 12px !important
   padding-right: 12px !important
 
+.uk-datepicker-table th
+  color: automatic-text-color($page_content_right_bg, 'muted')
+.uk-datepicker-table a
+  color: $text_color
+  &:hover, &:active, &:focus
+    color: $text_color
+a.uk-datepicker-table-muted
+  color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
+  &:hover, &:active, &:focus
+    color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
+
+.uk-tooltip
+  background: mix(black, $page_content_bg, 65%)
+  color: automatic-text-color(mix(black, $page_content_bg, 65%))
+.uk-tooltip-top-left:after,
+.uk-tooltip-top-right:after,
+.uk-tooltip-top:after
+    border-top-color: mix(black, $page_content_bg, 65%) !important
+
 .uk-dropdown
   background: $page_content_button_color
   & >ul > li > a

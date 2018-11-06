@@ -1467,7 +1467,7 @@ define([
                                                 '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
                                                 '                <div class="uk-float-left" style="width: 100%;">\n' +
                                                 '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
-                                                '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
+                                                '                    <select class="selectize" name="priority" data-md-selectize-inline>\n';
 
                                             priorities.forEach(function(p) {
                                                 if (p._id.toString() !== savedPriority._id)

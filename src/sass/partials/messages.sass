@@ -34,7 +34,7 @@
     //  border-bottom: none
 
     &.active
-      background: white
+      background: $page_content_right_bg
 
     &.active:before,
     &.message-tag:before
@@ -152,8 +152,8 @@
   right: 0
   height: 40px
   border: none
-  border-top: 1px solid #ddd
-  background: #fff
+  border-top: 1px solid $page_content_border_color
+  background: darken($page_content_right_bg, 5%)
   button
     border: none
     margin: 0
@@ -175,6 +175,10 @@
     height: 40px
     font-size: 14px
     font-family: "Source Sans Pro", sans-serif
+    background: darken($page_content_right_bg, 5%)
+    color: automatic-text-color(darken($page_content_right_bg, 5%))
+    &::placeholder
+      color: automatic-text-color(darken($page_content_right_bg, 5%))
   a
     display: block
     float: right
@@ -259,7 +263,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   display: block
   padding: 10px 5px 5px 5px
   font-size: 11px
-  color: #989898
+  color: automatic-text-color($page_content_right_bg, 'muted')
   font-family: "Roboto", sans-serif
 .conversation-deleted
   font-weight: 700
@@ -351,10 +355,12 @@ input[type="checkbox"]:checked.poloCheckbox + label
     border: 1px solid $page_content_border_color
     background: lighten($page_bg_color, 20%)
     padding: 5px 15px
-    color: #222
+    color: automatic-text-color(lighten($page_bg_color, 20%))
     font-size: 13px
     font-weight: 300
     +borderRadius(15px)
+    &::placeholder
+      color: automatic-text-color(lighten($page_bg_color, 20%), 'muted')
   &.withSeperator
     padding-left: 33px
     &::before
