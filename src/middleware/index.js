@@ -27,8 +27,7 @@ var _               = require('lodash'),
     favicon         = require('serve-favicon'),
     session         = require('express-session'),
     MongoStore      = require('connect-mongo')(session),
-    passportConfig  = require('../passport')(),
-    nconf           = require('nconf');
+    passportConfig  = require('../passport')();
 
 
 var middleware = {};
@@ -91,10 +90,10 @@ module.exports = function(app, db, callback) {
             //Mobile
             app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')));
 
-            app.use('/assets', express.static(nconf.get('base_dir') + '/public/uploads/assets'));
-            app.use('/uploads', middleware.redirectToLogin, express.static(nconf.get('base_dir') + '/public/uploads'));
+            app.use('/assets', express.static(path.join(__dirname, '../../public/uploads/assets')));
+            app.use('/uploads', middleware.redirectToLogin, express.static(path.join(__dirname, '../../public/uploads')));
 
-            app.use(express.static(nconf.get('base_dir') + '/public'));
+            app.use(express.static(path.join(__dirname, '../../public')));
 
             //Remove to enable plugins
             //next(null, store);
