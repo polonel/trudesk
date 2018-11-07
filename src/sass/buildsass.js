@@ -13,6 +13,7 @@
  */
 
 var _       = require('lodash');
+var path    = require('path');
 var sass    = require('node-sass');
 var nconf   = require('nconf');
 var settingUtil     = require('../settings/settingsUtil');
@@ -22,7 +23,7 @@ var buildsass = {};
 var sassOptionsDefaults = {
     indentedSyntax: true,
     includePaths: [
-        nconf.get('base_dir') + '/src/sass'
+        path.join(__dirname, '../../src/sass')
     ],
     outputStyle: 'compressed'
 };
@@ -56,6 +57,19 @@ function dynamicSass(entry, vars, success, error) {
     });
 }
 
+function save(result) {
+    var fs = require('fs');
+    var themeCss = path.join(__dirname, '../../public/css/app.min.css');
+    fs.writeFileSync(themeCss, result);
+}
+
+buildsass.buildDefault = function(callback) {
+    dynamicSass('app.sass', {}, function(result) {
+        save(result);
+        return callback();
+    }, callback);
+};
+
 buildsass.build = function(callback) {
     settingUtil.getSettings(function(err, s) {
         if (!err && s) {
@@ -69,13 +83,16 @@ buildsass.build = function(callback) {
                 tertiary: settings.colorTertiary.value,
                 quaternary: settings.colorQuaternary.value
             }, function(result) {
-                var fs = require('fs');
-                var themeCss = nconf.get('base_dir') + '/public/css/app.min.css';
-                fs.writeFileSync(themeCss, result);
+                save(result);
                 return callback();
             }, callback);
-        } else
-            return callback();
+        } else {
+            // Build Defaults
+            dynamicSass('app.sass', {}, function(result) {
+                save(result);
+                return callback();
+            }, callback);
+        }
     });
 };
 

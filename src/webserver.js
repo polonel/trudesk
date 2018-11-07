@@ -122,13 +122,19 @@ var async   = require('async'),
 
         require('socket.io')(server);
 
-        if (!server.listening) {
-            server.listen(port, '0.0.0.0', function() {
+        require('./sass/buildsass').buildDefault(function(err) {
+            if (err) {
+                winston.error(err);
+                return callback(err);
+            }
+
+            if (!server.listening) {
+                server.listen(port, '0.0.0.0', function() {
+                    return callback();
+                });
+            } else
                 return callback();
-            });
-        } else 
-            return callback();
-        
+        });
     };
 
 })(WebServer);
