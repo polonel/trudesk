@@ -132,8 +132,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin']);
-    grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['buildcss', 'shell:webpackDist']);
+    grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web']);
+    grunt.registerTask('build', ['uglify:uikit', 'cssmin', 'shell:webpackDist']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('default', ['server']);
 };
