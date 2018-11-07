@@ -97,11 +97,11 @@ var async   = require('async'),
         app.set('view engine', 'hbs');
         hbsHelpers.register(hbs.handlebars);
 
-        app.use('/assets', express.static(nconf.get('base_dir') + '/public/uploads/assets'));
-        app.use('/uploads', middleware.redirectToLogin, express.static(nconf.get('base_dir') + '/public/uploads'));
+        app.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')));
+        app.use('/uploads', routeMiddleware.redirectToLogin, express.static(path.join(__dirname, '../public/uploads')));
 
-        app.use(express.static(nconf.get('base_dir') + '/public'));
-        app.use(favicon(nconf.get('base_dir') + '/public/img/favicon.ico'));
+        app.use(express.static(path.join(__dirname, '../public')));
+        app.use(favicon(path.join(__dirname, '../public/img/favicon.ico')));
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
