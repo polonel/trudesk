@@ -23,7 +23,7 @@
             <hr class="nomargin-top clear">
             <div class="panel-body2" style="">
                 <div class="uk-grid uk-grid-collapse">
-                    <div class="uk-width-1-4 scrollable" style="background: #f7f8fa; min-height: 400px; max-height: 2000px; border-right: 1px solid #ccc;">
+                    <div class="uk-width-1-4 permission-roles br scrollable" style="min-height: 400px; max-height: 2000px;">
                         <ul id="permissionList" class="settings-categories" style="border: none; height: auto;">
                             {{#forEach data.roles}}
                                 <li data-key="{{_id}}" class="nopadding {{#ifeq isFirst compare=true}} active {{/ifeq}}" ng-click="switchRoles($event);">
