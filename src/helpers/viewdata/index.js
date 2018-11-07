@@ -17,79 +17,15 @@ var async           = require('async'),
     winston         = require('winston'),
     moment          = require('moment'),
     permissions     = require('../../permissions'),
-    settingSchema   = require('../../models/setting'),
-    settingUtil     = require('../../settings/settingsUtil'),
-
-    sass = require('node-sass');
-
+    settingSchema   = require('../../models/setting');
 
 var viewController = {};
 var viewdata = {};
 viewdata.notifications = {};
 viewdata.users = {};
 
-var nconf = require('nconf');
-var sassOptionsDefaults = {
-    indentedSyntax: true,
-    includePaths: [
-        nconf.get('base_dir') + '/src/sass'
-    ],
-    outputStyle: 'compressed'
-};
-
-function sassVariable(name, value) {
-    return '$' + name + ': ' + value + '\n';
-}
-
-function sassVariables(variablesObj) {
-    return Object.keys(variablesObj).map(function (name) {
-        return sassVariable(name, variablesObj[name]);
-    }).join('\n');
-}
-
-function sassImport(path) {
-    return '@import \'' + path + '\'\n';
-}
-
-function dynamicSass(entry, vars, success, error) {
-    var dataString =
-        sassVariables(vars) +
-        sassImport(entry);
-    var sassOptions = _.assign({}, sassOptionsDefaults, {
-        data: dataString
-    });
-
-    sass.render(sassOptions, function (err, result) {
-        return (err)
-            ? error(err)
-    : success(result.css.toString());
-    });
-}
-
 viewController.getData = function(request, cb) {
       async.parallel([
-          function(callback) {
-            settingUtil.getSettings(function(err, s) {
-                if (!err && s) {
-                    var settings = s.data.settings;
-
-                    dynamicSass('app.sass', {
-                        header_background: settings.colorHeaderBG.value,
-                        header_primary: settings.colorHeaderPrimary.value,
-                        primary: settings.colorPrimary.value,
-                        secondary: settings.colorSecondary.value,
-                        tertiary: settings.colorTertiary.value,
-                        quaternary: settings.colorQuaternary.value
-                    }, function(result) {
-                        var fs = require('fs');
-                        var themeCss = nconf.get('base_dir') + '/public/css/app.min.css';
-                        fs.writeFileSync(themeCss, result);
-                        return callback();
-                    }, callback);
-                } else
-                    return callback();
-            });
-          },
           function(callback) {
             settingSchema.getSetting('gen:sitetitle', function(err, setting) {
                 if (!err && setting && setting.value)

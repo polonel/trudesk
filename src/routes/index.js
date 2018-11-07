@@ -231,6 +231,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
+    router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass);
 
     router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins}); });
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);

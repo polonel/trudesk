@@ -99,5 +99,14 @@ apiSettings.testMailer = function(req, res) {
     });
 };
 
+apiSettings.buildsass = function(req, res) {
+    var buildsass = require('../../../sass/buildsass');
+    buildsass.build(function(err) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        return res.json({success: true});
+    });
+};
+
 
 module.exports = apiSettings;

@@ -1616,9 +1616,14 @@ define([
                             'Content-Type': 'application/json'
                         }
                     }).then(function successCallback() {
-                        helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false);
                         // Call rebuild of app.min.css
-                        $timeout(function() { $window.location.reload(); }, 1000);
+                        $http.get('/api/v1/settings/buildsass')
+                            .then(function successCallback() {
+                                helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false);
+                                $timeout(function() { $window.location.reload(); }, 1000);
+                            }, function errorCallback(err) {
+                                helpers.UI.showSnackbar(err, true);
+                            });
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar(err, true);
                     });
