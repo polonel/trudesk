@@ -21,6 +21,11 @@ var async           = require('async'),
 
 var apiSettings = {};
 
+function defaultApiResponse(err, res) {
+    if (err) return res.status(400).json({success: false, error: err});
+
+    return res.json({success: true});
+}
 
 /**
  * @api {put} /api/v1/settings/:setting Update Setting
@@ -80,10 +85,7 @@ apiSettings.updateSetting = function(req, res) {
             });
         });
     }, function(err) {
-        //done
-        if (err) return res.status(400).json({success: false, error: err});
-
-        return res.json({success: true});
+        return defaultApiResponse(err, res);
     });
 };
 
@@ -102,9 +104,7 @@ apiSettings.testMailer = function(req, res) {
 apiSettings.buildsass = function(req, res) {
     var buildsass = require('../../../sass/buildsass');
     buildsass.build(function(err) {
-        if (err) return res.status(400).json({success: false, error: err});
-
-        return res.json({success: true});
+        return defaultApiResponse(err, res);
     });
 };
 

@@ -91,7 +91,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   height: 15px;
   background-color: darken($page_content_bg, 5%);
   border-radius: 15px;
-  margin-right: 10px;
+  //margin-right: 10px;
   transition: background 0.3s ease;
   vertical-align: middle;
   margin: 0 16px;
