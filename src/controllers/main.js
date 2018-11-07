@@ -496,7 +496,7 @@ mainController.uploadFavicon = function(req, res) {
             return file.resume();
         }
 
-        var savePath = nconf.get('base_dir') + '/public/uploads/assets';
+        var savePath = path.join(__dirname, '../../public/uploads/assets');
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
         object.filePath = path.join(savePath, 'favicon' + path.extname(filename));
@@ -565,7 +565,7 @@ mainController.uploadLogo = function(req, res) {
             return file.resume();
         }
 
-        var savePath = nconf.get('base_dir') + '/public/uploads/assets';
+        var savePath = path.join(__dirname, '../../public/uploads/assets');
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
         object.filePath = path.join(savePath, 'topLogo' + path.extname(filename));
@@ -634,7 +634,7 @@ mainController.uploadPageLogo = function(req, res) {
             return file.resume();
         }
 
-        var savePath = nconf.get('base_dir') + '/public/uploads/assets';
+        var savePath = path.join(__dirname, '../../public/uploads/assets');
         if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
 
         object.filePath = path.join(savePath, 'pageLogo' + path.extname(filename));
