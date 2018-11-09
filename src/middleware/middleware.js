@@ -179,6 +179,8 @@ middleware.api = function(req, res, next) {
     });
 };
 
+middleware.hasAuth = middleware.api;
+
 middleware.isAdmin = function(req, res, next) {
       if (req.user.role === 'admin')
           return next();

@@ -98,7 +98,7 @@ var async   = require('async'),
         hbsHelpers.register(hbs.handlebars);
 
         app.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')));
-        app.use('/uploads', routeMiddleware.redirectToLogin, express.static(path.join(__dirname, '../public/uploads')));
+        app.use('/uploads', routeMiddleware.hasAuth, express.static(path.join(__dirname, '../public/uploads')));
 
         app.use(express.static(path.join(__dirname, '../public')));
         app.use(favicon(path.join(__dirname, '../public/img/favicon.ico')));
