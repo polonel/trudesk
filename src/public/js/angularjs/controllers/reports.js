@@ -14,7 +14,7 @@
 
 define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history'], function(angular, _, $, moment, helpers) {
     return angular.module('trudesk.controllers.reports', [])
-        .controller('reportsCtrl', function($scope, $http, $log, $timeout, $document, $window) {
+        .controller('reportsCtrl', function($scope, $http, $log, $timeout, $window) {
 
             var $filterDateStart = $('.filterDate_Start');
             $filterDateStart.each(function(index, element) {
@@ -247,10 +247,11 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history
             function downloadReport(response, filename) {
                 var headers = response.headers();
                 var blob = new Blob([response.data],{type:headers['content-type']});
-                var link = $document.createElement('a');
+                var link = $window.document.createElement('a');
                 link.href = $window.URL.createObjectURL(blob);
                 link.download = filename + '.csv';
                 link.click();
+                link.remove();
             }
 
         });
