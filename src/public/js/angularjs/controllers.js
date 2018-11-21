@@ -26,6 +26,7 @@ define([
   'angularjs/controllers/notices',
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
+  'angularjs/controllers/settings-permissions',
   'angularjs/controllers/editor'
 ], function ($, angular, _) {
   return angular
@@ -41,6 +42,7 @@ define([
       'trudesk.controllers.notices',
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
+      'trudesk.controllers.settings.permissions',
       'trudesk.controllers.editor'
     ])
     .controller('TrudeskController', function ($rootScope, $scope) {

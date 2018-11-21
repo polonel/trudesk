@@ -290,4 +290,24 @@ apiController.roles.get = function (req, res) {
   return res.json(roles)
 }
 
-module.exports = apiController
+apiController.roles.update = function(req, res) {
+    var data = req.body;
+    if (_.isUndefined(data))
+        return res.status(400).json({success: false, error: 'Invalid Post Data'});
+
+    var permissions = require('../permissions');
+    var hierarchy = data.hierarchy ? data.hierarchy : false;
+    var cleaned = _.omit(data, ['_id', 'hierarchy']);
+    var k = permissions.buildGrants(cleaned);
+    var roleSchema = require('../models/role');
+    roleSchema.get(data._id, function(err, role) {
+        if (err) return res.status(400).json({success: false, error: err});
+        role.updateGrantsAndHierarchy(k, hierarchy, function(err) {
+            if (err) return res.status(400).json({success: false, error: err});
+
+            return res.send('OK');
+        });
+    });
+};
+
+module.exports = apiController;

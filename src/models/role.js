@@ -52,6 +52,12 @@ roleSchema.methods.updateGrants = function(grants, callback) {
     this.save(callback);
 };
 
+roleSchema.methods.updateGrantsAndHierarchy = function(grants, hierarchy, callback) {
+    this.grants = grants;
+    this.hierarchy = hierarchy;
+    this.save(callback);
+};
+
 roleSchema.statics.getRoles = function(callback) {
     return this.model(COLLECTION).find({}).exec(callback);
 };
@@ -67,5 +73,8 @@ roleSchema.statics.getRoleByName = function(name, callback) {
 
     return q.exec(callback);
 };
+
+//Alias
+roleSchema.statics.get = roleSchema.statics.getRole;
 
 module.exports = mongoose.model(COLLECTION, roleSchema);

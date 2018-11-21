@@ -281,7 +281,8 @@ apiTickets.search = function (req, res) {
  *      "owner": {OwnerId},
  *      "group": {GroupId},
  *      "type": {TypeId},
- *      "prioirty": 0-3
+ *      "prioirty": {PriorityId},
+ *      "tags": [{tagId}]
  * }
  *
  * @apiExample Example usage:

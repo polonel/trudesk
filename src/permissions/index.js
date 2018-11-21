@@ -124,10 +124,26 @@ function hasPermOverRole(ownRole, extRole) {
     return !_.isUndefined(i);
 }
 
+function isAdmin(roleId, callback) {
+    roleSchema.get(roleId, function(err, role) {
+        if (err) return callback(false);
+
+        return callback(role.isAdmin);
+    });
+}
+
+function buildGrants(obj) {
+    return _.map(obj, function(v, k) {
+        return k + ':' + _.join(v, ' ');
+    });
+}
+
 module.exports = {
     canThis: canThis,
     parseRoleHierarchy: parseRoleHierarchy,
     hasPermOverRole: hasPermOverRole,
 
-    getRoles: getRoles
+    getRoles: getRoles,
+    isAdmin: isAdmin,
+    buildGrants: buildGrants
 };

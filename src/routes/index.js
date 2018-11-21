@@ -322,6 +322,13 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/api/v1/login', controllers.api.login)
   router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser)
   router.get('/api/v1/logout', middleware.api, controllers.api.logout)
+    router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
+    router.put('/api/v1/roles', middleware.api, controllers.api.roles.update);
+    router.get('/api/v1/roles/test', function(req, res) {
+        var p = require('../permissions');
+        p.buildGrants();
+        res.send();
+    });
 
   router.get('/api/v1/count/tags', middleware.api, function (req, res) {
     var tagSchema = require('../models/tag')

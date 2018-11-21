@@ -76,7 +76,8 @@ function rolesDefault(callback) {
             roleSchema.getRoleByName('Support', function(err, role) {
                 if (err) return done(err);
                 if (role) {
-                    role.updateGrants(supportGrants, done);
+                    return done();
+                    // role.updateGrants(supportGrants, done);
                 } else
                     roleSchema.create({
                         name: 'Support',
@@ -89,7 +90,8 @@ function rolesDefault(callback) {
             roleSchema.getRoleByName('Admin', function(err, role) {
                 if (err) return done(err);
                 if (role)
-                    role.updateGrants(adminGrants, done);
+                    return done();
+                    // role.updateGrants(adminGrants, done);
                 else {
                     roleSchema.create({
                         name: 'Admin',
