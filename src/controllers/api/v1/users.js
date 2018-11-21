@@ -521,9 +521,17 @@ apiUsers.deleteUser = function(req, res) {
             });
         },
         function(hasTickets, user, cb) {
-            if (hasTickets) {
-                //Disable if the user has tickets
+            var conversationSchema = require('../../../models/chat/conversation');
+            conversationSchema.getConversationsWithLimit(user._id, 10, function(err, conversations) {
+                if (err) return cb(err);
 
+                var hasConversations = _.size(conversations) > 0;
+                return cb(null, hasTickets, hasConversations, user);
+            });
+        },
+        function(hasTickets, hasConversations, user, cb) {
+            if (hasTickets || hasConversations) {
+                //Disable if the user has tickets or conversations
                 user.softDelete(function(err) {
                     if (err) return cb(err);
 
