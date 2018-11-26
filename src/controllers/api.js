@@ -295,6 +295,7 @@ apiController.roles.update = function(req, res) {
     if (_.isUndefined(data))
         return res.status(400).json({success: false, error: 'Invalid Post Data'});
 
+    var emitter = require('../emitter');
     var permissions = require('../permissions');
     var hierarchy = data.hierarchy ? data.hierarchy : false;
     var cleaned = _.omit(data, ['_id', 'hierarchy']);
@@ -304,6 +305,8 @@ apiController.roles.update = function(req, res) {
         if (err) return res.status(400).json({success: false, error: err});
         role.updateGrantsAndHierarchy(k, hierarchy, function(err) {
             if (err) return res.status(400).json({success: false, error: err});
+
+            emitter.emit('$trudesk:flushRoles');
 
             return res.send('OK');
         });

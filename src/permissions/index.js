@@ -15,6 +15,29 @@
 var _ = require('lodash')
 var roles = require('./roles')
 
+var _       = require('lodash');
+var winston = require('winston');
+var roleSchema = require('../models/role');
+var roleOrder = require('../models/roleorder');
+
+
+var register = function(callback) {
+    // Register Roles
+    roleSchema.getRoles(function(err, roles) {
+        if (err) return callback(err);
+
+        roleOrder.getOrder(function(err, ro) {
+            if (err) return callback(err);
+
+            winston.debug('Registering Permissions...');
+            global.roleOrder = ro;
+            global.roles = roles;
+
+            return callback();
+        });
+    });
+};
+
 /***
  * Checks to see if a role as the given action
  * @param role [role to check against]
@@ -139,6 +162,7 @@ function buildGrants(obj) {
 }
 
 module.exports = {
+    register: register,
     canThis: canThis,
     parseRoleHierarchy: parseRoleHierarchy,
     hasPermOverRole: hasPermOverRole,

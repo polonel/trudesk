@@ -521,6 +521,8 @@ var notifications = require('../notifications') // Load Push Events
   })
 
   emitter.on('$trudesk:flushRoles', function () {
-    io.sockets.emit('$trudesk:flushRoles')
+    require('../permissions').register(function () {
+      io.sockets.emit('$trudesk:flushRoles')
+    })
   })
 })()
