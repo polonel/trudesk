@@ -281,10 +281,10 @@ input[type="checkbox"]:checked.poloCheckbox + label
   .message-body
     margin-left: 10px
     padding: 5px 8px
-    background: #ddd
+    background: darken($page_content_right_bg, 10%)
     +borderRadius(5px)
     p
-      color: lighten(#222222, 20%)
+      color: automatic-text-color(darken($page_content_right_bg, 10%))
       font-size: 13px
       //font-weight: 300
       margin: 0
