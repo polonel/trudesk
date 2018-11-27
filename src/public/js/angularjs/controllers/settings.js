@@ -219,6 +219,77 @@ define([
                             });
                         }
 
+                        // Color Scheme Select
+                        var $colorSchemeSelect = $('#colorSchemeSelect');
+                        if ($scope.colorSecondary === '#2f3640')
+                            $colorSchemeSelect[0].selectize.setValue('dark', true);
+                        else if ($scope.colorHeaderBG === '#2e3238')
+                            $colorSchemeSelect[0].selectize.setValue('moonlight', true);
+                        else if ($scope.colorHeaderBG === '#112d4e')
+                            $colorSchemeSelect[0].selectize.setValue('bluejean', true);
+                        else if ($scope.colorHeaderBG === '#625757')
+                            $colorSchemeSelect[0].selectize.setValue('sandstone', true);
+                        else if ($scope.colorHeaderBG === '#404969')
+                            $colorSchemeSelect[0].selectize.setValue('winterfire', true);
+
+                        $colorSchemeSelect.on('change', function(e) {
+                            $scope.$apply(function() {
+                                var val = $colorSchemeSelect.val();
+                                switch (val) {
+                                    case 'light':
+                                        $scope.revertColor('colorHeaderBG', '#42464d');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorPrimary', '#606771');
+                                        $scope.revertColor('colorSecondary', '#f7f8fa');
+                                        $scope.revertColor('colorTertiary', '#e74c3c');
+                                        $scope.revertColor('colorQuaternary', '#e6e7e8');
+                                        break;
+                                    case 'dark':
+                                        $scope.revertColor('colorHeaderBG', '#242a31');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorSecondary', '#2f3640');
+                                        $scope.revertColor('colorTertiary', '#e74c3c');
+                                        $scope.revertColor('colorQuaternary', '#454f5d');
+                                        break;
+                                    case 'bluejean':
+                                        $scope.revertColor('colorHeaderBG', '#112d4e');
+                                        $scope.revertColor('colorHeaderPrimary', '#f9f7f7');
+                                        $scope.revertColor('colorPrimary', '#112d4e');
+                                        $scope.revertColor('colorSecondary', '#f9f7f7');
+                                        $scope.revertColor('colorTertiary', '#3f72af');
+                                        $scope.revertColor('colorQuaternary', '#dbe2ef');
+                                        break;
+                                    case 'moonlight':
+                                        $scope.revertColor('colorHeaderBG', '#2e3238');
+                                        $scope.revertColor('colorHeaderPrimary', '#eeeeee');
+                                        $scope.revertColor('colorPrimary', '#444a54');
+                                        $scope.revertColor('colorSecondary', '#c8c8c8');
+                                        $scope.revertColor('colorTertiary', '#7971ea');
+                                        $scope.revertColor('colorQuaternary', '#444a54');
+                                        break;
+                                    case 'sandstone':
+                                        $scope.revertColor('colorHeaderBG', '#625757');
+                                        $scope.revertColor('colorHeaderPrimary', '#f9f9f9');
+                                        $scope.revertColor('colorPrimary', '#625757');
+                                        $scope.revertColor('colorSecondary', '#dfdfdf');
+                                        $scope.revertColor('colorTertiary', '#ef5a5a');
+                                        $scope.revertColor('colorQuaternary', '#6f6363');
+                                        break;
+                                    case 'winterfire':
+                                        $scope.revertColor('colorHeaderBG', '#404969');
+                                        $scope.revertColor('colorHeaderPrimary', '#ebf0f6');
+                                        $scope.revertColor('colorPrimary', '#404969');
+                                        $scope.revertColor('colorSecondary', '#ebf0f6');
+                                        $scope.revertColor('colorTertiary', '#ff7f50');
+                                        $scope.revertColor('colorQuaternary', '#4a5479');
+                                        break;
+                                }
+
+                                $scope.saveColorScheme(e);
+                            });
+                        });
+
                         // Load MailCheckTicketType from settings
                         var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
                         var $selectizeTicketType = $mailerCheckTicketTypeSelect[0].selectize;
