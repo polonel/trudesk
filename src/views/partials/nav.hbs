@@ -105,7 +105,7 @@
             <hr>
             {{#canUser data.user "settings:edit"}}
                 <li class="hasSubMenu {{#is nav 'settings'}}active{{/is}}" data-nav-id="settings" data-nav-accordion data-nav-accordion-target="side-nav-accordion-settings">
-                    <a class="no-ajaxy" href="/settings"><i class="material-icons">settings</i>Settings</a>
+                    <a class="no-ajaxy" href="/settings"><i class="material-icons">settings</i>{{t 'common:Settings'}}</a>
                     <ul id="side-nav-accordion-settings" class="side-nav-sub side-nav-accordion">
                         <li {{#is subnav 'settings-general'}} class='active' {{/is}}><a href="/settings/general"><i class="material-icons fa-sub-icon">tune</i><span>{{t 'common:General'}}</span></a></li>
                         <li {{#is subnav 'settings-tickets'}} class="active" {{/is}}><a href="/settings/tickets"><i class="material-icons fa-sub-icon">assignment</i><span>{{t 'common:Tickets'}}</span></a></li>
