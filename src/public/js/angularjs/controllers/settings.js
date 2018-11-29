@@ -223,8 +223,12 @@ define([
                         var $colorSchemeSelect = $('#colorSchemeSelect');
                         if ($scope.colorSecondary === '#2f3640')
                             $colorSchemeSelect[0].selectize.setValue('dark', true);
+                        else if ($scope.colorTertiary === '#ee2b47')
+                            $colorSchemeSelect[0].selectize.setValue('midnight', true);
                         else if ($scope.colorHeaderBG === '#2e3238')
                             $colorSchemeSelect[0].selectize.setValue('moonlight', true);
+                        else if ($scope.colorTertiary === '#f67280')
+                            $colorSchemeSelect[0].selectize.setValue('purplerain', true);
                         else if ($scope.colorHeaderBG === '#112d4e')
                             $colorSchemeSelect[0].selectize.setValue('bluejean', true);
                         else if ($scope.colorHeaderBG === '#625757')
@@ -260,6 +264,14 @@ define([
                                         $scope.revertColor('colorTertiary', '#3f72af');
                                         $scope.revertColor('colorQuaternary', '#dbe2ef');
                                         break;
+                                    case 'midnight':
+                                        $scope.revertColor('colorHeaderBG', '#2c2e3e');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f6f6');
+                                        $scope.revertColor('colorPrimary', '#444a54');
+                                        $scope.revertColor('colorSecondary', '#c8c8c8');
+                                        $scope.revertColor('colorTertiary', '#ee2b47');
+                                        $scope.revertColor('colorQuaternary', '#2c2e3e');
+                                        break;
                                     case 'moonlight':
                                         $scope.revertColor('colorHeaderBG', '#2e3238');
                                         $scope.revertColor('colorHeaderPrimary', '#eeeeee');
@@ -267,6 +279,14 @@ define([
                                         $scope.revertColor('colorSecondary', '#c8c8c8');
                                         $scope.revertColor('colorTertiary', '#7971ea');
                                         $scope.revertColor('colorQuaternary', '#444a54');
+                                        break;
+                                    case 'purplerain':
+                                        $scope.revertColor('colorHeaderBG', '#393041');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f6f6');
+                                        $scope.revertColor('colorPrimary', '#393041');
+                                        $scope.revertColor('colorSecondary', '#d2cbd8');
+                                        $scope.revertColor('colorTertiary', '#f67280');
+                                        $scope.revertColor('colorQuaternary', '#52455f');
                                         break;
                                     case 'sandstone':
                                         $scope.revertColor('colorHeaderBG', '#625757');
