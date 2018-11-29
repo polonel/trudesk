@@ -1,5 +1,6 @@
 {
-  "Last_x_Days": "Letzte {{days}} Tage",
+  "Last_x_Days": "Yesterday",
+  "Last_x_Days_plural": "Last {{count}} Days",
   "Last_Updated": "Zuletzt Aktualisiert",
   "Cache_Still_Loading": "Cache wird noch geladen...",
   "Total_Tickets_last_x": "Total Tickets (last {{days}}d)",
@@ -20,10 +21,15 @@
   "Status": "Status",
   "Subject": "Betreff",
   "No_Data_Available": "No Data Available",
-  "_t": "Thu Oct 25 2018 03:29:44 GMT-0400 (Eastern Daylight Time)",
-  "No_tickets_to_display": "No_tickets_to_display",
+  "_t": "Thu Oct 25 2018 18:38:56 GMT-0400 (Eastern Daylight Time)",
+  "No_tickets_to_display": "No tickets to display",
   "Forgot_Password": "Forgot password",
   "Back_to_Login": "Back to Login",
-  "General_Documentation": "General_Documentation",
-  "Select_Import_Type": "Select Import Type"
+  "General_Documentation": "General Documentation",
+  "Select_Import_Type": "Select Import Type",
+  "Forgot_Password?": "Forgot Password?",
+  "Cant_login": "Can't login?",
+  "Output_Log": "Output Log",
+  "Main_output_log_desc": "Main output log. All errors are logged.",
+  "#": "#"
 }
