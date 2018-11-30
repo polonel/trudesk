@@ -143,13 +143,15 @@ middleware.checkCaptcha = function(req, res, next) {
 
 middleware.checkOrigin = function(req, res, next) {
     var origin = req.headers.origin;
-    var host = req.protocol + '://' + req.headers.host;
+    var host = req.headers.host;
 
     //Firefox Hack - Firefox Bug 1341689 & 1424076
     //Trudesk Bug #26
     //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
     if (!origin)
         origin = host;
+
+    origin = origin.replace(/^https?:\/\//, '');
 
     if (origin !== host)
         return res.status(400).json({success: false, error: 'Invalid Origin!'});
