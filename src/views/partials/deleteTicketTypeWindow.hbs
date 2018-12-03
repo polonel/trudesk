@@ -10,7 +10,7 @@
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="width: 100%;">
                     <label for="ticketType" class="uk-form-label">Type</label>
-                    <select class="selectize-white" name="ticketType" data-md-selectize-inline>
+                    <select class="selectize" name="ticketType" data-md-selectize-inline>
                         {{#each @root.data.common.ticketTypes}}
                             {{#isnot name ../name}}
                                 <option value="{{{_id}}}">{{name}}</option>

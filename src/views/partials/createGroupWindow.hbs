@@ -7,7 +7,7 @@
             </div>
             <div class="uk-margin-small-bottom">
                 <label for="gMembers" class="uk-form-label nopadding">Members</label>
-                <select class="selectize-white" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                <select class="selectize" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                     {{#each data.users}}
                         <option value="{{id}}">{{fullname}}</option>
                     {{/each}}
@@ -15,7 +15,7 @@
             </div>
             <div class="uk-margin-small-bottom">
                 <label for="gSendMailTo" class="uk-form-label nopadding">Send Mail To</label>
-                <select name="gSendMailTo" id="gSendMailTo" class="selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                <select name="gSendMailTo" id="gSendMailTo" class="selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                     {{#each data.users}}
                         <option value="{{_id}}">{{fullname}}</option>
                     {{/each}}

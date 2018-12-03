@@ -74,6 +74,14 @@ settingsController.general = function(req, res) {
     renderView(res, content);
 };
 
+settingsController.appearance = function(req, res) {
+    if (!checkPerms(req, 'settings:view')) return res.redirect('/');
+
+    var content = initViewContant('appearance', req);
+
+    renderView(res, content);
+};
+
 settingsController.ticketSettings = function(req, res) {
     if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
 

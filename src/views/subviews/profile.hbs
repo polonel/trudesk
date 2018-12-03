@@ -1,6 +1,6 @@
 <div data-user_id="{{data.account._id}}" class="hide"></div>
 <div data-host="{{data.host}}" class="hide"></div>
-<div class="grid grid-collapse page-content" ng-controller="profileCtrl"
+<div class="grid grid-collapse page-content no-border-top" ng-controller="profileCtrl"
     ng-init="
 
     otpEnabled={{#isNotNull data.account.tOTPKey}}true{{else}}false{{/isNotNull}};

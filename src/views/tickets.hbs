@@ -1,6 +1,6 @@
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
     <div class="nopadding ticketContent">
-        <div class="page-title noshadow uk-clearfix">
+        <div class="page-title no-border-bottom noshadow uk-clearfix">
             <p class="uk-display-inline-block">Tickets</p>
             <div class="uk-float-right">
                 <div class="autorefresh uk-float-left uk-clearfix"></div>
@@ -87,8 +87,8 @@
                         </li>
                     </ul>
                 </div>
-                <div class="search-box" style="float: left; border: none; margin-top: 9px; padding-left: 0;">
-                    <input id="tickets_Search" type="text" placeholder="Search" style="height: 30px; background: #fff; border: 1px solid #ccc; border-radius: 5px;"
+                <div class="search-box" style="float: left; border: none; margin-top: 8px; padding-left: 0;">
+                    <input id="tickets_Search" type="text" placeholder="Search" class="ticket-top-search"
                            ng-keypress="searchBarSubmit($event)"
                            value="{{data.filter.subject}}">
                 </div>
@@ -118,8 +118,13 @@
                         {{#if_eq status compare=0}}
                             <tr class="ticket-new {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-new"><span>New</span></td>
                                 <td>{{uid}}</td>
@@ -146,8 +151,13 @@
                         {{#is status 1}}
                             <tr class="ticket-open {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-open"><span>Open</span></td>
                                 <td>{{uid}}</td>
@@ -174,8 +184,13 @@
                         {{#is status 2}}
                             <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-pending"><span>Pending</span></td>
                                 <td>{{uid}}</td>

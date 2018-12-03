@@ -21,7 +21,7 @@
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="group" class="uk-form-label">Group</label>
-                <select class="uk-form-width-full selectize-white selectize-noremove" name="group" id="group" data-md-selectize-inline>
+                <select class="uk-form-width-full selectize selectize-noremove" name="group" id="group" data-md-selectize-inline>
                     {{#each data.common.groups}}
                         <option value="{{{_id}}}">{{name}}</option>
                     {{/each}}
@@ -30,7 +30,7 @@
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="padding-right: 11px; width: 30%;">
                     <label for="type" class="uk-form-label">Type</label>
-                    <select class="selectize-white" name="type" id="type" data-md-selectize-inline data-default="{{{data.common.defaultTicketType._id}}}">
+                    <select class="selectize" name="type" id="type" data-md-selectize-inline data-default="{{{data.common.defaultTicketType._id}}}">
                         {{#each data.common.ticketTypes}}
                             <option value="{{{_id}}}">{{name}}</option>
                         {{/each}}
@@ -39,7 +39,7 @@
 
                 <div class="uk-float-left" style="width: 68%;">
                     <label for="tags" class="uk-form-label">Tags</label>
-                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                    <select name="tags" id="tags" class="chosen-select1 selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                         {{#each data.common.ticketTags}}
                             <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                         {{/each}}
@@ -52,7 +52,7 @@
             <div class="uk-margin-medium-bottom">
                 <label for="ticket_priority" class="uk-form-label">Priority</label>
                 <div id="priorityLoader" style="display: none; height: 32px; width:32px; position: relative;">
-                    <div class="card-spinner">
+                    <div class="card-spinner" style="background: transparent !important;">
                         <div class="spinner" style="width: 24px; height: 24px;"></div>
                     </div>
                 </div>

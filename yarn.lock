@@ -8533,12 +8533,6 @@ secure-keys@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/secure-keys/-/secure-keys-1.0.0.tgz#f0c82d98a3b139a8776a8808050b824431087fca"
 
-semantic-release-conventional-commits@2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/semantic-release-conventional-commits/-/semantic-release-conventional-commits-2.0.1.tgz#825020aa8455992b5fdb164fdd316e2048a36546"
-  dependencies:
-    conventional-commits-parser "^3.0.0"
-
 semantic-release@15.9.16:
   version "15.9.16"
   resolved "https://registry.yarnpkg.com/semantic-release/-/semantic-release-15.9.16.tgz#70391ef6a9246253f54061ecd06634994e305b1e"

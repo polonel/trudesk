@@ -117,7 +117,7 @@
     font-size: 13px
     line-height: 18px
     -webkit-font-smoothing: inherit
-  background: #eef1f7
+  //background: #eef1f7
   cursor: text
   display: inline-block
 
@@ -127,7 +127,8 @@
   display: inline-block
 
 .selectize-input
-  border: 1px solid darken($selectize_bg, 10%)
+  border: 0 solid darken($selectize_bg, 10%)
+  border-bottom-width: 1px
   padding: 8px 8px
   display: inline-block
   width: 100%
@@ -142,8 +143,8 @@
   padding: 6px 8px 3px
 
 .selectize-input
-  &.full
-    background-color: $selectize_bg
+  //&.full
+  //  background-color: $selectize_bg
   &.disabled
     cursor: default !important
     *
@@ -174,12 +175,12 @@
       border: 0 solid #cacaca
   &.disabled > div
     color: #7d7d7d
-    background: #eef1f7
-    border: 0 solid #eef1f7
+    //background: #eef1f7
+    border: 0 solid transparent
     &.active
       color: #7d7d7d
-      background: #eef1f7
-      border: 0 solid #eef1f7
+      //background: #eef1f7
+      border: 0 solid transparent
 
 .selectize-input
   > input
@@ -297,7 +298,7 @@
       margin: 0 4px 0 -2px !important
   .selectize-input.disabled
     opacity: 0.5
-    background-color: #fafafa
+    background-color: darken($page_content_right_bg, 5%)
 
 .selectize-input
   border-color: rgba(0, 0, 0, 0.12)

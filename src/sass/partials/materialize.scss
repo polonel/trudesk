@@ -89,9 +89,9 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   position: relative;
   width: 40px;
   height: 15px;
-  background-color: #ccc;
+  background-color: darken($page_content_bg, 5%);
   border-radius: 15px;
-  margin-right: 10px;
+  //margin-right: 10px;
   transition: background 0.3s ease;
   vertical-align: middle;
   margin: 0 16px;
@@ -103,7 +103,7 @@ $medium-only: "only screen and (min-width : #{$small-screen-up}) and (max-width 
   display: inline-block;
   width: 21px;
   height: 21px;
-  background-color: #fff;
+  background-color: lighten($page_content_bg, 15%);
   border-radius: 21px;
   box-shadow: 0 1px 3px 1px rgba(0,0,0,.4);
   left: -5px;
@@ -148,7 +148,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   text-transform: uppercase;
   -webkit-transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
   transition: all 280ms cubic-bezier(0.4, 0, 0.2, 1);
-  color: #212121;
+  color: #444;
   box-sizing: border-box;
   cursor: pointer;
   -webkit-appearance: none;
@@ -160,8 +160,17 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
     background: #fff;
     outline: none;
     text-decoration: none;
-    color: #212121;
+    color: #444;
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  }
+}
+
+.md-btn {
+  background: lighten($page_content_bg, 15%);
+  color: automatic-text-color(lighten($page_content_bg, 15%));
+  &:hover, &:focus, &:active {
+    background: lighten($page_content_bg, 18%);
+    color: automatic-text-color(lighten($page_content_bg, 18%));
   }
 }
 
@@ -180,11 +189,16 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
 .md-btn-flat {
   box-shadow: none !important;
   background: none;
+  color: $text_color;
   &:hover, &:focus {
-    background: rgba(153, 153, 153, 0.2);
+    //background: rgba(153, 153, 153, 0.2);
+    background: darken($page_bg_color, 5%);
+    color: $text_color;
   }
   &:active {
-    background: rgba(153, 153, 153, 0.4);
+    //background: rgba(153, 153, 153, 0.4);
+    background: darken($page_bg_color, 8%);
+    color: $text_color;
   }
 }
 
@@ -198,10 +212,20 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   }
 }
 
-.md-btn-flat-danger {
-  color: #e53935;
+.md-btn-flat-accent {
+  color: $accent_color;
   &:hover, &:focus, &:active {
-    color: #e53935;
+    color: $accent_color;
+  }
+  &:hover, &:focus, &:active {
+    background: automatic-text-color($accent_color)
+  }
+}
+
+.md-btn-flat-danger {
+  color: $accent_danger;
+  &:hover, &:focus, &:active {
+    color: $accent_color;
   }
   &:hover, &:focus, &:active {
     background: #fceaea;

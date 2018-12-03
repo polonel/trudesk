@@ -35,10 +35,10 @@
       <ion-item class="item-remove-animate item-avatar item-icon-right" ng-repeat="ticket in tickets track by ticket._id" type="item-text-wrap" href="#/tab/tickets/{{ticket.uid}}">
         <div class="ticket-status status-{{ticket.status}}"></div>
         <div ng-if="ticket.owner.image != undefined" class="avatar">
-          <img ng-src="/uploads/users/{{ticket.owner.image}}">
+          <img http-src="/uploads/users/{{ticket.owner.image}}">
         </div>
         <div ng-if="ticket.owner.image == undefined" class="avatar">
-          <img ng-src="/uploads/users/defaultProfile.jpg">
+          <img http-src="/uploads/users/defaultProfile.jpg">
         </div>
         <h4 style="margin-bottom: 0;">T.{{ticket.uid}} - {{ticket.owner.fullname}}</h4>
         <span class="ticketDate">{{ticket.date | date: 'short'}}</span>

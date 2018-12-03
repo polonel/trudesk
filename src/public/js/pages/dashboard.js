@@ -49,7 +49,7 @@ define('pages/dashboard', [
                 show_tooltips: false,
                 aggregate_rollover: true,
                 transition_on_update: false,
-                colors: ['#2196f3', 'red']
+                // colors: ['#2196f3']
             };
 
             var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';

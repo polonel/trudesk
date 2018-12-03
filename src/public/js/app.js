@@ -13,7 +13,7 @@
  **/
 
 //Load SASS (Webpack)
-require('../../sass/app.sass');
+// require('../../sass/app.sass');
 
 require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, helpers, angular) {
     helpers.init();

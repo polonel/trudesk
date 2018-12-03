@@ -71,8 +71,8 @@ div#accountsTable_wrapper
   top: 28px
   left: -5px
   padding: 0
-  background: #ffffff
-  border: 1px solid #bec4d0
+  background: $page_content_right_bg
+  border: 1px solid $page_content_border_color
   +borderRadius(3px)
   z-index: 999
   ul
@@ -101,13 +101,13 @@ div#accountsTable_wrapper
 .page-top-comments
   .active > a,
   .active > button
-    background: darken(#cdd5e4, 1%)
+    background: darken($page_content_title_bg, 5%)
   a.btn,
   button.btn,
   button
-    background: darken($page_content_title_bg, 15%)
+    background: darken($page_content_title_bg, 8%)
     display: block
-    color: lighten($page_content_title_text, 15%)
+    color: automatic-text-color(darken($page_content_title_bg, 8%))
     font-family: $fontFamily
     font-weight: 400
     font-size: 12px
@@ -118,7 +118,7 @@ div#accountsTable_wrapper
     line-height: 14px
 
     &:hover
-      background: darken($page_content_title_bg, 20%)
+      background: darken($page_content_title_bg, 12%)
 
     i
       font-weight: normal
@@ -138,7 +138,7 @@ div#accountsTable_wrapper
   h4
     font-family: $fontFamily
     font-size: 14px
-    color: #8e98a2
+    color: darken($text_color, 10%)
     margin-bottom: 10px
 
 .ticket-assignee
@@ -157,14 +157,14 @@ div#accountsTable_wrapper
     h3
       font-family: $fontFamily
       font-size: 14px
-      color: #3d4854
+      color: $text_color
       margin: 0 0 7px
       line-height: normal
 
     a, a:active, a:focus
       display: block
       font: 400 12px/15px $fontFamily
-      color: #76797e
+      color: automatic-text-color($page_content_left_bg, 'muted')
       margin: 0 0 2px
 
       &:hover,
@@ -174,26 +174,23 @@ div#accountsTable_wrapper
     span
       font-family: $fontFamily
       font-size: 12px
-      color: #76797e
+      color: automatic-text-color($page_content_left_bg, 'muted')
       margin: 0 0 3px
 
 .ticket-details
   display: block
   min-height: 150px
-  background: #ffffff
-  border: 1px solid #d3d9e4
+  border: 1px solid $page_content_border_color
   margin: 0 15px !important
   margin-bottom: 30px !important
   padding: 15px  !important
   font-family: $fontFamily
   font-size: 12px
-  color: #76797e
   +borderRadius(3px)
 
   label
     font-family: $fontFamily
     font-size: 12px
-    color: #76797e
     margin-bottom: 3px
 
   input,
@@ -206,16 +203,16 @@ div#accountsTable_wrapper
     width: 97%
     padding: 5px 10px
     margin-bottom: 12px
-    color: #484848
+    color: $text_color
     background: #f3f5f9
-    border: 1px solid #bec4d0
+    border: 1px solid $text_color
     +borderRadius(3px)
     +boxShadow(none)
 
     &:focus
       outline: none
-      border-color: #bec4d0
-      background: lighten(#f3f5f9, 5%)
+      border-color: $text_color
+      background: lighten($text_color, 5%)
       +boxShadow(none)
 
   select, select:focus
@@ -224,7 +221,7 @@ div#accountsTable_wrapper
     background-position: 100% 50%
     background-repeat: no-repeat
     border: none
-    border-bottom: 1px solid #CCC
+    border-bottom: 1px solid $page_content_border_color
     +borderRadius(0)
     padding: 0
 
@@ -239,7 +236,7 @@ div#accountsTable_wrapper
 
     background: inherit
     border: none
-    border-bottom: 1px solid #CCC
+    border-bottom: 1px solid $page_content_border_color
     +borderRadius(0)
 
     .item
@@ -268,7 +265,7 @@ div#accountsTable_wrapper
   width: 100%
 
   .history-item
-    border-bottom: 1px solid #ddd
+    border-bottom: 1px solid $page_content_border_color
     margin-bottom: 10px
     &:last-child
       border-bottom: none
@@ -279,7 +276,7 @@ div#accountsTable_wrapper
       line-height: 13px
 
     em
-      color: #76797e
+      color: $text_color
       display: block
       margin-bottom: 7px
       font-size: 11px
@@ -295,7 +292,7 @@ div#accountsTable_wrapper
       font-weight: normal
       margin-top: 3px
       margin-bottom: 7px
-      color: #76797e
+      color: automatic-text-color($trupanel_bg, 'muted')
       display: inline-block
 
 
@@ -322,13 +319,13 @@ div#accountsTable_wrapper
       font-family: $fontFamily
       font-size: 18px
       font-weight: 600
-      color: #3d4854
+      color: $text_color
 
     a,a.comment-email-link
       display: inline-block
       font-size: 12px
       font-family: $fontFamily
-      color: $accent_color
+      color: automatic-link-color($page_content_bg)
       margin-left: 2px
       //margin-bottom: 7px
 
@@ -339,7 +336,7 @@ div#accountsTable_wrapper
     time
       font-family: $fontFamily
       font-size: 12px
-      color: #76797e
+      color: automatic-text-color($page_content_bg, 'muted')
       display: block
       margin-bottom: 4px
       margin-left: 2px
@@ -374,7 +371,7 @@ div#accountsTable_wrapper
     p
       font-family: $fontFamily
       font-size: 14px
-      color: #3d4854
+      color: $text_color
       line-height: 20px
 
   .ticket-comment,
@@ -391,15 +388,16 @@ div#accountsTable_wrapper
       font-size: 14px
       line-height: normal
       cursor: pointer
-      display: none
-      color: #8699ac
+      color: lighten($text_color, 20%)
+      opacity: 0.25
+      transition: opacity ease 200ms
     .add-attachment
       right: 55px
     &:hover
       .comment-actions,
       .edit-issue,
       .add-attachment
-        display: block
+        opacity: 1
     .comment-actions div
       float: right
       display: inline-block
@@ -422,11 +420,11 @@ div#accountsTable_wrapper
         width: 100%
         font-family: $fontFamily
         font-size: 14px
-        color: #3d4854
+        color: $text_color
         resize: none
         //background: #f3f5f9
         //border: 1px solid #dfe4ef
-        border-color: #dfe4ef
+        border-color: darken($page_content_bg, 10%)
         border-width: 0 0 1px
         background: inherit
         padding: 8px
@@ -502,5 +500,5 @@ form.form
     resize: none
 
 input[type="text"][disabled]
-  color: gray
+  color: automatic-text-color($page_content_bg, 'muted')
   background: darken(#eceff6, 5%)

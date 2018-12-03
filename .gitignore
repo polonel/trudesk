@@ -29,6 +29,7 @@ node_modules
 *.sassc
 
 #custom
+package-lock.json
 config.json
 import.csv
 /src/mailer/templates/promo/
@@ -53,3 +54,5 @@ public/css/app.css
 *.local
 sonar-project.properties
 .scannerwork/
+
+public/uploads/assets/*.*

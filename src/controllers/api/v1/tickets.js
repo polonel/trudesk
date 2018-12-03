@@ -1024,9 +1024,9 @@ apiTickets.deleteType = function(req, res) {
         function(next) {
             settingsSchema.getSettingByName('mailer:check:ticketype', function(err, setting) {
                 if (err) return next(err);
-                if (setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
+                if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
                     return next({custom: true, message: 'Type currently "Default Ticket Type" for mailer check.'});
-
+                
                 return next(null);
             });
         },

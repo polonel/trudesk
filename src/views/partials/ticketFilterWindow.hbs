@@ -25,7 +25,7 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
                         <label for="filterStatus" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Status:</label>
-                        <select name="filterStatus" id="filterStatus" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                        <select name="filterStatus" id="filterStatus" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             <option value="0">New</option>
                             <option value="1">Open</option>
                             <option value="2">Pending</option>
@@ -48,7 +48,7 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
                         <label for="filterTags" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Tags:</label>
-                        <select name="filterTags" id="filterTags" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                        <select name="filterTags" id="filterTags" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             {{#each data.common.ticketTags}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -59,7 +59,7 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
                         <label for="filterType" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Type:</label>
-                        <select name="filterType" id="filterType" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                        <select name="filterType" id="filterType" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             {{#each data.common.ticketTypes}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -70,7 +70,7 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
                         <label for="filterGroup" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Group:</label>
-                        <select name="filterGroup" id="filterGroup" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                        <select name="filterGroup" id="filterGroup" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             {{#each data.common.groups}}
                                 <option value="{{_id}}">{{name}}</option>
                             {{/each}}
@@ -81,7 +81,7 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-small-bottom">
                     <div class="uk-width-1-1">
                         <label for="filterAssignee" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Assignee:</label>
-                        <select name="filterAssignee" id="filterAssignee" class="selectize-white" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
+                        <select name="filterAssignee" id="filterAssignee" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             {{#each data.common.users}}
                                 {{#canUserRole role "ticket:assingee"}}
                                     <option value="{{_id}}">{{fullname}}</option>

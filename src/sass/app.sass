@@ -1,4 +1,5 @@
 @import "mixins"
+@import "functions"
 @import "_settings"
 //@import "_settings_theme_dark"
 @import url(//fonts.googleapis.com/css?family=Open+Sans:400,700,800,300,600)
@@ -27,7 +28,7 @@
 
 html,
 body
-  background: #f7f8fa
+  background: $secondary
   color: $text_color
   font-family: $fontFamily
   height: 100%
@@ -39,14 +40,11 @@ body
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, h4, h5, h6, pre, form, p, blockquote, th, td
   margin: 0
 
+li,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,th,td
+  color: $text_color
+
 h1,h2,h3,h4,h5,h6
   font-family: $fontFamily
-
-a
-  text-decoration: none !important
-  color: #1e88e5
-  &:hover, &:active, &:focus
-    color: #1976d2
 
 pre
   word-wrap: normal
@@ -87,6 +85,12 @@ h6
   font-size: 1rem
   line-height: 1.6
 
+a
+  color: $accent_color
+  text-decoration: none !important
+  &:hover, &:focus, &:active
+    color: darken($accent_color, 10%)
+
 p
   font-family: $fontFamily
   font-weight: normal
@@ -94,12 +98,12 @@ p
   line-height: 1.6
   margin-bottom: 1.25rem
   text-rendering: optimizeLegibility
-  color: $p_color
+  color: $text_color
 
 hr
   border: none
   height: 1px
-  background: #ddd
+  background: $page_content_border_color
   width: 100%
 
 img
@@ -108,7 +112,7 @@ img
 
 label
   font-size: 0.875rem
-  color: #4d4d4d
+  color: lighten($text_color, 5%)
   cursor: pointer
   display: block
   font-weight: normal
@@ -144,6 +148,7 @@ input[type="checkbox"]+label, input[type="radio"]+label
 input[type="file"], input[type="checkbox"], input[type="radio"], select
   margin: 0 0 1rem 0
 
+@import "partials/pace"
 @import "partials/common"
 @import "partials/contextmenu"
 @import "partials/topnav"
@@ -178,5 +183,6 @@ input[type="file"], input[type="checkbox"], input[type="radio"], select
 @import "partials/c3"
 @import "partials/easymde"
 @import "partials/searchbox"
+@import "partials/svgcheck"
 //
 @import "partials/ui"
