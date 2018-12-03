@@ -13,6 +13,7 @@
  */
 
 var async   = require('async'),
+    nconf   = require('nconf'),
     express = require('express'),
     WebServer = express(),
     winston = require('winston'),
@@ -96,8 +97,11 @@ var async   = require('async'),
         app.set('view engine', 'hbs');
         hbsHelpers.register(hbs.handlebars);
 
-        app.use(express.static(path.join(__dirname, '../', 'public')));
-        app.use(favicon(path.join(__dirname, '../', 'public/img/favicon.ico')));
+        app.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')));
+        app.use('/uploads', routeMiddleware.hasAuth, express.static(path.join(__dirname, '../public/uploads')));
+
+        app.use(express.static(path.join(__dirname, '../public')));
+        app.use(favicon(path.join(__dirname, '../public/img/favicon.ico')));
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
@@ -118,13 +122,19 @@ var async   = require('async'),
 
         require('socket.io')(server);
 
-        if (!server.listening) {
-            server.listen(port, '0.0.0.0', function() {
+        require('./sass/buildsass').buildDefault(function(err) {
+            if (err) {
+                winston.error(err);
+                return callback(err);
+            }
+
+            if (!server.listening) {
+                server.listen(port, '0.0.0.0', function() {
+                    return callback();
+                });
+            } else
                 return callback();
-            });
-        } else 
-            return callback();
-        
+        });
     };
 
 })(WebServer);

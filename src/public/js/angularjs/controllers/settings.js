@@ -44,7 +44,7 @@ define([
                     }
                 };
             })
-            .controller('settingsCtrl', function($scope, $http, $timeout, $log) {
+            .controller('settingsCtrl', function($scope, $http, $timeout, $log, $window) {
                 var mdeToolbarItems = [
                     {
                         name: 'bold',
@@ -108,6 +108,74 @@ define([
                 var privacyPolicyMDE = null;
 
                 $scope.init = function() {
+                    var $uploadButton = $('#logo-upload-select').parent();
+                    var uploadLogoSettings = {
+                        action: '/settings/general/uploadlogo',
+                        allow: '*.(jpg|jpeg|gif|png)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $uploadButton.text('Upload Logo');
+                            $uploadButton.attr('disabled', false);
+                            $uploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#logo-upload-select'), uploadLogoSettings);
+
+                    var $pageUploadButton = $('#page-logo-upload-select').parent();
+                    var pageUploadLogoSettings = {
+                        action: '/settings/general/uploadpagelogo',
+                        allow: '*.(jpg|jpeg|gif|png)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $pageUploadButton.text('Upload Logo');
+                            $pageUploadButton.attr('disabled', false);
+                            $pageUploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-page-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#page-logo-upload-select'), pageUploadLogoSettings);
+
+                    var uploadFaviconSettings = {
+                        action: '/settings/general/uploadfavicon',
+                        allow: '*.(jpg|jpeg|gif|png|ico)',
+                        loadstart: function() {
+                            $uploadButton.text('Uploading...');
+                            $uploadButton.attr('disabled', true);
+                            $uploadButton.addClass('disable');
+                        },
+                        allcomplete: function() {
+                            $uploadButton.text('Upload Logo');
+                            $uploadButton.attr('disabled', false);
+                            $uploadButton.removeClass('disable');
+                            helpers.UI.showSnackbar('Upload Complete', false);
+                            // remove page refresh once SettingsService merge
+                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                            $window.location.reload();
+                            $('button#remove-custom-logo-btn').removeClass('hide');
+                        }
+                    };
+
+                    UIkit.uploadSelect($('#favicon-upload-select'), uploadFaviconSettings);
+
                     //Fix Inputs if input is preloaded with a value
                     $timeout(function() {
                         $('input.md-input').each(function() {
@@ -134,7 +202,7 @@ define([
                         $timeout(function() {
                             // Call in next cycle - Timezones generated dynamically
                             helpers.UI.selectize($('select#tz').parent());
-                        }, 0);
+                        });
 
                         var $privacyPolicy = $('#privacyPolicy');
                         if ($privacyPolicy.length > 0) {
@@ -150,6 +218,97 @@ define([
                                 $scope.privacyPolicy = privacyPolicyMDE.value();
                             });
                         }
+
+                        // Color Scheme Select
+                        var $colorSchemeSelect = $('#colorSchemeSelect');
+                        if ($scope.colorSecondary === '#2f3640')
+                            $colorSchemeSelect[0].selectize.setValue('dark', true);
+                        else if ($scope.colorTertiary === '#ee2b47')
+                            $colorSchemeSelect[0].selectize.setValue('midnight', true);
+                        else if ($scope.colorHeaderBG === '#2e3238')
+                            $colorSchemeSelect[0].selectize.setValue('moonlight', true);
+                        else if ($scope.colorTertiary === '#f67280')
+                            $colorSchemeSelect[0].selectize.setValue('purplerain', true);
+                        else if ($scope.colorHeaderBG === '#112d4e')
+                            $colorSchemeSelect[0].selectize.setValue('bluejean', true);
+                        else if ($scope.colorHeaderBG === '#625757')
+                            $colorSchemeSelect[0].selectize.setValue('sandstone', true);
+                        else if ($scope.colorHeaderBG === '#404969')
+                            $colorSchemeSelect[0].selectize.setValue('winterfire', true);
+
+                        $colorSchemeSelect.on('change', function(e) {
+                            $scope.$apply(function() {
+                                var val = $colorSchemeSelect.val();
+                                switch (val) {
+                                    case 'light':
+                                        $scope.revertColor('colorHeaderBG', '#42464d');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorPrimary', '#606771');
+                                        $scope.revertColor('colorSecondary', '#f7f8fa');
+                                        $scope.revertColor('colorTertiary', '#e74c3c');
+                                        $scope.revertColor('colorQuaternary', '#e6e7e8');
+                                        break;
+                                    case 'dark':
+                                        $scope.revertColor('colorHeaderBG', '#242a31');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorPrimary', '#f6f7f8');
+                                        $scope.revertColor('colorSecondary', '#2f3640');
+                                        $scope.revertColor('colorTertiary', '#e74c3c');
+                                        $scope.revertColor('colorQuaternary', '#454f5d');
+                                        break;
+                                    case 'bluejean':
+                                        $scope.revertColor('colorHeaderBG', '#112d4e');
+                                        $scope.revertColor('colorHeaderPrimary', '#f9f7f7');
+                                        $scope.revertColor('colorPrimary', '#112d4e');
+                                        $scope.revertColor('colorSecondary', '#f9f7f7');
+                                        $scope.revertColor('colorTertiary', '#3f72af');
+                                        $scope.revertColor('colorQuaternary', '#dbe2ef');
+                                        break;
+                                    case 'midnight':
+                                        $scope.revertColor('colorHeaderBG', '#2c2e3e');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f6f6');
+                                        $scope.revertColor('colorPrimary', '#444a54');
+                                        $scope.revertColor('colorSecondary', '#c8c8c8');
+                                        $scope.revertColor('colorTertiary', '#ee2b47');
+                                        $scope.revertColor('colorQuaternary', '#2c2e3e');
+                                        break;
+                                    case 'moonlight':
+                                        $scope.revertColor('colorHeaderBG', '#2e3238');
+                                        $scope.revertColor('colorHeaderPrimary', '#eeeeee');
+                                        $scope.revertColor('colorPrimary', '#444a54');
+                                        $scope.revertColor('colorSecondary', '#c8c8c8');
+                                        $scope.revertColor('colorTertiary', '#7971ea');
+                                        $scope.revertColor('colorQuaternary', '#444a54');
+                                        break;
+                                    case 'purplerain':
+                                        $scope.revertColor('colorHeaderBG', '#393041');
+                                        $scope.revertColor('colorHeaderPrimary', '#f6f6f6');
+                                        $scope.revertColor('colorPrimary', '#393041');
+                                        $scope.revertColor('colorSecondary', '#d2cbd8');
+                                        $scope.revertColor('colorTertiary', '#f67280');
+                                        $scope.revertColor('colorQuaternary', '#52455f');
+                                        break;
+                                    case 'sandstone':
+                                        $scope.revertColor('colorHeaderBG', '#625757');
+                                        $scope.revertColor('colorHeaderPrimary', '#f9f9f9');
+                                        $scope.revertColor('colorPrimary', '#625757');
+                                        $scope.revertColor('colorSecondary', '#dfdfdf');
+                                        $scope.revertColor('colorTertiary', '#ef5a5a');
+                                        $scope.revertColor('colorQuaternary', '#6f6363');
+                                        break;
+                                    case 'winterfire':
+                                        $scope.revertColor('colorHeaderBG', '#404969');
+                                        $scope.revertColor('colorHeaderPrimary', '#ebf0f6');
+                                        $scope.revertColor('colorPrimary', '#404969');
+                                        $scope.revertColor('colorSecondary', '#ebf0f6');
+                                        $scope.revertColor('colorTertiary', '#ff7f50');
+                                        $scope.revertColor('colorQuaternary', '#4a5479');
+                                        break;
+                                }
+
+                                $scope.saveColorScheme(e);
+                            });
+                        });
 
                         // Load MailCheckTicketType from settings
                         var $mailerCheckTicketTypeSelect = $('#mailerCheckTicketType');
@@ -248,7 +407,7 @@ define([
                                 } else {
                                     tags.forEach(function(tag) {
                                         var html = '';
-                                        html += '<div class="uk-width-1-2" style="border-right: 1px solid #ccc; border-bottom: 1px solid #ccc;">\n' +
+                                        html += '<div class="uk-width-1-2 br bb">\n' +
                                             ' <div id="view-tag-' + tag._id + '" data-tagId="' + tag._id + '" class="z-box uk-clearfix">\n' +
                                             '     <div class="uk-grid uk-grid-collapse uk-clearfix">\n' +
                                             '         <div class="uk-width-1-2">\n' +
@@ -303,13 +462,13 @@ define([
                 }
 
                 $scope.$watch('mailerEnabled', function(newVal) {
-                    $('input#mailerHost').attr('disabled', !newVal);
-                    $('input#mailerSSL').attr('disabled', !newVal);
-                    $('input#mailerPort').attr('disabled', !newVal);
-                    $('input#mailerUsername').attr('disabled', !newVal);
-                    $('input#mailerPassword').attr('disabled', !newVal);
-                    $('input#mailerFrom').attr('disabled', !newVal);
-                    $('button#mailerSubmit').attr('disabled', !newVal);
+                    $('input#mailerHost').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerSSL').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerPort').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerUsername').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerPassword').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerFrom').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('button#mailerSubmit').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
                 });
 
                 $scope.defaultTicketTypeChanged = function() {
@@ -381,6 +540,22 @@ define([
                     });
                 };
 
+                $scope.saveSiteTitleClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:sitetitle',
+                        value: $scope.siteTitle
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Site title saved successfully.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
                 $scope.saveSiteUrlClicked = function() {
                     $http.put('/api/v1/settings', {
                         name: 'gen:siteurl',
@@ -391,6 +566,57 @@ define([
                         }
                     }).then(function successCallback() {
                         helpers.UI.showSnackbar('Site URL saved successfully.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomLogo = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:customlogo',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomPageLogo = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:custompagelogo',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.removeCustomFavicon = function(event) {
+                    event.preventDefault();
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:customfavicon',
+                        value: false
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        $window.location.reload();
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar('Error: ' + err, true);
                         $log.error(err);
@@ -506,11 +732,12 @@ define([
                 $scope.$watch('mailerCheckEnabled', function(newVal) {
                     var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0];
                     var $mailerCheckTicketPrioritySelectize = $('select#mailerCheckTicketPriority').selectize()[0];
-                    $('input#mailerCheckHost').attr('disabled', !newVal);
-                    $('input#mailerCheckPort').attr('disabled', !newVal);
-                    $('input#mailerCheckUsername').attr('disabled', !newVal);
-                    $('input#mailerCheckPassword').attr('disabled', !newVal);
-                    $('button#mailerCheckSubmit').attr('disabled', !newVal);
+
+                    $('input#mailerCheckHost').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckPort').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckUsername').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('input#mailerCheckPassword').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
+                    $('button#mailerCheckSubmit').attr('disabled', !newVal).parent().toggleClass('md-input-wrapper-disabled', !newVal);
                     if (!_.isUndefined($mailerCheckTicketTypeSelectize)) {
                         if (!newVal)
                             $mailerCheckTicketTypeSelectize.selectize.disable();
@@ -1237,7 +1464,7 @@ define([
                         helpers.UI.inputs();
                         helpers.UI.reRenderInputs();
                         createPriorityModal.find('form').trigger('reset');
-                        createPriorityModal.find('#generateHtmlColor').css({background: '#29B955'});
+                        createPriorityModal.find('.generateHtmlColorBtn').css({background: '#29B955'});
                         UIkit.modal(createPriorityModal, {bgclose: false}).show();
                         createPriorityModal.find('input[name="p-name"]').focus();
                     } else
@@ -1331,7 +1558,7 @@ define([
                                                 '            <div class="uk-margin-medium-bottom uk-clearfix">\n' +
                                                 '                <div class="uk-float-left" style="width: 100%;">\n' +
                                                 '                    <label for="priority" class="uk-form-label">Priority</label>\n' +
-                                                '                    <select class="selectize-white" name="priority" data-md-selectize-inline>\n';
+                                                '                    <select class="selectize" name="priority" data-md-selectize-inline>\n';
 
                                             priorities.forEach(function(p) {
                                                 if (p._id.toString() !== savedPriority._id)
@@ -1422,13 +1649,92 @@ define([
                     }
                 };
 
+                // Colors watch
+                function setApperanceColorBtn(selector, color) {
+                    var $button = $(selector);
+                    var fgColor = getContrast(color);
+                    $button.css({background: color, color: fgColor});
+                }
+
+                $scope.$watch('colorHeaderBG', function() { setApperanceColorBtn('#headerBGColorBtn', $scope.colorHeaderBG); });
+                $scope.$watch('colorHeaderPrimary', function() { setApperanceColorBtn('#headerPrimaryColorBtn', $scope.colorHeaderPrimary); });
+                $scope.$watch('colorPrimary', function() { setApperanceColorBtn('#primaryColorBtn', $scope.colorPrimary); });
+                $scope.$watch('colorSecondary', function() { setApperanceColorBtn('#secondaryColorBtn', $scope.colorSecondary); });
+                $scope.$watch('colorTertiary', function() { setApperanceColorBtn('#tertiaryColorBtn', $scope.colorTertiary); });
+                $scope.$watch('colorQuaternary', function() { setApperanceColorBtn('#quaternaryColorBtn', $scope.colorQuaternary); });
+
+                $scope.saveColorScheme = function($event) {
+                    $event.preventDefault();
+                    if ($scope.colorHeaderBG[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Header BG Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorHeaderPrimary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Header Primary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorPrimary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Primary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorSecondary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Secondary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorTertiary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Tertiary Color', true);
+                        return false;
+                    }
+
+                    if ($scope.colorQuaternary[0] !== '#') {
+                        helpers.UI.showSnackbar('Invalid Quaternary Color', true);
+                        return false;
+                    }
+
+                    $http.put('/api/v1/settings', [
+                        {name: 'color:headerbg', value: $scope.colorHeaderBG},
+                        {name: 'color:headerprimary', value: $scope.colorHeaderPrimary},
+                        {name: 'color:primary', value: $scope.colorPrimary},
+                        {name: 'color:secondary', value: $scope.colorSecondary},
+                        {name: 'color:tertiary', value: $scope.colorTertiary},
+                        {name: 'color:quaternary', value: $scope.colorQuaternary}
+                    ], {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        // Call rebuild of app.min.css
+                        $http.get('/api/v1/settings/buildsass')
+                            .then(function successCallback() {
+                                helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false);
+                                $timeout(function() { $window.location.reload(); }, 1000);
+                            }, function errorCallback(err) {
+                                helpers.UI.showSnackbar(err, true);
+                            });
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                };
+
+                $scope.revertColor = function(model, defaultColor) {
+                    $scope[model] = defaultColor;
+                };
+
                 $scope.generateRandomColor = function(id, $event) {
                     $event.preventDefault();
                     var $currentTarget = $($event.currentTarget);
                     if ($currentTarget.length > 0) {
                         var color = getRandomColor();
-                        $currentTarget.css({background: color});
+                        var fgColor = getContrast(color.substring(1));
+                        $currentTarget.css({background: color, color: fgColor});
                         $currentTarget.next().find('input').val(color);
+                        if ($currentTarget.next().find('input').attr('ng-model')) 
+                            $scope[$currentTarget.next().find('input').attr('ng-model')] = color;
+                        
                     }
                 };
 
@@ -1439,6 +1745,19 @@ define([
                         color += letters[Math.floor(Math.random() * 16)];
 
                     return color;
+                }
+
+                function getContrast(hexcolor){
+                    hexcolor = hexcolor.replace('#', '');
+                    if (hexcolor.length === 3) {
+                        var v = hexcolor[0];
+                        hexcolor = hexcolor + v + v + v;
+                    }
+                    var r = parseInt(hexcolor.substr(0,2),16);
+                    var g = parseInt(hexcolor.substr(2,2),16);
+                    var b = parseInt(hexcolor.substr(4,2),16);
+                    var yiq = ((r*299)+(g*587)+(b*114))/1000;
+                    return (yiq >= 128) ? '#444' : '#f7f8fa';
                 }
 
                 $scope.editTag = function($event) {

@@ -10,7 +10,7 @@
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="width: 100%;">
                     <label for="priority" class="uk-form-label">Priority</label>
-                    <select class="selectize-white" name="priority" data-md-selectize-inline>
+                    <select class="selectize" name="priority" data-md-selectize-inline>
                         {{#each @root.data.common.priorities}}
                             {{#isnot name ../name}}
                                 <option value="{{{_id}}}">{{name}}</option>

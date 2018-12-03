@@ -8,14 +8,15 @@
       <span class="status-{{ticket.status}}"></span>
     </div>
     <div class="ticket-details">
-      <img ng-src="/uploads/users/{{ticket.owner.image}}" class="profile-pic">
+      <img http-src="/uploads/users/{{ticket.owner.image}}" class="profile-pic" ng-if="ticket.owner.image">
+      <img http-src="/uploads/users/defaultProfile.jpg" class="profile-pic" ng-if="!ticket.owner.image">
       <div class="margin-left-65">
         <span class="date">{{ticket.date | date: 'short'}}</span>
         <h4>Ticket #{{ticket.uid}}</h4>
         <h5>{{ticket.owner.fullname}}</h5>
         <h5>{{ticket.group.name}}</h5>
         <div class="assignee right {{hasAssignee}}" style="width: auto;">
-          <img ng-src="/uploads/users/{{ticket.assignee.image}}" style="width: 25px; height: 25px; margin-right: 4px;" class="profile-pic" />
+          <img http-src="/uploads/users/{{ticket.assignee.image}}" ng-if="ticket.assignee && ticket.assignee.image" style="width: 25px; height: 25px; margin-right: 4px;" class="profile-pic" />
           <h6 style="margin: 0; padding: 0; display: inline-block;">{{ticket.assignee.fullname}}</h6>
         </div>
       </div>
@@ -29,11 +30,11 @@
 
       <ion-list>
         <ion-item class="item-avatar no-border no-padding-bottom" ng-repeat="comment in ticket.commentsMerged" type="item-text-wrap">
-          <div ng-if="comment.owner.image == undefined" class="avatar">
-            <img ng-src="/uploads/users/defaultProfile.jpg">
+          <div ng-if="!comment.owner.image" class="avatar">
+            <img http-src="/uploads/users/defaultProfile.jpg" ng-if="!comment.owner.image">
           </div>
-          <div ng-if="comment.owner.image != undefined" class="avatar">
-            <img ng-src="/uploads/users/{{comment.owner.image}}">
+          <div ng-if="comment.owner.image" class="avatar">
+            <img http-src="/uploads/users/{{comment.owner.image}}" ng-if="comment.owner.image">
           </div>
           <h4 style="margin-bottom: 0; font-weight: 300;">{{comment.owner.fullname}}</h4>
           <span class="ticketDate" style="right: 10px;">{{comment.date | date: 'short'}}</span>

@@ -143,8 +143,12 @@ function dbCallback(err, db) {
                 require('./src/settings/defaults').init(next);
             },
             function(next) {
-                        //Start Task Runners
-                        require('./src/taskrunner');
+                winston.debug('Building dynamic sass...');
+                require('./src/sass/buildsass').build(next);
+            },
+            function(next) {
+                //Start Task Runners
+                require('./src/taskrunner');
                 return next();
                     },
                     function(next) {

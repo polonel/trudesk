@@ -1,3 +1,8 @@
+.site-logo
+  width: 140px !important
+.site-logo-login
+  width: 400px !important
+
 .accent-text
   color: $accent_color !important
 
@@ -22,10 +27,23 @@
 .hide
   display: none
 
+.ba
+  border: 1px solid rgba(0,0,0,0.15) !important
+.bt
+  border-top: 1px solid rgba(0,0,0,0.15) !important
+.br
+  border-right: 1px solid rgba(0,0,0,0.15) !important
+.bb
+  border-bottom: 1px solid rgba(0,0,0,0.15) !important
+.bl
+  border-left: 1px solid rgba(0,0,0,0.15) !important
+
 .noborder
   border: none !important
 .no-border-top
   border-top: 0 !important
+.no-border-bottom
+  border-bottom: none !important
 
 .nomargin,
 .nm
@@ -113,6 +131,10 @@
 
 .text-white
   color: #fff !important
+.bg-white
+  background: #fff !important
+.bg-accent
+  background: $accent_color !important
 
 .font-weight-300,
 .font-light,
@@ -129,7 +151,7 @@
     font-size: 14px
     line-height: 18px
     display: block
-    color: #727272
+    color: automatic-text-color($page_content_right_bg, 'muted')
 
 .cursor-pointer
   cursor: default !important
@@ -147,7 +169,7 @@
   margin: 0
 
 a.blackLink
-  color: #000000 !important
+  color: automatic-link-color($page_content_right_bg) !important
 
 a.hoverUnderline
   &:hover
@@ -172,9 +194,9 @@ a.hoverUnderline
 
 .page-title,
 .page-title-right
-  height: 70px
+  height: 69px
   background: $page_content_title_bg
-  border-top: $page_content_border_accent
+  border-bottom: 1px solid $page_content_border_color
   //+boxShadow2(inset 0 1px 0px #fff, 2px 2px 2px 0px rgba(44,62,80,0.1))
   box-shadow: $page_content_title_shadow
   padding: 0 15px 0 35px
@@ -184,7 +206,7 @@ a.hoverUnderline
     font-size: 30px
     margin: 0
     line-height: 68px
-    color: $p_color
+    color: $page_content_title_text
     font-weight: 300
     &.left
       line-height: 68px
@@ -209,13 +231,12 @@ a.hoverUnderline
 
 .page-content-right
   background: $page_content_right_bg
-  border-top: $page_content_border_top
 //overflow: auto
 
 .page-content-left
   background: $page_content_left_bg
-  border-top: $page_content_border_top
-  border-right: $page_content_border_top
+  border-top: 1px solid $page_content_border_color
+  border-right: 1px solid $page_content_border_color
 
 .fa-large
   font-size: 24px
@@ -249,6 +270,7 @@ button:focus,
 .button:hover,
 .button:focus
   background-color: darken($accent_color, 5%)
+
 
 button,
 a.button
@@ -322,7 +344,7 @@ a.button
     font-size: 24px
     font-weight: 500
     line-height: 30px
-    color: #444
+    color: automatic-text-color(lighten($page_content_right_bg, 10%))
 
 .action-link
   background: transparent
@@ -357,19 +379,20 @@ a.button
   li
     float: none !important
     width: 100% !important
-    background: #f5f5f5 !important
+    background: $page_content_button_color !important
+    color: $page_content_button_text_color !important
     line-height: 1.4em !important
     height: auto !important
   a
     display: block
     width: 100%
-    background: #f5f5f5 !important
+    background: $page_content_button_color !important
     line-height: 1.4em !important
     padding: 5px 15px !important
-    color: #212121 !important
+    color: $page_content_button_text_color !important
     &:hover
       background: rgba(0,0,0, 0.085) !important
-      color: #212121 !important
+      color: $page_content_button_text_color !important
 
 .disconnected
   z-index: 10000
@@ -598,7 +621,7 @@ div.hoverAction
 
   span
     font-size: 0.875rem
-    color: #4d4d4d
+    color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
     font-weight: normal
     line-height: 1.5
     margin-bottom: 0
@@ -609,7 +632,7 @@ div.hoverAction
   textarea
     font-family: $fontFamily
     font-size: 14px
-    color: #3d4854
+    color: $text_color
     resize: none
     background: #f3f5f9
     border: 1px solid #dfe4ef
@@ -652,6 +675,15 @@ div.hoverAction
   padding: 10px 15px
   background: lighten($page_content_title_bg, 10%)
   border-top: $page_content_border_top
+
+.search-box input.ticket-top-search
+  background: $page_content_button_color
+  height: 30px
+  border: 1px solid $page_content_button_color
+  border-radius: 5px
+  color: $page_content_button_text_color
+  &::placeholder
+    color: automatic-text-color($page_content_button_color, 'muted')
 
 .pagination
   margin-right: 8px

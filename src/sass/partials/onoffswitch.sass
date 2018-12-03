@@ -15,7 +15,7 @@
     margin: auto !important
     overflow: hidden 
     cursor: pointer 
-    border: 1px solid #dae0ec
+    border: 1px solid darken($page_content_button_color, 10%)
     border-radius: 5px
     width: 100% !important
 
@@ -34,7 +34,7 @@
     padding: 0 
     line-height: 28px 
     font-size: 11px 
-    color: white 
+    color: $page_content_button_color
     font-family: Trebuchet, Arial, sans-serif 
     font-weight: bold 
     box-sizing: border-box 
@@ -43,7 +43,7 @@
     content: "Refresh"
     padding-left: 7px 
     background-color: $accent_color
-    color: #FFFFFF
+    color: #fff
 
 .subscribeSwitch-inner:before
     content: "Subscribe"
@@ -56,20 +56,20 @@
 .onoffswitch-inner:after
     content: "OFF"
     padding-right: 7px 
-    background-color: #f5f5f5
-    color: #999999 
+    background-color: lighten($page_content_bg, 25%)
+    color: automatic-text-color(lighten($page_content_bg, 25%))
     text-align: right 
 
 .onoffswitch-switch
     display: block 
     width: 28px 
     margin: 0 
-    background: #fff
+    background: $page_content_button_color
     position: absolute 
     top: 0 
-    bottom: 0 
+    bottom: 0
     right: 57px
-    border: 1px solid #dae0ec
+    border: 1px solid darken($page_content_button_color, 10%)
     border-radius: 5px 
     transition: all 0.3s ease-in 0s
     &.subscribeSwitch-switch

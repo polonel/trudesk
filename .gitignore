@@ -54,3 +54,5 @@ public/css/app.css
 *.local
 sonar-project.properties
 .scannerwork/
+
+public/uploads/assets/*.*

@@ -2,8 +2,10 @@
 .mGraph .mg-x-axis text,
 .mGraph .mg-y-axis text
   font-size: 11px
+  fill: $text_color
 
 .mGraph .mg-active-datapoint
+  fill: $text_color
   font-size: 13px
 
 .mGraph-panel
@@ -11,11 +13,14 @@
 
 .mGraph
   .mg-line1-color
-    stroke: $graph_path_color
+    stroke: $graph_path_color !important
   .mg-area1-color
-    fill: lighten($graph_path_color, 5%)
+    fill: lighten($graph_path_color, 5%) !important
   &.graph-blue
     .mg-line1-color
       stroke: #1976d2
     .mg-area1-color
       fill: lighten(#1976d2, 10%)
+
+.mg-extended-y-ticks
+  stroke: darken($page_content_border_color, 80%) !important

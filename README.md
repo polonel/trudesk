@@ -4,6 +4,7 @@
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9)](https://www.codacy.com/app/polonel/trudesk?utm_source=github.com&utm_medium=referral&utm_content=polonel/trudesk&utm_campaign=badger)
 [![Build Status](https://semaphoreci.com/api/v1/polonel/trudesk/branches/develop/badge.svg)](https://semaphoreci.com/polonel/trudesk)
+[![HitCount](http://hits.dwyl.io/polonel/trudesk.svg)](http://hits.dwyl.io/polonel/trudesk)
 
 [http://trudesk.io](http://trudesk.io/)
 

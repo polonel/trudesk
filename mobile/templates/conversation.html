@@ -11,8 +11,8 @@
 
   <ion-content style="bottom: 90px !important;" delegate-handle="userMessageScroll">
     <div class="message-profile">
-        <img ng-src="/uploads/users/{{conversation.partner.image}}" ng-if="conversation.partner.image != undefined">
-        <img ng-src="/uploads/users/defaultProfile.jpg" ng-if="conversation.partner.image == undefined" />
+        <img http-src="/uploads/users/{{conversation.partner.image}}" ng-if="conversation.partner.image != undefined">
+        <img http-src="/uploads/users/defaultProfile.jpg" ng-if="conversation.partner.image == undefined" />
         <div class="info" style="min-height: 65px;">
             <h4>{{conversation.partner.fullname}}</h4>
             <span ng-if="conversation.partner.title != undefined">
@@ -37,8 +37,8 @@
                 <div class="message-date">{{message.createdAt | amCalendar}}</div>
                 <div class="message-body" ng-bind-html="message.body | nl2br" autolinker></div>
                 <div class="message-sender">
-                    <img ng-src="/uploads/users/{{message.owner.image}}" ng-if="message.owner.image != undefined">
-                    <img ng-src="/uploads/users/defaultProfile.jpg" ng-if="message.owner.image == undefined" />
+                    <img http-src="/uploads/users/{{message.owner.image}}" ng-if="message.owner.image != undefined">
+                    <img http-src="/uploads/users/defaultProfile.jpg" ng-if="message.owner.image == undefined" />
                 </div>
             </div>
             <div class="message message-right" ng-if="message.owner._id == loggedInUser._id">
@@ -50,8 +50,8 @@
 
     <div class="user-is-typing-wrapper" ng-show="partnerTyping">
         <div class="chat-user-profile">
-            <img ng-src="/uploads/users/{{conversation.partner.image}}" alt="{{conversation.partner.fullname}}" ng-if="conversation.partner.image != undefined" />
-            <img ng-src="/uploads/users/defaultProfile.jpg" alt="{{conversation.partner.fullname}}" ng-if="conversation.partner.image == undefined" />
+            <img http-src="/uploads/users/{{conversation.partner.image}}" alt="{{conversation.partner.fullname}}" ng-if="conversation.partner.image != undefined" />
+            <img http-src="/uploads/users/defaultProfile.jpg" alt="{{conversation.partner.fullname}}" ng-if="conversation.partner.image == undefined" />
         </div>
         <div class="user-is-typing">
             <div class="dot"></div>

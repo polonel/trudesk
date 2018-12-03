@@ -19,7 +19,6 @@ var async           = require('async'),
     permissions     = require('../../permissions'),
     settingSchema   = require('../../models/setting');
 
-
 var viewController = {};
 var viewdata = {};
 viewdata.notifications = {};
@@ -27,6 +26,23 @@ viewdata.users = {};
 
 viewController.getData = function(request, cb) {
       async.parallel([
+          function(callback) {
+            if (global.env === 'development') 
+                require('../../sass/buildsass').build(callback);
+            else
+                return callback();
+            
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:sitetitle', function(err, setting) {
+                if (!err && setting && setting.value)
+                    viewdata.siteTitle = setting.value;
+                else
+                    viewdata.siteTitle = 'Trudesk';
+
+                return callback();
+            });
+          },
           function(callback) {
             viewdata.hostname = request.hostname;
             viewdata.hosturl = request.protocol + '://' + request.get('host');
@@ -54,6 +70,62 @@ viewController.getData = function(request, cb) {
 
                 return callback();
             });
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:customlogo', function(err, hasCustomLogo) {
+                viewdata.hasCustomLogo = !!(!err && hasCustomLogo && hasCustomLogo.value);
+
+                if (!viewdata.hasCustomLogo) {
+                    viewdata.logoImage = '/img/defaultLogoLight.png';
+                    return callback();
+                }
+
+                settingSchema.getSetting('gen:customlogofilename', function(err, logoFileName) {
+                    if (!err && logoFileName && !_.isUndefined(logoFileName.value)) 
+                        viewdata.logoImage = '/assets/' + logoFileName.value;
+                     else 
+                        viewdata.logoImage = '/img/defaultLogoLight.png';
+
+                    return callback();
+                });
+            });
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:custompagelogo', function(err, hasCustomPageLogo) {
+                  viewdata.hasCustomPageLogo = !!(!err && hasCustomPageLogo && hasCustomPageLogo.value);
+
+                  if (!viewdata.hasCustomPageLogo) {
+                      viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+                      return callback();
+                  }
+
+                  settingSchema.getSetting('gen:custompagelogofilename', function(err, logoFileName) {
+                      if (!err && logoFileName && !_.isUndefined(logoFileName.value))
+                          viewdata.pageLogoImage = '/assets/' + logoFileName.value;
+                      else
+                          viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+
+                      return callback();
+                  });
+              });
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:customfavicon', function(err, hasCustomFavicon) {
+                  viewdata.hasCustomFavicon = !!(!err && hasCustomFavicon && hasCustomFavicon.value);
+                  if (!viewdata.hasCustomFavicon) {
+                      viewdata.favicon = '/img/favicon.ico';
+                      return callback();
+                  } else {
+                      settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
+                          if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
+                              viewdata.favicon = '/assets/' + faviconFilename.value;
+                          else
+                              viewdata.favicon = '/img/favicon.ico';
+
+                          return callback();
+                      });
+                  }
+              });
           },
           function(callback) {
               viewController.getActiveNotice(function(err, data) {

@@ -1,0 +1,26 @@
+//Functions
+@function automatic-text-color($bgColor, $component:'')
+  @if (lightness($bgColor) > 50)
+    @if ($component != '' and $component == 'sidebar')
+      @return #3f444c
+    @else if ($component != '' and $component == 'muted')
+      @return #757575
+    @else
+      @return lighten($text_color, 5%)
+  @else
+    @if ($component != '' and $component == 'muted')
+      @return lighten($bgColor, 45%)
+    @else
+      @return #f7f8fa
+
+@function automatic-link-color($bgColor)
+  @if (lightness($bgColor) > 50 and lightness($accent_color) > 75)
+    @return darken($accent_color, 40%)
+  @else
+    @return lighten($accent_color, 10%)
+
+@function pace-color()
+  @if ($topbar_bg == #42464d)
+    @return #ffffff
+  @else
+    @return $accent_color
