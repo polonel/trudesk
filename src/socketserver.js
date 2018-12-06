@@ -628,11 +628,22 @@ var socketServer = function(ws) {
                     utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
                 }
             } else {
-                idleUsers[user.username].sockets.push(socket.id);
-                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+                var idleUser = idleUsers[user.username.toLowerCase()];
+                if (!_.isUndefined(idleUser)) {
+                    idleUser.sockets.push(socket.id);
 
-                utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
+                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function (o) {
+                        return o[0];
+                    }));
+                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function (o) {
+                        return o[0];
+                    }));
+
+                    utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {
+                        sortedUserList: sortedUserList,
+                        sortedIdleList: sortedIdleList
+                    });
+                }
             }
         });
 
