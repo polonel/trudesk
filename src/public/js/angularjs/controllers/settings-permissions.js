@@ -51,13 +51,23 @@ define([
                         });
                     }
 
-                    $('input[name="perm-tickets-all"]').change(function(e) {
+                    var $ticketsAllCheck = $('input[name="perm-tickets-all"]');
+
+                    $ticketsAllCheck.change(function(e) {
                         toggleAllPerm('tickets', e);
                     });
 
-                    $('input[name="perm-accounts-all"]').change(function(e) {
+                    if ($ticketsAllCheck.val() === 'on')
+                        toggleAll($ticketsAllCheck.parents('form'), 'tickets', true);
+
+                    var $accountPermAllCheck = $('input[name="perm-accounts-all"]');
+                    $accountPermAllCheck.change(function(e) {
                         toggleAllPerm('accounts', e);
                     });
+
+                    if ($accountPermAllCheck.val() === 'on') 
+                        toggleAll($accountPermAllCheck.parents('form'), 'accounts', true);
+                    
 
                     // $('input[name="perm-tickets-view-any"]').change(function(e) {
                     //     handleAnyChange('tickets-view', e);
@@ -79,6 +89,10 @@ define([
                 var checked = e.target.checked;
                 var $form = $currentTarget.parents('form');
 
+                toggleAll($form, type, checked);
+            }
+
+            function toggleAll($form, type, checked) {
                 $form.find('input[name="perm-' + type + '-create"]').prop('checked', checked).prop('disabled', checked);
                 $form.find('input[name="perm-' + type + '-view"]').prop('checked', checked).prop('disabled', checked);
                 $form.find('input[name="perm-' + type + '-edit"]').prop('checked', checked).prop('disabled', checked);
@@ -97,6 +111,7 @@ define([
             function sanitizePermissions(data) {
                 var obj = {};
                 var tObj = {};
+                var arr = [];
                 _.each(data, function(v, k) {
                     k = k.replace('perm', '').replace(/-/g, '');
                     tObj[k] = v;
@@ -106,32 +121,31 @@ define([
                     return v === 'on';
                 });
 
+                // Admin
                 obj.admin = tObj.isadmin ? ['*'] : null;
                 obj.setting = tObj.isadmin ? ['*'] : null;
 
+                // Agent
                 if (tObj.isagent)
                     obj.agent = ['*'];
 
+                // Tickets
                 if (tObj.ticketsall)
                     obj.ticket = ['*'];
                 else {
-                    var arr = [];
-                    if (tObj.ticketscreate)
-                        arr.push('create');
-                    if (tObj.ticketsview)
-                        arr.push('view');
-                    if (tObj.ticketsedit)
-                        arr.push('edit');
-                    if (tObj.ticketsdelete)
-                        arr.push('delete');
+                    if (tObj.ticketscreate) arr.push('create');
+                    if (tObj.ticketsview) arr.push('view');
+                    if (tObj.ticketsedit) arr.push('edit');
+                    if (tObj.ticketsdelete) arr.push('delete');
+
                     if (arr.length > 0)
                         obj.ticket = arr;
                 }
 
-                if (tObj.accountsall) {
+                // Accounts
+                if (tObj.accountsall) 
                     obj.account = ['*'];
-                } else {
-                    var arr = [];
+                 else {
                     if (tObj.accountscreate) arr.push('create');
                     if (tObj.accountsview) arr.push('view');
                     if (tObj.accountsedit) arr.push('edit');
