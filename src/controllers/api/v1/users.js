@@ -182,6 +182,8 @@ apiUsers.create = function(req, res) {
             if (_.isUndefined(id)) return done(null);
             groupSchema.getGroupById(id, function(err, grp) {
                 if (err) return done(err);
+                if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID');
+
                 grp.addMember(a._id, function(err, success) {
                     if (err) return done(err);
 
