@@ -611,17 +611,17 @@ div.hoverAction
 
   .chosen-container-multi
     .chosen-choices
-      border: 1px solid #dfe4ef
-      background: #f3f5f9
+      border: 1px solid darken($page_content_right_bg, 15%) !important
+      background: darken($page_content_right_bg, 10%)
       +borderRadius(3px)
 
     .chosen-drop
-      background: lighten(#f3f5f9, 10%)
-      border-color: #dfe4ef
+      background: darken($page_content_right_bg, 10%)
+      border-color: darken($page_content_right_bg, 15%)
 
   span
     font-size: 0.875rem
-    color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+    color: automatic-text-color(lighten($page_content_right_bg, 15%), 'muted')
     font-weight: normal
     line-height: 1.5
     margin-bottom: 0
@@ -635,7 +635,7 @@ div.hoverAction
     color: $text_color
     resize: none
     background: #f3f5f9
-    border: 1px solid #dfe4ef
+    border: 1px solid darken($page_content_right_bg, 10%)
     +borderRadius(3px)
     box-sizing: border-box
     +boxShadow(none)
