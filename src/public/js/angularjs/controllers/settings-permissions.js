@@ -57,46 +57,44 @@ define([
                         toggleAllPerm('tickets', e);
                     });
 
-                    if ($ticketsAllCheck.val() === 'on')
+                    if ($ticketsAllCheck.is(':checked'))
                         toggleAll($ticketsAllCheck.parents('form'), 'tickets', true);
 
                     var $accountPermAllCheck = $('input[name="perm-accounts-all"]');
                     $accountPermAllCheck.change(function(e) {
-                        toggleAllPerm('accounts', e);
+                        toggleAllPerm('accounts', e, ['import']);
                     });
 
-                    if ($accountPermAllCheck.val() === 'on') 
-                        toggleAll($accountPermAllCheck.parents('form'), 'accounts', true);
-                    
+                    if ($accountPermAllCheck.is(':checked'))
+                        toggleAll($accountPermAllCheck.parents('form'), 'accounts', true, ['import']);
 
-                    // $('input[name="perm-tickets-view-any"]').change(function(e) {
-                    //     handleAnyChange('tickets-view', e);
-                    // });
-                    //
-                    // $('input[name="perm-tickets-edit-any"]').change(function(e) {
-                    //     handleAnyChange('tickets-edit', e);
-                    // });
-                    //
-                    // $('input[name="perm-tickets-delete-any"]').change(function(e) {
-                    //     handleAnyChange('tickets-delete', e);
-                    // });
+                    $('input[name="perm-accounts-import"]').change(function(e) {
+                        var checked = $(e.currentTarget).prop('checked');
+                        if (checked)
+                            $('input[name="perm-accounts-create"]').prop('checked', checked);
+                    });
 
                 }, 0);
             };
 
-            function toggleAllPerm(type, e) {
+            function toggleAllPerm(type, e, specials) {
                 var $currentTarget = $(e.currentTarget);
                 var checked = e.target.checked;
                 var $form = $currentTarget.parents('form');
 
-                toggleAll($form, type, checked);
+                toggleAll($form, type, checked, specials);
             }
 
-            function toggleAll($form, type, checked) {
+            function toggleAll($form, type, checked, specials) {
                 $form.find('input[name="perm-' + type + '-create"]').prop('checked', checked).prop('disabled', checked);
                 $form.find('input[name="perm-' + type + '-view"]').prop('checked', checked).prop('disabled', checked);
                 $form.find('input[name="perm-' + type + '-edit"]').prop('checked', checked).prop('disabled', checked);
                 $form.find('input[name="perm-' + type + '-delete"]').prop('checked', checked).prop('disabled', checked);
+
+                if (specials && specials.length > 0) {
+                    for (var i = 0; i < specials.length; i++) 
+                        $form.find('input[name="perm-' + type + '-' + specials[i] + '"]').prop('checked', checked).prop('disabled', checked);
+                }
             }
 
             function handleAnyChange(type, e) {
@@ -150,6 +148,9 @@ define([
                     if (tObj.accountsview) arr.push('view');
                     if (tObj.accountsedit) arr.push('edit');
                     if (tObj.accountsdelete) arr.push('delete');
+
+                    //specials
+                    if (tObj.accountsimport) arr.push('import');
 
                     if (arr.length > 0)
                         obj.account = arr;

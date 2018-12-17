@@ -259,7 +259,7 @@
                                             </div>
                                             <hr class="nomargin-top clear">
 
-                                            <!--View Tickets-->
+                                            <!--View Accounts-->
                                             <div class="panel-body2" style="padding: 0 10px;">
                                                 <div class="uk-clearfix">
                                                     <div class="left">
@@ -279,7 +279,7 @@
                                             </div>
                                             <hr class="nomargin-top clear">
 
-                                            <!--Edit Tickets-->
+                                            <!--Edit Accounts-->
                                             <div class="panel-body2" style="padding: 0 10px;">
                                                 <div class="uk-clearfix">
                                                     <div class="left">
@@ -299,7 +299,7 @@
                                             </div>
                                             <hr class="nomargin-top clear">
 
-                                            <!--Delete Tickets-->
+                                            <!--Delete Accounts-->
                                             <div class="panel-body2" style="padding: 0 10px;">
                                                 <div class="uk-clearfix">
                                                     <div class="left">
@@ -311,6 +311,45 @@
                                                             <label>
                                                                 Allow
                                                                 <input type="checkbox" id="perm-accounts-delete-{{id}}" name="perm-accounts-delete" {{#canUserRole _id "account:delete"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--<hr class="nomargin-top clear">-->
+
+                                            <!--Import Accounts-->
+                                            <div class="panel-body2 bg-warn" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 class="text-dark" style="padding: 0 0 0 15px; margin: 20px 0; font-size: 18px; line-height: 14px;">Special Permissions</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--<hr class="nomargin-top clear">-->
+
+                                            <!--Import Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Import
+                                                            <i class="material-icons"
+                                                               style="color: #888;
+                                                              font-size: 14px;
+                                                              cursor: pointer;
+                                                              vertical-align: middle;"
+                                                               data-uk-tooltip="{cls:'long-text'}" title="Requires Create Permission">help</i>
+                                                        </h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-import-{{id}}" name="perm-accounts-import" {{#canUserRole _id "account:import"}} checked {{/canUserRole}}>
                                                                 <span class="lever"></span>
                                                             </label>
                                                         </div>
