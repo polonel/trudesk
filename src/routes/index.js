@@ -128,6 +128,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
     router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
     router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
+    router.get('/settings/backup', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.backupSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
 
@@ -266,6 +267,54 @@ function mainRoutes(router, middleware, controllers) {
     });
 
     if (global.env === 'development') {
+        router.get('/debug/deletebackup/:backup', function(req, res) {
+            var _ = require('lodash');
+            var fs = require('fs');
+            var path = require('path');
+
+            var filename = req.params.backup;
+            if (_.isUndefined(filename) || !fs.existsSync(path.join(__dirname, '../../backups/', filename)))
+                return res.status(400).json({success: false, error: 'Invalid Filename'});
+
+            fs.unlink(path.join(__dirname, '../../backups/', filename), function(err) {
+                if (err) return res.status(400).json({success: false, error: err});
+
+                return res.json({success: true});
+            });
+        });
+
+        router.get('/debug/getbackups', function(req, res) {
+            var fs = require('fs');
+            var path = require('path');
+            fs.readdir(path.join(__dirname, '../../backups'), function(err, files) {
+                if (err) return res.status(400).json({error: err});
+
+                var a = [];
+                files.forEach(function(file) {
+                    a.push(file);
+                });
+
+                return res.json({success: true, files: a});
+            });
+        });
+        router.get('/debug/backup', function(req, res) {
+            var database = require('../database');
+            var child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri } });
+            global.forks.push({name: 'backup', fork: child});
+            child.on('message', function(data) {
+                if (data.error) return res.status(400).json({success: false, error: data.error});
+
+                if (data.success)
+                    return res.json({success: true});
+                else
+                    return res.json({success: false, error: data.error});
+            });
+
+            child.on('close', function() {
+                winston.debug('MongoTest process terminated');
+            });
+        });
+
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);

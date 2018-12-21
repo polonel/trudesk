@@ -24,7 +24,7 @@ mailer.sendMail = function(data, callback) {
         if (err) return callback(err);
         if (!mailSettings.enabled) // Mail Disabled
             return callback(null, 'Mail Disabled');
-
+        
         data.from = mailSettings.from.value;
         if (!data.from) return callback('No From Address Set.');
 

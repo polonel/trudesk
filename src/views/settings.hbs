@@ -82,6 +82,11 @@
                         <h3>Push Service</h3>
                     </div>
                 </li>
+                <li {{#ifeq subnav compare='settings-backup'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-backup');">
+                    <div class="setting-category">
+                        <h3>Backup/Restore</h3>
+                    </div>
+                </li>
                 <li {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-legal');">
                     <div class="setting-category">
                         <h3>Legal</h3>
@@ -920,6 +925,8 @@
                         </div>
                     </div>
                 </div>
+
+                {{> 'settings/backuprestore'}}
 
                 <div data-settings-id="settings-legal" {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}}>
                     <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">

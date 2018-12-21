@@ -114,6 +114,14 @@ settingsController.tpsSettings = function(req, res) {
     renderView(res, content);
 };
 
+settingsController.backupSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:backup')) return res.redirect('/settings');
+
+    var content = initViewContant('backup', req);
+
+    renderView(res, content);
+};
+
 settingsController.legal = function(req, res) {
     if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
 

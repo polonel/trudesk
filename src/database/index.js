@@ -50,3 +50,4 @@ module.exports.init = function(callback, connectionString, opts) {
 };
 
 module.exports.db = db;
+module.exports.connectionuri = CONNECTION_URI;

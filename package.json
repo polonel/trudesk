@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "ansi_up": "3.0.0",
+    "archiver": "3.0.0",
     "async": "2.6.1",
     "bcrypt": "3.0.0",
     "body-parser": "1.18.3",
@@ -42,6 +43,7 @@
     "extract-text-webpack-plugin": "3.0.2",
     "fast-csv": "2.4.1",
     "file-tail": "0.3.0",
+    "fs-extra": "7.0.1",
     "grunt": "1.0.3",
     "grunt-contrib-cssmin": "2.2.1",
     "grunt-contrib-uglify": "3.4.0",
