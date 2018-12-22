@@ -103,6 +103,8 @@ function ticketTypeSettingDefault(callback) {
                 }
 
                 var type = _.first(types);
+                if (!type) return callback('No Types Defined!');
+
                 // Save default ticket type
                 var defaultTicketType = new SettingsSchema({
                     name: 'ticket:type:default',

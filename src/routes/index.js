@@ -54,12 +54,12 @@ function mainRoutes(router, middleware, controllers) {
         var _ = require('lodash');
         s.getSettingByName('gen:customlogo', function(err, hasCustomLogo) {
             if (!err && hasCustomLogo && hasCustomLogo.value)
-                s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
+                {s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
                     if (!err && logoFilename && !_.isUndefined(logoFilename))
                         return res.send('/assets/topLogo.png');
                     else
                         return res.send('/img/defaultLogoLight.png');
-                });
+                });}
             else
                 return res.send('/img/defaultLogoLight.png');
         });
@@ -289,19 +289,79 @@ function mainRoutes(router, middleware, controllers) {
             fs.readdir(path.join(__dirname, '../../backups'), function(err, files) {
                 if (err) return res.status(400).json({error: err});
 
-                var a = [];
-                files.forEach(function(file) {
-                    a.push(file);
-                });
+                // var a = [];
+                // var fileWithStats = [];
+                // files.forEach(function(file) {
+                //     a.push(file);
+                // });
 
-                return res.json({success: true, files: a});
+                var fileWithStats = [];
+                var async = require('async');
+                var _ = require('lodash');
+                var moment = require('moment');
+                async.forEach(files, function(f, next) {
+                    fs.stat(path.join(__dirname, '../../backups/', f), function(err, stats) {
+                        if (err) return next(err);
+
+                        var obj = {};
+                        obj.size = stats.size;
+                        obj.sizeFormat = formatBytes(obj.size, 1);
+                        obj.filename = f;
+                        obj.time = stats.mtime;
+
+                        fileWithStats.push(obj);
+
+                        return next();
+                    });
+                }, function(err) {
+                    if (err) return res.status(400).json({success: false, error: err});
+                    fileWithStats = _.sortBy(fileWithStats, function(o) { return new moment(o.time); }).reverse();
+                    return res.json({success: true, files: fileWithStats});
+                });
             });
         });
+
+        router.get('/debug/restore/:file', function(req, res) {
+            var _ = require('lodash');
+            var database = require('../database');
+
+            var file = req.params.file;
+            if (!file) return res.status(400).json({success: false, error: 'Invalid File'});
+
+            var child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri, FILE: file } });
+            global.forks.push({name: 'restore', fork: child});
+
+            child.on('message', function(data) {
+                child.kill('SIGINT');
+                global.forks = _.remove(global.forks, function(f) { return f.fork !== child; });
+
+                if (data.error) return res.status(400).json({success: false, error: data.error});
+
+                if (data.success) {
+                    var cache = _.find(global.forks, function(f) { return f.name === 'cache'; });
+                    if (cache && cache.fork)
+                        cache.fork.send({ name: 'cache:refresh:force'});
+
+                    return res.json({success: true});
+                }
+                else
+                    return res.json({success: false, error: data.error});
+            });
+
+            child.on('close', function() {
+                winston.debug('Restore Process Terminated');
+            });
+        });
+
         router.get('/debug/backup', function(req, res) {
+            var _ = require('lodash');
             var database = require('../database');
             var child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri } });
             global.forks.push({name: 'backup', fork: child});
             child.on('message', function(data) {
+                child.kill('SIGINT');
+                global.forks = _.remove(global.forks, function(f) { return f.fork !== child; });
+
                 if (data.error) return res.status(400).json({success: false, error: data.error});
 
                 if (data.success)
@@ -311,8 +371,23 @@ function mainRoutes(router, middleware, controllers) {
             });
 
             child.on('close', function() {
-                winston.debug('MongoTest process terminated');
+                winston.debug('Backup Process Terminated');
             });
+        });
+
+        router.delete('/debug/backup/:file', function(req, res) {
+            var fs = require('fs-extra');
+            var path = require('path');
+
+            var filename = req.params.file;
+            if (fs.existsSync(path.join(__dirname, '../../backups/', filename))) {
+                fs.unlink(path.join(__dirname, '../../backups/', filename), function(err) {
+                   if (err) return res.status(400).json({success: false, error: err});
+
+                   return res.json({success: true});
+                });
+            } else
+                return res.status(400).json({success: false, error: 'File not found'});
         });
 
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
@@ -399,6 +474,14 @@ function handleErrors(err, req, res) {
         layout: false
     });
 
+}
+
+function formatBytes(bytes, fixed) {
+    if (!fixed) fixed = 2;
+    if(bytes < 1024) return bytes + ' Bytes';
+    else if(bytes < 1048576) return(bytes / 1024).toFixed(fixed) + ' KB';
+    else if(bytes < 1073741824) return(bytes / 1048576).toFixed(fixed) + ' MB';
+    else return(bytes / 1073741824).toFixed(fixed) + ' GB';
 }
 
 function handle404(req, res) {

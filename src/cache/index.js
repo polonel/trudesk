@@ -238,6 +238,15 @@ truCache.refreshCache = function(callback) {
                 restartRefreshClock();
             });
         }
+
+        if (message.name === 'cache:refresh:force') {
+            winston.debug('Forcing Refreshing Cache....');
+
+            truCache.refreshCache(function() {
+                winston.debug('Cache Refreshed at ' + lastUpdated.format('hh:mm:ssa'));
+                restartRefreshClock();
+            });
+        }
     });
 
     loadConfig();

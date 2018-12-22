@@ -12,10 +12,12 @@
 
  */
 
+var _ = require('lodash');
 var fs = require('fs-extra');
-var os = require('os');
 var path = require('path');
 var spawn = require('child_process').spawn;
+var os = require('os');
+var AdmZip = require('adm-zip');
 var archiver = require('archiver');
 var database = require('../database');
 var winston = require('winston');
@@ -24,6 +26,7 @@ var moment = require('moment');
 global.env = process.env.NODE_ENV || 'production';
 
 var CONNECTION_URI = null;
+var databaseName = null;
 
 winston.setLevels(winston.config.cli.levels);
 winston.remove(winston.transports.Console);
@@ -65,19 +68,31 @@ function createZip(callback) {
 
 function cleanup(callback) {
     var rimraf = require('rimraf');
-    rimraf(path.join(__dirname, '../../backups/dump'), callback);
+    rimraf(path.join(__dirname, '../../restores/restore_*'), callback);
 }
 
 function copyFiles(callback) {
     fs.copy(path.join(__dirname, '../../public/uploads/'), path.join(__dirname, '../../backups/dump/'), callback);
 }
 
-function runBackup(callback) {
-    var platform = os.platform();
-    winston.info('Starting backup... (' + platform + ')');
+function extractArchive(file, callback) {
+    var zip = new AdmZip(path.join(__dirname, '../../backups/', file));
+    zip.extractAllTo(path.join(__dirname, '../../restores/restore_' + file + '/'), true);
 
-    var options = ['--uri', CONNECTION_URI, '--out', path.join(__dirname, '../../backups/dump/database/')];
-    var mongodump = spawn(path.join(__dirname, 'bin',  platform, 'mongodump'), options);
+    if (_.isFunction(callback))
+        return callback();
+}
+
+function cleanMongoDb(callback) {
+    database.db.connection.db.dropDatabase(callback);
+}
+
+function runRestore(file, callback) {
+    var platform = os.platform();
+    winston.info('Starting Restore... (' + platform + ')');
+
+    var options = ['--uri', CONNECTION_URI, '-d', databaseName, path.join(__dirname, '../../restores/restore_' + file, 'database/trudesk')];
+    var mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options);
 
     mongodump.stdout.on('data', function(data) {
         winston.debug(data.toString());
@@ -89,13 +104,7 @@ function runBackup(callback) {
 
     mongodump.on('exit', function(code) {
         if (code === 0) {
-            copyFiles(function(err) {
-                if (err) return callback(err);
-                createZip(function(err) {
-                    if (err) return callback(err);
-                    cleanup(callback);
-                });
-            });
+            callback(null, 'done');
         } else
             callback(new Error('MongoDump falied with code ' + code));
     });
@@ -103,33 +112,47 @@ function runBackup(callback) {
 
 (function() {
     CONNECTION_URI = process.env.MONGOURI;
+    if (!CONNECTION_URI) return process.send({success: false, error: 'Invalid connection uri'});
 
-    if (!CONNECTION_URI) return process.send({error: {message: 'Invalid connection uri'}});
+    var FILE = process.env.FILE;
+    if (!FILE) return process.send({success: false, error: 'Invalid File'});
+
+    if (!fs.existsSync(path.join(__dirname, '../../backups', FILE))) {
+        process.send({success: false, error: 'FILE NOT FOUND'});
+        return;
+    }
+
     var options = { keepAlive: 0, auto_reconnect: false, connectTimeoutMS: 5000, useNewUrlParser: true };
     database.init(function(e, db) {
         if (e) {
             process.send({success: false, error: e});
-            return process.kill(0);
+            return;
         }
 
         if (!db) {
             process.send({success: false, error: {message: 'Unable to open database'}});
-            return process.kill(0);
+            return;
         }
 
-        // Cleanup any leftovers
-        cleanup(function(err) {
-            if (err) return process.send({success: false, error: err});
-
-            runBackup(function(err) {
-                if (err) return process.send({success: false, error: err});
-                var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip';
-
-                winston.info('Backup completed successfully: ' + filename);
-                process.send({success: true});
-
-            });
+        databaseName = database.db.connection.db.databaseName;
+        cleanMongoDb(function(err) {
+            if (err)
+                process.send({success: false, error: err});
+            else {
+                cleanup(function() {
+                    extractArchive(FILE, function () {
+                        runRestore(FILE, function (err, result) {
+                            console.log(result);
+                            cleanup(function() {
+                                process.send({success: true});
+                            });
+                        });
+                    });
+                });
+            }
         });
+        // extractArchive('trudesk-12222018_0236.zip');
+
 
     }, CONNECTION_URI, options);
 }());

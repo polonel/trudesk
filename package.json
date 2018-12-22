@@ -19,6 +19,7 @@
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
+    "adm-zip": "0.4.13",
     "ansi_up": "3.0.0",
     "archiver": "3.0.0",
     "async": "2.6.1",

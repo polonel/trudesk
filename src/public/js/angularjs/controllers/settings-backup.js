@@ -24,8 +24,20 @@ define([
             $scope.init = function() {
                 $timeout(function() {
 
-
+                    $scope.getBackups();
                 }, 0);
+            };
+
+            $scope.backupFiles = [];
+
+            $scope.getBackups = function() {
+                $http.get('/debug/getbackups')
+                    .then(function success(res) {
+                        if (res.data && res.data.success === true)
+                            $scope.backupFiles = res.data.files;
+                    }, function error(err) {
+                        console.log(err);
+                    });
             };
 
             $scope.startbackup = function(e) {
@@ -37,6 +49,40 @@ define([
                         $log.log(res);
                         $button.parent().find('.uk-progress').addClass('hide');
                         $button.show();
+                        $scope.getBackups();
+                    }, function error(err) {
+                        $log.error(err);
+                    });
+            };
+
+            $scope.deleteBackup = function(idx) {
+                var file = $scope.backupFiles[idx];
+                if (!file)
+                    return false;
+                var filename = file.filename;
+
+                $http.delete('/debug/backup/' + filename)
+                    .then(function success(res) {
+                        $log.log(res);
+                        if (res.data && res.data.success)
+                            $scope.getBackups();
+                        else
+                            helpers.UI.showSnackbar('Unable to delete backup', true);
+                    }, function error(err) {
+                        $log.error(err);
+                    });
+            };
+
+            $scope.restoreFile = function(idx) {
+                var file = $scope.backupFiles[idx];
+                if (!file)
+                    return false;
+
+                var filename = file.filename;
+
+                $http.get('/debug/restore/' + filename)
+                    .then(function success(res) {
+                        $log.log(res);
                     }, function error(err) {
                         $log.error(err);
                     });
