@@ -390,6 +390,14 @@ function mainRoutes(router, middleware, controllers) {
                 return res.status(400).json({success: false, error: 'File not found'});
         });
 
+        router.get('/debug/hastools', function(req, res) {
+            require('child_process').exec('mongodump --version', function(err) {
+                if (err) return res.status(400).json({success: false, error: err});
+
+                return res.json({success: true});
+            });
+        });
+
         router.get('/debug/populatedb', controllers.debug.populatedatabase);
 
         router.get('/debug/sendmail', controllers.debug.sendmail);

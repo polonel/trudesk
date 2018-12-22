@@ -13,6 +13,8 @@
  **/
 
 var _               = require('lodash');
+var fs              = require('fs-extra');
+var path            = require('path');
 var async           = require('async');
 var winston         = require('winston');
 var moment          = require('moment-timezone');
@@ -21,6 +23,17 @@ var SettingsSchema  = require('../models/setting');
 var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
+
+function createDirectories(callback) {
+    async.parallel([
+        function(done) {
+            fs.ensureDir(path.join(__dirname, '../../backups'), done);
+        },
+        function(done) {
+            fs.ensureDir(path.join(__dirname, '../../restores'), done);
+        }
+    ], callback);
+}
 
 function timezoneDefault(callback) {
     SettingsSchema.getSettingByName('gen:timezone', function(err, setting) {
@@ -315,6 +328,9 @@ function addedDefaultPrioritesToTicketTypes(callback) {
 settingsDefaults.init = function(callback) {
     winston.debug('Checking Default Settings...');
     async.series([
+        function(done) {
+            return createDirectories(done);
+        },
         function(done) {
             return timezoneDefault(done);
         },
