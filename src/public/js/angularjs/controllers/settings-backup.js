@@ -23,12 +23,22 @@ define([
         .controller('BackupCtrl', function($scope, $http, $timeout, $log) {
             $scope.init = function() {
                 $timeout(function() {
-
+                    $scope.checkTools();
                     $scope.getBackups();
                 }, 0);
             };
 
             $scope.backupFiles = [];
+
+            $scope.hasTools = false;
+            $scope.checkTools = function() {
+                $http.get('/debug/hastools')
+                    .then(function success(res) {
+                        $scope.hasTools = (res.data && res.data.success);
+                    }, function error(err) {
+                        $scope.hasTools = false;
+                    });
+            };
 
             $scope.getBackups = function() {
                 $http.get('/debug/getbackups')

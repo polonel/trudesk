@@ -391,6 +391,9 @@ function mainRoutes(router, middleware, controllers) {
         });
 
         router.get('/debug/hastools', function(req, res) {
+            if (require('os').platform() === 'win32')
+                return res.json({success: true});
+
             require('child_process').exec('mongodump --version', function(err) {
                 if (err) return res.status(400).json({success: false, error: err});
 

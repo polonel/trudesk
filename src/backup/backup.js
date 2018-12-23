@@ -76,8 +76,12 @@ function runBackup(callback) {
     var platform = os.platform();
     winston.info('Starting backup... (' + platform + ')');
 
+    var mongodumpExec = 'mongodump';
+    if (platform === 'win32')
+        mongodumpExec = path.join(__dirname, 'bin/win32/mongodump');
+
     var options = ['--uri', CONNECTION_URI, '--out', path.join(__dirname, '../../backups/dump/database/')];
-    var mongodump = spawn(path.join(__dirname, 'bin',  platform, 'mongodump'), options);
+    var mongodump = spawn(mongodumpExec, options);
 
     mongodump.stdout.on('data', function(data) {
         winston.debug(data.toString());
