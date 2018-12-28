@@ -12,16 +12,17 @@
 
  */
 
-var _ = require('lodash');
-var fs = require('fs-extra');
-var path = require('path');
-var spawn = require('child_process').spawn;
-var os = require('os');
-var AdmZip = require('adm-zip');
-var archiver = require('archiver');
-var database = require('../database');
-var winston = require('winston');
-var moment = require('moment');
+var _           = require('lodash');
+var fs          = require('fs-extra');
+var path        = require('path');
+var spawn       = require('child_process').spawn;
+var os          = require('os');
+var async       = require('async');
+var AdmZip      = require('adm-zip');
+var archiver    = require('archiver');
+var database    = require('../database');
+var winston     = require('winston');
+var moment      = require('moment');
 
 global.env = process.env.NODE_ENV || 'production';
 
@@ -39,40 +40,29 @@ winston.add(winston.transports.Console, {
     level: global.env === 'production' ? 'info' : 'verbose'
 });
 
-function createZip(callback) {
-    var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip';
-    var output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename));
-    var archive = archiver('zip', {
-        zlib: { level: 9 }
-    });
-
-    output.on('close', callback);
-    output.on('end', callback);
-
-    archive.on('warning', function(err) {
-        if (err.code === 'ENOENT')
-            winston.warn(err);
-        else {
-            winston.error(err);
-            return callback(err);
-        }
-    });
-
-    archive.on('error', callback);
-
-    archive.pipe(output);
-    archive.directory(path.join(__dirname, '../../backups/dump/'), false);
-
-    archive.finalize();
-}
 
 function cleanup(callback) {
     var rimraf = require('rimraf');
     rimraf(path.join(__dirname, '../../restores/restore_*'), callback);
 }
 
-function copyFiles(callback) {
-    fs.copy(path.join(__dirname, '../../public/uploads/'), path.join(__dirname, '../../backups/dump/'), callback);
+function cleanUploads(callback) {
+    var rimraf = require('rimraf');
+    rimraf(path.join(__dirname, '../../public/uploads/*'), callback);
+}
+
+function copyUploads(file, callback) {
+    async.parallel([
+        function(done) {
+            fs.copy(path.join(__dirname, '../../restores/restore_' + file + '/assets/'), path.join(__dirname, '../../public/uploads/assets/'), done);
+        },
+        function(done) {
+            fs.copy(path.join(__dirname, '../../restores/restore_' + file + '/users/'), path.join(__dirname, '../../public/uploads/users/'), done);
+        },
+        function(done) {
+            fs.copy(path.join(__dirname, '../../restores/restore_' + file + '/tickets/'), path.join(__dirname, '../../public/uploads/tickets/'), done);
+        }
+    ], callback);
 }
 
 function extractArchive(file, callback) {
@@ -135,24 +125,33 @@ function runRestore(file, callback) {
         }
 
         databaseName = database.db.connection.db.databaseName;
-        cleanMongoDb(function(err) {
-            if (err)
-                process.send({success: false, error: err});
-            else {
-                cleanup(function() {
-                    extractArchive(FILE, function () {
-                        runRestore(FILE, function (err, result) {
-                            console.log(result);
-                            cleanup(function() {
-                                process.send({success: true});
-                            });
-                        });
-                    });
-                });
+        async.series([
+            function(next) {
+            // Clean any old restores hanging around
+                cleanup(next);
+            },
+            function(next) {
+                cleanUploads(next);
+            },
+            function(next) {
+                extractArchive(FILE, next);
+            },
+            function(next) {
+                cleanMongoDb(next);
+            },
+            function(next) {
+                runRestore(FILE, next);
+            },
+            function(next) {
+                copyUploads(FILE, next);
+            },
+            function(next) {
+                cleanup(next);
             }
+        ], function(err) {
+            if (err) return process.send({success: false, error: err});
+
+            return process.send({success: true});
         });
-        // extractArchive('trudesk-12222018_0236.zip');
-
-
     }, CONNECTION_URI, options);
 }());

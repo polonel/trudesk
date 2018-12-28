@@ -93,11 +93,15 @@ function runBackup(callback) {
 
     mongodump.on('exit', function(code) {
         if (code === 0) {
-            copyFiles(function(err) {
+            require('rimraf')(path.join(__dirname,  '../../backups/dump/database/trudesk/session*'), function(err) {
                 if (err) return callback(err);
-                createZip(function(err) {
+
+                copyFiles(function(err) {
                     if (err) return callback(err);
-                    cleanup(callback);
+                    createZip(function(err) {
+                        if (err) return callback(err);
+                        cleanup(callback);
+                    });
                 });
             });
         } else

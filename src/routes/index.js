@@ -328,6 +328,16 @@ function mainRoutes(router, middleware, controllers) {
             var file = req.params.file;
             if (!file) return res.status(400).json({success: false, error: 'Invalid File'});
 
+            // CHECK IF HAS TOOLS INSTALLED
+            // if (require('os').platform() === 'win32')
+            //     return res.json({success: true});
+            //
+            // require('child_process').exec('mongodump --version', function(err) {
+            //     if (err) return res.status(400).json({success: false, error: err});
+            //
+            //     return res.json({success: true});
+            // });
+
             var child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri, FILE: file } });
             global.forks.push({name: 'restore', fork: child});
 
