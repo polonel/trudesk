@@ -47,6 +47,17 @@ angular.module('trudesk', [
       cordova.plugins.Keyboard.disableScroll(true);
     }
 
+    // Lock screen in Portrait if on anything but iPad
+    if (!ionic.Platform.isIPad()) {
+        if (window.screen) {
+            window.screen.orientation.lock('portrait');
+        }
+    } else {
+      if (window.screen) {
+        window.screen.orientation.unlock();
+      }
+    }
+                       
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       window.StatusBar.styleLightContent();
@@ -1004,7 +1015,7 @@ angular.module('trudesk.services', [])
   }
 })
 
-.factory('Camera', function($q, $cordovaCamera) {
+.factory('Camera', function($q, $cordovaCamera, $ionicPlatform) {
     return {
       open: function() {
         var deferred = $q.defer();
@@ -1036,7 +1047,17 @@ angular.module('trudesk.services', [])
           };
 
           $cordovaCamera.getPicture(options).then(function(fileURL) {
-            deferred.resolve(fileURL);
+            if ($ionicPlatform.is('ios'))
+              return deferred.resolve(fileURL);
+            
+            else if ($ionicPlatform.is('android'))
+            // Fixed content:// Paths when loading library files on Android 4.4+
+              window.FilePath.resolveNativePath(fileURL, function(resolvedFileURI) {
+                return deferred.resolve(resolvedFileURI);
+              });
+
+            else
+              return deferred.reject('Unsupported Platform');
           });
         } else {
           deferred.reject('Not Supported in browser');
@@ -1267,7 +1288,7 @@ angular.module('trudesk.controllers.accounts', [])
 
   $scope.openCamera = function() {
     Camera.open().then(function(fileURL) {
-        ionic.trigger('$trudesk.imgcrop.setImage', {image: fileURL});
+        ionic.trigger('$trudesk.imgcrop.setImage', {image: window.Ionic.WebView.convertFileSrc(fileURL)});
         ionic.trigger('$trudesk.imgcrop.showCropper', {});
         $scope.imgcropModal.show();
     });
@@ -1275,7 +1296,7 @@ angular.module('trudesk.controllers.accounts', [])
 
   $scope.openPhotoLibrary = function() {
     Camera.library().then(function(fileURL) {
-      ionic.trigger('$trudesk.imgcrop.setImage', {image: fileURL});
+      ionic.trigger('$trudesk.imgcrop.setImage', {image: window.Ionic.WebView.convertFileSrc(fileURL)});
       ionic.trigger('$trudesk.imgcrop.showCropper', {});
       $scope.imgcropModal.show();
     });
@@ -2168,8 +2189,8 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
       Users.getLoggedInUser().then(function(user) {
         $scope.loggedInUser = user;
       }).then(function() {
-        $scope.addCommentModal.show();
         $scope.popover.hide();
+        $scope.addCommentModal.show();
       });
   };
 
