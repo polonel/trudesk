@@ -1,0 +1,25 @@
+version: 2.0
+
+jobs:
+  build_docker:
+    docker:
+      - image: node:10-alpine
+    working_directory: ~/trudesk
+    steps:
+      - checkout
+      - setup_remove_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build Docker Image
+          command: docker build -t polonel/trudesk:test .
+
+workflows:
+  version: 2
+  dev_docker_prod:
+    jobs:
+      - build_docker:
+          filters:
+            branches:
+              only:
+                - docker
+                - dockernightly

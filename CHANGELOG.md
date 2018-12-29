@@ -1,3 +1,25 @@
+## [1.0.3](https://github.com/polonel/trudesk/compare/v1.0.2...v1.0.3) (2018-12-03)
+
+
+### Bug Fixes
+
+* **accounts:** crash if user was deleted with active conversations [#109](https://github.com/polonel/trudesk/issues/109) ([6ea0ad4](https://github.com/polonel/trudesk/commit/6ea0ad4))
+* **assets:** security fix ([b081965](https://github.com/polonel/trudesk/commit/b081965))
+* **install:** server crash due to invalid middleware ([88367d9](https://github.com/polonel/trudesk/commit/88367d9))
+* **mobile:** secure assets not loading ([dca823e](https://github.com/polonel/trudesk/commit/dca823e))
+* **reports:** unable to download reports [#106](https://github.com/polonel/trudesk/issues/106) ([a2cdb7f](https://github.com/polonel/trudesk/commit/a2cdb7f))
+* **sass:** not compiling for install server ([e0f744d](https://github.com/polonel/trudesk/commit/e0f744d))
+* **static:** file access path ([568c343](https://github.com/polonel/trudesk/commit/568c343))
+* **style:** disabled classes applied incorrectly ([884519c](https://github.com/polonel/trudesk/commit/884519c))
+* **style:** incorrect border style ([5edfb0f](https://github.com/polonel/trudesk/commit/5edfb0f))
+* **styles:** incorrect styles ([ae0d82f](https://github.com/polonel/trudesk/commit/ae0d82f))
+* **tickettype:** crash when deleting ticket type [#113](https://github.com/polonel/trudesk/issues/113) ([dc4d335](https://github.com/polonel/trudesk/commit/dc4d335))
+
+
+### Reverts
+
+* **static:** files path var ([dd440e0](https://github.com/polonel/trudesk/commit/dd440e0))
+
 ## [1.0.2](https://github.com/polonel/trudesk/compare/v1.0.1...v1.0.2) (2018-11-03)
 
 
