@@ -3,7 +3,7 @@ version: 2.0
 jobs:
   build_docker:
     docker:
-      - image: node:10-alpine
+      - image: circleci/node:10-stretch
     working_directory: ~/trudesk
     steps:
       - checkout
