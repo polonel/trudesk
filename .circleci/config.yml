@@ -7,7 +7,7 @@ jobs:
     working_directory: ~/trudesk
     steps:
       - checkout
-      - setup_remove_docker:
+      - setup_remote_docker:
           docker_layer_caching: true
       - run:
           name: Build Docker Image
