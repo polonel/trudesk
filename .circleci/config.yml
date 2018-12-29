@@ -1,6 +1,36 @@
 version: 2.0
 
 jobs:
+  build_develop:
+    docker:
+      - image: circleci/node:10-stretch
+      - image: circleci/mongo:3.6
+    working_directory: ~/trudesk
+    envirnoment:
+      NODE_ENV: development
+    steps:
+      - checkout
+      - run:
+          name: Run Tests
+          command: yarn run test
+      - retore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Dependencies
+          command: yarn install --forzen-lockfile
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/yarn
+      - run:
+          name: Run Build
+          command: yarn run build
+      - run:
+          name: Run Codacy
+          command: yarn run codacy
   build_docker:
     docker:
       - image: circleci/node:10-stretch
@@ -11,15 +41,31 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Build Docker Image
-          command: docker build -t polonel/trudesk:test .
+          command: |
+            docker build -t polonel/trudesk:latest .
+            docker tag polonel/trudesk:latest polonel/trudesk:$CIRCLE_TAG
+      - run:
+          name: Push Docker Image
+          command: |
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push polonel/trudesk:latest
+            docker push polonel/trudesk:$TAG
 
 workflows:
   version: 2
   dev_docker_prod:
     jobs:
+      - build_develop:
+          filters:
+            branches:
+              only: develop
       - build_docker:
           filters:
             branches:
               only:
                 - docker
                 - dockernightly
+      - build_production:
+          filters:
+            branches:
+              only: master
