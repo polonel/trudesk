@@ -10,9 +10,6 @@ jobs:
       NODE_ENV: development
     steps:
     - checkout
-    - run:
-        name: Run Tests
-        command: yarn run test
     - restore_cache:
         name: Restore Yarn Package Cache
         keys:
@@ -25,6 +22,9 @@ jobs:
         key: yarn-packages-{{ checksum "yarn.lock" }}
         paths:
         - ~/.cache/yarn
+    - run:
+        name: Run Tests
+        command: yarn run test
     - run:
         name: Run Build
         command: yarn run build
