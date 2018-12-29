@@ -3,14 +3,11 @@ FROM node:10.10-alpine
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
 
-COPY package.json /usr/src/trudesk
 COPY . /usr/src/trudesk
 
-RUN apk add --no-cache --update bash
+RUN apk add --no-cache --update bash make gcc g++ python
 
-RUN apk add --no-cache make gcc g++ python -t && \
-    npm install -g yarn && \
-    yarn && \
+RUN npm install -g yarn && \
     yarn install --production --ignore-scripts --prefer-offline --force && \
     npm rebuild bcrypt --build-from-source && \
     yarn run build && \
