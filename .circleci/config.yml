@@ -13,7 +13,7 @@ jobs:
     - run:
         name: Run Tests
         command: yarn run test
-    - retore_cache:
+    - restore_cache:
         name: Restore Yarn Package Cache
         keys:
         - yarn-packages-{{ checksum "yarn.lock" }}
