@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/node:10-stretch
+    - image: circleci/node:10-stretch
     working_directory: ~/trudesk
 
 commands:
@@ -62,7 +62,7 @@ jobs:
         command: npx semantic-release
   build_docker_arm:
     docker:
-      - image: ubuntu:18.04
+    - image: ubuntu:18.04
     working_directory: ~/trudesk
     steps:
     - setup_remote_docker:
@@ -95,47 +95,49 @@ jobs:
         name: Build Docker Image
         command: |
           docker build -t polonel/trudesk:next .
+          docker tag polonel/trudesk:next polonel/trudesk:latest
     - run:
         name: Push Docker Image
         command: |
           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
           docker push polonel/trudesk:next
+          docker push polonel/trudesk:latest
   build_production_docker:
     executor: docker-executor
     steps:
-      - run:
-          name: Setup Environment Variables
-          command: |
-            wget http://trudesk.io/tools/semver
-            chmod +x semver
-            ~/trudesk/semver get major $CIRCLE_TAG >> ~/major
-            ~/trudesk/semver get minor $CIRCLE_TAG >> ~/minor
-            ~/trudesk/semver get patch $CIRCLE_TAG >> ~/patch
-            echo 'export MAJOR=$(cat ~/major)' >> $BASH_ENV
-            echo 'export MINOR=$(cat ~/minor)' >> $BASH_ENV
-            echo 'export PATCH=$(cat ~/patch)' >> $BASH_ENV
-            rm -rf ~/trudesk/*
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Build Docker Image
-          command: docker build -t polonel/trudesk:latest .
-      - run:
-          name: Tag Docker Images
-          command: |
-            docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
-            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
-            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
-            docker images
-      - run:
-          name: Push Docker Image
-          command: |
-            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
-            docker push polonel/trudesk:latest
-            docker push polonel/trudesk:$MAJOR
-            docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
-            docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
+    - run:
+        name: Setup Environment Variables
+        command: |
+          wget http://trudesk.io/tools/semver
+          chmod +x semver
+          ~/trudesk/semver get major $CIRCLE_TAG >> ~/major
+          ~/trudesk/semver get minor $CIRCLE_TAG >> ~/minor
+          ~/trudesk/semver get patch $CIRCLE_TAG >> ~/patch
+          echo 'export MAJOR=$(cat ~/major)' >> $BASH_ENV
+          echo 'export MINOR=$(cat ~/minor)' >> $BASH_ENV
+          echo 'export PATCH=$(cat ~/patch)' >> $BASH_ENV
+          rm -rf ~/trudesk/*
+    - checkout
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - run:
+        name: Build Docker Image
+        command: docker build -t polonel/trudesk:latest .
+    - run:
+        name: Tag Docker Images
+        command: |
+          docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
+          docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+          docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
+          docker images
+    - run:
+        name: Push Docker Image
+        command: |
+          echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+          docker push polonel/trudesk:latest
+          docker push polonel/trudesk:$MAJOR
+          docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+          docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
 
 workflows:
   version: 2.1
@@ -160,8 +162,8 @@ workflows:
           branches:
             only: master
     - build_production_docker:
-#        requires:
-#          - build_production
+        #        requires:
+        #          - build_production
         filters:
           branches:
             only: master
