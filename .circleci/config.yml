@@ -76,7 +76,7 @@ jobs:
     - run:
         name: Setup QEmu
         command: |
-          copy /usr/bin/qemu-arm-static .
+          cp /usr/bin/qemu-arm-static .
     - run:
         name: Install Docker
         command: curl -fsSL https://get.docker.com/ | sh
