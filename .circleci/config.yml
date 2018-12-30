@@ -69,6 +69,11 @@ jobs:
     - setup_remote_docker:
         docker_layer_caching: true
     - run:
+        name: Install Deps
+        command: |
+          apt-get update
+          apt-get install -y git curl wget
+    - run:
         name: Install Docker
         command: curl -fsSL https://get.docker.com/ | sh
     - run:
