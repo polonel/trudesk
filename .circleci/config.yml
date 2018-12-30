@@ -82,9 +82,6 @@ jobs:
           docker run --rm --privileged multiarch/qemu-user-static:register --reset
           wget http://trudesk.io/install/qemu-arm-static
           chmod +x qemu-arm-static
-#    - run:
-#        name: Enabling qemu
-#        command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
     - run:
         name: Build Docker - ARM
         command: docker build -f Dockerfile.rp3 -t polonel/trudesk:latest-arm .
@@ -103,6 +100,33 @@ jobs:
         command: |
           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
           docker push polonel/trudesk:next
+  build_production_docker:
+    executor: docker-executor
+    environment:
+      TEST_TAG: 1.0.3
+    steps:
+      - run:
+          name: Setup Environment Variables
+          command: |
+            wget http://trudesk.io/tools/semver
+            chmod +x semver
+            echo 'export MAJOR=$(~/trudesk/semver get major $TEST_TAG)' >> $BASH_ENV
+            echo 'export MINOR=$(~/trudesk/semver get minor $TEST_TAG)' >> $BASH_ENV
+            echo 'export PATCH=$(~/trudesk/semver get patch $TEST_TAG)' >> $BASH_ENV
+            echo 'export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")' >> $BASH_ENV
+            source $BASH_ENV
+      - checkout
+      - setup_remote_docker:
+          docker_layer_caching: true
+      - run:
+          name: Build Docker Image
+          command: docker build -t polonel/trudesk:latest
+      - run:
+          name: Tag Docker Images
+          command: |
+            docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
+            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "$MAJOR.$MINOR")
+            docker tag polonel/trudesk:latest polonel/trudesk:$VERSION
 
 workflows:
   version: 2.1
@@ -116,12 +140,19 @@ workflows:
         filters:
           branches:
             only:
+            - docker
             - dockernightly
     - build_docker_arm:
         filters:
           branches:
-            only: docker
+            only: dockerarm
     - build_production:
         filters:
           branches:
             only: master
+    - build_production_docker:
+#        requires:
+#          - build_production
+        filters:
+          branches:
+            only: docker
