@@ -110,17 +110,13 @@ jobs:
           command: |
             wget http://trudesk.io/tools/semver
             chmod +x semver
-            ~/trudesk/semver get major $TEST_TAG >> major
-            ~/trudesk/semver get minor $TEST_TAG >> minor
-            ~/trudesk/semver get patch $TEST_TAG >> patch
-            cat major
-            cat minor
-            cat patch
-            echo 'export MAJOR=$(cat major)' >> $BASH_ENV
-            echo 'export MINOR=$(cat minor)' >> $BASH_ENV
-            echo 'export PATCH=$(cat patch)' >> $BASH_ENV
+            ~/trudesk/semver get major $TEST_TAG >> ~/major
+            ~/trudesk/semver get minor $TEST_TAG >> ~/minor
+            ~/trudesk/semver get patch $TEST_TAG >> ~/patch
+            echo 'export MAJOR=$(cat ~/major)' >> $BASH_ENV
+            echo 'export MINOR=$(cat ~/minor)' >> $BASH_ENV
+            echo 'export PATCH=$(cat ~/patch)' >> $BASH_ENV
             echo 'export VERSION=$(echo "${MAJOR}.${MINOR}.${PATCH}")' >> $BASH_ENV
-            source $BASH_ENV
             rm -rf ~/trudesk/*
       - checkout
       - setup_remote_docker:
