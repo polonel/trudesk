@@ -95,11 +95,13 @@ jobs:
         name: Build Docker Image
         command: |
           docker build -t polonel/trudesk:next .
+          docker tag polonel/trudesk:next polonel/trudesk:latest
     - run:
         name: Push Docker Image
         command: |
           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
           docker push polonel/trudesk:next
+          docker push polonel/trudesk:latest
   build_production_docker:
     executor: docker-executor
     steps:
