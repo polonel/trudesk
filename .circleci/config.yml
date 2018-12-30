@@ -62,21 +62,21 @@ jobs:
         command: npx semantic-release
   build_docker_arm:
     docker:
-      - image: armhf/alpine
+      - image: ubuntu:16.04
     working_directory: ~/trudesk
     steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Install Docker
-          command: |
-            apk update
-            apk add docker
-            service docker start
-      - run:
-          name: Build Docker - ARM
-          command: docker build -t polonel/trudesk:latest-arm .
+    - checkout
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - run:
+        name: Install Docker
+        command: curl -fsSL https://get.docker.com/ | sh
+    - run:
+        name: Enabling qemu
+        command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+    - run:
+        name: Build Docker - ARM
+        command: docker build -f Dockerfile.rp3 -t polonel/trudesk:latest-arm .
   build_docker_next:
     executor: docker-executor
     steps:
