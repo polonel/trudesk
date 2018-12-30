@@ -10,11 +10,11 @@ WORKDIR /usr/src/trudesk
 
 RUN npm config set unsafe-perm true
 
-RUN apk add --no-cache --update bash gcc g++ python
+RUN apk add --no-cache --update bash make gcc g++ python
 
 RUN npm install -g yarn && \
     yarn install --production --ignore-scripts --force && \
-    npm rebuild --build-from-source && \
+    npm rebuild bcrypt node-sass --build-from-source && \
     yarn run build && \
     apk del make gcc g++ python
 
