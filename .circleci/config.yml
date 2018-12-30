@@ -65,20 +65,24 @@ jobs:
       - image: ubuntu:16.04
     working_directory: ~/trudesk
     steps:
-    - checkout
     - setup_remote_docker:
         docker_layer_caching: true
     - run:
         name: Install Deps
         command: |
           apt-get update
-          apt-get install -y git curl wget
+          apt-get install -y git curl wget qemu qemu-user qemu-user-static
+    - checkout
+    - run:
+        name: Setup QEmu
+        command: |
+          copy /usr/bin/qemu-arm-static .
     - run:
         name: Install Docker
         command: curl -fsSL https://get.docker.com/ | sh
-    - run:
-        name: Enabling qemu
-        command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
+#    - run:
+#        name: Enabling qemu
+#        command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
     - run:
         name: Build Docker - ARM
         command: docker build -f Dockerfile.rp3 -t polonel/trudesk:latest-arm .
