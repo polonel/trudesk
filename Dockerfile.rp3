@@ -1,21 +1,21 @@
-FROM arm32v6/node:10-alpine
+FROM arm32v7/node:10-stretch
 
 COPY qemu-arm-static /usr/bin/
 
 RUN mkdir -p /usr/src/trudesk
-WORKDIR /usr/src/trudesk
 
 COPY . /usr/src/trudesk
 
+WORKDIR /usr/src/trudesk
+
 RUN npm config set unsafe-perm true
 
-RUN apk add --no-cache --update bash gcc g++ python
+RUN apt-get install build-essential python
 
-RUN npm install -g yarn && \
-    yarn --production --ignore-scripts --frozen-lockfile --network-timeout 100000 install && \
-    npm rebuild --build-from-source && \
-    yarn run build && \
-    apk del make gcc g++ python
+RUN npm install --build-from-source && \
+    npm run build && \
+    apt-get -y remove build-essential python
+    apt-get -y autoremove
 
 EXPOSE 8118
 
