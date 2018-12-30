@@ -14,7 +14,7 @@ RUN apt-get install build-essential python
 
 RUN npm install --build-from-source && \
     npm run build && \
-    apt-get -y remove build-essential python
+    apt-get -y remove build-essential python && \
     apt-get -y autoremove
 
 EXPOSE 8118
