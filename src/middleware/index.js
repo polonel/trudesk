@@ -97,7 +97,7 @@ module.exports = function(app, db, callback) {
             app.use(express.static(path.join(__dirname, '../../public')));
 
             //Remove to enable plugins
-            //next(null, store);
+            return next(null, store);
             global.plugins = [];
             var dive = require('dive');
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {

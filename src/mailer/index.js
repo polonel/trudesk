@@ -22,10 +22,13 @@ var mailer = {};
 mailer.sendMail = function(data, callback) {
     createTransporter(function(err, mailSettings) {
         if (err) return callback(err);
-        if (!mailSettings.enabled) // Mail Disabled
+        if (!mailSettings || !mailSettings.enabled) // Mail Disabled
             return callback(null, 'Mail Disabled');
-        
+
+        if (!mailSettings.from) return callback('No From Address Set.');
+
         data.from = mailSettings.from.value;
+
         if (!data.from) return callback('No From Address Set.');
 
         mailSettings.transporter.sendMail(data, callback);
