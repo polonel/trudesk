@@ -110,9 +110,15 @@ jobs:
           command: |
             wget http://trudesk.io/tools/semver
             chmod +x semver
-            echo 'export MAJOR=$(~/trudesk/semver get major $TEST_TAG)' >> $BASH_ENV
-            echo 'export MINOR=$(~/trudesk/semver get minor $TEST_TAG)' >> $BASH_ENV
-            echo 'export PATCH=$(~/trudesk/semver get patch $TEST_TAG)' >> $BASH_ENV
+#            Required to prevent bash loop
+            export TMP_MAJOR=$(~/trudesk/semver get major $TEST_TAG)
+            export TMP_MINOR=$(~/trudesk/semver get minor $TEST_TAG)
+            export TMP_PATCH=$(~/trudesk/semver get patch $TEST_TAG)
+            export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")
+            echo $VERSION
+            echo 'export MAJOR="$TMP_MAJOR"' >> $BASH_ENV
+            echo 'export MINOR="$TMP_MINOR"' >> $BASH_ENV
+            echo 'export PATCH="$TMP_PATCH"' >> $BASH_ENV
             echo 'export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")' >> $BASH_ENV
             source $BASH_ENV
             rm -rf semver
