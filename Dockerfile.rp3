@@ -12,8 +12,8 @@ RUN npm config set unsafe-perm true
 RUN apk add --no-cache --update bash gcc g++ python
 
 RUN npm install -g yarn && \
-    yarn install --production --ignore-scripts --prefer-offline --force && \
-    npm rebuild bcrypt --build-from-source && \
+    yarn install --production --ignore-scripts && \
+    npm rebuild --build-from-source && \
     yarn run build && \
     apk del make gcc g++ python
 
