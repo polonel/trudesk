@@ -113,10 +113,13 @@ jobs:
             ~/trudesk/semver get major $TEST_TAG >> major
             ~/trudesk/semver get minor $TEST_TAG >> minor
             ~/trudesk/semver get patch $TEST_TAG >> patch
+            cat major
+            cat minor
+            cat patch
             echo 'export MAJOR=$(cat major)' >> $BASH_ENV
             echo 'export MINOR=$(cat minor)' >> $BASH_ENV
             echo 'export PATCH=$(cat patch)' >> $BASH_ENV
-            echo 'export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")' >> $BASH_ENV
+            echo 'export VERSION=$(echo "${MAJOR}.${MINOR}.${PATCH}")' >> $BASH_ENV
             source $BASH_ENV
             rm -rf ~/trudesk/*
       - checkout
@@ -129,8 +132,7 @@ jobs:
           name: Tag Docker Images
           command: |
             docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
-            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "$MAJOR.$MINOR")
-            docker tag polonel/trudesk:latest polonel/trudesk:$VERSION
+            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
 
 workflows:
   version: 2.1
