@@ -3,7 +3,7 @@ version: 2.1
 executors:
   docker-executor:
     docker:
-      - image: circleci/node:10-stretch
+    - image: circleci/node:10-stretch
     working_directory: ~/trudesk
 
 commands:
@@ -15,7 +15,7 @@ commands:
         - yarn-packages-{{ checksum "yarn.lock" }}
     - run:
         name: Install Dependencies
-        command: yarn install --forzen-lockfile
+        command: yarn install --frozen-lockfile
     - save_cache:
         name: Save Yarn Package Cache
         key: yarn-packages-{{ checksum "yarn.lock" }}
@@ -62,21 +62,29 @@ jobs:
         command: npx semantic-release
   build_docker_arm:
     docker:
-      - image: armhf/alpine
+    - image: ubuntu:18.04
     working_directory: ~/trudesk
     steps:
-      - checkout
-      - setup_remote_docker:
-          docker_layer_caching: true
-      - run:
-          name: Install Docker
-          command: |
-            apk update
-            apk add docker
-            service docker start
-      - run:
-          name: Build Docker - ARM
-          command: docker build -t polonel/trudesk:latest-arm .
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - run:
+        name: Install Deps
+        command: |
+          apt-get update
+          apt-get install -y git curl wget
+    - checkout
+    - run:
+        name: Install Docker
+        command: curl -fsSL https://get.docker.com/ | sh
+    - run:
+        name: Setup QEmu
+        command: |
+          docker run --rm --privileged multiarch/qemu-user-static:register --reset
+          wget http://trudesk.io/install/qemu-arm-static
+          chmod +x qemu-arm-static
+    - run:
+        name: Build Docker - ARM
+        command: docker build -f Dockerfile.rp3 -t polonel/trudesk:latest-arm .
   build_docker_next:
     executor: docker-executor
     steps:
@@ -92,6 +100,42 @@ jobs:
         command: |
           echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
           docker push polonel/trudesk:next
+  build_production_docker:
+    executor: docker-executor
+    steps:
+    - run:
+        name: Setup Environment Variables
+        command: |
+          wget http://trudesk.io/tools/semver
+          chmod +x semver
+          ~/trudesk/semver get major $CIRCLE_TAG >> ~/major
+          ~/trudesk/semver get minor $CIRCLE_TAG >> ~/minor
+          ~/trudesk/semver get patch $CIRCLE_TAG >> ~/patch
+          echo 'export MAJOR=$(cat ~/major)' >> $BASH_ENV
+          echo 'export MINOR=$(cat ~/minor)' >> $BASH_ENV
+          echo 'export PATCH=$(cat ~/patch)' >> $BASH_ENV
+          rm -rf ~/trudesk/*
+    - checkout
+    - setup_remote_docker:
+        docker_layer_caching: true
+    - run:
+        name: Build Docker Image
+        command: docker build -t polonel/trudesk:latest .
+    - run:
+        name: Tag Docker Images
+        command: |
+          docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
+          docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+          docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
+          docker images
+    - run:
+        name: Push Docker Image
+        command: |
+          echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+          docker push polonel/trudesk:latest
+          docker push polonel/trudesk:$MAJOR
+          docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+          docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
 
 workflows:
   version: 2.1
@@ -105,12 +149,21 @@ workflows:
         filters:
           branches:
             only:
+            - docker
             - dockernightly
     - build_docker_arm:
         filters:
           branches:
-            only: docker
+            only: dockerarm
     - build_production:
         filters:
           branches:
             only: master
+    - build_production_docker:
+        #        requires:
+        #          - build_production
+        filters:
+          branches:
+            only: master
+          tags:
+            only: /^v.*/
