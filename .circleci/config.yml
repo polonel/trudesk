@@ -105,18 +105,15 @@ jobs:
     steps:
       - run:
           name: Setup Environment Variables
-          environment:
-            TEST_TAG: 1.0.3
           command: |
             wget http://trudesk.io/tools/semver
             chmod +x semver
-            ~/trudesk/semver get major $TEST_TAG >> ~/major
-            ~/trudesk/semver get minor $TEST_TAG >> ~/minor
-            ~/trudesk/semver get patch $TEST_TAG >> ~/patch
+            ~/trudesk/semver get major $CIRCLE_TAG >> ~/major
+            ~/trudesk/semver get minor $CIRCLE_TAG >> ~/minor
+            ~/trudesk/semver get patch $CIRCLE_TAG >> ~/patch
             echo 'export MAJOR=$(cat ~/major)' >> $BASH_ENV
             echo 'export MINOR=$(cat ~/minor)' >> $BASH_ENV
             echo 'export PATCH=$(cat ~/patch)' >> $BASH_ENV
-            echo 'export VERSION=$(echo "${MAJOR}.${MINOR}.${PATCH}")' >> $BASH_ENV
             rm -rf ~/trudesk/*
       - checkout
       - setup_remote_docker:
@@ -129,7 +126,16 @@ jobs:
           command: |
             docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
             docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+            docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
             docker images
+      - run:
+          name: Push Docker Image
+          command: |
+            echo $DOCKER_PWD | docker login -u $DOCKER_LOGIN --password-stdin
+            docker push polonel/trudesk:latest
+            docker push polonel/trudesk:$MAJOR
+            docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+            docker push polonel/trudesk:$(echo "${MAJOR}.${MINOR}.${PATCH}")
 
 workflows:
   version: 2.1
@@ -158,4 +164,6 @@ workflows:
 #          - build_production
         filters:
           branches:
-            only: docker
+            only: master
+          tags:
+            only: /^v.*/
