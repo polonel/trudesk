@@ -113,8 +113,6 @@ jobs:
             export TMP_MAJOR=$(~/trudesk/semver get major $TEST_TAG)
             export TMP_MINOR=$(~/trudesk/semver get minor $TEST_TAG)
             export TMP_PATCH=$(~/trudesk/semver get patch $TEST_TAG)
-            export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")
-            echo $VERSION
             echo 'export MAJOR="$TMP_MAJOR"' >> $BASH_ENV
             echo 'export MINOR="$TMP_MINOR"' >> $BASH_ENV
             echo 'export PATCH="$TMP_PATCH"' >> $BASH_ENV
@@ -126,7 +124,7 @@ jobs:
           docker_layer_caching: true
       - run:
           name: Build Docker Image
-          command: docker build -t polonel/trudesk:latest
+          command: docker build -t polonel/trudesk:latest .
       - run:
           name: Tag Docker Images
           command: |
