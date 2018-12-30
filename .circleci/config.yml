@@ -62,7 +62,7 @@ jobs:
         command: npx semantic-release
   build_docker_arm:
     docker:
-      - image: ubuntu:16.04
+      - image: ubuntu:18.10
     working_directory: ~/trudesk
     steps:
     - setup_remote_docker:
