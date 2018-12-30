@@ -81,6 +81,7 @@ jobs:
         command: |
           docker run --rm --privileged multiarch/qemu-user-static:register --reset
           wget http://trudesk.io/install/qemu-arm-static
+          chmod +x qemu-arm-static
 #    - run:
 #        name: Enabling qemu
 #        command: docker run --rm --privileged multiarch/qemu-user-static:register --reset
