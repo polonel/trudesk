@@ -102,19 +102,17 @@ jobs:
           docker push polonel/trudesk:next
   build_production_docker:
     executor: docker-executor
-    environment:
-      TEST_TAG: 1.0.3
     steps:
       - run:
           name: Setup Environment Variables
+          environment:
+            TEST_TAG: 1.0.3
           command: |
             wget http://trudesk.io/tools/semver
             chmod +x semver
-            cp semver /usr/bin/
-            rm -rf semver
-            echo 'export MAJOR=$(semver get major ${TEST_TAG})' >> $BASH_ENV
-            echo 'export MINOR=$(semver get minor ${TEST_TAG})' >> $BASH_ENV
-            echo 'export PATCH=$(semver get patch ${TEST_TAG})' >> $BASH_ENV
+            echo 'export MAJOR=$(~/semver get major $TEST_TAG)' >> $BASH_ENV
+            echo 'export MINOR=$(~/semver get minor $TEST_TAG)' >> $BASH_ENV
+            echo 'export PATCH=$(~/semver get patch $TEST_TAG)' >> $BASH_ENV
             echo 'export VERSION=$(echo "$MAJOR.$MINOR.$PATCH")' >> $BASH_ENV
             source $BASH_ENV
       - checkout
