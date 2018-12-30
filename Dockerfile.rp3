@@ -12,7 +12,7 @@ RUN npm config set unsafe-perm true
 RUN apk add --no-cache --update bash gcc g++ python
 
 RUN npm install -g yarn && \
-    yarn install --production --ignore-scripts && \
+    yarn --production --ignore-scripts --frozen-lockfile --network-timeout 100000 install && \
     npm rebuild --build-from-source && \
     yarn run build && \
     apk del make gcc g++ python
