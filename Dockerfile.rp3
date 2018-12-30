@@ -7,7 +7,9 @@ WORKDIR /usr/src/trudesk
 
 COPY . /usr/src/trudesk
 
-RUN apk add --no-cache --update bash make gcc g++ python
+RUN npm config set unsafe-perm true
+
+RUN apk add --no-cache --update bash gcc g++ python
 
 RUN npm install -g yarn && \
     yarn install --production --ignore-scripts --prefer-offline --force && \
