@@ -129,6 +129,7 @@ jobs:
           command: |
             docker tag polonel/trudesk:latest polonel/trudesk:$MAJOR
             docker tag polonel/trudesk:latest polonel/trudesk:$(echo "${MAJOR}.${MINOR}")
+            docker images
 
 workflows:
   version: 2.1
