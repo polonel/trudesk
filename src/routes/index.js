@@ -275,6 +275,15 @@ function mainRoutes(router, middleware, controllers) {
             res.send('OK');
         });
 
+        var formidable = require('express-formidable');
+
+        router.post('/debug/sendgrid', formidable(), function(req, res) {
+           console.log(req.fields);
+           console.log('---------');
+           console.log(req.fields.to);
+           return res.send();
+        });
+
         router.get('/debug/cache/refresh', function (req, res) {
             var _ = require('lodash');
 
