@@ -42,6 +42,7 @@
     "extract-text-webpack-plugin": "3.0.2",
     "fast-csv": "2.4.1",
     "file-tail": "0.3.0",
+    "fs-extra": "7.0.1",
     "grunt": "1.0.3",
     "grunt-contrib-cssmin": "2.2.1",
     "grunt-contrib-uglify": "3.4.0",
