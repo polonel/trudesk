@@ -29,7 +29,6 @@ node_modules
 *.sassc
 
 #custom
-.circleci/
 package-lock.json
 config.json
 import.csv
