@@ -1,57 +1,64 @@
-<a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="375" /></a>
+<h1 align="center">
+<a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="500" /></a>
+</h1>
+<p align="center">
+<a href="https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9"><img src="https://img.shields.io/codacy/grade/7b3acb53c33b4a40bb32da109bbdd1a9/develop.svg?style=flat-square" /></a>
+<img src="https://img.shields.io/circleci/token/ad7d2d066a75685a15c8e2fd08bd75e53b18fbb7/project/github/polonel/trudesk/develop.svg?style=flat-square" />
+<a href="http://hits.dwyl.io/polonel/trudesk"><img src="http://hits.dwyl.io/polonel/trudesk.svg" /></a>
+<a href="https://forum.trudesk.io"><img src="https://img.shields.io/discourse/https/forum.trudesk.io/topics.svg?style=flat-square" /></a>
+<a title="Crowdin" target="_blank" href="https://crowdin.com/project/trudesk"><img src="https://d322cqt584bo4o.cloudfront.net/trudesk/localized.svg?style=flat-square"></a>
+<img src="https://img.shields.io/badge/license-APACHE%202-green.svg?style=flat-square" />
+<img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" />
+<a href="http://trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
+<br />
+<sub>© 2014-2018, Chris Brame (<b><a href="https://github.com/polonel">@polonel</a></b>).</sub>
+</p>
+<br />
 
-<br/><br/>
+### Open Source Help Desk - Simply Organized.
+Quickly resolve issues & task with an easy to use solution. Built with one goal in mind, to keep work loads organized and simple. Get started today at <a href="http://trudesk.io">Trudesk.io</a>
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9)](https://www.codacy.com/app/polonel/trudesk?utm_source=github.com&utm_medium=referral&utm_content=polonel/trudesk&utm_campaign=badger)
-[![Build Status](https://semaphoreci.com/api/v1/polonel/trudesk/branches/develop/badge.svg)](https://semaphoreci.com/polonel/trudesk)
-[![HitCount](http://hits.dwyl.io/polonel/trudesk.svg)](http://hits.dwyl.io/polonel/trudesk)
+<p align="center">
+    <img src="http://trudesk.io/images/hero-td-right.png" />
+</p>
 
-[http://trudesk.io](http://trudesk.io/)
+### Online Demo
+An online demo is live with fake data at <a href="http://docker.trudesk.io">http://docker.trudesk.io</a>. <br />
+<sub>**Note: demo data resets every two hours**<sub>
+``` text
+Username: demo.user
+Password: password
+```
 
-Trudesk is an open source help desk solution still in active development.
+#### Deploy Trudesk Anywhere
+**Trudesk** is built with <a href="https://nodejs.org">nodejs</a> and <a href="https://mongodb.org">mongodb</a> and can run on any cloud provider, docker, bare-metal, or even a raspberry pi.
+Take it for a spin on Ubuntu 16.04 with a one liner - <br />`curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash`
 
-Built on [Node.JS](http://nodejs.org) and [MongoDB](http://www.mongodb.org).
-
-### Requirements
-+ Node.JS v9.10.0 or later
-+ MongoDB 3.6 or later
-
-### Install & Run
-1. Clone the repo using: ```git clone http://www.github.com/polonel/trudesk```
-2. Install dependencies: ```npm i yarn -g && yarn```
-3. Build the scripts: ```npm run build```
-3. Start the server: ```npm start```
-4. Navigate to: ```http://localhost:8118```
-
-#### Ubuntu 16.04 Install Script
-```curl -L -s http://www.trudesk.io/install/install_ubuntu.sh | sudo bash```
-
-#### Trudesk Virtual Appliance
-The Trudesk Virtual Appliance can quickly deploy to both Virtual Box as well as VMWare. Visit the appliance documentation for more information.
+###### Trudesk Virtual Appliance
+The Trudesk Virtual Appliance can quickly deploy to both Virtual Box and VMWare. Visit the appliance documentation for more information.
 [Trudesk Virtual Appliance Documentation](http://www.trudesk.io/v1/guide/installation.html#Virtual-Appliance)
 
 ### Documentation
-___Docs are still in development___
+Online documentation: [http://www.trudesk.io/docs](http://www.trudesk.io/docs)
 
-To view the online documentation: [http://www.trudesk.io/v1/guide](http://www.trudesk.io/v1/guide)
-
-### Help
-if you like what you see here, and want to help support the work being done, you could:
-
-+ Contribute code, issues and pull requests
-+ Spread the word about trudesk
-+ [![alt tag](https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=USPWFP6P6RTKC) Or you can buy me a cup of cofee or even dinner :)
-#### Translators Wanted
-Volunteer to help translate the project on Crowdin: [https://crwd.in/trudesk](https://crwd.in/trudesk)
+### Contributing
+If you like what you see here, and want to help support the work being done, you could:
++ Report Bugs
++ Request/Implement Features
++ Refactor Codebase
++ Help Write Documentation
++ Translation - Help translate trudesk on [Crowdin](https://crwd.in/trudesk).
 
 ### Sponsors
+Just a few who have made the project possible.
+<br />
 <a href="https://www.browserstack.com"><img src="https://trudesk.io/images/browserstack-logo-600x315.png" width="115" /></a>
 
 Trudesk is tested with confidence using [BrowserStack](https://browserstack.com).
 
 ### License
 
-    Copyright 2014-2018 Chris Brame
+    Copyright 2014-2019 Chris Brame
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
