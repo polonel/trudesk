@@ -64,6 +64,7 @@ workflows:
           branches:
             only: develop
   production:
+    jobs:
     - build_production:
         filters:
           branches:
