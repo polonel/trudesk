@@ -30,14 +30,17 @@ define([
 
             $scope.backupFiles = [];
 
-            $scope.hasTools = false;
+            $scope.loadingTools = true;
             $scope.checkTools = function() {
                 $http.get('/debug/hastools')
                     .then(function success(res) {
                         $scope.hasTools = (res.data && res.data.success);
                     }, function error(err) {
                         $scope.hasTools = false;
-                    });
+                    }).then(function() {
+                        $scope.loadingTools = false;
+                        $scope.showNoTools = (!$scope.loading && !$scope.hasTools);
+                });
             };
 
             $scope.getBackups = function() {
