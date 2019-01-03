@@ -29,6 +29,7 @@ node_modules
 *.sassc
 
 #custom
+.circleci/
 package-lock.json
 config.json
 import.csv
@@ -54,7 +55,6 @@ public/css/app.css
 *.local
 sonar-project.properties
 .scannerwork/
-
 public/uploads/assets/*.*
-
 backups/
+restores/
