@@ -43,7 +43,7 @@ jobs:
     - checkout
     - run:
         name: Install npx
-        command: npm i -g npx
+        command: sudo npm i -g npx
     - yarninstall
     - run:
         name: Run Tests
