@@ -7,11 +7,11 @@
 <a href="http://hits.dwyl.io/polonel/trudesk"><img src="http://hits.dwyl.io/polonel/trudesk.svg" /></a>
 <a href="https://forum.trudesk.io"><img src="https://img.shields.io/discourse/https/forum.trudesk.io/topics.svg?style=flat-square" /></a>
 <a title="Crowdin" target="_blank" href="https://crowdin.com/project/trudesk"><img src="https://d322cqt584bo4o.cloudfront.net/trudesk/localized.svg?style=flat-square"></a>
-<img src="https://img.shields.io/badge/license-APACHE%202-green.svg?style=flat-square" />
-<img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" />
+<a href="https://github.com/polonel/trudesk/blob/master/LICENSE"><img src="https://img.shields.io/badge/license-APACHE%202-green.svg?style=flat-square" /></a>
+<a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
 <a href="http://trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2018, Chris Brame (<b><a href="https://github.com/polonel">@polonel</a></b>).</sub>
+<sub>© 2014-2019, Chris Brame (<b><a href="https://github.com/polonel">@polonel</a></b>).</sub>
 </p>
 <br />
 
