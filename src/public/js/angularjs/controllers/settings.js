@@ -914,41 +914,6 @@ define([
                     });
                 };
 
-                $scope.showCreateTagWindow = function($event) {
-                    $event.preventDefault();
-                    var createTagModal = $('#createTagModal');
-                    if (createTagModal.length > 0)
-                        UIkit.modal(createTagModal, {bgclose: false}).show();
-
-                };
-
-                $scope.createTag = function($event) {
-                    $event.preventDefault();
-                    var form = $('#createTagForm');
-                    if (!form.isValid(null, null, false))
-                        return true;
-                     else {
-                        var tagName = form.find('input[name="tagName"]').val();
-                        if (!tagName || tagName.length < 3) return true;
-
-                        $http.post('/api/v1/tags/create', {
-                            tag: tagName
-                        }, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(function successCallback() {
-                            helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
-                            var time = new Date().getTime();
-                            History.pushState(null, null, '/settings/tickets/?refresh=' + time);
-
-                        }, function errorCallback(err) {
-                            helpers.UI.showSnackbar('Unable to create tag. Check console', true);
-                            $log.error(err);
-                        });
-                    }
-                };
-
                 $scope.showCreateTicketTypeWindow = function($event) {
                     $event.preventDefault();
                     var createTicketTypeModal = $('#createTicketTypeModal');
