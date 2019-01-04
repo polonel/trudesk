@@ -94,25 +94,34 @@ define([
             };
 
             $scope.restoreFile = function(idx) {
-                socket.ui.emitShowRestoreOverlay();
-
                 var file = $scope.backupFiles[idx];
                 if (!file)
                     return false;
 
                 var filename = file.filename;
 
-                $http.post('/api/v1/backup/restore', {
-                    file: filename
-                }).then(function success(res) {
-                    $log.log(res);
-                    helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false);
-                    $timeout(function() {
-                        socket.ui.emitRestoreComplete();
-                    }, 2000);
-                }, function error(err) {
-                    $log.error(err);
-                    helpers.UI.showSnackbar('An Error Occurred. Check Console.', true);
+                UIkit.modal.confirm(
+                    '<h2>Are you sure?</h2>' +
+                    '<p style="font-size: 15px;"><span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> All data will be wiped from the database and restored with the selected backup file: <strong>' + filename + '</strong></p>' +
+                    '<p style="font-size: 12px;">Any users currently logged in will be presented with a blocking restore page. Preventing any further actions.' +
+                    'Once complete all users are required to log in again.</p>',
+                    function() {
+                        socket.ui.emitShowRestoreOverlay();
+
+                        $http.post('/api/v1/backup/restore', {
+                            file: filename
+                        }).then(function success(res) {
+                            $log.log(res);
+                            helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false);
+                            $timeout(function() {
+                                socket.ui.emitRestoreComplete();
+                            }, 2000);
+                        }, function error(err) {
+                            $log.error(err);
+                            helpers.UI.showSnackbar('An Error Occurred. Check Console.', true);
+                        });
+                }, {
+                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
                 });
             };
 
