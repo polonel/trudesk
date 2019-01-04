@@ -17,8 +17,9 @@ define([
     'underscore',
     'jquery',
     'modules/helpers',
+    'modules/socket',
     'uikit'
-], function (angular, _, $, helpers, UIkit) {
+], function (angular, _, $, helpers, socket, UIkit) {
     return angular.module('trudesk.controllers.settings.backup', ['ngSanitize'])
         .controller('BackupCtrl', function($scope, $http, $timeout, $log) {
             $scope.init = function() {
@@ -93,6 +94,8 @@ define([
             };
 
             $scope.restoreFile = function(idx) {
+                socket.ui.emitShowRestoreOverlay();
+
                 var file = $scope.backupFiles[idx];
                 if (!file)
                     return false;
@@ -103,8 +106,13 @@ define([
                     file: filename
                 }).then(function success(res) {
                     $log.log(res);
+                    helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false);
+                    $timeout(function() {
+                        socket.ui.emitRestoreComplete();
+                    }, 2000);
                 }, function error(err) {
                     $log.error(err);
+                    helpers.UI.showSnackbar('An Error Occurred. Check Console.', true);
                 });
             };
 

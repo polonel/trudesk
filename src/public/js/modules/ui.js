@@ -60,6 +60,32 @@ define('modules/ui', [
 
         //Logs
         this.updateServerLogs(socket);
+
+        //Backup / Restore
+        this.onShowRestoreOverlay();
+        this.onRestoreComplete();
+    };
+
+    socketUi.onShowRestoreOverlay = function() {
+        socket.removeAllListeners('$trudesk:restore:showOverlay');
+        socket.on('$trudesk:restore:showOverlay', function() {
+            $('#restoreBackupOverlay').removeClass('hide');
+        });
+    };
+
+    socketUi.emitShowRestoreOverlay = function() {
+        socket.emit('$trudesk:restore:showOverlay');
+    };
+
+    socketUi.onRestoreComplete = function() {
+        socket.removeAllListeners('$trudesk:restore:complete');
+        socket.on('$trudesk:restore:complete', function() {
+           location.reload();
+        });
+    };
+
+    socketUi.emitRestoreComplete = function() {
+        socket.emit('$trudesk:restore:complete');
     };
 
     socketUi.setShowNotice = function(notice) {
