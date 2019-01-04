@@ -22,8 +22,57 @@ define([
 ], function (angular, _, $, helpers, socket, UIkit) {
     return angular.module('trudesk.controllers.settings.backup', ['ngSanitize'])
         .controller('BackupCtrl', function($scope, $http, $timeout, $log) {
+
+            function initBackupUpload() {
+                var progressbar = $('#backupUploadProgress'),
+                    $backupUploadSelect = $('#backup-upload-select'),
+                    $uploadButton = $backupUploadSelect.parent(),
+                    bar = progressbar.find('.uk-progress-bar'),
+                    settings = {
+                        action: '/api/v1/backup/upload',
+                        allow: '*.zip',
+                        type: 'json',
+
+                        loadstart: function() {
+                            bar.css('width', '0%').text('0%');
+                            progressbar.removeClass('hide');
+                            $uploadButton.addClass('hide');
+                        },
+                        notallowed: function() {
+                            helpers.UI.showSnackbar('Invalid File Type. Please upload a Zip file.', true);
+                        },
+                        error: function(err) {
+                            $log.error(err);
+                            helpers.UI.showSnackbar('An unknown error occurred. Check Console', true);
+                        },
+                        progress: function(percent) {
+                            percent = Math.ceil(percent);
+                            bar.css('width', percent + '%').text(percent + '%');
+                        },
+
+                        allcomplete: function(response) {
+                            $log.log(response);
+                            if (!response.success)
+                                helpers.UI.showSnackbar(response.error, true);
+
+                            bar.css('width', '100%').text('100%');
+
+                            $timeout(function() {
+                                progressbar.addClass('hide');
+                                $uploadButton.removeClass('hide');
+                                $scope.getBackups();
+                                $backupUploadSelect.val(null);
+                            }, 1500);
+                        }
+                    };
+
+                UIkit.uploadSelect($backupUploadSelect, settings);
+            }
+
             $scope.init = function() {
                 $timeout(function() {
+                    initBackupUpload();
+
                     $scope.checkTools();
                     $scope.getBackups();
                 }, 0);

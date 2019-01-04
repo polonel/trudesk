@@ -162,4 +162,55 @@ backup_restore.hasBackupTools = function(req, res) {
     });
 };
 
+backup_restore.uploadBackup = function(req, res) {
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1
+        }
+    });
+
+    var object = {}, error;
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('application/zip') === -1 &&
+            mimetype.indexOf('application/x-compressed') === -1 &&
+            mimetype.indexOf('application/x-zip-compressed') === -1 &&
+            mimetype.indexOf('application/octet-stream') === -1 &&
+            mimetype.indexOf('multipart/x-zip')) {
+            error = {
+                status: 400,
+                message: 'Invalid file type. Zip Required.'
+            };
+
+            return file.resume();
+        }
+
+        var savePath = path.join(__dirname, '../../backups');
+        fs.ensureDirSync(savePath);
+
+        object.filePath = path.join(savePath, filename);
+        object.filename = filename;
+        object.mimetype = mimetype;
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).json({success: false, error: error.message});
+
+        if (_.isUndefined(object.filePath) ||
+            _.isUndefined(object.filename))
+
+            return res.status(400).json({success: false, error: 'Invalid Form Data'});
+
+        if (!fs.existsSync(object.filePath)) return res.status(400).json({success: false, error: 'File failed to save to disk'});
+
+        return res.json({success: true});
+    });
+
+    req.pipe(busboy);
+};
+
 module.exports = backup_restore;

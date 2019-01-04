@@ -246,6 +246,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/backup', middleware.api, middleware.isAdmin, controllers.backuprestore.runBackup);
     router.delete('/api/v1/backup/:backup', middleware.api, middleware.isAdmin, controllers.backuprestore.deleteBackup);
     router.post('/api/v1/backup/restore', middleware.api, middleware.isAdmin, controllers.backuprestore.restoreBackup);
+    router.post('/api/v1/backup/upload', middleware.api, middleware.isAdmin, controllers.backuprestore.uploadBackup);
     router.get('/api/v1/backup/hastools', middleware.api, middleware.isAdmin, controllers.backuprestore.hasBackupTools);
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
