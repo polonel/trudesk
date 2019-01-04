@@ -32,7 +32,7 @@ define([
 
             $scope.loadingTools = true;
             $scope.checkTools = function() {
-                $http.get('/debug/hastools')
+                $http.get('/api/v1/backup/hastools')
                     .then(function success(res) {
                         $scope.hasTools = (res.data && res.data.success);
                     }, function error(err) {
@@ -44,7 +44,7 @@ define([
             };
 
             $scope.getBackups = function() {
-                $http.get('/debug/getbackups')
+                $http.get('/api/v1/backups')
                     .then(function success(res) {
                         if (res.data && res.data.success === true)
                             $scope.backupFiles = res.data.files;
@@ -57,7 +57,7 @@ define([
                 var $button = $(e.currentTarget);
                 // $button.prop('disabled', true).addClass('disabled').text('Please Wait...');
                 $button.hide().parent().find('.uk-progress').removeClass('hide');
-                $http.get('/debug/backup')
+                $http.post('/api/v1/backup')
                     .then(function success(res) {
                         $log.log(res);
                         $button.parent().find('.uk-progress').addClass('hide');
@@ -72,18 +72,24 @@ define([
                 var file = $scope.backupFiles[idx];
                 if (!file)
                     return false;
+
                 var filename = file.filename;
 
-                $http.delete('/debug/backup/' + filename)
-                    .then(function success(res) {
-                        $log.log(res);
-                        if (res.data && res.data.success)
-                            $scope.getBackups();
-                        else
-                            helpers.UI.showSnackbar('Unable to delete backup', true);
-                    }, function error(err) {
-                        $log.error(err);
-                    });
+                UIkit.modal.confirm('<p style="font-size: 14px;">This action is permanent and will destroy the backup file: <strong>' + filename + '</strong><br />Are you sure?</p>', function() {
+                    $http.delete('/api/v1/backup/' + filename)
+                        .then(function success(res) {
+                            $log.log(res);
+                            if (res.data && res.data.success) {
+                                $scope.getBackups();
+                                helpers.UI.showSnackbar('Backup successfully deleted', false);
+                            } else
+                                helpers.UI.showSnackbar('Unable to delete backup', true);
+                        }, function error(err) {
+                            $log.error(err);
+                        });
+                }, {
+                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
+                });
             };
 
             $scope.restoreFile = function(idx) {
@@ -93,12 +99,13 @@ define([
 
                 var filename = file.filename;
 
-                $http.get('/debug/restore/' + filename)
-                    .then(function success(res) {
-                        $log.log(res);
-                    }, function error(err) {
-                        $log.error(err);
-                    });
+                $http.post('/api/v1/backup/restore', {
+                    file: filename
+                }).then(function success(res) {
+                    $log.log(res);
+                }, function error(err) {
+                    $log.error(err);
+                });
             };
 
         });

@@ -82,7 +82,11 @@ function runRestore(file, callback) {
     winston.info('Starting Restore... (' + platform + ')');
 
     var options = ['--uri', CONNECTION_URI, '-d', databaseName, path.join(__dirname, '../../restores/restore_' + file, 'database/trudesk')];
-    var mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options);
+    var mongodump = null;
+    if (platform === 'win32')
+        mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options);
+    else
+        mongodump = spawn('mongorestore', options);
 
     mongodump.stdout.on('data', function(data) {
         winston.debug(data.toString());

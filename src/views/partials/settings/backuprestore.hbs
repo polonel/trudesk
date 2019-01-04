@@ -10,8 +10,16 @@
                 <div style="padding: 0 15px; margin: 15px 0;">
                     <h4>Installing MongoDB Tools</h4>
                     <br />
-                    <h5><strong>Ubuntu 16.04+</strong></h5>
-                    <pre>$ sudo apt-get install -y mongo-tools</pre>
+                    <h5><strong>Ubuntu 16.04</strong></h5>
+                    <pre style="white-space: pre-line">
+                        wget https://repo.mongodb.org/apt/ubuntu/dists/xenial/mongodb-org/3.6/multiverse/binary-amd64/mongodb-org-tools_3.6.9_amd64.deb && \
+                        dpkg -i mongodb-org-tools_3.6.9_amd64.deb
+                    </pre>
+                    <br />
+                    <h5><strong>Ubuntu 18.04</strong></h5>
+                    <pre style="white-space: pre-line">
+                        sudo apt install -y mongo-tools
+                    </pre>
                     <br />
                     <h5><strong>Fedora 29</strong></h5>
                     <pre>$ dnf install -y mongo-tools</pre>
@@ -92,5 +100,4 @@
             </div>
         </div>
     </div>
-
 </div>
