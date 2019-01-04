@@ -696,7 +696,7 @@
                                 </h5>
                             </div>
                             <div class="right" style="position:relative;">
-                                <div style="margin: 12px 15px 0 0;">
+                                <div style="margin: 12px 15px 0 0;" ng-controller="commonCtrl">
                                     <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateTagWindow($event);">Create</button>
                                 </div>
                             </div>
@@ -712,7 +712,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{> createTagWindow}}
+                        {{> createTagWindow page='settings' }}
                     </div>
 
                 </div>
