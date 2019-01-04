@@ -1,3 +1,18 @@
+## [1.0.4](https://github.com/polonel/trudesk/compare/v1.0.3...v1.0.4) (2019-01-03)
+
+
+### Bug Fixes
+
+* **appearance:** dark theme colors ([7ac11ad](https://github.com/polonel/trudesk/commit/7ac11ad))
+* **attachments:** failed to upload on docker ([36a5bcb](https://github.com/polonel/trudesk/commit/36a5bcb))
+* **crash:** idle users array out-of-bounds ([ebacda9](https://github.com/polonel/trudesk/commit/ebacda9))
+* **mailer:** undefined value error ([b3658f1](https://github.com/polonel/trudesk/commit/b3658f1))
+
+
+### Reverts
+
+* **routes:** miscommit ([9198e47](https://github.com/polonel/trudesk/commit/9198e47))
+
 ## [1.0.3](https://github.com/polonel/trudesk/compare/v1.0.2...v1.0.3) (2018-12-03)
 
 
