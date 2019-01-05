@@ -153,7 +153,7 @@ define([
                     '<h2>Are you sure?</h2>' +
                     '<p style="font-size: 15px;"><span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> All data will be wiped from the database and restored with the selected backup file: <strong>' + filename + '</strong></p>' +
                     '<p style="font-size: 12px;">Any users currently logged in will be presented with a blocking restore page. Preventing any further actions.' +
-                    'Once complete all users are required to log in again.</p>',
+                    'Once complete all users are required to log in again.</p><br /><p style="font-size: 12px; font-style: italic;">This process may take a while depending on the size of the backup.</p>',
                     function() {
                         socket.ui.emitShowRestoreOverlay();
 
