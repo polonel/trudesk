@@ -1635,7 +1635,7 @@ apiTickets.getOverdue = function(req, res) {
             ticketSchema.getOverdue(grps, function (err, objs) {
                 if (err) return res.status(400).json({success: false, error: err.message});
 
-                var sorted = _.sortBy(objs, 'updated').reverse();
+                var sorted = _.sortBy(objs, 'uid').reverse();
 
                 return res.json({success: true, tickets: sorted});
             });
