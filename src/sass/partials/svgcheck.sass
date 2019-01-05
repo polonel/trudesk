@@ -1,0 +1,52 @@
+.svgcheck
+  cursor: pointer
+  position: relative
+  top: -2px !important
+  margin: 0 !important
+  width: 16px
+  height: 16px
+  -webkit-tap-highlight-color: transparent
+  transform: translate3d(0,0,0)
+  &:before
+    content: ""
+    position: absolute
+    top: -15px
+    left: -15px
+    width: 24px
+    height: 24px
+    border-radius: 50%
+    // background: rgba(#223254,.03)
+    opacity: 0
+    transition: opacity .2s ease
+  svg
+    position: relative
+    z-index: 1
+    fill: none
+    stroke-linecap: butt
+    stroke-linejoin: round
+    stroke: lighten($text_color, 30%)
+    stroke-width: 2
+    transform: translate3d(0,0,0)
+    transition: all .2s ease
+    path
+      stroke-dasharray: 60
+      stroke-dashoffset: 0
+    polyline
+      stroke-dasharray: 22
+      stroke-dashoffset: 67
+  &:hover
+    &:before
+      opacity: 1
+    svg
+      stroke: $accent_color
+
+.svgcheckinput:checked + .svgcheck
+  svg
+    stroke: $accent_color
+    path
+      stroke-dashoffset: 60
+      transition: all .3s linear
+    polyline
+      stroke-dashoffset: 42
+      transition: all .2s linear
+      transition-delay: .15s

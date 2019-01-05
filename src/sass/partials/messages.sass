@@ -23,18 +23,18 @@
     text-overflow: '...'
 
     &:hover
-      background: white
+      background: lighten($page_content_left_bg, 5%)
       cursor: pointer
 
     &.message-folder:hover
-      background: $page_content_left_bg
+      background: lighten($page_content_left_bg, 5%)
       cursor: default
 
     //&:last-child
     //  border-bottom: none
 
     &.active
-      background: white
+      background: $page_content_right_bg
 
     &.active:before,
     &.message-tag:before
@@ -73,7 +73,7 @@
       padding: 0
     .message-subject
       margin-top: 3px
-      color: lighten($text_color, 40%)
+      color: lighten($text_color, 20%)
       margin-right: 15px
       text-overflow: ellipsis
       white-space: nowrap
@@ -152,8 +152,8 @@
   right: 0
   height: 40px
   border: none
-  border-top: 1px solid #ddd
-  background: #fff
+  border-top: 1px solid $page_content_border_color
+  background: darken($page_content_right_bg, 5%)
   button
     border: none
     margin: 0
@@ -175,6 +175,10 @@
     height: 40px
     font-size: 14px
     font-family: "Source Sans Pro", sans-serif
+    background: darken($page_content_right_bg, 5%)
+    color: automatic-text-color(darken($page_content_right_bg, 5%))
+    &::placeholder
+      color: automatic-text-color(darken($page_content_right_bg, 5%))
   a
     display: block
     float: right
@@ -196,7 +200,7 @@
     font-size: 30px
     font-family: $fontFamily
     font-weight: 300
-    color: #3d4854
+    color: $text_color
     margin-bottom: 5px
 
   h5
@@ -259,7 +263,7 @@ input[type="checkbox"]:checked.poloCheckbox + label
   display: block
   padding: 10px 5px 5px 5px
   font-size: 11px
-  color: #989898
+  color: automatic-text-color($page_content_right_bg, 'muted')
   font-family: "Roboto", sans-serif
 .conversation-deleted
   font-weight: 700
@@ -277,10 +281,10 @@ input[type="checkbox"]:checked.poloCheckbox + label
   .message-body
     margin-left: 10px
     padding: 5px 8px
-    background: #ddd
+    background: darken($page_content_right_bg, 10%)
     +borderRadius(5px)
     p
-      color: lighten(#222222, 20%)
+      color: automatic-text-color(darken($page_content_right_bg, 10%))
       font-size: 13px
       //font-weight: 300
       margin: 0
@@ -344,17 +348,19 @@ input[type="checkbox"]:checked.poloCheckbox + label
 .search-box
   position: relative
   padding: 10px
-  border-top: 1px solid #ddd
-  border-right: $sidebar_border_right
+  border-top: 1px solid $page_content_border_color
+  border-right: 1px solid $page_content_border_color
   input
     width: 100%
-    border: none
-    background: lighten(#ddd, 8%)
+    border: 1px solid $page_content_border_color
+    background: lighten($page_bg_color, 20%)
     padding: 5px 15px
-    color: #222
+    color: automatic-text-color(lighten($page_bg_color, 20%))
     font-size: 13px
     font-weight: 300
     +borderRadius(15px)
+    &::placeholder
+      color: automatic-text-color(lighten($page_bg_color, 20%), 'muted')
   &.withSeperator
     padding-left: 33px
     &::before

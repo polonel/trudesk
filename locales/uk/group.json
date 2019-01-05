@@ -1,10 +1,10 @@
 {
-  "Find_Group": "Find Group",
-  "Members_with_count": "{{count}} member",
-  "Members_with_count_plural": "{{count}} members",
-  "Members": "Members",
-  "Send_Notifications_To": "Send Notifications To",
-  "Create_Group": "Create Group",
-  "Group_Name": "Group Name",
-  "Group_Breakdown": "Group Breakdown"
+  "Find_Group": "Знайти групу",
+  "Members_with_count": "{{count}} учасник",
+  "Members_with_count_plural": "{{count}} учасники",
+  "Members": "Учасники",
+  "Send_Notifications_To": "Надіслати сповіщення до",
+  "Create_Group": "Створити групу",
+  "Group_Name": "Назва групи",
+  "Group_Breakdown": "Робити групу"
 }

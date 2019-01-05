@@ -47,7 +47,7 @@ module.exports = function(app, db, callback) {
     app.set('view engine', 'hbs');
     hbsHelpers.register(hbs.handlebars);
 
-    app.use(favicon(path.join(__dirname, '../../', 'public/img/favicon.ico')));
+    // app.use(favicon(nconf.get('base_dir') + '/public/img/favicon.ico'));
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use(cookieParser());
@@ -89,26 +89,18 @@ module.exports = function(app, db, callback) {
             app.use(passportConfig.session());
             app.use(flash());
 
-            //Load after Passport!!
-            app.use('/uploads/tickets', function(req, res, next) {
-                if (!req.user) 
-                    return res.redirect('/');
-
-                return next();
-            });
-
             //CORS
             app.use(allowCrossDomain);
             //Mobile
             app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')));
 
-            app.use('/uploads/tickets', middleware.redirectToLogin, express.static(path.resolve(__dirname, '/public/uploads/tickets')));
-            app.use('/uploads/users', middleware.redirectToLogin, express.static(path.resolve(__dirname, '/public/uploads/users')));
-            
-            app.use(express.static(path.join(__dirname, '../../', 'public')));
+            app.use('/assets', express.static(path.join(__dirname, '../../public/uploads/assets')));
+            app.use('/uploads', middleware.hasAuth, express.static(path.join(__dirname, '../../public/uploads')));
+
+            app.use(express.static(path.join(__dirname, '../../public')));
 
             //Remove to enable plugins
-            //next(null, store);
+            return next(null, store);
             global.plugins = [];
             var dive = require('dive');
             dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {

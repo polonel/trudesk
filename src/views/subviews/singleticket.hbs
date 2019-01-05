@@ -112,7 +112,7 @@
                             </div>
                         </div>
                         <div class="uk-width-1-1 padding-left-right-15">
-                            <div class="tru-card ticket-details uk-clearfix" style="background: #fff;">
+                            <div class="tru-card ticket-details uk-clearfix">
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginright5">
                                         <span>{{t 'common:Type'}}</span>
@@ -187,7 +187,7 @@
                         </div>
                         {{#canUser data.user "ticket:viewHistory"}}
                             <div class="uk-width-1-1 padding-left-right-15">
-                                <div class="tru-card ticket-details" style="background: #fff;height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
+                                <div class="tru-card ticket-details" style="height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
                                     {{t 'common:Ticket'}} {{t 'common:History'}}
                                     <hr style="padding: 0; margin: 0;"/>
                                     <div class="history-items scrollable" style="padding-top: 12px;">
@@ -719,7 +719,9 @@
                                     <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                                 {{/each}}
                             </select>
-                            <button type="button" ng-click="showCreateTags($event)" style="border-radius: 0; -moz-border-radius: 0;"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                            <div ng-controller="commonCtrl">
+                                <button type="button" ng-click="showCreateTagWindow($event);" style="border-radius: 0; -moz-border-radius: 0;"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                            </div>
                         </div>
 
                         <div class="left" style="margin-top: 15px;">
@@ -734,24 +736,9 @@
             </div>
         </div>
 
-        <div id="createTagModal" class="uk-modal" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-            <div class="uk-modal-dialog uk-clearfix">
-                <a class="uk-modal-close uk-close no-ajaxy"></a>
-                <h5 style="font-weight: 300;">{{t 'ticket:Create_Tag'}}</h5>
-                <div>
-                    <form id="createTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddNewTag($event)">
-                        <input type="text" id="tag" name="tag" class="md-input" />
-
-                        <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button uk-button-success nomargin" type="submit">{{t 'ticket:Create_Tag'}}</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        {{> createTagWindow page='singleticket'}}
 
     </div>
-</div>
 
 {{#contentFor 'js-plugins'}}
 

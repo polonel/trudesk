@@ -473,7 +473,7 @@ ticketsController.single = function(req, res) {
 };
 
 ticketsController.uploadAttachment = function(req, res) {
-    var fs = require('fs');
+    var fs = require('fs-extra');
     var Busboy = require('busboy');
     var busboy = new Busboy({
         headers: req.headers,
@@ -511,7 +511,7 @@ ticketsController.uploadAttachment = function(req, res) {
         var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId);
         var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
 
-        if (!fs.existsSync(savePath)) fs.mkdirSync(savePath);
+        if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath);
 
         object.filePath = path.join(savePath, 'attachment_' + sanitizedFilename);
         object.filename = sanitizedFilename;

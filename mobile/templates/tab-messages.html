@@ -28,8 +28,8 @@
                     ng-repeat="userObj in onlineUsers track by userObj.user._id | orderBy: 'user'"
                     ng-click="startConversation(userObj.user._id);">
                     <div class="avatar avatar-small">
-                        <img ng-src="/uploads/users/{{userObj.user.image}}" ng-if="userObj.user.image">
-                            <img ng-src="/uploads/users/defaultProfile.jpg" ng-if="!userObj.user.image">
+                        <img http-src="/uploads/users/{{userObj.user.image}}" ng-if="userObj.user.image">
+                            <img http-src="/uploads/users/defaultProfile.jpg" ng-if="!userObj.user.image">
                                 <span class="online-status" style="bottom: 15px; right: 10px;"></span>
                                 </div>
                     <div class="item-x-content">
@@ -55,8 +55,8 @@
                 ng-repeat="userObj in onlineUsers track by userObj.user._id | orderBy: 'user'"
                 ng-click="startConversation(userObj.user._id);">
                 <div class="avatar avatar-small">
-                    <img ng-src="/uploads/users/{{userObj.user.image}}" ng-if="userObj.user.image">
-                        <img ng-src="/uploads/users/defaultProfile.jpg" ng-if="!userObj.user.image">
+                    <img http-src="/uploads/users/{{userObj.user.image}}" ng-if="userObj.user.image">
+                        <img http-src="/uploads/users/defaultProfile.jpg" ng-if="!userObj.user.image">
                             <span class="online-status" style="bottom: 15px; right: 10px;"></span>
                             </div>
                 <div class="item-x-content">
@@ -71,12 +71,12 @@
       ng-repeat="convo in recentConversations track by convo._id | orderBy:'-updatedAt'"
       style="min-height: 50px;" href="#/tab/messages/{{convo._id}}" ng-show="showRecentConversations">
         <div ng-if="(convo.participants | conversationFrom:loggedInUser).image != undefined" class="avatar avatar-small avatar-with-status">
-          <img ng-src="/uploads/users/{{(convo.participants | conversationFrom:loggedInUser).image}}">
+          <img http-src="/uploads/users/{{(convo.participants | conversationFrom:loggedInUser).image}}">
           <span class="online-status online-status-online" ng-if="isUserOnline(onlineUsers, (convo.participants | conversationFrom:loggedInUser))"></span>
           <span class="online-status online-status-offline" ng-if="!isUserOnline(onlineUsers, (convo.participants | conversationFrom:loggedInUser))"></span>
         </div>
         <div ng-if="(convo.participants | conversationFrom:loggedInUser).image == undefined" class="avatar avatar-small avatar-with-status">
-          <img ng-src="/uploads/users/defaultProfile.jpg">
+          <img http-src="/uploads/users/defaultProfile.jpg">
           <span class="online-status online-status-online" ng-if="isUserOnline(onlineUsers, (convo.participants | conversationFrom:loggedInUser))"></span>
           <span class="online-status online-status-offline" ng-if="!isUserOnline(onlineUsers, (convo.participants | conversationFrom:loggedInUser))"></span>
         </div>
@@ -96,6 +96,36 @@
         </ion-option-button>
       </ion-item>
     </ion-list>
+    <!--<ion-item class="item-divider item light-font list-head-light">More conversations</ion-item>-->
+    <!--<ion-list>-->
+      <!--<ion-item class="item-remove-animate item-avatar item-icon-right" style="min-height: 50px;">-->
+        <!--<div class="avatar avatar-small avatar-with-status">-->
+          <!--<img http-src="/uploads/users/defaultProfile.jpg">-->
+          <!--<span class="online-status online-status-offline"></span>-->
+        <!--</div>-->
+        <!--<h3 style="margin-bottom: 0; margin-top: 3px; font-weight: 300;">Chris Brame</h3>-->
+        <!--<span class="message-date">Saturday</span>-->
+        <!--<p style="margin-top: 2px; color: #b3b3b3; font-weight: 300;">Chris: Hey how are you doing today, this is a really long message attempt.</p>-->
+
+        <!--<ion-option-button class="button" style="padding-left: 17px; padding-right: 17px;font-weight: 300; font-size: 12px;background: #cccccc;color:#fff;">-->
+          <!--<div>-->
+            <!--<i class="icon ion-ios-more-outline"></i>-->
+            <!--More-->
+          <!--</div>-->
+        <!--</ion-option-button>-->
+        <!--<ion-option-button class="button" style="padding-left: 17px; padding-right: 17px;font-weight: 300; font-size: 12px;background: #bcbcbc;color:#fff;">-->
+          <!--<div>-->
+            <!--<i class="icon ion-ios-volume-low"></i>-->
+            <!--Mute-->
+          <!--</div>-->
+        <!--</ion-option-button>-->
+        <!--<ion-option-button class="button-assertive" style="padding-left: 13px; padding-right: 13px; font-weight: 300; font-size: 12px;">-->
+          <!--<div>-->
+            <!--<i class="icon ion-ios-close-empty"></i>-->
+            <!--Delete          -->
+          <!--</div>-->
+        <!--</ion-option-button>-->
+      <!--</ion-item>-->
     </ion-list>
   </ion-content>
 </ion-view>

@@ -56,7 +56,6 @@ module.exports = function(grunt) {
                         'public/css/plugins/datatables/dataTables.scroller.css',
                         'public/css/plugins/datatables/dataTables.foundation.css',
                         'src/public/js/vendor/chosen/chosen.css',
-                        'src/public/js/vendor/pace/pace.theme.css',
                         'src/public/js/vendor/enjoyhint/enjoyhint.css',
                         'src/public/js/vendor/metricsgraphics/metricsgraphics.css',
                         'public/css/vendor/font-awesome.min.css',
@@ -133,8 +132,8 @@ module.exports = function(grunt) {
     });
 
     grunt.registerTask('buildcss', ['uglify:uikit', 'cssmin']);
-    grunt.registerTask('server', 'launch webserver and watch tasks', ['parallel:web']);
-    grunt.registerTask('build', ['buildcss', 'shell:webpackDist']);
+    grunt.registerTask('server', 'launch webserver and watch tasks', ['uglify:uikit', 'cssmin', 'parallel:web']);
+    grunt.registerTask('build', ['uglify:uikit', 'cssmin', 'shell:webpackDist']);
     grunt.registerTask('devbuild', ['shell:webpackDev']);
     grunt.registerTask('default', ['server']);
 };

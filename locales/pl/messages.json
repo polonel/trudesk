@@ -1,9 +1,9 @@
 {
-  "Conversations": "Conversations",
-  "Delete_Conversation": "Delete Conversation",
-  "Conversation_started_on": "Conversation started on",
-  "Type_your_message": "Type your message...",
-  "Delete_Message": "Delete Message",
-  "Start_Conversation": "Start Conversation",
-  "More_Conversations": "More Conversations"
+  "Conversations": "Rozmowy",
+  "Delete_Conversation": "Usuń rozmowę",
+  "Conversation_started_on": "Zacznij konwersację tutaj",
+  "Type_your_message": "Wpisz wiadomość tutaj...",
+  "Delete_Message": "Usuń wiadomość",
+  "Start_Conversation": "Rozpocznij rozmowe",
+  "More_Conversations": "Więcej"
 }

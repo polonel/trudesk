@@ -1,9 +1,9 @@
 {
-  "Conversations": "Conversations",
-  "Delete_Conversation": "Delete Conversation",
-  "Conversation_started_on": "Conversation started on",
-  "Type_your_message": "Type your message...",
-  "Delete_Message": "Delete Message",
-  "Start_Conversation": "Start Conversation",
-  "More_Conversations": "More Conversations"
+  "Conversations": "Sohbetler",
+  "Delete_Conversation": "Sohbeti Sil",
+  "Conversation_started_on": "Sohbet şu tarihte başladı",
+  "Type_your_message": "Mesajınızı yazın...",
+  "Delete_Message": "Mesajı Sil",
+  "Start_Conversation": "Sohbete Başla",
+  "More_Conversations": "Sohbetler"
 }

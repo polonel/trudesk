@@ -77,7 +77,6 @@ define('pages/singleTicket', [
                     if (id.length > 0) {
                         var comment = $($event.currentTarget).find('textarea#commentText').val();
                         var commentId = $($event.currentTarget).attr('data-commentId');
-                        comment = '<p>' + comment + '</p>';
 
                         socketClient.ui.setCommentText(id, commentId, comment);
                     }
@@ -112,7 +111,6 @@ define('pages/singleTicket', [
                     if (id.length > 0) {
                         var note = $($event.currentTarget).find('textarea#noteText').val();
                         var noteId = $($event.currentTarget).attr('data-noteId');
-                        note = '<p>' + note + '</p>';
 
                         socketClient.ui.setNoteText(id, noteId, note);
                     }

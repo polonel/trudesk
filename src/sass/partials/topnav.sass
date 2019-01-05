@@ -15,6 +15,7 @@
 
 .top-bar
   padding: 0 15px
+  border-bottom: $topbar_border
 
 .top-menu
   height: 75px
@@ -23,8 +24,8 @@
   ul
     li
       background: $topbar_bg
-      height: 75px
-      line-height: 75px
+      height: 74px
+      line-height: 74px
       color: $topbar_text_color
       position: relative
 
@@ -44,7 +45,8 @@
       &.top-bar-icon a
         font-size: 30px
         font-family: "FontAwesome", sans-serif
-        max-height: 75px
+        overflow: hidden
+        max-height: 74px
 
         &:hover
           color: $topbar_icons_hover !important
@@ -107,7 +109,7 @@
 .top-bar-section ul li.profile-area
   font-family: $fontFamily
   font-size: 18px
-  color: $topbar_user_text !important
+  color: $topbar_text_color !important
   //background: url("/img/midDots.png") no-repeat
   //background-position: 0 50%
   margin-left: 10px
@@ -125,7 +127,7 @@
   span
     display: inline-block
     margin: 0 20px 0 15px
-    color: #ffffff !important
+    color: $topbar_text_color !important
     &:hover
       color: inherit
 
@@ -150,8 +152,8 @@
   visibility: hidden
   opacity: 0
   z-index: 99999
-  background: #ffffff
-  border: 1px solid rgba(100,100,100,0.4)
+  background: lighten($page_content_right_bg, 10%)
+  border: 1px solid rgba(0,0,0,0.2)
   //padding: 10px
   position: relative
   +boxShadow(0px 3px 8px 0px rgba(0,0,0,0.247059))
@@ -170,7 +172,7 @@
 
   &:after
     border-color: rgba(255, 255, 255, 0)
-    border-bottom-color: #fff
+    border-bottom-color: lighten($page_content_right_bg, 10%)
     border-width: 8px
     margin-left: -8px
 
@@ -202,10 +204,10 @@
   .actions
     width: 100%
     height: auto
-    border-bottom: 1px solid rgba(100,100,100,0.4)
+    border-bottom: 1px solid rgba(0,0,0,0.2)
     line-height: 24px
     font-size: 12px
-    color: #000
+    color: $text_color
     font-family: "Roboto", sans-serif
     a
       width: 100%
@@ -237,13 +239,13 @@
 
   li
     width: 100%
-    background: #ffffff !important
-    border-bottom: 1px solid rgba(100,100,100,0.4)
+    background: lighten($page_content_right_bg, 10%) !important
+    border-bottom: 1px solid rgba(0,0,0,0.2)
     height: 72px
     max-height: 80px
     line-height: normal
     &:hover
-      background: #f3f5f9 !important
+      background: darken(lighten($page_content_right_bg, 10%), 4%) !important
     &:last-child
       border-bottom: none
 
@@ -252,22 +254,21 @@
       width: 100%
       height: 71px
       padding: 10px !important
-      background: #ffffff !important
+      background: lighten($page_content_right_bg, 10%) !important
       line-height: normal !important
       font-size: 12px
-      color: black !important
+      color: $text_color !important
       position: relative
 
       &:hover
         background: transparent !important
-        color: #000 !important
 
       .messageUnread
         width: 16px
         height: 16px
         font-size: 12px
         font-family: "FontAwesome"
-        color: #646464
+        color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
         position: absolute
         top: 8px
         right: 3px
@@ -284,7 +285,7 @@
         margin-bottom: 3px
 
       div.messageDate
-        color: #646464 !important
+        color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted') !important
 
       div.messageSnippet
         width: 218px
@@ -298,7 +299,7 @@
         font-size: 25px
         line-height: 59px
         text-align: center
-        color: black
+        color: automatic-text-color(lighten($page_content_right_bg, 10%))
         background: transparent !important
         &.warn
           color: #e7a13c

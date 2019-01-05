@@ -441,7 +441,7 @@ apiTickets.createPublicTicket = function(req, res) {
                     owner: savedUser._id,
                     group: group._id,
                     type: ticketType._id,
-                    priority: 1,
+                    priority: _.first(ticketType.priorities)._id, //TODO: change when priority order is complete!
                     subject: postData.ticket.subject,
                     issue: postData.ticket.issue,
                     history: [HistoryItem],
@@ -1024,9 +1024,9 @@ apiTickets.deleteType = function(req, res) {
         function(next) {
             settingsSchema.getSettingByName('mailer:check:ticketype', function(err, setting) {
                 if (err) return next(err);
-                if (setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
+                if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
                     return next({custom: true, message: 'Type currently "Default Ticket Type" for mailer check.'});
-
+                
                 return next(null);
             });
         },
@@ -1635,7 +1635,7 @@ apiTickets.getOverdue = function(req, res) {
             ticketSchema.getOverdue(grps, function (err, objs) {
                 if (err) return res.status(400).json({success: false, error: err.message});
 
-                var sorted = _.sortBy(objs, 'updated').reverse();
+                var sorted = _.sortBy(objs, 'uid').reverse();
 
                 return res.json({success: true, tickets: sorted});
             });

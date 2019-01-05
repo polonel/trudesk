@@ -658,7 +658,7 @@ var helpers = {
     },
 
     overdue: function(showOverdue, date, updated, overdueIn, options) {
-        if (!showOverdue) return false;
+        if (!showOverdue) return '';
         var now = moment();
         if (updated)
             updated = moment(updated);

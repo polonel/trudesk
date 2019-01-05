@@ -412,7 +412,10 @@ var socketServer = function(ws) {
             var ownerId = socket.request.user._id;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true;
-            issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
             var markedIssue = marked(issue);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
@@ -438,7 +441,11 @@ var socketServer = function(ws) {
             var comment = data.commentText;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true;
-            comment = comment.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
+
             var markedComment = marked(comment);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
@@ -485,7 +492,10 @@ var socketServer = function(ws) {
             var note = data.noteText;
             var ticketSchema = require('./models/ticket');
             if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note)) return true;
-            note = note.replace(/(\r\n|\n\r|\r|\n)/g, '<br>');
+
+            marked.setOptions({
+                breaks: true
+            });
             var markedNote = marked(note);
 
             ticketSchema.getTicketById(ticketId, function(err, ticket) {
@@ -618,11 +628,22 @@ var socketServer = function(ws) {
                     utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
                 }
             } else {
-                idleUsers[user.username].sockets.push(socket.id);
-                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+                var idleUser = idleUsers[user.username.toLowerCase()];
+                if (!_.isUndefined(idleUser)) {
+                    idleUser.sockets.push(socket.id);
 
-                utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
+                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function (o) {
+                        return o[0];
+                    }));
+                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function (o) {
+                        return o[0];
+                    }));
+
+                    utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {
+                        sortedUserList: sortedUserList,
+                        sortedIdleList: sortedIdleList
+                    });
+                }
             }
         });
 

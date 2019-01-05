@@ -1,15 +1,22 @@
 .CodeMirror
   height: 250px
   border-radius: 0
+  border-color: $page_content_border_color
+  background: $page_content_right_bg
+  color: automatic-text-color($page_content_right_bg)
 .CodeMirror-fullscreen
   z-index: 10 !important
+
+.editor-preview
+  background: $page_content_right_bg
+  color: automatic-text-color($page_content_right_bg)
 
 .editor-preview-side
   z-index: 10 !important
 
 .editor-toolbar
   border-radius: 0
-  border-color: #ddd !important
+  border-color: $page_content_border_color !important
   &:hover
     button
       transition: opacity linear 0.4ms
@@ -19,8 +26,9 @@
     height: 26px
     margin-right: 2px
     opacity: 0.8
-    &:focus
-      background-color: #fff
+    &:focus, &:hover
+      background-color: darken($page_content_right_bg, 10%)
+      border-color: darken($page_content_right_bg, 10%)
   i.separator
     margin: 3px 6px
     vertical-align: top
@@ -45,7 +53,7 @@
   height: 24px
   width: 24px
   margin-left: 0 !important
-  color: #757575
+  color: automatic-text-color($page_content_bg, 'muted')
 
 .mi-italic:after
   content: "format_italic"

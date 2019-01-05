@@ -33,5 +33,7 @@
   "tps_desc": "Trudesk Push Server authentication for push notifications",
   "Get_API_Key": "Получить API ключ",
   "privacy_policy_desc": "Paste in HTML / Text of your privacy policy",
-  "SLA Overdue": "SLA Overdue"
+  "SLA Overdue": "SLA Overdue",
+  "Site_Title": "Site Title",
+  "Site_Title_desc": "Title of site. Used as page title. <i>default: Trudesk</i>"
 }

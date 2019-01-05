@@ -1,3 +1,54 @@
+## [1.0.4](https://github.com/polonel/trudesk/compare/v1.0.3...v1.0.4) (2019-01-03)
+
+
+### Bug Fixes
+
+* **appearance:** dark theme colors ([7ac11ad](https://github.com/polonel/trudesk/commit/7ac11ad))
+* **attachments:** failed to upload on docker ([36a5bcb](https://github.com/polonel/trudesk/commit/36a5bcb))
+* **crash:** idle users array out-of-bounds ([ebacda9](https://github.com/polonel/trudesk/commit/ebacda9))
+* **mailer:** undefined value error ([b3658f1](https://github.com/polonel/trudesk/commit/b3658f1))
+
+
+### Reverts
+
+* **routes:** miscommit ([9198e47](https://github.com/polonel/trudesk/commit/9198e47))
+
+## [1.0.3](https://github.com/polonel/trudesk/compare/v1.0.2...v1.0.3) (2018-12-03)
+
+
+### Bug Fixes
+
+* **accounts:** crash if user was deleted with active conversations [#109](https://github.com/polonel/trudesk/issues/109) ([6ea0ad4](https://github.com/polonel/trudesk/commit/6ea0ad4))
+* **assets:** security fix ([b081965](https://github.com/polonel/trudesk/commit/b081965))
+* **install:** server crash due to invalid middleware ([88367d9](https://github.com/polonel/trudesk/commit/88367d9))
+* **mobile:** secure assets not loading ([dca823e](https://github.com/polonel/trudesk/commit/dca823e))
+* **reports:** unable to download reports [#106](https://github.com/polonel/trudesk/issues/106) ([a2cdb7f](https://github.com/polonel/trudesk/commit/a2cdb7f))
+* **sass:** not compiling for install server ([e0f744d](https://github.com/polonel/trudesk/commit/e0f744d))
+* **static:** file access path ([568c343](https://github.com/polonel/trudesk/commit/568c343))
+* **style:** disabled classes applied incorrectly ([884519c](https://github.com/polonel/trudesk/commit/884519c))
+* **style:** incorrect border style ([5edfb0f](https://github.com/polonel/trudesk/commit/5edfb0f))
+* **styles:** incorrect styles ([ae0d82f](https://github.com/polonel/trudesk/commit/ae0d82f))
+* **tickettype:** crash when deleting ticket type [#113](https://github.com/polonel/trudesk/issues/113) ([dc4d335](https://github.com/polonel/trudesk/commit/dc4d335))
+
+
+### Reverts
+
+* **static:** files path var ([dd440e0](https://github.com/polonel/trudesk/commit/dd440e0))
+
+## [1.0.2](https://github.com/polonel/trudesk/compare/v1.0.1...v1.0.2) (2018-11-03)
+
+
+### Bug Fixes
+
+* **assets:** security fix ([4f6c00d](https://github.com/polonel/trudesk/commit/4f6c00d))
+* **database:** connection returning true even if error occured ([0156c4b](https://github.com/polonel/trudesk/commit/0156c4b))
+* **database:** removed incorrect events ([357752d](https://github.com/polonel/trudesk/commit/357752d))
+* **mobile:** chrome 53+ not allowing selects to open. [#96](https://github.com/polonel/trudesk/issues/96) ([7d71135](https://github.com/polonel/trudesk/commit/7d71135))
+* **styles:** issue [#101](https://github.com/polonel/trudesk/issues/101) editing issue/comment/note ([46ab7e8](https://github.com/polonel/trudesk/commit/46ab7e8))
+* **styles:** new tickets had incorrect classes ([4793c31](https://github.com/polonel/trudesk/commit/4793c31))
+* **tickets:** public ticket crash [#103](https://github.com/polonel/trudesk/issues/103) ([19b75f1](https://github.com/polonel/trudesk/commit/19b75f1))
+* **timezone:** option to set local timezone ([e3eb12a](https://github.com/polonel/trudesk/commit/e3eb12a))
+
 ## [1.0.1](https://github.com/polonel/trudesk/compare/v1.0.0...v1.0.1) (2018-09-27)
 
 

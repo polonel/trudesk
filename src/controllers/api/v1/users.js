@@ -182,6 +182,8 @@ apiUsers.create = function(req, res) {
             if (_.isUndefined(id)) return done(null);
             groupSchema.getGroupById(id, function(err, grp) {
                 if (err) return done(err);
+                if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID');
+
                 grp.addMember(a._id, function(err, success) {
                     if (err) return done(err);
 
@@ -521,9 +523,17 @@ apiUsers.deleteUser = function(req, res) {
             });
         },
         function(hasTickets, user, cb) {
-            if (hasTickets) {
-                //Disable if the user has tickets
+            var conversationSchema = require('../../../models/chat/conversation');
+            conversationSchema.getConversationsWithLimit(user._id, 10, function(err, conversations) {
+                if (err) return cb(err);
 
+                var hasConversations = _.size(conversations) > 0;
+                return cb(null, hasTickets, hasConversations, user);
+            });
+        },
+        function(hasTickets, hasConversations, user, cb) {
+            if (hasTickets || hasConversations) {
+                //Disable if the user has tickets or conversations
                 user.softDelete(function(err) {
                     if (err) return cb(err);
 

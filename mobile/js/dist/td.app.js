@@ -28,10 +28,17 @@ angular.module('trudesk', [
   'ngCropper',
   'monospaced.elastic',
   'angularMoment',
-  'jett.ionic.filter.bar'
+  'jett.ionic.filter.bar',
+  'angular.img'
   ])
 
-.run(function($ionicPlatform, $rootScope, $location, $localStorage, $state) {
+.run(function($ionicPlatform, $rootScope, $location, $localStorage, $state, $http) {
+  if ($localStorage.accessToken) {
+    $http.defaults.headers.common.accesstoken = $localStorage.accessToken;
+  } else {
+    $http.defaults.headers.common.accesstoken = '';
+  }
+  
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -71,7 +78,7 @@ angular.module('trudesk', [
         }
     });
 
-                       setTimeout(function() {
+    setTimeout(function() {
       angular.element(document.querySelector('#loader')).addClass('hide');
     }, 900);
   });
@@ -291,7 +298,6 @@ angularPeity.directive('lineChart', function() {
     return peityDirective('line');
 });
 
-
 var fileOnChange = angular.module('fileOnChange', []);
 
 fileOnChange.directive('fileOnChange', function() {
@@ -353,7 +359,7 @@ hideTabBar.directive('hideTabBar', function($timeout) {
     restrict: 'A',
     compile: function(element, attr) {
       var tabBar = document.querySelector('.tab-nav');
-      console.log(tabBar);      
+     
       return function($scope, $element, $attr) {
         var scroll = $element[0].querySelector('.scroll-content');
         $scope.$on('$ionicView.beforeEnter', function() {
@@ -725,6 +731,19 @@ angular.module('trudesk.services', [])
 })
 .factory('Users', function($q, $http, $localStorage) {
     return {
+      getImage: function(url) {
+        return new Promise(function(resolve, reject) {
+          $http.get(url, {
+            method: 'GET',
+            headers: {
+              'accesstoken': $localStorage.accessToken
+            }
+          }).then(function(response) {
+            var objectUrl = URL.createObjectURL(response.blob());
+            return resolve(objectUrl);
+          }).catch(function(err) { return reject(err); });
+        });
+      },
       get: function(username) {
         return $http.get('/api/v1/users/' + username, {
           headers: {
@@ -1132,6 +1151,8 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
             $localStorage.accessToken = response.data.accessToken;
             $localStorage.loggedInUser = response.data.user;
 
+            $http.defaults.headers.common.accesstoken = $localStorage.accessToken;
+
             //OneSignal
             if (window.plugins && window.plugins.OneSignal) {
               window.plugins.OneSignal.setSubscription(true);
@@ -1276,6 +1297,7 @@ angular.module('trudesk.controllers.accounts', [])
         ionic.trigger('$trudesk.clearLoginForm', {});    
         $localStorage.server = undefined;
         $localStorage.accessToken = undefined;
+        $http.defaults.headers.common.accesstoken = $localStorage.accessToken;        
         if (window.plugins && window.plugins.OneSignal)
           window.plugins.OneSignal.setSubscription(false);
         $ionicHistory.clearCache();
@@ -2449,6 +2471,14 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
       $scope.$broadcast('scroll.refreshComplete');
     });
   };
+
+  $scope.getUserImage = function(imageFile) {
+    var url = 'http://' + $localStorage.server + '/uploads/users/' + imageFile;
+    
+    return Users.getImage(url).then(function(image) {
+      console.log(image);
+    });
+  }
 
   $scope.fetchTickets = function() {
       angular.element(document).find('ion-item').removeClass('item-remove-animate');

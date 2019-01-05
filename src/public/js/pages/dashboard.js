@@ -49,7 +49,7 @@ define('pages/dashboard', [
                 show_tooltips: false,
                 aggregate_rollover: true,
                 transition_on_update: false,
-                colors: ['#2196f3']
+                // colors: ['#2196f3']
             };
 
             var showOverdue = $('#__showOverdueTickets').text().toLowerCase() === 'true';
@@ -68,12 +68,15 @@ define('pages/dashboard', [
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/'+ ticket.uid + '">T#' + ticket.uid + '</a></td>';
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">' + window.i18next.t('common:Open') + '</span></td>';
                             html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
-                            html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                            if (ticket.updated)
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                            else
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.date).format('MM.DD.YYYY') + '</td>';
                             html += '</tr>';
                         });
 
                         $overdueTableBody.append(html);
-
+                        $overdueTableBody.ajaxify();
                         overdueSpinner.animate({opacity: 0}, 600, function() {
                             $(this).hide();
                         });
