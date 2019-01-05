@@ -5,7 +5,7 @@ WORKDIR /usr/src/trudesk
 
 COPY . /usr/src/trudesk
 
-RUN apk add --no-cache --update bash make gcc g++ python
+RUN apk add --no-cache --update bash make gcc g++ python mongodb-tools
 
 RUN npm install -g yarn && \
     yarn install --production --ignore-scripts --prefer-offline --force && \
