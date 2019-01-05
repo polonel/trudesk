@@ -9,6 +9,7 @@
                 <hr />
                 <div style="padding: 0 15px; margin: 15px 0;">
                     <h4>Installing MongoDB Tools</h4>
+                    <p style="margin: 0 0 5px 0; font-size: 13px;">MongoDB Tools are required to perform backup and restore. See below for instructions on installing the MongoDB Tools.</p>
                     <br />
                     <h5><strong>Ubuntu 16.04</strong></h5>
                     <pre style="white-space: pre-line">
@@ -22,7 +23,10 @@
                     </pre>
                     <br />
                     <h5><strong>Fedora 29</strong></h5>
-                    <pre>$ dnf install -y mongo-tools</pre>
+                    <pre>dnf install -y mongo-tools</pre>
+                    <br />
+                    <h5><strong>Alpine Linux</strong></h5>
+                    <pre>apk add mongodb-tools</pre>
                 </div>
             </div>
             <!--<div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">-->

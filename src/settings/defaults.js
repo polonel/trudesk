@@ -35,6 +35,42 @@ function createDirectories(callback) {
     ], callback);
 }
 
+function downloadWin32MongoDBTools(callback) {
+    var http = require('http');
+    var os = require('os');
+    if (os.platform() === 'win32') {
+        var filename = 'mongodb-tools.3.6.9-win32x64.zip';
+        var savePath = path.join(__dirname, '../backup/bin/win32/');
+        fs.ensureDirSync(savePath);
+        if (!fs.existsSync(path.join(savePath, 'mongodump.exe')) ||
+            !fs.existsSync(path.join(savePath, 'mongorestore.exe')) ||
+            !fs.existsSync(path.join(savePath, 'libeay32.dll')) ||
+            !fs.existsSync(path.join(savePath, 'ssleay32.dll'))) {
+            winston.debug('Windows platform detected. Downloading MongoDB Tools');
+            fs.emptyDirSync(savePath);
+            var unzip = require('unzip');
+            var file = fs.createWriteStream(path.join(savePath, filename));
+            http.get('http://storage.trudesk.io/tools/' + filename, function(response) {
+                response.pipe(file);
+                file.on('finish', function() {
+                    file.close();
+                });
+                file.on('close', function() {
+                    fs.createReadStream(path.join(savePath, filename)).pipe(unzip.Extract({ path: savePath })).on('close', function() {
+                        fs.unlink(path.join(savePath, filename), callback);
+                    });
+                });
+            }).on('error', function(err) {
+                fs.unlink(path.join(savePath, filename));
+                winston.debug(err);
+                return callback();
+            });
+        } else
+            return callback();
+    } else
+        return callback();
+}
+
 function timezoneDefault(callback) {
     SettingsSchema.getSettingByName('gen:timezone', function(err, setting) {
         if (err) {
@@ -330,6 +366,9 @@ settingsDefaults.init = function(callback) {
     async.series([
         function(done) {
             return createDirectories(done);
+        },
+        function(done) {
+            downloadWin32MongoDBTools(done);
         },
         function(done) {
             return timezoneDefault(done);
