@@ -896,6 +896,29 @@ define([
                     });
                 };
 
+                function saveMinLength(settingName, length) {
+                    $http.put('/api/v1/settings', {
+                        name: settingName,
+                        value: length
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                }
+
+                $scope.saveMinSubjectLengthClick = function() {
+                    saveMinLength('ticket:minlength:subject', $scope.minSubjectLength);
+                };
+
+                $scope.saveMinIssueLengthClick = function() {
+                    saveMinLength('ticket:minlength:issue', $scope.minIssueLength);
+                };
+
                 $scope.allowUserRegistrationChanged = function() {
                     var vm = this;
                     $scope.allowUserRegistration = vm.allowUserRegistration;

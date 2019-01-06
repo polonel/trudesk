@@ -2,7 +2,11 @@
     siteTitle='{{data.settings.siteTitle.value}}';
     siteUrl='{{data.settings.siteUrl.value}}';
     selectedTimezone='{{data.settings.timezone.value}}';
+
     defaultTicketType='{{data.settings.defaultTicketType.value}}';
+    minSubjectLength={{data.settings.minSubjectLength.value}};
+    minIssueLength={{data.settings.minIssueLength.value}};
+
     mailerEnabled={{data.settings.mailerEnabled.value}};
     mailerHost='{{data.settings.mailerHost.value}}';
     mailerSSL={{data.settings.mailerSSL.value}};
@@ -478,6 +482,46 @@
                                         <input type="checkbox" id="showOverdueTickets" name="showOverdueTickets" ng-change="showOverdueTicketsChanged()" ng-model="showOverdueTickets">
                                         <span class="lever"></span>
                                     </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Subject Length-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Minimum Subject Length</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Minimum character for ticket subjects
+                                </h5>
+                            </div>
+                            <div class="right" style="width: 165px; padding-right: 15px; position:relative;">
+                                <div class="left" style="width: 90px; padding-right: 10px;">
+                                    <input id="minSubjectLength" class="md-input md-input-width-small" name="minSubjectLength" type="number" ng-model="minSubjectLength" />
+                                </div>
+                                <div class="right" style="margin-top: 13px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveMinSubjectLengthClick();">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Issue Length-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Minimum Issue Length</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Minimum character for ticket issues
+                                </h5>
+                            </div>
+                            <div class="right" style="width: 165px; padding-right: 15px; position:relative;">
+                                <div class="left" style="width: 90px; padding-right: 10px;">
+                                    <input id="minIssueLength" class="md-input md-input-width-small" name="minIssueLength" type="number" ng-model="minIssueLength" />
+                                </div>
+                                <div class="right" style="margin-top: 13px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveMinIssueLengthClick();">Save</button>
                                 </div>
                             </div>
                         </div>

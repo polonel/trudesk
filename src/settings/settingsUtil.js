@@ -63,6 +63,8 @@ util.getSettings = function(callback) {
         s.colorQuaternary = parseSetting(settings, 'color:quaternary', '#E6E7E8');
 
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
+        s.minSubjectLength = parseSetting(settings, 'ticket:minlength:subject', 10);
+        s.minIssueLength = parseSetting(settings, 'ticket:minlength:issue', 10); 
 
         s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);
         s.mailerHost = parseSetting(settings, 'mailer:host', '');

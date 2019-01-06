@@ -27,6 +27,33 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+              viewdata.ticketSettings = {};
+              async.parallel([
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:subject', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minSubject = setting.value;
+                          else
+                              viewdata.ticketSettings.minSubject = 10;
+
+
+                          return done();
+                      });
+                  },
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:issue', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minIssue = setting.value;
+                          else
+                              viewdata.ticketSettings.minIssue = 10;
+
+
+                          return done();
+                      });
+                  }
+              ], callback);
+          },
+          function(callback) {
             if (global.env === 'development') 
                 require('../../sass/buildsass').build(callback);
             else
