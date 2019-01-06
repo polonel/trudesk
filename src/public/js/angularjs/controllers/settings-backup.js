@@ -125,7 +125,7 @@ define([
 
                 var filename = file.filename;
 
-                UIkit.modal.confirm('<p style="font-size: 14px;">This action is permanent and will destroy the backup file: <strong>' + filename + '</strong><br />Are you sure?</p>', function() {
+                UIkit.modal.confirm('<h2 class="text-light">Are you sure?</h2><p style="font-size: 14px;">This action is permanent and will destroy the backup file: <strong>' + filename + '</p>', function() {
                     $http.delete('/api/v1/backup/' + filename)
                         .then(function success(res) {
                             $log.log(res);

@@ -540,6 +540,22 @@ define([
                     });
                 };
 
+                $scope.saveShortDateFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:shortDateFormat',
+                        value: $scope.shortDateFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
                 $scope.saveSiteTitleClicked = function() {
                     $http.put('/api/v1/settings', {
                         name: 'gen:sitetitle',

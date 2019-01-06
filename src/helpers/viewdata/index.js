@@ -27,6 +27,22 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+              if (global.env === 'development')
+                  require('../../sass/buildsass').build(callback);
+              else
+                  return callback();
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:shortDateFormat', function(err, setting) {
+                  if (!err && setting && setting.value)
+                      viewdata.shortDateFormat = setting.value;
+                  else
+                      viewdata.shortDateFormat = 'MM/DD/YYYY';
+
+                  return callback();
+              });
+          },
+          function(callback) {
               viewdata.ticketSettings = {};
               async.parallel([
                   function(done) {
@@ -52,13 +68,6 @@ viewController.getData = function(request, cb) {
                       });
                   }
               ], callback);
-          },
-          function(callback) {
-            if (global.env === 'development') 
-                require('../../sass/buildsass').build(callback);
-            else
-                return callback();
-            
           },
           function(callback) {
             settingSchema.getSetting('gen:sitetitle', function(err, setting) {

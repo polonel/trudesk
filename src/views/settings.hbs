@@ -2,6 +2,7 @@
     siteTitle='{{data.settings.siteTitle.value}}';
     siteUrl='{{data.settings.siteUrl.value}}';
     selectedTimezone='{{data.settings.timezone.value}}';
+    shortDateFormat='{{data.settings.shortDateFormat.value}}';
 
     defaultTicketType='{{data.settings.defaultTicketType.value}}';
     minSubjectLength={{data.settings.minSubjectLength.value}};
@@ -162,6 +163,25 @@
                                     <select class="selectize" name="tz" id="tz" ng-model="selectedTimezone" ng-change="timezoneChanged()"
                                             ng-options="v.value as v.label for v in timeZones" data-md-selectize-bottom>
                                     </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Short Date Format</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Set the format for short dates. <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank">Moment.js Format Options</a>
+                                </h5>
+                            </div>
+                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                                <div class="uk-width-3-4 uk-float-left" style="padding-right: 10px;">
+                                    <input id="shortDateFormat" class="md-input md-input-width-medium" name="shortDateFormat" type="text" ng-model="shortDateFormat" />
+                                </div>
+                                <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveShortDateFormatClicked();">Save</button>
                                 </div>
                             </div>
                         </div>

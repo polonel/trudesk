@@ -39,6 +39,8 @@ define('pages/dashboard', [
 
             helpers.resizeAll();
 
+            dashboardPage.shortDateFormat = window.trudeskSettingsService.getSettings().shortDateFormat.value;
+
             var parms = {
                 full_width: true,
                 height: 250,
@@ -69,9 +71,9 @@ define('pages/dashboard', [
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>';
                             html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
                             if (ticket.updated)
-                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format(dashboardPage.shortDateFormat) + '</td>';
                             else
-                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.date).format('MM.DD.YYYY') + '</td>';
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.date).format(dashboardPage.shortDateFormat) + '</td>';
                             html += '</tr>';
                         });
 

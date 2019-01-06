@@ -133,50 +133,6 @@ function showTourSettingDefault(callback) {
     });
 }
 
-function ticketLengthSettingDefault(callback) {
-    async.parallel([
-        function(done) {
-            SettingsSchema.getSettingByName('ticket:minlength:subject', function(err, setting) {
-                if (err) {
-                    winston.warn(err);
-                    return done(err);
-                }
-
-                if (!setting) {
-                    var s = new SettingsSchema({
-                        name: 'ticket:minlength:subject',
-                        value: 10
-                    });
-
-                    s.save(done);
-                } else
-                    return done();
-            });
-        },
-        function(done) {
-            SettingsSchema.getSettingByName('ticket:minlength:issue', function(err, setting) {
-                if (err) {
-                    winston.warn(err);
-                    return done(err);
-                }
-
-                if (!setting) {
-                    var s = new SettingsSchema({
-                        name: 'ticket:minlength:issue',
-                        value: 10
-                    });
-
-                    s.save(done);
-                } else
-                    return done();
-            });
-        }
-    ], function(err) {
-        if (_.isFunction(callback))
-            return callback(err);
-    });
-}
-
 function ticketTypeSettingDefault(callback) {
     SettingsSchema.getSettingByName('ticket:type:default', function(err, setting) {
         if (err) {
@@ -422,9 +378,6 @@ settingsDefaults.init = function(callback) {
         },
         function(done) {
             return ticketTypeSettingDefault(done);
-        },
-        function(done) {
-            return ticketLengthSettingDefault(done);
         },
         function(done) {
             return ticketPriorityDefaults(done);

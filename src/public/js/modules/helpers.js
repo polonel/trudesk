@@ -1254,6 +1254,13 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         return timezone;
     };
 
+    helpers.getShortDateFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().shortDateFormat.value;
+        else
+            return 'MM/DD/YYYY';
+    };
+
     helpers.formatDate = function(date, format) {
         var timezone = this.getTimezone();
         if (!timezone)

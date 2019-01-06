@@ -229,7 +229,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/reports/generate/tickets_by_type', middleware.api, controllers.api.reports.generate.ticketsByType);
     router.post('/api/v1/reports/generate/tickets_by_user', middleware.api, controllers.api.reports.generate.ticketsByUser);
 
-
+    router.get('/api/v1/settings', middleware.api, controllers.api.settings.getSettings);
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
     router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass);
