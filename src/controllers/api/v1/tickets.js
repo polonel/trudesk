@@ -555,44 +555,45 @@ apiTickets.update = function(req, res) {
             if (err) return res.status(400).json({success: false, error: 'Invalid Post Data'});
             async.parallel([
                 function(cb) {
-                    if (!_.isUndefined(reqTicket.status)) {
-                        ticket.setStatus(req.user, reqTicket.status, function (e, t) {
-                            ticket = t;
+                    if (!_.isUndefined(reqTicket.status))
+                        ticket.status = reqTicket.status;
 
-                            cb();
-                        });
-                    } else 
-                        cb();
-                    
+                    return cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.subject))
+                        ticket.subject = reqTicket.subject;
+
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.group)) {
                         ticket.group = reqTicket.group._id;
 
                         ticket.populate('group', function() {
-                             cb();
+                            return cb();
                         });
-                    } else 
-                        cb();
+                    } else
+                        return cb();
                     
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.closedDate))
                         ticket.closedDate = reqTicket.closedDate;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                         ticket.tags = reqTicket.tags;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue))
                         ticket.issue = reqTicket.issue;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
@@ -606,10 +607,10 @@ apiTickets.update = function(req, res) {
 
                             ticket.history.push(HistoryItem);
 
-                            cb();
+                            return cb();
                         });
-                    } else 
-                        cb();
+                    } else
+                        return cb();
                     
                 }
             ], function() {
