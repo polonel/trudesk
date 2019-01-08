@@ -92,12 +92,12 @@ middleware.redirectIfUser = function(req, res, next) {
 
 middleware.ensurel2Auth = function(req, res, next) {
     if (req.session.l2auth === 'totp') {
-        if (req.user)
-            {if (req.user.role !== 'user')
+        if (req.user) {
+            if (req.user.role !== 'user')
                 return res.redirect('/dashboard');
-            else
-                return res.redirect('/tickets');}
-        else
+
+            return res.redirect('/tickets');
+        } else
             return next();
     } else 
         return res.redirect('/l2auth');

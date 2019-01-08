@@ -45,8 +45,8 @@ function buildGraphData(arr, days, callback) {
 
     if (_.isFunction(callback))
         return callback(graphData);
-    else
-        return graphData;
+
+    return graphData;
 }
 
 function buildAvgResponse(ticketArray, callback) {
@@ -71,8 +71,8 @@ function buildAvgResponse(ticketArray, callback) {
 
     if (_.isFunction(callback))
         return callback(cbObj);
-    else
-        return cbObj;
+
+    return cbObj;
 }
 
 /**
@@ -420,8 +420,8 @@ apiTickets.createPublicTicket = function(req, res) {
 
                 if (defaultType.value)
                     return next(null, defaultType.value, group, savedUser);
-                else
-                    return next('Failed: Invalid Default Ticket Type.');
+
+                return next('Failed: Invalid Default Ticket Type.');
             });
         },
 

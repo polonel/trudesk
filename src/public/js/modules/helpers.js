@@ -1254,11 +1254,39 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         return timezone;
     };
 
+    helpers.getTimeFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().timeFormat.value;
+        else
+            return 'hh:mma';
+    };
+
+    helpers.getCalendarDate = function(date) {
+        moment.updateLocale('en', {
+            calendar: {
+                sameDay: '[Today at] LT',
+                lastDay: '[Yesterday at] LT',
+                nextDay: '[Tomorrow at] LT',
+                lastWeek: '[Last] ddd [at] LT',
+                nextWeek: 'ddd [at] LT',
+                sameElse: helpers.getShortDateFormat()
+            }
+        });
+        return moment.utc(date).tz(this.getTimezone()).calendar();
+    };
+
     helpers.getShortDateFormat = function() {
         if (window.trudeskSettingsService)
             return window.trudeskSettingsService.getSettings().shortDateFormat.value;
         else
             return 'MM/DD/YYYY';
+    };
+
+    helpers.getLongDateFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().longDateFormat.value;
+        else
+            return 'MM/DD/YYYY h:mma';
     };
 
     helpers.formatDate = function(date, format) {

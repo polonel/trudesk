@@ -15,6 +15,7 @@
 define('modules/ui', [
     'jquery',
     'underscore',
+    'uikit',
     'modules/helpers',
     'modules/navigation',
     'modules/socket.io/noticeUI',
@@ -22,7 +23,7 @@ define('modules/ui', [
     'modules/socket.io/logs.io',
     'history'
 
-], function($, _, helpers, nav, noticeUI, ticketsUI, logsIO) {
+], function($, _, UIKit, helpers, nav, noticeUI, ticketsUI, logsIO) {
     var socketUi = {},
         socket;
 
@@ -737,7 +738,8 @@ define('modules/ui', [
                         '<div class="issue-text">' +
                         '<h3>Re: ' + ticket.subject + '</h3>' +
                         '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
-                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, 'MMM DD, h:mma') + '</time>' +
+                        '<br />' +
+                        '<time datetime="' + item.date + '" data-uk-tooltip="{delay: 250}" title="' + helpers.formatDate(item.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) + '">' + helpers.getCalendarDate(item.date) + '</time>' +
                         '<div class="comment-body"><p>' + item.comment + '</p></div>' +
                         '</div>' +
                         '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + item._id + '" style="margin-bottom: 15px;">' +
@@ -770,8 +772,10 @@ define('modules/ui', [
                         '<div class="issue-text">' +
                         '<h3>Re: ' + ticket.subject + '</h3>' +
                         '<a class="comment-email-link" href="mailto:' + item.owner.email + '">' + item.owner.fullname + ' &lt;' + item.owner.email + '&gt;</a>' +
-                        '<time datetime="' + item.date + '">' + helpers.formatDate(item.date, 'MMM DD, h:mma') + '</time>' +
-                        '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
+                        '<br />' +
+                        '<time datetime="' + item.date + '" data-uk-tooltip="{delay: 250}" title="' + helpers.formatDate(item.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) + '">' + helpers.getCalendarDate(item.date) + '</time>' +
+                        '<br />' +
+                        '<span class="uk-badge uk-badge-small nomargin-left-right text-white">NOTE</span>' +
                         '<div class="comment-body"><p>' + item.note + '</p></div>' +
                         '</div>' +
                         '<div class="edit-note-form uk-clearfix hide" data-noteid="' + item._id + '" style="margin-bottom: 15px;">' +
@@ -810,7 +814,8 @@ define('modules/ui', [
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a class="comment-email-link" href="mailto:' + comment.owner.email + '">' + comment.owner.fullname + ' &lt;' + comment.owner.email + '&gt;</a>' +
-                    '<time datetime="' + comment.date + '">' + helpers.formatDate(comment.date, 'MMM DD, h:mma') + '</time>' +
+                    '<br />' +
+                    '<time datetime="' + comment.date + '" data-uk-tooltip="{delay: 250}" title="' + helpers.formatDate(comment.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) + '">' + helpers.getCalendarDate(comment.date) + '</time>' +
                     '<div class="comment-body"><p>' + comment.comment + '</p></div>' +
                     '</div>' +
                     '<div class="edit-comment-form uk-clearfix hide" data-commentid="' + comment._id + '" style="margin-bottom: 15px;">' +
@@ -848,8 +853,10 @@ define('modules/ui', [
                     '<div class="issue-text">' +
                     '<h3>Re: ' + ticket.subject + '</h3>' +
                     '<a class="comment-email-link" href="mailto:' + note.owner.email + '">' + note.owner.fullname + ' &lt;' + note.owner.email + '&gt;</a>' +
-                    '<time datetime="' + note.date + '">' + helpers.formatDate(note.date, 'MMM DD, h:mma') + '</time>' +
-                    '<span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>' +
+                    '<br />' +
+                    '<time datetime="' + note.date + '" data-uk-tooltip="{delay: 250}" title="' + helpers.formatDate(note.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) + '">' + helpers.getCalendarDate(note.date) + '</time>' +
+                    '<br />' +
+                    '<span class="uk-badge uk-badge-small nomargin-left-right text-white">NOTE</span>' +
                     '<div class="comment-body"><p>' + note.note + '</p></div>' +
                     '</div>' +
                     '<div class="edit-note-form uk-clearfix hide" data-noteid="' + note._id + '" style="margin-bottom: 15px;">' +

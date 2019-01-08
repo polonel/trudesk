@@ -33,14 +33,38 @@ viewController.getData = function(request, cb) {
                   return callback();
           },
           function(callback) {
-              settingSchema.getSetting('gen:shortDateFormat', function(err, setting) {
-                  if (!err && setting && setting.value)
-                      viewdata.shortDateFormat = setting.value;
-                  else
-                      viewdata.shortDateFormat = 'MM/DD/YYYY';
+            async.parallel([
+                function(done) {
+                    settingSchema.getSetting('gen:timeFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.timeFormat = setting.value;
+                        else
+                            viewdata.timeFormat = 'hh:mma';
 
-                  return callback();
-              });
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:shortDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.shortDateFormat = setting.value;
+                        else
+                            viewdata.shortDateFormat = 'MM/DD/YYYY';
+
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:longDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.longDateFormat = setting.value;
+                        else
+                            viewdata.longDateFormat = 'MM/DD/YYYY h:mma';
+
+                        return done();
+                    });
+                }
+            ], callback);
           },
           function(callback) {
               viewdata.ticketSettings = {};
@@ -151,16 +175,16 @@ viewController.getData = function(request, cb) {
                   if (!viewdata.hasCustomFavicon) {
                       viewdata.favicon = '/img/favicon.ico';
                       return callback();
-                  } else {
-                      settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
-                          if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
-                              viewdata.favicon = '/assets/' + faviconFilename.value;
-                          else
-                              viewdata.favicon = '/img/favicon.ico';
-
-                          return callback();
-                      });
                   }
+
+                  settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
+                      if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
+                          viewdata.favicon = '/assets/' + faviconFilename.value;
+                      else
+                          viewdata.favicon = '/img/favicon.ico';
+
+                      return callback();
+                  });
               });
           },
           function(callback) {

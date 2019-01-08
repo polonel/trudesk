@@ -866,8 +866,10 @@ apiUsers.checkEmail = function(req, res) {
     UserSchema.getUserByEmail(email, function(err, users) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
-        if (!_.isNull(users)) return res.json({success: true, exist: true});
-        else return res.json({success: true, exist: false});
+        if (!_.isNull(users))
+            return res.json({success: true, exist: true});
+
+        return res.json({success: true, exist: false});
     });
 };
 

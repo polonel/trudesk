@@ -103,7 +103,10 @@ define('pages/dashboard', [
                     method: 'GET',
                     success: function (_data) {
                         var lastUpdated = $('#lastUpdated').find('span');
-                        lastUpdated.text(_data.lastUpdated);
+
+                        var formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat();
+                        var formated = moment(_data.lastUpdated, 'MM/DD/YYYY hh:mm:ssa').format(formatString);
+                        lastUpdated.text(formated);
 
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');

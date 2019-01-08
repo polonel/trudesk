@@ -528,7 +528,7 @@ define('modules/chat',[
             html += '</div>';
             html += '<div class="chat-box-messages scrollable">';
             if (userMeta && userMeta.deletedAt)
-                html += '<div class="chat-box-deletedAt">Conversation deleted at ' + moment(userMeta.deletedAt).format('MM.D.YY \\at h:mma') + '</div>';
+                html += '<div class="chat-box-deletedAt">Conversation deleted at ' + moment(userMeta.deletedAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) + '</div>';
             html += '<div class="chat-message-list" data-chat-userid="' + user._id + '">';
             html += '</div>';
             html += '<div class="user-is-typing-wrapper hide">';

@@ -129,7 +129,7 @@
                                 <td class="ticket-status ticket-new"><span>New</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -141,7 +141,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -162,7 +162,7 @@
                                 <td class="ticket-status ticket-open"><span>Open</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -174,7 +174,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -195,7 +195,7 @@
                                 <td class="ticket-status ticket-pending"><span>Pending</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -207,7 +207,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated ../data.common.longDateFormat}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -223,7 +223,7 @@
                                 <td class="ticket-status ticket-closed"><span>Closed</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -235,7 +235,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated ../data.common.longDateFormat}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}

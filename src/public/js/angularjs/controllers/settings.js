@@ -23,9 +23,10 @@ define([
     'moment',
     'moment_timezone',
     'velocity',
-    'history'],
+    'history',
+    'angularjs/services'],
     function(angular, _, $, helpers, ui, UIkit, EasyMDE, moment) {
-        return angular.module('trudesk.controllers.settings', ['ngSanitize'])
+        return angular.module('trudesk.controllers.settings', ['ngSanitize', 'trudesk.services.settings'])
             .directive('selectize', function($timeout) {
                 return {
                     restrict: 'A',
@@ -44,7 +45,7 @@ define([
                     }
                 };
             })
-            .controller('settingsCtrl', function($scope, $http, $timeout, $log, $window) {
+            .controller('settingsCtrl', function(SettingsService, $scope, $http, $timeout, $log, $window) {
                 var mdeToolbarItems = [
                     {
                         name: 'bold',
@@ -108,6 +109,11 @@ define([
                 var privacyPolicyMDE = null;
 
                 $scope.init = function() {
+                    // Set using Service due to handlebars escaping backslashes
+                    $scope.timeFormat = SettingsService.getSettings().timeFormat.value;
+                    $scope.shortDateFormat = SettingsService.getSettings().shortDateFormat.value;
+                    $scope.longDateFormat = SettingsService.getSettings().longDateFormat.value;
+
                     var $uploadButton = $('#logo-upload-select').parent();
                     var uploadLogoSettings = {
                         action: '/settings/general/uploadlogo',
@@ -540,6 +546,23 @@ define([
                     });
                 };
 
+                $scope.saveTimeFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:timeFormat',
+                        value: $scope.timeFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        SettingsService.getSettings().timeFormat.value = $scope.timeFormat;
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
                 $scope.saveShortDateFormatClicked = function() {
                     $http.put('/api/v1/settings', {
                         name: 'gen:shortDateFormat',
@@ -549,6 +572,24 @@ define([
                             'Content-Type': 'application/json'
                         }
                     }).then(function successCallback() {
+                        SettingsService.getSettings().shortDateFormat.value = $scope.shortDateFormat;
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.saveLongDateFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:longDateFormat',
+                        value: $scope.longDateFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        SettingsService.getSettings().longDateFormat.value = $scope.longDateFormat;
                         helpers.UI.showSnackbar('Setting Saved.', false);
                     }, function errorCallback(err) {
                         helpers.showSnackbar('Error: ' + err, true);

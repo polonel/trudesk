@@ -48,7 +48,10 @@ util.getSettings = function(callback) {
         s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk');
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
+        s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma');
         s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY');
+        s.longDateFormat = parseSetting(settings, 'gen:longDateFormat', 'MM/DD/YYYY h:mma');
+
         s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
         s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '');
         s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false);
