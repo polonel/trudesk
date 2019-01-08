@@ -314,7 +314,6 @@ apiUsers.update = function(req, res) {
     // saveGroups - Profile saving where groups are not sent
     var saveGroups = data.saveGroups;
     var obj = {
-        username:       data.aUsername,
         fullname:       data.aFullname,
         title:          data.aTitle,
         password:       data.aPass,
