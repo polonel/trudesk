@@ -549,10 +549,10 @@ apiTickets.update = function(req, res) {
             return res.status(401).json({success: false, error: 'Invalid Permissions'});
         var oId = req.params.id;
         var reqTicket = req.body;
-        if (_.isUndefined(oId)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+        if (_.isUndefined(oId)) return res.status(400).json({success: false, error: 'Invalid Ticket ObjectID.'});
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
-            if (err) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+            if (err) return res.status(400).json({success: false, error: err.message});
             async.parallel([
                 function(cb) {
                     if (!_.isUndefined(reqTicket.status))
