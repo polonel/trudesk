@@ -16,6 +16,7 @@ var async           = require('async'),
     path            = require('path'),
     _               = require('lodash'),
     winston         = require('winston'),
+    pkg         = require('../../package'),
     Chance          = require('chance');
 
 var installController = {};
@@ -26,6 +27,8 @@ installController.index = function(req, res) {
     var content = {};
     content.title = 'Install Trudesk';
     content.layout = false;
+
+    content.bottom = 'Trudesk v' + pkg.version;
 
     res.render('install', content);
 };

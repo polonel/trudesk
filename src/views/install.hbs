@@ -197,6 +197,15 @@
             stroke-width: 5;
             stroke-linecap: round;
         }
+        .bottom {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            font-size: 12px;
+            font-family: "Roboto", Arial, sans-serif;
+            margin: 0 0 5px 15px;
+            color: rgba(0,0,0,0.5);
+        }
     </style>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -379,6 +388,10 @@
             </div>
         </div>
     </div>
+</div>
+
+<div class="bottom">
+    {{bottom}}
 </div>
 
 <script type="text/javascript">
