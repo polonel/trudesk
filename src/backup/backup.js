@@ -98,7 +98,11 @@ function runBackup(callback) {
 
     mongodump.on('exit', function(code) {
         if (code === 0) {
-            require('rimraf')(path.join(__dirname,  '../../backups/dump/database/trudesk/session*'), function(err) {
+            var dbName = fs.readdirSync(__dirname, '../../backups/dump/database')[0];
+            if (!dbName)
+                return callback(new Error('Unable to retrieve database name'));
+
+            require('rimraf')(path.join(__dirname,  '../../backups/dump/database', dbName, 'session*'), function(err) {
                 if (err) return callback(err);
 
                 copyFiles(function(err) {
