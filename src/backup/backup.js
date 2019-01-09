@@ -69,6 +69,11 @@ function cleanup(callback) {
 }
 
 function copyFiles(callback) {
+    //Make sure the directories are created for the backup.
+    fs.ensureDirSync(path.join(__dirname, '../../public/uploads/assets'));
+    fs.ensureDirSync(path.join(__dirname, '../../public/uploads/tickets'));
+    fs.ensureDirSync(path.join(__dirname, '../../public/uploads/users'));
+
     fs.copy(path.join(__dirname, '../../public/uploads/'), path.join(__dirname, '../../backups/dump/'), callback);
 }
 
