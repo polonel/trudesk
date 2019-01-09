@@ -27,6 +27,7 @@
     "body-parser": "1.18.3",
     "busboy": "0.2.14",
     "chance": "1.0.16",
+    "cheerio": "1.0.0-rc.2",
     "clone": "2.1.2",
     "connect-flash": "0.1.1",
     "connect-mongo": "2.0.1",
