@@ -127,7 +127,10 @@ backup_restore.restoreBackup = function(req, res) {
         child.kill('SIGINT');
         global.forks = _.remove(global.forks, function(f) { return f.fork !== child; });
 
-        if (data.error) return res.status(400).json({success: false, error: data.error});
+        if (data.error) {
+            result = {success: false, error: data.error};
+            return;
+        }
 
         if (data.success) {
             var cache = _.find(global.forks, function(f) { return f.name === 'cache'; });
