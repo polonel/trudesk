@@ -35,6 +35,7 @@ $ docker pull polonel/trudesk:1.0
 $ docker run --name trudesk --link mongodb:mongodb \
     -v /data/trudesk/uploads:/usr/src/trudesk/public/uploads \
     -v /data/trudesk/plugins:/usr/src/trudesk/plugins \
+    -v /data/trudesk/backups:/usr/src/trudesk/backups \
     -e NODE_ENV=production \
     -e MONGODB_PORT_27017_TCP_ADDR=mongodb -e MONGODB_DATABASE_NAME=trudesk \
     -P -d polonel/trudesk:$TAG
