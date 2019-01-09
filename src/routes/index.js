@@ -54,12 +54,12 @@ function mainRoutes(router, middleware, controllers) {
         var _ = require('lodash');
         s.getSettingByName('gen:customlogo', function(err, hasCustomLogo) {
             if (!err && hasCustomLogo && hasCustomLogo.value)
-                s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
+                {s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
                     if (!err && logoFilename && !_.isUndefined(logoFilename))
                         return res.send('/assets/topLogo.png');
                     else
                         return res.send('/img/defaultLogoLight.png');
-                });
+                });}
             else
                 return res.send('/img/defaultLogoLight.png');
         });
@@ -128,6 +128,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
     router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
     router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
+    router.get('/settings/backup', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.backupSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
 
@@ -228,7 +229,7 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/reports/generate/tickets_by_type', middleware.api, controllers.api.reports.generate.ticketsByType);
     router.post('/api/v1/reports/generate/tickets_by_user', middleware.api, controllers.api.reports.generate.ticketsByUser);
 
-
+    router.get('/api/v1/settings', middleware.api, controllers.api.settings.getSettings);
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
     router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass);
@@ -241,6 +242,12 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.createPublicAccount);
 
+    router.get('/api/v1/backups', middleware.api, middleware.isAdmin, controllers.backuprestore.getBackups);
+    router.post('/api/v1/backup', middleware.api, middleware.isAdmin, controllers.backuprestore.runBackup);
+    router.delete('/api/v1/backup/:backup', middleware.api, middleware.isAdmin, controllers.backuprestore.deleteBackup);
+    router.post('/api/v1/backup/restore', middleware.api, middleware.isAdmin, controllers.backuprestore.restoreBackup);
+    router.post('/api/v1/backup/upload', middleware.api, middleware.isAdmin, controllers.backuprestore.uploadBackup);
+    router.get('/api/v1/backup/hastools', middleware.api, middleware.isAdmin, controllers.backuprestore.hasBackupTools);
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
         if (req.user.role === 'admin') {

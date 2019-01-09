@@ -19,7 +19,7 @@ define('pages/settings', [
     'uikit',
     'history'
 
-], function($) {
+], function($, _, helpers, UIkit, History) {
     var settingsPage = {};
 
     settingsPage.init = function(callback) {

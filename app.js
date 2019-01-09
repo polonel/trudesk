@@ -67,7 +67,7 @@ if (!process.env.FORK) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
+    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2019 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
     winston.info('Server Time: ' + new Date());
@@ -183,8 +183,12 @@ function dbCallback(err, db) {
                         //});
 
                         var fork = require('child_process').fork;
+                        var memLimit = '2048';
+                        if (process.env.MEMORYLIMIT)
+                            memLimit = process.env.MEMORYLIMIT;
+
                         var n = fork(path.join(__dirname, '/src/cache/index.js'), {
-                            execArgv: ['--max-old-space-size=4096'],
+                            execArgv: ['--max-old-space-size=' + memLimit],
                             env: {
                                 FORK: 1, NODE_ENV: global.env,
                                 MONGODB_DATABASE_NAME: process.env.MONGODB_DATABASE_NAME,
@@ -203,10 +207,10 @@ function dbCallback(err, db) {
                             }
                         });
 
-                return next();
+                        return next();
                     }
                 ], function() {
-            winston.info('trudesk Ready');
+                    winston.info('trudesk Ready');
                 });
             });
         }

@@ -1,6 +1,6 @@
-<div class="uk-modal" id="createTagModal" ng-controller="settingsCtrl">
+<div class="uk-modal" id="createTagModal" ng-controller="commonCtrl">
     <div class="uk-modal-dialog">
-        <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag($event)">
+        <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag('{{page}}', $event)">
             <div class="">
                 <h2 class="nomargin mb-5">Create a tag</h2>
                 <p class="uk-text-small uk-text-muted">Tags categorize tickets, making it easy to identify issues</p>

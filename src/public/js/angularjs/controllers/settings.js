@@ -23,9 +23,10 @@ define([
     'moment',
     'moment_timezone',
     'velocity',
-    'history'],
+    'history',
+    'angularjs/services'],
     function(angular, _, $, helpers, ui, UIkit, EasyMDE, moment) {
-        return angular.module('trudesk.controllers.settings', ['ngSanitize'])
+        return angular.module('trudesk.controllers.settings', ['ngSanitize', 'trudesk.services.settings'])
             .directive('selectize', function($timeout) {
                 return {
                     restrict: 'A',
@@ -44,7 +45,7 @@ define([
                     }
                 };
             })
-            .controller('settingsCtrl', function($scope, $http, $timeout, $log, $window) {
+            .controller('settingsCtrl', function(SettingsService, $scope, $http, $timeout, $log, $window) {
                 var mdeToolbarItems = [
                     {
                         name: 'bold',
@@ -108,6 +109,11 @@ define([
                 var privacyPolicyMDE = null;
 
                 $scope.init = function() {
+                    // Set using Service due to handlebars escaping backslashes
+                    $scope.timeFormat = SettingsService.getSettings().timeFormat.value;
+                    $scope.shortDateFormat = SettingsService.getSettings().shortDateFormat.value;
+                    $scope.longDateFormat = SettingsService.getSettings().longDateFormat.value;
+
                     var $uploadButton = $('#logo-upload-select').parent();
                     var uploadLogoSettings = {
                         action: '/settings/general/uploadlogo',
@@ -540,6 +546,57 @@ define([
                     });
                 };
 
+                $scope.saveTimeFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:timeFormat',
+                        value: $scope.timeFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        SettingsService.getSettings().timeFormat.value = $scope.timeFormat;
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.saveShortDateFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:shortDateFormat',
+                        value: $scope.shortDateFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        SettingsService.getSettings().shortDateFormat.value = $scope.shortDateFormat;
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
+                $scope.saveLongDateFormatClicked = function() {
+                    $http.put('/api/v1/settings', {
+                        name: 'gen:longDateFormat',
+                        value: $scope.longDateFormat
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        SettingsService.getSettings().longDateFormat.value = $scope.longDateFormat;
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.showSnackbar('Error: ' + err, true);
+                        $log.error(err);
+                    });
+                };
+
                 $scope.saveSiteTitleClicked = function() {
                     $http.put('/api/v1/settings', {
                         name: 'gen:sitetitle',
@@ -896,6 +953,29 @@ define([
                     });
                 };
 
+                function saveMinLength(settingName, length) {
+                    $http.put('/api/v1/settings', {
+                        name: settingName,
+                        value: length
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Setting Saved.', false);
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar(err, true);
+                    });
+                }
+
+                $scope.saveMinSubjectLengthClick = function() {
+                    saveMinLength('ticket:minlength:subject', $scope.minSubjectLength);
+                };
+
+                $scope.saveMinIssueLengthClick = function() {
+                    saveMinLength('ticket:minlength:issue', $scope.minIssueLength);
+                };
+
                 $scope.allowUserRegistrationChanged = function() {
                     var vm = this;
                     $scope.allowUserRegistration = vm.allowUserRegistration;
@@ -912,41 +992,6 @@ define([
                     }, function errorCallback(err) {
                         helpers.UI.showSnackbar(err, true);
                     });
-                };
-
-                $scope.showCreateTagWindow = function($event) {
-                    $event.preventDefault();
-                    var createTagModal = $('#createTagModal');
-                    if (createTagModal.length > 0)
-                        UIkit.modal(createTagModal, {bgclose: false}).show();
-
-                };
-
-                $scope.createTag = function($event) {
-                    $event.preventDefault();
-                    var form = $('#createTagForm');
-                    if (!form.isValid(null, null, false))
-                        return true;
-                     else {
-                        var tagName = form.find('input[name="tagName"]').val();
-                        if (!tagName || tagName.length < 3) return true;
-
-                        $http.post('/api/v1/tags/create', {
-                            tag: tagName
-                        }, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(function successCallback() {
-                            helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
-                            var time = new Date().getTime();
-                            History.pushState(null, null, '/settings/tickets/?refresh=' + time);
-
-                        }, function errorCallback(err) {
-                            helpers.UI.showSnackbar('Unable to create tag. Check console', true);
-                            $log.error(err);
-                        });
-                    }
                 };
 
                 $scope.showCreateTicketTypeWindow = function($event) {

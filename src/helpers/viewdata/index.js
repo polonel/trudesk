@@ -27,11 +27,71 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
-            if (global.env === 'development') 
-                require('../../sass/buildsass').build(callback);
-            else
-                return callback();
-            
+              if (global.env === 'development')
+                  require('../../sass/buildsass').build(callback);
+              else
+                  return callback();
+          },
+          function(callback) {
+            async.parallel([
+                function(done) {
+                    settingSchema.getSetting('gen:timeFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.timeFormat = setting.value;
+                        else
+                            viewdata.timeFormat = 'hh:mma';
+
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:shortDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.shortDateFormat = setting.value;
+                        else
+                            viewdata.shortDateFormat = 'MM/DD/YYYY';
+
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:longDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.longDateFormat = setting.value;
+                        else
+                            viewdata.longDateFormat = 'MM/DD/YYYY h:mma';
+
+                        return done();
+                    });
+                }
+            ], callback);
+          },
+          function(callback) {
+              viewdata.ticketSettings = {};
+              async.parallel([
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:subject', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minSubject = setting.value;
+                          else
+                              viewdata.ticketSettings.minSubject = 10;
+
+
+                          return done();
+                      });
+                  },
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:issue', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minIssue = setting.value;
+                          else
+                              viewdata.ticketSettings.minIssue = 10;
+
+
+                          return done();
+                      });
+                  }
+              ], callback);
           },
           function(callback) {
             settingSchema.getSetting('gen:sitetitle', function(err, setting) {
@@ -115,16 +175,16 @@ viewController.getData = function(request, cb) {
                   if (!viewdata.hasCustomFavicon) {
                       viewdata.favicon = '/img/favicon.ico';
                       return callback();
-                  } else {
-                      settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
-                          if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
-                              viewdata.favicon = '/assets/' + faviconFilename.value;
-                          else
-                              viewdata.favicon = '/img/favicon.ico';
-
-                          return callback();
-                      });
                   }
+
+                  settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
+                      if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
+                          viewdata.favicon = '/assets/' + faviconFilename.value;
+                      else
+                          viewdata.favicon = '/img/favicon.ico';
+
+                      return callback();
+                  });
               });
           },
           function(callback) {

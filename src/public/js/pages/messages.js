@@ -186,14 +186,14 @@ define('pages/messages', [
 
                 if (left) {
                     html    += '<div class="message message-left">';
-                    html    += '<img class="profileImage" src="/uploads/users/' + image + '" data-userId="' + message.owner._id + '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '"/>';
+                    html    += '<img class="profileImage" src="/uploads/users/' + image + '" data-userId="' + message.owner._id + '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) + '"/>';
                     html    += '<div class="message-body">';
                     html    += '<p>' + message.body + '</p>';
                     html    += '</div>';
                     html    += '</div>';
                 } else {
                     html    += '<div class="message message-right">';
-                    html    += '<div class="message-body" data-uk-tooltip="{pos:\'right\', animation: false}" title="' + message.owner.fullname + ' - ' + moment(message.createdAt).format('h:mma') + '">';
+                    html    += '<div class="message-body" data-uk-tooltip="{pos:\'right\', animation: false}" title="' + moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) + '">';
                     html    += '<p>' + message.body + '</p>';
                     html    += '</div>';
                     html    += '</div>';

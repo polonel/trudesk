@@ -22,7 +22,7 @@ var db = {};
 //var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + nconf.get('mongo:password') + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
 var CONNECTION_URI = 'mongodb://' + process.env.MONGODB_PORT_27017_TCP_ADDR + ':27017/trudesk_' + process.env.MONGODB_DATABASE_NAME;
 
-var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true };
+var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true, useCreateIndex: true };
 
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
@@ -49,3 +49,4 @@ module.exports.init = function(callback, connectionString, opts) {
 };
 
 module.exports.db = db;
+module.exports.connectionuri = CONNECTION_URI;

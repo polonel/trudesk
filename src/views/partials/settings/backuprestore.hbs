@@ -1,0 +1,115 @@
+<div data-settings-id="settings-backup" {{#ifeq subnav compare='settings-backup'}} class="active" {{/ifeq}} ng-controller="BackupCtrl" ng-init="init();">
+    <div class="setting-item-wrap uk-margin-medium-bottom" ng-show="showNoTools">
+        <div class="panel trupanel nopadding no-hover-shadow uk-clearfix" style="min-height: 60px;">
+            <div class="uk-width-1-1">
+                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">MongoDB Tools Not Found</h6>
+                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                    Unable to locate MongoDB tools. Please make sure MongoDB tools are installed. <br />
+                </h5>
+                <hr />
+                <div style="padding: 0 15px; margin: 15px 0;">
+                    <h4>Installing MongoDB Tools</h4>
+                    <p style="margin: 0 0 5px 0; font-size: 13px;">MongoDB Tools are required to perform backup and restore. See below for instructions on installing the MongoDB Tools.</p>
+                    <br />
+                    <h5><strong>Ubuntu 16.04</strong></h5>
+                    <pre style="white-space: pre-line">
+                        wget https://repo.mongodb.org/apt/ubuntu/dists/xenial/mongodb-org/3.6/multiverse/binary-amd64/mongodb-org-tools_3.6.9_amd64.deb && \
+                        dpkg -i mongodb-org-tools_3.6.9_amd64.deb
+                    </pre>
+                    <br />
+                    <h5><strong>Ubuntu 18.04</strong></h5>
+                    <pre style="white-space: pre-line">
+                        sudo apt install -y mongo-tools
+                    </pre>
+                    <br />
+                    <h5><strong>Fedora 29</strong></h5>
+                    <pre>dnf install -y mongo-tools</pre>
+                    <br />
+                    <h5><strong>Alpine Linux</strong></h5>
+                    <pre>apk add mongodb-tools</pre>
+                </div>
+            </div>
+            <!--<div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">-->
+                <!--<div class="uk-width-2-3 uk-float-right" style="margin-top: 10px; text-align: right;">-->
+                    <!--<div class="uk-progress uk-progress-success uk-progress-striped uk-active hide" style="height: 31px;">-->
+                        <!--<div class="uk-progress-bar" style="width: 115px; line-height: 31px; font-size: 11px; text-transform: uppercase; float: right !important;">Please Wait...</div>-->
+                    <!--</div>-->
+                    <!--<button class="md-btn md-btn-small md-btn-primary" style="margin-top: 10px;" ng-click="helpInstallTools($event);">Help Me</button>-->
+                <!--</div>-->
+            <!--</div>-->
+        </div>
+    </div>
+
+    <div class="setting-item-wrap uk-margin-medium-bottom" ng-show="hasTools">
+        <div class="panel trupanel nopadding no-hover-shadow uk-clearfix" style="min-height: 60px;">
+            <div class="left">
+                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Backup Now</h6>
+                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                    Backup all site data. (Database, Attachments, Profile Pictures)
+                </h5>
+            </div>
+            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                <div class="uk-width-2-3 uk-float-right" style="margin-top: 10px; text-align: right;">
+                    <div class="uk-progress uk-progress-success uk-progress-striped uk-active hide" style="height: 31px; background: transparent;">
+                        <div class="uk-progress-bar" style="width: 115px; line-height: 31px; font-size: 11px; text-transform: uppercase; float: right !important;">Please Wait...</div>
+                    </div>
+                    <button class="md-btn md-btn-small md-btn-success" style="width: 115px;" ng-click="startbackup($event);">Backup Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="setting-item-wrap uk-margin-medium-bottom" ng-show="hasTools">
+        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+            <div class="left">
+                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Backups</h6>
+                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                    Current Stored Backups
+                </h5>
+            </div>
+            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                <div class="uk-width-2-3 uk-float-right" style="margin-top: 10px; text-align: right;">
+                    <div id="backupUploadProgress" class="uk-progress hide" style="height: 31px;">
+                        <div class="uk-progress-bar" style="width: 0; line-height: 31px; font-size: 11px;">0%</div>
+                    </div>
+                    <form class="uk-form-stacked">
+                        <button class="md-btn md-btn-small md-btn-primary uk-form-file no-ajaxy" style="width: 85px;">Upload<input id="backup-upload-select" type="file" /></button>
+                    </form>
+                </div>
+            </div>
+            <hr class="nomargin-top clear">
+            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                <div class="uk-position-relative">
+                    <div class="zone" ng-show="!backupFiles.length">
+                        <div class="z-box uk-clearfix">
+                            <h2 class="uk-text-muted uk-text-center">No Backups</h2>
+                        </div>
+                    </div>
+
+                    <table class="uk-table mt-0" ng-show="backupFiles.length">
+                        <thead>
+                            <tr>
+                                <th>Filename</th>
+                                <th>Size</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="file in backupFiles">
+                                <td class="valign-middle" style="width: 60%; height: 60px;">{[{file.filename}]}</td>
+                                <td class="valign-middle">{[{file.sizeFormat}]}</td>
+                                <td class="uk-text-right valign-middle">
+                                    <div class="md-btn-group">
+                                        <a href="/backups/{[{file.filename}]}" class="md-btn md-btn-small md-btn-wave">Download</a>
+                                        <button class="md-btn md-btn-small md-btn-wave" ng-click="restoreFile($index);">Restore</button>
+                                        <button class="md-btn md-btn-small md-btn-wave md-btn-danger" ng-click="deleteBackup($index);">Delete</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

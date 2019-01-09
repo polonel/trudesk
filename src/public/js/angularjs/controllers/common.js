@@ -16,6 +16,53 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
         .controller('commonCtrl', function($scope, $window, $http, $cookies, $timeout, $log) {
 
+            $scope.showCreateTagWindow = function($event) {
+                $event.preventDefault();
+                var createTagModal = $('#createTagModal');
+                if (createTagModal.length > 0)
+                    UI.modal(createTagModal, {bgclose: false}).show();
+            };
+
+            $scope.createTag = function(page, $event) {
+                $event.preventDefault();
+                var form = $('#createTagForm');
+                if (!form.isValid(null, null, false))
+                    return true;
+                else {
+                    var tagName = form.find('input[name="tagName"]').val();
+                    if (!tagName || tagName.length < 2) return true;
+
+                    $http.post('/api/v1/tags/create', {
+                        tag: tagName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback(response) {
+                        var data = response.data;
+                        helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
+                        if (page === 'settings') {
+                            var time = new Date().getTime();
+                            History.pushState(null, null, '/settings/tickets/?refresh=' + time);
+                        } else if (page === 'singleticket') {
+                            var tagModal = $('#createTagModal');
+                            var tagFormField = $('select#tags');
+                            tagFormField.append('<option id="TAG__' + data.tag._id + '" value="' + data.tag._id + '">' + data.tag.name + '</option>');
+                            tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
+                            tagFormField.trigger('chosen:updated');
+                            form.find('#tag').val('');
+                            if (tagModal.length > 0) UI.modal(tagModal).hide();
+                            $timeout(function() {
+                                $scope.showTags($event);
+                            }, 250);
+                        }
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Unable to create tag. Check console', true);
+                        $log.error(err);
+                    });
+                }
+            };
+
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
               $timeout(function() {

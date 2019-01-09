@@ -277,14 +277,6 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     });
             };
 
-            $scope.showCreateTags = function(event) {
-                event.preventDefault();
-                var tagModal = $('#createTagModal');
-                if (tagModal.length > 0) 
-                    UIkit.modal(tagModal, {bgclose: false}).show();
-                
-            };
-
             $scope.showTags = function(event) {
                 event.preventDefault();
                 var tagModal = $('#addTagModal');
@@ -306,40 +298,6 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     tagModal.find('select').trigger('chosen:updated');
 
                     UIkit.modal('#addTagModal', {bgclose: false}).show();
-                }
-            };
-
-            $scope.submitAddNewTag = function(event) {
-                event.preventDefault();
-                var form = $('form#createTagForm');
-                if (form.length > 0) {
-                    var tag = form.find('#tag').val();
-                    var data = {
-                        tag: tag
-                    };
-
-                    $http({
-                        method: 'POST',
-                        url: '/api/v1/tags/create',
-                        data: data,
-                        headers: { 'Content-Type': 'application/json'}
-                    })
-                        .success(function(data) {
-                            var tagModal = $('#createTagModal');
-                            var tagFormField = $('select#tags');
-                            tagFormField.append('<option id="TAG__' + data.tag._id + '" value="' + data.tag._id + '">' + data.tag.name + '</option>');
-                            tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
-                            tagFormField.trigger('chosen:updated');
-                            form.find('#tag').val('');
-                            if (tagModal.length > 0) UIkit.modal(tagModal).hide();
-                            $timeout(function() {
-                                $scope.showTags(event);
-                            }, 250);
-                        })
-                        .error(function(err) {
-                            $log.log('[trudesk:tickets:addTag} - Error: ' + err.error);
-                            helpers.UI.showSnackbar('Error: ' + err.error, true);
-                        });
                 }
             };
 
