@@ -19,10 +19,8 @@ var spawn       = require('child_process').spawn;
 var os          = require('os');
 var async       = require('async');
 var AdmZip      = require('adm-zip');
-var archiver    = require('archiver');
 var database    = require('../database');
 var winston     = require('winston');
-var moment      = require('moment');
 
 global.env = process.env.NODE_ENV || 'production';
 
@@ -97,9 +95,9 @@ function runRestore(file, callback) {
     });
 
     mongodump.on('exit', function(code) {
-        if (code === 0) {
+        if (code === 0) 
             callback(null, 'done');
-        } else
+         else
             callback(new Error('MongoDump falied with code ' + code));
     });
 }
@@ -129,6 +127,9 @@ function runRestore(file, callback) {
         }
 
         databaseName = database.db.connection.db.databaseName;
+
+        fs.ensureDirSync(path.join(__dirname, '../../restores'));
+
         async.series([
             function(next) {
             // Clean any old restores hanging around
