@@ -9,7 +9,7 @@ RUN apk add --no-cache --update bash make gcc g++ python mongodb-tools
 
 RUN npm install -g yarn && \
     yarn install --production --ignore-scripts --prefer-offline --force && \
-    npm rebuild bcrypt --build-from-source && \
+    npm rebuild bcrypt node-sass --build-from-source && \
     yarn run build && \
     apk del make gcc g++ python
 
