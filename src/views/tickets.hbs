@@ -174,7 +174,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true)}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -207,7 +207,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated ../data.common.longDateFormat}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -235,7 +235,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated ../data.common.longDateFormat}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
