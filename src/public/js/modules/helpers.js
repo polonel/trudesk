@@ -1286,7 +1286,7 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         if (window.trudeskSettingsService)
             return window.trudeskSettingsService.getSettings().longDateFormat.value;
         else
-            return 'MM/DD/YYYY h:mma';
+            return 'MMM DD, YYYY';
     };
 
     helpers.formatDate = function(date, format) {
