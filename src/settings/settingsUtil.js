@@ -33,7 +33,7 @@ util.setSetting = function(setting, value, callback) {
         value: value
     };
 
-    settingSchema.update({name: s.name}, s, {upsert: true}, callback);
+    settingSchema.updateOne({name: s.name}, s, {upsert: true}, callback);
 };
 
 util.getSettings = function(callback) {

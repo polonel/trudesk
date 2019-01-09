@@ -1154,7 +1154,7 @@ ticketSchema.statics.updateType = function(oldTypeId, newTypeId, callback) {
         return callback('Invalid IDs - TicketSchema.UpdateType()', null);
 
     var self = this;
-    return self.model(COLLECTION).update({type: oldTypeId}, {$set: {type: newTypeId}}, {multi: true, new: false}, callback);
+    return self.model(COLLECTION).updateMany({type: oldTypeId}, {$set: {type: newTypeId}}, callback);
 };
 
 ticketSchema.statics.getAssigned = function(userId, callback) {

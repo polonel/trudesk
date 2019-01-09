@@ -257,7 +257,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(1, function(err, normal) {
                     if (!err) {
                         winston.debug('Converting Priority: Normal');
-                        ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 1}, { $set: { priority: normal._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -277,7 +277,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(2, function(err, urgent) {
                     if (!err) {
                         winston.debug('Converting Priority: Urgent');
-                        ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 2 }, {$set: {priority: urgent._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -297,7 +297,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(3, function(err, critical) {
                     if (!err) {
                         winston.debug('Converting Priority: Critical');
-                        ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 3}, { $set: { priority: critical._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();

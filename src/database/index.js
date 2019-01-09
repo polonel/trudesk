@@ -23,7 +23,7 @@ var dbPassword = encodeURIComponent(nconf.get('mongo:password'));
 
 var CONNECTION_URI = 'mongodb://' + nconf.get('mongo:username') + ':' + dbPassword + '@' + nconf.get('mongo:host') + ':' + nconf.get('mongo:port') + '/' + nconf.get('mongo:database');
 
-var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true };
+var options = { keepAlive: 1, connectTimeoutMS: 30000, useNewUrlParser: true, useCreateIndex: true };
 
 module.exports.init = function(callback, connectionString, opts) {
     if (connectionString) CONNECTION_URI = connectionString;
