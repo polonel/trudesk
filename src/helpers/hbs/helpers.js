@@ -27,6 +27,15 @@ require('moment-duration-format');
 // The module to be exported
 var helpers = {
 
+    concat: function(a, b, space, comma) {
+        if (space && (comma === false || _.isObject(comma)))
+            return a.toString() + ' ' + b.toString();
+        else if (comma === true)
+            return a.toString() + ', ' + b.toString();
+        else
+            return a.toString() + b.toString();
+    },
+
     contains: function (str, pattern, options) {
         if (str.indexOf(pattern) !== -1) 
             return options.fn(this);
@@ -481,7 +490,9 @@ var helpers = {
         return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both'});
     },
 
-    calendarDate: function(date) {
+    calendarDate: function(date, fallback) {
+        if (_.isObject(fallback))
+            fallback = 'll [at] LT';
         moment.updateLocale('en', {
             calendar: {
                 sameDay: '[Today at] LT',
@@ -489,7 +500,7 @@ var helpers = {
                 nextDay: '[Tomorrow at] LT',
                 lastWeek: '[Last] ddd [at] LT',
                 nextWeek: 'ddd [at] LT',
-                sameElse: 'L'
+                sameElse: fallback
             }
         });
         return moment.utc(date).tz(global.timezone).calendar();

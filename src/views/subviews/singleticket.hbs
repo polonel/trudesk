@@ -193,7 +193,7 @@
                                     <div class="history-items scrollable" style="padding-top: 12px;">
                                         {{#each data.ticket.history}}
                                             <div class="history-item">
-                                                <time datetime="{{formatDate date "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                <time datetime="{{formatDate date ../data.common.longDateFormat}}">{{formatDate date  (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}</time>
                                                 <em>Action by: <span>{{owner.fullname}}</span></em>
                                                 <p>{{description}}</p>
                                             </div>
@@ -245,9 +245,13 @@
                             </div>
                             <div class="issue-text">
                                 <h3 class="subject-text">{{data.ticket.subject}}</h3>
-                                <!--<input id="subjectText" name="subjectText" type="text" value="{{data.ticket.subject}}" />-->
+                                <!--<input id="subjectText" name="subjectText" type="text" class="md-input" value="{{data.ticket.subject}}" />-->
                                 <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
-                                <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD hh:mm"}}">{{formatDate data.ticket.date "MMM DD, h:mma"}}</time>
+                                <br>
+                                <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD HH:mm"}}" >
+                                    {{formatDate data.ticket.date (concat data.common.longDateFormat data.common.timeFormat true true)}}
+                                </time>
+                                <br>
                                 <ul class="attachments" data-ticketid="{{data.ticket._id}}">
                                     {{#each data.ticket.attachments}}
                                         <li>
@@ -340,9 +344,15 @@
                                                 <div class="issue-text">
                                                     <h3>Re: {{../data.ticket.subject}}</h3>
                                                     <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                    <br/>
+                                                    <time datetime="{{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                          title="{{formatDate date (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                          data-uk-tooltip="{delay: 200}">
+                                                        {{calendarDate date}}
+                                                    </time>
                                                     {{#is isNote true}}
-                                                        <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                        <br>
+                                                        <span class="uk-badge uk-badge-small nomargin-left-right text-white">NOTE</span>
                                                     {{/is}}
                                                     <div class="comment-body">
                                                         {{#is isNote true}}
@@ -418,8 +428,14 @@
                                                 <div class="issue-text">
                                                     <h3>Re: {{../data.ticket.subject}}</h3>
                                                     <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                                                    <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                                    <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                    <br>
+                                                    <time datetime="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                          title="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                          data-uk-tooltip="{delay: 200}">
+                                                        {{calendarDate date}}
+                                                    </time>
+                                                    <br>
+                                                    <span class="uk-badge uk-badge-small nomargin-left-right text-white">NOTE</span>
                                                     <div class="comment-body">
                                                         <p>{{{note}}}</p>
                                                     </div>
@@ -496,7 +512,12 @@
                                             <div class="issue-text">
                                                 <h3>Re: {{../data.ticket.subject}}</h3>
                                                 <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                                                <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
+                                                <br>
+                                                <time datetime="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                      title="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                      data-uk-tooltip="{delay: 200}">
+                                                    {{calendarDate date}}
+                                                </time>
                                                 <div class="comment-body">
                                                         <p>{{{comment}}}</p>
                                                 </div>
@@ -573,8 +594,14 @@
                                             <div class="issue-text">
                                                 <h3>Re: {{../data.ticket.subject}}</h3>
                                                 <a class="comment-email-link" href="mailto:{{owner.email}}">{{{owner.fullname}}} &lt;{{{owner.email}}}&gt;</a>
-                                                <time datetime="{{formatDate data "YYYY-MM-DD hh:mm"}}">{{formatDate date "MMM DD, h:mma"}}</time>
-                                                <span class="uk-badge uk-badge-small nomargin-left-right">NOTE</span>
+                                                <br>
+                                                <time datetime="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                      title="{{formatDate data (concat ../data.common.longDateFormat ../data.common.timeFormat true true)}}"
+                                                      data-uk-tooltip="{delay: 200}">
+                                                    {{calendarDate date}}
+                                                </time>
+                                                <br>
+                                                <span class="uk-badge uk-badge-small nomargin-left-right text-white">NOTE</span>
                                                 <div class="comment-body">
                                                     <p>{{{note}}}</p>
                                                 </div>
@@ -719,7 +746,9 @@
                                     <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                                 {{/each}}
                             </select>
-                            <button type="button" ng-click="showCreateTags($event)" style="border-radius: 0; -moz-border-radius: 0;"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                            <div ng-controller="commonCtrl">
+                                <button type="button" ng-click="showCreateTagWindow($event);" style="border-radius: 0; -moz-border-radius: 0;"><i class="fa fa-plus" style="margin-right: 0;"></i></button>
+                            </div>
                         </div>
 
                         <div class="left" style="margin-top: 15px;">
@@ -734,24 +763,9 @@
             </div>
         </div>
 
-        <div id="createTagModal" class="uk-modal" aria-labelledby="modalTitle" aria-hidden="true" role="dialog">
-            <div class="uk-modal-dialog uk-clearfix">
-                <a class="uk-modal-close uk-close no-ajaxy"></a>
-                <h5 style="font-weight: 300;">Create Tag</h5>
-                <div>
-                    <form id="createTagForm" action="#" method="POST" class="nomargin" ng-submit="submitAddNewTag($event)">
-                        <input type="text" id="tag" name="tag" class="md-input" />
-
-                        <div class="right" style="margin-top: 15px;">
-                            <button class="uk-button uk-button-success nomargin" type="submit">Create Tag</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        {{> createTagWindow page='singleticket'}}
 
     </div>
-</div>
 
 {{#contentFor 'js-plugins'}}
 

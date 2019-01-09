@@ -21,6 +21,9 @@ var _                   = require('lodash'),
     emitter             = require('./emitter'),
     marked              = require('marked');
 
+// Submodules
+var backuprestore       = require('./socketio/backuprestore');
+
 var socketServer = function(ws) {
     'use strict';
     var usersOnline = {},
@@ -83,11 +86,14 @@ var socketServer = function(ws) {
     io.sockets.on('connection', function(socket) {
         // var totalOnline = _.size(usersOnline);
 
+        //Register Submodules
+        backuprestore.showRestoreOverlay(io, socket);
+        backuprestore.emitRestoreComplete(io, socket);
+        
         setInterval(function() {
             updateConversationsNotifications();
             updateNotifications();
             updateOnlineBubbles();
-
         }, 5000);
 
         socket.on('$trudesk:chat:updateOnlineBubbles', function() {

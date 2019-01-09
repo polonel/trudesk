@@ -2,7 +2,11 @@
     siteTitle='{{data.settings.siteTitle.value}}';
     siteUrl='{{data.settings.siteUrl.value}}';
     selectedTimezone='{{data.settings.timezone.value}}';
+
     defaultTicketType='{{data.settings.defaultTicketType.value}}';
+    minSubjectLength={{data.settings.minSubjectLength.value}};
+    minIssueLength={{data.settings.minIssueLength.value}};
+
     mailerEnabled={{data.settings.mailerEnabled.value}};
     mailerHost='{{data.settings.mailerHost.value}}';
     mailerSSL={{data.settings.mailerSSL.value}};
@@ -80,6 +84,11 @@
                 <li {{#ifeq subnav compare='settings-tps'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-tps');">
                     <div class="setting-category">
                         <h3>Push Service</h3>
+                    </div>
+                </li>
+                <li {{#ifeq subnav compare='settings-backup'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-backup');">
+                    <div class="setting-category">
+                        <h3>Backup/Restore</h3>
                     </div>
                 </li>
                 <li {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}} ng-click="switchSettings($event, 'settings-legal');">
@@ -161,23 +170,85 @@
                     <div class="setting-item-wrap uk-margin-medium-bottom">
                         <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
                             <div class="left">
-                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Time & Date Fromat</h6>
                                 <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
-                                    Tour the user interface on initial login.
+                                    <a href="https://momentjs.com/docs/#/displaying/format/" target="_blank">Moment.js Format Options</a>
                                 </h5>
                             </div>
-                            <div class="right" style="position:relative;">
-                                <!-- Switch -->
-                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
-                                    <label>
-                                        Enable
-                                        <input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">
-                                        <span class="lever"></span>
-                                    </label>
+                            <div class="right uk-width-1-3 uk-clearfix" style="position:relative; margin-right: 15px; margin-top: 5px;">
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="padding: 20px 15px 15px 15px;">
+                                <div class="uk-position-relative">
+                                    <div class="zone">
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Time Format</h5>
+                                                <p class="uk-text-muted">Set the format for time.</p>
+                                            </div>
+                                            <div class="uk-float-right uk-width-1-3 uk-clearfix" style="position:relative; max-width: 283px; margin-top: 5px;">
+                                                <div class="uk-width-3-4 uk-float-left" style="padding-right: 10px;">
+                                                    <input id="timeFormat" class="md-input md-input-width-medium" name="timeFormat" type="text" ng-model="timeFormat" />
+                                                </div>
+                                                <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
+                                                    <button class="md-btn md-btn-small" ng-click="saveTimeFormatClicked();">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Sort Date Format</h5>
+                                                <p class="uk-text-muted">Set the format for short dates.</p>
+                                            </div>
+                                            <div class="uk-float-right uk-width-1-3 uk-clearfix" style="position:relative; max-width: 283px; margin-top: 5px;">
+                                                <div class="uk-width-3-4 uk-float-left" style="padding-right: 10px;">
+                                                    <input id="shortDateFormat" class="md-input md-input-width-medium" name="shortDateFormat" type="text" ng-model="shortDateFormat" />
+                                                </div>
+                                                <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
+                                                    <button class="md-btn md-btn-small" ng-click="saveShortDateFormatClicked();">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="z-box uk-clearfix">
+                                            <div class="uk-float-left uk-width-1-2">
+                                                <h5 style="font-weight: normal;">Long Date Format</h5>
+                                                <p class="uk-text-muted">Set the format for long dates.</p>
+                                            </div>
+                                            <div class="uk-float-right uk-width-1-3 uk-clearfix" style="position:relative; max-width: 283px; margin-top: 5px;">
+                                                <div class="uk-width-3-4 uk-float-left" style="padding-right: 10px;">
+                                                    <input id="longDateFormat" class="md-input md-input-width-medium" name="longDateFormat" type="text" ng-model="longDateFormat" />
+                                                </div>
+                                                <div class="uk-width-1-4 uk-float-right" style="margin-top: 10px; text-align: center;">
+                                                    <button class="md-btn md-btn-small" ng-click="saveLongDateFormatClicked();">Save</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <!--<div class="setting-item-wrap uk-margin-medium-bottom">-->
+                        <!--<div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">-->
+                            <!--<div class="left">-->
+                                <!--<h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Show Tour - <i style="font-size: 13px; color: #a1a1a1;">Beta</i></h6>-->
+                                <!--<h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">-->
+                                    <!--Tour the user interface on initial login.-->
+                                <!--</h5>-->
+                            <!--</div>-->
+                            <!--<div class="right" style="position:relative;">-->
+                                <!--&lt;!&ndash; Switch &ndash;&gt;-->
+                                <!--<div class="md-switch md-green" style="margin: 20px 0 0 0;">-->
+                                    <!--<label>-->
+                                        <!--Enable-->
+                                        <!--<input type="checkbox" id="showTour" name="showTour" ng-change="showTourChanged()" ng-model="showTour">-->
+                                        <!--<span class="lever"></span>-->
+                                    <!--</label>-->
+                                <!--</div>-->
+                            <!--</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
 
                     <div class="setting-item-wrap uk-margin-medium-bottom">
                         <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
@@ -478,6 +549,46 @@
                         </div>
                     </div>
 
+                    <!-- Ticket Subject Length-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Minimum Subject Length</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Minimum character for ticket subjects
+                                </h5>
+                            </div>
+                            <div class="right" style="width: 165px; padding-right: 15px; position:relative;">
+                                <div class="left" style="width: 90px; padding-right: 10px;">
+                                    <input id="minSubjectLength" class="md-input md-input-width-small" name="minSubjectLength" type="number" ng-model="minSubjectLength" />
+                                </div>
+                                <div class="right" style="margin-top: 13px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveMinSubjectLengthClick();">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ticket Issue Length-->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Minimum Issue Length</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Minimum character for ticket issues
+                                </h5>
+                            </div>
+                            <div class="right" style="width: 165px; padding-right: 15px; position:relative;">
+                                <div class="left" style="width: 90px; padding-right: 10px;">
+                                    <input id="minIssueLength" class="md-input md-input-width-small" name="minIssueLength" type="number" ng-model="minIssueLength" />
+                                </div>
+                                <div class="right" style="margin-top: 13px; text-align: center;">
+                                    <button class="md-btn md-btn-small" ng-click="saveMinIssueLengthClick();">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!--Ticket Types-->
                     <div class="setting-item-wrap uk-margin-medium-bottom">
                         <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
@@ -691,7 +802,7 @@
                                 </h5>
                             </div>
                             <div class="right" style="position:relative;">
-                                <div style="margin: 12px 15px 0 0;">
+                                <div style="margin: 12px 15px 0 0;" ng-controller="commonCtrl">
                                     <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateTagWindow($event);">Create</button>
                                 </div>
                             </div>
@@ -707,7 +818,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{> createTagWindow}}
+                        {{> createTagWindow page='settings' }}
                     </div>
 
                 </div>
@@ -920,6 +1031,8 @@
                         </div>
                     </div>
                 </div>
+
+                {{> 'settings/backuprestore'}}
 
                 <div data-settings-id="settings-legal" {{#ifeq subnav compare='settings-legal'}} class="active" {{/ifeq}}>
                     <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">

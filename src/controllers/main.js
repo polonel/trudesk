@@ -16,7 +16,8 @@ var _               = require('lodash'),
     path            = require('path'),
     passport        = require('passport'),
     winston         = require('winston'),
-    nconf           = require('nconf');
+
+    pkg         = require('../../package');
 
 var mainController = {};
 
@@ -45,6 +46,7 @@ mainController.index = function(req, res) {
         if (settings.hasCustomPageLogo.value && settings.customPageLogoFilename.value.length > 0)
             content.pageLogo = '/assets/' + settings.customPageLogoFilename.value;
 
+        content.bottom = 'Trudesk v' + pkg.version;
 
         res.render('login', content);
     });

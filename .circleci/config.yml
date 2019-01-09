@@ -17,6 +17,20 @@ commands:
         - ~/.cache/yarn
 
 jobs:
+  build_general:
+    docker:
+    - image: circleci/node:10-stretch
+    - image: circleci/mongo:3.6
+    working_directory: ~/trudesk
+    steps:
+    - checkout
+    - yarninstall
+    - run:
+        name: Run Tests
+        command: yarn run test
+    - run:
+        name: Run Build
+        command: yarn run build
   build_develop:
     docker:
     - image: circleci/node:10-stretch
@@ -57,6 +71,14 @@ jobs:
 
 workflows:
   version: 2.1
+  general:
+    jobs:
+    - build_general:
+        filters:
+          branches:
+            ignore:
+              - develop
+              - master
   develop:
     jobs:
     - build_develop:

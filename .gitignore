@@ -56,5 +56,5 @@ sonar-project.properties
 .scannerwork/
 
 public/uploads/assets/*.*
-
+/src/backup/bin/
 backups/

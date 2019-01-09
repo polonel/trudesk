@@ -39,6 +39,8 @@ define('pages/dashboard', [
 
             helpers.resizeAll();
 
+            dashboardPage.shortDateFormat = window.trudeskSettingsService.getSettings().shortDateFormat.value;
+
             var parms = {
                 full_width: true,
                 height: 250,
@@ -68,12 +70,15 @@ define('pages/dashboard', [
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><a href="/tickets/'+ ticket.uid + '">T#' + ticket.uid + '</a></td>';
                             html += '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>';
                             html += '<td class="uk-width-6-10">' + ticket.subject + '</td>';
-                            html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format('MM.DD.YYYY') + '</td>';
+                            if (ticket.updated)
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.updated).format(dashboardPage.shortDateFormat) + '</td>';
+                            else
+                                html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">' + moment(ticket.date).format(dashboardPage.shortDateFormat) + '</td>';
                             html += '</tr>';
                         });
 
                         $overdueTableBody.append(html);
-
+                        $overdueTableBody.ajaxify();
                         overdueSpinner.animate({opacity: 0}, 600, function() {
                             $(this).hide();
                         });
@@ -98,7 +103,10 @@ define('pages/dashboard', [
                     method: 'GET',
                     success: function (_data) {
                         var lastUpdated = $('#lastUpdated').find('span');
-                        lastUpdated.text(_data.lastUpdated);
+
+                        var formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat();
+                        var formated = moment(_data.lastUpdated, 'MM/DD/YYYY hh:mm:ssa').format(formatString);
+                        lastUpdated.text(formated);
 
                         if (!_data.data) {
                             console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data');

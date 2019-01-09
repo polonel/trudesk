@@ -33,7 +33,7 @@ util.setSetting = function(setting, value, callback) {
         value: value
     };
 
-    settingSchema.update({name: s.name}, s, {upsert: true}, callback);
+    settingSchema.updateOne({name: s.name}, s, {upsert: true}, callback);
 };
 
 util.getSettings = function(callback) {
@@ -48,6 +48,10 @@ util.getSettings = function(callback) {
         s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk');
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
         s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
+        s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma');
+        s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY');
+        s.longDateFormat = parseSetting(settings, 'gen:longDateFormat', 'MM/DD/YYYY h:mma');
+
         s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
         s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '');
         s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false);
@@ -63,6 +67,8 @@ util.getSettings = function(callback) {
         s.colorQuaternary = parseSetting(settings, 'color:quaternary', '#E6E7E8');
 
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
+        s.minSubjectLength = parseSetting(settings, 'ticket:minlength:subject', 10);
+        s.minIssueLength = parseSetting(settings, 'ticket:minlength:issue', 10); 
 
         s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);
         s.mailerHost = parseSetting(settings, 'mailer:host', '');

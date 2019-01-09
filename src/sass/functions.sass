@@ -19,6 +19,12 @@
   @else
     @return lighten($accent_color, 10%)
 
+@function pre-color($bgColor)
+  @if (lightness($bgColor) > 50)
+    @return darken($bgColor, 5%)
+  @else
+    @return lighten($bgColor, 3%)
+
 @function pace-color()
   @if ($topbar_bg == #42464d)
     @return #ffffff

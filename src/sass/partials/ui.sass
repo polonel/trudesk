@@ -344,9 +344,18 @@ label.md-label
     padding: 2px 4px
     +borderRadius(2px)
     line-height: 12px
+    color: rgba(0,0,0,0.75)
 
 .uk-progress
-  background: white
+  background: pre-color($page_content_right_bg)
+  &.uk-progress-disabled .uk-progress-bar
+    background-color: #ccc
+  &.uk-progress-success .uk-progress-bar
+    background-color: #7cb342
+  &.uk-progress-accent .uk-progress-bar
+    background-color: $accent_color
+  .uk-progress-bar
+    background-color: $accent_blue
 
 .uk-margin-medium-bottom
   margin-bottom: 24px !important
@@ -610,6 +619,8 @@ textarea.review-list
 
 .uk-table thead th
   color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+.uk-table td
+  border-bottom: 1px solid $page_content_border_color
 
 .danger-zone,
 .zone
@@ -628,7 +639,8 @@ textarea.review-list
     padding: 16px
     border-top: 1px solid rgba(0,0,0,0.175)
     margin-top: -1px
-    &:first-of-type
+    &:first-of-type,
+    &:only-of-type
       border-top: none
     p
       font-size: 13px

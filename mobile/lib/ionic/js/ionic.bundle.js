@@ -55844,14 +55844,16 @@ function($rootScope, $ionicBody, $compile, $timeout, $ionicPlatform, $ionicTempl
 
       return $timeout(function() {
         var otherSibling = false;
-         for (var i = 0; i < modalStack.length; ++i) {
+
+        for (var i = 0; i < modalStack.length; ++i) {
           if (modalStack[i].viewType === self.viewType) {
             // there are other modal (or popover, depending on viewType)
             otherSibling = true;
             break;
           }
         }
-         if (!otherSibling) {
+
+        if (!otherSibling) {
           $ionicBody.removeClass(self.viewType + '-open');
         }
         self.el.classList.add('hide');
