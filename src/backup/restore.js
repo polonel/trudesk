@@ -79,7 +79,11 @@ function runRestore(file, callback) {
     var platform = os.platform();
     winston.info('Starting Restore... (' + platform + ')');
 
-    var options = ['--uri', CONNECTION_URI, '-d', databaseName, path.join(__dirname, '../../restores/restore_' + file, 'database/trudesk')];
+    var dbName = fs.readdirSync(path.join(__dirname, '../../restores/restore_' + file, 'database'))[0];
+    if (!dbName)
+        return callback(new Error('Invalid Backup. Unable to get DBName'));
+
+    var options = ['--uri', CONNECTION_URI, '-d', databaseName, path.join(__dirname, '../../restores/restore_' + file, 'database', dbName)];
     var mongodump = null;
     if (platform === 'win32')
         mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options);
