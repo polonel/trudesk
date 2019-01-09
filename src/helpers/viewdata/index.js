@@ -59,7 +59,7 @@ viewController.getData = function(request, cb) {
                         if (!err && setting && setting.value)
                             viewdata.longDateFormat = setting.value;
                         else
-                            viewdata.longDateFormat = 'MM/DD/YYYY h:mma';
+                            viewdata.longDateFormat = 'MMM DD, YYYY';
 
                         return done();
                     });
