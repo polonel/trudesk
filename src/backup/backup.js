@@ -98,7 +98,7 @@ function runBackup(callback) {
 
     mongodump.on('exit', function(code) {
         if (code === 0) {
-            var dbName = fs.readdirSync(__dirname, '../../backups/dump/database')[0];
+            var dbName = fs.readdirSync(path.join(__dirname, '../../backups/dump/database'))[0];
             if (!dbName)
                 return callback(new Error('Unable to retrieve database name'));
 
