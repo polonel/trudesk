@@ -81,7 +81,7 @@ mailCheck.init = function(settings) {
     mailCheck.messages = [];
 
     bindImapError();
-    bindImapReady(mailCheck.fetchMailOptions);
+    bindImapReady();
 
     mailCheck.fetchMail();
     mailCheck.checkTimer = setInterval(function() {
