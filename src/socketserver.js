@@ -8,6 +8,7 @@
    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  ========================================================================
  Created:    02/10/2015
+ Updated:    01/09/2019
  Author:     Chris Brame
 
  **/
@@ -22,14 +23,16 @@ var _                   = require('lodash'),
     marked              = require('marked');
 
 // Submodules
+var sharedVars          = require('./socketio').shared;
+var sharedUtils         = require('./socketio').utils;
+
+var chatSocket          = require('./socketio/chatSocket');
+var notificationSocket  = require('./socketio/notificationSocket');
 var backuprestore       = require('./socketio/backuprestore');
 
 var socketServer = function(ws) {
     'use strict';
-    var usersOnline = {},
-        idleUsers = {},
-        sockets = [],
-        io = require('socket.io')(ws.server);
+    var io = require('socket.io')(ws.server);
 
     io.use(function(data, accept) {
         async.waterfall([
@@ -84,140 +87,15 @@ var socketServer = function(ws) {
     ]);
 
     io.sockets.on('connection', function(socket) {
-        // var totalOnline = _.size(usersOnline);
-
         //Register Submodules
-        backuprestore.showRestoreOverlay(io, socket);
-        backuprestore.emitRestoreComplete(io, socket);
-        
-        setInterval(function() {
-            updateConversationsNotifications();
-            updateNotifications();
-            updateOnlineBubbles();
-        }, 5000);
+        chatSocket.register(socket);
+        notificationSocket.register(socket);
+        backuprestore.register(socket);
 
-        socket.on('$trudesk:chat:updateOnlineBubbles', function() {
-           updateOnlineBubbles();
-        });
+        socket.on('updateUsers', function() {
+            var sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline);
 
-        if (socket.request.user.logged_in)
-            joinChatServer();
-
-        function updateOnlineBubbles() {
-            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
-
-            utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
-        }
-
-        function updateConversationsNotifications() {
-            var userId = socket.request.user._id;
-            var messageSchema = require('./models/chat/message');
-            var conversationSchema = require('./models/chat/conversation');
-            conversationSchema.getConversationsWithLimit(userId, 10, function(err, conversations) {
-                if (err) {
-                    winston.warn(err.message);
-                    return false;
-                }
-
-                var convos = [];
-
-                async.eachSeries(conversations, function(convo, done) {
-                    var c = convo.toObject();
-
-                    var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === userId.toString(); })];
-                    if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) 
-                        return done();
-                    
-
-                    messageSchema.getMostRecentMessage(c._id, function(err, rm) {
-                        if (err) return done(err);
-
-                        _.each(c.participants, function(p) {
-                            if (p._id.toString() !== userId.toString())
-                                c.partner = p;
-                        });
-
-                        rm = _.first(rm);
-
-                        if (!_.isUndefined(rm)) {
-                            if (String(c.partner._id) === String(rm.owner._id)) 
-                                c.recentMessage = c.partner.fullname + ': ' + rm.body;
-                             else 
-                                c.recentMessage = 'You: ' + rm.body;
-                            
-                        } else 
-                            c.recentMessage = 'New Conversation';
-                        
-
-                        convos.push(c);
-
-                        return done();
-                    });
-
-                }, function(err) {
-                    if (err) return false;
-                    return utils.sendToSelf(socket, 'updateConversationsNotifications', {conversations: convos});
-                });
-            });
-        }
-
-        socket.on('updateConversationsNotifications', function() {
-            updateConversationsNotifications();
-        });
-
-        function updateNotifications() {
-            var notifications = {};
-            var notificationSchema = require('./models/notification');
-            notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
-                if (err) {
-                    winston.warn(err);
-                    return true;
-                }
-
-                // notifications.items = _.take(items, 5);
-                notifications.items = items;
-                var p = _.filter(items, {unread: true});
-                notifications.count = _.size(p);
-
-                utils.sendToSelf(socket, 'updateNotifications', notifications);
-            });
-        }
-
-        socket.on('updateNotifications', function() {
-            updateNotifications();
-        });
-
-        socket.on('markNotificationRead', function(_id) {
-            if (_.isUndefined(_id)) return true;
-            var notificationSchema = require('./models/notification');
-            notificationSchema.getNotification(_id, function(err, notification) {
-                if (err) return true;
-
-                notification.markRead(function() {
-                    notification.save(function(err) {
-                        if (err) return true;
-
-                        updateNotifications();
-                    });
-                });
-            });
-        });
-
-        socket.on('clearNotifications', function() {
-            var userId = socket.request.user._id;
-            if (_.isUndefined(userId)) return true;
-            var notifications = {};
-            notifications.items = [];
-            notifications.count = 0;
-
-            var notificationSchema = require('./models/notification');
-            notificationSchema.clearNotifications(userId, function(err) {
-                if (err) return true;
-
-                utils.sendToSelf(socket, 'updateNotifications', notifications);
-            });
-
+            utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
 
         socket.on('ticket:updategrid', function() {
@@ -255,13 +133,6 @@ var socketServer = function(ws) {
 
                 utils.sendToAllConnectedClients(io, 'updateComments', ticket);
             });
-        });
-
-        socket.on('updateUsers', function() {
-            //utils.sendToUser(sockets, usersOnline, socket.request.user.username, 'updateUsers', sortedUserList);
-            var sortedUserList = sortByKeys(usersOnline);
-
-            utils.sendToSelf(socket, 'updateUsers', sortedUserList);
         });
 
         socket.on('updateAssigneeList', function() {
@@ -619,7 +490,7 @@ var socketServer = function(ws) {
         socket.on('$trudesk:setUserIdle', function() {
             var user = socket.request.user;
             var exists = false;
-            if (idleUsers.hasOwnProperty(user.username.toLowerCase()))
+            if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase()))
                 exists = true;
 
             var sortedUserList = null;
@@ -627,21 +498,21 @@ var socketServer = function(ws) {
 
             if (!exists) {
                 if (user.username.length !== 0) {
-                    idleUsers[user.username.toLowerCase()] = {sockets: [socket.id], user:user};
-                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+                    sharedVars.idleUsers[user.username.toLowerCase()] = {sockets: [socket.id], user:user};
+                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.usersOnline), function(o) { return o[0]; }));
+                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function(o) { return o[0]; }));
 
                     utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
                 }
             } else {
-                var idleUser = idleUsers[user.username.toLowerCase()];
+                var idleUser = sharedVars.idleUsers[user.username.toLowerCase()];
                 if (!_.isUndefined(idleUser)) {
                     idleUser.sockets.push(socket.id);
 
-                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function (o) {
+                    sortedUserList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.usersOnline), function (o) {
                         return o[0];
                     }));
-                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function (o) {
+                    sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function (o) {
                         return o[0];
                     }));
 
@@ -655,208 +526,13 @@ var socketServer = function(ws) {
 
         socket.on('$trudesk:setUserActive', function() {
             var user = socket.request.user;
-            if (idleUsers.hasOwnProperty(user.username.toLowerCase())) {
-                delete idleUsers[user.username.toLowerCase()];
-                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-                var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+            if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) {
+                delete sharedVars.idleUsers[user.username.toLowerCase()];
+                var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.usersOnline), function(o) { return o[0]; }));
+                var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function(o) { return o[0]; }));
 
                 utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
             }
-        });
-
-        function joinChatServer() {
-            var user = socket.request.user;
-            var exists = false;
-            if (usersOnline.hasOwnProperty(user.username.toLowerCase()))
-                exists = true;
-
-            // var sortedUserList = _.zipObject(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-            var sortedUserList;
-
-            if (!exists) {
-                if (user.username.length !== 0) {
-                    usersOnline[user.username] = {sockets: [socket.id], user: user};
-                    sortedUserList = sortByKeys(usersOnline);
-
-                    utils.sendToSelf(socket, 'joinSuccessfully');
-                    utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
-                    sockets.push(socket);
-
-                    spawnOpenChatWindows(socket, user._id);
-                }
-            } else {
-                usersOnline[user.username].sockets.push(socket.id);
-                utils.sendToSelf(socket, 'joinSuccessfully');
-
-                sortedUserList = sortByKeys(usersOnline);
-                utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
-                sockets.push(socket);
-
-                spawnOpenChatWindows(socket, user._id);
-            }
-        }
-
-        socket.on('getOpenChatWindows', function() {
-            spawnOpenChatWindows(socket, socket.request.user._id);
-        });
-
-        function spawnOpenChatWindows(socket, loggedInAccountId) {
-            var userSchema = require('./models/user');
-            var conversationSchema = require('./models/chat/conversation');
-            userSchema.getUser(loggedInAccountId, function(err, user) {
-                if (err) return true;
-
-                async.eachSeries(user.preferences.openChatWindows, function(convoId, done) {
-                    var partner = null;
-                    conversationSchema.getConversation(convoId, function(err, conversation) {
-                        if (err || !conversation) return done();
-                        _.each(conversation.participants, function(i) {
-                            if (i._id.toString() !== loggedInAccountId.toString()) {
-                                partner = i.toObject();
-                                return partner;
-                            }
-                        });
-
-                        if (partner === null) return done();
-
-                        delete partner.password;
-                        delete partner.resetPassHash;
-                        delete partner.resetPassExpire;
-                        delete partner.accessToken;
-                        delete partner.iOSDeviceTokens;
-                        delete partner.deleted;
-
-                        utils.sendToSelf(socket, 'spawnChatWindow', partner);
-
-                        return done();
-                    });
-                });
-            });
-        }
-
-        socket.on('spawnChatWindow', function(userId) {
-            //Get user
-            var userSchema = require('./models/user');
-            userSchema.getUser(userId, function(err, user) {
-                if (err) return true;
-                if (user !== null) {
-                    var u = user.toObject();
-                    delete u.password;
-                    delete u.resetPassHash;
-                    delete u.resetPassExpire;
-                    delete u.accessToken;
-                    delete u.iOSDeviceTokens;
-                    delete u.deleted;
-
-                    utils.sendToSelf(socket,'spawnChatWindow', u);
-                }
-            });
-        });
-
-        socket.on('saveChatWindow', function(data) {
-             var userId = data.userId;
-             var convoId = data.convoId;
-             var remove = data.remove;
-
-             var userSchema = require('./models/user');
-             userSchema.getUser(userId, function(err, user) {
-                 if (err) return true;
-                 if (user !== null) {
-                     if (remove) 
-                        user.removeOpenChatWindow(convoId);
-                      else 
-                         user.addOpenChatWindow(convoId);
-
-                     
-                 }
-             });
-        });
-
-        socket.on('chatMessage', function(data) {
-            var to = data.to;
-            var from = data.from;
-            var od = data.type;
-            if (data.type === 's') 
-                data.type = 'r';
-             else 
-                data.type = 's';
-            
-
-            var userSchema = require('./models/user');
-
-            async.parallel([
-                function(next) {
-                    userSchema.getUser(to, function(err, toUser) {
-                        if (err) return next(err);
-                        if (!toUser) return next('User Not Found!');
-
-                        data.toUser = toUser;
-
-                        return next();
-                    });
-                },
-                function(next) {
-                    userSchema.getUser(from, function(err, fromUser) {
-                        if (err) return next(err);
-                        if (!fromUser) return next('User Not Found');
-
-                        data.fromUser = fromUser;
-
-                        return next();
-                    });
-                }
-            ], function(err) {
-                if (err) return utils.sendToSelf(socket, 'chatMessage', {message: err});
-
-                utils.sendToUser(sockets, usersOnline, data.toUser.username, 'chatMessage', data);
-                data.type = od;
-                utils.sendToUser(sockets, usersOnline, data.fromUser.username, 'chatMessage', data);
-            });
-        });
-
-        socket.on('chatTyping', function(data) {
-            var to = data.to;
-            var from = data.from;
-
-            var user = null;
-            var fromUser = null;
-
-            _.find(usersOnline, function(v) {
-                if (String(v.user._id) === String(to)) 
-                    user = v.user;
-                
-                if (String(v.user._id) === String(from)) 
-                    fromUser = v.user;
-                
-            });
-
-            if (_.isNull(user) || _.isNull(fromUser)) 
-                return;
-            
-
-            data.toUser = user;
-            data.fromUser = fromUser;
-
-            utils.sendToUser(sockets, usersOnline, user.username, 'chatTyping', data);
-        });
-
-        socket.on('chatStopTyping', function(data) {
-            var to = data.to;
-            var user = null;
-
-            _.find(usersOnline, function(v) {
-                if (String(v.user._id) === String(to)) 
-                    user = v.user;
-                
-            });
-
-            if (_.isNull(user)) 
-                return;
-            
-
-            data.toUser = user;
-
-            utils.sendToUser(sockets, usersOnline, user.username, 'chatStopTyping', data);
         });
 
         //
@@ -1205,37 +881,37 @@ var socketServer = function(ws) {
         //
         socket.on('disconnect', function() {
             var user = socket.request.user;
-            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
-            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+            var sortedUserList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.usersOnline), function(o) { return o[0]; }));
+            var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function(o) { return o[0]; }));
 
-            if (!_.isUndefined(usersOnline[user.username])) {
-                var userSockets = usersOnline[user.username].sockets;
+            if (!_.isUndefined(sharedVars.usersOnline[user.username])) {
+                var userSockets = sharedVars.usersOnline[user.username].sockets;
 
                 if (_.size(userSockets) < 2) 
-                    delete usersOnline[user.username];
-                 else 
-                    usersOnline[user.username].sockets = _.without(userSockets, socket.id);
+                    delete sharedVars.usersOnline[user.username];
+                 else
+                    sharedVars.usersOnline[user.username].sockets = _.without(userSockets, socket.id);
                 
 
-                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(usersOnline), function(o) { return o[0]; }));
+                sortedUserList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.usersOnline), function(o) { return o[0]; }));
 
-                var o = _.findKey(sockets, {'id': socket.id});
-                sockets = _.without(sockets, o);
+                var o = _.findKey(sharedVars.sockets, {'id': socket.id});
+                sharedVars.sockets = _.without(sharedVars.sockets, o);
             }
 
-            if (!_.isUndefined(idleUsers[user.username])) {
-                var idleSockets = idleUsers[user.username].sockets;
+            if (!_.isUndefined(sharedVars.idleUsers[user.username])) {
+                var idleSockets = sharedVars.idleUsers[user.username].sockets;
 
                 if (_.size(idleSockets) < 2) 
-                    delete idleUsers[user.username];
-                 else 
-                    idleUsers[user.username].sockets = _.without(idleSockets, socket.id);
+                    delete sharedVars.idleUsers[user.username];
+                 else
+                    sharedVars.idleUsers[user.username].sockets = _.without(idleSockets, socket.id);
                 
 
-                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(idleUsers), function(o) { return o[0]; }));
+                sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function(o) { return o[0]; }));
 
-                var i = _.findKey(sockets, {'id': socket.id});
-                sockets = _.without(sockets, i);
+                var i = _.findKey(sharedVars.sockets, {'id': socket.id});
+                sharedVars.sockets = _.without(sharedVars.sockets, i);
             }
 
             //Save lastOnline Time
@@ -1256,18 +932,12 @@ var socketServer = function(ws) {
 
 
     global.io = io;
+
+    // Register Intervals
+    chatSocket.registerInterval();
+
     winston.info('SocketServer Running');
-
-
 };
-
-function sortByKeys(obj) {
-    var keys = Object.keys(obj);
-    var sortedKeys = _.sortBy(keys);
-    return _.fromPairs(
-        _.map(sortedKeys, function(key) { return [key, obj[key]]; })
-    );
-}
 
 function onAuthorizeSuccess(data, accept) {
     'use strict';

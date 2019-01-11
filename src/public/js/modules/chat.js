@@ -30,24 +30,6 @@ define('modules/chat',[
         loggedInAccount = window.trudeskSessionService.getUser();
         socket = sock;
 
-        socket.removeAllListeners('connect');
-        socket.on('connect', function() {
-            // There seems to be a bug in Firefox that prevents
-            // the socket from executing an emit right after the event.
-            // Workaround is to delay the joining of the server for 100ms
-
-            //Socket joinChatServer was impl into the server and removed from client side. 8-9-2017
-            // var i = _.debounce(function() {
-            //     socket.emit('joinChatServer');
-            // }, 100);
-            // i();
-        });
-
-        socket.removeAllListeners('connectingToSocketServer');
-        socket.on('connectingToSocketServer', function() {
-
-        });
-
         socket.removeAllListeners('updateUsers');
         socket.on('updateUsers', function(data) {
             var html = '';
@@ -453,7 +435,6 @@ define('modules/chat',[
                 body: message
             }),
             success: function(data) {
-
                 socket.emit('chatMessage',
                     {
                         conversation: cid,
@@ -464,7 +445,7 @@ define('modules/chat',[
                         message: data.message.body
                     });
 
-                if (complete !== undefined && _.isFunction(complete))
+                if (_.isFunction(complete))
                     return complete();
             },
             error: function(error) {

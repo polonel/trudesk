@@ -11,20 +11,40 @@
  Author:     Chris Brame
 
  **/
+var _   = require('lodash');
 var utils = require('../helpers/utils');
+
+var sharedVars = require('./index').shared;
 
 var events = {};
 
-events.showRestoreOverlay = function(io, socket) {
+function register(socket) {
+    events.showRestoreOverlay(socket);
+    events.emitRestoreComplete(socket);
+}
+
+events.showRestoreOverlay = function(socket) {
+    _.each(sharedVars.intervals, function(i) {
+        clearInterval(i);
+    });
+    sharedVars.intervals = [];
+
     socket.on('$trudesk:restore:showOverlay', function() {
         utils.sendToAllConnectedClients(io, '$trudesk:restore:showOverlay');
     });
 };
 
-events.emitRestoreComplete = function(io, socket) {
+events.emitRestoreComplete = function(socket) {
     socket.on('$trudesk:restore:complete', function() {
         utils.sendToAllConnectedClients(io, '$trudesk:restore:complete');
+        utils.disconnectAllClients(io);
+        sharedVars.sockets = [];
+        sharedVars.usersOnline = {};
+        sharedVars.idleUsers = {};
     });
 };
 
-module.exports = events;
+module.exports = {
+    events: events,
+    register: register
+};
