@@ -463,28 +463,9 @@ define('modules/ui', [
     socketUi.updateTicketPriority = function() {
         socket.removeAllListeners('updateTicketPriority');
         socket.on('updateTicketPriority', function(data) {
-            var prioritySelect = $('select#tPriority[data-ticketId="' + data._id + '"] option[value="' + data.priority + '"]');
+            var prioritySelect = $('select#tPriority[data-ticketId="' + data._id + '"] option[value="' + data.priority._id + '"]');
             if (prioritySelect.length > 0) 
                 prioritySelect.prop('selected', true);
-             else {
-                prioritySelect = $('div#tPriority[data-ticketId="' + data._id + '"]');
-                if (prioritySelect.length > 0) {
-                    var priorityname = 'Normal';
-                    switch (data.priority) {
-                        case 1:
-                            priorityname = 'Normal';
-                            break;
-                        case 2:
-                            priorityname = 'Urgent';
-                            break;
-                        case 3:
-                            priorityname = 'Critical';
-                            break;
-                    }
-
-                    prioritySelect.html(priorityname);
-                }
-            }
         });
     };
 
