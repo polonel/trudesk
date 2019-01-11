@@ -82,8 +82,6 @@ define('modules/chat',[
             }
 
             chatClient.bindActions();
-            socket.emit('$trudesk:chat:updateOnlineBubbles');
-
         });
 
         socket.removeAllListeners('$trudesk:chat:updateOnlineBubbles');

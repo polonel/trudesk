@@ -146,8 +146,8 @@ define('modules/ui', [
             btnMailNotifications.on('click', updateMailNotificationsClicked);
         });
 
-        socket.removeAllListeners('$trudesk:chat:updateConversationsNotifications');
-        socket.on('$trudesk:chat:updateConversationsNotifications', function(data) {
+        socket.removeAllListeners('updateConversationsNotifications');
+        socket.on('updateConversationsNotifications', function(data) {
             var label = $('#btn_mail-notifications').find('> span');
             //TODO: Fixed this once unread messages is fully impl.
             var count = 0; // Setting this to 0 to clear label until above is impl.

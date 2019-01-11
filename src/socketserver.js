@@ -92,12 +92,6 @@ var socketServer = function(ws) {
         notificationSocket.register(socket);
         backuprestore.register(socket);
 
-        socket.on('updateUsers', function() {
-            var sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline);
-
-            utils.sendToSelf(socket, 'updateUsers', sortedUserList);
-        });
-
         socket.on('ticket:updategrid', function() {
             utils.sendToAllConnectedClients(io, 'ticket:updategrid');
         });

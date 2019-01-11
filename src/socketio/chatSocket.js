@@ -34,19 +34,20 @@ function register(socket) {
     if (socket.request.user.logged_in)
         joinChatServer(socket);
 
-//     var socketInterval = setInterval(function() {
-//         console.log('CALLED');
-//         updateConversationsNotifications(socket);
-//     }, 5000);
-// var a = [];
-//     a.push(socketInterval);
 }
 
 function registerInterval() {
     // Global to server start (1 instance)
-    setInterval(function() {
+    return setInterval(function() {
+        updateUsers();
         updateOnlineBubbles();
+        updateConversationsNotifications();
     }, 5000);
+}
+
+function updateUsers() {
+    var sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline);
+    utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList);
 }
 
 function updateOnlineBubbles() {
@@ -54,8 +55,6 @@ function updateOnlineBubbles() {
     var sortedIdleList = _.fromPairs(_.sortBy(_.toPairs(sharedVars.idleUsers), function(o) { return o[0]; }));
 
     utils.sendToAllConnectedClients(io, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
-
-    // utils.sendToSelf(socket, '$trudesk:chat:updateOnlineBubbles', {sortedUserList: sortedUserList, sortedIdleList: sortedIdleList});
 }
 
 events.updateOnlineBubbles = function(socket) {
@@ -64,66 +63,67 @@ events.updateOnlineBubbles = function(socket) {
     });
 };
 
-function updateConversationsNotifications(socket) {
-    async.each(io.sockets, function(sock) {
-        console.log(sock);
-    });
+function updateConversationsNotifications() {
+    _.each(io.sockets.sockets, function(socket) {
+        if (!socket.request && !socket.request.user)
+            return;
 
-    var userId = socket.request.user._id;
-    var messageSchema = require('../models/chat/message');
-    var conversationSchema = require('../models/chat/conversation');
-    conversationSchema.getConversationsWithLimit(userId, 10, function(err, conversations) {
-        if (err) {
-            winston.warn(err.message);
-            return false;
-        }
+        var userId = socket.request.user._id;
+        var messageSchema = require('../models/chat/message');
+        var conversationSchema = require('../models/chat/conversation');
+        conversationSchema.getConversationsWithLimit(userId, 10, function(err, conversations) {
+            if (err) {
+                winston.warn(err.message);
+                return false;
+            }
 
-        var convos = [];
+            var convos = [];
 
-        async.eachSeries(conversations, function(convo, done) {
-            var c = convo.toObject();
+            async.eachSeries(conversations, function(convo, done) {
+                var c = convo.toObject();
 
-            var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === userId.toString(); })];
-            if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt)
-                return done();
+                var userMeta = convo.userMeta[_.findIndex(convo.userMeta, function(item) { return item.userId.toString() === userId.toString(); })];
+                if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt)
+                    return done();
 
 
-            messageSchema.getMostRecentMessage(c._id, function(err, rm) {
-                if (err) return done(err);
+                messageSchema.getMostRecentMessage(c._id, function(err, rm) {
+                    if (err) return done(err);
 
-                _.each(c.participants, function(p) {
-                    if (p._id.toString() !== userId.toString())
-                        c.partner = p;
+                    _.each(c.participants, function(p) {
+                        if (p._id.toString() !== userId.toString())
+                            c.partner = p;
+                    });
+
+                    rm = _.first(rm);
+
+                    if (!_.isUndefined(rm)) {
+                        if (!c.partner || !rm.owner) return done();
+
+                        if (String(c.partner._id) === String(rm.owner._id))
+                            c.recentMessage = c.partner.fullname + ': ' + rm.body;
+                        else
+                            c.recentMessage = 'You: ' + rm.body;
+
+                    } else
+                        c.recentMessage = 'New Conversation';
+
+
+                    convos.push(c);
+
+                    return done();
                 });
 
-                rm = _.first(rm);
-
-                if (!_.isUndefined(rm)) {
-                    if (!c.partner || !rm.owner) return done();
-
-                    if (String(c.partner._id) === String(rm.owner._id))
-                        c.recentMessage = c.partner.fullname + ': ' + rm.body;
-                    else
-                        c.recentMessage = 'You: ' + rm.body;
-
-                } else
-                    c.recentMessage = 'New Conversation';
-
-
-                convos.push(c);
-
-                return done();
+            }, function(err) {
+                if (err) return false;
+                return utils.sendToSelf(socket, 'updateConversationsNotifications', {conversations: convos});
             });
-
-        }, function(err) {
-            if (err) return false;
-            return utils.sendToSelf(socket, 'updateConversationsNotifications', {conversations: convos});
         });
     });
 }
 
 events.updateConversationsNotifications = function(socket) {
-    socket.on('$trudesk:chat:updateConversationsNotifications', function() {
+    socket.on('updateConversationsNotifications', function() {
         updateConversationsNotifications(socket);
     });
 };
