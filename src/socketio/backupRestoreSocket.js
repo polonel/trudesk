@@ -24,12 +24,10 @@ function register(socket) {
 }
 
 events.showRestoreOverlay = function(socket) {
-    _.each(sharedVars.intervals, function(i) {
-        clearInterval(i);
-    });
-    sharedVars.intervals = [];
-
     socket.on('$trudesk:restore:showOverlay', function() {
+        if (global.socketServer && global.socketServer.eventLoop)
+            global.socketServer.eventLoop.stop();
+
         utils.sendToAllConnectedClients(io, '$trudesk:restore:showOverlay');
     });
 };

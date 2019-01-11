@@ -103,24 +103,25 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                                               function success(response) {
                                                   if (response.data && response.data.type && response.data.type.priorities && response.data.success) {
                                                       var typePriorities = response.data.type.priorities;
-                                                      if (angular.isDefined($priorities[0])) {
-                                                          var priorities = _.sortBy(typePriorities, 'migrationNum');
-                                                          $priorities.empty();
-                                                          _.each(priorities, function(priority, idx) {
-                                                              var checked = (idx === 0) ? 'checked' : '';
-                                                              if (angular.isUndefined(priority.htmlColor))
-                                                                  priority.htmlColor = '#29b955';
+                                                      if (angular.isUndefined($priorities[0]))
+                                                          return;
 
-                                                              var html = '<span class="icheck-inline">' +
-                                                                  '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />' +
-                                                                  '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>' +
-                                                                  '</span>';
+                                                      var priorities = _.sortBy(typePriorities, 'migrationNum');
+                                                      $priorities.empty();
+                                                      _.each(priorities, function(priority, idx) {
+                                                          var checked = (idx === 0) ? 'checked' : '';
+                                                          if (angular.isUndefined(priority.htmlColor))
+                                                              priority.htmlColor = '#29b955';
 
-                                                              $priorities.append(html);
-                                                          });
+                                                          var html = '<span class="icheck-inline">' +
+                                                              '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />' +
+                                                              '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>' +
+                                                              '</span>';
 
-                                                          $priorityLoader.hide();
-                                                      }
+                                                          $priorities.append(html);
+                                                      });
+
+                                                      $priorityLoader.hide();
                                                   }
                                               },
                                               function error(err) {

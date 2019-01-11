@@ -23,10 +23,11 @@ var backup_restore = {};
 
 function formatBytes(bytes, fixed) {
     if (!fixed) fixed = 2;
-    if(bytes < 1024) return bytes + ' Bytes';
-    else if(bytes < 1048576) return(bytes / 1024).toFixed(fixed) + ' KB';
-    else if(bytes < 1073741824) return(bytes / 1048576).toFixed(fixed) + ' MB';
-    else return(bytes / 1073741824).toFixed(fixed) + ' GB';
+    if (bytes < 1024) return bytes + ' Bytes';
+    if (bytes < 1048576) return(bytes / 1024).toFixed(fixed) + ' KB';
+    if (bytes < 1073741824) return(bytes / 1048576).toFixed(fixed) + ' MB';
+
+    return (bytes / 1073741824).toFixed(fixed) + ' GB';
 }
 
 backup_restore.getBackups = function(req, res) {

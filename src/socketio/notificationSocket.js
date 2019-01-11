@@ -15,40 +15,34 @@ var _   = require('lodash');
 var winston = require('winston');
 var utils = require('../helpers/utils');
 
-var sharedVars = require('./index').shared;
-
 var events = {};
 
 function register(socket) {
     events.updateNotifications(socket);
     events.markNotificationRead(socket);
-
-    var socketInterval = setInterval(function() {
-        updateNotifications(socket);
-    }, 5000);
-
-    sharedVars.intervals.push(socketInterval);
 }
 
-function registerInterval() {
-
+function eventLoop() {
+    updateNotifications();
 }
 
-function updateNotifications(socket) {
-    var notifications = {};
-    var notificationSchema = require('../models/notification');
-    notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
-        if (err) {
-            winston.warn(err);
-            return true;
-        }
+function updateNotifications() {
+    _.each(io.sockets.sockets, function(socket) {
+        var notifications = {};
+        var notificationSchema = require('../models/notification');
+        notificationSchema.findAllForUser(socket.request.user._id, function(err, items) {
+            if (err) {
+                winston.warn(err);
+                return true;
+            }
 
-        // notifications.items = _.take(items, 5);
-        notifications.items = items;
-        var p = _.filter(items, {unread: true});
-        notifications.count = _.size(p);
+            // notifications.items = _.take(items, 5);
+            notifications.items = items;
+            var p = _.filter(items, {unread: true});
+            notifications.count = _.size(p);
 
-        utils.sendToSelf(socket, 'updateNotifications', notifications);
+            utils.sendToSelf(socket, 'updateNotifications', notifications);
+        });
     });
 }
 
@@ -96,6 +90,6 @@ events.clearNotifications = function(socket) {
 
 module.exports = {
     events: events,
-    register: register,
-    registerInterval: registerInterval
+    eventLoop: eventLoop,
+    register: register
 };

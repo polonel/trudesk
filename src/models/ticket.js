@@ -281,7 +281,7 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isUndefined(priority)) return callback('Priority must be a Object.', null);
+    if (_.isUndefined(priority) || !_.isObject(priority)) return callback('Priority must be a PriorityObject.', null);
 
     var self = this;
     self.priority = priority._id;

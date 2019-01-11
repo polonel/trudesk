@@ -15,6 +15,7 @@ var _       = require('lodash');
 var async   = require('async');
 var winston = require('winston');
 var utils   = require('../helpers/utils');
+var userSchema = require('../models/user');
 
 var sharedVars  = require('./index').shared;
 var sharedUtils = require('./index').utils;
@@ -22,6 +23,8 @@ var sharedUtils = require('./index').utils;
 var events = {};
 
 function register(socket) {
+    events.onSetUserIdle(socket);
+    events.onSetUserActive(socket);
     events.updateOnlineBubbles(socket);
     events.updateConversationsNotifications(socket);
     events.spawnChatWindow(socket);
@@ -30,20 +33,54 @@ function register(socket) {
     events.onChatTyping(socket);
     events.onChatStopTyping(socket);
     events.saveChatWindow(socket);
+    events.onDisconnect(socket);
 
     if (socket.request.user.logged_in)
         joinChatServer(socket);
 
 }
 
-function registerInterval() {
-    // Global to server start (1 instance)
-    return setInterval(function() {
-        updateUsers();
-        updateOnlineBubbles();
-        updateConversationsNotifications();
-    }, 5000);
+function eventLoop() {
+    updateUsers();
+    updateOnlineBubbles();
+    updateConversationsNotifications();
 }
+
+events.onSetUserIdle = function(socket) {
+    socket.on('$trudesk:setUserIdle', function() {
+        var user = socket.request.user;
+        var exists = false;
+        if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase()))
+            exists = true;
+
+        if (!exists) {
+            if (user.username.length !== 0) {
+                sharedVars.idleUsers[user.username.toLowerCase()] = {sockets: [socket.id], user:user};
+
+                updateOnlineBubbles();
+            }
+        } else {
+            var idleUser = sharedVars.idleUsers[user.username.toLowerCase()];
+            if (!_.isUndefined(idleUser)) {
+                idleUser.sockets.push(socket.id);
+
+                updateOnlineBubbles();
+            }
+        }
+    });
+};
+
+events.onSetUserActive = function(socket) {
+    socket.on('$trudesk:setUserActive', function() {
+        var user = socket.request.user;
+        if (sharedVars.idleUsers.hasOwnProperty(user.username.toLowerCase())) {
+            delete sharedVars.idleUsers[user.username.toLowerCase()];
+
+            updateOnlineBubbles();
+        }
+    });
+};
+
 
 function updateUsers() {
     var sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline);
@@ -204,8 +241,6 @@ events.saveChatWindow = function(socket) {
                     user.removeOpenChatWindow(convoId);
                 else
                     user.addOpenChatWindow(convoId);
-
-
             }
         });
     });
@@ -335,8 +370,51 @@ function joinChatServer(socket) {
     }
 }
 
+events.onDisconnect = function(socket) {
+    socket.on('disconnect', function() {
+        var user = socket.request.user;
+
+        if (!_.isUndefined(sharedVars.usersOnline[user.username])) {
+            var userSockets = sharedVars.usersOnline[user.username].sockets;
+
+            if (_.size(userSockets) < 2)
+                delete sharedVars.usersOnline[user.username];
+            else
+                sharedVars.usersOnline[user.username].sockets = _.without(userSockets, socket.id);
+
+            var o = _.findKey(sharedVars.sockets, {'id': socket.id});
+            sharedVars.sockets = _.without(sharedVars.sockets, o);
+        }
+
+        if (!_.isUndefined(sharedVars.idleUsers[user.username])) {
+            var idleSockets = sharedVars.idleUsers[user.username].sockets;
+
+            if (_.size(idleSockets) < 2)
+                delete sharedVars.idleUsers[user.username];
+            else
+                sharedVars.idleUsers[user.username].sockets = _.without(idleSockets, socket.id);
+
+            var i = _.findKey(sharedVars.sockets, {'id': socket.id});
+            sharedVars.sockets = _.without(sharedVars.sockets, i);
+        }
+
+        //Save lastOnline Time
+        userSchema.getUser(user._id, function(err, u) {
+            if (!err && u) {
+                u.lastOnline = new Date();
+
+                u.save();
+            }
+        });
+
+        updateOnlineBubbles();
+
+        winston.debug('User disconnected: ' + user.username + ' - ' + socket.id);
+    });
+};
+
 module.exports = {
     events: events,
-    register: register,
-    registerInterval: registerInterval
+    eventLoop: eventLoop,
+    register: register
 };

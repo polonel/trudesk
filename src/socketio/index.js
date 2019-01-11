@@ -30,7 +30,6 @@ module.exports = {
     shared: {
         sockets: [],
         usersOnline: {},
-        idleUsers: {},
-        intervals: []
+        idleUsers: {}
     }
 };

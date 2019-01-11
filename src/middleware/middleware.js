@@ -97,11 +97,12 @@ middleware.ensurel2Auth = function(req, res, next) {
                 return res.redirect('/dashboard');
 
             return res.redirect('/tickets');
-        } else
-            return next();
-    } else 
-        return res.redirect('/l2auth');
-    
+        }
+
+        return next();
+    }
+
+    return res.redirect('/l2auth');
 };
 
 //Common
