@@ -20,6 +20,7 @@ var events = {};
 function register(socket) {
     events.updateNotifications(socket);
     events.markNotificationRead(socket);
+    events.clearNotifications(socket);
 }
 
 function eventLoop() {

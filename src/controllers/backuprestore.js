@@ -72,12 +72,13 @@ backup_restore.runBackup = function(req, res) {
         child.kill('SIGINT');
         global.forks = _.remove(global.forks, function(f) { return f.fork !== child; });
 
-        if (data.error) return res.status(400).json({success: false, error: data.error});
+        if (data.error)
+            result = {success: false, error: data.error};
 
         if (data.success)
             result = {success: true};
         else
-            result = {success: false, error: data.error};
+            result = {success: false, error: data};
     });
 
     child.on('close', function() {
