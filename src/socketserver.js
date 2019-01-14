@@ -16,7 +16,8 @@
 var winston                 = require('winston'),
     async                   = require('async'),
     passportSocketIo        = require('passport.socketio'),
-    cookieparser            = require('cookie-parser');
+    cookieparser            = require('cookie-parser'),
+    nconf                   = require('nconf');
 
 // Submodules
 var ticketSocket            = require('./socketio/ticketSocket');
@@ -29,7 +30,16 @@ var logsSocket              = require('./socketio/logsSocket');
 
 var socketServer = function(ws) {
     'use strict';
-    var io = require('socket.io')(ws.server);
+
+    var socketConfig = {
+        pingTimeout: (nconf.get('socket:pingTimeout')) ? nconf.get('socket:pingTimeout') : 5000,
+        pingInterval: (nconf.get('socket:pingInterval')) ? nconf.get('socket:pingInterval') : 25000
+    };
+
+    var io = require('socket.io')(ws.server, {
+        pingTimeout: socketConfig.pingTimeout,
+        pingInterval: socketConfig.pingInterval
+    });
 
     io.use(function(data, accept) {
         async.waterfall([
@@ -76,12 +86,8 @@ var socketServer = function(ws) {
     });
 
     io.set('transports', [
-        'websocket',
-        'flashsocket',
-        'htmlfile',
-        'xhr-polling',
-        'jsonp-polling',
-        'polling'
+        'polling',
+        'websocket'
     ]);
 
     io.sockets.on('connection', function(socket) {
