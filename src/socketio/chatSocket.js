@@ -371,7 +371,7 @@ function joinChatServer(socket) {
 }
 
 events.onDisconnect = function(socket) {
-    socket.on('disconnect', function() {
+    socket.on('disconnect', function(reason) {
         var user = socket.request.user;
 
         if (!_.isUndefined(sharedVars.usersOnline[user.username])) {
@@ -409,7 +409,10 @@ events.onDisconnect = function(socket) {
 
         updateOnlineBubbles();
 
-        winston.debug('User disconnected: ' + user.username + ' - ' + socket.id);
+        if (reason === 'transport error')
+            reason = 'client terminated';
+
+        winston.debug('User disconnected (' + reason + '): ' + user.username + ' - ' + socket.id);
     });
 };
 
