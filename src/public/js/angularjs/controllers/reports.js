@@ -12,9 +12,17 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'history'], function(angular, _, $, moment, helpers) {
+define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formvalidator', 'history'], function(angular, _, $, moment, helpers) {
     return angular.module('trudesk.controllers.reports', [])
         .controller('reportsCtrl', function($scope, $http, $log, $timeout, $window) {
+            $.formUtils.addValidator({
+                name: 'shortDate',
+                validatorFunction: function(value) {
+                    return moment(value, helpers.getShortDateFormat(), true).isValid();
+                },
+                errorMessage: 'Invalid Date (' + helpers.getShortDateFormat() + ')',
+                errorMessageKey: 'invalidShortDate'
+            });
 
             var $filterDateStart = $('.filterDate_Start');
             $filterDateStart.each(function(index, element) {
