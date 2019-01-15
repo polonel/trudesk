@@ -86,7 +86,7 @@ define(['angular', 'underscore', 'jquery', 'uikit', 'modules/socket', 'modules/n
                     element: $commentReply[0],
                     forceSync: true,
                     minHeight: '220px', //Slighty smaller to adjust the scroll
-                    toolbar: mdeToolbarItems,
+                    toolbar: mdeToolbarItems
                 });
 
                 commentMDE.codemirror.setOption('extraKeys', {

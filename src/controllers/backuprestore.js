@@ -16,10 +16,9 @@ var _ = require('lodash');
 var fs = require('fs-extra');
 var path = require('path');
 var async = require('async');
-var winston = require('winston');
 var moment = require('moment');
 
-var backup_restore = {};
+var backupRestore = {};
 
 function formatBytes(bytes, fixed) {
     if (!fixed) fixed = 2;
@@ -30,7 +29,7 @@ function formatBytes(bytes, fixed) {
     return (bytes / 1073741824).toFixed(fixed) + ' GB';
 }
 
-backup_restore.getBackups = function(req, res) {
+backupRestore.getBackups = function(req, res) {
     fs.readdir(path.join(__dirname, '../../backups'), function(err, files) {
         if (err) return res.status(400).json({error: err});
 
@@ -61,7 +60,7 @@ backup_restore.getBackups = function(req, res) {
     });
 };
 
-backup_restore.runBackup = function(req, res) {
+backupRestore.runBackup = function(req, res) {
     var database = require('../database');
     var child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri } });
     global.forks.push({name: 'backup', fork: child});
@@ -92,7 +91,7 @@ backup_restore.runBackup = function(req, res) {
     });
 };
 
-backup_restore.deleteBackup = function(req, res) {
+backupRestore.deleteBackup = function(req, res) {
     var filename = req.params.backup;
     if (_.isUndefined(filename) || !fs.existsSync(path.join(__dirname, '../../backups/', filename)))
         return res.status(400).json({success: false, error: 'Invalid Filename'});
@@ -104,7 +103,7 @@ backup_restore.deleteBackup = function(req, res) {
     });
 };
 
-backup_restore.restoreBackup = function(req, res) {
+backupRestore.restoreBackup = function(req, res) {
     var database = require('../database');
 
     var file = req.body.file;
@@ -156,7 +155,7 @@ backup_restore.restoreBackup = function(req, res) {
     });
 };
 
-backup_restore.hasBackupTools = function(req, res) {
+backupRestore.hasBackupTools = function(req, res) {
     if (require('os').platform() === 'win32')
         return res.json({success: true});
 
@@ -167,7 +166,7 @@ backup_restore.hasBackupTools = function(req, res) {
     });
 };
 
-backup_restore.uploadBackup = function(req, res) {
+backupRestore.uploadBackup = function(req, res) {
     var Busboy = require('busboy');
     var busboy = new Busboy({
         headers: req.headers,
@@ -218,4 +217,4 @@ backup_restore.uploadBackup = function(req, res) {
     req.pipe(busboy);
 };
 
-module.exports = backup_restore;
+module.exports = backupRestore;

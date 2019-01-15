@@ -112,6 +112,7 @@ var socketServer = function(ws) {
                     // The main socket event loop.
                     notificationSocket.eventLoop();
                     chatSocket.eventLoop();
+
                 }, 5000);
             },
             stop: function() {

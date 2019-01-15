@@ -57,8 +57,8 @@ function mainRoutes(router, middleware, controllers) {
                 {s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
                     if (!err && logoFilename && !_.isUndefined(logoFilename))
                         return res.send('/assets/topLogo.png');
-                    else
-                        return res.send('/img/defaultLogoLight.png');
+
+                    return res.send('/img/defaultLogoLight.png');
                 });}
             else
                 return res.send('/img/defaultLogoLight.png');
@@ -141,7 +141,6 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
-    router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
 
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);

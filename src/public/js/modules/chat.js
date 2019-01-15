@@ -135,6 +135,7 @@ define('modules/chat',[
                 scroller = chatBox.find('.chat-box-messages');
                 chatMessageList.append(chatMessage);
                 helpers.scrollToBottom(scroller);
+                helpers.UI.playSound('sendChatMessage');
             } else if (type === 'r') {
                 selector = '.chat-box[data-chat-userid="' + from + '"]';
                 chatBox = $(selector);
@@ -151,6 +152,8 @@ define('modules/chat',[
                     scroller = chatBox.find('.chat-box-messages');
                     helpers.scrollToBottom(scroller);
                 }
+
+                helpers.UI.playSound('receivedChatMessage');
             }
 
             $.event.trigger('$trudesk:chat:message', data);
@@ -235,21 +238,24 @@ define('modules/chat',[
         if (isTyping[cid]) {
             clearTimeout(typingTimeout[cid]);
             typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, userid);
-            return;
+
+            if (_.isFunction(complete))
+                return complete();
+
+        } else {
+            socket.emit('chatTyping', {
+                cid: cid,
+                to: userid,
+                from: loggedInAccount._id
+            });
+
+            isTyping[cid] = true;
+            if (typingTimeout[cid] === undefined)
+                typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, userid);
+
+            if (_.isFunction(complete))
+                return complete();
         }
-
-        socket.emit('chatTyping', {
-            cid: cid,
-            to: userid,
-            from: loggedInAccount._id
-        });
-
-        isTyping[cid] = true;
-        if (typingTimeout[cid] === undefined)
-            typingTimeout[cid] = setTimeout(stopTyping, 5000, cid, userid);
-
-        if (_.isFunction(complete))
-            return complete();
     };
 
     chatClient.bindActions = function() {
@@ -289,13 +295,12 @@ define('modules/chat',[
 
             if (cid === undefined || user === undefined) {
                 console.log('Invalid Conversation ID or User ID');
-                return false;
+                return;
             }
 
-            chatClient.startTyping(cid, user, function() {
-
-            });
+            chatClient.startTyping(cid, user);
         });
+
         $textarea.autogrow({
             postGrowCallback: chatBoxTextAreaGrowCallback,
             enterPressed: function(self, v) {
@@ -354,43 +359,42 @@ define('modules/chat',[
     function startConversation(owner, receiver, callback) {
         if (owner === receiver) 
             return callback('Invalid Participants');
-         else {
-            $.ajax({
-                url: '/api/v1/messages/conversation/start',
-                type: 'POST',
-                contentType: 'application/json',
-                dataType: 'json',
-                data: JSON.stringify({
-                    owner: owner,
-                    participants: [
-                        owner,
-                        receiver
-                    ]
-                }),
-                success: function(data) {
-                    $.ajax({
-                        url: '/api/v1/messages/conversation/' + data.conversation._id,
-                        type: 'GET',
-                        success: function(d) {
-                            var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() === owner.toString(); })];
-                            if (userMeta && userMeta.deletedAt) {
-                                d.messages = _.filter(d.messages, function(message) {
-                                    return moment(message.createdAt) > moment(userMeta.deletedAt);
-                                });
-                            }
-                            data.conversation.messages = d.messages;
-                            return callback(null, data.conversation);
-                        },
-                        error: function(err) {
-                            return callback(err);
+
+        $.ajax({
+            url: '/api/v1/messages/conversation/start',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                owner: owner,
+                participants: [
+                    owner,
+                    receiver
+                ]
+            }),
+            success: function(data) {
+                $.ajax({
+                    url: '/api/v1/messages/conversation/' + data.conversation._id,
+                    type: 'GET',
+                    success: function(d) {
+                        var userMeta = data.conversation.userMeta[_.findIndex(data.conversation.userMeta, function(item) { return item.userId.toString() === owner.toString(); })];
+                        if (userMeta && userMeta.deletedAt) {
+                            d.messages = _.filter(d.messages, function(message) {
+                                return moment(message.createdAt) > moment(userMeta.deletedAt);
+                            });
                         }
-                    });
-                },
-                error: function(err) {
-                    return callback(err);
-                }
-            });
-        }
+                        data.conversation.messages = d.messages;
+                        return callback(null, data.conversation);
+                    },
+                    error: function(err) {
+                        return callback(err);
+                    }
+                });
+            },
+            error: function(err) {
+                return callback(err);
+            }
+        });
     }
 
     function loadChatMessages(chatBox, messageArray) {

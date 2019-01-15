@@ -62,6 +62,7 @@ define([
                                 $uploadButton.removeClass('hide');
                                 $scope.getBackups();
                                 $backupUploadSelect.val(null);
+                                helpers.UI.playSound('success');
                             }, 1500);
                         }
                     };
@@ -85,7 +86,7 @@ define([
                 $http.get('/api/v1/backup/hastools')
                     .then(function success(res) {
                         $scope.hasTools = (res.data && res.data.success);
-                    }, function error(err) {
+                    }, function error() {
                         $scope.hasTools = false;
                     }).then(function() {
                         $scope.loadingTools = false;
@@ -99,7 +100,7 @@ define([
                         if (res.data && res.data.success === true)
                             $scope.backupFiles = res.data.files;
                     }, function error(err) {
-                        console.log(err);
+                        $log.error(err);
                     });
             };
 
@@ -112,8 +113,12 @@ define([
                         $log.log(res);
                         $button.parent().find('.uk-progress').addClass('hide');
                         $button.show();
+                        helpers.UI.showSnackbar('Backup completed successfully.', false);
+                        helpers.UI.playSound('success');
                         $scope.getBackups();
                     }, function error(err) {
+                        helpers.UI.playSound('error');
+                        helpers.UI.showSnackbar('Error: ' + err, true);
                         $log.error(err);
                     });
             };
