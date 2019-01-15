@@ -113,22 +113,19 @@ function runRestore(file, callback) {
     var FILE = process.env.FILE;
     if (!FILE) return process.send({success: false, error: 'Invalid File'});
 
-    if (!fs.existsSync(path.join(__dirname, '../../backups', FILE))) {
-        process.send({success: false, error: 'FILE NOT FOUND'});
-        return;
-    }
+    if (!fs.existsSync(path.join(__dirname, '../../backups', FILE))) 
+        return process.send({success: false, error: 'FILE NOT FOUND'});
+    
 
     var options = { keepAlive: 0, auto_reconnect: false, connectTimeoutMS: 5000, useNewUrlParser: true };
     database.init(function(e, db) {
-        if (e) {
-            process.send({success: false, error: e});
-            return;
-        }
+        if (e) 
+            return process.send({success: false, error: e});
+        
 
-        if (!db) {
-            process.send({success: false, error: {message: 'Unable to open database'}});
-            return;
-        }
+        if (!db) 
+            return process.send({success: false, error: {message: 'Unable to open database'}});
+        
 
         databaseName = database.db.connection.db.databaseName;
 

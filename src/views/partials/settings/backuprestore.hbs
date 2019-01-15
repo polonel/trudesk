@@ -100,7 +100,7 @@
                                 <td class="valign-middle">{[{file.sizeFormat}]}</td>
                                 <td class="uk-text-right valign-middle">
                                     <div class="md-btn-group">
-                                        <a href="/backups/{[{file.filename}]}" class="md-btn md-btn-small md-btn-wave">Download</a>
+                                        <a href="/backups/{[{file.filename}]}" class="md-btn md-btn-small md-btn-wave no-ajaxy" target="_blank">Download</a>
                                         <button class="md-btn md-btn-small md-btn-wave" ng-click="restoreFile($index);">Restore</button>
                                         <button class="md-btn md-btn-small md-btn-wave md-btn-danger" ng-click="deleteBackup($index);">Delete</button>
                                     </div>

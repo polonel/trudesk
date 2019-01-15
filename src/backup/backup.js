@@ -47,10 +47,10 @@ function createZip(callback) {
     output.on('end', callback);
 
     archive.on('warning', function(err) {
-        if (err.code === 'ENOENT')
+        if (err.code === 'ENOENT') 
             winston.warn(err);
-        else {
-            winston.error(err);
+         else {
+            winston.error(err)  ;
             return callback(err);
         }
     });

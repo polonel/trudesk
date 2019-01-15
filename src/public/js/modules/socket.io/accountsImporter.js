@@ -22,6 +22,44 @@ define('modules/socket.io/accountsImporter', [
 
     var socket;
 
+    function onStatusChange(type, item, percent) {
+        var $statusBox = $('#' + type + '-import-status-box > ul');
+        if (item) {
+            if (item.state === 1)
+                $statusBox.append('<li><div data-import-username="' + item.username + '" style="display:flex;">Importing ' + item.username + '<span>...</span></div></li>');
+            else if (item.state === 2) {
+                var span = $statusBox.find('div[data-import-username="' + item.username + '"] > span');
+                if (span.length > 0) {
+                    span.css({display: 'inline-flex', marginLeft: '5px'});
+                    span.html('<i class="md-color-green material-icons" style="font-size:18px;line-height:18px;vertical-align:middle;">check</i>');
+                }
+            } else if (item.state === 3) {
+                var span1 = $statusBox.find('div[data-import-username="' + item.username + '"] > span');
+                if (span1.length > 0) {
+                    span1.css({display: 'inline-flex', marginLeft: '5px'});
+                    span1.html('<i class="md-color-red material-icons" style="font-size:18px;line-height:18px;vertical-align:middle;">close</i>');
+                }
+            }
+        }
+
+        scrollStatusBox();
+
+        $('.js-' + type + '-progress').find('.uk-progress-bar').css({width: percent + '%'});
+    }
+
+    function finishImport(type, completedCount) {
+        var $statusBox = $('#' + type + '-import-status-box');
+        if (completedCount === 1)
+            $statusBox.find('ul').append('<li>Imported ' + completedCount + ' account</li>');
+        else
+            $statusBox.find('ul').append('<li>Imported ' + completedCount + ' accounts</li>');
+
+        scrollStatusBox();
+
+        var $wizard = $('#wizard_' + type);
+        $wizard.find('.button_finish').removeClass('disabled');
+    }
+
     accountsImporter.init = function(sock) {
         socket = sock;
 
@@ -55,44 +93,6 @@ define('modules/socket.io/accountsImporter', [
 
         socket.emit('$trudesk:accounts:import:' + type, {addedUsers: addedUsers, updatedUsers: updatedUsers});
     };
-
-    function onStatusChange(type, item, percent) {
-        var $statusBox = $('#' + type + '-import-status-box > ul');
-        if (item) {
-            if (item.state === 1) 
-                $statusBox.append('<li><div data-import-username="' + item.username + '" style="display:flex;">Importing ' + item.username + '<span>...</span></div></li>');
-             else if (item.state === 2) {
-                var span = $statusBox.find('div[data-import-username="' + item.username + '"] > span');
-                if (span.length > 0) {
-                    span.css({display: 'inline-flex', marginLeft: '5px'});
-                    span.html('<i class="md-color-green material-icons" style="font-size:18px;line-height:18px;vertical-align:middle;">check</i>');
-                }
-            } else if (item.state === 3) {
-                var span1 = $statusBox.find('div[data-import-username="' + item.username + '"] > span');
-                if (span1.length > 0) {
-                    span1.css({display: 'inline-flex', marginLeft: '5px'});
-                    span1.html('<i class="md-color-red material-icons" style="font-size:18px;line-height:18px;vertical-align:middle;">close</i>');
-                }
-            }
-        }
-
-        scrollStatusBox();
-
-        $('.js-' + type + '-progress').find('.uk-progress-bar').css({width: percent + '%'});
-    }
-
-    function finishImport(type, completedCount) {
-        var $statusBox = $('#' + type + '-import-status-box');
-        if (completedCount === 1)
-            $statusBox.find('ul').append('<li>Imported ' + completedCount + ' account</li>');
-        else
-            $statusBox.find('ul').append('<li>Imported ' + completedCount + ' accounts</li>');
-
-        scrollStatusBox();
-
-        var $wizard = $('#wizard_' + type);
-        $wizard.find('.button_finish').removeClass('disabled');
-    }
 
     function scrollStatusBox() {
         var e = $('#ldap-import-status-box');

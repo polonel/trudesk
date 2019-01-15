@@ -113,6 +113,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
 
     helpers.UI = {};
 
+    helpers.UI.playSound = function(soundId) {
+        var audio = $('audio#' + soundId + '_audio');
+        if (audio.length > 0) audio.trigger('play');
+    };
+
     helpers.UI.bindAccordion = function() {
         $('li[data-nav-accordion]').each(function() {
             if ($(this).hasClass('active') && $(this).parents('.sidebar').hasClass('expand')) {
@@ -1257,8 +1262,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.getTimeFormat = function() {
         if (window.trudeskSettingsService)
             return window.trudeskSettingsService.getSettings().timeFormat.value;
-        else
-            return 'hh:mma';
+
+        return 'hh:mma';
     };
 
     helpers.getCalendarDate = function(date) {
@@ -1278,15 +1283,15 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     helpers.getShortDateFormat = function() {
         if (window.trudeskSettingsService)
             return window.trudeskSettingsService.getSettings().shortDateFormat.value;
-        else
-            return 'MM/DD/YYYY';
+
+        return 'MM/DD/YYYY';
     };
 
     helpers.getLongDateFormat = function() {
         if (window.trudeskSettingsService)
             return window.trudeskSettingsService.getSettings().longDateFormat.value;
-        else
-            return 'MMM DD, YYYY';
+
+        return 'MMM DD, YYYY';
     };
 
     helpers.formatDate = function(date, format) {

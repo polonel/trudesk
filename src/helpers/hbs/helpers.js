@@ -30,10 +30,11 @@ var helpers = {
     concat: function(a, b, space, comma) {
         if (space && (comma === false || _.isObject(comma)))
             return a.toString() + ' ' + b.toString();
-        else if (comma === true)
+
+        if (comma === true)
             return a.toString() + ', ' + b.toString();
-        else
-            return a.toString() + b.toString();
+
+        return a.toString() + b.toString();
     },
 
     contains: function (str, pattern, options) {

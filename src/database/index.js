@@ -34,6 +34,7 @@ module.exports.init = function(callback, connectionString, opts) {
         return callback(null, db);
 
     mongoose.Promise = global.Promise;
+    mongoose.set('useFindAndModify', false);
     mongoose.connect(CONNECTION_URI, options).then(function() {
         if (!process.env.FORK)
             winston.info('Connected to MongoDB');

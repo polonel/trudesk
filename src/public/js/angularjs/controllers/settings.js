@@ -1041,26 +1041,25 @@ define([
                     var form = $('#createTicketTypeForm');
                     if (!form.isValid(null, null, false))
                         return true;
-                     else {
-                        var typeName = form.find('input[name="typeName"]').val();
-                        if (!typeName || typeName.length < 3) return true;
 
-                        $http.post('/api/v1/tickets/types/create', {
-                            name: typeName
-                        }, {
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        }).then(function successCallback() {
-                            helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
+                    var typeName = form.find('input[name="typeName"]').val();
+                    if (!typeName || typeName.length < 3) return true;
 
-                            History.pushState(null, null, '/settings/tickets/?refresh=true');
+                    $http.post('/api/v1/tickets/types/create', {
+                        name: typeName
+                    }, {
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    }).then(function successCallback() {
+                        helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false);
 
-                        }, function errorCallback(err) {
-                            helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);
-                            $log.error(err);
-                        });
-                    }
+                        History.pushState(null, null, '/settings/tickets/?refresh=true');
+
+                    }, function errorCallback(err) {
+                        helpers.UI.showSnackbar('Unable to create ticket type. Check console', true);
+                        $log.error(err);
+                    });
                 };
 
                 $scope.editTicketType = function($event) {

@@ -19,7 +19,9 @@ define('modules/socket', [
     'modules/socket.io/accountsImporter'
 
 ], function(chat, ui, accountsImporter) {
-    var socket = io.connect();
+    var socket = io.connect({
+        transports: ['polling', 'websocket']
+    });
     var sClient = {
         socket: socket
     };

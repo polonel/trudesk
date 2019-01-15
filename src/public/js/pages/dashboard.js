@@ -50,7 +50,7 @@ define('pages/dashboard', [
                 y_extended_ticks: true,
                 show_tooltips: false,
                 aggregate_rollover: true,
-                transition_on_update: false,
+                transition_on_update: false
                 // colors: ['#2196f3']
             };
 

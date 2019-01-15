@@ -142,14 +142,12 @@ apiUsers.create = function(req, res) {
 
     var postData = req.body;
 
-    if (_.isUndefined(postData) ||
-        !_.isObject(postData) ||
-        _.isUndefined(postData.aUsername) ||
-        _.isUndefined(postData.aPass) ||
-        _.isUndefined(postData.aPassConfirm) ||
-        _.isUndefined(postData.aFullname) ||
-        _.isUndefined(postData.aEmail) ||
-        _.isUndefined(postData.aRole))
+    if (_.isUndefined(postData) || !_.isObject(postData))
+        return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    var propCheck = ['aUsername', 'aPass', 'aPassConfirm', 'aFullname', 'aEmail', 'aRole'];
+
+    if (!_.every(propCheck, function(x) { return x in postData; }))
         return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps))

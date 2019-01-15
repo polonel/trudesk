@@ -96,26 +96,26 @@ module.exports = function(app, db, callback) {
 
             app.use(express.static(path.join(__dirname, '../../public')));
 
-            //Remove to enable plugins
+            // Uncomment to enable plugins
             return next(null, store);
-            global.plugins = [];
-            var dive = require('dive');
-            dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
-               if (err) throw err;
-               var fs = require('fs');
-               if (fs.existsSync(path.join(dir, 'plugin.json'))) {
-                   var plugin = require(path.join(dir, 'plugin.json'));
-                   if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
-                       throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
-
-                   global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
-                   var pluginPublic = path.join(dir, '/public');
-                   app.use('/plugins/' + plugin.name, express.static(pluginPublic));
-                   winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
-               }
-            }, function() {
-                next(null, store);
-            });
+            // global.plugins = [];
+            // var dive = require('dive');
+            // dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
+            //    if (err) throw err;
+            //    var fs = require('fs');
+            //    if (fs.existsSync(path.join(dir, 'plugin.json'))) {
+            //        var plugin = require(path.join(dir, 'plugin.json'));
+            //        if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
+            //            throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
+            //
+            //        global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
+            //        var pluginPublic = path.join(dir, '/public');
+            //        app.use('/plugins/' + plugin.name, express.static(pluginPublic));
+            //        winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
+            //    }
+            // }, function() {
+            //     next(null, store);
+            // });
         }
     ], function(err, s) {
         if (err) {
