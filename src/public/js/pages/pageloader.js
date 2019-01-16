@@ -18,7 +18,16 @@
 define('pages/pageloader', ['async', 'jquery'], function(async, $) {
     var pageLoader = {};
     pageLoader.init = function(callback) {
-        window.react.updateSidebar({activeItem: $('#__sidebar_route').text(), activeSubItem: $('#__sidebar_sub_route').text(), sessionUser: window.trudeskSessionService.getUser()});
+        // window.react.updateSidebar({activeItem: $('#__sidebar_route').text(), activeSubItem: $('#__sidebar_sub_route').text(), sessionUser: window.trudeskSessionService.getUser()});
+        window.react.redux.store.dispatch({
+            type: 'NAV_CHANGE',
+            payload: {
+                activeItem: $('#__sidebar_route').text(),
+                activeSubItem: $('#__sidebar_sub_route').text(),
+                sessionUser: window.trudeskSessionService.getUser()
+            }
+        });
+
         require([
             'pages/dashboard',
             'pages/messages',

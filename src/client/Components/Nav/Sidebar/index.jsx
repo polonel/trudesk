@@ -1,8 +1,12 @@
 import React from 'react';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import SidebarItem from 'Components/Nav/SidebarItem';
 import NavSeparator from 'Components/Nav/NavSeperator';
 import Submenu from 'Components/Nav/Submenu';
 import SubmenuItem from 'Components/Nav/SubmenuItem';
+
+import { updateNavChange } from '../../../actions/nav';
 
 import Permissions from '../../../../permissions/index.js';
 
@@ -11,17 +15,10 @@ import Helpers from 'modules/helpers';
 class Sidebar extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {
-            activeItem: '',
-            activeSubItem: '',
-            sessionUser: null,
 
-            plugins: null
-        };
-
-        window.react.updateSidebar = (data) => {
-            this.setState(data);
-        };
+        // window.react.updateSidebar = (data) => {
+        //     this.props.updateNavChange(data);
+        // };
     }
 
     componentDidMount() {
@@ -72,7 +69,7 @@ class Sidebar extends React.Component {
     }
 
     render() {
-        const { activeItem, activeSubItem, plugins, sessionUser } = this.state;
+        const { activeItem, activeSubItem, plugins, sessionUser } = this.props;
         return (
             <ul className="side-nav">
                 <SidebarItem text="Dashboard" icon="dashboard" href="/dashboard" class="navHome" active={(activeItem === 'dashboard')} />
@@ -136,4 +133,17 @@ class Sidebar extends React.Component {
     }
 }
 
-export default Sidebar;
+Sidebar.propTypes = {
+    updateNavChange: PropTypes.func.isRequired,
+    activeItem: PropTypes.string.isRequired,
+    activeSubItem: PropTypes.string.isRequired,
+    sessionUser: PropTypes.object.isRequired
+};
+
+const mapStateToProps = (state) => ({
+    activeItem: state.sidebar.activeItem,
+    activeSubItem: state.sidebar.activeSubItem,
+    sessionUser: state.sidebar.sessionUser
+});
+
+export default connect(mapStateToProps, { updateNavChange })(Sidebar);
