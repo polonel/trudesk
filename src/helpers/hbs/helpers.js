@@ -22,7 +22,7 @@
 // node_modules
 var _       = require('lodash');
 var moment  = require('moment-timezone');
-require('moment-duration-format');
+require('moment-duration-format')(moment);
 
 // The module to be exported
 var helpers = {
