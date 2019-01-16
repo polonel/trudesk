@@ -9,7 +9,7 @@ import IndexSagas from './sagas';
 
 const sagaMiddleware = createSagaMiddleware();
 
-import Sidebar from './Components/Nav/Sidebar/index.jsx';
+import Sidebar from './components/Nav/Sidebar/index.jsx';
 
 /*eslint-disable */
 const composeSetup = process.env.NODE_ENV !== 'production' && typeof window === 'object' &&

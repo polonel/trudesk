@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import SidebarItem from 'Components/Nav/SidebarItem';
-import NavSeparator from 'Components/Nav/NavSeperator';
-import Submenu from 'Components/Nav/Submenu';
-import SubmenuItem from 'Components/Nav/SubmenuItem';
+import SidebarItem from 'components/Nav/SidebarItem';
+import NavSeparator from 'components/Nav/NavSeperator';
+import Submenu from 'components/Nav/Submenu';
+import SubmenuItem from 'components/Nav/SubmenuItem';
 
 import { updateNavChange } from '../../../actions/nav';
 
@@ -137,7 +137,7 @@ Sidebar.propTypes = {
     updateNavChange: PropTypes.func.isRequired,
     activeItem: PropTypes.string.isRequired,
     activeSubItem: PropTypes.string.isRequired,
-    sessionUser: PropTypes.object.isRequired
+    sessionUser: PropTypes.object
 };
 
 const mapStateToProps = (state) => ({
