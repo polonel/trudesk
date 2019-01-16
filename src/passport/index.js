@@ -41,7 +41,6 @@ module.exports = function() {
             
 
             if (!user || user.deleted) {
-                console.log('No User Found');
                 return done(null, false, req.flash('loginMessage', 'No User Found.'));
             }
 

@@ -1,0 +1,25 @@
+{
+  "name": "angular-img-http-src",
+  "version": "1.0.1",
+  "description": "Use $http service to fetch img src as objectURL",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dougmoscrop/angular-img-http-src.git"
+  },
+  "keywords": [
+    "Angular"
+  ],
+  "author": "Doug Moscrop <doug.moscrop@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dougmoscrop/angular-img-http-src/issues"
+  },
+  "homepage": "https://github.com/dougmoscrop/angular-img-http-src#readme",
+  "peerDependencies": {
+    "angular": "1.x"
+  }
+}

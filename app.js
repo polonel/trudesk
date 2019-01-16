@@ -67,10 +67,10 @@ if (!process.env.FORK) {
     winston.info('  888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.');
     winston.info('  "888" d888b     `V88V"V8P\' `Y8bod88P" `Y8bod8P\' 8""888P\' o888o o888o');
     winston.info('==========================================================================');
-    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2018 Chris Brame');
+    winston.info('trudesk v' + pkg.version + ' Copyright (C) 2014-2019 Chris Brame');
     winston.info('');
     winston.info('Running in: ' + global.env);
-    winston.info('Time: ' + new Date());
+    winston.info('Server Time: ' + new Date());
 }
 
 var configFile = path.join(__dirname, '/config.json'),
@@ -141,7 +141,6 @@ function start() {
 function dbCallback(err, db) {
     if (err) 
         return start();
-    
 
     ws.init(db, function(err) {
         if (err) {
@@ -180,6 +179,10 @@ function dbCallback(err, db) {
                 require('./src/settings/defaults').init(next);
             },
             function(next) {
+                winston.debug('Building dynamic sass...');
+                require('./src/sass/buildsass').build(next);
+            },
+            function(next) {
                 //Start Task Runners
                 require('./src/taskrunner');
                 return next();
@@ -216,11 +219,10 @@ function dbCallback(err, db) {
                 //});
 
                 var fork = require('child_process').fork;
-                var n;
-                if (process.env.MONGOHQ_URL)
-                    n = fork(path.join(__dirname, '/src/cache/index.js'), { execArgv: ['--max-old-space-size=4096'], env: { FORK: 1, NODE_ENV: global.env, MONGOHQ_URL: process.env.MONGOHQ_URL } } );
-                else
-                    n = fork(path.join(__dirname, '/src/cache/index.js'), { execArgv: ['--max-old-space-size=4096'], env: { FORK: 1, NODE_ENV: global.env } } );
+                var memLimit = '2048';
+                if (process.env.MEMORYLIMIT)
+                    memLimit = process.env.MEMORYLIMIT;
+                var n = fork(path.join(__dirname, '/src/cache/index.js'), { execArgv: ['--max-old-space-size=' + memLimit], env: { FORK: 1, NODE_ENV: global.env } } );
 
                 global.forks.push({name: 'cache', fork: n});
 

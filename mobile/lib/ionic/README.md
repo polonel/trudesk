@@ -1,6 +1,6 @@
 # ionic-bower
 
-Bower repository for [Ionic Framework](http://github.com/driftyco/ionic)
+Bower repository for [Ionic Framework](http://github.com/driftyco/ionic) v1 (Ionic 2+ uses npm)
 
 ### Usage
 
@@ -10,6 +10,6 @@ Alternatively, include the individual ionic files with the dependencies separate
 
 ### Versions
 
-To install the latest stable version, `bower install driftyco/ionic-bower#v1.1.1`
+To install the latest stable version, `bower install driftyco/ionic-bower`
 
 To install the latest nightly release, `bower install driftyco/ionic-bower#master`

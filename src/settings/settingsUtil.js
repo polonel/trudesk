@@ -27,6 +27,15 @@ function parseSetting(settings, name, defaultValue) {
     return s;
 }
 
+util.setSetting = function(setting, value, callback) {
+    var s = {
+        name: setting,
+        value: value
+    };
+
+    settingSchema.updateOne({name: s.name}, s, {upsert: true}, callback);
+};
+
 util.getSettings = function(callback) {
     settingSchema.getSettings(function(err, settings) {
         if (err) return callback('Invalid Settings');
@@ -36,9 +45,30 @@ util.getSettings = function(callback) {
                 data: {}
             };
 
+        s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk');
         s.siteUrl = parseSetting(settings, 'gen:siteurl', '');
+        s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York');
+        s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma');
+        s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY');
+        s.longDateFormat = parseSetting(settings, 'gen:longDateFormat', 'MMM DD, YYYY');
+
+        s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false);
+        s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '');
+        s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false);
+        s.customPageLogoFilename = parseSetting(settings, 'gen:custompagelogofilename', '');
+        s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false);
+        s.customFaviconFilename = parseSetting(settings, 'gen:customfaviconfilename', '');
+
+        s.colorHeaderBG = parseSetting(settings, 'color:headerbg', '#42464d');
+        s.colorHeaderPrimary = parseSetting(settings, 'color:headerprimary', '#f6f7fa');
+        s.colorPrimary = parseSetting(settings, 'color:primary', '#545A63');
+        s.colorSecondary = parseSetting(settings, 'color:secondary', '#f7f8fa');
+        s.colorTertiary = parseSetting(settings, 'color:tertiary', '#E74C3C');
+        s.colorQuaternary = parseSetting(settings, 'color:quaternary', '#E6E7E8');
 
         s.defaultTicketType = parseSetting(settings, 'ticket:type:default', '');
+        s.minSubjectLength = parseSetting(settings, 'ticket:minlength:subject', 10);
+        s.minIssueLength = parseSetting(settings, 'ticket:minlength:issue', 10); 
 
         s.mailerEnabled = parseSetting(settings, 'mailer:enable', false);
         s.mailerHost = parseSetting(settings, 'mailer:host', '');

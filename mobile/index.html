@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width, viewport-fit=cover">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no, width=device-width, height=device-height, viewport-fit=cover">
      <meta http-equiv="Content-Security-Policy" content="default-src gap://ready file://* * 'self' data: blob: 'unsafe-inline' 'unsafe-eval' ws: wss:;"> 
     <title></title>
 
@@ -18,7 +18,7 @@
     <script src="lib/ngstorage/ngStorage.min.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
-    <script src="cordova.js"></script>
+    <!-- <script src="cordova.js"></script> -->
 
     <!--ionic filter plugin-->
     <link rel="stylesheet" href="lib/ionic-filter-bar/dist/ionic.filter.bar.css">
@@ -42,21 +42,22 @@
     <script src="lib/Autolinker.js/dist/Autolinker.min.js" charset="utf-8"></script>
     <script src="lib/moment/min/moment.min.js" charset="utf-8"></script>
     <script src="lib/angular-moment/angular-moment.min.js" charset="utf-8"></script>
+    <script src="lib/angular-img-http-src/index.js" charset="utf-8"></script>
 
     <!-- your app's js -->
     <script src="js/dist/td.app.min.js"></script>
   </head>
   <body ng-app="trudesk">
-    <!--
-      The nav bar that will be updated as we navigate between views.
-    -->
+    <div class="mobile-container">
+
+    
     <div id="loader" class="loader"></div>
-    <ion-nav-bar class="bar-dark nav-title-slide-ios7">
-      <ion-nav-back-button>
-      </ion-nav-back-button>
-    </ion-nav-bar>
+      <ion-nav-bar class="bar-dark nav-title-slide-ios7">
+        <ion-nav-back-button>
+        </ion-nav-back-button>
+      </ion-nav-bar>
 
-    <ion-nav-view></ion-nav-view>
-
+      <ion-nav-view></ion-nav-view>
+    </div>
   </body>
 </html>

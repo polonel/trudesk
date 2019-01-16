@@ -18,6 +18,7 @@ var Imap        = require('imap');
 var winston     = require('winston');
 // var marked      = require('marked');
 var simpleParser = require('mailparser').simpleParser;
+var cheerio     = require('cheerio');
 
 var emitter     = require('../emitter');
 var userSchema  = require('../models/user');
@@ -77,119 +78,132 @@ mailCheck.init = function(settings) {
         deleteMessage: s.mailerCheckDeleteMessage.value
     };
 
-    mailCheck.fetchMail(mailCheck.fetchMailOptions);
+    mailCheck.messages = [];
+
+    bindImapError();
+    bindImapReady();
+
+    mailCheck.fetchMail();
     mailCheck.checkTimer = setInterval(function() {
-        mailCheck.fetchMail(mailCheck.fetchMailOptions);
+        mailCheck.fetchMail();
     }, POLLING_INTERVAL);
 };
 
 mailCheck.refetch = function() {
-    mailCheck.fetchMail(mailCheck.fetchMailOptions);
+    if (_.isUndefined(mailCheck.fetchMailOptions)) {
+        winston.warn('Mailcheck.refetch() running before Mailcheck.init(); please run Mailcheck.init() prior');
+        return;
+    }
+
+    mailCheck.fetchMail();
 };
+
+function bindImapError() {
+    mailCheck.Imap.on('error', function(err) {
+        winston.debug(err);
+    });
+}
+
+function bindImapReady() {
+    try {
+        mailCheck.Imap.on('end', function() {
+            handleMessages(mailCheck.messages);
+            mailCheck.Imap.destroy();
+        });
+
+        mailCheck.Imap.on('ready', function() {
+            openInbox(function (err) {
+                if (err) {
+                    mailCheck.Imap.end();
+                    winston.debug(err);
+                } else {
+                    async.waterfall([
+                        function (next) {
+                            mailCheck.Imap.search(['UNSEEN'], next);
+                        },
+                        function (results, next) {
+                            if (_.size(results) < 1) {
+                                winston.debug('MailCheck: Nothing to Fetch.');
+                                return next();
+                            }
+
+                            winston.debug('Processed %s Mail > Ticket', _.size(results));
+
+                            var flag = '\\Seen';
+                            if (mailCheck.fetchMailOptions.deleteMessage)
+                                flag = '\\Deleted';
+
+                            mailCheck.Imap.addFlags(results, flag, function (err) {
+                                if (err) winston.warn(err);
+                            });
+
+                            var message = {};
+
+                            var f = mailCheck.Imap.fetch(results, {
+                                bodies: ''
+                            });
+
+                            f.on('message', function (msg) {
+                                msg.on('body', function (stream) {
+                                    var buffer = '';
+                                    stream.on('data', function (chunk) {
+                                        buffer += chunk.toString('utf8');
+                                    });
+
+                                    stream.once('end', function () {
+                                        simpleParser(buffer, function (err, mail) {
+                                            if (err) winston.warn(err);
+
+                                            if (mail.headers.has('from'))
+                                                message.from = mail.headers.get('from').value[0].address;
+
+                                            if (mail.subject)
+                                                message.subject = mail.subject;
+                                            else
+                                                message.subject = message.from;
+
+                                            if (_.isUndefined(mail.textAsHtml)) {
+                                                var $ = cheerio.load(mail.html);
+                                                var $body = $('body');
+                                                message.body = ($body.length > 0) ? $body.html() : mail.html;
+                                            } else
+                                                message.body = mail.textAsHtml;
+
+                                            mailCheck.messages.push(message);
+                                        });
+                                    });
+                                });
+                            });
+
+                            f.on('end', function () {
+                                mailCheck.Imap.closeBox(true, function (err) {
+                                    if (err) winston.warn(err);
+
+                                    return next();
+                                });
+                            });
+                        }
+                    ], function (err) {
+                        if (err) winston.warn(err);
+                        mailCheck.Imap.end();
+                    });
+                }
+            });
+        });
+
+    } catch (error) {
+        winston.warn(error);
+        mailCheck.Imap.end();
+    }
+}
 
 mailCheck.fetchMail = function() {
     try {
-        if (_.isUndefined(mailCheck.fetchMailOptions)) {
-            winston.warn('Mailcheck.fetchMail() running before Mailcheck.init(); please run Mailcheck.init() prior');
-            return;
-        }
-
-        var messages = [];
-
-        mailCheck.Imap.once('error', function(err) {
-            winston.debug(err);
-        });
-
-        mailCheck.Imap.once('ready', function() {
-                openInbox(function (err) {
-                    if (err) {
-                        mailCheck.Imap.end();
-                        winston.debug(err);
-                    } else {
-                        async.waterfall([
-                            function (next) {
-                                mailCheck.Imap.search(['UNSEEN'], next);
-                            },
-                            function (results, next) {
-                                if (_.size(results) < 1) {
-                                    winston.debug('MailCheck: Nothing to Fetch.');
-                                    return next();
-                                }
-
-                                winston.debug('Processed %s Mail > Ticket', _.size(results));
-
-                                var flag = '\\Seen';
-                                if (mailCheck.fetchMailOptions.deleteMessage)
-                                    flag = '\\Deleted';
-
-                                mailCheck.Imap.addFlags(results, flag, function (err) {
-                                    if (err) winston.warn(err);
-                                });
-
-                                var message = {};
-
-                                var f = mailCheck.Imap.fetch(results, {
-                                    bodies: ''
-                                });
-
-                                f.on('message', function (msg) {
-                                    msg.on('body', function (stream) {
-                                        var buffer = '';
-                                        stream.on('data', function (chunk) {
-                                            buffer += chunk.toString('utf8');
-                                        });
-
-                                        stream.once('end', function () {
-                                            simpleParser(buffer, function (err, mail) {
-                                                if (err) winston.warn(err);
-
-                                                if (mail.headers.has('from')) 
-                                                    message.from = mail.headers.get('from').value[0].address;
-                                                
-                                                if (mail.subject) 
-                                                    message.subject = mail.subject;
-                                                 else 
-                                                    message.subject = message.from;
-                                                
-
-                                                message.body = mail.textAsHtml;
-
-                                                messages.push(message);
-                                            });
-                                        });
-                                    });
-                                });
-
-                                f.once('end', function () {
-                                    mailCheck.Imap.closeBox(true, function (err) {
-                                        if (err) winston.warn(err);
-
-
-                                        return next();
-                                    });
-                                });
-                            }
-                        ], function (err) {
-                            if (err) winston.warn(err);
-
-                            mailCheck.Imap.end();
-                        });
-                    }
-                });
-
-        });
-
-        mailCheck.Imap.once('end', function() {
-            handleMessages(messages);
-        });
-
-
-        // Call Connect Last
+        mailCheck.messages = [];
         mailCheck.Imap.connect();
-
     } catch (err) {
-        winston.warn(err);
         mailCheck.Imap.end();
+        winston.warn(err);
     }
 };
 

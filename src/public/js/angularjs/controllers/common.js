@@ -16,6 +16,52 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
     return angular.module('trudesk.controllers.common', ['trudesk.controllers.messages'])
         .controller('commonCtrl', function($scope, $window, $http, $cookies, $timeout, $log) {
 
+            $scope.showCreateTagWindow = function($event) {
+                $event.preventDefault();
+                var createTagModal = $('#createTagModal');
+                if (createTagModal.length > 0)
+                    UI.modal(createTagModal, {bgclose: false}).show();
+            };
+
+            $scope.createTag = function(page, $event) {
+                $event.preventDefault();
+                var form = $('#createTagForm');
+                if (!form.isValid(null, null, false))
+                    return true;
+
+                var tagName = form.find('input[name="tagName"]').val();
+                if (!tagName || tagName.length < 2) return true;
+
+                $http.post('/api/v1/tags/create', {
+                    tag: tagName
+                }, {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(function successCallback(response) {
+                    var data = response.data;
+                    helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false);
+                    if (page === 'settings') {
+                        var time = new Date().getTime();
+                        History.pushState(null, null, '/settings/tickets/?refresh=' + time);
+                    } else if (page === 'singleticket') {
+                        var tagModal = $('#createTagModal');
+                        var tagFormField = $('select#tags');
+                        tagFormField.append('<option id="TAG__' + data.tag._id + '" value="' + data.tag._id + '">' + data.tag.name + '</option>');
+                        tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true);
+                        tagFormField.trigger('chosen:updated');
+                        form.find('#tag').val('');
+                        if (tagModal.length > 0) UI.modal(tagModal).hide();
+                        $timeout(function() {
+                            $scope.showTags($event);
+                        }, 250);
+                    }
+                }, function errorCallback(err) {
+                    helpers.UI.showSnackbar('Unable to create tag. Check console', true);
+                    $log.error(err);
+                });
+            };
+
             //NG Init function
             $scope.setDefaultCreateTicketValues = function() {
               $timeout(function() {
@@ -56,24 +102,25 @@ define(['angular', 'underscore', 'jquery', 'modules/socket', 'uikit', 'modules/t
                                               function success(response) {
                                                   if (response.data && response.data.type && response.data.type.priorities && response.data.success) {
                                                       var typePriorities = response.data.type.priorities;
-                                                      if (angular.isDefined($priorities[0])) {
-                                                          var priorities = _.sortBy(typePriorities, 'migrationNum');
-                                                          $priorities.empty();
-                                                          _.each(priorities, function(priority, idx) {
-                                                              var checked = (idx === 0) ? 'checked' : '';
-                                                              if (angular.isUndefined(priority.htmlColor))
-                                                                  priority.htmlColor = '#29b955';
+                                                      if (angular.isUndefined($priorities[0]))
+                                                          return;
 
-                                                              var html = '<span class="icheck-inline">' +
-                                                                  '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />' +
-                                                                  '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>' +
-                                                                  '</span>';
+                                                      var priorities = _.sortBy(typePriorities, 'migrationNum');
+                                                      $priorities.empty();
+                                                      _.each(priorities, function(priority, idx) {
+                                                          var checked = (idx === 0) ? 'checked' : '';
+                                                          if (angular.isUndefined(priority.htmlColor))
+                                                              priority.htmlColor = '#29b955';
 
-                                                              $priorities.append(html);
-                                                          });
+                                                          var html = '<span class="icheck-inline">' +
+                                                              '<input class="with-gap" type="radio" name="priority" id="priority_' + priority._id + '" value="' + priority._id + '" data-md-icheck ' + checked + ' />' +
+                                                              '<label for="priority_' + priority._id + '" class="mb-10 inline-label"><span class="uk-badge" style="background-color: ' + priority.htmlColor +'">' + priority.name + '</span></label>' +
+                                                              '</span>';
 
-                                                          $priorityLoader.hide();
-                                                      }
+                                                          $priorities.append(html);
+                                                      });
+
+                                                      $priorityLoader.hide();
                                                   }
                                               },
                                               function error(err) {

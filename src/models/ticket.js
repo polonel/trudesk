@@ -281,7 +281,7 @@ ticketSchema.methods.setTicketType = function(ownerId, typeId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketPriority = function(ownerId, priority, callback) {
-    if (_.isUndefined(priority)) return callback('Priority must be a Object.', null);
+    if (_.isUndefined(priority) || !_.isObject(priority)) return callback('Priority must be a PriorityObject.', null);
 
     var self = this;
     self.priority = priority._id;
@@ -557,7 +557,7 @@ ticketSchema.statics.getAll = function(callback) {
 
 ticketSchema.statics.getForCache = function(callback) {
     var self = this;
-    var t365 = moment().hour(23).minute(59).second(59).subtract(365, 'd').toDate();
+    var t365 = moment.utc().hour(23).minute(59).second(59).subtract(365, 'd').toDate();
     self.model(COLLECTION).find({date: {$gte: t365}, deleted: false})
         .select('_id uid date status history comments assignee owner tags')
         .sort('date')
@@ -946,30 +946,96 @@ ticketSchema.statics.getOverdue = function(grpId, callback) {
     if (_.isUndefined(grpId)) return callback('Invalid Group Ids - TicketSchema.GetOverdue()', null);
 
     var self = this;
-    var grpHash = hash(grpId);
 
-    var cache = global.cache;
-    if (cache) {
-        var overdue = cache.get('tickets:overdue:' + grpHash);
-        if (overdue)
-            return callback(null, overdue);
-    }
+    // Disable cache (TEMP 01/04/2019)
+    // var grpHash = hash(grpId);
+    // var cache = global.cache;
+    // if (cache) {
+    //     var overdue = cache.get('tickets:overdue:' + grpHash);
+    //     if (overdue)
+    //         return callback(null, overdue);
+    // }
 
-    var q = self.model(COLLECTION).find({group: {$in: grpId}, status: 1, deleted: false})
-        .$where(function() {
+    async.waterfall([
+        function(next) {
+            return self.model(COLLECTION)
+                .find({group: {$in: grpId}, status: {$in: [0,1]}, deleted: false})
+                .select('_id date updated')
+                .lean()
+                .exec(next);
+        },
+        function(tickets, next) {
+            var t = _.map(tickets, function(i) {
+                return _.transform(i, function(result, value, key) {
+                    if (key === '_id') result._id = value;
+                    if (key === 'priority') result.overdueIn = value.overdueIn;
+                    if (key === 'date') result.date = value;
+                    if (key === 'updated') result.updated = value;
+                }, {});
+            });
+
+            return next(null, t);
+        },
+        function(tickets, next) {
             var now = new Date();
-            var updated = new Date(this.updated);
-            var timeout = new Date(updated);
-            timeout.setDate(timeout.getDate() + 2);
-            return now > timeout;
-        }).select('_id uid subject updated');
+            var ids = _.filter(tickets, function(t) {
+                if (!t.date && !t.updated)
+                    return false;
 
-    q.lean().exec(function(err, results) {
+                var timeout = null;
+                if (t.updated) {
+                    var updated = new Date(t.updated);
+                    timeout = new Date(updated);
+                    timeout.setMinutes(updated.getMinutes() + t.overdueIn);
+                } else {
+                    var date = new Date(t.date);
+                    timeout = new Date(date);
+                    timeout.setMinutes(date.getMinutes() + t.overdueIn);
+                }
+
+                return now > timeout;
+            });
+
+            ids = _.map(ids, '_id');
+
+            return next(null, ids);
+        },
+        function (ids, next) {
+            return self.model(COLLECTION).find({_id: {$in: ids}})
+                .limit(50)
+                .select('_id uid subject updated date')
+                .lean()
+                .exec(next);
+        }
+    ], function(err, tickets) {
         if (err) return callback(err, null);
-        if (cache) cache.set('tickets:overdue:' + grpHash, results, 600); //10min
+        // Disable cache (TEMP 01/04/2019)
+        // if (cache) cache.set('tickets:overdue:' + grpHash, tickets, 600); //10min
 
-        return callback(null, results);
+        return callback(null, tickets);
     });
+
+    // var q = self.model(COLLECTION).find({group: {$in: grpId}, status: {$in: [0,1]}, deleted: false})
+    //     .$where(function() {
+    //         return this.priority.overdueIn === undefined;
+    //         var now = new Date();
+    //         var timeout = null;
+    //         if (this.updated) {
+    //             timeout = new Date(this.updated);
+    //             timeout.setMinutes(timeout.getMinutes() + this.priority.overdueIn);
+    //         } else {
+    //             timeout = new Date(this.date);
+    //             timeout.setMinutes(timeout.getMinutes() + this.priority.overdueIn);
+    //         }
+    //         return now > timeout;
+    //     }).select('_id uid subject updated');
+    //
+    // q.lean().exec(function(err, results) {
+    //     if (err) return callback(err, null);
+    //     if (cache) cache.set('tickets:overdue:' + grpHash, results, 600); //10min
+    //
+    //     return callback(null, results);
+    // });
 
     //TODO: Turn on when REDIS is impl
     // This will be pres through server reload
@@ -1088,7 +1154,7 @@ ticketSchema.statics.updateType = function(oldTypeId, newTypeId, callback) {
         return callback('Invalid IDs - TicketSchema.UpdateType()', null);
 
     var self = this;
-    return self.model(COLLECTION).update({type: oldTypeId}, {$set: {type: newTypeId}}, {multi: true, new: false}, callback);
+    return self.model(COLLECTION).updateMany({type: oldTypeId}, {$set: {type: newTypeId}}, callback);
 };
 
 ticketSchema.statics.getAssigned = function(userId, callback) {
@@ -1128,7 +1194,7 @@ ticketSchema.statics.getTopTicketGroups = function(timespan, top, callback) {
 
     var self = this;
 
-    var today = moment().hour(23).minute(59).second(59);
+    var today = moment.utc().hour(23).minute(59).second(59);
     var tsDate = today.clone().subtract(timespan, 'd');
     var query = {date: {$gte: tsDate.toDate(), $lte: today.toDate()}, deleted: false};
     if (timespan === -1)

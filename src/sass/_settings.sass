@@ -1,53 +1,90 @@
+@import "mixins"
+@import "functions"
+
+// ----------------------------------------------------------
+// THEME
+// ----------------------------------------------------------
+
+// Most Text, Icons, and borders
+$primary: #606771 !default
+//$primary: #eef0f6 !default
+// The main background color, text color of some buttons
+$secondary: #f7f8fa !default
+//$secondary: #2a344c !default
+// Link, Some Buttons, notifications, and accent color
+$tertiary: #E74C3C !default
+//$tertiary: #30b4c9 !default
+// Sidebar
+$quaternary: #e6e7e8 !default
+//$quaternary: darken(#ffffff, 9%) !default
+// Background color of Header
+$header_background: #42464d !default
+//$header_background: #eef0f6 !default
+// Text and icon color in the header
+$header_primary: #f6f7f8 !default
+//$header_primary: #2a344c !default
+// Used to indicate an action was successful
+$accent_success: #29b955 !default
+// Highlight color for actions and Errors
+$accent_danger: #d32f2f !default
+
+// ------------------------------------------------------------------------
+
 $rowWidth: 100%
 $fontFamily: "Roboto", "Open Sans", sans-serif
-$accent_color: #E74C3C
-$accent_blue: #2196F3
-$accent_success: #29b955
-$accent_danger: #d32f2f
 
-$text_color: lighten(#222, 10%)
-$p_color: $text_color
+$accent_color: $tertiary
+$accent_blue: #2196F3
+
+$text_color: $primary
+$p_color: $primary
 
 
 //THEME
 $logo_text_color: #FFFFFF
 $logo_circle_color: #E74C3C
 
-$topbar_bg: darken(#595f69, 10%)
-$topbar_icons: #FFFFFF
+$topbar_bg: $header_background
+$topbar_text_color: $header_primary
+$topbar_user_text: $header_primary
+$topbar_icons: $header_primary
 $topbar_icons_hover: darken($topbar_icons, 10%)
-$topbar_badge: #E74C3C
-$topbar_user_text: #FFFFFF
-$topbar_text_color: #222222
+$topbar_badge: $accent_color
+$topbar_border: 1px solid darken($topbar_bg, 5%)
+
+$page_bg_color: $secondary
 
 //$sidebar_box_shadow: inset 0px 3px 4px rgba(0,0,0,0.07)
 $sidebar_box_shadow: none
-$sidebar_bg: #e6e7e8
-$sidebar_border_right: 1px solid #ddd
-$sidebar_text: #3f444c
-$sidebar_text_hover: #3f444c
-$sidebar_item_hover: #d2d3d6
-$sidebar_item_active: #595f69
-$sidebar_item_active_text: #fff
-$sidebar_subnav_bg: #dfe0e2
+$sidebar_bg: $quaternary
+//$sidebar_bg: darken($page_bg_color, 5%)
+$sidebar_border_right: 1px solid darken($sidebar_bg, 5%)
+$sidebar_text: automatic-text-color($sidebar_bg, 'sidebar')
+$sidebar_text_hover: $sidebar_text
+$sidebar_item_hover: darken($sidebar_bg, 8%)
+$sidebar_item_active: lighten($topbar_bg, 5%)
+$sidebar_item_active_text: automatic-text-color($sidebar_item_active, 'sidebar')
+$sidebar_subnav_bg: darken($sidebar_bg, 5%)
 $sidebar_subnav_box_shadow: none
-$sidebar_subnav_text: lighten(#333, 15%)
-$sidebar_subnav_hover: #222
-$sidebar_subnav_item_hover: #d2d3d6
-$sidebar_subnav_active: #000
-$sidebar_subnav_hr: darken($sidebar_subnav_bg, 25%)
+$sidebar_subnav_text: automatic-text-color($sidebar_subnav_bg, 'sidebar')
+$sidebar_subnav_item_hover: lighten($sidebar_subnav_bg, 5%)
+$sidebar_subnav_hover: automatic-text-color($sidebar_subnav_item_hover, 'sidebar')
+$sidebar_subnav_active: automatic-text-color($sidebar_subnav_bg, 'sidebar')
+$sidebar_subnav_hr: darken($sidebar_subnav_bg, 5%)
 
-$page_content_bg: #f7f8fa
-$page_content_right_bg: #FFFFFF
-$page_content_left_bg: #f7f8fa
-$page_content_title_bg: #f7f8fa
+$page_content_bg: $secondary
+//$page_content_border_color: rgba(darken($page_content_bg, 25%), 0.25)
+$page_content_border_color: rgba(0,0,0,0.15)
+$page_content_right_bg: lighten($secondary, 10%)
+$page_content_left_bg: $secondary
+$page_content_title_bg: $secondary
 $page_content_title_shadow: 2px 2px 2px 0px rgba(44,62,80,0.1)
-$page_content_title_border_color: darken(#EEE, 8%)
-$page_content_title_text: #222222
-$page_content_border_top: 1px solid darken(#EEE, 8%)
+$page_content_title_border_color: $page_content_border_color
+$page_content_title_text: automatic-text-color($page_content_title_bg)
+$page_content_border_top: 1px solid $page_content_border_color
 $page_content_border_accent: 2px solid $page_content_title_bg
-$page_content_button_color: #FFFFFF
-$page_content_button_text_color: $sidebar_item_active
+$page_content_button_color: lighten($page_content_bg, 10%)
+$page_content_button_text_color: automatic-text-color($page_content_button_color)
 
 //$overdue_flash_color: #b71c1c
 
@@ -56,7 +93,7 @@ $ticket_status_open: $accent_danger
 $ticket_status_pending: $accent_blue
 $ticket_status_closed: #CCCCCC
 
-$trupanel_bg: #FFF
+$trupanel_bg: lighten($page_content_bg, 7%)
 
 $datatables_head_bg: $page_content_title_bg
 $datatables_head_border_top: 1px solid $page_content_title_border_color
@@ -68,7 +105,7 @@ $datepicker_header_bg: $sidebar_item_active
 $datepicker_header_text_color: $sidebar_item_active_text
 $datepicker_background_color: $page_content_bg
 
-$graph_path_color: $accent_success
+$graph_path_color: #2196f3 !default
 
-$selectize_bg: $page_content_title_bg
-$selectize_text: $text_color
+$selectize_bg: lighten($page_content_bg, 7%)
+$selectize_text: automatic-text-color($selectize_bg)

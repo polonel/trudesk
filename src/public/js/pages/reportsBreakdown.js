@@ -135,7 +135,7 @@ define('pages/reportsBreakdown', [
                                     html += ticket.subject;
                                     html += '</td>';
                                     html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">';
-                                    html += moment(ticket.updated).format('MM.DD.YYYY');
+                                    html += moment.utc(ticket.updated).tz(helpers.getTimezone()).format(helpers.getShortDateFormat());
                                     html += '</td>';
                                     html += '</tr>';
                             });

@@ -13,40 +13,97 @@
  **/
 
 var _               = require('lodash');
+var fs              = require('fs-extra');
+var path            = require('path');
 var async           = require('async');
 var winston         = require('winston');
+var moment          = require('moment-timezone');
 
 var SettingsSchema  = require('../models/setting');
 var PrioritySchema  = require('../models/ticketpriority');
 
 var settingsDefaults = {};
 
-settingsDefaults.init = function(callback) {
-    winston.debug('Checking Default Settings...');
-    async.series([
+function createDirectories(callback) {
+    async.parallel([
         function(done) {
-            return showTourSettingDefault(done);
+            fs.ensureDir(path.join(__dirname, '../../backups'), done);
         },
         function(done) {
-            return ticketTypeSettingDefault(done);
-        },
-        function(done) {
-            return ticketPriorityDefaults(done);
-        },
-        function(done) {
-            return addedDefaultPrioritesToTicketTypes(done);
-        },
-        function(done) {
-            return checkPriorities(done);
-        },
-        function(done) {
-            return normalizeTags(done);
+            fs.ensureDir(path.join(__dirname, '../../restores'), done);
         }
-    ], function() {
-        if (_.isFunction(callback))
+    ], callback);
+}
+
+function downloadWin32MongoDBTools(callback) {
+    var http = require('http');
+    var os = require('os');
+    if (os.platform() === 'win32') {
+        var filename = 'mongodb-tools.3.6.9-win32x64.zip';
+        var savePath = path.join(__dirname, '../backup/bin/win32/');
+        fs.ensureDirSync(savePath);
+        if (!fs.existsSync(path.join(savePath, 'mongodump.exe')) ||
+            !fs.existsSync(path.join(savePath, 'mongorestore.exe')) ||
+            !fs.existsSync(path.join(savePath, 'libeay32.dll')) ||
+            !fs.existsSync(path.join(savePath, 'ssleay32.dll'))) {
+            winston.debug('Windows platform detected. Downloading MongoDB Tools');
+            fs.emptyDirSync(savePath);
+            var unzip = require('unzip');
+            var file = fs.createWriteStream(path.join(savePath, filename));
+            http.get('http://storage.trudesk.io/tools/' + filename, function(response) {
+                response.pipe(file);
+                file.on('finish', function() {
+                    file.close();
+                });
+                file.on('close', function() {
+                    fs.createReadStream(path.join(savePath, filename)).pipe(unzip.Extract({ path: savePath })).on('close', function() {
+                        fs.unlink(path.join(savePath, filename), callback);
+                    });
+                });
+            }).on('error', function(err) {
+                fs.unlink(path.join(savePath, filename));
+                winston.debug(err);
+                return callback();
+            });
+        } else
             return callback();
+    } else
+        return callback();
+}
+
+function timezoneDefault(callback) {
+    SettingsSchema.getSettingByName('gen:timezone', function(err, setting) {
+        if (err) {
+            winston.warn(err);
+            if (_.isFunction(callback)) return callback(err);
+            return false;
+        }
+
+        if (!setting) {
+            var defaultTimezone = new SettingsSchema({
+                name: 'gen:timezone',
+                value: 'America/New_York'
+            });
+
+            defaultTimezone.save(function(err, setting) {
+                if (err) {
+                    winston.warn(err);
+                    if (_.isFunction(callback)) return callback(err);
+                }
+
+                winston.debug('Timezone set to ' + setting.value);
+                moment.tz.setDefault(setting.value);
+
+                if (_.isFunction(callback)) return callback();
+            });
+        } else {
+            winston.debug('Timezone set to ' + setting.value);
+            moment.tz.setDefault(setting.value);
+
+            if (_.isFunction(callback)) return callback();
+        }
     });
-};
+}
 
 function showTourSettingDefault(callback) {
     SettingsSchema.getSettingByName('showTour:enable', function(err, setting) {
@@ -95,6 +152,8 @@ function ticketTypeSettingDefault(callback) {
                 }
 
                 var type = _.first(types);
+                if (!type) return callback('No Types Defined!');
+
                 // Save default ticket type
                 var defaultTicketType = new SettingsSchema({
                     name: 'ticket:type:default',
@@ -198,7 +257,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(1, function(err, normal) {
                     if (!err) {
                         winston.debug('Converting Priority: Normal');
-                        ticketSchema.collection.update({priority: 1}, { $set: { priority: normal._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 1}, { $set: { priority: normal._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -218,7 +277,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(2, function(err, urgent) {
                     if (!err) {
                         winston.debug('Converting Priority: Urgent');
-                        ticketSchema.collection.update({priority: 2 }, {$set: {priority: urgent._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 2 }, {$set: {priority: urgent._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -238,7 +297,7 @@ function checkPriorities(callback) {
                 PrioritySchema.getByMigrationNum(3, function(err, critical) {
                     if (!err) {
                         winston.debug('Converting Priority: Critical');
-                        ticketSchema.collection.update({priority: 3}, { $set: { priority: critical._id }}, {multi: true}).then(function(res) {
+                        ticketSchema.collection.updateMany({priority: 3}, { $set: { priority: critical._id }}).then(function(res) {
                             if (res && res.result) {
                                 if (res.result.ok === 1)
                                     return done();
@@ -301,5 +360,41 @@ function addedDefaultPrioritesToTicketTypes(callback) {
         }
     ], callback);
 }
+
+settingsDefaults.init = function(callback) {
+    winston.debug('Checking Default Settings...');
+    async.series([
+        function(done) {
+            return createDirectories(done);
+        },
+        function(done) {
+            downloadWin32MongoDBTools(done);
+        },
+        function(done) {
+            return timezoneDefault(done);
+        },
+        function(done) {
+            return showTourSettingDefault(done);
+        },
+        function(done) {
+            return ticketTypeSettingDefault(done);
+        },
+        function(done) {
+            return ticketPriorityDefaults(done);
+        },
+        function(done) {
+            return addedDefaultPrioritesToTicketTypes(done);
+        },
+        function(done) {
+            return checkPriorities(done);
+        },
+        function(done) {
+            return normalizeTags(done);
+        }
+    ], function() {
+        if (_.isFunction(callback))
+            return callback();
+    });
+};
 
 module.exports = settingsDefaults;

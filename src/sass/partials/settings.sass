@@ -19,9 +19,9 @@
       top: 15px
       content: "arrow_forward_ios"
       font-size: 18px
-      color: #ccc
-    &.active
-      background: white
+      color: darken($page_content_bg, 10%)
+    &.active,&:hover
+      background: lighten($page_content_bg, 5%)
       &:before
         border-left: none
       &:after
@@ -35,3 +35,6 @@
     h3
       font-size: 16px
       font-weight: normal
+
+.ticket-type-categories
+  background: darken($page_content_bg, 1%)

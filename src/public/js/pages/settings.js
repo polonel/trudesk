@@ -16,17 +16,24 @@ define('pages/settings', [
     'jquery',
     'underscore',
     'modules/helpers',
+    'uikit',
     'history'
 
-], function($) {
+], function($, _, helpers, UIkit, History) {
     var settingsPage = {};
 
     settingsPage.init = function(callback) {
         $(document).ready(function() {
+            var testPage = $('#page-content').find('div[data-page="settings"]');
+            if (testPage.length < 1) {
+                if (typeof callback === 'function')
+                    return callback();
+
+                return false;
+            }
 
             if (typeof callback === 'function')
                 return callback();
-
         });
     };
 

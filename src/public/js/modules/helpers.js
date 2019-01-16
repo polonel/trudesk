@@ -32,7 +32,8 @@ define([
         'chosen',
         'velocity',
         'peity',
-        'multiselect'
+        'multiselect',
+        'moment_timezone'
     ],
 function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
 
@@ -49,6 +50,8 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         
 
         self.prototypes();
+
+        self.setTimezone();
 
         self.resizeFullHeight();
         self.setupScrollers();
@@ -109,6 +112,11 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
     };
 
     helpers.UI = {};
+
+    helpers.UI.playSound = function(soundId) {
+        var audio = $('audio#' + soundId + '_audio');
+        if (audio.length > 0) audio.trigger('play');
+    };
 
     helpers.UI.bindAccordion = function() {
         $('li[data-nav-accordion]').each(function() {
@@ -1247,8 +1255,75 @@ function($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookie
         });
     };
 
+    helpers.setTimezone = function() {
+        var $timezone = $('#__timezone');
+        var timezone;
+        if ($timezone.length < 1) 
+            Cookies.set('$trudesk:timezone', 'America/New_York');
+         else {
+            timezone = Cookies.get('$trudesk:timezone');
+            var __timezone = $timezone.text();
+            if (!timezone)
+                Cookies.set('$trudesk:timezone', __timezone);
+             else if (timezone !== __timezone)
+                Cookies.set('$trudesk:timezone',__timezone);
+        }
+
+        timezone = Cookies.get('$trudesk:timezone');
+
+        moment.tz.setDefault(timezone);
+        $timezone.remove();
+    };
+
+    helpers.getTimezone = function() {
+        var timezone = Cookies.get('$trudesk:timezone');
+        if (!timezone)
+            timezone = 'America/New_York';
+
+        return timezone;
+    };
+
+    helpers.getTimeFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().timeFormat.value;
+
+        return 'hh:mma';
+    };
+
+    helpers.getCalendarDate = function(date) {
+        moment.updateLocale('en', {
+            calendar: {
+                sameDay: '[Today at] LT',
+                lastDay: '[Yesterday at] LT',
+                nextDay: '[Tomorrow at] LT',
+                lastWeek: '[Last] ddd [at] LT',
+                nextWeek: 'ddd [at] LT',
+                sameElse: helpers.getShortDateFormat()
+            }
+        });
+        return moment.utc(date).tz(this.getTimezone()).calendar();
+    };
+
+    helpers.getShortDateFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().shortDateFormat.value;
+
+        return 'MM/DD/YYYY';
+    };
+
+    helpers.getLongDateFormat = function() {
+        if (window.trudeskSettingsService)
+            return window.trudeskSettingsService.getSettings().longDateFormat.value;
+
+        return 'MMM DD, YYYY';
+    };
+
     helpers.formatDate = function(date, format) {
-        return moment(date).format(format);
+        var timezone = this.getTimezone();
+        if (!timezone)
+            timezone = 'America/New_York';
+
+        return moment.utc(date).tz(timezone).format(format);
     };
 
     helpers.setupChosen = function() {

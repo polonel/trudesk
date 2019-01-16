@@ -25,7 +25,7 @@
                                 </div>
                             </td>
                             <td class="date">
-                                <time datetime="{{formatDate created "YYYY-MM-DDThh:mm"}}" class="timestamp">{{formatDate created "MMM DD, YYYY hh:mma"}}</time>
+                                <time datetime="{{formatDate created "YYYY-MM-DDThh:mm"}}" class="timestamp">{{formatDate created (concat ../data.common.shortDateFormat ../data.common.timeFormat true)}}</time>
                             </td>
                         </tr>
                     {{/each}}

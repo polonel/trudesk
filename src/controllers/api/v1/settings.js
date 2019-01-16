@@ -17,10 +17,24 @@ var async           = require('async'),
     winston         = require('winston'),
     sanitizeHtml    = require('sanitize-html'),
 
-    SettingsSchema   = require('../../../models/setting');
+    SettingsSchema   = require('../../../models/setting'),
+    settingsUtil     = require('../../../settings/settingsUtil');
 
 var apiSettings = {};
 
+function defaultApiResponse(err, res) {
+    if (err) return res.status(400).json({success: false, error: err});
+
+    return res.json({success: true});
+}
+
+apiSettings.getSettings = function(req, res) {
+    settingsUtil.getSettings(function(err, settings) {
+        if (err) return res.status(400).json({success: false, error: err});
+
+        return res.json({success: true, settings: settings});
+    });
+};
 
 /**
  * @api {put} /api/v1/settings/:setting Update Setting
@@ -80,10 +94,7 @@ apiSettings.updateSetting = function(req, res) {
             });
         });
     }, function(err) {
-        //done
-        if (err) return res.status(400).json({success: false, error: err});
-
-        return res.json({success: true});
+        return defaultApiResponse(err, res);
     });
 };
 
@@ -96,6 +107,13 @@ apiSettings.testMailer = function(req, res) {
         }
 
         return res.json({success: true});
+    });
+};
+
+apiSettings.buildsass = function(req, res) {
+    var buildsass = require('../../../sass/buildsass');
+    buildsass.build(function(err) {
+        return defaultApiResponse(err, res);
     });
 };
 

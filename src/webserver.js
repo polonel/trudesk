@@ -12,7 +12,9 @@
 
  */
 
-var express = require('express'),
+var async   = require('async'),
+    nconf   = require('nconf'),
+    express = require('express'),
     WebServer = express(),
     winston = require('winston'),
     middleware = require('./middleware'),
@@ -31,11 +33,32 @@ var express = require('express'),
     module.exports.app = app;
     module.exports.init = function(db, callback, p) {
         if (p !== undefined) port = p;
-        middleware(app, db, function(middleware, store) {
-            module.exports.sessionStore = store;
+        async.series([
+            function(next) {
+                var settingSchema = require('./models/setting');
+                settingSchema.getSetting('gen:timezone', function(err, setting) {
+                    if (err || !setting || !setting.value) {
+                        if (err)
+                            winston.warn(err);
 
-            routes(app, middleware);
+                        global.timezone = 'America/New_York';
+                        return next();
+                    }
 
+                    global.timezone = setting.value;
+
+                    return next();
+                });
+            },
+            function(next) {
+                middleware(app, db, function(middleware, store) {
+                    module.exports.sessionStore = store;
+                    routes(app, middleware);
+
+                    return next();
+                });
+            }
+        ], function() {
             server.on('error', function(err) {
                 if (err.code === 'EADDRINUSE') {
                     winston.error('Address in use, exiting...');
@@ -61,7 +84,8 @@ var express = require('express'),
             hbs             = require('express-hbs'),
             hbsHelpers      = require('./helpers/hbs/helpers'),
             bodyParser      = require('body-parser'),
-            favicon         = require('serve-favicon');
+            favicon         = require('serve-favicon'),
+            pkg             = require('../package.json');
 
         var routeMiddleware = require('./middleware/middleware')(app);
 
@@ -73,12 +97,16 @@ var express = require('express'),
         app.set('view engine', 'hbs');
         hbsHelpers.register(hbs.handlebars);
 
-        app.use(express.static(path.join(__dirname, '../', 'public')));
-        app.use(favicon(path.join(__dirname, '../', 'public/img/favicon.ico')));
+        app.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')));
+
+        app.use(express.static(path.join(__dirname, '../public')));
+        app.use(favicon(path.join(__dirname, '../public/img/favicon.ico')));
         app.use(bodyParser.urlencoded({ extended: false }));
         app.use(bodyParser.json());
 
         router.get('/healthz', function (req, res) { res.status(200).send('OK'); });
+        router.get('/version', function(req, res) { return res.json({version: pkg.version }); });
+
         router.get('/install', controllers.install.index);
         router.post('/install', routeMiddleware.checkOrigin, controllers.install.install);
         router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest);
@@ -93,13 +121,19 @@ var express = require('express'),
 
         require('socket.io')(server);
 
-        if (!server.listening) {
-            server.listen(port, '0.0.0.0', function() {
+        require('./sass/buildsass').buildDefault(function(err) {
+            if (err) {
+                winston.error(err);
+                return callback(err);
+            }
+
+            if (!server.listening) {
+                server.listen(port, '0.0.0.0', function() {
+                    return callback();
+                });
+            } else
                 return callback();
-            });
-        } else 
-            return callback();
-        
+        });
     };
 
 })(WebServer);

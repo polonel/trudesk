@@ -142,14 +142,12 @@ apiUsers.create = function(req, res) {
 
     var postData = req.body;
 
-    if (_.isUndefined(postData) ||
-        !_.isObject(postData) ||
-        _.isUndefined(postData.aUsername) ||
-        _.isUndefined(postData.aPass) ||
-        _.isUndefined(postData.aPassConfirm) ||
-        _.isUndefined(postData.aFullname) ||
-        _.isUndefined(postData.aEmail) ||
-        _.isUndefined(postData.aRole))
+    if (_.isUndefined(postData) || !_.isObject(postData))
+        return res.status(400).json({'success': false, error: 'Invalid Post Data'});
+
+    var propCheck = ['aUsername', 'aPass', 'aPassConfirm', 'aFullname', 'aEmail', 'aRole'];
+
+    if (!_.every(propCheck, function(x) { return x in postData; }))
         return res.status(400).json({'success': false, error: 'Invalid Post Data'});
 
     if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps))
@@ -182,6 +180,8 @@ apiUsers.create = function(req, res) {
             if (_.isUndefined(id)) return done(null);
             groupSchema.getGroupById(id, function(err, grp) {
                 if (err) return done(err);
+                if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID');
+
                 grp.addMember(a._id, function(err, success) {
                     if (err) return done(err);
 
@@ -312,7 +312,6 @@ apiUsers.update = function(req, res) {
     // saveGroups - Profile saving where groups are not sent
     var saveGroups = data.saveGroups;
     var obj = {
-        username:       data.aUsername,
         fullname:       data.aFullname,
         title:          data.aTitle,
         password:       data.aPass,
@@ -521,9 +520,17 @@ apiUsers.deleteUser = function(req, res) {
             });
         },
         function(hasTickets, user, cb) {
-            if (hasTickets) {
-                //Disable if the user has tickets
+            var conversationSchema = require('../../../models/chat/conversation');
+            conversationSchema.getConversationsWithLimit(user._id, 10, function(err, conversations) {
+                if (err) return cb(err);
 
+                var hasConversations = _.size(conversations) > 0;
+                return cb(null, hasTickets, hasConversations, user);
+            });
+        },
+        function(hasTickets, hasConversations, user, cb) {
+            if (hasTickets || hasConversations) {
+                //Disable if the user has tickets or conversations
                 user.softDelete(function(err) {
                     if (err) return cb(err);
 
@@ -856,8 +863,10 @@ apiUsers.checkEmail = function(req, res) {
     UserSchema.getUserByEmail(email, function(err, users) {
         if (err) return res.status(400).json({success: false, error: err.message});
 
-        if (!_.isNull(users)) return res.json({success: true, exist: true});
-        else return res.json({success: true, exist: false});
+        if (!_.isNull(users))
+            return res.json({success: true, exist: true});
+
+        return res.json({success: true, exist: false});
     });
 };
 

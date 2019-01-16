@@ -24,6 +24,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/dashboard', middleware.redirectToLogin, middleware.redirectIfUser, middleware.loadCommonData, controllers.main.dashboard);
 
     router.get('/login', function(req, res) { return res.redirect('/');});
+    router.get('/logint', controllers.main.index);
     router.post('/login', controllers.main.loginPost);
     router.get('/l2auth', controllers.main.l2authget);
     router.post('/l2auth', controllers.main.l2AuthPost);
@@ -47,6 +48,22 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/newissue', controllers.tickets.pubNewIssue);
     router.get('/register', controllers.accounts.signup);
     router.get('/signup', controllers.accounts.signup);
+
+    router.get('/logoimage', function(req, res) {
+        var s = require('../models/setting');
+        var _ = require('lodash');
+        s.getSettingByName('gen:customlogo', function(err, hasCustomLogo) {
+            if (!err && hasCustomLogo && hasCustomLogo.value)
+                {s.getSettingByName('gen:customlogofilename', function(err, logoFilename) {
+                    if (!err && logoFilename && !_.isUndefined(logoFilename))
+                        return res.send('/assets/topLogo.png');
+
+                    return res.send('/img/defaultLogoLight.png');
+                });}
+            else
+                return res.send('/img/defaultLogoLight.png');
+        });
+    });
 
     //Tickets
     router.get('/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.getActive, controllers.tickets.processor);
@@ -103,10 +120,15 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/settings', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
     router.get('/settings/general', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.general);
+    router.get('/settings/appearance', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.appearance);
+    router.post('/settings/general/uploadlogo', middleware.redirectToLogin, controllers.main.uploadLogo);
+    router.post('/settings/general/uploadpagelogo', middleware.redirectToLogin, controllers.main.uploadPageLogo);
+    router.post('/settings/general/uploadfavicon', middleware.redirectToLogin, controllers.main.uploadFavicon);
     router.get('/settings/tickets', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.ticketSettings);
     router.get('/settings/mailer', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.mailerSettings);
     router.get('/settings/notifications', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.notificationsSettings);
     router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings);
+    router.get('/settings/backup', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.backupSettings);
     router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal);
     router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs);
 
@@ -119,7 +141,6 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/login', controllers.api.login);
     router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser);
     router.get('/api/v1/logout', middleware.api, controllers.api.logout);
-    router.post('/api/v1/devices/settoken', middleware.api, controllers.api.devices.setDeviceToken);
 
     router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get);
     router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search);
@@ -207,9 +228,10 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/reports/generate/tickets_by_type', middleware.api, controllers.api.reports.generate.ticketsByType);
     router.post('/api/v1/reports/generate/tickets_by_user', middleware.api, controllers.api.reports.generate.ticketsByUser);
 
-
+    router.get('/api/v1/settings', middleware.api, controllers.api.settings.getSettings);
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
+    router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass);
 
     router.get('/api/v1/plugins/list/installed', middleware.api, function(req, res) { return res.json({success: true, loadedPlugins: global.plugins, plugins: global.pluginsJson}); });
     router.get('/api/v1/plugins/install/:packageid', middleware.api, middleware.isAdmin, controllers.api.plugins.installPlugin);
@@ -219,6 +241,12 @@ function mainRoutes(router, middleware, controllers) {
     router.post('/api/v1/public/tickets/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.tickets.createPublicTicket);
     router.post('/api/v1/public/account/create', middleware.checkCaptcha, middleware.checkOrigin, controllers.api.users.createPublicAccount);
 
+    router.get('/api/v1/backups', middleware.api, middleware.isAdmin, controllers.backuprestore.getBackups);
+    router.post('/api/v1/backup', middleware.api, middleware.isAdmin, controllers.backuprestore.runBackup);
+    router.delete('/api/v1/backup/:backup', middleware.api, middleware.isAdmin, controllers.backuprestore.deleteBackup);
+    router.post('/api/v1/backup/restore', middleware.api, middleware.isAdmin, controllers.backuprestore.restoreBackup);
+    router.post('/api/v1/backup/upload', middleware.api, middleware.isAdmin, controllers.backuprestore.uploadBackup);
+    router.get('/api/v1/backup/hastools', middleware.api, middleware.isAdmin, controllers.backuprestore.hasBackupTools);
 
     router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function(req, res) {
         if (req.user.role === 'admin') {

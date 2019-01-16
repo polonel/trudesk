@@ -14,7 +14,7 @@
 
 var async           = require('async'),
     _               = require('lodash'),
-    moment          = require('moment'),
+    moment          = require('moment-timezone'),
     winston         = require('winston'),
     permissions     = require('../../../permissions'),
     emitter         = require('../../../emitter');
@@ -45,8 +45,8 @@ function buildGraphData(arr, days, callback) {
 
     if (_.isFunction(callback))
         return callback(graphData);
-    else
-        return graphData;
+
+    return graphData;
 }
 
 function buildAvgResponse(ticketArray, callback) {
@@ -71,8 +71,8 @@ function buildAvgResponse(ticketArray, callback) {
 
     if (_.isFunction(callback))
         return callback(cbObj);
-    else
-        return cbObj;
+
+    return cbObj;
 }
 
 /**
@@ -420,8 +420,8 @@ apiTickets.createPublicTicket = function(req, res) {
 
                 if (defaultType.value)
                     return next(null, defaultType.value, group, savedUser);
-                else
-                    return next('Failed: Invalid Default Ticket Type.');
+
+                return next('Failed: Invalid Default Ticket Type.');
             });
         },
 
@@ -441,7 +441,7 @@ apiTickets.createPublicTicket = function(req, res) {
                     owner: savedUser._id,
                     group: group._id,
                     type: ticketType._id,
-                    priority: 1,
+                    priority: _.first(ticketType.priorities)._id, //TODO: change when priority order is complete!
                     subject: postData.ticket.subject,
                     issue: postData.ticket.issue,
                     history: [HistoryItem],
@@ -549,50 +549,51 @@ apiTickets.update = function(req, res) {
             return res.status(401).json({success: false, error: 'Invalid Permissions'});
         var oId = req.params.id;
         var reqTicket = req.body;
-        if (_.isUndefined(oId)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+        if (_.isUndefined(oId)) return res.status(400).json({success: false, error: 'Invalid Ticket ObjectID.'});
         var ticketModel = require('../../../models/ticket');
         ticketModel.getTicketById(oId, function(err, ticket) {
-            if (err) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+            if (err) return res.status(400).json({success: false, error: err.message});
             async.parallel([
                 function(cb) {
-                    if (!_.isUndefined(reqTicket.status)) {
-                        ticket.setStatus(req.user, reqTicket.status, function (e, t) {
-                            ticket = t;
+                    if (!_.isUndefined(reqTicket.status))
+                        ticket.status = reqTicket.status;
 
-                            cb();
-                        });
-                    } else 
-                        cb();
-                    
+                    return cb();
+                },
+                function(cb) {
+                    if (!_.isUndefined(reqTicket.subject))
+                        ticket.subject = reqTicket.subject;
+
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.group)) {
                         ticket.group = reqTicket.group._id;
 
                         ticket.populate('group', function() {
-                             cb();
+                            return cb();
                         });
-                    } else 
-                        cb();
+                    } else
+                        return cb();
                     
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.closedDate))
                         ticket.closedDate = reqTicket.closedDate;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.tags) && !_.isNull(reqTicket.tags))
                         ticket.tags = reqTicket.tags;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue))
                         ticket.issue = reqTicket.issue;
 
-                    cb();
+                    return cb();
                 },
                 function(cb) {
                     if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
@@ -606,10 +607,10 @@ apiTickets.update = function(req, res) {
 
                             ticket.history.push(HistoryItem);
 
-                            cb();
+                            return cb();
                         });
-                    } else 
-                        cb();
+                    } else
+                        return cb();
                     
                 }
             ], function() {
@@ -1024,9 +1025,9 @@ apiTickets.deleteType = function(req, res) {
         function(next) {
             settingsSchema.getSettingByName('mailer:check:ticketype', function(err, setting) {
                 if (err) return next(err);
-                if (setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
+                if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase())
                     return next({custom: true, message: 'Type currently "Default Ticket Type" for mailer check.'});
-
+                
                 return next(null);
             });
         },
@@ -1211,8 +1212,17 @@ apiTickets.getTicketStats = function(req, res) {
     obj.mostActiveTicket = cache.get('quickstats:mostActiveTicket');
 
     obj.lastUpdated = cache.get('tickets:overview:lastUpdated');
+    var settingsUtil = require('../../../settings/settingsUtil');
+    settingsUtil.getSettings(function(err, context) {
+        if (err)
+            return res.send(obj);
 
-    return res.send(obj);
+        var tz = context.data.settings.timezone.value;
+        obj.lastUpdated = moment.utc(obj.lastUpdated).tz(tz).format('MM-DD-YYYY hh:mm:ssa');
+
+        return res.send(obj);
+    });
+    // return res.send(obj);
 };
 
 function parseTicketStats(role, tickets, callback) {
@@ -1626,7 +1636,7 @@ apiTickets.getOverdue = function(req, res) {
             ticketSchema.getOverdue(grps, function (err, objs) {
                 if (err) return res.status(400).json({success: false, error: err.message});
 
-                var sorted = _.sortBy(objs, 'updated').reverse();
+                var sorted = _.sortBy(objs, 'uid').reverse();
 
                 return res.json({success: true, tickets: sorted});
             });

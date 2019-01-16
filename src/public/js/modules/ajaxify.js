@@ -131,7 +131,7 @@ define('modules/ajaxify', [
             var $this = $(this);
 
             // Ajaxify
-            $this.find('a:internal:not(.no-ajaxy):not(.ajaxify-bound)').addClass('ajaxify-bound').on('click', function(event){
+            $this.find('a:internal:not(.no-ajaxy):not(.ajaxify-bound):not(.search-choice-close)').addClass('ajaxify-bound').on('click', function(event){
                 // Prepare
                 var
                     $this = $(this),

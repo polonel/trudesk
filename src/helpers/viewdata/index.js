@@ -12,11 +12,12 @@
 
  **/
 
-var async   = require('async'),
-    _       = require('lodash'),
-    winston = require('winston'),
-    moment  = require('moment'),
-    permissions     = require('../../permissions');
+var async           = require('async'),
+    _               = require('lodash'),
+    winston         = require('winston'),
+    moment          = require('moment'),
+    permissions     = require('../../permissions'),
+    settingSchema   = require('../../models/setting');
 
 var viewController = {};
 var viewdata = {};
@@ -26,11 +27,87 @@ viewdata.users = {};
 viewController.getData = function(request, cb) {
       async.parallel([
           function(callback) {
+              if (global.env === 'development')
+                  require('../../sass/buildsass').build(callback);
+              else
+                  return callback();
+          },
+          function(callback) {
+            async.parallel([
+                function(done) {
+                    settingSchema.getSetting('gen:timeFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.timeFormat = setting.value;
+                        else
+                            viewdata.timeFormat = 'hh:mma';
+
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:shortDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.shortDateFormat = setting.value;
+                        else
+                            viewdata.shortDateFormat = 'MM/DD/YYYY';
+
+                        return done();
+                    });
+                },
+                function(done) {
+                    settingSchema.getSetting('gen:longDateFormat', function(err, setting) {
+                        if (!err && setting && setting.value)
+                            viewdata.longDateFormat = setting.value;
+                        else
+                            viewdata.longDateFormat = 'MMM DD, YYYY';
+
+                        return done();
+                    });
+                }
+            ], callback);
+          },
+          function(callback) {
+              viewdata.ticketSettings = {};
+              async.parallel([
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:subject', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minSubject = setting.value;
+                          else
+                              viewdata.ticketSettings.minSubject = 10;
+
+
+                          return done();
+                      });
+                  },
+                  function(done) {
+                      settingSchema.getSetting('ticket:minlength:issue', function(err, setting) {
+                          if (!err && setting && setting.value)
+                              viewdata.ticketSettings.minIssue = setting.value;
+                          else
+                              viewdata.ticketSettings.minIssue = 10;
+
+
+                          return done();
+                      });
+                  }
+              ], callback);
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:sitetitle', function(err, setting) {
+                if (!err && setting && setting.value)
+                    viewdata.siteTitle = setting.value;
+                else
+                    viewdata.siteTitle = 'Trudesk';
+
+                return callback();
+            });
+          },
+          function(callback) {
             viewdata.hostname = request.hostname;
             viewdata.hosturl = request.protocol + '://' + request.get('host');
 
             // If hosturl setting is not set. Let's set it.
-              var settingSchema = require('../../models/setting');
               settingSchema.getSetting('gen:siteurl', function(err, setting) {
                   if (!err && !setting) {
                       settingSchema.create({
@@ -42,6 +119,72 @@ viewController.getData = function(request, cb) {
                   } else 
                       return callback();
                   
+              });
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:timezone', function(err, timezone) {
+                if (!err && timezone)
+                    viewdata.timezone = timezone.value;
+                else
+                    viewdata.timezone = 'America/New_York';
+
+                return callback();
+            });
+          },
+          function(callback) {
+            settingSchema.getSetting('gen:customlogo', function(err, hasCustomLogo) {
+                viewdata.hasCustomLogo = !!(!err && hasCustomLogo && hasCustomLogo.value);
+
+                if (!viewdata.hasCustomLogo) {
+                    viewdata.logoImage = '/img/defaultLogoLight.png';
+                    return callback();
+                }
+
+                settingSchema.getSetting('gen:customlogofilename', function(err, logoFileName) {
+                    if (!err && logoFileName && !_.isUndefined(logoFileName.value)) 
+                        viewdata.logoImage = '/assets/' + logoFileName.value;
+                     else 
+                        viewdata.logoImage = '/img/defaultLogoLight.png';
+
+                    return callback();
+                });
+            });
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:custompagelogo', function(err, hasCustomPageLogo) {
+                  viewdata.hasCustomPageLogo = !!(!err && hasCustomPageLogo && hasCustomPageLogo.value);
+
+                  if (!viewdata.hasCustomPageLogo) {
+                      viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+                      return callback();
+                  }
+
+                  settingSchema.getSetting('gen:custompagelogofilename', function(err, logoFileName) {
+                      if (!err && logoFileName && !_.isUndefined(logoFileName.value))
+                          viewdata.pageLogoImage = '/assets/' + logoFileName.value;
+                      else
+                          viewdata.pageLogoImage = '/img/defaultLogoDark.png';
+
+                      return callback();
+                  });
+              });
+          },
+          function(callback) {
+              settingSchema.getSetting('gen:customfavicon', function(err, hasCustomFavicon) {
+                  viewdata.hasCustomFavicon = !!(!err && hasCustomFavicon && hasCustomFavicon.value);
+                  if (!viewdata.hasCustomFavicon) {
+                      viewdata.favicon = '/img/favicon.ico';
+                      return callback();
+                  }
+
+                  settingSchema.getSetting('gen:customfaviconfilename', function(err, faviconFilename) {
+                      if (!err && faviconFilename && !_.isUndefined(faviconFilename.value))
+                          viewdata.favicon = '/assets/' + faviconFilename.value;
+                      else
+                          viewdata.favicon = '/img/favicon.ico';
+
+                      return callback();
+                  });
               });
           },
           function(callback) {

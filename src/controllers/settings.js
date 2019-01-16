@@ -24,7 +24,7 @@ var settingsController = {};
 
 settingsController.content = {};
 
-function initViewContant(view, req) {
+function initViewContent(view, req) {
     var content = {};
     content.title = 'Settings';
     content.nav = 'settings';
@@ -69,7 +69,15 @@ function renderView(res, content) {
 settingsController.general = function(req, res) {
     if (!checkPerms(req, 'settings:view')) return res.redirect('/');
 
-    var content = initViewContant('general', req);
+    var content = initViewContent('general', req);
+
+    renderView(res, content);
+};
+
+settingsController.appearance = function(req, res) {
+    if (!checkPerms(req, 'settings:view')) return res.redirect('/');
+
+    var content = initViewContent('appearance', req);
 
     renderView(res, content);
 };
@@ -77,7 +85,7 @@ settingsController.general = function(req, res) {
 settingsController.ticketSettings = function(req, res) {
     if (!checkPerms(req, 'settings:tickets')) return res.redirect('/settings');
 
-    var content = initViewContant('tickets', req);
+    var content = initViewContent('tickets', req);
 
     renderView(res, content);
 };
@@ -85,7 +93,7 @@ settingsController.ticketSettings = function(req, res) {
 settingsController.mailerSettings = function(req, res) {
     if (!checkPerms(req, 'settings:mailer')) return res.redirect('/settings');
 
-    var content = initViewContant('mailer', req);
+    var content = initViewContent('mailer', req);
 
     renderView(res, content);
 };
@@ -93,7 +101,7 @@ settingsController.mailerSettings = function(req, res) {
 settingsController.notificationsSettings = function(req, res) {
     if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings');
 
-    var content = initViewContant('notifications', req);
+    var content = initViewContent('notifications', req);
 
     renderView(res, content);
 };
@@ -101,7 +109,15 @@ settingsController.notificationsSettings = function(req, res) {
 settingsController.tpsSettings = function(req, res) {
     if (!checkPerms(req, 'settings:tps')) return res.redirect('/settings');
 
-    var content = initViewContant('tps', req);
+    var content = initViewContent('tps', req);
+
+    renderView(res, content);
+};
+
+settingsController.backupSettings = function(req, res) {
+    if (!checkPerms(req, 'settings:backup')) return res.redirect('/settings');
+
+    var content = initViewContent('backup', req);
 
     renderView(res, content);
 };
@@ -109,7 +125,7 @@ settingsController.tpsSettings = function(req, res) {
 settingsController.legal = function(req, res) {
     if (!checkPerms(req, 'settings:legal')) return res.redirect('/settings');
 
-    var content = initViewContant('legal', req);
+    var content = initViewContent('legal', req);
 
     renderView(res, content);
 };
@@ -117,7 +133,7 @@ settingsController.legal = function(req, res) {
 settingsController.logs = function(req, res) {
     if (!checkPerms(req, 'settings:logs')) return res.redirect('/settings');
 
-    var content = initViewContant('logs', req);
+    var content = initViewContent('logs', req);
 
     var fs = require('fs'),
         path = require('path'),

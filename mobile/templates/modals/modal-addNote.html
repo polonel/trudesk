@@ -7,7 +7,8 @@
   </ion-header-bar>
   <ion-content>
     <div class="ticket-details" style="padding: 0 15px;">
-      <img ng-src="/uploads/users/{{loggedInUser.image}}" class="profile-pic">
+      <img http-src="/uploads/users/defaultProfile.jpg" class="profile-pic" ng-if="!loggedInUser.image">
+      <img http-src="/uploads/users/{{loggedInUser.image}}" class="profile-pic" ng-if="loggedInUser.image">
       <div class="margin-left-65">
         <span class="date" style="right: 15px;">{{'' | currentdate}}</span>
         <h4>Ticket #{{ticket.uid}}</h4>

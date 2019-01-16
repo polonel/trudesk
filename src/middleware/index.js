@@ -46,7 +46,7 @@ module.exports = function(app, db, callback) {
     app.set('view engine', 'hbs');
     hbsHelpers.register(hbs.handlebars);
 
-    app.use(favicon(path.join(__dirname, '../../', 'public/img/favicon.ico')));
+    // app.use(favicon(nconf.get('base_dir') + '/public/img/favicon.ico'));
     app.use(bodyParser.urlencoded({ extended: false }));
     app.use(bodyParser.json());
     app.use(cookieParser());
@@ -85,45 +85,37 @@ module.exports = function(app, db, callback) {
             app.use(passportConfig.session());
             app.use(flash());
 
-            //Load after Passport!!
-            app.use('/uploads/tickets', function(req, res, next) {
-                if (!req.user) 
-                    return res.redirect('/');
-
-                return next();
-            });
-
             //CORS
             app.use(allowCrossDomain);
-            app.use('/uploads/tickets', express.static(path.join(__dirname, '../../', 'public', 'uploads', 'tickets')));
-
             //Mobile
             app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')));
 
-            app.use(express.static(path.join(__dirname, '../../', 'public')));
+            app.use('/assets', express.static(path.join(__dirname, '../../public/uploads/assets')));
+            app.use('/uploads', middleware.hasAuth, express.static(path.join(__dirname, '../../public/uploads')));
+            app.use('/backups', middleware.hasAuth, middleware.isAdmin, express.static(path.join(__dirname, '../../backups')));
 
-            //Remove to enable plugins
-            //next(null, store);
-            global.plugins = [];
-            global.pluginsJson = [];
-            var dive = require('dive');
-            dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
-               if (err) throw err;
-               var fs = require('fs');
-               if (fs.existsSync(path.join(dir, 'plugin.json'))) {
-                   var plugin = require(path.join(dir, 'plugin.json'));
-                   if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
-                       throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
+            app.use(express.static(path.join(__dirname, '../../public')));
 
-                   global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
-                   global.pluginsJson.push(plugin);
-                   var pluginPublic = path.join(dir, '/public');
-                   app.use('/plugins/' + plugin.name, express.static(pluginPublic));
-                   winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
-               }
-            }, function() {
-                next(null, store);
-            });
+            // Uncomment to enable plugins
+            return next(null, store);
+            // global.plugins = [];
+            // var dive = require('dive');
+            // dive(path.join(__dirname, '../../plugins'), {directories: true, files: false, recursive: false}, function(err, dir) {
+            //    if (err) throw err;
+            //    var fs = require('fs');
+            //    if (fs.existsSync(path.join(dir, 'plugin.json'))) {
+            //        var plugin = require(path.join(dir, 'plugin.json'));
+            //        if (!_.isUndefined(_.find(global.plugins, {'name': plugin.name})))
+            //            throw new Error('Unable to load plugin with duplicate name: ' + plugin.name);
+            //
+            //        global.plugins.push({name: plugin.name.toLowerCase(), version: plugin.version});
+            //        var pluginPublic = path.join(dir, '/public');
+            //        app.use('/plugins/' + plugin.name, express.static(pluginPublic));
+            //        winston.debug('Detected Plugin: ' + plugin.name.toLowerCase() + '-' + plugin.version);
+            //    }
+            // }, function() {
+            //     next(null, store);
+            // });
         }
     ], function(err, s) {
         if (err) {

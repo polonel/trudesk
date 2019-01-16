@@ -21,11 +21,21 @@
 
 // node_modules
 var _       = require('lodash');
-var moment  = require('moment');
-require('moment-duration-format');
+var moment  = require('moment-timezone');
+require('moment-duration-format')(moment);
 
 // The module to be exported
 var helpers = {
+
+    concat: function(a, b, space, comma) {
+        if (space && (comma === false || _.isObject(comma)))
+            return a.toString() + ' ' + b.toString();
+
+        if (comma === true)
+            return a.toString() + ', ' + b.toString();
+
+        return a.toString() + b.toString();
+    },
 
     contains: function (str, pattern, options) {
         if (str.indexOf(pattern) !== -1) 
@@ -466,22 +476,24 @@ var helpers = {
     },
 
     now: function() {
-        return new moment();
+        return new moment.utc();
     },
 
     formatDate: function(date, format) {
-        return moment(date).format(format);
+        return moment.utc(date).tz(global.timezone).format(format);
     },
 
     formatDateParse: function(date, parseFormat, returnFormat) {
-        return moment(date, parseFormat).format(returnFormat);
+        return moment.utc(date, parseFormat).tz(global.timezone).format(returnFormat);
     },
 
     durationFormat: function(duration, parseFormat) {
         return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', { trim: 'both'});
     },
 
-    calendarDate: function(date) {
+    calendarDate: function(date, fallback) {
+        if (_.isObject(fallback))
+            fallback = 'll [at] LT';
         moment.updateLocale('en', {
             calendar: {
                 sameDay: '[Today at] LT',
@@ -489,10 +501,10 @@ var helpers = {
                 nextDay: '[Tomorrow at] LT',
                 lastWeek: '[Last] ddd [at] LT',
                 nextWeek: 'ddd [at] LT',
-                sameElse: 'L'
+                sameElse: fallback
             }
         });
-        return moment(date).calendar();
+        return moment.utc(date).tz(global.timezone).calendar();
     },
 
     fromNow: function(date) {
@@ -516,7 +528,7 @@ var helpers = {
             }
         });
 
-        return moment(date).fromNow();
+        return moment.utc(date).tz(global.timezone).fromNow();
     },
 
     firstCap: function(str) {
@@ -658,7 +670,7 @@ var helpers = {
     },
 
     overdue: function(showOverdue, date, updated, overdueIn, options) {
-        if (!showOverdue) return false;
+        if (!showOverdue) return '';
         var now = moment();
         if (updated)
             updated = moment(updated);

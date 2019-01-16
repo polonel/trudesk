@@ -1,16 +1,12 @@
 import React from 'react';
 import SidebarItem from 'Components/Nav/SidebarItem';
-import NavSeperator from 'Components/Nav/NavSeperator';
+import NavSeparator from 'Components/Nav/NavSeperator';
 import Submenu from 'Components/Nav/Submenu';
 import SubmenuItem from 'Components/Nav/SubmenuItem';
 
 import Permissions from '../../../../permissions/index.js';
 
 import Helpers from 'modules/helpers';
-
-//Sass
-import './style.sass';
-import 'sass/partials/sidebar.sass';
 
 class Sidebar extends React.Component {
     constructor(props) {
@@ -85,7 +81,7 @@ class Sidebar extends React.Component {
                         <SubmenuItem text="Active" icon="timer" href="/tickets/active" active={activeSubItem === 'tickets-active'} />
                         <SubmenuItem text="Assigned" icon="assignment_ind" href="/tickets/assigned" active={activeSubItem === 'tickets-assigned'} />
                         <SubmenuItem text="Unassigned" icon="person_add_disabled" href="/tickets/unassigned" active={activeSubItem === 'tickets-unassigned'} />
-                        <NavSeperator />
+                        <NavSeparator />
                         <SubmenuItem text="New" icon="&#xE24D;" href="/tickets/new" active={activeSubItem === 'tickets-new'} />
                         <SubmenuItem text="Pending" icon="&#xE629;" href="/tickets/pending" active={activeSubItem === 'tickets-pending'} />
                         <SubmenuItem text="Open" icon="&#xE2C8;" href="/tickets/open" active={activeSubItem === 'tickets-open'} />
@@ -103,27 +99,29 @@ class Sidebar extends React.Component {
                     <SidebarItem text="Reports" icon="assessment" href="/reports/generate" class="navReports no-ajaxy" hasSubmenu={true} subMenuTarget='reports' active={(activeItem === 'reports')} >
                         <Submenu id="reports">
                             <SubmenuItem text="Generate" icon="timeline" href="/reports/generate" active={activeSubItem === 'reports-generate'} />
-                            <NavSeperator/>
+                            <NavSeparator/>
                             <SubmenuItem text="Group Breakdown" icon="supervisor_account" href="/reports/breakdown/group" active={activeSubItem === 'reports-breakdown-group'} />
                             <SubmenuItem text="User Breakdown" icon="perm_identity" href="/reports/breakdown/user" active={activeSubItem === 'reports-breakdown-user'} />
                         </Submenu>
                     </SidebarItem>
                 }
 
-                {this.renderPlugins()}
+                {/*{this.renderPlugins()}*/}
 
                 {sessionUser && Permissions.canThis(sessionUser.role, 'notices:view') &&
                     <SidebarItem text="Notices" icon="warning" href="/notices" class="navNotices" active={(activeItem === 'notices')} />
                 }
-                <NavSeperator/>
+                <NavSeparator/>
                 {sessionUser && Permissions.canThis(sessionUser.role, 'settings:edit') &&
                     <SidebarItem text="Settings" icon="settings" href="/settings" class="navSettings no-ajaxy" hasSubmenu={true} subMenuTarget='settings' active={(activeItem === 'settings')}>
                         <Submenu id="settings">
                             <SubmenuItem text="General" icon="tune" href="/settings" active={activeSubItem === 'settings-general'} />
+                            <SubmenuItem text="Appearance" icon="style" href="/settings/appearance" active={activeSubItem === 'settings-appearance'} />
                             <SubmenuItem text="Tickets" icon="assignment" href="/settings/tickets" active={activeSubItem === 'settings-tickets'} />
                             <SubmenuItem text="Mailer" icon="email" href="/settings/mailer" active={activeSubItem === 'settings-mailer'} />
                             {/*<SubmenuItem text="Notifications" icon="" href="/settings/notifications" active={activeSubItem === 'settings-notifications'} />*/}
                             <SubmenuItem text="Push Service" icon="mobile_friendly" href="/settings/tps" active={activeSubItem === 'settings-tps'} />
+                            <SubmenuItem text="Backup/Restore" icon="archive" href="/settings/backup" active={activeSubItem === 'settings-backup'} />
                             <SubmenuItem text="Legal" icon="gavel" href="/settings/legal" active={activeSubItem === 'settings-legal'} />
                             {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') &&
                                 <SubmenuItem text="Logs" icon="remove_from_queue" href="/settings/logs" hasSeperator={true} active={activeSubItem === 'settings-logs'} />

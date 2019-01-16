@@ -28,10 +28,17 @@ angular.module('trudesk', [
   'ngCropper',
   'monospaced.elastic',
   'angularMoment',
-  'jett.ionic.filter.bar'
+  'jett.ionic.filter.bar',
+  'angular.img'
   ])
 
-.run(function($ionicPlatform, $rootScope, $location, $localStorage, $state) {
+.run(function($ionicPlatform, $rootScope, $location, $localStorage, $state, $http) {
+  if ($localStorage.accessToken) {
+    $http.defaults.headers.common.accesstoken = $localStorage.accessToken;
+  } else {
+    $http.defaults.headers.common.accesstoken = '';
+  }
+  
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -40,6 +47,17 @@ angular.module('trudesk', [
       cordova.plugins.Keyboard.disableScroll(true);
     }
 
+    // Lock screen in Portrait if on anything but iPad
+    if (!ionic.Platform.isIPad()) {
+        if (window.screen) {
+            window.screen.orientation.lock('portrait');
+        }
+    } else {
+      if (window.screen) {
+        window.screen.orientation.unlock();
+      }
+    }
+                       
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       window.StatusBar.styleLightContent();
@@ -49,7 +67,7 @@ angular.module('trudesk', [
       if (jsonData.notification.payload && jsonData.notification.payload.additionalData) {
         var ticketUid = jsonData.notification.payload.additionalData.ticketUid;
         if (ticketUid) {
-          console.log('Moving to ticket: ' + ticketUid);
+//          console.log('Moving to ticket: ' + ticketUid);
           $state.go('tab.tickets')
           setTimeout(function() {
             return $state.go('tab.tickets-details', { ticketuid: ticketUid})
@@ -71,7 +89,7 @@ angular.module('trudesk', [
         }
     });
 
-                       setTimeout(function() {
+    setTimeout(function() {
       angular.element(document.querySelector('#loader')).addClass('hide');
     }, 900);
   });
@@ -291,7 +309,6 @@ angularPeity.directive('lineChart', function() {
     return peityDirective('line');
 });
 
-
 var fileOnChange = angular.module('fileOnChange', []);
 
 fileOnChange.directive('fileOnChange', function() {
@@ -353,7 +370,7 @@ hideTabBar.directive('hideTabBar', function($timeout) {
     restrict: 'A',
     compile: function(element, attr) {
       var tabBar = document.querySelector('.tab-nav');
-      console.log(tabBar);      
+     
       return function($scope, $element, $attr) {
         var scroll = $element[0].querySelector('.scroll-content');
         $scope.$on('$ionicView.beforeEnter', function() {
@@ -725,6 +742,19 @@ angular.module('trudesk.services', [])
 })
 .factory('Users', function($q, $http, $localStorage) {
     return {
+      getImage: function(url) {
+        return new Promise(function(resolve, reject) {
+          $http.get(url, {
+            method: 'GET',
+            headers: {
+              'accesstoken': $localStorage.accessToken
+            }
+          }).then(function(response) {
+            var objectUrl = URL.createObjectURL(response.blob());
+            return resolve(objectUrl);
+          }).catch(function(err) { return reject(err); });
+        });
+      },
       get: function(username) {
         return $http.get('/api/v1/users/' + username, {
           headers: {
@@ -985,7 +1015,7 @@ angular.module('trudesk.services', [])
   }
 })
 
-.factory('Camera', function($q, $cordovaCamera) {
+.factory('Camera', function($q, $cordovaCamera, $ionicPlatform) {
     return {
       open: function() {
         var deferred = $q.defer();
@@ -1017,7 +1047,17 @@ angular.module('trudesk.services', [])
           };
 
           $cordovaCamera.getPicture(options).then(function(fileURL) {
-            deferred.resolve(fileURL);
+            if ($ionicPlatform.is('ios'))
+              return deferred.resolve(fileURL);
+            
+            else if ($ionicPlatform.is('android'))
+            // Fixed content:// Paths when loading library files on Android 4.4+
+              window.FilePath.resolveNativePath(fileURL, function(resolvedFileURI) {
+                return deferred.resolve(resolvedFileURI);
+              });
+
+            else
+              return deferred.reject('Unsupported Platform');
           });
         } else {
           deferred.reject('Not Supported in browser');
@@ -1131,6 +1171,8 @@ angular.module('trudesk.controllers.login', []).controller('LoginCtrl', function
             $localStorage.username = $scope.auth.username;
             $localStorage.accessToken = response.data.accessToken;
             $localStorage.loggedInUser = response.data.user;
+
+            $http.defaults.headers.common.accesstoken = $localStorage.accessToken;
 
             //OneSignal
             if (window.plugins && window.plugins.OneSignal) {
@@ -1246,7 +1288,7 @@ angular.module('trudesk.controllers.accounts', [])
 
   $scope.openCamera = function() {
     Camera.open().then(function(fileURL) {
-        ionic.trigger('$trudesk.imgcrop.setImage', {image: fileURL});
+        ionic.trigger('$trudesk.imgcrop.setImage', {image: window.Ionic.WebView.convertFileSrc(fileURL)});
         ionic.trigger('$trudesk.imgcrop.showCropper', {});
         $scope.imgcropModal.show();
     });
@@ -1254,7 +1296,7 @@ angular.module('trudesk.controllers.accounts', [])
 
   $scope.openPhotoLibrary = function() {
     Camera.library().then(function(fileURL) {
-      ionic.trigger('$trudesk.imgcrop.setImage', {image: fileURL});
+      ionic.trigger('$trudesk.imgcrop.setImage', {image: window.Ionic.WebView.convertFileSrc(fileURL)});
       ionic.trigger('$trudesk.imgcrop.showCropper', {});
       $scope.imgcropModal.show();
     });
@@ -1276,6 +1318,7 @@ angular.module('trudesk.controllers.accounts', [])
         ionic.trigger('$trudesk.clearLoginForm', {});    
         $localStorage.server = undefined;
         $localStorage.accessToken = undefined;
+        $http.defaults.headers.common.accesstoken = $localStorage.accessToken;        
         if (window.plugins && window.plugins.OneSignal)
           window.plugins.OneSignal.setSubscription(false);
         $ionicHistory.clearCache();
@@ -2146,8 +2189,8 @@ angular.module('trudesk.controllers.ticketDetails', []).controller('TicketsDetai
       Users.getLoggedInUser().then(function(user) {
         $scope.loggedInUser = user;
       }).then(function() {
-        $scope.addCommentModal.show();
         $scope.popover.hide();
+        $scope.addCommentModal.show();
       });
   };
 
@@ -2449,6 +2492,14 @@ angular.module('trudesk.controllers.tickets', []).controller('TicketsCtrl', func
       $scope.$broadcast('scroll.refreshComplete');
     });
   };
+
+  $scope.getUserImage = function(imageFile) {
+    var url = 'http://' + $localStorage.server + '/uploads/users/' + imageFile;
+    
+    return Users.getImage(url).then(function(image) {
+      console.log(image);
+    });
+  }
 
   $scope.fetchTickets = function() {
       angular.element(document).find('ion-item').removeClass('item-remove-animate');

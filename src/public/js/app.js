@@ -13,19 +13,25 @@
  **/
 
 //Load SASS (Webpack)
-require('../../sass/app.sass');
+// require('../../sass/app.sass');
 
 global.react = {}; // Global react var for calling state outside react.
 
-require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, helpers, angular) {
+require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function($, helpers, angular, async) {
     helpers.init();
 
     angular.element(document).ready(function() {
         // Call the Session service before bootstrapping.
         // Allowing the SessionUser to be populated before the controllers have access.
-        angular.injector(['ng', 'sessionLoader']).get('SessionService').init(function(err) {
-            if (err)
-                throw new Error(err);
+        async.parallel([
+            function(done) {
+                angular.injector(['ng', 'trudesk.services.session']).get('SessionService').init(done);
+            },
+            function(done) {
+                angular.injector(['ng', 'trudesk.services.settings']).get('SettingsService').init(done);
+            }
+        ], function(err) {
+            if (err) throw new Error(err);
 
             require(['angularjs/main'], function() {
                 //Static Bootstraps

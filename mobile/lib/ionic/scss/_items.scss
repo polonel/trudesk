@@ -822,4 +822,9 @@ button.item.item-button-right {
       margin: 0 auto;
     }
   }
+
+  ion-option-button:last-child {
+    padding-right: calc(constant(safe-area-inset-right) + #{$button-padding});
+    padding-right: calc(env(safe-area-inset-right) + #{$button-padding});
+  }
 }

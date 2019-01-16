@@ -26,7 +26,8 @@ define([
     'angularjs/controllers/notices',
     'angularjs/controllers/plugins',
     'angularjs/controllers/reports',
-    'angularjs/controllers/settings'
+    'angularjs/controllers/settings',
+    'angularjs/controllers/settings-backup'
 
 ], function($, angular, _) {
 
@@ -43,7 +44,8 @@ define([
             'trudesk.controllers.notices',
             'trudesk.controllers.plugins',
             'trudesk.controllers.reports',
-            'trudesk.controllers.settings'
+            'trudesk.controllers.settings',
+            'trudesk.controllers.settings.backup'
         ])
         .controller('TrudeskController', function($rootScope, $scope) {
             $scope.submitForm = function(formName, $event) {

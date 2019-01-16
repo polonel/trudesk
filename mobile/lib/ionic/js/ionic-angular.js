@@ -2,7 +2,7 @@
  * Copyright 2015 Drifty Co.
  * http://drifty.com/
  *
- * Ionic, v1.3.1
+ * Ionic, v1.3.5
  * A powerful HTML5 mobile app framework.
  * http://ionicframework.com/
  *
@@ -902,7 +902,7 @@ function($rootScope, $state, $location, $window, $timeout, $ionicViewSwitcher, $
           var viewIds = Object.keys(viewHistory.views);
           viewIds.forEach(function(viewId) {
             var view = viewHistory.views[viewId];
-            if ( view.backViewId === switchToView.viewId ) {
+            if ((view.backViewId === switchToView.viewId) && (view.historyId !== switchToView.historyId)) {
               view.backViewId = null;
             }
           });
@@ -1538,7 +1538,7 @@ function($rootScope, $state, $location, $document, $ionicPlatform, $ionicHistory
  * $ionicConfigProvider.views.maxCache(10);
  * ```
  *
- * Additionally, each platform can have it's own config within the `$ionicConfigProvider.platform`
+ * Additionally, each platform can have its own config within the `$ionicConfigProvider.platform`
  * property. The config below would only apply to Android devices.
  *
  * ```js
@@ -2204,7 +2204,8 @@ var LOADING_TPL =
  * .controller('LoadingCtrl', function($scope, $ionicLoading) {
  *   $scope.show = function() {
  *     $ionicLoading.show({
- *       template: 'Loading...'
+ *       template: 'Loading...',
+ *       duration: 3000
  *     }).then(function(){
  *        console.log("The loading indicator is now displayed");
  *     });
@@ -2387,7 +2388,7 @@ function($ionicLoadingConfig, $ionicBody, $ionicTemplateLoader, $ionicBackdrop, 
   function showLoader(options) {
     options = extend({}, $ionicLoadingConfig || {}, options || {});
     // use a default delay of 100 to avoid some issues reported on github
-    // https://github.com/driftyco/ionic/issues/3717
+    // https://github.com/ionic-team/ionic/issues/3717
     var delay = options.delay || options.showDelay || 0;
 
     deregisterStateListener1();
@@ -2521,7 +2522,7 @@ function($rootScope, $ionicBody, $compile, $timeout, $ionicPlatform, $ionicTempl
      *    Default: 'slide-in-up'
      *  - `{boolean=}` `focusFirstInput` Whether to autofocus the first input of
      *    the modal when shown. Will only show the keyboard on iOS, to force the keyboard to show
-     *    on Android, please use the [Ionic keyboard plugin](https://github.com/driftyco/ionic-plugin-keyboard#keyboardshow).
+     *    on Android, please use the [Ionic keyboard plugin](https://github.com/ionic-team/ionic-plugin-keyboard#keyboardshow).
      *    Default: false.
      *  - `{boolean=}` `backdropClickToClose` Whether to close the modal on clicking the backdrop.
      *    Default: true.
@@ -2659,7 +2660,18 @@ function($rootScope, $ionicBody, $compile, $timeout, $ionicPlatform, $ionicTempl
       }
 
       return $timeout(function() {
-        $ionicBody.removeClass(self.viewType + '-open');
+        var otherSibling = false;
+          for (var i = 0; i < modalStack.length; ++i) {
+            if (modalStack[i].viewType === self.viewType) {
+              // there are other modal (or popover, depending on viewType)
+              otherSibling = true;
+              break;
+            }
+        }
+        if (!otherSibling) {
+          $ionicBody.removeClass(self.viewType + '-open');
+        }
+        
         self.el.classList.add('hide');
       }, self.hideDelay || 320);
     },
@@ -3014,8 +3026,8 @@ IonicModule
          * @description
          * Add Cordova event listeners, such as `pause`, `resume`, `volumedownbutton`, `batterylow`,
          * `offline`, etc. More information about available event types can be found in
-         * [Cordova's event documentation](https://cordova.apache.org/docs/en/edge/cordova_events_events.md.html#Events).
-         * @param {string} type Cordova [event type](https://cordova.apache.org/docs/en/edge/cordova_events_events.md.html#Events).
+         * [Cordova's event documentation](https://cordova.apache.org/docs/en/latest/cordova/events/events.html).
+         * @param {string} type Cordova [event type](https://cordova.apache.org/docs/en/latest/cordova/events/events.html).
          * @param {function} callback Called when the Cordova event is fired.
          * @returns {function} Returns a deregistration function to remove the event listener.
          */
@@ -3126,7 +3138,7 @@ IonicModule
  *   $scope.$on('$destroy', function() {
  *     $scope.popover.remove();
  *   });
- *   // Execute action on hide popover
+ *   // Execute action on hidden popover
  *   $scope.$on('popover.hidden', function() {
  *     // Execute action
  *   });
@@ -5211,7 +5223,7 @@ function($timeout, $document, $q, $ionicClickBlock, $ionicConfig, $ionicNavBarDe
  * More info:
  * - https://openradar.appspot.com/22186109
  * - https://github.com/angular/angular.js/issues/12241
- * - https://github.com/driftyco/ionic/issues/4082
+ * - https://github.com/ionic-team/ionic/issues/4082
  *
  *
  * @license AngularJS
@@ -7769,20 +7781,15 @@ function($scope, $attrs, $ionicSideMenuDelegate, $ionicPlatform, $ionicBody, $io
 
     self.content.setTranslateX(amount);
 
-    if (amount >= 0) {
-      leftShowing = true;
-      rightShowing = false;
+    leftShowing = amount > 0;
+    rightShowing = amount < 0;
 
-      if (amount > 0) {
-        // Push the z-index of the right menu down
-        self.right && self.right.pushDown && self.right.pushDown();
-        // Bring the z-index of the left menu up
-        self.left && self.left.bringUp && self.left.bringUp();
-      }
+    if (amount > 0) {
+      // Push the z-index of the right menu down
+      self.right && self.right.pushDown && self.right.pushDown();
+      // Bring the z-index of the left menu up
+      self.left && self.left.bringUp && self.left.bringUp();
     } else {
-      rightShowing = true;
-      leftShowing = false;
-
       // Bring the z-index of the right menu up
       self.right && self.right.bringUp && self.right.bringUp();
       // Push the z-index of the left menu down
@@ -8877,7 +8884,7 @@ IonicModule
  *
  * - The iOS webview has a performance bottleneck when switching out `<img src>` attributes.
  *   To increase performance of images on iOS, cache your images in advance and,
- *   if possible, lower the number of unique images. We're working on [a solution](https://github.com/driftyco/ionic/issues/3194).
+ *   if possible, lower the number of unique images. We're working on [a solution](https://github.com/ionic-team/ionic/issues/3194).
  *
  * @usage
  * #### Basic Item List ([codepen](http://codepen.io/ionic/pen/0c2c35a34a8b18ad4d793fef0b081693))
@@ -10610,7 +10617,7 @@ function headerFooterBarDirective(isHeader) {
  * reach to trigger the on-infinite expression. Default: 1%.
  * @param {string=} spinner The {@link ionic.directive:ionSpinner} to show while loading. The SVG
  * {@link ionic.directive:ionSpinner} is now the default, replacing rotating font icons.
- * @param {string=} icon The icon to show while loading. Default: 'ion-load-d'.  This is depreicated
+ * @param {string=} icon The icon to show while loading. Default: 'ion-load-d'.  This is depreciated
  * in favor of the SVG {@link ionic.directive:ionSpinner}.
  * @param {boolean=} immediate-check Whether to check the infinite scroll bounds immediately on load.
  *
@@ -11068,9 +11075,9 @@ IonicModule.directive('ionOptionButton', [function() {
       return function($scope, $element, $attr, itemCtrl) {
         if (!itemCtrl.optionsContainer) {
           itemCtrl.optionsContainer = jqLite(ITEM_TPL_OPTION_BUTTONS);
-          itemCtrl.$element.append(itemCtrl.optionsContainer);
+          itemCtrl.$element.prepend(itemCtrl.optionsContainer);
         }
-        itemCtrl.optionsContainer.append($element);
+        itemCtrl.optionsContainer.prepend($element);
 
         itemCtrl.$element.addClass('item-right-editable');
 
@@ -11183,7 +11190,7 @@ IonicModule
  *
  * ### Notes
  * - This directive requires the
- * [Ionic Keyboard Plugin](https://github.com/driftyco/ionic-plugins-keyboard).
+ * [Ionic Keyboard Plugin](https://github.com/ionic-team/ionic-plugins-keyboard).
  * - On Android not in fullscreen mode, i.e. you have
  *   `<preference name="Fullscreen" value="false" />` or no preference in your `config.xml` file,
  *   this directive is unnecessary since it is the default behavior.
@@ -11780,7 +11787,6 @@ IonicModule
  * @param {boolean=} no-tap-scroll By default, the navbar will scroll the content
  * to the top when tapped.  Set no-tap-scroll to true to disable this behavior.
  *
- * </table><br/>
  */
 IonicModule
 .directive('ionNavBar', function() {
@@ -12499,7 +12505,9 @@ IonicModule
 
         $scope.$on('scroll.refreshComplete', function() {
           $scope.$evalAsync(function() {
-            scrollCtrl.scrollView.finishPullToRefresh();
+            if(scrollCtrl.scrollView){
+              scrollCtrl.scrollView.finishPullToRefresh();
+            }
           });
         });
       }
@@ -12541,6 +12549,7 @@ IonicModule
  * @param {boolean=} paging Whether to scroll with paging.
  * @param {expression=} on-refresh Called on pull-to-refresh, triggered by an {@link ionic.directive:ionRefresher}.
  * @param {expression=} on-scroll Called whenever the user scrolls.
+ * @param {expression=} on-scroll-complete Called whenever the scrolling paging is completed.
  * @param {boolean=} scrollbar-x Whether to show the horizontal scrollbar. Default true.
  * @param {boolean=} scrollbar-y Whether to show the vertical scrollbar. Default true.
  * @param {boolean=} zooming Whether to support pinch-to-zoom
@@ -12576,6 +12585,7 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
           direction: '@',
           paging: '@',
           $onScroll: '&onScroll',
+          $onScrollComplete: '&onScrollComplete',
           scroll: '@',
           scrollbarX: '@',
           scrollbarY: '@',
@@ -12617,7 +12627,8 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
           maxZoom: $scope.$eval($scope.maxZoom) || 3,
           minZoom: $scope.$eval($scope.minZoom) || 0.5,
           preventDefault: true,
-          nativeScrolling: nativeScrolling
+          nativeScrolling: nativeScrolling,
+          scrollingComplete: onScrollComplete
         };
 
         if (isPaging) {
@@ -12625,10 +12636,17 @@ function($timeout, $controller, $ionicBind, $ionicConfig) {
           scrollViewOptions.bouncing = false;
         }
 
-        $controller('$ionicScroll', {
+        var scrollCtrl = $controller('$ionicScroll', {
           $scope: $scope,
           scrollViewOptions: scrollViewOptions
         });
+
+        function onScrollComplete() {
+          $scope.$onScrollComplete && $scope.$onScrollComplete({
+            scrollTop: scrollCtrl.scrollView.__scrollTop,
+            scrollLeft: scrollCtrl.scrollView.__scrollLeft
+          });
+        }
       }
     }
   };
@@ -13287,7 +13305,6 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
  * @ngdoc directive
  * @name ionSlides
  * @module ionic
- * @delegate ionic.service:$ionicSlideBoxDelegate
  * @restrict E
  * @description
  * The Slides component is a powerful multi-page container where each page can be swiped or dragged between.
@@ -13332,8 +13349,8 @@ function($animate, $timeout, $compile, $ionicSlideBoxDelegate, $ionicHistory, $i
  *
  * $scope.$on("$ionicSlides.slideChangeEnd", function(event, data){
  *   // note: the indexes are 0-based
- *   $scope.activeIndex = data.activeIndex;
- *   $scope.previousIndex = data.previousIndex;
+ *   $scope.activeIndex = data.slider.activeIndex;
+ *   $scope.previousIndex = data.slider.previousIndex;
  * });
  *
  * ```

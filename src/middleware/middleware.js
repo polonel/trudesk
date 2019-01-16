@@ -92,16 +92,17 @@ middleware.redirectIfUser = function(req, res, next) {
 
 middleware.ensurel2Auth = function(req, res, next) {
     if (req.session.l2auth === 'totp') {
-        if (req.user)
-            {if (req.user.role !== 'user')
+        if (req.user) {
+            if (req.user.role !== 'user')
                 return res.redirect('/dashboard');
-            else
-                return res.redirect('/tickets');}
-        else
-            return next();
-    } else 
-        return res.redirect('/l2auth');
-    
+
+            return res.redirect('/tickets');
+        }
+
+        return next();
+    }
+
+    return res.redirect('/l2auth');
 };
 
 //Common
@@ -143,13 +144,15 @@ middleware.checkCaptcha = function(req, res, next) {
 
 middleware.checkOrigin = function(req, res, next) {
     var origin = req.headers.origin;
-    var host = req.protocol + '://' + req.headers.host;
+    var host = req.headers.host;
 
     //Firefox Hack - Firefox Bug 1341689 & 1424076
     //Trudesk Bug #26
     //TODO: Fix this once Firefox fixes its Origin Header in same-origin POST request.
     if (!origin)
         origin = host;
+
+    origin = origin.replace(/^https?:\/\//, '');
 
     if (origin !== host)
         return res.status(400).json({success: false, error: 'Invalid Origin!'});
@@ -178,6 +181,8 @@ middleware.api = function(req, res, next) {
         return next();
     });
 };
+
+middleware.hasAuth = middleware.api;
 
 middleware.isAdmin = function(req, res, next) {
       if (req.user.role === 'admin')

@@ -1,23 +1,143 @@
-@import "../mixins"
-@import "../_settings"
+@import "../_settings.sass"
 
-.side-nav-bottom-panel
-  position: fixed
-  bottom: 0
-  left: 0
+//Hack to not show popout menu on reposition
+body > .side-nav-sub.tether-element
+  display: none !important
+  visibility: hidden !important
+  opacity: 0 !important
+  z-index: -9999 !important
+  height: 0px !important
+  width: 0px !important
+  -webkit-transition: none !important
+  -moz-transition: none !important
+  -o-transition: none !important
+  transition: none !important
+
+.no-animation
+  transition: none !important
+
+#page-content
+  transition: margin 0.2s ease
+  &.expanded-sidebar
+    margin-left: 215px !important
+
+.sidebar
+  @media only screen and (min-width: 40.063em) and (max-width: 64em)
+    position: absolute
+    top: 75px
+    left: 0
+    width: 57px
+    max-width: 57px
+    z-index: 9999
+    overflow: hidden
+
   background: $sidebar_bg
+  color: $sidebar_text
+  width: 57px
+  position: fixed
+  top: 75px
+  left: 0
+  bottom: 0
+  //+boxShadow($sidebar_box_shadow)
+  //+boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
+  transition: width 0.2s ease
+  z-index: 10
+  //border-right: $sidebar_border_right
+  &:after
+    content: ""
+    position: absolute
+    right: 0
+    top: 0
+    width: 1px
+    height: 100%
+    background: darken($sidebar_bg, 10%)
+
+  #expand-menu
+    overflow: hidden
+  &.expand
+    width: 215px
+    ul.side-nav
+      li.hasSubMenu:after
+        opacity: 1
+    .side-nav-bottom-panel
+      width: 215px
+      a
+        width: 215px
+        padding: 0 0 0 60px !important
+        font-size: 100%
+
+ul.side-nav
+  list-style: none outside none
+  line-height: 1.6
   display: block
   margin: 0
+  //padding: 0.875rem 0
   padding: 0
-  width: 57px
-  transition: all .2s ease
-  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
-  a
-    transition: all .2s ease
-    padding: 0 !important
-    font-size: 0
-    color: $sidebar_text !important
+  hr
+    margin: 5px 0
+    background: darken($sidebar_bg, 10%)
+
+  li
+    font-size: 14px
+    font-family: "Roboto", sans-serif
+    margin: 0
+    font-weight: normal
     position: relative
+    //&:hover
+    //  & > .side-nav-sub.side-nav-floating
+    //    display: block
+    //    opacity: 1
+    //    visibility: visible
+
+    &.hasSubMenu
+      &.hasSubMenuOpen
+        &:after
+          transform: rotate(180deg)
+      &:after
+        filter: none
+        font-size: 18px
+        top: 10px
+        right: 5px
+        display: inline-block
+        opacity: 0
+        transform: rotate(0deg)
+        zoom: 1
+        font-family: "Material Icons"
+        font-style: normal
+        vertical-align: baseline
+        text-align: center
+        text-transform: none
+        text-rendering: auto
+        position: absolute
+        transition: transform .3s ease, opacity .15s ease
+        content: 'expand_more'
+        pointer-events: none
+      &.active
+        &:after
+          color: #fff
+
+    &.active > a
+      font-family: "Roboto", sans-serif !important
+      background: $sidebar_item_active !important
+      color: $sidebar_item_active_text !important
+
+      border-left: 5px solid $accent_color
+      &:hover
+        &:after
+          width: 0
+          transform: translateX(0)
+
+      i,svg
+        color: $sidebar_item_active_text !important
+        fill: $sidebar_item_active_text !important
+        margin-left: -3px
+
+  a
+    padding: 0 0.875rem !important
+    color: $sidebar_text !important
+    //border-left: 2px solid $sidebar_bg
+    position: relative
+    padding-left: 60px !important
     line-height: 48px
     height: 48px
 
@@ -31,6 +151,7 @@
       width: 5px
       -webkit-transition: -webkit-transform 0.2s ease-in-out
       transition: -webkit-transform 0.2s ease-in-out
+      transition: transform 0.2s ease-in-out
       transition: transform 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out
 
     &:hover
@@ -45,11 +166,18 @@
       padding-bottom: 5px
 
     &:hover
+      //border-left: 2px solid $accent_color
       background: $sidebar_item_hover !important
 
       i,svg
         color: $sidebar_text_hover
         fill: $sidebar_text_hover
+        &.icon-accounts
+          background-position: 0 -24px
+        &.icon-groups
+          background-position: 0 -22px
+        &.icon-invoices
+          background-position: 0 -20px
 
     i,svg
       line-height: 26px
@@ -60,7 +188,169 @@
       top: 5px
       left: 15px
       fill: $sidebar_text
-      //padding: 0.875rem 0
-      padding: 0
     i
       font-size: 24px !important
+
+ul.side-nav-sub
+  @extend .side-nav
+  list-style: none
+  background: $sidebar_subnav_bg
+  box-shadow: $sidebar_subnav_box_shadow
+  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
+  margin: 0
+  overflow: hidden
+  max-height: 0
+  padding: 0
+  transition: all .3s cubic-bezier(.215,.61,.355,1)
+  -webkit-transition: all .3s cubic-bezier(.215,.61,.355,1)
+  -moz-transition: all .3s cubic-bezier(.215,.61,.355,1)
+
+  &.subMenuOpen
+    max-height: 500px
+
+  &.side-nav-floating
+    width: 150px
+    position: absolute
+    top: 0
+    left: 0
+    max-height: none !important
+    -webkit-transition: all .3s cubic-bezier(.215,.61,.355,1)
+    -moz-transition: all .3s cubic-bezier(.215,.61,.355,1)
+    transition: all .3s cubic-bezier(.215,.61,.355,1)
+    z-index: 9999
+    min-width: 145px
+    border: 1px solid rgba(0,0,0,0.05)
+    padding-top: 2px
+    padding-bottom: 2px
+    +boxShadow(none)
+    +borderRadius(1px)
+    opacity: 0
+    display: block
+    visibility: hidden
+    &.sub-menu-right-open
+      visibility: visible
+      opacity: 1
+    li.active>a, a
+      border-right: none
+      span
+        left: 15px
+      svg,i
+        display: none
+    hr
+      margin: 5px 0
+  hr
+    margin: 15px 20px
+    border: none
+    height: 1px
+    background: $sidebar_subnav_hr
+  li
+    margin: 5px 0
+    position: relative
+
+    &.active
+      > a
+        background: $sidebar_subnav_bg !important
+        color: $sidebar_subnav_active !important
+        font-weight: bold
+        border: none
+        border-right: 1px solid rgba(0,0,0,0.1)
+
+        &:hover
+          background: $sidebar_subnav_item_hover !important
+          &:after
+            width: 5px
+            transform: translateX(5px)
+        i,svg
+          color: $sidebar_subnav_active !important
+          fill: $sidebar_subnav_active !important
+          margin-left: 0
+        .fa-sub-icon
+          line-height: 20px
+          font-size: 20px
+          left: 20px
+          top: 0
+          &.material-icons
+            font-size: 24px
+
+        .icon-inbox
+          background-position: 0 -18px
+        .icon-sent
+          background-position: -16px -17px
+        .icon-trash
+          background-position: -32px -16px
+        .icon-check
+          background-position: 0 -16px
+  a
+    border: none
+    font-weight: 300
+    padding-left: 60px !important
+    line-height: 30px
+    height: 30px !important
+    color: $sidebar_subnav_text
+    span
+      display: inline-block
+      position: absolute
+      top: 1px
+      left: 62px
+    i,svg
+      color: $sidebar_subnav_text !important
+      fill: $sidebar_subnav_text !important
+    &:hover
+      border: none
+      color: $sidebar_subnav_hover !important
+      //background: inherit !important
+      background: $sidebar_subnav_item_hover !important
+      i,svg
+        color: $sidebar_subnav_hover !important
+        fill: $sidebar_subnav_hover !important
+      .icon-inbox
+        background-position: 0 -18px
+      .icon-sent
+        background-position: -16px -17px
+      .icon-trash
+        background-position: -32px -16px
+      .icon-check
+        background-position: 0 -16px
+    .fa-sub-icon,svg
+      line-height: 20px
+      font-size: 20px
+      left: 20px
+      top: 0
+      &.material-icons
+        font-size: 24px
+
+.icon-inbox,
+.icon-sent,
+.icon-trash,
+.icon-check
+  width: 16px
+  height: 16px
+  background: url(/img/inbox.png) 0 0 no-repeat
+  position: absolute
+  top: 3px !important
+  left: 20px !important
+
+.icon-check
+  background-image: url(/img/tickets_submenu.png)
+
+.icon-sent
+  background-position: -16px 0
+.icon-trash
+  background-position: -32px 0
+  left: 22px !important
+
+.icon-accounts
+  width: 18px
+  height: 24px
+  background: url(/img/accounts.png) 0 0 no-repeat
+
+.icon-groups
+  width: 22px
+  height: 22px
+  background: url(/img/groups.png) 0 0 no-repeat
+
+.icon-invoices
+  width: 24px
+  height: 20px
+  background: url(/img/invoices.png) 0 0 no-repeat
+  top: 10px !important

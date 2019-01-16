@@ -22,7 +22,6 @@ module.exports._sendToSelf = function(io, socketId, method, data) {
     _.each(io.sockets.sockets, function(socket) {
         if (socket.id === socketId) 
             socket.emit(method, data);
-        
     });
 };
 
@@ -58,5 +57,11 @@ module.exports.sendToAllExcept = function(io, exceptSocketId, method, data) {
         if (socket.id !== exceptSocketId) 
             socket.emit(method, data);
         
+    });
+};
+
+module.exports.disconnectAllClients = function(io) {
+    Object.keys(io.sockets.sockets).forEach(function(sock) {
+        io.sockets.sockets[sock].disconnect(true);
     });
 };
