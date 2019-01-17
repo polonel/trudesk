@@ -207,7 +207,7 @@ define([
 
                         $timeout(function() {
                             // Call in next cycle - Timezones generated dynamically
-                            helpers.UI.selectize($('select#tz').parent());
+                            // helpers.UI.selectize($('select#tz').parent());
                         });
 
                         var $privacyPolicy = $('#privacyPolicy');

@@ -10,6 +10,7 @@ import IndexSagas from './sagas';
 const sagaMiddleware = createSagaMiddleware();
 
 import Sidebar from './components/Nav/Sidebar/index.jsx';
+import renderer from './renderer';
 
 /*eslint-disable */
 const composeSetup = process.env.NODE_ENV !== 'production' && typeof window === 'object' &&
@@ -38,3 +39,7 @@ ReactDOM.render(
     sidebarWithProvider,
     document.getElementById('side-nav')
 );
+
+window.react.renderer = renderer;
+
+renderer(store);

@@ -54,6 +54,7 @@
     "grunt-shell": "2.1.0",
     "handlebars": "4.0.11",
     "imap": "0.8.19",
+    "immutable": "4.0.0-rc.12",
     "imports-loader": "0.8.0",
     "ip-address": "5.8.9",
     "js-string-escape": "1.0.1",

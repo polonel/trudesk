@@ -37,6 +37,10 @@ var helpers = {
         return a.toString() + b.toString();
     },
 
+    stringify: function(s) {
+        return JSON.stringify(s);
+    },
+
     contains: function (str, pattern, options) {
         if (str.indexOf(pattern) !== -1) 
             return options.fn(this);

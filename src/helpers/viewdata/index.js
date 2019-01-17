@@ -309,7 +309,6 @@ viewController.getData = function(request, cb) {
       ], function(err) {
           if (err) 
               winston.warn('Error: ' + err);
-          
 
           return cb(viewdata);
       });

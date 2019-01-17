@@ -77,7 +77,9 @@ module.exports = {
             snackbar:       'plugins/snackbar',
 
             sass:           path.resolve(__dirname, 'src/sass'),
-            components:     path.resolve(__dirname, 'src/client/components')
+            components:     path.resolve(__dirname, 'src/client/components'),
+            actions:        path.resolve(__dirname, 'src/client/actions'),
+            lib:            path.resolve(__dirname, 'src/public/js/modules')
         }
     },
     externals: {

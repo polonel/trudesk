@@ -18,7 +18,8 @@
 define('pages/pageloader', ['async', 'jquery'], function(async, $) {
     var pageLoader = {};
     pageLoader.init = function(callback) {
-        // window.react.updateSidebar({activeItem: $('#__sidebar_route').text(), activeSubItem: $('#__sidebar_sub_route').text(), sessionUser: window.trudeskSessionService.getUser()});
+        // Called to render component on ajax page load
+        window.react.renderer(window.react.redux.store);
         window.react.redux.store.dispatch({
             type: 'NAV_CHANGE',
             payload: {

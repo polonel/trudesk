@@ -163,6 +163,11 @@
     if (screen.width <= 800) {
         document.location = '/mobile';
     }
+
+    // TODO: Temp. Until we pass render fully on server.
+    if (!window.trudesk)
+        window.trudesk = {};
+    window.trudesk.viewdata = {{{stringify data.common}}};
 </script>
 
 <script src="/js/trudesk.min.js"></script>

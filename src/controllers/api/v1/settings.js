@@ -71,6 +71,9 @@ apiSettings.updateSetting = function(req, res) {
 
     if (!_.isArray(postData)) postData = [postData];
 
+    var updatedSettings = [];
+
+    //
     async.each(postData, function(item, callback) {
         SettingsSchema.getSettingByName(item.name, function(err, s) {
             if (err) return callback(err.message);
@@ -87,14 +90,18 @@ apiSettings.updateSetting = function(req, res) {
 
             s.value = item.value;
 
-            s.save(function(err) {
+            s.save(function(err, savedSetting) {
                 if (err) return callback(err.message);
 
-                callback();
+                updatedSettings.push(savedSetting);
+
+                return callback();
             });
         });
     }, function(err) {
-        return defaultApiResponse(err, res);
+        if (err) return res.status(400).json({success: false, error: err});
+
+        return res.json({success: true, updatedSettings: updatedSettings});
     });
 };
 
