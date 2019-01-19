@@ -85,7 +85,7 @@ class AppearanceSettings extends React.Component {
         };
     }
 
-    componentDidUpdate(prevProp, prevState) {
+    componentDidUpdate() {
         const colorScheme = this.calcColorScheme();
         if (this.state.selectedColorScheme !== colorScheme)
             this.setState({

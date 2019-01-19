@@ -21,14 +21,14 @@ class SettingItem extends React.Component {
                                                cursor: 'pointer',
                                                lineHeight: '3px',
                                                marginLeft: '4px'}}
-                               data-uk-tooltip title={tooltip}>error</i>
+                               data-uk-tooltip="{cls:'long-text'}" title={tooltip}>error</i>
                             }
                         </h6>
                         <h5 style={{padding: '0 0 10px 15px', margin: '2px 0 0 0',  fontSize: '12px'}} className="uk-text-muted">
                             { subTitle }
                         </h5>
                     </div>
-                    <div className="right uk-width-1-2" style={{position: 'relative',  paddingTop: '5px'}}>
+                    <div className="right uk-width-1-3" style={{position: 'relative',  paddingTop: '5px'}}>
                         <div className="uk-float-left" style={{paddingRight: '11px',  minWidth: '130px',  width: '100%'}}>
                             { component }
                         </div>

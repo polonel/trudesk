@@ -143,7 +143,7 @@ Sidebar.propTypes = {
 const mapStateToProps = (state) => ({
     activeItem: state.sidebar.activeItem,
     activeSubItem: state.sidebar.activeSubItem,
-    sessionUser: state.sidebar.sessionUser
+    sessionUser: state.shared.sessionUser
 });
 
 export default connect(mapStateToProps, { updateNavChange })(Sidebar);

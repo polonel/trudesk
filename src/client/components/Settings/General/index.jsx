@@ -43,6 +43,11 @@ class GeneralSettings extends React.Component {
         }).sort(function(a, b) { return a.utc - b.utc; });
     }
 
+    onTimezoneChange(e) {
+        if (e.target.value)
+            this.updateSetting('timezone', 'gen:timezone', e.target.value);
+    }
+
     render() {
         const { active } = this.props;
 
@@ -55,7 +60,7 @@ class GeneralSettings extends React.Component {
         );
 
         const Timezone = (
-            <SingleSelect stateName='timezone' settingName='gen:timezone' items={this.getTimezones()} value={this.getSettingsValue('timezone')} />
+            <SingleSelect stateName='timezone' settingName='gen:timezone' items={this.getTimezones()} value={this.getSettingsValue('timezone')} onSelectChange={(e) => { this.onTimezoneChange(e); }} />
         );
 
         const AllowUserRegistration = (
@@ -71,13 +76,13 @@ class GeneralSettings extends React.Component {
                 <SettingItem title='Time Zone' subTitle='Set the local timezone for date display' tooltip='Requires Server Restart' component={Timezone} />
                 <SettingItem title='Time & Date Format' subTitle={<a href='https://momentjs.com/docs/#/displaying/format/' rel='noopener noreferrer' target='_blank'>Moment.js Format Options</a>}>
                     <SettingSubItem title='Time Format' subTitle='Set the format for time display' component={
-                        <InputWithSave stateName='timeFormat' settingName='gen:timeFormat' value={this.getSettingsValue('timeFormat')}/>
+                        <InputWithSave stateName='timeFormat' settingName='gen:timeFormat' value={this.getSettingsValue('timeFormat')} width={'60%'} />
                     } />
                     <SettingSubItem title='Short Date Format' subTitle='Set the format for short dates' component={
-                        <InputWithSave stateName='shortDateFormat' settingName='gen:shortDateFormat' value={this.getSettingsValue('shortDateFormat')}/>
+                        <InputWithSave stateName='shortDateFormat' settingName='gen:shortDateFormat' value={this.getSettingsValue('shortDateFormat')} width={'60%'} />
                     } />
                     <SettingSubItem title='Long Date Format' subTitle='Set the format for long dates' component={
-                        <InputWithSave stateName='longDateFormat' settingName='gen:longDateFormat' value={this.getSettingsValue('longDateFormat')}/>
+                        <InputWithSave stateName='longDateFormat' settingName='gen:longDateFormat' value={this.getSettingsValue('longDateFormat')} width={'60%'} />
                     } />
                 </SettingItem>
                 <SettingItem title='Allow User Registration' subTitle='Allow users to create accounts on the login screen.' component={AllowUserRegistration} />

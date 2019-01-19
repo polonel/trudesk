@@ -8,6 +8,7 @@ import Menu from 'components/Settings/subcomponents/Menu';
 import MenuItem from 'components/Settings/subcomponents/MenuItem';
 import GeneralSettings from 'components/Settings/General';
 import AppearanceSettings from 'components/Settings/Appearance';
+import TicketsSettings from 'components/Settings/Tickets';
 
 class SettingsContainer extends React.Component {
     constructor(props) {
@@ -65,6 +66,7 @@ class SettingsContainer extends React.Component {
                         <div className='settings-wrap'>
                             <GeneralSettings active={(this.state.activeCategory === 'settings-general')} />
                             <AppearanceSettings active={(this.state.activeCategory === 'settings-appearance')} />
+                            <TicketsSettings active={(this.state.activeCategory === 'settings-tickets')} />
                         </div>
                     </div>
                 </div>

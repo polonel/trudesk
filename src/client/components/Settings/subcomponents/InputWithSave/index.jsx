@@ -39,13 +39,17 @@ class InputWithSave extends React.Component {
     }
 
     render() {
+        let width = '100%';
+        if (this.props.width)
+            width = this.props.width;
+
         return (
-            <div className='uk-width-3-4 uk-float-right'>
+            <div className='uk-width-1-1 uk-float-right' style={{width: width}}>
                 <div className="uk-width-3-4 uk-float-left" style={{paddingRight: '10px'}}>
                     <input id={this.props.stateName} className="md-input md-input-width-medium" type="text" value={this.state.value} onChange={evt => this.updateValue(evt)} />
                 </div>
                 <div className="uk-width-1-4 uk-float-right" style={{marginTop: '10px', textAlign: 'center'}}>
-                    <button className="md-btn md-btn-small" onClick={e => (this.onSaveClicked(e))}>Save</button>
+                    <button className="md-btn md-btn-small" onClick={e => (this.onSaveClicked(e))}>{(this.props.saveLabel ? this.props.saveLabel : 'Save')}</button>
                 </div>
             </div>
         );
@@ -56,7 +60,9 @@ InputWithSave.propTypes = {
     updateSetting: PropTypes.func.isRequired,
     settingName: PropTypes.string.isRequired,
     stateName: PropTypes.string.isRequired,
-    value: PropTypes.string
+    saveLabel: PropTypes.string,
+    value: PropTypes.string,
+    width: PropTypes.string
 };
 
 export default connect(null, { updateSetting })(InputWithSave);

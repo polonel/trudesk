@@ -29,6 +29,13 @@ define('pages/pageloader', ['async', 'jquery'], function(async, $) {
             }
         });
 
+        window.react.redux.store.dispatch({
+            type: 'SET_SESSION_USER',
+            payload: {
+                sessionUser: window.trudeskSessionService.getUser()
+            }
+        });
+
         require([
             'pages/dashboard',
             'pages/messages',
