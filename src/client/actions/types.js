@@ -7,3 +7,5 @@ export const NAV_CHANGE = defineAction('NAV_CHANGE');
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR]);
 export const UPDATE_SETTING = defineAction('UPDATE_SETTING', [SUCCESS, ERROR]);
+export const UPDATE_MULTIPLE_SETTINGS = defineAction('UPDATE_MULTIPLE_SETTINGS', [SUCCESS, ERROR]);
+export const UPDATE_COLORSCHEME = defineAction('UPDATE_COLORSCHEME', [SUCCESS, ERROR]);

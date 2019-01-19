@@ -4,8 +4,8 @@ let api = {};
 
 api.settings = {};
 
-api.settings.update = function({name, value}) {
-    return axios.put('/api/v1/settings', {name, value})
+api.settings.update = function(settings) {
+    return axios.put('/api/v1/settings', settings)
         .then((res) => {
             return res.data;
         });

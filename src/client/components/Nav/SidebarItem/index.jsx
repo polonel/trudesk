@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import Helpers from 'modules/helpers';
 
-import './style.sass';
+// import './style.sass';
 
 class NavButton extends Component {
     constructor(props) {

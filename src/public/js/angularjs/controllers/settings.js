@@ -114,51 +114,51 @@ define([
                     $scope.shortDateFormat = SettingsService.getSettings().shortDateFormat.value;
                     $scope.longDateFormat = SettingsService.getSettings().longDateFormat.value;
 
-                    var $uploadButton = $('#logo-upload-select').parent();
-                    var uploadLogoSettings = {
-                        action: '/settings/general/uploadlogo',
-                        allow: '*.(jpg|jpeg|gif|png)',
-                        loadstart: function() {
-                            $uploadButton.text('Uploading...');
-                            $uploadButton.attr('disabled', true);
-                            $uploadButton.addClass('disable');
-                        },
-                        allcomplete: function() {
-                            $uploadButton.text('Upload Logo');
-                            $uploadButton.attr('disabled', false);
-                            $uploadButton.removeClass('disable');
-                            helpers.UI.showSnackbar('Upload Complete', false);
-                            // remove page refresh once SettingsService merge
-                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
-                            $window.location.reload();
-                            $('button#remove-custom-logo-btn').removeClass('hide');
-                        }
-                    };
+                    // var $uploadButton = $('#logo-upload-select').parent();
+                    // var uploadLogoSettings = {
+                    //     action: '/settings/general/uploadlogo',
+                    //     allow: '*.(jpg|jpeg|gif|png)',
+                    //     loadstart: function() {
+                    //         $uploadButton.text('Uploading...');
+                    //         $uploadButton.attr('disabled', true);
+                    //         $uploadButton.addClass('disable');
+                    //     },
+                    //     allcomplete: function() {
+                    //         $uploadButton.text('Upload Logo');
+                    //         $uploadButton.attr('disabled', false);
+                    //         $uploadButton.removeClass('disable');
+                    //         helpers.UI.showSnackbar('Upload Complete', false);
+                    //         // remove page refresh once SettingsService merge
+                    //         // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                    //         $window.location.reload();
+                    //         $('button#remove-custom-logo-btn').removeClass('hide');
+                    //     }
+                    // };
+                    //
+                    // UIkit.uploadSelect($('#logo-upload-select'), uploadLogoSettings);
 
-                    UIkit.uploadSelect($('#logo-upload-select'), uploadLogoSettings);
-
-                    var $pageUploadButton = $('#page-logo-upload-select').parent();
-                    var pageUploadLogoSettings = {
-                        action: '/settings/general/uploadpagelogo',
-                        allow: '*.(jpg|jpeg|gif|png)',
-                        loadstart: function() {
-                            $uploadButton.text('Uploading...');
-                            $uploadButton.attr('disabled', true);
-                            $uploadButton.addClass('disable');
-                        },
-                        allcomplete: function() {
-                            $pageUploadButton.text('Upload Logo');
-                            $pageUploadButton.attr('disabled', false);
-                            $pageUploadButton.removeClass('disable');
-                            helpers.UI.showSnackbar('Upload Complete', false);
-                            // remove page refresh once SettingsService merge
-                            // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
-                            $window.location.reload();
-                            $('button#remove-custom-page-logo-btn').removeClass('hide');
-                        }
-                    };
-
-                    UIkit.uploadSelect($('#page-logo-upload-select'), pageUploadLogoSettings);
+                    // var $pageUploadButton = $('#page-logo-upload-select').parent();
+                    // var pageUploadLogoSettings = {
+                    //     action: '/settings/general/uploadpagelogo',
+                    //     allow: '*.(jpg|jpeg|gif|png)',
+                    //     loadstart: function() {
+                    //         $uploadButton.text('Uploading...');
+                    //         $uploadButton.attr('disabled', true);
+                    //         $uploadButton.addClass('disable');
+                    //     },
+                    //     allcomplete: function() {
+                    //         $pageUploadButton.text('Upload Logo');
+                    //         $pageUploadButton.attr('disabled', false);
+                    //         $pageUploadButton.removeClass('disable');
+                    //         helpers.UI.showSnackbar('Upload Complete', false);
+                    //         // remove page refresh once SettingsService merge
+                    //         // $('img.site-logo').attr('src', '/assets/topLogo.png?refresh=' + new Date().getTime());
+                    //         $window.location.reload();
+                    //         $('button#remove-custom-page-logo-btn').removeClass('hide');
+                    //     }
+                    // };
+                    //
+                    // UIkit.uploadSelect($('#page-logo-upload-select'), pageUploadLogoSettings);
 
                     var uploadFaviconSettings = {
                         action: '/settings/general/uploadfavicon',

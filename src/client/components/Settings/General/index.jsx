@@ -2,12 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import moment from 'moment-timezone';
-import { fetchSettings } from 'actions/settings';
+import { updateSetting } from 'actions/settings';
 
-import SettingItem from 'components/Settings/SettingItem';
+import SettingItem from 'components/Settings/subcomponents/SettingItem';
 
-import InputWithSave from 'components/Settings/InputWithSave';
-import SingleSelect from 'components/Settings/SingleSelect';
+import InputWithSave from 'components/Settings/subcomponents/InputWithSave';
+import SingleSelect from 'components/Settings/subcomponents/SingleSelect';
+import EnableSwitch from 'components/Settings/subcomponents/EnableSwitch';
+import SettingSubItem from 'components/Settings/subcomponents/SettingSubItem';
 
 class GeneralSettings extends React.Component {
     constructor(props) {
@@ -18,11 +20,15 @@ class GeneralSettings extends React.Component {
     }
 
     componentDidMount() {
-        this.props.fetchSettings();
+
     }
 
     getSettingsValue(name) {
         return ((this.props.settings.getIn(['settings', name, 'value'])) ? this.props.settings.getIn(['settings', name, 'value']) : '' );
+    }
+
+    updateSetting(stateName, name, value) {
+        this.props.updateSetting({stateName, name, value});
     }
 
     getTimezones() {
@@ -48,15 +54,33 @@ class GeneralSettings extends React.Component {
             <InputWithSave stateName='siteUrl' settingName='gen:siteurl' value={this.getSettingsValue('siteUrl')} />
         );
 
-        let Timezone = (
+        const Timezone = (
             <SingleSelect stateName='timezone' settingName='gen:timezone' items={this.getTimezones()} value={this.getSettingsValue('timezone')} />
         );
 
+        const AllowUserRegistration = (
+            <EnableSwitch stateName='allowUserRegistration' label='Enable' checked={this.getSettingsValue('allowUserRegistration')}  onChange={(e) => {
+                this.updateSetting('allowUserRegistration', 'allowUserRegistration:enable', e.target.checked);
+            }} />
+        );
+
         return (
-            <div data-settings-id="settings-general" className={((active) ? 'active': '')}>
+            <div className={((active) ? 'active': 'hide')}>
                 <SettingItem title='Site Title' subTitle={<div>Title of site. Used as page title. <i>default: Trudesk</i></div>} component={SiteTitle} />
                 <SettingItem title='Site Url' subTitle={<div>Publicly accessible URL of this site. <i>ex: {this.state.viewData.hosturl}</i></div>} component={SiteUrl} />
                 <SettingItem title='Time Zone' subTitle='Set the local timezone for date display' tooltip='Requires Server Restart' component={Timezone} />
+                <SettingItem title='Time & Date Format' subTitle={<a href='https://momentjs.com/docs/#/displaying/format/' rel='noopener noreferrer' target='_blank'>Moment.js Format Options</a>}>
+                    <SettingSubItem title='Time Format' subTitle='Set the format for time display' component={
+                        <InputWithSave stateName='timeFormat' settingName='gen:timeFormat' value={this.getSettingsValue('timeFormat')}/>
+                    } />
+                    <SettingSubItem title='Short Date Format' subTitle='Set the format for short dates' component={
+                        <InputWithSave stateName='shortDateFormat' settingName='gen:shortDateFormat' value={this.getSettingsValue('shortDateFormat')}/>
+                    } />
+                    <SettingSubItem title='Long Date Format' subTitle='Set the format for long dates' component={
+                        <InputWithSave stateName='longDateFormat' settingName='gen:longDateFormat' value={this.getSettingsValue('longDateFormat')}/>
+                    } />
+                </SettingItem>
+                <SettingItem title='Allow User Registration' subTitle='Allow users to create accounts on the login screen.' component={AllowUserRegistration} />
             </div>
         );
     }
@@ -64,7 +88,7 @@ class GeneralSettings extends React.Component {
 
 GeneralSettings.propTypes = {
     active: PropTypes.bool,
-    fetchSettings: PropTypes.func.isRequired,
+    updateSetting: PropTypes.func.isRequired,
     settings: PropTypes.object.isRequired
 };
 
@@ -72,4 +96,4 @@ const mapStateToProps = (state) => ({
     settings: state.settings.settings
 });
 
-export default connect(mapStateToProps, { fetchSettings })(GeneralSettings);
+export default connect(mapStateToProps, { updateSetting })(GeneralSettings);

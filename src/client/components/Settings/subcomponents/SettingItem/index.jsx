@@ -33,6 +33,23 @@ class SettingItem extends React.Component {
                             { component }
                         </div>
                     </div>
+                    { (this.props.children) &&
+                        <div>
+                            <hr className="nomargin-top clear" />
+                            <div className="panel-body2" style={{padding: '20px 15px 15px 15px'}}>
+                                <div className="uk-position-relative">
+                                    <div className="zone">
+                                        {React.Children.map(this.props.children, (child, k) => (
+                                            <div key={k} className="z-box uk-clearfix">
+                                                {child}
+                                            </div>
+                                        ))
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
                 </div>
             </div>
         );
@@ -48,7 +65,8 @@ SettingItem.propTypes = {
         PropTypes.string,
         PropTypes.object
     ]),
-    tootip: PropTypes.string
+    tooltip: PropTypes.string,
+    component: PropTypes.element
 };
 
 export default SettingItem;

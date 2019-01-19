@@ -19,7 +19,7 @@ class SingleSelect extends React.Component {
         helpers.UI.selectize();
         const $select = $(this.select);
 
-        $select.on('change', (e) => this.updateValue(e));
+        $select.on('change', this.props.onSelectChange);
     }
 
     componentWillUnmount() {
@@ -50,13 +50,18 @@ class SingleSelect extends React.Component {
 
     render() {
         const { items } = this.props;
+        let width = '75%';
 
         if (this.select && this.select.selectize) {
             this.select.selectize.addItem(this.state.value, true);
         }
+
+        if (this.props.width)
+            width = this.props.width;
+
         return (
-            <div className="uk-width-3-4 uk-float-right" style={{paddingRight: '10px'}}>
-                <select className="selectize" ref={select => { this.select = select; }} data-md-selectize data-md-selectize-bottom value={this.state.value} onChange={(evt) => this.updateValue(evt)}>
+            <div className="uk-width-3-4 uk-float-right" style={{paddingRight: '10px', width: width}}>
+                <select className="selectize" ref={select => { this.select = select; }} data-md-selectize data-md-selectize-bottom value={this.state.value} onChange={this.props.onSelectChange}>
                     { items.map(function(obj, i) {
                         return <option key={i} value={obj.value}>{obj.label}</option>;
                     })}
@@ -71,7 +76,9 @@ SingleSelect.propTypes = {
     settingName: PropTypes.string.isRequired,
     stateName: PropTypes.string.isRequired,
     value: PropTypes.string,
-    items: PropTypes.arrayOf(PropTypes.object).isRequired
+    width: PropTypes.string,
+    items: PropTypes.arrayOf(PropTypes.object).isRequired,
+    onSelectChange: PropTypes.func.isRequired
 };
 
 export default connect(null, { updateSetting })(SingleSelect);

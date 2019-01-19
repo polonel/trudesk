@@ -1,19 +1,19 @@
 import {Provider} from 'react-redux';
-import GeneralSettings from 'components/Settings/General';
 import ReactDOM from 'react-dom';
 import React from 'react';
+import SettingsContainer from './containers/SettingsContainer';
 
 export default function(store) {
-    if (document.getElementById('settings-general')) {
-        const generalSettingsWithProvider = (
+    if (document.getElementById('settings-container')) {
+        const SettingsContainerWithProvider = (
             <Provider store={store}>
-                <GeneralSettings active={true} />
+                <SettingsContainer />
             </Provider>
         );
 
         ReactDOM.render(
-            generalSettingsWithProvider,
-            document.getElementById('settings-general')
+            SettingsContainerWithProvider,
+            document.getElementById('settings-container')
         );
     }
 }

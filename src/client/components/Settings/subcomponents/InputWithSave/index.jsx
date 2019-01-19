@@ -10,7 +10,7 @@ class InputWithSave extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            value: ''
+            value: this.props.value
         };
     }
 
@@ -18,10 +18,11 @@ class InputWithSave extends React.Component {
         helpers.UI.inputs();
     }
 
-    static getDerivedStateFromProps(props, state) {
+    static getDerivedStateFromProps(nextProps, state) {
         if (!state.value) {
-            state.value = (props.value) ? props.value : '';
-            return state;
+            return {
+                value: nextProps.value
+            };
         }
 
         return null;

@@ -7,7 +7,7 @@ import $ from 'jquery';
 import Helpers from 'modules/helpers';
 
 //Sass
-import './style.sass';
+// import './style.sass';
 
 class Submenu extends Component {
     componentDidMount() {
