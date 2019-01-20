@@ -230,6 +230,7 @@ function mainRoutes(router, middleware, controllers) {
 
     router.get('/api/v1/settings', middleware.api, controllers.api.settings.getSettings);
     router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting);
+    router.get('/api/v1/settings/:name', middleware.api, controllers.api.settings.getSingleSetting);
     router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer);
     router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass);
 

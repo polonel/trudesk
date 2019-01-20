@@ -36,6 +36,18 @@ apiSettings.getSettings = function(req, res) {
     });
 };
 
+apiSettings.getSingleSetting = function(req, res) {
+    settingsUtil.getSettings(function(err, settings) {
+        if (err) return res.status(400).json({success: false, error: err});
+        
+        var setting = settings.data.settings[req.params.name];
+        if (!setting)
+            return res.status(400).json({success: false, error: 'invalid setting'});
+
+        return res.json({success: true, setting: setting});
+    });
+};
+
 /**
  * @api {put} /api/v1/settings/:setting Update Setting
  * @apiName updateSetting
