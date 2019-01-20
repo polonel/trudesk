@@ -713,7 +713,7 @@ define('modules/ui', [
                     //Comment
                     allCommentsHtml +=  '<div class="ticket-comment" data-commentid="' + item._id + '">' +
                         '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
-                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<img class="profile-pic" src="/uploads/users/' + image + '" alt=""/>' +
                         '<span class="uk-border-circle user-offline" data-user-status-id="' + item.owner._id + '"></span>' +
                         '</div>' +
                         '<div class="issue-text">' +
@@ -747,7 +747,7 @@ define('modules/ui', [
                 } else if (item.isNote) {
                     allCommentsHtml +=  '<div class="ticket-note" data-noteid="' + item._id + '">' +
                         '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
-                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<img class="profile-pic" src="/uploads/users/' + image + '" alt=""/>' +
                         '<span class="uk-border-circle user-offline" data-user-status-id="' + item.owner._id + '"></span>' +
                         '</div>' +
                         '<div class="issue-text">' +
@@ -789,7 +789,7 @@ define('modules/ui', [
 
                 commentsHtml +=  '<div class="ticket-comment" data-commentid="' + comment._id + '">' +
                     '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
-                        '<img src="/uploads/users/' + image + '" alt=""/>' +
+                        '<img class="profile-pic" src="/uploads/users/' + image + '" alt=""/>' +
                         '<span class="uk-border-circle user-offline" data-user-status-id="' + comment.owner._id + '"></span>' +
                     '</div>' +
                     '<div class="issue-text">' +
@@ -828,7 +828,7 @@ define('modules/ui', [
 
                 notesHtml +=  '<div class="ticket-note" data-noteid="' + note._id + '">' +
                     '<div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">' +
-                    '<img src="/uploads/users/' + image + '" alt=""/>' +
+                    '<img class="profile-pic" src="/uploads/users/' + image + '" alt=""/>' +
                     '<span class="uk-border-circle user-offline" data-user-status-id="' + note.owner._id + '"></span>' +
                     '</div>' +
                     '<div class="issue-text">' +

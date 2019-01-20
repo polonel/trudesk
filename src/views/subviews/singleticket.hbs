@@ -236,9 +236,9 @@
                         <div class="initial-issue" data-ticketid="{{data.ticket._id}}">
                             <div class="ticket-owner-picture relative uk-clearfix uk-display-inline-block uk-float-left">
                                 {{#if data.ticket.owner.image}}
-                                    <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
+                                    <img class="profile-pic" src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
                                 {{else}}
-                                    <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt=""/>
                                 {{/if}}
 
                                 <span class="user-offline uk-border-circle" data-user-status-id="{{data.ticket.owner._id}}"></span>
@@ -335,9 +335,9 @@
                                             <div class="ticket-comment" data-commentId="{{_id}}">
                                                 <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                     {{#if owner.image}}
-                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                        <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                     {{else}}
-                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                        <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                     {{/if}}
                                                     <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                                 </div>
@@ -419,9 +419,9 @@
                                             <div class="ticket-note" data-noteid="{{_id}}">
                                                 <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                     {{#if owner.image}}
-                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                        <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                     {{else}}
-                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                        <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                     {{/if}}
                                                     <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                                 </div>
@@ -503,9 +503,9 @@
                                         <div class="ticket-comment" data-commentId="{{_id}}">
                                             <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                 {{#if owner.image}}
-                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                 {{else}}
-                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                 {{/if}}
                                                 <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                             </div>
@@ -585,9 +585,9 @@
                                         <div class="ticket-note" data-noteid="{{_id}}">
                                             <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                 {{#if owner.image}}
-                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                 {{else}}
-                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                 {{/if}}
                                                 <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                             </div>
@@ -666,9 +666,9 @@
                         <!-- Comments / Notes Form -->
                         <div class="uk-width-1-1 ticket-reply uk-clearfix {{#is data.ticket.status 3}}hide{{/is}}">
                             {{#if data.common.loggedInAccount.image}}
-                                <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
+                                <img class="profile-pic" src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
                             {{else}}
-                                <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                             {{/if}}
                             <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
                                 <div class="tru-tab-selectors">

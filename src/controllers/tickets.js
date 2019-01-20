@@ -472,6 +472,87 @@ ticketsController.single = function(req, res) {
     });
 };
 
+ticketsController.uploadImageMDE = function(req, res) {
+    var Chance = require('chance');
+    var chance = new Chance();
+    var fs = require('fs-extra');
+    var Busboy = require('busboy');
+    var busboy = new Busboy({
+        headers: req.headers,
+        limits: {
+            files: 1,
+            fileSize: 10*1024*1024 // 10mb limit
+        }
+    });
+
+    var object = {}, error;
+
+    object.ticketId = req.headers.ticketid;
+
+    busboy.on('file', function(fieldname, file, filename, encoding, mimetype) {
+        if (mimetype.indexOf('image/') === -1) {
+            error = {
+                status: 500,
+                message: 'Invalid File Type'
+            };
+
+            return file.resume();
+        }
+
+        var ext = path.extname(filename);
+
+        var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId);
+        // var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
+        var sanitizedFilename = chance.hash({length: 20}) + ext;
+        if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath);
+
+        object.filePath = path.join(savePath, 'inline_' + sanitizedFilename);
+        object.filename = sanitizedFilename;
+        object.mimetype = mimetype;
+
+        if (fs.existsSync(object.filePath)) {
+            error = {
+                status: 500,
+                message: 'File already exists'
+            };
+
+            return file.resume();
+        }
+
+        file.on('limit', function() {
+            error = {
+                status: 500,
+                message: 'File too large'
+            };
+
+            // Delete the temp file
+            if (fs.existsSync(object.filePath)) fs.unlinkSync(object.filePath);
+
+            return file.resume();
+        });
+
+        file.pipe(fs.createWriteStream(object.filePath));
+    });
+
+    busboy.on('finish', function() {
+        if (error) return res.status(error.status).send(error.message);
+
+        if (_.isUndefined(object.ticketId) ||
+            _.isUndefined(object.filename) ||
+            _.isUndefined(object.filePath))
+            return res.status(400).send('Invalid Form Data');
+
+        // Everything Checks out lets make sure the file exists and then add it to the attachments array
+        if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk');
+
+        var fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename;
+
+        return res.json({filename: fileUrl, ticketId: object.ticketId});
+    });
+
+    req.pipe(busboy);
+};
+
 ticketsController.uploadAttachment = function(req, res) {
     var fs = require('fs-extra');
     var Busboy = require('busboy');

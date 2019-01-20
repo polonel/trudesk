@@ -26,6 +26,14 @@ define('pages/singleTicket', [
 
             helpers.setupTruTabs($('.tru-tab-selectors').find('.tru-tab-selector'));
 
+            $('.comment-body img:not(.hasLinked)').each(function() {
+                var $this = $(this);
+                var src = $this.attr('src');
+                $this.addClass('hasLinked');
+                var a = $('<a>').addClass('no-ajaxy').attr('href', src).attr('target', '_blank');
+                $this.wrap(a);
+            });
+
             $('.remove-attachment').each(function() {
                 var self = $(this);
                 self.off('click', onRemoveAttachmentClick);

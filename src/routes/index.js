@@ -86,6 +86,7 @@ function mainRoutes(router, middleware, controllers) {
     router.get('/tickets/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.tickets.single);
     // router.post('/tickets/postcomment', middleware.redirectToLogin, controllers.tickets.postcomment);
     router.post('/tickets/uploadattachment', middleware.redirectToLogin, controllers.tickets.uploadAttachment);
+    router.post('/tickets/uploadmdeimage', middleware.redirectToLogin, controllers.tickets.uploadImageMDE);
 
     //Messages
     router.get('/messages', middleware.redirectToLogin, middleware.loadCommonData, controllers.messages.get);

@@ -74,6 +74,9 @@ module.exports = {
             tether:         'vendor/tether/tether',
             shepherd:       'vendor/shepherd/js/shepherd.min',
             easymde:        'vendor/easymde/dist/easymde.min',
+            inlineAttachment: 'vendor/easymde/dist/inline-attachment',
+            inputInlineAttachment: 'vendor/easymde/dist/input.inline-attachment',
+            cm4InlineAttachment: 'vendor/easymde/dist/codemirror-4.inline-attachment',
             snackbar:       'plugins/snackbar'
         }
     },
