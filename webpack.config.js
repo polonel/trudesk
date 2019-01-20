@@ -78,7 +78,7 @@ module.exports = {
             inlineAttachment: 'vendor/easymde/dist/inline-attachment',
             inputInlineAttachment: 'vendor/easymde/dist/input.inline-attachment',
             cm4InlineAttachment: 'vendor/easymde/dist/codemirror-4.inline-attachment',
-            snackbar:       'plugins/snackbar'
+            snackbar:       'plugins/snackbar',
 
             sass:           path.resolve(__dirname, 'src/sass'),
             components:     path.resolve(__dirname, 'src/client/components'),
