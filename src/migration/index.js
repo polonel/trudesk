@@ -30,7 +30,7 @@ function migrateUserRoles(callback) {
         },
         function(roles, next) {
             var adminRole = _.find(roles, {normalized: 'admin'});
-            userSchema.collection.update({role: 'admin'}, { $set: { role: adminRole._id }}, {multi: true}).then(function(res) {
+            userSchema.collection.updateMany({role: 'admin'}, { $set: { role: adminRole._id }}).then(function(res) {
                 if (res && res.result) {
                     if (res.result.ok === 1)
                         return next(null, roles);
@@ -42,7 +42,7 @@ function migrateUserRoles(callback) {
         },
         function(roles, next) {
             var supportRole = _.find(roles, {normalized: 'support'});
-            userSchema.collection.update({$or: [{role: 'support'}, {role:'mod'}]}, { $set: { role: supportRole._id }}, {multi: true}).then(function(res) {
+            userSchema.collection.updateMany({$or: [{role: 'support'}, {role:'mod'}]}, { $set: { role: supportRole._id }}).then(function(res) {
                 if (res && res.result) {
                     if (res.result.ok === 1)
                         return next(null, roles);
@@ -54,7 +54,7 @@ function migrateUserRoles(callback) {
         },
         function(roles, next) {
             var userRole = _.find(roles, {normalized: 'user'});
-            userSchema.collection.update({role: 'user'}, { $set: { role: userRole._id }}, {multi: true}).then(function(res) {
+            userSchema.collection.updateMany({role: 'user'}, { $set: { role: userRole._id }}).then(function(res) {
                 if (res && res.result) {
                     if (res.result.ok === 1)
                         return next(null, roles);
