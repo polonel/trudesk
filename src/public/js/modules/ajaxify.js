@@ -113,8 +113,7 @@ define('modules/ajaxify', [
       var isInternalLink
 
       // Check link
-      isInternalLink =
-        url.substring(0, rootUrl.length) === rootUrl || url.indexOf(':') === -1
+      isInternalLink = url.substring(0, rootUrl.length) === rootUrl || url.indexOf(':') === -1
 
       // Ignore or Keep
       return isInternalLink
@@ -125,10 +124,7 @@ define('modules/ajaxify', [
       // Prepare
       var result = String(html)
         .replace(/<!DOCTYPE[^>]*>/i, '')
-        .replace(
-          /<(html|head|body|title|meta|script)([\s>])/gi,
-          '<div class="document-$1"$2'
-        )
+        .replace(/<(html|head|body|title|meta|script)([\s>])/gi, '<div class="document-$1"$2')
         .replace(/<\/(html|head|body|title|meta|script)>/gi, '</div>')
 
       // Return
@@ -142,9 +138,7 @@ define('modules/ajaxify', [
 
       // Ajaxify
       $this
-        .find(
-          'a:internal:not(.no-ajaxy):not(.ajaxify-bound):not(.search-choice-close)'
-        )
+        .find('a:internal:not(.no-ajaxy):not(.ajaxify-bound):not(.search-choice-close)')
         .addClass('ajaxify-bound')
         .on('click', function (event) {
           // Prepare
@@ -233,9 +227,7 @@ define('modules/ajaxify', [
           $('#page-content').animate({ opacity: 0 }, 0, function () {
             // Memory Leak Fix- Remove events before destroying content;
             var $oldContent = $('#page-content')
-            $oldContent
-              .find('*')
-              .off('click click.chosen mouseup mousemove mousedown change')
+            $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change')
 
             // Update the content
             $content.stop(true, true)
@@ -251,9 +243,7 @@ define('modules/ajaxify', [
             // Update the title
             document.title = $data.find('.document-title:first').text()
             try {
-              document.getElementsByTagName(
-                'title'
-              )[0].innerHTML = document.title
+              document.getElementsByTagName('title')[0].innerHTML = document.title
                 .replace('<', '&lt;')
                 .replace('>', '&gt;')
                 .replace(' & ', ' &amp; ')
@@ -279,9 +269,7 @@ define('modules/ajaxify', [
 
             // Complete the change
             if ($body.ScrollTo || false)
-              $body.ScrollTo(
-                scrollOptions
-              ) /* http://balupton.com/projects/jquery-scrollto */
+              $body.ScrollTo(scrollOptions) /* http://balupton.com/projects/jquery-scrollto */
             $body.removeClass('loading')
             $window.trigger(completedEventName)
 

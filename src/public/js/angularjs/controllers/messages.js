@@ -23,16 +23,7 @@ define([
 ], function (angular, _, $, helpers, socket) {
   return angular
     .module('trudesk.controllers.messages', ['trudesk.services.session'])
-    .controller('messagesCtrl', function (
-      SessionService,
-      $scope,
-      $document,
-      $http,
-      $window,
-      $cookies,
-      $timeout,
-      $log
-    ) {
+    .controller('messagesCtrl', function (SessionService, $scope, $document, $http, $window, $cookies, $timeout, $log) {
       $scope.loadConversation = function (convoId) {
         History.pushState(null, null, '/messages/' + convoId)
       }

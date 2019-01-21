@@ -125,9 +125,7 @@ define('pages/accounts', [
               socket.ui.updateUsers()
             },
             error: function (error) {
-              console.log(
-                '[trudesk:accountsPage:setupGrid] - Error: ' + error.error
-              )
+              console.log('[trudesk:accountsPage:setupGrid] - Error: ' + error.error)
             }
           })
         }
@@ -199,9 +197,7 @@ define('pages/accounts', [
             socket.ui.updateUsers()
           })
           .fail(function (err) {
-            console.log(
-              '[trudesk:accountsPage:setupGrid] - Error: ' + err.error
-            )
+            console.log('[trudesk:accountsPage:setupGrid] - Error: ' + err.error)
             $loading = false
           })
       }
@@ -220,28 +216,18 @@ define('pages/accounts', [
 
     var html = '<div data-uk-filter="' + user.role + ',' + user.fullname + '">'
     if (addRemove) {
-      html +=
-        '<div class="tru-card tru-card-hover" data-card-username="' +
-        user.username +
-        '" data-search-result>'
+      html += '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '" data-search-result>'
     } else {
-      html +=
-        '<div class="tru-card tru-card-hover" data-card-username="' +
-        user.username +
-        '">'
+      html += '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">'
     }
 
     if (user.role === 'admin') {
       html += '<div class="tru-card-head tru-card-head-admin">'
     } else {
-      html +=
-        '<div class="tru-card-head ' +
-        (user.deleted ? 'tru-card-head-deleted' : '') +
-        '">'
+      html += '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">'
     }
 
-    html +=
-      '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">'
+    html += '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\', mode: \'click\'}">'
     html += '<i class="material-icons tru-icon">&#xE5D4;</i>'
     html += '<div class="uk-dropdown uk-dropdown-small">'
     html += '<ul class="uk-nav">'
@@ -274,13 +260,10 @@ define('pages/accounts', [
         (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000) +
         '" alt="Profile Pic" class="tru-card-head-avatar" />'
     } else {
-      html +=
-        '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />'
+      html += '<img src="/uploads/users/defaultProfile.jpg" alt="Profile Pic" class="tru-card-head-avatar" />'
     }
     html +=
-      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' +
-      user._id +
-      '"></span>'
+      '<span class="user-status-large user-offline uk-border-circle" data-user-status-id="' + user._id + '"></span>'
     html += '</div>'
 
     html += '</div>'
@@ -297,10 +280,7 @@ define('pages/accounts', [
     html += '<li>'
     html += '<div class="tru-list-content">'
     html += '<span class="tru-list-heading">Role</span>'
-    html +=
-      '<span class="uk-text-small uk-text-muted">' +
-      user.role.capitalizeFirstLetter() +
-      '</span>'
+    html += '<span class="uk-text-small uk-text-muted">' + user.role.capitalizeFirstLetter() + '</span>'
     html += '</div>'
     html += '</li>'
     html += '<li>'

@@ -168,29 +168,19 @@ define('modules/ui', [
       _.each(items, function (item) {
         if (item.partner !== undefined) {
           html += '<li>'
-          html +=
-            '<a class="messageNotification" href="/messages/' +
-            item._id +
-            '" role="button">'
+          html += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">'
           html += '<div class="uk-clearfix">'
           if (item.partner.image) {
             html +=
-              '<div class="profilePic left"><img src="/uploads/users/' +
-              item.partner.image +
-              '" alt="profile"/></div>'
+              '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>'
           } else {
-            html +=
-              '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
+            html += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
           }
-          html +=
-            '<div class="messageAuthor"><strong>' +
-            item.partner.fullname +
-            '</strong></div>'
+          html += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>'
           html += '<div class="messageSnippet">'
           html += '<span>' + item.recentMessage + '</span>'
           html += '</div>'
-          html +=
-            '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">'
+          html += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">'
           html +=
             '<time datetime="' +
             helpers.formatDate(item.updatedAt, 'YYYY-MM-DDThh:mm') +
@@ -218,11 +208,7 @@ define('modules/ui', [
       var statusSelectBox = $('#statusSelect')
       if (statusSelectBox.length > 0) statusSelectBox.addClass('hide')
 
-      var tStatusBox = $(
-        '.floating-ticket-status[data-ticketId="' +
-          ticketId +
-          '"] > .ticket-status'
-      )
+      var tStatusBox = $('.floating-ticket-status[data-ticketId="' + ticketId + '"] > .ticket-status')
       if (tStatusBox.length > 0) {
         tStatusBox.removeClass('ticket-new')
         tStatusBox.removeClass('ticket-open')
@@ -359,19 +345,12 @@ define('modules/ui', [
         html += '<a class="messageNotification no-ajaxy" role="button">'
         html += '<div class="uk-clearfix">'
         if (_.isUndefined(user.image)) {
-          html +=
-            '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
+          html += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
         } else {
-          html +=
-            '<div class="profilePic left"><img src="/uploads/users/' +
-            user.image +
-            '" alt="profile"/></div>'
+          html += '<div class="profilePic left"><img src="/uploads/users/' + user.image + '" alt="profile"/></div>'
         }
 
-        html +=
-          '<div class="messageAuthor"><strong>' +
-          user.fullname +
-          '</strong></div>'
+        html += '<div class="messageAuthor"><strong>' + user.fullname + '</strong></div>'
         html += '<div class="messageSnippet">'
         html += '<span>' + user.email + '</span>'
         html += '</div>'
@@ -425,20 +404,14 @@ define('modules/ui', [
   socketUi.updateAssignee = function () {
     socket.removeAllListeners('updateAssignee')
     socket.on('updateAssignee', function (ticket) {
-      var assigneeContainer = $(
-        '.ticket-assignee[data-ticketId="' + ticket._id + '"]'
-      )
+      var assigneeContainer = $('.ticket-assignee[data-ticketId="' + ticket._id + '"]')
       if (assigneeContainer.length > 0) {
-        var image = _.isUndefined(ticket.assignee)
-          ? 'defaultProfile.jpg'
-          : ticket.assignee.image
+        var image = _.isUndefined(ticket.assignee) ? 'defaultProfile.jpg' : ticket.assignee.image
         if (_.isUndefined(image)) image = 'defaultProfile.jpg'
         assigneeContainer.find('a > img').attr('src', '/uploads/users/' + image)
         var $bubble = assigneeContainer.find('a > span[data-user-status-id]')
         if ($bubble.length < 1 && ticket.assignee) {
-          $bubble = $(
-            '<span class="user-offline uk-border-circle" data-user-status-id></span>'
-          )
+          $bubble = $('<span class="user-offline uk-border-circle" data-user-status-id></span>')
           assigneeContainer.find('a').append($bubble)
           $bubble = assigneeContainer.find('a > span[data-user-status-id]')
         }
@@ -453,14 +426,10 @@ define('modules/ui', [
         }
         var details = assigneeContainer.find('.ticket-assignee-details')
         if (details.length > 0) {
-          var name = _.isUndefined(ticket.assignee)
-            ? 'No User Assigned'
-            : ticket.assignee.fullname
+          var name = _.isUndefined(ticket.assignee) ? 'No User Assigned' : ticket.assignee.fullname
           details.find('h3').html(name)
           var a = details.find('a.comment-email-link')
-          var email = _.isUndefined(ticket.assignee)
-            ? ''
-            : ticket.assignee.email
+          var email = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.email
           if (a.length > 0) {
             a.attr('href', 'mailto:' + email).html(email)
           } else {
@@ -472,9 +441,7 @@ define('modules/ui', [
           }
 
           var span = details.find('span')
-          var title = _.isUndefined(ticket.assignee)
-            ? ''
-            : ticket.assignee.title
+          var title = _.isUndefined(ticket.assignee) ? '' : ticket.assignee.title
           if (span.length > 0) {
             span.html(title)
           } else {
@@ -500,13 +467,7 @@ define('modules/ui', [
   socketUi.updateTicketType = function () {
     socket.removeAllListeners('updateTicketType')
     socket.on('updateTicketType', function (data) {
-      var typeSelect = $(
-        'select#tType[data-ticketId="' +
-          data._id +
-          '"] option[value="' +
-          data.type._id +
-          '"]'
-      )
+      var typeSelect = $('select#tType[data-ticketId="' + data._id + '"] option[value="' + data.type._id + '"]')
       if (typeSelect.length > 0) {
         typeSelect.prop('selected', true)
       } else {
@@ -531,11 +492,7 @@ define('modules/ui', [
     socket.removeAllListeners('updateTicketPriority')
     socket.on('updateTicketPriority', function (data) {
       var prioritySelect = $(
-        'select#tPriority[data-ticketId="' +
-          data._id +
-          '"] option[value="' +
-          data.priority._id +
-          '"]'
+        'select#tPriority[data-ticketId="' + data._id + '"] option[value="' + data.priority._id + '"]'
       )
       if (prioritySelect.length > 0) {
         prioritySelect.prop('selected', true)
@@ -555,13 +512,7 @@ define('modules/ui', [
   socketUi.updateTicketGroup = function () {
     socket.removeAllListeners('updateTicketGroup')
     socket.on('updateTicketGroup', function (data) {
-      var groupSelect = $(
-        'select#tGroup[data-ticketId="' +
-          data._id +
-          '"] option[value="' +
-          data.group._id +
-          '"]'
-      )
+      var groupSelect = $('select#tGroup[data-ticketId="' + data._id + '"] option[value="' + data.group._id + '"]')
       if (groupSelect.length > 0) {
         groupSelect.prop('selected', true)
       } else {
@@ -655,12 +606,7 @@ define('modules/ui', [
 
       $ul.empty()
       _.each(ticket.attachments, function (attachment) {
-        var html =
-          '<li><a href="' +
-          attachment.path +
-          '" class="no-ajaxy" target="_blank">' +
-          attachment.name +
-          '</a>'
+        var html = '<li><a href="' + attachment.path + '" class="no-ajaxy" target="_blank">' + attachment.name + '</a>'
         if (canRemoveAttachments) {
           html +=
             '<a href="#" class="remove-attachment" data-attachmentId="' +
@@ -772,16 +718,12 @@ define('modules/ui', [
         combined = _.union(ticket.comments, ticket.notes)
         allCount = ticket.comments.length + ticket.notes.length
       } else {
-        $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').addClass(
-          'hide'
-        )
+        $('#tab-internal-notes[data-ticketid="' + ticket._id + '"]').addClass('hide')
       }
 
       ticket.commentsAndNotes = _.sortBy(combined, 'date')
 
-      var commentsNotesTab = $(
-        '.comments-notes-tab[data-ticketid="' + ticket._id + '"]'
-      )
+      var commentsNotesTab = $('.comments-notes-tab[data-ticketid="' + ticket._id + '"]')
 
       if (ticket.commentsAndNotes.length < 1) {
         commentsNotesTab.addClass('hide')
@@ -790,9 +732,7 @@ define('modules/ui', [
 
       commentsNotesTab.removeClass('hide')
 
-      var allCommentsContainer = $(
-        '.all-comments[data-ticketId="' + ticket._id + '"]'
-      )
+      var allCommentsContainer = $('.all-comments[data-ticketId="' + ticket._id + '"]')
       var commentContainer = $('.comments[data-ticketId="' + ticket._id + '"]')
       var notesContainer = $('.notes[data-ticketId="' + ticket._id + '"]')
 
@@ -848,10 +788,7 @@ define('modules/ui', [
             '<time datetime="' +
             item.date +
             '" data-uk-tooltip="{delay: 250}" title="' +
-            helpers.formatDate(
-              item.date,
-              helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()
-            ) +
+            helpers.formatDate(item.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) +
             '">' +
             helpers.getCalendarDate(item.date) +
             '</time>' +
@@ -875,24 +812,16 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (
-            helpers.canUser('comment:delete') ||
-            helpers.canUserEditSelf(item.owner._id, 'comment')
-          ) {
+          if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
             allCommentsHtml +=
               '<div class="remove-comment" data-commentId="' +
               item._id +
               '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (
-            helpers.canUser('commen:edit') ||
-            helpers.canUserEditSelf(item.owner._id, 'comment')
-          ) {
+          if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
             allCommentsHtml +=
-              '<div class="edit-comment" data-commentId="' +
-              item._id +
-              '"><i class="material-icons">&#xE254;</i></div>'
+              '<div class="edit-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE254;</i></div>'
           }
 
           allCommentsHtml += '</div>' + '</div>'
@@ -924,10 +853,7 @@ define('modules/ui', [
             '<time datetime="' +
             item.date +
             '" data-uk-tooltip="{delay: 250}" title="' +
-            helpers.formatDate(
-              item.date,
-              helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()
-            ) +
+            helpers.formatDate(item.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) +
             '">' +
             helpers.getCalendarDate(item.date) +
             '</time>' +
@@ -953,24 +879,14 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (
-            helpers.canUser('note:delete') ||
-            helpers.canUserEditSelf(item.owner._id, 'note')
-          ) {
+          if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) {
             allCommentsHtml +=
-              '<div class="remove-note" data-noteid="' +
-              item._id +
-              '"><i class="material-icons">&#xE5CD;</i></div>'
+              '<div class="remove-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (
-            helpers.canUser('note:edit') ||
-            helpers.canUserEditSelf(item.owner._id, 'note')
-          ) {
+          if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
             allCommentsHtml +=
-              '<div class="edit-note" data-noteid="' +
-              item._id +
-              '"><i class="material-icons">&#xE254;</i></div>'
+              '<div class="edit-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE254;</i></div>'
           }
 
           allCommentsHtml += '</div>' + '</div>'
@@ -1008,10 +924,7 @@ define('modules/ui', [
           '<time datetime="' +
           comment.date +
           '" data-uk-tooltip="{delay: 250}" title="' +
-          helpers.formatDate(
-            comment.date,
-            helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()
-          ) +
+          helpers.formatDate(comment.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) +
           '">' +
           helpers.getCalendarDate(comment.date) +
           '</time>' +
@@ -1035,20 +948,14 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (
-          helpers.canUser('comment:delete') ||
-          helpers.canUserEditSelf(comment.owner._id, 'comment')
-        ) {
+        if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
           commentsHtml +=
             '<div class="remove-comment" data-commentId="' +
             comment._id +
             '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (
-          helpers.canUser('commen:edit') ||
-          helpers.canUserEditSelf(comment.owner._id, 'comment')
-        ) {
+        if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
           commentsHtml +=
             '<div class="edit-comment" data-commentId="' +
             comment._id +
@@ -1089,10 +996,7 @@ define('modules/ui', [
           '<time datetime="' +
           note.date +
           '" data-uk-tooltip="{delay: 250}" title="' +
-          helpers.formatDate(
-            note.date,
-            helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()
-          ) +
+          helpers.formatDate(note.date, helpers.getLongDateFormat() + ', ' + helpers.getTimeFormat()) +
           '">' +
           helpers.getCalendarDate(note.date) +
           '</time>' +
@@ -1118,24 +1022,14 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (
-          helpers.canUser('note:delete') ||
-          helpers.canUserEditSelf(note.owner._id, 'note')
-        ) {
+        if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) {
           notesHtml +=
-            '<div class="remove-note" data-noteid="' +
-            note._id +
-            '"><i class="material-icons">&#xE5CD;</i></div>'
+            '<div class="remove-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (
-          helpers.canUser('note:edit') ||
-          helpers.canUserEditSelf(note.owner._id, 'note')
-        ) {
+        if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
           notesHtml +=
-            '<div class="edit-note" data-noteid="' +
-            note._id +
-            '"><i class="material-icons">&#xE254;</i></div>'
+            '<div class="edit-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE254;</i></div>'
         }
 
         notesHtml += '</div>' + '</div>'
@@ -1192,16 +1086,13 @@ define('modules/ui', [
 
         switch (item.type) {
           case 0:
-            html +=
-              '<div class="messageIcon left"><i class="fa fa-check green"></i></div>'
+            html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>'
             break
           case 1:
-            html +=
-              '<div class="messageIcon left"><i class="fa fa-comment-o green" style="margin-top: -5px"></i></div>'
+            html += '<div class="messageIcon left"><i class="fa fa-comment-o green" style="margin-top: -5px"></i></div>'
             break
           case 2:
-            html +=
-              '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>'
+            html += '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>'
             break
         }
 
@@ -1227,9 +1118,7 @@ define('modules/ui', [
 
         $notifications.append(html)
 
-        var $nLinks = $('#notifications-Messages').find(
-          'a[data-notificationId]'
-        )
+        var $nLinks = $('#notifications-Messages').find('a[data-notificationId]')
         $.each($nLinks, function (k, val) {
           var item = $(val)
           item.off('click')
@@ -1352,10 +1241,7 @@ define('modules/ui', [
     socket.on('trudesk:profileImageUpdate', function (data) {
       var profileImage = $('#profileImage[data-userid="' + data.userid + '"]')
       if (profileImage.length > 0) {
-        profileImage.attr(
-          'src',
-          '/uploads/users/' + data.img + '?r=' + new Date().getTime()
-        )
+        profileImage.attr('src', '/uploads/users/' + data.img + '?r=' + new Date().getTime())
       }
     })
   }

@@ -43,8 +43,7 @@ var apiTags = {}
  */
 apiTags.createTag = function (req, res) {
   var data = req.body
-  if (_.isUndefined(data.tag))
-    return res.status(400).json({ error: 'Invalid Post Data' })
+  if (_.isUndefined(data.tag)) return res.status(400).json({ error: 'Invalid Post Data' })
 
   var Tag = new TagSchema({
     name: data.tag
@@ -64,19 +63,13 @@ apiTags.getTagsWithLimit = function (req, res) {
 
   var tagSchema = require('../../../models/tag')
   try {
-    tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function (
-      err,
-      tags
-    ) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+    tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function (err, tags) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, tags: tags })
     })
   } catch (e) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Limit and/or page' })
+    return res.status(400).json({ success: false, error: 'Invalid Limit and/or page' })
   }
 }
 
@@ -98,12 +91,7 @@ apiTags.getTagsWithLimit = function (req, res) {
 apiTags.updateTag = function (req, res) {
   var id = req.params.id
   var data = req.body
-  if (
-    _.isUndefined(id) ||
-    _.isNull(id) ||
-    _.isNull(data) ||
-    _.isUndefined(data)
-  ) {
+  if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
     return res.status(400).json({ success: false, error: 'Invalid Put Data' })
   }
 
@@ -114,8 +102,7 @@ apiTags.updateTag = function (req, res) {
     tag.name = data.name
 
     tag.save(function (err, t) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, tag: t })
     })
@@ -138,8 +125,7 @@ apiTags.updateTag = function (req, res) {
  */
 apiTags.deleteTag = function (req, res) {
   var id = req.params.id
-  if (_.isUndefined(id) || _.isNull(id))
-    return res.status(400).json({ success: false, error: 'Invalid Tag Id' })
+  if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ success: false, error: 'Invalid Tag Id' })
 
   async.series(
     [
@@ -174,8 +160,7 @@ apiTags.deleteTag = function (req, res) {
       }
     ],
     function (err) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true })
     }

@@ -30,16 +30,7 @@ define([
 ], function (angular, _, $, UIkit, socket, nav, md, helpers, EasyMDE) {
   return angular
     .module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
-    .controller('singleTicket', function (
-      SessionService,
-      $window,
-      $rootScope,
-      $scope,
-      $http,
-      $timeout,
-      $q,
-      $log
-    ) {
+    .controller('singleTicket', function (SessionService, $window, $rootScope, $scope, $http, $timeout, $q, $log) {
       $scope.loggedInAccount = SessionService.getUser()
 
       var mdeToolbarItems = [
@@ -123,47 +114,39 @@ define([
           }
         })
 
-        $window.inlineAttachment.editors.codemirror4.attach(
-          commentMDE.codemirror,
-          {
-            onFileUploadResponse: function (xhr) {
-              var result = JSON.parse(xhr.responseText)
+        $window.inlineAttachment.editors.codemirror4.attach(commentMDE.codemirror, {
+          onFileUploadResponse: function (xhr) {
+            var result = JSON.parse(xhr.responseText)
 
-              var filename = result[this.settings.jsonFieldName]
+            var filename = result[this.settings.jsonFieldName]
 
-              if (result && filename) {
-                var newValue
-                if (typeof this.settings.urlText === 'function') {
-                  newValue = this.settings.urlText.call(this, filename, result)
-                } else {
-                  newValue = this.settings.urlText.replace(
-                    this.filenameTag,
-                    filename
-                  )
-                }
-
-                var text = this.editor
-                  .getValue()
-                  .replace(this.lastValue, newValue)
-                this.editor.setValue(text)
-                this.settings.onFileUploaded.call(this, filename)
+            if (result && filename) {
+              var newValue
+              if (typeof this.settings.urlText === 'function') {
+                newValue = this.settings.urlText.call(this, filename, result)
+              } else {
+                newValue = this.settings.urlText.replace(this.filenameTag, filename)
               }
-              return false
-            },
-            onFileUploadError: function (xhr) {
-              var result = xhr.responseText
-              var text = this.editor.getValue() + ' ' + result
+
+              var text = this.editor.getValue().replace(this.lastValue, newValue)
               this.editor.setValue(text)
-            },
-            extraHeaders: {
-              ticketid: $('#__ticketId').text()
-            },
-            errorText: 'Error uploading file: ',
-            uploadUrl: '/tickets/uploadmdeimage',
-            jsonFieldName: 'filename',
-            urlText: '![Image]({filename})'
-          }
-        )
+              this.settings.onFileUploaded.call(this, filename)
+            }
+            return false
+          },
+          onFileUploadError: function (xhr) {
+            var result = xhr.responseText
+            var text = this.editor.getValue() + ' ' + result
+            this.editor.setValue(text)
+          },
+          extraHeaders: {
+            ticketid: $('#__ticketId').text()
+          },
+          errorText: 'Error uploading file: ',
+          uploadUrl: '/tickets/uploadmdeimage',
+          jsonFieldName: 'filename',
+          urlText: '![Image]({filename})'
+        })
       }
 
       var $ticketNote = $('#ticket-note')
@@ -176,47 +159,39 @@ define([
           toolbar: mdeToolbarItems
         })
 
-        $window.inlineAttachment.editors.codemirror4.attach(
-          noteMDE.codemirror,
-          {
-            onFileUploadResponse: function (xhr) {
-              var result = JSON.parse(xhr.responseText)
+        $window.inlineAttachment.editors.codemirror4.attach(noteMDE.codemirror, {
+          onFileUploadResponse: function (xhr) {
+            var result = JSON.parse(xhr.responseText)
 
-              var filename = result[this.settings.jsonFieldName]
+            var filename = result[this.settings.jsonFieldName]
 
-              if (result && filename) {
-                var newValue
-                if (typeof this.settings.urlText === 'function') {
-                  newValue = this.settings.urlText.call(this, filename, result)
-                } else {
-                  newValue = this.settings.urlText.replace(
-                    this.filenameTag,
-                    filename
-                  )
-                }
-
-                var text = this.editor
-                  .getValue()
-                  .replace(this.lastValue, newValue)
-                this.editor.setValue(text)
-                this.settings.onFileUploaded.call(this, filename)
+            if (result && filename) {
+              var newValue
+              if (typeof this.settings.urlText === 'function') {
+                newValue = this.settings.urlText.call(this, filename, result)
+              } else {
+                newValue = this.settings.urlText.replace(this.filenameTag, filename)
               }
-              return false
-            },
-            onFileUploadError: function (xhr) {
-              var result = xhr.responseText
-              var text = this.editor.getValue() + ' ' + result
+
+              var text = this.editor.getValue().replace(this.lastValue, newValue)
               this.editor.setValue(text)
-            },
-            extraHeaders: {
-              ticketid: $('#__ticketId').text()
-            },
-            errorText: 'Error uploading file: ',
-            uploadUrl: '/tickets/uploadmdeimage',
-            jsonFieldName: 'filename',
-            urlText: '![Image]({filename})'
-          }
-        )
+              this.settings.onFileUploaded.call(this, filename)
+            }
+            return false
+          },
+          onFileUploadError: function (xhr) {
+            var result = xhr.responseText
+            var text = this.editor.getValue() + ' ' + result
+            this.editor.setValue(text)
+          },
+          extraHeaders: {
+            ticketid: $('#__ticketId').text()
+          },
+          errorText: 'Error uploading file: ',
+          uploadUrl: '/tickets/uploadmdeimage',
+          jsonFieldName: 'filename',
+          urlText: '![Image]({filename})'
+        })
       }
 
       // Setup Assignee Drop based on Status
@@ -419,9 +394,7 @@ define([
             }
           })
           _.each(selectedItems, function (item) {
-            var option = tagModal
-              .find('#tags')
-              .find('option[value="' + item + '"]')
+            var option = tagModal.find('#tags').find('option[value="' + item + '"]')
             option.prop('selected', 'selected')
           })
 
@@ -497,9 +470,7 @@ define([
             '<div class="mde-error uk-float-left uk-text-left">Please enter a valid comment. Comments must contain at least 5 characters.</div>'
           )
 
-          $mdeError = commentField
-            .siblings('.editor-statusbar')
-            .find('.mde-error')
+          $mdeError = commentField.siblings('.editor-statusbar').find('.mde-error')
           if ($mdeError.length < 1) {
             commentField.siblings('.editor-statusbar').prepend(mdeError)
           }
@@ -602,11 +573,7 @@ define([
 
             function mouseup ($event) {
               var target = $event.target.offsetParent
-              if (
-                $(target).length > 0 &&
-                $(target).hasClass('floating-ticket-status')
-              )
-                return false
+              if ($(target).length > 0 && $(target).hasClass('floating-ticket-status')) return false
 
               if (!element.hasClass('hide')) {
                 element.addClass('hide')

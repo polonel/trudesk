@@ -27,10 +27,7 @@ define([
   'angularjs/services'
 ], function (angular, _, $, helpers, ui, UIkit, EasyMDE, moment) {
   return angular
-    .module('trudesk.controllers.settings', [
-      'ngSanitize',
-      'trudesk.services.settings'
-    ])
+    .module('trudesk.controllers.settings', ['ngSanitize', 'trudesk.services.settings'])
     .directive('selectize', function ($timeout) {
       return {
         restrict: 'A',
@@ -53,14 +50,7 @@ define([
         }
       }
     })
-    .controller('settingsCtrl', function (
-      SettingsService,
-      $scope,
-      $http,
-      $timeout,
-      $log,
-      $window
-    ) {
+    .controller('settingsCtrl', function (SettingsService, $scope, $http, $timeout, $log, $window) {
       var mdeToolbarItems = [
         {
           name: 'bold',
@@ -173,10 +163,7 @@ define([
           }
         }
 
-        UIkit.uploadSelect(
-          $('#page-logo-upload-select'),
-          pageUploadLogoSettings
-        )
+        UIkit.uploadSelect($('#page-logo-upload-select'), pageUploadLogoSettings)
 
         var uploadFaviconSettings = {
           action: '/settings/general/uploadfavicon',
@@ -221,8 +208,7 @@ define([
               var timezoneAtBeginningOfyear = moment.tz(year + '-01-01', name)
               return {
                 utc: timezoneAtBeginningOfyear.utcOffset(),
-                label:
-                  '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
+                label: '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
                 value: name
               }
             })
@@ -379,10 +365,7 @@ define([
             items: $scope.ticketTagsCount,
             itemsOnPage: 16
           })
-          $ticketTagPagination.on(
-            'select.uk.pagination',
-            loadTicketTagPagination
-          )
+          $ticketTagPagination.on('select.uk.pagination', loadTicketTagPagination)
         }, 0)
       }
 
@@ -399,9 +382,7 @@ define([
               $timeout(function () {
                 var type = response.type
                 if ($scope.mailerCheckTicketPriority === '') {
-                  $scope.mailerCheckTicketPriority = _.first(
-                    type.priorities
-                  )._id
+                  $scope.mailerCheckTicketPriority = _.first(type.priorities)._id
                 }
 
                 var holdPriorityValue = $scope.mailerCheckTicketPriority
@@ -414,8 +395,7 @@ define([
                   holdPriorityValue = _.first(type.priorities)._id
                 }
 
-                var $selectizeTicketPriority =
-                  $mailCheckTicketPrioritySelect[0].selectize
+                var $selectizeTicketPriority = $mailCheckTicketPrioritySelect[0].selectize
                 $selectizeTicketPriority.clearOptions()
 
                 type.priorities.forEach(function (priority) {
@@ -662,10 +642,7 @@ define([
           )
           .then(
             function successCallback () {
-              helpers.UI.showSnackbar(
-                'Timezone Updated. Please restart server.',
-                false
-              )
+              helpers.UI.showSnackbar('Timezone Updated. Please restart server.', false)
             },
             function errorCallback (err) {
               helpers.UI.showSnackbar('Error: ' + err, true)
@@ -716,8 +693,7 @@ define([
           )
           .then(
             function successCallback () {
-              SettingsService.getSettings().shortDateFormat.value =
-                $scope.shortDateFormat
+              SettingsService.getSettings().shortDateFormat.value = $scope.shortDateFormat
               helpers.UI.showSnackbar('Setting Saved.', false)
             },
             function errorCallback (err) {
@@ -743,8 +719,7 @@ define([
           )
           .then(
             function successCallback () {
-              SettingsService.getSettings().longDateFormat.value =
-                $scope.longDateFormat
+              SettingsService.getSettings().longDateFormat.value = $scope.longDateFormat
               helpers.UI.showSnackbar('Setting Saved.', false)
             },
             function errorCallback (err) {
@@ -1016,10 +991,7 @@ define([
         $http
           .put(
             '/api/v1/settings',
-            [
-              { name: 'tps:username', value: $scope.tpsUsername },
-              { name: 'tps:apikey', value: $scope.tpsApiKey }
-            ],
+            [{ name: 'tps:username', value: $scope.tpsUsername }, { name: 'tps:apikey', value: $scope.tpsApiKey }],
             {
               headers: {
                 'Content-Type': 'application/json'
@@ -1037,12 +1009,8 @@ define([
       }
 
       $scope.$watch('mailerCheckEnabled', function (newVal) {
-        var $mailerCheckTicketTypeSelectize = $(
-          'select#mailerCheckTicketType'
-        ).selectize()[0]
-        var $mailerCheckTicketPrioritySelectize = $(
-          'select#mailerCheckTicketPriority'
-        ).selectize()[0]
+        var $mailerCheckTicketTypeSelectize = $('select#mailerCheckTicketType').selectize()[0]
+        var $mailerCheckTicketPrioritySelectize = $('select#mailerCheckTicketPriority').selectize()[0]
 
         $('input#mailerCheckHost')
           .attr('disabled', !newVal)
@@ -1108,10 +1076,7 @@ define([
                       .success(function () {})
                       .error(function (err) {
                         helpers.hideLoader()
-                        $log.log(
-                          '[trudesk:settings:mailerCheckSubmit] - Error: ' +
-                            err.error
-                        )
+                        $log.log('[trudesk:settings:mailerCheckSubmit] - Error: ' + err.error)
                         $log.error(err)
                       })
                   },
@@ -1130,12 +1095,8 @@ define([
 
       $scope.mailerCheckFormSubmit = function ($event) {
         $event.preventDefault()
-        var mailerCheckTicketTypeValue = $(
-          '#mailerCheckTicketType option[selected]'
-        ).val()
-        var mailerCheckTicketPriorityValue = $(
-          '#mailerCheckTicketPriority option[selected]'
-        ).val()
+        var mailerCheckTicketTypeValue = $('#mailerCheckTicketType option[selected]').val()
+        var mailerCheckTicketPriorityValue = $('#mailerCheckTicketPriority option[selected]').val()
         $http
           .put(
             '/api/v1/settings',
@@ -1185,10 +1146,7 @@ define([
                     .success(function () {})
                     .error(function (err) {
                       helpers.hideLoader()
-                      $log.log(
-                        '[trudesk:settings:mailerCheckSubmit] - Error: ' +
-                          err.error
-                      )
+                      $log.log('[trudesk:settings:mailerCheckSubmit] - Error: ' + err.error)
                       $log.error(err)
                     })
                 },
@@ -1444,18 +1402,12 @@ define([
           )
           .then(
             function successCallback () {
-              helpers.UI.showSnackbar(
-                'Type: ' + typeName + ' created successfully',
-                false
-              )
+              helpers.UI.showSnackbar('Type: ' + typeName + ' created successfully', false)
 
               History.pushState(null, null, '/settings/tickets/?refresh=true')
             },
             function errorCallback (err) {
-              helpers.UI.showSnackbar(
-                'Unable to create ticket type. Check console',
-                true
-              )
+              helpers.UI.showSnackbar('Unable to create ticket type. Check console', true)
               $log.error(err)
             }
           )
@@ -1498,10 +1450,7 @@ define([
             )
             .then(
               function successCallback () {
-                helpers.UI.showSnackbar(
-                  'Type: ' + typeName + ' updated successfully',
-                  false
-                )
+                helpers.UI.showSnackbar('Type: ' + typeName + ' updated successfully', false)
                 $('li[data-key="' + typeId + '"]')
                   .find('h3')
                   .text(typeName)
@@ -1535,10 +1484,7 @@ define([
           )
           .then(
             function successCallback () {
-              helpers.UI.showSnackbar(
-                'Type: ' + typeName + ' updated successfully',
-                false
-              )
+              helpers.UI.showSnackbar('Type: ' + typeName + ' updated successfully', false)
             },
             function errorCallback (err) {
               helpers.UI.showSnackbar(err, true)
@@ -1552,9 +1498,7 @@ define([
           if (delTicketTypeModal.length > 0) {
             UIkit.modal(delTicketTypeModal, { bgclose: false }).show()
           } else {
-            $log.log(
-              'Unable to locate modal window: #deleteTicketTypeModal' + typeId
-            )
+            $log.log('Unable to locate modal window: #deleteTicketTypeModal' + typeId)
           }
         } else {
           $scope.submitDeleteTicketType(typeId, undefined)
@@ -1570,15 +1514,10 @@ define([
         }
 
         var typeName = $('input#del_type_name-' + typeId).val()
-        var newTypeId = $(
-          'form#deleteTicketTypeForm-' + typeId + ' select[name="ticketType"]'
-        ).val()
+        var newTypeId = $('form#deleteTicketTypeForm-' + typeId + ' select[name="ticketType"]').val()
 
         if (!newTypeId || newTypeId.length < 1) {
-          helpers.UI.showSnackbar(
-            'Unable to get new ticket type. Aborting...',
-            true
-          )
+          helpers.UI.showSnackbar('Unable to get new ticket type. Aborting...', true)
           return true
         }
 
@@ -1594,30 +1533,18 @@ define([
         }).then(
           function successCallback (response) {
             if (response.data.success) {
-              helpers.UI.showSnackbar(
-                'Successfully removed ticket type: ' + typeName,
-                false
-              )
+              helpers.UI.showSnackbar('Successfully removed ticket type: ' + typeName, false)
 
               return History.pushState(null, null, '/settings/tickets/')
             }
           },
           function errorCallback (response) {
             if (!_.isUndefined(response.data.error.custom)) {
-              $log.error(
-                '[trudesk:settings:submitDeleteTicketType] Error -',
-                response.data.error
-              )
+              $log.error('[trudesk:settings:submitDeleteTicketType] Error -', response.data.error)
               helpers.UI.showSnackbar(response.data.error.message, true)
             } else {
-              $log.error(
-                '[trudesk:settings:submitDeleteTicketType] Error -',
-                response.data.error
-              )
-              helpers.UI.showSnackbar(
-                'Unable to remove ticket type. Check console.',
-                true
-              )
+              $log.error('[trudesk:settings:submitDeleteTicketType] Error -', response.data.error)
+              helpers.UI.showSnackbar('Unable to remove ticket type. Check console.', true)
             }
           }
         )
@@ -1659,13 +1586,9 @@ define([
         var $viewBox = $('#view-p-' + pId)
         var $editBox = $('#edit-p-' + pId)
         if ($editBox.length > 0 && $viewBox.length > 0) {
-          $editBox
-            .find('.uk-color-button')
-            .css({
-              background: $editBox
-                .find('input[name="p-' + pId + '-htmlColor"]')
-                .val()
-            })
+          $editBox.find('.uk-color-button').css({
+            background: $editBox.find('input[name="p-' + pId + '-htmlColor"]').val()
+          })
           $viewBox.addClass('hide')
           $editBox.removeClass('hide')
         }
@@ -1693,13 +1616,9 @@ define([
         var $viewBox = $('#t-' + typeId + '-view-p-' + id)
         var $editBox = $('#t-' + typeId + '-edit-p-' + id)
         if ($editBox.length > 0 && $viewBox.length > 0) {
-          $editBox
-            .find('.uk-color-button')
-            .css({
-              background: $editBox
-                .find('input[name="p-' + id + '-htmlColor"]')
-                .val()
-            })
+          $editBox.find('.uk-color-button').css({
+            background: $editBox.find('input[name="p-' + id + '-htmlColor"]').val()
+          })
           $viewBox.addClass('hide')
           $editBox.removeClass('hide')
         }
@@ -1737,9 +1656,7 @@ define([
                 .get('/api/v1/tickets/priorities')
                 .success(function (response) {
                   var priorities = response.priorities
-                  var $addPriorityToTypeModal = $(
-                    '#addPriorityTicketType-' + typeId
-                  )
+                  var $addPriorityToTypeModal = $('#addPriorityTicketType-' + typeId)
                   var $pLoop = $addPriorityToTypeModal.find('.priority-loop')
                   $pLoop.empty()
 
@@ -1822,21 +1739,15 @@ define([
                 })
                 .error(function (error) {
                   $log.error(error)
-                  helpers.UI.showSnackbar(
-                    'Unable to load ticket type. Check Console.'
-                  )
+                  helpers.UI.showSnackbar('Unable to load ticket type. Check Console.')
                 })
             } else {
-              helpers.UI.showSnackbar(
-                'Unable to load ticket type. Check Console.'
-              )
+              helpers.UI.showSnackbar('Unable to load ticket type. Check Console.')
             }
           })
           .error(function (error) {
             $log.error(error)
-            helpers.UI.showSnackbar(
-              'Unable to load ticket type. Check Console.'
-            )
+            helpers.UI.showSnackbar('Unable to load ticket type. Check Console.')
           })
       }
 
@@ -1862,17 +1773,12 @@ define([
               var Type = response.data.type
               if (Type) {
                 // Update UI
-                var $typeContainer = $(
-                  'div[data-ticket-type-id="' + typeId + '"]'
-                )
+                var $typeContainer = $('div[data-ticket-type-id="' + typeId + '"]')
                 if ($typeContainer.length > 0) {
                   var $prioritiesBox = $typeContainer.find('.priority-loop')
                   var html = ''
                   $prioritiesBox.empty()
-                  var sortedTypePriorities = _.sortBy(
-                    _.sortBy(Type.priorities, 'name'),
-                    'migrationNum'
-                  )
+                  var sortedTypePriorities = _.sortBy(_.sortBy(Type.priorities, 'name'), 'migrationNum')
 
                   _.each(sortedTypePriorities, function (priority) {
                     html = ''
@@ -2081,11 +1987,7 @@ define([
         }
       }
 
-      $scope.submitRemoveTicketTypePriority = function (
-        typeId,
-        priorityId,
-        $event
-      ) {
+      $scope.submitRemoveTicketTypePriority = function (typeId, priorityId, $event) {
         if ($event) {
           $event.preventDefault()
         }
@@ -2129,9 +2031,7 @@ define([
           helpers.UI.inputs()
           helpers.UI.reRenderInputs()
           createPriorityModal.find('form').trigger('reset')
-          createPriorityModal
-            .find('.generateHtmlColorBtn')
-            .css({ background: '#29B955' })
+          createPriorityModal.find('.generateHtmlColorBtn').css({ background: '#29B955' })
           UIkit.modal(createPriorityModal, { bgclose: false }).show()
           createPriorityModal.find('input[name="p-name"]').focus()
         } else {
@@ -2150,11 +2050,7 @@ define([
           var $priorityName = $form.find('input[name="p-name"]')
           var $priorityOverdueIn = $form.find('input[name="p-overdueIn"]')
           var $priorityHtmlColor = $form.find('input[name="p-htmlColor"]')
-          if (
-            $priorityName.length < 1 ||
-            $priorityOverdueIn.length < 1 ||
-            $priorityHtmlColor.length < 1
-          ) {
+          if ($priorityName.length < 1 || $priorityOverdueIn.length < 1 || $priorityHtmlColor.length < 1) {
             return false
           }
 
@@ -2296,12 +2192,7 @@ define([
 
                         priorities.forEach(function (p) {
                           if (p._id.toString() !== savedPriority._id) {
-                            html +=
-                              '<option value="' +
-                              p._id +
-                              '">' +
-                              p.name +
-                              '</option>'
+                            html += '<option value="' + p._id + '">' + p.name + '</option>'
                           }
                         })
 
@@ -2348,20 +2239,14 @@ define([
                       })
                       .error(function (errorResponse) {
                         $log.error(errorResponse)
-                        helpers.UI.showSnackbar(
-                          'Error: ' + errorResponse.data.error,
-                          true
-                        )
+                        helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true)
                       })
                   }
                 }
               },
               function errorCallback (errorResponse) {
                 $log.error(errorResponse)
-                helpers.UI.showSnackbar(
-                  'Error: ' + errorResponse.data.error,
-                  true
-                )
+                helpers.UI.showSnackbar('Error: ' + errorResponse.data.error, true)
               }
             )
         }
@@ -2371,19 +2256,11 @@ define([
         $event.preventDefault()
         var $form = $($event.currentTarget)
         var priorityId = $form.attr('data-priority-id')
-        var typeId = $form
-          .parents('div[data-ticket-type-id]')
-          .attr('data-ticket-type-id')
+        var typeId = $form.parents('div[data-ticket-type-id]').attr('data-ticket-type-id')
         if ($form && priorityId) {
-          var $priorityNameInput = $form.find(
-            'input[name="p-' + priorityId + '-name"]'
-          )
-          var $priorityHtmlColor = $form.find(
-            'input[name="p-' + priorityId + '-htmlColor"]'
-          )
-          var $priorityOverdueIn = $form.find(
-            'input[name="p-' + priorityId + '-overdueIn"]'
-          )
+          var $priorityNameInput = $form.find('input[name="p-' + priorityId + '-name"]')
+          var $priorityHtmlColor = $form.find('input[name="p-' + priorityId + '-htmlColor"]')
+          var $priorityOverdueIn = $form.find('input[name="p-' + priorityId + '-overdueIn"]')
           var priorityName = $priorityNameInput.val()
           var htmlColor = $priorityHtmlColor.val()
           var overdueIn = $priorityOverdueIn.val()
@@ -2410,12 +2287,8 @@ define([
                   .find('.p-' + priorityId + '-name')
                   .css({ color: htmlColor })
                   .text(priorityName)
-                $body
-                  .find('.p-' + priorityId + '-overdueIn')
-                  .text(response.data.priority.durationFormatted)
-                $body
-                  .find('input[name="p-' + priorityId + '-htmlColor"]')
-                  .val(htmlColor)
+                $body.find('.p-' + priorityId + '-overdueIn').text(response.data.priority.durationFormatted)
+                $body.find('input[name="p-' + priorityId + '-htmlColor"]').val(htmlColor)
                 if (typeId) {
                   $scope.cancelEditTicketTypePriority(typeId, priorityId)
                 } else {
@@ -2440,10 +2313,7 @@ define([
         setApperanceColorBtn('#headerBGColorBtn', $scope.colorHeaderBG)
       })
       $scope.$watch('colorHeaderPrimary', function () {
-        setApperanceColorBtn(
-          '#headerPrimaryColorBtn',
-          $scope.colorHeaderPrimary
-        )
+        setApperanceColorBtn('#headerPrimaryColorBtn', $scope.colorHeaderPrimary)
       })
       $scope.$watch('colorPrimary', function () {
         setApperanceColorBtn('#primaryColorBtn', $scope.colorPrimary)
@@ -2512,10 +2382,7 @@ define([
               // Call rebuild of app.min.css
               $http.get('/api/v1/settings/buildsass').then(
                 function successCallback () {
-                  helpers.UI.showSnackbar(
-                    'Color Scheme Saved. Reloading...',
-                    false
-                  )
+                  helpers.UI.showSnackbar('Color Scheme Saved. Reloading...', false)
                   $timeout(function () {
                     $window.location.reload()
                   }, 1000)
@@ -2622,10 +2489,7 @@ define([
               }
             )
             .success(function () {
-              helpers.UI.showSnackbar(
-                'Tag: ' + tagName + ' updated successfully',
-                false
-              )
+              helpers.UI.showSnackbar('Tag: ' + tagName + ' updated successfully', false)
               var $h5 = $('h5.tag-' + tagId + '-name')
               if ($h5.length > 0) {
                 $h5.text(tagName)
@@ -2672,26 +2536,14 @@ define([
         }).then(
           function successCallback (response) {
             if (response.data.success) {
-              helpers.UI.showSnackbar(
-                'Successfully removed tag: ' + tagName,
-                false
-              )
+              helpers.UI.showSnackbar('Successfully removed tag: ' + tagName, false)
 
-              return History.pushState(
-                null,
-                null,
-                '/settings/tickets/?refresh=' + new Date().getTime()
-              )
+              return History.pushState(null, null, '/settings/tickets/?refresh=' + new Date().getTime())
             }
           },
           function errorCallback (response) {
-            $log.error(
-              '[trudesk:settings:deleteTag] Error - ' + response.data.error
-            )
-            helpers.UI.showSnackbar(
-              'Unable to remove Tag. Check console.',
-              true
-            )
+            $log.error('[trudesk:settings:deleteTag] Error - ' + response.data.error)
+            helpers.UI.showSnackbar('Unable to remove Tag. Check console.', true)
           }
         )
       }

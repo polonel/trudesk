@@ -109,10 +109,7 @@ var port = process.env.PORT || 8118
     app.set('view engine', 'hbs')
     hbsHelpers.register(hbs.handlebars)
 
-    app.use(
-      '/assets',
-      express.static(path.join(__dirname, '../public/uploads/assets'))
-    )
+    app.use('/assets', express.static(path.join(__dirname, '../public/uploads/assets')))
 
     app.use(express.static(path.join(__dirname, '../public')))
     app.use(favicon(path.join(__dirname, '../public/img/favicon.ico')))
@@ -127,26 +124,10 @@ var port = process.env.PORT || 8118
     })
 
     router.get('/install', controllers.install.index)
-    router.post(
-      '/install',
-      routeMiddleware.checkOrigin,
-      controllers.install.install
-    )
-    router.post(
-      '/install/mongotest',
-      routeMiddleware.checkOrigin,
-      controllers.install.mongotest
-    )
-    router.post(
-      '/install/existingdb',
-      routeMiddleware.checkOrigin,
-      controllers.install.existingdb
-    )
-    router.post(
-      '/install/restart',
-      routeMiddleware.checkOrigin,
-      controllers.install.restart
-    )
+    router.post('/install', routeMiddleware.checkOrigin, controllers.install.install)
+    router.post('/install/mongotest', routeMiddleware.checkOrigin, controllers.install.mongotest)
+    router.post('/install/existingdb', routeMiddleware.checkOrigin, controllers.install.existingdb)
+    router.post('/install/restart', routeMiddleware.checkOrigin, controllers.install.restart)
 
     app.use('/', router)
 

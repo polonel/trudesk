@@ -78,35 +78,21 @@ define('pages/reportsBreakdown', [
 
             var tCount = _data.data.ticketCount
             var ticketCount = $('#ticketCount')
-            var oldTicketCount =
-              ticketCount.text() === '--' ? 0 : ticketCount.text()
+            var oldTicketCount = ticketCount.text() === '--' ? 0 : ticketCount.text()
             var totalTicketText = 'Total Tickets (lifetime)'
             ticketCount
               .parents('.tru-card-content')
               .find('span.uk-text-small')
               .text(totalTicketText)
-            var theAnimation = new CountUp(
-              'ticketCount',
-              parseInt(oldTicketCount),
-              tCount,
-              0,
-              1.5
-            )
+            var theAnimation = new CountUp('ticketCount', parseInt(oldTicketCount), tCount, 0, 1.5)
             theAnimation.start()
 
             var closedCount = Number(_data.data.closedCount)
             var closedPercent = Math.round((closedCount / tCount) * 100)
 
             var textComplete = $('#text_complete')
-            var oldTextComplete =
-              textComplete.text() === '--' ? 0 : textComplete.text()
-            var completeAnimation = new CountUp(
-              'text_complete',
-              parseInt(oldTextComplete),
-              closedPercent,
-              0,
-              1.5
-            )
+            var oldTextComplete = textComplete.text() === '--' ? 0 : textComplete.text()
+            var completeAnimation = new CountUp('text_complete', parseInt(oldTextComplete), closedPercent, 0, 1.5)
             completeAnimation.start()
 
             var pieComplete = $('#pie_complete')
@@ -119,8 +105,7 @@ define('pages/reportsBreakdown', [
 
             var responseTime_text = $('#responseTime_text')
             // var responseTime_graph = $('#responseTime_graph');
-            var oldResponseTime =
-              responseTime_text.text() === '--' ? 0 : responseTime_text.text()
+            var oldResponseTime = responseTime_text.text() === '--' ? 0 : responseTime_text.text()
             var responseTime = _data.data.avgResponse
             var responseTime_animation = new CountUp(
               'responseTime_text',
@@ -134,10 +119,7 @@ define('pages/reportsBreakdown', [
             var recentTicketsBody = $('tbody.recent-tickets')
             recentTicketsBody.html('')
             var html = ''
-            var sortedTickets = _.sortBy(
-              _data.data.recentTickets,
-              'uid'
-            ).reverse()
+            var sortedTickets = _.sortBy(_data.data.recentTickets, 'uid').reverse()
             _.each(sortedTickets, function (ticket) {
               var status = ''
               switch (ticket.status) {
@@ -170,8 +152,7 @@ define('pages/reportsBreakdown', [
               html += '<td class="uk-width-6-10">'
               html += ticket.subject
               html += '</td>'
-              html +=
-                '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">'
+              html += '<td class="uk-width-2-10 uk-text-right uk-text-muted uk-text-small">'
               html += moment
                 .utc(ticket.updated)
                 .tz(helpers.getTimezone())
@@ -229,10 +210,7 @@ define('pages/reportsBreakdown', [
           }
         }).error(function (err) {
           // console.log(err);
-          console.log(
-            '[trudesk:reportsBreakdownGroup:getData] Error - ' +
-              err.responseText
-          )
+          console.log('[trudesk:reportsBreakdownGroup:getData] Error - ' + err.responseText)
           helpers.UI.showSnackbar(JSON.parse(err.responseText).error, true)
         })
       }

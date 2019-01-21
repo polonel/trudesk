@@ -71,8 +71,7 @@ apiSettings.getSettings = function (req, res) {
  */
 apiSettings.updateSetting = function (req, res) {
   var postData = req.body
-  if (_.isUndefined(postData))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (_.isUndefined(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   if (!_.isArray(postData)) postData = [postData]
 
@@ -113,9 +112,7 @@ apiSettings.testMailer = function (req, res) {
   mailer.verify(function (err) {
     if (err) {
       winston.debug(err)
-      return res
-        .status(400)
-        .json({ success: false, error: err.code ? err.code : 'See Console' })
+      return res.status(400).json({ success: false, error: err.code ? err.code : 'See Console' })
     }
 
     return res.json({ success: true })

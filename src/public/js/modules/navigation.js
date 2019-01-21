@@ -12,12 +12,7 @@
 
  **/
 
-define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
-  $,
-  helpers,
-  _,
-  socket
-) {
+define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function ($, helpers, _, socket) {
   var navigation = {}
 
   navigation.init = function () {
@@ -102,8 +97,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
 
     if ($(drop).hasClass('pSmall')) leftO = 180
 
-    var left =
-      $(this).offset().left - $(window).scrollLeft() - pageOffsetLeft - leftO
+    var left = $(this).offset().left - $(window).scrollLeft() - pageOffsetLeft - leftO
     // if (drop.hasClass('p-dropdown-left')) {
     //     //left += 250;
     // }

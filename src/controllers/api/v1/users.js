@@ -162,14 +162,7 @@ apiUsers.create = function (req, res) {
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
   }
 
-  var propCheck = [
-    'aUsername',
-    'aPass',
-    'aPassConfirm',
-    'aFullname',
-    'aEmail',
-    'aRole'
-  ]
+  var propCheck = ['aUsername', 'aPass', 'aPassConfirm', 'aFullname', 'aEmail', 'aRole']
 
   if (
     !_.every(propCheck, function (x) {
@@ -179,20 +172,12 @@ apiUsers.create = function (req, res) {
     return res.status(400).json({ success: false, error: 'Invalid Post Data' })
   }
 
-  if (
-    _.isUndefined(postData.aGrps) ||
-    _.isNull(postData.aGrps) ||
-    !_.isArray(postData.aGrps)
-  ) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Group Array' })
+  if (_.isUndefined(postData.aGrps) || _.isNull(postData.aGrps) || !_.isArray(postData.aGrps)) {
+    return res.status(400).json({ success: false, error: 'Invalid Group Array' })
   }
 
   if (postData.aPass !== postData.aPassConfirm)
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Password Match' })
+    return res.status(400).json({ success: false, error: 'Invalid Password Match' })
 
   var account = new UserSchema({
     username: postData.aUsername,
@@ -222,10 +207,7 @@ apiUsers.create = function (req, res) {
         if (_.isUndefined(id)) return done(null)
         groupSchema.getGroupById(id, function (err, grp) {
           if (err) return done(err)
-          if (!grp)
-            return done(
-              'Invalid Group (' + id + ') - Group not found. Check Group ID'
-            )
+          if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID')
 
           grp.addMember(a._id, function (err, success) {
             if (err) return done(err)
@@ -275,8 +257,7 @@ apiUsers.createPublicAccount = function (req, res) {
   var response = {}
   response.success = true
   var postData = req.body
-  if (!_.isObject(postData))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   var user, group
 
@@ -316,8 +297,7 @@ apiUsers.createPublicAccount = function (req, res) {
     ],
     function (err, result) {
       if (err) winston.debug(err)
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       delete result.user.password
       result.user.password = undefined
@@ -399,14 +379,10 @@ apiUsers.update = function (req, res) {
             }
           }
 
-          if (!_.isUndefined(obj.fullname) && obj.fullname.length > 0)
-            user.fullname = obj.fullname
-          if (!_.isUndefined(obj.email) && obj.email.length > 0)
-            user.email = obj.email
-          if (!_.isUndefined(obj.title) && obj.title.length > 0)
-            user.title = obj.title
-          if (!_.isUndefined(obj.role) && obj.role.length > 0)
-            user.role = obj.role
+          if (!_.isUndefined(obj.fullname) && obj.fullname.length > 0) user.fullname = obj.fullname
+          if (!_.isUndefined(obj.email) && obj.email.length > 0) user.email = obj.email
+          if (!_.isUndefined(obj.title) && obj.title.length > 0) user.title = obj.title
+          if (!_.isUndefined(obj.role) && obj.role.length > 0) user.role = obj.role
 
           user.save(function (err, nUser) {
             if (err) return done(err)
@@ -557,8 +533,7 @@ apiUsers.updatePreferences = function (req, res) {
 apiUsers.deleteUser = function (req, res) {
   var username = req.params.username
 
-  if (_.isUndefined(username) || _.isNull(username))
-    return res.status(400).json({ error: 'Invalid Request' })
+  if (_.isUndefined(username) || _.isNull(username)) return res.status(400).json({ error: 'Invalid Request' })
 
   async.waterfall(
     [
@@ -574,14 +549,8 @@ apiUsers.deleteUser = function (req, res) {
             return cb({ message: 'Cannot remove yourself!' })
           }
 
-          if (
-            req.user.role.toLowerCase() === 'support' ||
-            req.user.role.toLowerCase() === 'user'
-          ) {
-            if (
-              user.role.toLowerCase() === 'mod' ||
-              user.role.toLowerCase() === 'admin'
-            ) {
+          if (req.user.role.toLowerCase() === 'support' || req.user.role.toLowerCase() === 'user') {
+            if (user.role.toLowerCase() === 'mod' || user.role.toLowerCase() === 'admin') {
               return cb({ message: 'Insufficient permissions' })
             }
           }
@@ -600,10 +569,7 @@ apiUsers.deleteUser = function (req, res) {
       },
       function (hasTickets, user, cb) {
         var conversationSchema = require('../../../models/chat/conversation')
-        conversationSchema.getConversationsWithLimit(user._id, 10, function (
-          err,
-          conversations
-        ) {
+        conversationSchema.getConversationsWithLimit(user._id, 10, function (err, conversations) {
           if (err) return cb(err)
 
           var hasConversations = _.size(conversations) > 0
@@ -629,8 +595,7 @@ apiUsers.deleteUser = function (req, res) {
       }
     ],
     function (err, disabled) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, disabled: disabled })
     }
@@ -659,8 +624,7 @@ apiUsers.deleteUser = function (req, res) {
  */
 apiUsers.enableUser = function (req, res) {
   var username = req.params.username
-  if (_.isUndefined(username))
-    return res.status(400).json({ error: 'Invalid Request' })
+  if (_.isUndefined(username)) return res.status(400).json({ error: 'Invalid Request' })
 
   UserSchema.getUserByUsername(username, function (err, user) {
     if (err) {
@@ -668,8 +632,7 @@ apiUsers.enableUser = function (req, res) {
       return res.status(400).json({ error: err.message })
     }
 
-    if (_.isUndefined(user) || _.isNull(user))
-      return res.status(400).json({ error: 'Invalid Request' })
+    if (_.isUndefined(user) || _.isNull(user)) return res.status(400).json({ error: 'Invalid Request' })
 
     if (!permissions.canThis(req.user.role, 'accounts:delete'))
       return res.status(401).json({ error: 'Invalid Permissions' })
@@ -713,8 +676,7 @@ apiUsers.enableUser = function (req, res) {
  */
 apiUsers.single = function (req, res) {
   var username = req.params.username
-  if (_.isUndefined(username))
-    return res.status(400).json({ error: 'Invalid Request.' })
+  if (_.isUndefined(username)) return res.status(400).json({ error: 'Invalid Request.' })
 
   var response = {
     success: true,
@@ -727,8 +689,7 @@ apiUsers.single = function (req, res) {
         UserSchema.getUserByUsername(username, function (err, user) {
           if (err) return done(err)
 
-          if (_.isUndefined(user) || _.isNull(user))
-            return done('Invalid Request')
+          if (_.isUndefined(user) || _.isNull(user)) return done('Invalid Request')
 
           user = stripUserFields(user)
           response.user = user
@@ -737,10 +698,7 @@ apiUsers.single = function (req, res) {
         })
       },
       function (user, done) {
-        groupSchema.getAllGroupsOfUserNoPopulate(user._id, function (
-          err,
-          grps
-        ) {
+        groupSchema.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
           if (err) return done(err)
 
           response.groups = _.map(grps, function (o) {
@@ -812,8 +770,7 @@ apiUsers.notificationCount = function (req, res) {
  */
 apiUsers.generateApiKey = function (req, res) {
   var id = req.params.id
-  if (_.isUndefined(id) || _.isNull(id))
-    return res.status(400).json({ error: 'Invalid Request' })
+  if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
 
   UserSchema.getUser(id, function (err, user) {
     if (err) return res.status(400).json({ error: 'Invalid Request' })
@@ -847,18 +804,13 @@ apiUsers.generateApiKey = function (req, res) {
  */
 apiUsers.removeApiKey = function (req, res) {
   var id = req.params.id
-  if (_.isUndefined(id) || _.isNull(id))
-    return res.status(400).json({ error: 'Invalid Request' })
+  if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
 
   UserSchema.getUser(id, function (err, user) {
-    if (err)
-      return res.status(400).json({ error: 'Invalid Request', fullError: err })
+    if (err) return res.status(400).json({ error: 'Invalid Request', fullError: err })
 
     user.removeAccessToken(function (err) {
-      if (err)
-        return res
-          .status(400)
-          .json({ error: 'Invalid Request', fullError: err })
+      if (err) return res.status(400).json({ error: 'Invalid Request', fullError: err })
 
       return res.json({ success: true })
     })
@@ -887,20 +839,14 @@ apiUsers.removeApiKey = function (req, res) {
 apiUsers.generateL2Auth = function (req, res) {
   var id = req.params.id
   if (id.toString() !== req.user._id.toString()) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Account Owner!' })
+    return res.status(400).json({ success: false, error: 'Invalid Account Owner!' })
   }
 
   UserSchema.getUser(id, function (err, user) {
-    if (err)
-      return res.status(400).json({ success: false, error: 'Invalid Request' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Request' })
 
     user.generateL2Auth(function (err, generatedKey) {
-      if (err)
-        return res
-          .status(400)
-          .json({ success: false, error: 'Invalid Request' })
+      if (err) return res.status(400).json({ success: false, error: 'Invalid Request' })
 
       req.session.l2auth = 'totp'
       return res.json({ success: true, generatedKey: generatedKey })
@@ -930,20 +876,14 @@ apiUsers.generateL2Auth = function (req, res) {
 apiUsers.removeL2Auth = function (req, res) {
   var id = req.params.id
   if (id.toString() !== req.user._id.toString()) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Account Owner!' })
+    return res.status(400).json({ success: false, error: 'Invalid Account Owner!' })
   }
 
   UserSchema.getUser(id, function (err, user) {
-    if (err)
-      return res.status(400).json({ success: false, error: 'Invalid Request' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Request' })
 
     user.removeL2Auth(function (err) {
-      if (err)
-        return res
-          .status(400)
-          .json({ success: false, error: 'Invalid Request' })
+      if (err) return res.status(400).json({ success: false, error: 'Invalid Request' })
 
       req.session.l2auth = null
       return res.json({ success: true })
@@ -1046,8 +986,7 @@ apiUsers.uploadProfilePic = function (req, res) {
   var object = {}
   var error
 
-  if (_.isUndefined(req.params.username))
-    return res.status(400).json({ error: 'Invalid Username' })
+  if (_.isUndefined(req.params.username)) return res.status(400).json({ error: 'Invalid Username' })
   object.username = req.params.username
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
@@ -1063,10 +1002,7 @@ apiUsers.uploadProfilePic = function (req, res) {
     var savePath = path.join(__dirname, '../../../../public/uploads/users')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
-    object.filePath = path.join(
-      savePath,
-      'aProfile_' + object.username + '.jpg'
-    )
+    object.filePath = path.join(savePath, 'aProfile_' + object.username + '.jpg')
     object.filename = 'aProfile_' + object.username + '.jpg'
     object.mimetype = mimetype
 
@@ -1085,16 +1021,11 @@ apiUsers.uploadProfilePic = function (req, res) {
   busboy.on('finish', function () {
     if (error) return res.status(error.status).send(error.message)
 
-    if (
-      _.isUndefined(object.username) ||
-      _.isUndefined(object.filePath) ||
-      _.isUndefined(object.filename)
-    ) {
+    if (_.isUndefined(object.username) || _.isUndefined(object.filePath) || _.isUndefined(object.filename)) {
       return res.status(400).send('Invalid Form Data')
     }
 
-    if (!fs.existsSync(object.filePath))
-      return res.status(400).send('File failed to save to disk')
+    if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
 
     UserSchema.getUserByUsername(object.username, function (err, user) {
       if (err) return res.status(400).send(err.message)

@@ -12,15 +12,13 @@
 
  **/
 
-define([
-  'angular',
-  'underscore',
-  'jquery',
-  'modules/helpers',
-  'uikit',
-  'history',
-  'multiselect'
-], function (angular, _, $, helpers, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'multiselect'], function (
+  angular,
+  _,
+  $,
+  helpers,
+  UIkit
+) {
   return angular
     .module('trudesk.controllers.groups', [])
     .controller('groupsCtrl', function ($scope, $http, $timeout, $log) {
@@ -131,9 +129,7 @@ define([
         var card = self.parents('.tru-card-wrapper')
         if (groupID) {
           UIkit.modal.confirm(
-            'Are you sure you want to delete group: <strong>' +
-              card.find('h3').attr('data-group-name') +
-              '</strong>',
+            'Are you sure you want to delete group: <strong>' + card.find('h3').attr('data-group-name') + '</strong>',
             function () {
               helpers.showLoader(0.8)
               $http
@@ -198,12 +194,10 @@ define([
 
       function buildHTML (group) {
         var html = ''
-        html +=
-          '<div class="tru-card-wrapper" data-uk-filter="' + group.name + '">'
+        html += '<div class="tru-card-wrapper" data-uk-filter="' + group.name + '">'
         html += '<div class="tru-card tru-card-hover">'
         html += '<div class="tru-card-head">'
-        html +=
-          '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\',mode:\'click\'}">'
+        html += '<div class="tru-card-head-menu" data-uk-dropdown="{pos: \'bottom-right\',mode:\'click\'}">'
         html += '<i class="material-icons tru-icon">&#xE5D4;</i>'
         html += '<div class="uk-dropdown uk-dropdown-small">'
         html += '<ul class="uk-nav">'
@@ -218,14 +212,10 @@ define([
         html += '</ul>'
         html += '</div>'
         html += '</div>'
-        html +=
-          '<h3 class="tru-card-head-text uk-text-center" style="padding-top:60px;">'
+        html += '<h3 class="tru-card-head-text uk-text-center" style="padding-top:60px;">'
         html += group.name
         html += '<span class="uk-text-truncate">'
-        html +=
-          _.size(group.members).toString() +
-          ' ' +
-          (_.size(group.members) === 1 ? 'member' : 'members')
+        html += _.size(group.members).toString() + ' ' + (_.size(group.members) === 1 ? 'member' : 'members')
         html += '</span>'
         html += '</h3>'
         html += '</div>'

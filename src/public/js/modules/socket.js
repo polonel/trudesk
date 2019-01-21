@@ -12,12 +12,11 @@
 
  **/
 
-define('modules/socket', [
-  'modules/chat',
-  'modules/ui',
-
-  'modules/socket.io/accountsImporter'
-], function (chat, ui, accountsImporter) {
+define('modules/socket', ['modules/chat', 'modules/ui', 'modules/socket.io/accountsImporter'], function (
+  chat,
+  ui,
+  accountsImporter
+) {
   var socket = io.connect({
     transports: ['polling', 'websocket']
   })

@@ -16,11 +16,7 @@ var winston = require('winston')
 
 var request = require('request')
 
-module.exports.pushNotification = function (
-  tpsUsername,
-  tpsApiKey,
-  notification
-) {
+module.exports.pushNotification = function (tpsUsername, tpsApiKey, notification) {
   var body = {
     title: notification.title,
     content: notification.content,
@@ -53,9 +49,7 @@ module.exports.pushNotification = function (
         winston.debug(err)
       } else {
         if (response.statusCode === 401) {
-          winston.warn(
-            '[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.'
-          )
+          winston.warn('[trudesk:TPS:pushNotification] Error - Invalid API Key and or Username.')
         }
       }
     }

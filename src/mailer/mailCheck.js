@@ -62,44 +62,23 @@ mailCheck.init = function (settings) {
     return x.name === 'mailer:check:deletemessage'
   })
 
-  s.mailerCheckEnabled =
-    s.mailerCheckEnabled === undefined ? { value: false } : s.mailerCheckEnabled
-  s.mailerCheckHost =
-    s.mailerCheckHost === undefined ? { value: '' } : s.mailerCheckHost
-  s.mailerCheckPort =
-    s.mailerCheckPort === undefined ? { value: 143 } : s.mailerCheckPort
-  s.mailerCheckUsername =
-    s.mailerCheckUsername === undefined ? { value: '' } : s.mailerCheckUsername
-  s.mailerCheckPassword =
-    s.mailerCheckPassword === undefined ? { value: '' } : s.mailerCheckPassword
-  s.mailerCheckPolling =
-    s.mailerCheckPolling === undefined
-      ? { value: 600000 }
-      : s.mailerCheckPolling // 10 min
-  s.mailerCheckTicketType =
-    s.mailerCheckTicketType === undefined
-      ? { value: 'Issue' }
-      : s.mailerCheckTicketType
-  s.mailerCheckTicketPriority =
-    s.mailerCheckTicketPriority === undefined
-      ? { value: '' }
-      : s.mailerCheckTicketPriority
-  s.mailerCheckCreateAccount =
-    s.mailerCheckCreateAccount === undefined
-      ? { value: false }
-      : s.mailerCheckCreateAccount
-  s.mailerCheckDeleteMessage =
-    s.mailerCheckDeleteMessage === undefined
-      ? { value: false }
-      : s.mailerCheckDeleteMessage
+  s.mailerCheckEnabled = s.mailerCheckEnabled === undefined ? { value: false } : s.mailerCheckEnabled
+  s.mailerCheckHost = s.mailerCheckHost === undefined ? { value: '' } : s.mailerCheckHost
+  s.mailerCheckPort = s.mailerCheckPort === undefined ? { value: 143 } : s.mailerCheckPort
+  s.mailerCheckUsername = s.mailerCheckUsername === undefined ? { value: '' } : s.mailerCheckUsername
+  s.mailerCheckPassword = s.mailerCheckPassword === undefined ? { value: '' } : s.mailerCheckPassword
+  s.mailerCheckPolling = s.mailerCheckPolling === undefined ? { value: 600000 } : s.mailerCheckPolling // 10 min
+  s.mailerCheckTicketType = s.mailerCheckTicketType === undefined ? { value: 'Issue' } : s.mailerCheckTicketType
+  s.mailerCheckTicketPriority = s.mailerCheckTicketPriority === undefined ? { value: '' } : s.mailerCheckTicketPriority
+  s.mailerCheckCreateAccount = s.mailerCheckCreateAccount === undefined ? { value: false } : s.mailerCheckCreateAccount
+  s.mailerCheckDeleteMessage = s.mailerCheckDeleteMessage === undefined ? { value: false } : s.mailerCheckDeleteMessage
 
   var MAILERCHECK_ENABLED = s.mailerCheckEnabled.value
   var MAILERCHECK_HOST = s.mailerCheckHost.value
   var MAILERCHECK_USER = s.mailerCheckUsername.value
   var MAILERCHECK_PASS = s.mailerCheckPassword.value
   var MAILERCHECK_PORT = s.mailerCheckPort.value
-  var MAILERCHECK_TLS =
-    s.mailerCheckPort.value === '993' ? { value: true } : false
+  var MAILERCHECK_TLS = s.mailerCheckPort.value === '993' ? { value: true } : false
   var POLLING_INTERVAL = s.mailerCheckPolling.value
 
   if (!MAILERCHECK_ENABLED) return true
@@ -132,9 +111,7 @@ mailCheck.init = function (settings) {
 
 mailCheck.refetch = function () {
   if (_.isUndefined(mailCheck.fetchMailOptions)) {
-    winston.warn(
-      'Mailcheck.refetch() running before Mailcheck.init(); please run Mailcheck.init() prior'
-    )
+    winston.warn('Mailcheck.refetch() running before Mailcheck.init(); please run Mailcheck.init() prior')
     return
   }
 
@@ -200,9 +177,7 @@ function bindImapReady () {
                         if (err) winston.warn(err)
 
                         if (mail.headers.has('from')) {
-                          message.from = mail.headers.get(
-                            'from'
-                          ).value[0].address
+                          message.from = mail.headers.get('from').value[0].address
                         }
 
                         if (mail.subject) {
@@ -214,8 +189,7 @@ function bindImapReady () {
                         if (_.isUndefined(mail.textAsHtml)) {
                           var $ = cheerio.load(mail.html)
                           var $body = $('body')
-                          message.body =
-                            $body.length > 0 ? $body.html() : mail.html
+                          message.body = $body.length > 0 ? $body.html() : mail.html
                         } else {
                           message.body = mail.textAsHtml
                         }
@@ -281,10 +255,7 @@ function handleMessages (messages) {
 
               // User doesn't exist. Lets create public user... If we want too
               if (mailCheck.fetchMailOptions.createAccount) {
-                userSchema.createUserFromEmail(message.from, function (
-                  err,
-                  response
-                ) {
+                userSchema.createUserFromEmail(message.from, function (err, response) {
                   if (err) return callback(err)
 
                   message.owner = response.user
@@ -304,15 +275,9 @@ function handleMessages (messages) {
                 return callback()
               }
 
-              groupSchema.getAllGroupsOfUser(message.owner._id, function (
-                err,
-                group
-              ) {
+              groupSchema.getAllGroupsOfUser(message.owner._id, function (err, group) {
                 if (err) return callback(err)
-                if (!group)
-                  return callback(
-                    'Unknown group for user: ' + message.owner.email
-                  )
+                if (!group) return callback('Unknown group for user: ' + message.owner.email)
 
                 if (_.isArray(group)) {
                   message.group = _.first(group)
@@ -335,16 +300,13 @@ function handleMessages (messages) {
                 return callback(null, type)
               })
             } else {
-              ticketTypeSchema.getType(
-                mailCheck.fetchMailOptions.defaultTicketType,
-                function (err, type) {
-                  if (err) return callback(err)
+              ticketTypeSchema.getType(mailCheck.fetchMailOptions.defaultTicketType, function (err, type) {
+                if (err) return callback(err)
 
-                  message.type = type
+                message.type = type
 
-                  return callback(null, type)
-                }
-              )
+                return callback(null, type)
+              })
             }
           },
           handlePriority: [
@@ -353,10 +315,7 @@ function handleMessages (messages) {
               var type = result.handleTicketType
 
               if (mailCheck.fetchMailOptions.defaultPriority !== '') {
-                return callback(
-                  null,
-                  mailCheck.fetchMailOptions.defaultPriority
-                )
+                return callback(null, mailCheck.fetchMailOptions.defaultPriority)
               }
 
               var firstPriority = _.first(type.priorities)

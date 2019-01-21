@@ -56,9 +56,7 @@ function downloadWin32MongoDBTools (callback) {
       var unzip = require('unzip')
       var file = fs.createWriteStream(path.join(savePath, filename))
       http
-        .get('http://storage.trudesk.io/tools/' + filename, function (
-          response
-        ) {
+        .get('http://storage.trudesk.io/tools/' + filename, function (response) {
           response.pipe(file)
           file.on('finish', function () {
             file.close()
@@ -145,10 +143,7 @@ function showTourSettingDefault (callback) {
 }
 
 function ticketTypeSettingDefault (callback) {
-  SettingsSchema.getSettingByName('ticket:type:default', function (
-    err,
-    setting
-  ) {
+  SettingsSchema.getSettingByName('ticket:type:default', function (err, setting) {
     if (err) {
       winston.warn(err)
       if (_.isFunction(callback)) {
@@ -226,10 +221,7 @@ function ticketPriorityDefaults (callback) {
   async.each(
     priorities,
     function (item, next) {
-      PrioritySchema.findOne({ migrationNum: item.migrationNum }, function (
-        err,
-        priority
-      ) {
+      PrioritySchema.findOne({ migrationNum: item.migrationNum }, function (err, priority) {
         if (!err && (_.isUndefined(priority) || _.isNull(priority))) {
           return item.save(next)
         }
@@ -266,28 +258,22 @@ function checkPriorities (callback) {
   async.parallel(
     [
       function (done) {
-        ticketSchema.collection
-          .countDocuments({ priority: 1 })
-          .then(function (count) {
-            migrateP1 = count > 0
-            return done()
-          })
+        ticketSchema.collection.countDocuments({ priority: 1 }).then(function (count) {
+          migrateP1 = count > 0
+          return done()
+        })
       },
       function (done) {
-        ticketSchema.collection
-          .countDocuments({ priority: 2 })
-          .then(function (count) {
-            migrateP2 = count > 0
-            return done()
-          })
+        ticketSchema.collection.countDocuments({ priority: 2 }).then(function (count) {
+          migrateP2 = count > 0
+          return done()
+        })
       },
       function (done) {
-        ticketSchema.collection
-          .countDocuments({ priority: 3 })
-          .then(function (count) {
-            migrateP3 = count > 0
-            return done()
-          })
+        ticketSchema.collection.countDocuments({ priority: 3 }).then(function (count) {
+          migrateP3 = count > 0
+          return done()
+        })
       }
     ],
     function () {
@@ -299,10 +285,7 @@ function checkPriorities (callback) {
               if (!err) {
                 winston.debug('Converting Priority: Normal')
                 ticketSchema.collection
-                  .updateMany(
-                    { priority: 1 },
-                    { $set: { priority: normal._id } }
-                  )
+                  .updateMany({ priority: 1 }, { $set: { priority: normal._id } })
                   .then(function (res) {
                     if (res && res.result) {
                       if (res.result.ok === 1) {
@@ -325,10 +308,7 @@ function checkPriorities (callback) {
               if (!err) {
                 winston.debug('Converting Priority: Urgent')
                 ticketSchema.collection
-                  .updateMany(
-                    { priority: 2 },
-                    { $set: { priority: urgent._id } }
-                  )
+                  .updateMany({ priority: 2 }, { $set: { priority: urgent._id } })
                   .then(function (res) {
                     if (res && res.result) {
                       if (res.result.ok === 1) {
@@ -351,10 +331,7 @@ function checkPriorities (callback) {
               if (!err) {
                 winston.debug('Converting Priority: Critical')
                 ticketSchema.collection
-                  .updateMany(
-                    { priority: 3 },
-                    { $set: { priority: critical._id } }
-                  )
+                  .updateMany({ priority: 3 }, { $set: { priority: critical._id } })
                   .then(function (res) {
                     if (res && res.result) {
                       if (res.result.ok === 1) {

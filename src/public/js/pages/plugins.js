@@ -12,12 +12,7 @@
 
  **/
 
-define('pages/plugins', [
-  'jquery',
-  'modules/helpers',
-  'tether',
-  'history'
-], function ($, helpers, Tether) {
+define('pages/plugins', ['jquery', 'modules/helpers', 'tether', 'history'], function ($, helpers, Tether) {
   var pluginsPage = {}
 
   pluginsPage.init = function (callback) {

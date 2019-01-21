@@ -82,9 +82,7 @@ function buildAvgResponse (ticketArray, callback) {
     return m + x
   }, 0)
 
-  var tvt = moment
-    .duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds')
-    .asHours()
+  var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours()
   cbObj.avgResponse = Math.floor(tvt)
 
   if (_.isFunction(callback)) {
@@ -231,10 +229,7 @@ apiTickets.search = function (req, res) {
   async.waterfall(
     [
       function (callback) {
-        groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function (
-          err,
-          grps
-        ) {
+        groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
           callback(err, grps)
         })
       },
@@ -252,10 +247,7 @@ apiTickets.search = function (req, res) {
         }
       },
       function (grps, callback) {
-        ticketModel.getTicketsWithSearchString(grps, searchString, function (
-          err,
-          results
-        ) {
+        ticketModel.getTicketsWithSearchString(grps, searchString, function (err, results) {
           if (!permissions.canThis(req.user.role.role, 'notes:view')) {
             _.each(results, function (ticket) {
               ticket.notes = []
@@ -267,10 +259,7 @@ apiTickets.search = function (req, res) {
       }
     ],
     function (err, results) {
-      if (err)
-        return res
-          .status(400)
-          .json({ success: false, error: 'Error - ' + err.message })
+      if (err) return res.status(400).json({ success: false, error: 'Error - ' + err.message })
 
       return res.json({
         success: true,
@@ -324,8 +313,7 @@ apiTickets.create = function (req, res) {
   response.success = true
 
   var postData = req.body
-  if (!_.isObject(postData))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId
 
@@ -414,8 +402,7 @@ apiTickets.createPublicTicket = function (req, res) {
   var response = {}
   response.success = true
   var postData = req.body
-  if (!_.isObject(postData))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   var user, group, ticket, plainTextPass
 
@@ -462,10 +449,7 @@ apiTickets.createPublicTicket = function (req, res) {
 
       function (group, savedUser, next) {
         var settingsSchema = require('../../../models/setting')
-        settingsSchema.getSettingByName('ticket:type:default', function (
-          err,
-          defaultType
-        ) {
+        settingsSchema.getSettingByName('ticket:type:default', function (err, defaultType) {
           if (err) return next(err)
 
           if (defaultType.value) {
@@ -520,8 +504,7 @@ apiTickets.createPublicTicket = function (req, res) {
     ],
     function (err, result) {
       if (err) winston.debug(err)
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       delete result.user.password
       result.user.password = undefined
@@ -559,8 +542,7 @@ apiTickets.createPublicTicket = function (req, res) {
  */
 apiTickets.single = function (req, res) {
   var uid = req.params.uid
-  if (_.isUndefined(uid))
-    return res.status(200).json({ success: false, error: 'Invalid Ticket' })
+  if (_.isUndefined(uid)) return res.status(200).json({ success: false, error: 'Invalid Ticket' })
 
   var ticketModel = require('../../../models/ticket')
   ticketModel.getTicketByUid(uid, function (err, ticket) {
@@ -609,20 +591,14 @@ apiTickets.update = function (req, res) {
   if (!_.isUndefined(user) && !_.isNull(user)) {
     var permissions = require('../../../permissions')
     if (!permissions.canThis(user.role, 'ticket:update')) {
-      return res
-        .status(401)
-        .json({ success: false, error: 'Invalid Permissions' })
+      return res.status(401).json({ success: false, error: 'Invalid Permissions' })
     }
     var oId = req.params.id
     var reqTicket = req.body
-    if (_.isUndefined(oId))
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Ticket ObjectID.' })
+    if (_.isUndefined(oId)) return res.status(400).json({ success: false, error: 'Invalid Ticket ObjectID.' })
     var ticketModel = require('../../../models/ticket')
     ticketModel.getTicketById(oId, function (err, ticket) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
       async.parallel(
         [
           function (cb) {
@@ -672,10 +648,7 @@ apiTickets.update = function (req, res) {
             return cb()
           },
           function (cb) {
-            if (
-              !_.isUndefined(reqTicket.assignee) &&
-              !_.isNull(reqTicket.assignee)
-            ) {
+            if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
               ticket.assignee = reqTicket.assignee
               ticket.populate('assignee', function (err, t) {
                 var HistoryItem = {
@@ -696,9 +669,7 @@ apiTickets.update = function (req, res) {
         function () {
           ticket.save(function (err, t) {
             if (err) {
-              return res
-                .status(400)
-                .json({ success: false, error: err.message })
+              return res.status(400).json({ success: false, error: err.message })
             }
 
             if (!permissions.canThis(user.role, 'notes:view')) {
@@ -717,9 +688,7 @@ apiTickets.update = function (req, res) {
       )
     })
   } else {
-    return res
-      .status(403)
-      .json({ success: false, error: 'Invalid Access Token' })
+    return res.status(403).json({ success: false, error: 'Invalid Access Token' })
   }
 }
 
@@ -753,10 +722,7 @@ apiTickets.delete = function (req, res) {
 
   var ticketModel = require('../../../models/ticket')
   ticketModel.softDelete(oId, function (err) {
-    if (err)
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Post Data' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
     emitter.emit('ticket:deleted', oId)
     res.json({ success: true, error: null })
@@ -801,19 +767,12 @@ apiTickets.postComment = function (req, res) {
   var owner = commentJson.ownerId
   var ticketId = commentJson._id
 
-  if (_.isUndefined(ticketId))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (_.isUndefined(ticketId)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
   var ticketModel = require('../../../models/ticket')
   ticketModel.getTicketById(ticketId, function (err, t) {
-    if (err)
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Post Data' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-    if (_.isUndefined(comment))
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Post Data' })
+    if (_.isUndefined(comment)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
     var marked = require('marked')
     marked.setOptions({
@@ -836,8 +795,7 @@ apiTickets.postComment = function (req, res) {
     t.history.push(HistoryItem)
 
     t.save(function (err, tt) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       if (!permissions.canThis(req.user.role, 'notes:view')) {
         tt.notes = []
@@ -888,16 +846,12 @@ apiTickets.postComment = function (req, res) {
  */
 apiTickets.postInternalNote = function (req, res) {
   var payload = req.body
-  if (_.isUndefined(payload.ticketid))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (_.isUndefined(payload.ticketid)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
   var ticketModel = require('../../../models/ticket')
   ticketModel.getTicketById(payload.ticketid, function (err, ticket) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
-    if (_.isUndefined(payload.note))
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Post Data' })
+    if (_.isUndefined(payload.note)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
     var marked = require('marked')
     // var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
@@ -917,12 +871,9 @@ apiTickets.postInternalNote = function (req, res) {
     ticket.history.push(HistoryItem)
 
     ticket.save(function (err, savedTicket) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
-      ticketModel.populate(savedTicket, 'subscribers notes.owner', function (
-        err
-      ) {
+      ticketModel.populate(savedTicket, 'subscribers notes.owner', function (err) {
         if (err) return res.json({ success: true, ticket: savedTicket })
 
         emitter.emit('ticket:note:added', savedTicket, Note)
@@ -950,10 +901,7 @@ apiTickets.postInternalNote = function (req, res) {
 apiTickets.getTypes = function (req, res) {
   var ticketType = require('../../../models/tickettype')
   ticketType.getTypes(function (err, types) {
-    if (err)
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Post Data' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
     return res.json(types)
   })
@@ -961,13 +909,11 @@ apiTickets.getTypes = function (req, res) {
 
 apiTickets.getType = function (req, res) {
   var id = req.params.id
-  if (!id)
-    return res.status(400).json({ success: false, error: 'Invalid Type ID' })
+  if (!id) return res.status(400).json({ success: false, error: 'Invalid Type ID' })
 
   var ticketType = require('../../../models/tickettype')
   ticketType.getType(id, function (err, type) {
-    if (err)
-      return res.status(400).json({ success: false, error: 'Invalid Type ID' })
+    if (err) return res.status(400).json({ success: false, error: 'Invalid Type ID' })
 
     return res.json({ success: true, type: type })
   })
@@ -1005,15 +951,11 @@ apiTickets.createType = function (req, res) {
     if (err) return res.status(400).json({ success: false, error: err.message })
     priorities = _.sortBy(priorities, 'migrationNum')
 
-    ticketTypeSchema.create(
-      { name: typeName, priorities: priorities },
-      function (err, ticketType) {
-        if (err)
-          return res.status(400).json({ success: false, error: err.message })
+    ticketTypeSchema.create({ name: typeName, priorities: priorities }, function (err, ticketType) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
-        return res.json({ success: true, tickettype: ticketType })
-      }
-    )
+      return res.json({ success: true, tickettype: ticketType })
+    })
   })
 }
 
@@ -1039,12 +981,7 @@ apiTickets.updateType = function (req, res) {
 
   var ticketTypeSchema = require('../../../models/tickettype')
 
-  if (
-    _.isUndefined(id) ||
-    _.isNull(id) ||
-    _.isNull(data) ||
-    _.isUndefined(data)
-  ) {
+  if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
     return res.status(400).json({ success: false, error: 'Invalid Put Data' })
   }
 
@@ -1054,8 +991,7 @@ apiTickets.updateType = function (req, res) {
     type.name = data.name
 
     type.save(function (err, t) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, type: t })
     })
@@ -1070,25 +1006,20 @@ apiTickets.typeAddPriority = function (req, res) {
   var ticketTypeSchema = require('../../../models/tickettype')
 
   if (!id || !data || !data.priority) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid request data' })
+    return res.status(400).json({ success: false, error: 'Invalid request data' })
   }
 
   ticketTypeSchema.getType(id, function (err, type) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
     type.addPriority(data.priority, function (err, type) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       type.save(function (err, t) {
-        if (err)
-          return res.status(400).json({ success: false, error: err.message })
+        if (err) return res.status(400).json({ success: false, error: err.message })
 
         t.populate('priorities', function (err, tt) {
-          if (err)
-            return res.status(400).json({ success: false, error: err.message })
+          if (err) return res.status(400).json({ success: false, error: err.message })
 
           return res.json({ success: true, type: tt })
         })
@@ -1105,25 +1036,20 @@ apiTickets.typeRemovePriority = function (req, res) {
   var ticketTypeSchema = require('../../../models/tickettype')
 
   if (!id || !data || !data.priority) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid request data' })
+    return res.status(400).json({ success: false, error: 'Invalid request data' })
   }
 
   ticketTypeSchema.getType(id, function (err, type) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
     type.removePriority(data.priority, function (err, type) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       type.save(function (err, t) {
-        if (err)
-          return res.status(400).json({ success: false, error: err.message })
+        if (err) return res.status(400).json({ success: false, error: err.message })
 
         t.populate('priorities', function (err, tt) {
-          if (err)
-            return res.status(400).json({ success: false, error: err.message })
+          if (err) return res.status(400).json({ success: false, error: err.message })
 
           return res.json({ success: true, type: tt })
         })
@@ -1168,16 +1094,9 @@ apiTickets.deleteType = function (req, res) {
   async.waterfall(
     [
       function (next) {
-        settingsSchema.getSettingByName('mailer:check:ticketype', function (
-          err,
-          setting
-        ) {
+        settingsSchema.getSettingByName('mailer:check:ticketype', function (err, setting) {
           if (err) return next(err)
-          if (
-            setting &&
-            setting.value.toString().toLowerCase() ===
-              delTypeId.toString().toLowerCase()
-          ) {
+          if (setting && setting.value.toString().toLowerCase() === delTypeId.toString().toLowerCase()) {
             return next({
               custom: true,
               message: 'Type currently "Default Ticket Type" for mailer check.'
@@ -1218,9 +1137,7 @@ apiTickets.createPriority = function (req, res) {
   var pHtmlColor = data.htmlColor
 
   if (!pName) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Request Data.' })
+    return res.status(400).json({ success: false, error: 'Invalid Request Data.' })
   }
 
   var TicketPrioritySchema = require('../../../models/ticketpriority')
@@ -1256,15 +1173,8 @@ apiTickets.updatePriority = function (req, res) {
 
   var data = req.body
 
-  if (
-    _.isUndefined(id) ||
-    _.isNull(id) ||
-    _.isNull(data) ||
-    _.isUndefined(data)
-  ) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Request Data' })
+  if (_.isUndefined(id) || _.isNull(id) || _.isNull(data) || _.isUndefined(data)) {
+    return res.status(400).json({ success: false, error: 'Invalid Request Data' })
   }
 
   var ticketPrioritySchema = require('../../../models/ticketpriority')
@@ -1282,8 +1192,7 @@ apiTickets.updatePriority = function (req, res) {
     }
 
     priority.save(function (err, p) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, priority: p })
     })
@@ -1296,20 +1205,14 @@ apiTickets.deletePriority = function (req, res) {
   var newPriority = req.body.newPriority
 
   if (!id || !newPriority) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Request Data' })
+    return res.status(400).json({ success: false, error: 'Invalid Request Data' })
   }
 
   async.series(
     [
       function (next) {
         var ticketSchema = require('../../../models/ticket')
-        ticketSchema.updateMany(
-          { priority: id },
-          { priority: newPriority },
-          next
-        )
+        ticketSchema.updateMany({ priority: id }, { priority: newPriority }, next)
       },
       function (next) {
         var ticketPrioritySchema = require('../../../models/ticketpriority')
@@ -1325,8 +1228,7 @@ apiTickets.deletePriority = function (req, res) {
       }
     ],
     function (err) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true })
     }
@@ -1490,12 +1392,8 @@ function parseTicketStats (role, tickets, callback) {
  */
 apiTickets.getTicketStatsForGroup = function (req, res) {
   var groupId = req.params.group
-  if (groupId === 0)
-    return res
-      .status(200)
-      .json({ success: false, error: 'Please Select Group.' })
-  if (_.isUndefined(groupId))
-    return res.status(400).json({ success: false, error: 'Invalid Group Id.' })
+  if (groupId === 0) return res.status(200).json({ success: false, error: 'Please Select Group.' })
+  if (_.isUndefined(groupId)) return res.status(400).json({ success: false, error: 'Invalid Group Id.' })
 
   var ticketModel = require('../../../models/ticket')
   var data = {}
@@ -1513,8 +1411,7 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
         })
       },
       function (tickets, callback) {
-        if (_.isEmpty(tickets))
-          return callback('Group has no tickets to report.')
+        if (_.isEmpty(tickets)) return callback('Group has no tickets to report.')
         var today = moment()
           .hour(23)
           .minute(59)
@@ -1577,12 +1474,8 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
  */
 apiTickets.getTicketStatsForUser = function (req, res) {
   var userId = req.params.user
-  if (userId === 0)
-    return res
-      .status(200)
-      .json({ success: false, error: 'Please Select User.' })
-  if (_.isUndefined(userId))
-    return res.status(400).json({ success: false, error: 'Invalid User Id.' })
+  if (userId === 0) return res.status(200).json({ success: false, error: 'Please Select User.' })
+  if (_.isUndefined(userId)) return res.status(400).json({ success: false, error: 'Invalid User Id.' })
 
   var ticketModel = require('../../../models/ticket')
   var data = {}
@@ -1600,8 +1493,7 @@ apiTickets.getTicketStatsForUser = function (req, res) {
         })
       },
       function (tickets, callback) {
-        if (_.isEmpty(tickets))
-          return callback('User has no tickets to report.')
+        if (_.isEmpty(tickets)) return callback('User has no tickets to report.')
         var today = moment()
           .hour(23)
           .minute(59)
@@ -1733,8 +1625,7 @@ apiTickets.removeAttachment = function (req, res) {
 
   // Check user perm
   var user = req.user
-  if (_.isUndefined(user))
-    return res.status(400).json({ error: 'Invalid User Auth.' })
+  if (_.isUndefined(user)) return res.status(400).json({ error: 'Invalid User Auth.' })
 
   var permissions = require('../../../permissions')
   if (!permissions.canThis(user.role, 'tickets:removeAttachment'))
@@ -1864,10 +1755,7 @@ apiTickets.getTags = function (req, res) {
  */
 apiTickets.getOverdue = function (req, res) {
   var settingSchema = require('../../../models/setting')
-  settingSchema.getSettingByName('showOverdueTickets:enable', function (
-    err,
-    setting
-  ) {
+  settingSchema.getSettingByName('showOverdueTickets:enable', function (err, setting) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
     if (setting !== null && setting.value === false) {
@@ -1880,14 +1768,12 @@ apiTickets.getOverdue = function (req, res) {
     var ticketSchema = require('../../../models/ticket')
     var groupSchema = require('../../../models/group')
     groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
       grps = grps.map(function (g) {
         return g._id.toString()
       })
       ticketSchema.getOverdue(grps, function (err, objs) {
-        if (err)
-          return res.status(400).json({ success: false, error: err.message })
+        if (err) return res.status(400).json({ success: false, error: err.message })
 
         var sorted = _.sortBy(objs, 'uid').reverse()
 

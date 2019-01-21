@@ -24,14 +24,7 @@ define([
 ], function (angular, _, $, socket, UI, tour, helpers) {
   return angular
     .module('trudesk.controllers.common', ['trudesk.controllers.messages'])
-    .controller('commonCtrl', function (
-      $scope,
-      $window,
-      $http,
-      $cookies,
-      $timeout,
-      $log
-    ) {
+    .controller('commonCtrl', function ($scope, $window, $http, $cookies, $timeout, $log) {
       $scope.showCreateTagWindow = function ($event) {
         $event.preventDefault()
         var createTagModal = $('#createTagModal')
@@ -65,32 +58,17 @@ define([
           .then(
             function successCallback (response) {
               var data = response.data
-              helpers.UI.showSnackbar(
-                'Tag: ' + tagName + ' created successfully',
-                false
-              )
+              helpers.UI.showSnackbar('Tag: ' + tagName + ' created successfully', false)
               if (page === 'settings') {
                 var time = new Date().getTime()
-                History.pushState(
-                  null,
-                  null,
-                  '/settings/tickets/?refresh=' + time
-                )
+                History.pushState(null, null, '/settings/tickets/?refresh=' + time)
               } else if (page === 'singleticket') {
                 var tagModal = $('#createTagModal')
                 var tagFormField = $('select#tags')
                 tagFormField.append(
-                  '<option id="TAG__' +
-                    data.tag._id +
-                    '" value="' +
-                    data.tag._id +
-                    '">' +
-                    data.tag.name +
-                    '</option>'
+                  '<option id="TAG__' + data.tag._id + '" value="' + data.tag._id + '">' + data.tag.name + '</option>'
                 )
-                tagFormField
-                  .find('option#TAG__' + data.tag._id)
-                  .prop('selected', true)
+                tagFormField.find('option#TAG__' + data.tag._id).prop('selected', true)
                 tagFormField.trigger('chosen:updated')
                 form.find('#tag').val('')
                 if (tagModal.length > 0) UI.modal(tagModal).hide()
@@ -100,10 +78,7 @@ define([
               }
             },
             function errorCallback (err) {
-              helpers.UI.showSnackbar(
-                'Unable to create tag. Check console',
-                true
-              )
+              helpers.UI.showSnackbar('Unable to create tag. Check console', true)
               $log.error(err)
             }
           )
@@ -166,10 +141,7 @@ define([
                               return
                             }
 
-                            var priorities = _.sortBy(
-                              typePriorities,
-                              'migrationNum'
-                            )
+                            var priorities = _.sortBy(typePriorities, 'migrationNum')
                             $priorities.empty()
                             _.each(priorities, function (priority, idx) {
                               var checked = idx === 0 ? 'checked' : ''
@@ -211,8 +183,7 @@ define([
                   options = $typeSelectize.options
                   var defaultType = $type.attr('data-default')
                   if (defaultType) {
-                    var selectDefault = _.find(options, { value: defaultType })
-                      .value
+                    var selectDefault = _.find(options, { value: defaultType }).value
 
                     if (selectDefault) {
                       $typeSelectize.addItem(selectDefault, true)
@@ -220,8 +191,7 @@ define([
                   } else {
                     first = _.chain(options)
                       .map(function (v, k) {
-                        if (angular.isDefined(v.$order) && v.$order === 1)
-                          return k
+                        if (angular.isDefined(v.$order) && v.$order === 1) return k
                       })
                       .first()
                       .value()
@@ -299,11 +269,9 @@ define([
             $scope.noticeAlertWindow = $('#noticeAlertWindow')
             if ($scope.noticeAlertWindow.length > 0) {
               var cookieName = $('#__noticeCookieName').text()
-              if (angular.isUndefined(cookieName) || _.isEmpty(cookieName))
-                return true
+              if (angular.isUndefined(cookieName) || _.isEmpty(cookieName)) return true
               var shouldShowNotice =
-                $cookies.get(cookieName) === 'true' ||
-                angular.isUndefined($cookies.get(cookieName))
+                $cookies.get(cookieName) === 'true' || angular.isUndefined($cookies.get(cookieName))
 
               if (shouldShowNotice) {
                 var modal = UI.modal($scope.noticeAlertWindow, {

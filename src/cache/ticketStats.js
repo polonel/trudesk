@@ -76,9 +76,7 @@ function buildAvgResponse (ticketArray, callback) {
     0
   )
 
-  var tvt = moment
-    .duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds')
-    .asHours()
+  var tvt = moment.duration(Math.round(ticketAvgTotal / _.size($ticketAvg)), 'seconds').asHours()
   cbObj.avgResponse = Math.floor(tvt)
 
   return callback(cbObj)

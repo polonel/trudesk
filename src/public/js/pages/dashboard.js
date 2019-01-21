@@ -106,9 +106,7 @@ define('pages/dashboard', [
             })
           },
           error: function (err) {
-            console.log(
-              '[trudesk:dashboard:loadOverdue] Error - ' + err.responseText
-            )
+            console.log('[trudesk:dashboard:loadOverdue] Error - ' + err.responseText)
             helpers.UI.showSnackbar(err.responseText, true)
           }
         })
@@ -128,8 +126,7 @@ define('pages/dashboard', [
           success: function (_data) {
             var lastUpdated = $('#lastUpdated').find('span')
 
-            var formatString =
-              helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
+            var formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
             var formated = moment
               .utc(_data.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
               .tz(helpers.getTimezone())
@@ -137,17 +134,13 @@ define('pages/dashboard', [
             lastUpdated.text(formated)
 
             if (!_data.data) {
-              console.log(
-                '[trudesk:dashboard:getData] Error - Invalid Graph Data'
-              )
+              console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data')
               helpers.UI.showSnackbar('Error - Invalid Graph Data', true)
             } else if (_data.data.length < 1) {
               // No data in graph. Show No Data avaliable
               var $breakdownGraph = $('#breakdownGraph')
               $breakdownGraph.empty()
-              $breakdownGraph.append(
-                '<div class="no-data-available-text">No Data Available</div>'
-              )
+              $breakdownGraph.append('<div class="no-data-available-text">No Data Available</div>')
             } else {
               $('#breakdownGraph').empty()
               parms.data = MG.convert.date(_data.data, 'date')
@@ -157,8 +150,7 @@ define('pages/dashboard', [
             var tCount = _data.ticketCount
 
             var ticketCount = $('#ticketCount')
-            var oldTicketCount =
-              ticketCount.text() === '--' ? 0 : ticketCount.text()
+            var oldTicketCount = ticketCount.text() === '--' ? 0 : ticketCount.text()
             var totalTicketText = 'Total Tickets (last ' + timespan + 'd)'
             // if (timespan == 0)
             //     totalTicketText = 'Total Tickets (lifetime)';
@@ -166,28 +158,15 @@ define('pages/dashboard', [
               .parents('.tru-card-content')
               .find('span.uk-text-small')
               .text(totalTicketText)
-            var theAnimation = new CountUp(
-              'ticketCount',
-              parseInt(oldTicketCount),
-              tCount,
-              0,
-              1.5
-            )
+            var theAnimation = new CountUp('ticketCount', parseInt(oldTicketCount), tCount, 0, 1.5)
             theAnimation.start()
 
             var closedCount = Number(_data.closedCount)
             var closedPercent = Math.round((closedCount / tCount) * 100)
 
             var textComplete = $('#text_complete')
-            var oldTextComplete =
-              textComplete.text() === '--' ? 0 : textComplete.text()
-            var completeAnimation = new CountUp(
-              'text_complete',
-              parseInt(oldTextComplete),
-              closedPercent,
-              0,
-              1.5
-            )
+            var oldTextComplete = textComplete.text() === '--' ? 0 : textComplete.text()
+            var completeAnimation = new CountUp('text_complete', parseInt(oldTextComplete), closedPercent, 0, 1.5)
             completeAnimation.start()
 
             var pieComplete = $('#pie_complete')
@@ -200,8 +179,7 @@ define('pages/dashboard', [
 
             var $responseTimeText = $('#responseTime_text')
             // var responseTime_graph = $('#responseTime_graph');
-            var oldResponseTime =
-              $responseTimeText.text() === '--' ? 0 : $responseTimeText.text()
+            var oldResponseTime = $responseTimeText.text() === '--' ? 0 : $responseTimeText.text()
             var responseTime = _data.ticketAvg
             var responseTimeAnimation = new CountUp(
               'responseTime_text',
@@ -215,30 +193,18 @@ define('pages/dashboard', [
             // QuickStats
             var mostRequester = $('#mostRequester')
             if (_data.mostRequester) {
-              mostRequester.text(
-                _data.mostRequester.name +
-                  ' (' +
-                  _data.mostRequester.value +
-                  ')'
-              )
+              mostRequester.text(_data.mostRequester.name + ' (' + _data.mostRequester.value + ')')
             }
             var mostCommenter = $('#mostCommenter')
             if (_data.mostCommenter) {
-              mostCommenter.text(
-                _data.mostCommenter.name +
-                  ' (' +
-                  _data.mostCommenter.value +
-                  ')'
-              )
+              mostCommenter.text(_data.mostCommenter.name + ' (' + _data.mostCommenter.value + ')')
             } else {
               mostCommenter.text('--')
             }
 
             var mostAssignee = $('#mostAssignee')
             if (_data.mostAssignee) {
-              mostAssignee.text(
-                _data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')'
-              )
+              mostAssignee.text(_data.mostAssignee.name + ' (' + _data.mostAssignee.value + ')')
             } else {
               mostAssignee.text('--')
             }
@@ -251,9 +217,7 @@ define('pages/dashboard', [
             }
           },
           error: function (err) {
-            console.log(
-              '[trudesk:dashboard:getData] Error - ' + err.responseText
-            )
+            console.log('[trudesk:dashboard:getData] Error - ' + err.responseText)
             helpers.UI.showSnackbar(err.responseText, true)
           }
         })

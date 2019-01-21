@@ -12,11 +12,7 @@
 
  **/
 
-define('modules/socket.io/accountsImporter', [
-  'jquery',
-  'modules/helpers',
-  'history'
-], function ($, helpers) {
+define('modules/socket.io/accountsImporter', ['jquery', 'modules/helpers', 'history'], function ($, helpers) {
   var accountsImporter = {}
 
   var socket
@@ -33,9 +29,7 @@ define('modules/socket.io/accountsImporter', [
             '<span>...</span></div></li>'
         )
       } else if (item.state === 2) {
-        var span = $statusBox.find(
-          'div[data-import-username="' + item.username + '"] > span'
-        )
+        var span = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
         if (span.length > 0) {
           span.css({ display: 'inline-flex', marginLeft: '5px' })
           span.html(
@@ -43,9 +37,7 @@ define('modules/socket.io/accountsImporter', [
           )
         }
       } else if (item.state === 3) {
-        var span1 = $statusBox.find(
-          'div[data-import-username="' + item.username + '"] > span'
-        )
+        var span1 = $statusBox.find('div[data-import-username="' + item.username + '"] > span')
         if (span1.length > 0) {
           span1.css({ display: 'inline-flex', marginLeft: '5px' })
           span1.html(
@@ -65,13 +57,9 @@ define('modules/socket.io/accountsImporter', [
   function finishImport (type, completedCount) {
     var $statusBox = $('#' + type + '-import-status-box')
     if (completedCount === 1) {
-      $statusBox
-        .find('ul')
-        .append('<li>Imported ' + completedCount + ' account</li>')
+      $statusBox.find('ul').append('<li>Imported ' + completedCount + ' account</li>')
     } else {
-      $statusBox
-        .find('ul')
-        .append('<li>Imported ' + completedCount + ' accounts</li>')
+      $statusBox.find('ul').append('<li>Imported ' + completedCount + ' accounts</li>')
     }
 
     scrollStatusBox()

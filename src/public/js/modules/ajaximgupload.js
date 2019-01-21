@@ -12,11 +12,7 @@
 
  **/
 
-define('modules/ajaximgupload', [
-  'jquery',
-  'underscore',
-  'modules/helpers'
-], function ($, _, helpers) {
+define('modules/ajaximgupload', ['jquery', 'underscore', 'modules/helpers'], function ($, _, helpers) {
   var aiu = {}
 
   aiu.init = function () {

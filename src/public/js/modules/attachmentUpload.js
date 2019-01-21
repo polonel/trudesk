@@ -12,12 +12,12 @@
 
  **/
 
-define('modules/attachmentUpload', [
-  'jquery',
-  'underscore',
-  'modules/helpers',
-  'modules/socket'
-], function ($, _, helpers, socket) {
+define('modules/attachmentUpload', ['jquery', 'underscore', 'modules/helpers', 'modules/socket'], function (
+  $,
+  _,
+  helpers,
+  socket
+) {
   var attachmentUploader = {}
 
   attachmentUploader.init = function () {

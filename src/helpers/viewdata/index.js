@@ -43,10 +43,7 @@ viewController.getData = function (request, cb) {
         async.parallel(
           [
             function (done) {
-              settingSchema.getSetting('gen:timeFormat', function (
-                err,
-                setting
-              ) {
+              settingSchema.getSetting('gen:timeFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.timeFormat = setting.value
                 } else {
@@ -57,10 +54,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('gen:shortDateFormat', function (
-                err,
-                setting
-              ) {
+              settingSchema.getSetting('gen:shortDateFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.shortDateFormat = setting.value
                 } else {
@@ -71,10 +65,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('gen:longDateFormat', function (
-                err,
-                setting
-              ) {
+              settingSchema.getSetting('gen:longDateFormat', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.longDateFormat = setting.value
                 } else {
@@ -93,10 +84,7 @@ viewController.getData = function (request, cb) {
         async.parallel(
           [
             function (done) {
-              settingSchema.getSetting('ticket:minlength:subject', function (
-                err,
-                setting
-              ) {
+              settingSchema.getSetting('ticket:minlength:subject', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.minSubject = setting.value
                 } else {
@@ -107,10 +95,7 @@ viewController.getData = function (request, cb) {
               })
             },
             function (done) {
-              settingSchema.getSetting('ticket:minlength:issue', function (
-                err,
-                setting
-              ) {
+              settingSchema.getSetting('ticket:minlength:issue', function (err, setting) {
                 if (!err && setting && setting.value) {
                   viewdata.ticketSettings.minIssue = setting.value
                 } else {
@@ -168,25 +153,15 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:customlogo', function (
-          err,
-          hasCustomLogo
-        ) {
-          viewdata.hasCustomLogo = !!(
-            !err &&
-            hasCustomLogo &&
-            hasCustomLogo.value
-          )
+        settingSchema.getSetting('gen:customlogo', function (err, hasCustomLogo) {
+          viewdata.hasCustomLogo = !!(!err && hasCustomLogo && hasCustomLogo.value)
 
           if (!viewdata.hasCustomLogo) {
             viewdata.logoImage = '/img/defaultLogoLight.png'
             return callback()
           }
 
-          settingSchema.getSetting('gen:customlogofilename', function (
-            err,
-            logoFileName
-          ) {
+          settingSchema.getSetting('gen:customlogofilename', function (err, logoFileName) {
             if (!err && logoFileName && !_.isUndefined(logoFileName.value)) {
               viewdata.logoImage = '/assets/' + logoFileName.value
             } else {
@@ -198,25 +173,15 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:custompagelogo', function (
-          err,
-          hasCustomPageLogo
-        ) {
-          viewdata.hasCustomPageLogo = !!(
-            !err &&
-            hasCustomPageLogo &&
-            hasCustomPageLogo.value
-          )
+        settingSchema.getSetting('gen:custompagelogo', function (err, hasCustomPageLogo) {
+          viewdata.hasCustomPageLogo = !!(!err && hasCustomPageLogo && hasCustomPageLogo.value)
 
           if (!viewdata.hasCustomPageLogo) {
             viewdata.pageLogoImage = '/img/defaultLogoDark.png'
             return callback()
           }
 
-          settingSchema.getSetting('gen:custompagelogofilename', function (
-            err,
-            logoFileName
-          ) {
+          settingSchema.getSetting('gen:custompagelogofilename', function (err, logoFileName) {
             if (!err && logoFileName && !_.isUndefined(logoFileName.value)) {
               viewdata.pageLogoImage = '/assets/' + logoFileName.value
             } else {
@@ -228,29 +193,15 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        settingSchema.getSetting('gen:customfavicon', function (
-          err,
-          hasCustomFavicon
-        ) {
-          viewdata.hasCustomFavicon = !!(
-            !err &&
-            hasCustomFavicon &&
-            hasCustomFavicon.value
-          )
+        settingSchema.getSetting('gen:customfavicon', function (err, hasCustomFavicon) {
+          viewdata.hasCustomFavicon = !!(!err && hasCustomFavicon && hasCustomFavicon.value)
           if (!viewdata.hasCustomFavicon) {
             viewdata.favicon = '/img/favicon.ico'
             return callback()
           }
 
-          settingSchema.getSetting('gen:customfaviconfilename', function (
-            err,
-            faviconFilename
-          ) {
-            if (
-              !err &&
-              faviconFilename &&
-              !_.isUndefined(faviconFilename.value)
-            ) {
+          settingSchema.getSetting('gen:customfaviconfilename', function (err, faviconFilename) {
+            if (!err && faviconFilename && !_.isUndefined(faviconFilename.value)) {
               viewdata.favicon = '/assets/' + faviconFilename.value
             } else {
               viewdata.favicon = '/img/favicon.ico'
@@ -267,10 +218,7 @@ viewController.getData = function (request, cb) {
           viewdata.noticeCookieName = undefined
 
           if (!_.isUndefined(data) && !_.isNull(data)) {
-            viewdata.noticeCookieName =
-              data.name +
-              '_' +
-              moment(data.activeDate).format('MMMDDYYYY_HHmmss')
+            viewdata.noticeCookieName = data.name + '_' + moment(data.activeDate).format('MMMDDYYYY_HHmmss')
           }
 
           return callback()
@@ -285,10 +233,7 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        viewController.getUnreadNotificationsCount(request, function (
-          err,
-          count
-        ) {
+        viewController.getUnreadNotificationsCount(request, function (err, count) {
           if (err) return callback(err)
           viewdata.notifications.unreadCount = count
           return callback()
@@ -438,10 +383,7 @@ viewController.getUnreadNotificationsCount = function (request, callback) {
 viewController.getConversations = function (request, callback) {
   var conversationSchema = require('../../models/chat/conversation')
   var messageSchema = require('../../models/chat/message')
-  conversationSchema.getConversationsWithLimit(request.user._id, 10, function (
-    err,
-    conversations
-  ) {
+  conversationSchema.getConversationsWithLimit(request.user._id, 10, function (err, conversations) {
     if (err) {
       winston.warn(err.message)
       return callback(err)
@@ -460,11 +402,7 @@ viewController.getConversations = function (request, callback) {
               return item.userId.toString() === request.user._id.toString()
             })
           ]
-        if (
-          !_.isUndefined(userMeta) &&
-          !_.isUndefined(userMeta.deletedAt) &&
-          userMeta.deletedAt > convo.updatedAt
-        ) {
+        if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
           return done()
         }
 
@@ -540,10 +478,7 @@ viewController.loggedInAccount = function (request, callback) {
 
 viewController.getGroups = function (request, callback) {
   var groupSchema = require('../../models/group')
-  groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (
-    err,
-    data
-  ) {
+  groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
     if (err) {
       winston.debug(err)
       return callback(err)
@@ -630,10 +565,7 @@ viewController.getTags = function (request, callback) {
 
 viewController.getOverdueSetting = function (request, callback) {
   var settingSchema = require('../../models/setting')
-  settingSchema.getSettingByName('showOverdueTickets:enable', function (
-    err,
-    data
-  ) {
+  settingSchema.getSettingByName('showOverdueTickets:enable', function (err, data) {
     if (err) {
       winston.debug(err)
       return callback(null, true)

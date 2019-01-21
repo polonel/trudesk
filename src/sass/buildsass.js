@@ -12,88 +12,99 @@
 
  */
 
-var _       = require('lodash');
-var path    = require('path');
-var sass    = require('node-sass');
-var nconf   = require('nconf');
-var settingUtil     = require('../settings/settingsUtil');
+var _ = require('lodash')
+var path = require('path')
+var sass = require('node-sass')
+var nconf = require('nconf')
+var settingUtil = require('../settings/settingsUtil')
 
-var buildsass = {};
+var buildsass = {}
 
 var sassOptionsDefaults = {
-    indentedSyntax: true,
-    includePaths: [
-        path.join(__dirname, '../../src/sass')
-    ],
-    outputStyle: 'compressed'
-};
-
-function sassVariable(name, value) {
-    return '$' + name + ': ' + value + '\n';
+  indentedSyntax: true,
+  includePaths: [path.join(__dirname, '../../src/sass')],
+  outputStyle: 'compressed'
 }
 
-function sassVariables(variablesObj) {
-    return Object.keys(variablesObj).map(function (name) {
-        return sassVariable(name, variablesObj[name]);
-    }).join('\n');
+function sassVariable (name, value) {
+  return '$' + name + ': ' + value + '\n'
 }
 
-function sassImport(path) {
-    return '@import \'' + path + '\'\n';
+function sassVariables (variablesObj) {
+  return Object.keys(variablesObj)
+    .map(function (name) {
+      return sassVariable(name, variablesObj[name])
+    })
+    .join('\n')
 }
 
-function dynamicSass(entry, vars, success, error) {
-    var dataString =
-        sassVariables(vars) +
-        sassImport(entry);
-    var sassOptions = _.assign({}, sassOptionsDefaults, {
-        data: dataString
-    });
-
-    sass.render(sassOptions, function (err, result) {
-        return (err)
-            ? error(err)
-            : success(result.css.toString());
-    });
+function sassImport (path) {
+  return "@import '" + path + "'\n"
 }
 
-function save(result) {
-    var fs = require('fs');
-    var themeCss = path.join(__dirname, '../../public/css/app.min.css');
-    fs.writeFileSync(themeCss, result);
+function dynamicSass (entry, vars, success, error) {
+  var dataString = sassVariables(vars) + sassImport(entry)
+  var sassOptions = _.assign({}, sassOptionsDefaults, {
+    data: dataString
+  })
+
+  sass.render(sassOptions, function (err, result) {
+    return err ? error(err) : success(result.css.toString())
+  })
 }
 
-buildsass.buildDefault = function(callback) {
-    dynamicSass('app.sass', {}, function(result) {
-        save(result);
-        return callback();
-    }, callback);
-};
+function save (result) {
+  var fs = require('fs')
+  var themeCss = path.join(__dirname, '../../public/css/app.min.css')
+  fs.writeFileSync(themeCss, result)
+}
 
-buildsass.build = function(callback) {
-    settingUtil.getSettings(function(err, s) {
-        if (!err && s) {
-            var settings = s.data.settings;
+buildsass.buildDefault = function (callback) {
+  dynamicSass(
+    'app.sass',
+    {},
+    function (result) {
+      save(result)
+      return callback()
+    },
+    callback
+  )
+}
 
-            dynamicSass('app.sass', {
-                header_background: settings.colorHeaderBG.value,
-                header_primary: settings.colorHeaderPrimary.value,
-                primary: settings.colorPrimary.value,
-                secondary: settings.colorSecondary.value,
-                tertiary: settings.colorTertiary.value,
-                quaternary: settings.colorQuaternary.value
-            }, function(result) {
-                save(result);
-                return callback();
-            }, callback);
-        } else {
-            // Build Defaults
-            dynamicSass('app.sass', {}, function(result) {
-                save(result);
-                return callback();
-            }, callback);
-        }
-    });
-};
+buildsass.build = function (callback) {
+  settingUtil.getSettings(function (err, s) {
+    if (!err && s) {
+      var settings = s.data.settings
 
-module.exports = buildsass;
+      dynamicSass(
+        'app.sass',
+        {
+          header_background: settings.colorHeaderBG.value,
+          header_primary: settings.colorHeaderPrimary.value,
+          primary: settings.colorPrimary.value,
+          secondary: settings.colorSecondary.value,
+          tertiary: settings.colorTertiary.value,
+          quaternary: settings.colorQuaternary.value
+        },
+        function (result) {
+          save(result)
+          return callback()
+        },
+        callback
+      )
+    } else {
+      // Build Defaults
+      dynamicSass(
+        'app.sass',
+        {},
+        function (result) {
+          save(result)
+          return callback()
+        },
+        callback
+      )
+    }
+  })
+}
+
+module.exports = buildsass

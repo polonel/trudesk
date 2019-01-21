@@ -220,9 +220,7 @@ var helpers = {
     }
 
     if (!operators[operator]) {
-      throw new Error(
-        'Handlebars Helper "compare" doesn\'t know the operator ' + operator
-      )
+      throw new Error('Handlebars Helper "compare" doesn\'t know the operator ' + operator)
     }
 
     var result = operators[operator](left, right)
@@ -529,11 +527,9 @@ var helpers = {
   },
 
   durationFormat: function (duration, parseFormat) {
-    return moment
-      .duration(duration, parseFormat)
-      .format('Y [year], M [month], d [day], h [hour], m [min]', {
-        trim: 'both'
-      })
+    return moment.duration(duration, parseFormat).format('Y [year], M [month], d [day], h [hour], m [min]', {
+      trim: 'both'
+    })
   },
 
   calendarDate: function (date, fallback) {
@@ -626,12 +622,7 @@ var helpers = {
   },
 
   trim: function (string) {
-    if (
-      _.isUndefined(string) ||
-      _.isNull(string) ||
-      string.length < 1 ||
-      typeof string === 'object'
-    ) {
+    if (_.isUndefined(string) || _.isNull(string) || string.length < 1 || typeof string === 'object') {
       return ''
     }
     return string.trim()

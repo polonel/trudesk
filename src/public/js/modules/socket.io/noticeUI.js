@@ -73,9 +73,7 @@ define('modules/socket.io/noticeUI', [
     var noticeText = noticeAlertWindow.find('#noticeText')
     var noticeBG = noticeAlertWindow.find('#noticeBG')
     var noticeCookieName = noticeAlertWindow.find('#__noticeCookieName')
-    noticeCookieName.html(
-      notice.name + '_' + moment(notice.activeDate).format('MMMDDYYYY_HHmmss')
-    )
+    noticeCookieName.html(notice.name + '_' + moment(notice.activeDate).format('MMMDDYYYY_HHmmss'))
 
     noticeBG.css('background-color', notice.color)
     noticeTitle.css('color', notice.fontColor)

@@ -21,8 +21,7 @@ var ticketSchema = require('../models/ticket')
 var init = function (tickets, timespan, callback) {
   var tags = []
   var $tickets = []
-  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0)
-    timespan = 99999
+  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 99999
 
   var today = moment()
     .hour(23)
@@ -39,10 +38,7 @@ var init = function (tickets, timespan, callback) {
     [
       function (done) {
         if (tickets) {
-          ticketSchema.populate(tickets, { path: 'tags' }, function (
-            err,
-            _tickets
-          ) {
+          ticketSchema.populate(tickets, { path: 'tags' }, function (err, _tickets) {
             if (err) return done(err)
 
             $tickets = _tickets
@@ -51,10 +47,7 @@ var init = function (tickets, timespan, callback) {
         } else {
           ticketSchema.getForCache(function (err, tickets) {
             if (err) return done(err)
-            ticketSchema.populate(tickets, { path: 'tags' }, function (
-              err,
-              _tickets
-            ) {
+            ticketSchema.populate(tickets, { path: 'tags' }, function (err, _tickets) {
               if (err) return done(err)
 
               $tickets = _tickets

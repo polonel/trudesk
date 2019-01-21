@@ -196,8 +196,7 @@ apiController.login = function (req, res) {
 
   userModel.getUserByUsername(username, function (err, user) {
     if (err) return res.status(401).json({ success: false, error: err.message })
-    if (!user)
-      return res.status(401).json({ success: false, error: 'Invalid User' })
+    if (!user) return res.status(401).json({ success: false, error: 'Invalid User' })
 
     if (!userModel.validate(password, user.password))
       return res.status(401).json({ success: false, error: 'Invalid Password' })
@@ -212,9 +211,7 @@ apiController.login = function (req, res) {
     delete resUser.preferences
 
     if (_.isUndefined(resUser.accessToken) || _.isNull(resUser.accessToken)) {
-      return res
-        .status(200)
-        .json({ success: false, error: 'No API Key assigned to this User.' })
+      return res.status(200).json({ success: false, error: 'No API Key assigned to this User.' })
     }
 
     req.user = resUser
@@ -274,8 +271,7 @@ apiController.logout = function (req, res) {
       }
     ],
     function (err) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.status(200).json({ success: true })
     }

@@ -24,14 +24,7 @@ define([
 ], function (angular, _, $, helpers, UIKit) {
   return angular
     .module('trudesk.controllers.profile', ['trudesk.services.session'])
-    .controller('profileCtrl', function (
-      SessionService,
-      $scope,
-      $window,
-      $http,
-      $log,
-      $timeout
-    ) {
+    .controller('profileCtrl', function (SessionService, $scope, $window, $http, $log, $timeout) {
       $scope.init = function () {
         // Fix Inputs if input is preloaded with a value
         fixInputLabels()
@@ -222,10 +215,7 @@ define([
         $http.post('/api/v1/users/' + id + '/generatel2auth').then(
           function success (response) {
             if (!response.data.success) {
-              helpers.UI.showSnackbar(
-                'Error: Unknown error has occurred.',
-                true
-              )
+              helpers.UI.showSnackbar('Error: Unknown error has occurred.', true)
               if (_.isFunction(completed)) {
                 return completed('Error: Unknown error has occurred.')
               }
@@ -239,10 +229,7 @@ define([
           function error (err) {
             $log.error('[trudesk:profile:generateL2Auth]')
             $log.error(err)
-            helpers.UI.showSnackbar(
-              'Error: Could not generate new secret! Check Console',
-              true
-            )
+            helpers.UI.showSnackbar('Error: Could not generate new secret! Check Console', true)
             if (_.isFunction(completed)) {
               completed(err)
             }
@@ -266,10 +253,7 @@ define([
           .error(function (e) {
             $log.error('[trudesk:profile:removeL2Auth]')
             $log.error(e)
-            helpers.UI.showSnackbar(
-              'Error: Could not remove. Check Console',
-              true
-            )
+            helpers.UI.showSnackbar('Error: Could not remove. Check Console', true)
             if (_.isFunction(completed)) {
               completed(e)
             }

@@ -37,16 +37,10 @@ function handleError (res, err) {
 accountsController.signup = function (req, res) {
   var marked = require('marked')
   var settings = require('../models/setting')
-  settings.getSettingByName('allowUserRegistration:enable', function (
-    err,
-    setting
-  ) {
+  settings.getSettingByName('allowUserRegistration:enable', function (err, setting) {
     if (err) return handleError(res, err)
     if (setting && setting.value === true) {
-      settings.getSettingByName('legal:privacypolicy', function (
-        err,
-        privacyPolicy
-      ) {
+      settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
         if (err) return handleError(res, err)
 
         var content = {}
@@ -156,10 +150,7 @@ accountsController.get = function (req, res) {
 
 accountsController.importPage = function (req, res) {
   var user = req.user
-  if (
-    _.isUndefined(user) ||
-    !permissions.canThis(user.role, 'accounts:import')
-  ) {
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:import')) {
     return res.redirect('/')
   }
 
@@ -196,13 +187,9 @@ accountsController.profile = function (req, res) {
   async.parallel(
     {
       account: function (callback) {
-        userSchema.findOne(
-          { _id: req.user._id },
-          '+accessToken +tOTPKey',
-          function (err, obj) {
-            callback(err, obj)
-          }
-        )
+        userSchema.findOne({ _id: req.user._id }, '+accessToken +tOTPKey', function (err, obj) {
+          callback(err, obj)
+        })
       }
     },
     function (err, result) {
@@ -221,8 +208,7 @@ accountsController.profile = function (req, res) {
 accountsController.bindLdap = function (req, res) {
   var ldap = require('../ldap')
   var postData = req.body
-  if (_.isUndefined(postData))
-    return res.status(400).json({ success: false, error: 'Invalid Post Data.' })
+  if (_.isUndefined(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data.' })
 
   var server = postData['ldap-server']
   var dn = postData['ldap-bind-dn']
@@ -231,24 +217,20 @@ accountsController.bindLdap = function (req, res) {
   var filter = postData['ldap-filter']
 
   ldap.bind('ldap://' + server, dn, password, function (err) {
-    if (err && !res.headersSent)
-      return res.status(400).json({ success: false, error: err })
+    if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
 
     ldap.search(searchBase, filter, function (err, results) {
-      if (err && !res.headersSent)
-        return res.status(400).json({ success: false, error: err })
+      if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
 
       var entries = results.entries
       var foundUsers = null
       ldap.unbind(function (err) {
-        if (err && !res.headersSent)
-          return res.status(400).json({ success: false, error: err })
+        if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
 
         var mappedUsernames = _.map(entries, 'sAMAccountName')
 
         userSchema.find({ username: mappedUsernames }, function (err, users) {
-          if (err && !res.headersSent)
-            return res.status(400).json({ success: false, error: err })
+          if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
 
           foundUsers = users
 
@@ -256,16 +238,12 @@ accountsController.bindLdap = function (req, res) {
 
           _.each(mappedUsernames, function (mappedUsername) {
             var u = _.find(entries, function (f) {
-              return (
-                f.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase()
-              )
+              return f.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase()
             })
 
             if (u) {
               var clonedUser = _.find(foundUsers, function (g) {
-                return (
-                  g.username.toLowerCase() === u.sAMAccountName.toLowerCase()
-                )
+                return g.username.toLowerCase() === u.sAMAccountName.toLowerCase()
               })
               if (clonedUser) {
                 clonedUser = _.clone(clonedUser)
@@ -276,9 +254,7 @@ accountsController.bindLdap = function (req, res) {
             }
 
             _.remove(entries, function (k) {
-              return (
-                k.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase()
-              )
+              return k.sAMAccountName.toLowerCase() === mappedUsername.toLowerCase()
             })
           })
 
@@ -445,12 +421,10 @@ accountsController.uploadJSON = function (req, res) {
         object.json = JSON.parse(buffer)
         var accounts = object.json.accounts
         if (_.isUndefined(accounts)) {
-          return res
-            .status(400)
-            .json({
-              success: false,
-              error: 'No accounts defined in JSON file.'
-            })
+          return res.status(400).json({
+            success: false,
+            error: 'No accounts defined in JSON file.'
+          })
         }
 
         async.eachSeries(
@@ -521,10 +495,7 @@ accountsController.uploadImage = function (req, res) {
     var savePath = path.join(__dirname, '../../public/uploads/users')
     if (!fs.existsSync(savePath)) fs.mkdirSync(savePath)
 
-    object.filePath = path.join(
-      savePath,
-      'aProfile_' + object.username + path.extname(filename)
-    )
+    object.filePath = path.join(savePath, 'aProfile_' + object.username + path.extname(filename))
     object.filename = 'aProfile_' + object.username + path.extname(filename)
     object.mimetype = mimetype
 
@@ -559,8 +530,7 @@ accountsController.uploadImage = function (req, res) {
     }
 
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
-    if (!fs.existsSync(object.filePath))
-      return res.status(400).send('File Failed to Save to Disk')
+    if (!fs.existsSync(object.filePath)) return res.status(400).send('File Failed to Save to Disk')
 
     userSchema.getUser(object._id, function (err, user) {
       if (err) return handleError(res, err)

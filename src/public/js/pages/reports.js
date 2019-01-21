@@ -58,8 +58,7 @@ define('pages/reports', [
         var tCount = _data.ticketCount
 
         var ticketCount = $('#ticketCount')
-        var oldTicketCount =
-          ticketCount.text() === '--' ? 0 : ticketCount.text()
+        var oldTicketCount = ticketCount.text() === '--' ? 0 : ticketCount.text()
         var totalTicketText = 'Total Tickets (last ' + timespan + 'd)'
         if (timespan === 0) {
           totalTicketText = 'Total Tickets (lifetime)'
@@ -68,28 +67,15 @@ define('pages/reports', [
           .parents('.tru-card-content')
           .find('span.uk-text-small')
           .text(totalTicketText)
-        var theAnimation = new CountUp(
-          'ticketCount',
-          parseInt(oldTicketCount),
-          tCount,
-          0,
-          1.5
-        )
+        var theAnimation = new CountUp('ticketCount', parseInt(oldTicketCount), tCount, 0, 1.5)
         theAnimation.start()
 
         var closedCount = Number(_data.closedCount)
         var closedPercent = Math.round((closedCount / tCount) * 100)
 
         var textComplete = $('#text_complete')
-        var oldTextComplete =
-          textComplete.text() === '--' ? 0 : textComplete.text()
-        var completeAnimation = new CountUp(
-          'text_complete',
-          parseInt(oldTextComplete),
-          closedPercent,
-          0,
-          1.5
-        )
+        var oldTextComplete = textComplete.text() === '--' ? 0 : textComplete.text()
+        var completeAnimation = new CountUp('text_complete', parseInt(oldTextComplete), closedPercent, 0, 1.5)
         completeAnimation.start()
 
         var pieComplete = $('#pie_complete')
@@ -102,16 +88,9 @@ define('pages/reports', [
 
         var responseTime_text = $('#responseTime_text')
         // var responseTime_graph = $('#responseTime_graph');
-        var oldResponseTime =
-          responseTime_text.text() === '--' ? 0 : responseTime_text.text()
+        var oldResponseTime = responseTime_text.text() === '--' ? 0 : responseTime_text.text()
         var responseTime = _data.ticketAvg
-        var responseTime_animation = new CountUp(
-          'responseTime_text',
-          parseInt(oldResponseTime),
-          responseTime,
-          0,
-          1.5
-        )
+        var responseTime_animation = new CountUp('responseTime_text', parseInt(oldResponseTime), responseTime, 0, 1.5)
         responseTime_animation.start()
       }
     }).error(function (err) {

@@ -22,13 +22,7 @@ define([
   'angularSanitize'
 ], function (angular) {
   return angular
-    .module('trudesk', [
-      'trudesk.services.session',
-      'ngRoute',
-      'ngCookies',
-      'ngSanitize',
-      'trudesk.controllers'
-    ])
+    .module('trudesk', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
     .config(function ($interpolateProvider) {
       $interpolateProvider.startSymbol('{[{')
       $interpolateProvider.endSymbol('}]}')

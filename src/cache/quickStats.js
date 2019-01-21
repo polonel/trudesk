@@ -39,30 +39,22 @@ var init = function (tickets, callback) {
     [
       function (done) {
         if (tickets) {
-          ticketSchema.populate(
-            tickets,
-            { path: 'owner comments.owner assignee' },
-            function (err, _tickets) {
-              $tickets = _tickets
+          ticketSchema.populate(tickets, { path: 'owner comments.owner assignee' }, function (err, _tickets) {
+            $tickets = _tickets
 
-              return done()
-            }
-          )
+            return done()
+          })
         } else {
           ticketSchema.getForCache(function (err, tickets) {
             if (err) return done(err)
 
-            ticketSchema.populate(
-              tickets,
-              { path: 'owner comments.owner assignee' },
-              function (err, _tickets) {
-                if (err) return done(err)
+            ticketSchema.populate(tickets, { path: 'owner comments.owner assignee' }, function (err, _tickets) {
+              if (err) return done(err)
 
-                $tickets = _tickets
+              $tickets = _tickets
 
-                return done()
-              }
-            )
+              return done()
+            })
           })
         }
       },
@@ -133,9 +125,7 @@ function buildMostRequester (ticketArray, callback) {
 
 function flatten (arr) {
   return arr.reduce(function (flat, toFlatten) {
-    return flat.concat(
-      Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten
-    )
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten)
   }, [])
 }
 

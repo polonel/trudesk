@@ -32,12 +32,8 @@ var socketServer = function (ws) {
   'use strict'
 
   var socketConfig = {
-    pingTimeout: nconf.get('socket:pingTimeout')
-      ? nconf.get('socket:pingTimeout')
-      : 5000,
-    pingInterval: nconf.get('socket:pingInterval')
-      ? nconf.get('socket:pingInterval')
-      : 25000
+    pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 5000,
+    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 25000
   }
 
   var io = require('socket.io')(ws.server, {
@@ -55,14 +51,9 @@ var socketServer = function (ws) {
           }
 
           var userSchema = require('./models/user')
-          userSchema.getUserByAccessToken(data.request._query.token, function (
-            err,
-            user
-          ) {
+          userSchema.getUserByAccessToken(data.request._query.token, function (err, user) {
             if (!err && user) {
-              winston.debug(
-                'Authenticated socket ' + data.id + ' - ' + user.username
-              )
+              winston.debug('Authenticated socket ' + data.id + ' - ' + user.username)
               data.request.user = user
               data.request.user.logged_in = true
               data.token = data.request._query.token
@@ -75,11 +66,7 @@ var socketServer = function (ws) {
           })
         },
         function (data, accept) {
-          if (
-            data.request &&
-            data.request.user &&
-            data.request.user.logged_in
-          ) {
+          if (data.request && data.request.user && data.request.user.logged_in) {
             data.user = data.request.user
             return accept(null, true)
           }

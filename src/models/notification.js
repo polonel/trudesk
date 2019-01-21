@@ -40,10 +40,7 @@ notificationSchema.methods.markRead = function (callback) {
 
 notificationSchema.statics.getNotification = function (id, callback) {
   if (_.isUndefined(id)) {
-    return callback(
-      'Invalid ObjectId - NotificationSchema.GetNotification()',
-      null
-    )
+    return callback('Invalid ObjectId - NotificationSchema.GetNotification()', null)
   }
 
   return this.model(COLLECTION).findOne({ _id: id }, callback)
@@ -51,10 +48,7 @@ notificationSchema.statics.getNotification = function (id, callback) {
 
 notificationSchema.statics.findAllForUser = function (oId, callback) {
   if (_.isUndefined(oId)) {
-    return callback(
-      'Invalid ObjectId - NotificationSchema.FindAllForUser()',
-      null
-    )
+    return callback('Invalid ObjectId - NotificationSchema.FindAllForUser()', null)
   }
 
   var q = this.model(COLLECTION)
@@ -74,24 +68,15 @@ notificationSchema.statics.getCount = function (oId, callback) {
 
 notificationSchema.statics.getUnreadCount = function (oId, callback) {
   if (_.isUndefined(oId)) {
-    return callback(
-      'Invalid ObjectId - NotificationSchema.GetUnreadCount()',
-      null
-    )
+    return callback('Invalid ObjectId - NotificationSchema.GetUnreadCount()', null)
   }
 
-  return this.model(COLLECTION).countDocuments(
-    { owner: oId, unread: true },
-    callback
-  )
+  return this.model(COLLECTION).countDocuments({ owner: oId, unread: true }, callback)
 }
 
 notificationSchema.statics.clearNotifications = function (oId, callback) {
   if (_.isUndefined(oId)) {
-    return callback(
-      'Invalid UserId - NotificationSchema.ClearNotifications()',
-      null
-    )
+    return callback('Invalid UserId - NotificationSchema.ClearNotifications()', null)
   }
 
   return this.model(COLLECTION).deleteOne({ owner: oId }, callback)

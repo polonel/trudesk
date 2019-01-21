@@ -47,11 +47,7 @@ module.exports = function () {
             }
 
             if (!user || user.deleted) {
-              return done(
-                null,
-                false,
-                req.flash('loginMessage', 'No User Found.')
-              )
+              return done(null, false, req.flash('loginMessage', 'No User Found.'))
             }
 
             if (!User.validate(password, user.password)) {
@@ -59,11 +55,7 @@ module.exports = function () {
             }
 
             if (!User.validate(password, user.password)) {
-              return done(
-                null,
-                false,
-                req.flash('loginMessage', 'Incorrect Password.')
-              )
+              return done(null, false, req.flash('loginMessage', 'Incorrect Password.'))
             }
 
             req.user = user
@@ -83,21 +75,14 @@ module.exports = function () {
       function (user, done) {
         if (!user.hasL2Auth) return done(false)
 
-        User.findOne({ _id: user._id }, '+tOTPKey +tOTPPeriod', function (
-          err,
-          user
-        ) {
+        User.findOne({ _id: user._id }, '+tOTPKey +tOTPPeriod', function (err, user) {
           if (err) return done(err)
 
           if (!user.tOTPPeriod) {
             user.tOTPPeriod = 30
           }
 
-          return done(
-            null,
-            base32.decode(user.tOTPKey).toString(),
-            user.tOTPPeriod
-          )
+          return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod)
         })
       }
     )

@@ -107,8 +107,7 @@ apiGroups.getAll = function (req, res) {
  */
 apiGroups.getSingleGroup = function (req, res) {
   var id = req.params.id
-  if (_.isUndefined(id))
-    return res.status(400).json({ error: 'Invalid Request' })
+  if (_.isUndefined(id)) return res.status(400).json({ error: 'Invalid Request' })
 
   GroupSchema.getGroupById(id, function (err, group) {
     if (err) return res.status(400).json({ error: err.message })
@@ -158,10 +157,7 @@ apiGroups.create = function (req, res) {
   Group.sendMailTo = req.body.sendMailTo
 
   Group.save(function (err, group) {
-    if (err)
-      return res
-        .status(400)
-        .json({ success: false, error: 'Error: ' + err.message })
+    if (err) return res.status(400).json({ success: false, error: 'Error: ' + err.message })
 
     res.json({ success: true, error: null, group: group })
   })
@@ -254,10 +250,7 @@ apiGroups.updateGroup = function (req, res) {
  */
 apiGroups.deleteGroup = function (req, res) {
   var id = req.params.id
-  if (_.isUndefined(id))
-    return res
-      .status(400)
-      .json({ success: false, error: 'Error: Invalid Group Id.' })
+  if (_.isUndefined(id)) return res.status(400).json({ success: false, error: 'Error: Invalid Group Id.' })
 
   async.series(
     [

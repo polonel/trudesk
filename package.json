@@ -11,6 +11,7 @@
     "build": "grunt build",
     "test": "mocha --recursive",
     "lint": "standard | snazzy",
+    "format": "prettier-standard \"./*.js\" \"src/*.js\" \"src/**/*.js\" \"!src/public/js/vendor/**/*.js\" \"!src/public/js/plugins/**/*.js\"",
     "coverage": "istanbul cover ./node_modules/mocha/bin/_mocha -- --recursive",
     "codacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --recursive -R spec && cat ./coverage/lcov.info | cross-env CODACY_PROJECT_TOKEN=65070aca43cc4fba96eaabd4033c9528 codacy-coverage && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch",
@@ -187,6 +188,9 @@
       "d3",
       "History"
     ]
+  },
+  "prettier": {
+    "printWidth": 120
   },
   "config": {
     "blanket": {

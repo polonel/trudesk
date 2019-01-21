@@ -57,10 +57,7 @@ module.exports = function (app, db, callback) {
     hbs.express4({
       handlebars: HandleBars,
       defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
-      partialsDir: [
-        path.join(__dirname + '/../views/partials/'),
-        path.join(__dirname + '/../views/subviews/reports')
-      ]
+      partialsDir: [path.join(__dirname + '/../views/partials/'), path.join(__dirname + '/../views/subviews/reports')]
     })
   )
   app.set('view engine', 'hbs')
@@ -114,20 +111,10 @@ module.exports = function (app, db, callback) {
         // CORS
         app.use(allowCrossDomain)
         // Mobile
-        app.use(
-          '/mobile',
-          express.static(path.join(__dirname, '../../', 'mobile'))
-        )
+        app.use('/mobile', express.static(path.join(__dirname, '../../', 'mobile')))
 
-        app.use(
-          '/assets',
-          express.static(path.join(__dirname, '../../public/uploads/assets'))
-        )
-        app.use(
-          '/uploads',
-          middleware.hasAuth,
-          express.static(path.join(__dirname, '../../public/uploads'))
-        )
+        app.use('/assets', express.static(path.join(__dirname, '../../public/uploads/assets')))
+        app.use('/uploads', middleware.hasAuth, express.static(path.join(__dirname, '../../public/uploads')))
         app.use(
           '/backups',
           middleware.hasAuth,
@@ -172,10 +159,7 @@ module.exports = function (app, db, callback) {
 
 function allowCrossDomain (req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader(
-    'Access-Control-Allow-Methods',
-    'GET, POST, PUT, DELETE, PATCH, OPTIONS'
-  )
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS')
   res.setHeader(
     'Access-Control-Allow-Headers',
     'DNT,X-Mx-ReqToken,Keep-Alive,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,accesstoken'

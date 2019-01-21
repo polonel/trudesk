@@ -89,10 +89,7 @@ function copyUploads (file, callback) {
 
 function extractArchive (file, callback) {
   var zip = new AdmZip(path.join(__dirname, '../../backups/', file))
-  zip.extractAllTo(
-    path.join(__dirname, '../../restores/restore_' + file + '/'),
-    true
-  )
+  zip.extractAllTo(path.join(__dirname, '../../restores/restore_' + file + '/'), true)
 
   if (_.isFunction(callback)) {
     return callback()
@@ -107,9 +104,7 @@ function runRestore (file, callback) {
   var platform = os.platform()
   winston.info('Starting Restore... (' + platform + ')')
 
-  var dbName = fs.readdirSync(
-    path.join(__dirname, '../../restores/restore_' + file, 'database')
-  )[0]
+  var dbName = fs.readdirSync(path.join(__dirname, '../../restores/restore_' + file, 'database'))[0]
   if (!dbName) {
     return callback(new Error('Invalid Backup. Unable to get DBName'))
   }
@@ -123,10 +118,7 @@ function runRestore (file, callback) {
   ]
   var mongodump = null
   if (platform === 'win32') {
-    mongodump = spawn(
-      path.join(__dirname, 'bin', platform, 'mongorestore'),
-      options
-    )
+    mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options)
   } else {
     mongodump = spawn('mongorestore', options)
   }
@@ -150,8 +142,7 @@ function runRestore (file, callback) {
 
 ;(function () {
   CONNECTION_URI = process.env.MONGOURI
-  if (!CONNECTION_URI)
-    return process.send({ success: false, error: 'Invalid connection uri' })
+  if (!CONNECTION_URI) return process.send({ success: false, error: 'Invalid connection uri' })
 
   var FILE = process.env.FILE
   if (!FILE) return process.send({ success: false, error: 'Invalid File' })

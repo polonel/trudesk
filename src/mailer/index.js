@@ -78,24 +78,12 @@ function createTransporter (callback) {
       return x.name === 'mailer:from'
     })
 
-    mailSettings.enabled =
-      mailSettings.enabled && mailSettings.enabled.value
-        ? mailSettings.enabled.value
-        : false
+    mailSettings.enabled = mailSettings.enabled && mailSettings.enabled.value ? mailSettings.enabled.value : false
 
     var transport = {
-      host:
-        mailSettings.host && mailSettings.host.value
-          ? mailSettings.host.value
-          : '127.0.0.1',
-      port:
-        mailSettings.port && mailSettings.port.value
-          ? mailSettings.port.value
-          : 25,
-      secure:
-        mailSettings.ssl && mailSettings.ssl.value
-          ? mailSettings.ssl.value
-          : false,
+      host: mailSettings.host && mailSettings.host.value ? mailSettings.host.value : '127.0.0.1',
+      port: mailSettings.port && mailSettings.port.value ? mailSettings.port.value : 25,
+      secure: mailSettings.ssl && mailSettings.ssl.value ? mailSettings.ssl.value : false,
       tls: {
         rejectUnauthorized: false,
         ciphers: 'SSLv3'
@@ -104,10 +92,7 @@ function createTransporter (callback) {
     if (mailSettings.username && mailSettings.username.value) {
       transport.auth = {
         user: mailSettings.username.value,
-        pass:
-          mailSettings.password && mailSettings.password.value
-            ? mailSettings.password.value
-            : ''
+        pass: mailSettings.password && mailSettings.password.value ? mailSettings.password.value : ''
       }
     }
 

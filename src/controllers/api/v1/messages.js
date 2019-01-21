@@ -48,10 +48,7 @@ var apiMessages = {}
  */
 
 apiMessages.getConversations = function (req, res) {
-  ConversationSchema.getConversations(req.user._id, function (
-    err,
-    conversations
-  ) {
+  ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
     return res.json({ success: true, conversations: conversations })
@@ -59,10 +56,7 @@ apiMessages.getConversations = function (req, res) {
 }
 
 apiMessages.getRecentConversations = function (req, res) {
-  ConversationSchema.getConversations(req.user._id, function (
-    err,
-    conversations
-  ) {
+  ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err.message })
 
     var result = []
@@ -73,9 +67,7 @@ apiMessages.getRecentConversations = function (req, res) {
           return mItem.userId.toString() === req.user._id.toString()
         })
         if (idx === -1) {
-          return res
-            .status(400)
-            .json({ success: false, error: 'Unable to attach to userMeta' })
+          return res.status(400).json({ success: false, error: 'Unable to attach to userMeta' })
         }
 
         MessageSchema.getMostRecentMessage(item._id, function (err, m) {
@@ -86,10 +78,7 @@ apiMessages.getRecentConversations = function (req, res) {
             return done()
           }
 
-          if (
-            item.userMeta[idx].deletedAt &&
-            item.userMeta[idx].deletedAt > _.first(m).createdAt
-          ) {
+          if (item.userMeta[idx].deletedAt && item.userMeta[idx].deletedAt > _.first(m).createdAt) {
             return done()
           }
 
@@ -111,10 +100,7 @@ apiMessages.getRecentConversations = function (req, res) {
 }
 
 apiMessages.get = function (req, res) {
-  ConversationSchema.getConversations(req.user._id, function (
-    err,
-    conversations
-  ) {
+  ConversationSchema.getConversations(req.user._id, function (err, conversations) {
     if (err) return res.status(400).json({ success: false, error: err })
     var fullConversations = []
 
@@ -210,18 +196,16 @@ apiMessages.send = function (req, res) {
     [
       function (done) {
         // Updated conversation to save UpdatedAt field.
-        ConversationSchema.findOneAndUpdate(
-          { _id: cId },
-          { updatedAt: new Date() },
-          { new: false },
-          function (err, convo) {
-            if (err) return done(err)
-            if (convo === null || convo === undefined) {
-              return done('Invalid Conversation: ' + convo)
-            }
-            return done(null, convo)
+        ConversationSchema.findOneAndUpdate({ _id: cId }, { updatedAt: new Date() }, { new: false }, function (
+          err,
+          convo
+        ) {
+          if (err) return done(err)
+          if (convo === null || convo === undefined) {
+            return done('Invalid Conversation: ' + convo)
           }
-        )
+          return done(null, convo)
+        })
       },
       function (convo, done) {
         var Message = new MessageSchema({
@@ -255,9 +239,7 @@ apiMessages.getMessagesForConversation = function (req, res) {
   var page = req.query.page === undefined ? 0 : req.query.page
   var limit = req.query.limit === undefined ? 10 : req.query.limit
   if (_.isUndefined(conversation) || _.isNull(conversation)) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Conversation' })
+    return res.status(400).json({ success: false, error: 'Invalid Conversation' })
   }
 
   var response = {}
@@ -311,9 +293,7 @@ apiMessages.deleteConversation = function (req, res) {
   var conversation = req.params.id
 
   if (_.isUndefined(conversation) || _.isNull(conversation)) {
-    return res
-      .status(400)
-      .json({ success: false, error: 'Invalid Conversation' })
+    return res.status(400).json({ success: false, error: 'Invalid Conversation' })
   }
 
   ConversationSchema.getConversation(conversation, function (err, convo) {
@@ -324,16 +304,13 @@ apiMessages.deleteConversation = function (req, res) {
       return item.userId.toString() === user._id.toString()
     })
     if (idx === -1) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Unable to attach to userMeta' })
+      return res.status(400).json({ success: false, error: 'Unable to attach to userMeta' })
     }
 
     convo.userMeta[idx].deletedAt = new Date()
 
     convo.save(function (err, sConvo) {
-      if (err)
-        return res.status(400).json({ success: false, error: err.message })
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
       return res.json({ success: true, conversation: sConvo })
     })

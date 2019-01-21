@@ -114,116 +114,32 @@ truCache.refreshCache = function (callback) {
                 // console.timeEnd('test');
                 if (err) return done(err)
                 var expire = 3600 // 1 hour
-                cache.set(
-                  'tickets:overview:lastUpdated',
-                  stats.lastUpdated,
-                  expire
-                )
+                cache.set('tickets:overview:lastUpdated', stats.lastUpdated, expire)
 
-                cache.set(
-                  'tickets:overview:e30:ticketCount',
-                  stats.e30.tickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e30:closedTickets',
-                  stats.e30.closedTickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e30:responseTime',
-                  stats.e30.avgResponse,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e30:graphData',
-                  stats.e30.graphData,
-                  expire
-                )
+                cache.set('tickets:overview:e30:ticketCount', stats.e30.tickets, expire)
+                cache.set('tickets:overview:e30:closedTickets', stats.e30.closedTickets, expire)
+                cache.set('tickets:overview:e30:responseTime', stats.e30.avgResponse, expire)
+                cache.set('tickets:overview:e30:graphData', stats.e30.graphData, expire)
 
-                cache.set(
-                  'tickets:overview:e60:ticketCount',
-                  stats.e60.tickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e60:closedTickets',
-                  stats.e60.closedTickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e60:responseTime',
-                  stats.e60.avgResponse,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e60:graphData',
-                  stats.e60.graphData,
-                  expire
-                )
+                cache.set('tickets:overview:e60:ticketCount', stats.e60.tickets, expire)
+                cache.set('tickets:overview:e60:closedTickets', stats.e60.closedTickets, expire)
+                cache.set('tickets:overview:e60:responseTime', stats.e60.avgResponse, expire)
+                cache.set('tickets:overview:e60:graphData', stats.e60.graphData, expire)
 
-                cache.set(
-                  'tickets:overview:e90:ticketCount',
-                  stats.e90.tickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e90:closedTickets',
-                  stats.e90.closedTickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e90:responseTime',
-                  stats.e90.avgResponse,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e90:graphData',
-                  stats.e90.graphData,
-                  expire
-                )
+                cache.set('tickets:overview:e90:ticketCount', stats.e90.tickets, expire)
+                cache.set('tickets:overview:e90:closedTickets', stats.e90.closedTickets, expire)
+                cache.set('tickets:overview:e90:responseTime', stats.e90.avgResponse, expire)
+                cache.set('tickets:overview:e90:graphData', stats.e90.graphData, expire)
 
-                cache.set(
-                  'tickets:overview:e180:ticketCount',
-                  stats.e180.tickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e180:closedTickets',
-                  stats.e180.closedTickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e180:responseTime',
-                  stats.e180.avgResponse,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e180:graphData',
-                  stats.e180.graphData,
-                  expire
-                )
+                cache.set('tickets:overview:e180:ticketCount', stats.e180.tickets, expire)
+                cache.set('tickets:overview:e180:closedTickets', stats.e180.closedTickets, expire)
+                cache.set('tickets:overview:e180:responseTime', stats.e180.avgResponse, expire)
+                cache.set('tickets:overview:e180:graphData', stats.e180.graphData, expire)
 
-                cache.set(
-                  'tickets:overview:e365:ticketCount',
-                  stats.e365.tickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e365:closedTickets',
-                  stats.e365.closedTickets,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e365:responseTime',
-                  stats.e365.avgResponse,
-                  expire
-                )
-                cache.set(
-                  'tickets:overview:e365:graphData',
-                  stats.e365.graphData,
-                  expire
-                )
+                cache.set('tickets:overview:e365:ticketCount', stats.e365.tickets, expire)
+                cache.set('tickets:overview:e365:closedTickets', stats.e365.closedTickets, expire)
+                cache.set('tickets:overview:e365:responseTime', stats.e365.avgResponse, expire)
+                cache.set('tickets:overview:e365:graphData', stats.e365.graphData, expire)
 
                 // cache.set('tickets:overview:lifetime:ticketCount', stats.lifetime.tickets, expire);
                 // cache.set('tickets:overview:lifetime:closedTickets', stats.lifetime.closedTickets, expire);
@@ -305,11 +221,7 @@ truCache.refreshCache = function (callback) {
                 cache.set('quickstats:mostRequester', stats.mostRequester, 3600)
                 cache.set('quickstats:mostCommenter', stats.mostCommenter, 3600)
                 cache.set('quickstats:mostAssignee', stats.mostAssignee, 3600)
-                cache.set(
-                  'quickstats:mostActiveTicket',
-                  stats.mostActiveTicket,
-                  3600
-                )
+                cache.set('quickstats:mostActiveTicket', stats.mostActiveTicket, 3600)
 
                 return done()
               })
@@ -339,9 +251,7 @@ truCache.refreshCache = function (callback) {
     if (message.name === 'cache:refresh') {
       winston.debug('Refreshing Cache....')
       var now = moment()
-      var timeSinceLast = Math.round(
-        moment.duration(now.diff(lastUpdated)).asMinutes()
-      )
+      var timeSinceLast = Math.round(moment.duration(now.diff(lastUpdated)).asMinutes())
       if (timeSinceLast < 5) {
         var i = 5 - timeSinceLast
         winston.debug('Cannot refresh cache for another ' + i + ' minutes')

@@ -10,8 +10,7 @@
   }
 
   var extend = function (child, parent) {
-    for (var key in parent)
-      if (hasProp.call(parent, key)) child[key] = parent[key]
+    for (var key in parent) if (hasProp.call(parent, key)) child[key] = parent[key]
     function ctor () {
       this.constructor = child
     }
@@ -156,9 +155,7 @@
       }
       if (this.data[key]) {
         existend = true
-        this.stats.vsize -= this._getValLength(
-          this._unwrap(this.data[key], false)
-        )
+        this.stats.vsize -= this._getValLength(this._unwrap(this.data[key], false))
       }
       this.data[key] = this._wrap(value, ttl)
       this.stats.vsize += this._getValLength(value)
@@ -184,9 +181,7 @@
       for (i = 0, len = keys.length; i < len; i++) {
         key = keys[i]
         if (this.data[key] != null) {
-          this.stats.vsize -= this._getValLength(
-            this._unwrap(this.data[key], false)
-          )
+          this.stats.vsize -= this._getValLength(this._unwrap(this.data[key], false))
           this.stats.ksize -= this._getKeyLength(key)
           this.stats.keys--
           delCount++
@@ -206,8 +201,7 @@
 
     NodeCache.prototype.ttl = function () {
       var arg, args, cb, i, key, len, ttl
-      ;(key = arguments[0]),
-        (args = arguments.length >= 2 ? slice.call(arguments, 1) : [])
+      ;(key = arguments[0]), (args = arguments.length >= 2 ? slice.call(arguments, 1) : [])
       for (i = 0, len = args.length; i < len; i++) {
         arg = args[i]
         switch (typeof arg) {
@@ -295,10 +289,7 @@
         this._check(key, value)
       }
       if (startPeriod && this.options.checkperiod > 0) {
-        this.checkTimeout = setTimeout(
-          this._checkData,
-          this.options.checkperiod * 1000
-        )
+        this.checkTimeout = setTimeout(this._checkData, this.options.checkperiod * 1000)
         if (this.checkTimeout.unref != null) {
           this.checkTimeout.unref()
         }

@@ -104,8 +104,7 @@ settingsController.mailerSettings = function (req, res) {
 }
 
 settingsController.notificationsSettings = function (req, res) {
-  if (!checkPerms(req, 'settings:notifications'))
-    return res.redirect('/settings')
+  if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings')
 
   var content = initViewContent('notifications', req)
 
@@ -158,9 +157,7 @@ settingsController.logs = function (req, res) {
     }
 
     content.data.logFileContent = data.toString().trim()
-    content.data.logFileContent = ansiUp.ansi_to_html(
-      content.data.logFileContent
-    )
+    content.data.logFileContent = ansiUp.ansi_to_html(content.data.logFileContent)
 
     return res.render('logs', content)
   })

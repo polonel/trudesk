@@ -123,10 +123,7 @@ function updateConversationsNotifications () {
     var userId = socket.request.user._id
     var messageSchema = require('../models/chat/message')
     var conversationSchema = require('../models/chat/conversation')
-    conversationSchema.getConversationsWithLimit(userId, 10, function (
-      err,
-      conversations
-    ) {
+    conversationSchema.getConversationsWithLimit(userId, 10, function (err, conversations) {
       if (err) {
         winston.warn(err.message)
         return false
@@ -145,11 +142,7 @@ function updateConversationsNotifications () {
                 return item.userId.toString() === userId.toString()
               })
             ]
-          if (
-            !_.isUndefined(userMeta) &&
-            !_.isUndefined(userMeta.deletedAt) &&
-            userMeta.deletedAt > convo.updatedAt
-          ) {
+          if (!_.isUndefined(userMeta) && !_.isUndefined(userMeta.deletedAt) && userMeta.deletedAt > convo.updatedAt) {
             return done()
           }
 
@@ -205,10 +198,7 @@ function spawnOpenChatWindows (socket) {
   userSchema.getUser(loggedInAccountId, function (err, user) {
     if (err) return true
 
-    async.eachSeries(user.preferences.openChatWindows, function (
-      convoId,
-      done
-    ) {
+    async.eachSeries(user.preferences.openChatWindows, function (convoId, done) {
       var partner = null
       conversationSchema.getConversation(convoId, function (err, conversation) {
         if (err || !conversation) return done()
@@ -320,24 +310,11 @@ events.onChatMessage = function (socket) {
         }
       ],
       function (err) {
-        if (err)
-          return utils.sendToSelf(socket, 'chatMessage', { message: err })
+        if (err) return utils.sendToSelf(socket, 'chatMessage', { message: err })
 
-        utils.sendToUser(
-          sharedVars.sockets,
-          sharedVars.usersOnline,
-          data.toUser.username,
-          'chatMessage',
-          data
-        )
+        utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, data.toUser.username, 'chatMessage', data)
         data.type = od
-        utils.sendToUser(
-          sharedVars.sockets,
-          sharedVars.usersOnline,
-          data.fromUser.username,
-          'chatMessage',
-          data
-        )
+        utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, data.fromUser.username, 'chatMessage', data)
       }
     )
   })
@@ -368,13 +345,7 @@ events.onChatTyping = function (socket) {
     data.toUser = user
     data.fromUser = fromUser
 
-    utils.sendToUser(
-      sharedVars.sockets,
-      sharedVars.usersOnline,
-      user.username,
-      'chatTyping',
-      data
-    )
+    utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, user.username, 'chatTyping', data)
   })
 }
 
@@ -395,13 +366,7 @@ events.onChatStopTyping = function (socket) {
 
     data.toUser = user
 
-    utils.sendToUser(
-      sharedVars.sockets,
-      sharedVars.usersOnline,
-      user.username,
-      'chatStopTyping',
-      data
-    )
+    utils.sendToUser(sharedVars.sockets, sharedVars.usersOnline, user.username, 'chatStopTyping', data)
   })
 }
 
@@ -450,10 +415,7 @@ events.onDisconnect = function (socket) {
       if (_.size(userSockets) < 2) {
         delete sharedVars.usersOnline[user.username]
       } else {
-        sharedVars.usersOnline[user.username].sockets = _.without(
-          userSockets,
-          socket.id
-        )
+        sharedVars.usersOnline[user.username].sockets = _.without(userSockets, socket.id)
       }
 
       var o = _.findKey(sharedVars.sockets, { id: socket.id })
@@ -466,10 +428,7 @@ events.onDisconnect = function (socket) {
       if (_.size(idleSockets) < 2) {
         delete sharedVars.idleUsers[user.username]
       } else {
-        sharedVars.idleUsers[user.username].sockets = _.without(
-          idleSockets,
-          socket.id
-        )
+        sharedVars.idleUsers[user.username].sockets = _.without(idleSockets, socket.id)
       }
 
       var i = _.findKey(sharedVars.sockets, { id: socket.id })
@@ -491,9 +450,7 @@ events.onDisconnect = function (socket) {
       reason = 'client terminated'
     }
 
-    winston.debug(
-      'User disconnected (' + reason + '): ' + user.username + ' - ' + socket.id
-    )
+    winston.debug('User disconnected (' + reason + '): ' + user.username + ' - ' + socket.id)
   })
 }
 

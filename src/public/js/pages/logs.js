@@ -12,10 +12,7 @@
 
  **/
 
-define('pages/logs', ['jquery', 'modules/socket', 'history'], function (
-  $,
-  socket
-) {
+define('pages/logs', ['jquery', 'modules/socket', 'history'], function ($, socket) {
   var logsPage = {}
 
   logsPage.init = function (callback) {

@@ -46,8 +46,7 @@ var options = {
 module.exports.init = function (callback, connectionString, opts) {
   if (connectionString) CONNECTION_URI = connectionString
   if (opts) options = opts
-  if (!_.isUndefined(process.env.MONGOHQ_URL))
-    CONNECTION_URI = process.env.MONGOHQ_URL.trim()
+  if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim()
 
   if (db.connection) {
     return callback(null, db)

@@ -56,38 +56,18 @@ util.getSettings = function (callback) {
     s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
     s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York')
     s.timeFormat = parseSetting(settings, 'gen:timeFormat', 'hh:mma')
-    s.shortDateFormat = parseSetting(
-      settings,
-      'gen:shortDateFormat',
-      'MM/DD/YYYY'
-    )
-    s.longDateFormat = parseSetting(
-      settings,
-      'gen:longDateFormat',
-      'MMM DD, YYYY'
-    )
+    s.shortDateFormat = parseSetting(settings, 'gen:shortDateFormat', 'MM/DD/YYYY')
+    s.longDateFormat = parseSetting(settings, 'gen:longDateFormat', 'MMM DD, YYYY')
 
     s.hasCustomLogo = parseSetting(settings, 'gen:customlogo', false)
     s.customLogoFilename = parseSetting(settings, 'gen:customlogofilename', '')
     s.hasCustomPageLogo = parseSetting(settings, 'gen:custompagelogo', false)
-    s.customPageLogoFilename = parseSetting(
-      settings,
-      'gen:custompagelogofilename',
-      ''
-    )
+    s.customPageLogoFilename = parseSetting(settings, 'gen:custompagelogofilename', '')
     s.hasCustomFavicon = parseSetting(settings, 'gen:customfavicon', false)
-    s.customFaviconFilename = parseSetting(
-      settings,
-      'gen:customfaviconfilename',
-      ''
-    )
+    s.customFaviconFilename = parseSetting(settings, 'gen:customfaviconfilename', '')
 
     s.colorHeaderBG = parseSetting(settings, 'color:headerbg', '#42464d')
-    s.colorHeaderPrimary = parseSetting(
-      settings,
-      'color:headerprimary',
-      '#f6f7fa'
-    )
+    s.colorHeaderPrimary = parseSetting(settings, 'color:headerprimary', '#f6f7fa')
     s.colorPrimary = parseSetting(settings, 'color:primary', '#545A63')
     s.colorSecondary = parseSetting(settings, 'color:secondary', '#f7f8fa')
     s.colorTertiary = parseSetting(settings, 'color:tertiary', '#E74C3C')
@@ -110,48 +90,20 @@ util.getSettings = function (callback) {
     s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143)
     s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '')
     s.mailerCheckPassword = parseSetting(settings, 'mailer:check:password', '')
-    s.mailerCheckTicketType = parseSetting(
-      settings,
-      'mailer:check:ticketype',
-      ''
-    )
-    s.mailerCheckTicketPriority = parseSetting(
-      settings,
-      'mailer:check:ticketpriority',
-      ''
-    )
-    s.mailerCheckCreateAccount = parseSetting(
-      settings,
-      'mailer:check:createaccount',
-      false
-    )
-    s.mailerCheckDeleteMessage = parseSetting(
-      settings,
-      'mailer:check:deletemessage',
-      true
-    )
+    s.mailerCheckTicketType = parseSetting(settings, 'mailer:check:ticketype', '')
+    s.mailerCheckTicketPriority = parseSetting(settings, 'mailer:check:ticketpriority', '')
+    s.mailerCheckCreateAccount = parseSetting(settings, 'mailer:check:createaccount', false)
+    s.mailerCheckDeleteMessage = parseSetting(settings, 'mailer:check:deletemessage', true)
 
     s.showTour = parseSetting(settings, 'showTour:enable', false)
-    s.showOverdueTickets = parseSetting(
-      settings,
-      'showOverdueTickets:enable',
-      true
-    )
+    s.showOverdueTickets = parseSetting(settings, 'showOverdueTickets:enable', true)
 
     s.tpsEnabled = parseSetting(settings, 'tps:enable', false)
     s.tpsUsername = parseSetting(settings, 'tps:username', '')
     s.tpsApiKey = parseSetting(settings, 'tps:apikey', '')
 
-    s.allowPublicTickets = parseSetting(
-      settings,
-      'allowPublicTickets:enable',
-      false
-    )
-    s.allowUserRegistration = parseSetting(
-      settings,
-      'allowUserRegistration:enable',
-      false
-    )
+    s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false)
+    s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false)
 
     s.privacyPolicy = parseSetting(settings, 'legal:privacypolicy', '')
     s.privacyPolicy.value = jsStringEscape(s.privacyPolicy.value)
@@ -168,10 +120,7 @@ util.getSettings = function (callback) {
               return o.name
             })
             _.each(content.data.ticketTypes, function (type) {
-              type.priorities = _.sortBy(type.priorities, [
-                'migrationNum',
-                'name'
-              ])
+              type.priorities = _.sortBy(type.priorities, ['migrationNum', 'name'])
             })
 
             return done()
@@ -182,10 +131,7 @@ util.getSettings = function (callback) {
           ticketPrioritySchema.getPriorities(function (err, priorities) {
             if (err) return done(err)
 
-            content.data.priorities = _.sortBy(priorities, [
-              'migrationNum',
-              'name'
-            ])
+            content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
 
             return done()
           })

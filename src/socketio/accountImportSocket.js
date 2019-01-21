@@ -33,9 +33,7 @@ events.onImportCSV = function (socket) {
     var authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
-      winston.warn(
-        '[$trudesk:accounts:import:csv] - Error: Invalid permissions.'
-      )
+      winston.warn('[$trudesk:accounts:import:csv] - Error: Invalid permissions.')
       utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
         error: 'Invalid Permissions. Check Console.'
       })
@@ -62,11 +60,7 @@ events.onImportCSV = function (socket) {
                 }
               }
 
-              utils.sendToSelf(
-                socket,
-                '$trudesk:accounts:import:onStatusChange',
-                data
-              )
+              utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
               var user = new UserSchema({
                 username: cu.username,
@@ -89,22 +83,14 @@ events.onImportCSV = function (socket) {
                 if (err) {
                   winston.warn(err)
                   data.item.state = 3
-                  utils.sendToSelf(
-                    socket,
-                    '$trudesk:accounts:import:onStatusChange',
-                    data
-                  )
+                  utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                 } else {
                   completedCount++
                   // Send update
                   data.completedCount = completedCount
                   data.item.state = 2 // Completed
                   setTimeout(function () {
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
                     done()
                   }, 150)
@@ -127,11 +113,7 @@ events.onImportCSV = function (socket) {
                 state: 1 // Starting
               }
             }
-            utils.sendToSelf(
-              socket,
-              '$trudesk:accounts:import:onStatusChange',
-              data
-            )
+            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
             UserSchema.getUserByUsername(uu.username, function (err, user) {
               if (err) {
                 console.log(err)
@@ -147,21 +129,13 @@ events.onImportCSV = function (socket) {
                   if (err) {
                     console.log(err)
                     data.item.state = 3
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                   } else {
                     completedCount++
                     data.item.state = 2
                     data.completedCount = completedCount
                     setTimeout(function () {
-                      utils.sendToSelf(
-                        socket,
-                        '$trudesk:accounts:import:onStatusChange',
-                        data
-                      )
+                      utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                     }, 150)
                   }
                 })
@@ -182,9 +156,7 @@ events.onImportJSON = function (socket) {
     var authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
-      winston.warn(
-        '[$trudesk:accounts:import:json] - Error: Invalid permissions.'
-      )
+      winston.warn('[$trudesk:accounts:import:json] - Error: Invalid permissions.')
       utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
         error: 'Invalid Permissions. Check Console.'
       })
@@ -211,11 +183,7 @@ events.onImportJSON = function (socket) {
                 }
               }
 
-              utils.sendToSelf(
-                socket,
-                '$trudesk:accounts:import:onStatusChange',
-                data
-              )
+              utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
               var user = new UserSchema({
                 username: cu.username,
@@ -238,22 +206,14 @@ events.onImportJSON = function (socket) {
                 if (err) {
                   winston.warn(err)
                   data.item.state = 3
-                  utils.sendToSelf(
-                    socket,
-                    '$trudesk:accounts:import:onStatusChange',
-                    data
-                  )
+                  utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                 } else {
                   completedCount++
                   // Send update
                   data.completedCount = completedCount
                   data.item.state = 2 // Completed
                   setTimeout(function () {
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
                     done()
                   }, 150)
@@ -276,11 +236,7 @@ events.onImportJSON = function (socket) {
                 state: 1 // Starting
               }
             }
-            utils.sendToSelf(
-              socket,
-              '$trudesk:accounts:import:onStatusChange',
-              data
-            )
+            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
             UserSchema.getUserByUsername(uu.username, function (err, user) {
               if (err) {
                 console.log(err)
@@ -296,21 +252,13 @@ events.onImportJSON = function (socket) {
                   if (err) {
                     console.log(err)
                     data.item.state = 3
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                   } else {
                     completedCount++
                     data.item.state = 2
                     data.completedCount = completedCount
                     setTimeout(function () {
-                      utils.sendToSelf(
-                        socket,
-                        '$trudesk:accounts:import:onStatusChange',
-                        data
-                      )
+                      utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                     }, 150)
                   }
                 })
@@ -331,9 +279,7 @@ events.onImportLDAP = function (socket) {
     var authUser = socket.request.user
     if (!permissions.canThis(authUser.role, 'accounts:import')) {
       // Send Error Socket Emit
-      winston.warn(
-        '[$trudesk:accounts:import:ldap] - Error: Invalid permissions.'
-      )
+      winston.warn('[$trudesk:accounts:import:ldap] - Error: Invalid permissions.')
       utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
         error: 'Invalid Permissions. Check Console.'
       })
@@ -360,11 +306,7 @@ events.onImportLDAP = function (socket) {
                 }
               }
 
-              utils.sendToSelf(
-                socket,
-                '$trudesk:accounts:import:onStatusChange',
-                data
-              )
+              utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
               var user = new UserSchema({
                 username: lu.sAMAccountName,
@@ -379,22 +321,14 @@ events.onImportLDAP = function (socket) {
                 if (err) {
                   winston.warn(err)
                   data.item.state = 3
-                  utils.sendToSelf(
-                    socket,
-                    '$trudesk:accounts:import:onStatusChange',
-                    data
-                  )
+                  utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                 } else {
                   completedCount++
                   // Send update
                   data.completedCount = completedCount
                   data.item.state = 2 // Completed
                   setTimeout(function () {
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
 
                     done()
                   }, 150)
@@ -417,11 +351,7 @@ events.onImportLDAP = function (socket) {
                 state: 1 // Starting
               }
             }
-            utils.sendToSelf(
-              socket,
-              '$trudesk:accounts:import:onStatusChange',
-              data
-            )
+            utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
             UserSchema.getUser(uu._id, function (err, user) {
               if (err) {
                 console.log(err)
@@ -434,21 +364,13 @@ events.onImportLDAP = function (socket) {
                   if (err) {
                     console.log(err)
                     data.item.state = 3
-                    utils.sendToSelf(
-                      socket,
-                      '$trudesk:accounts:import:onStatusChange',
-                      data
-                    )
+                    utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                   } else {
                     completedCount++
                     data.item.state = 2
                     data.completedCount = completedCount
                     setTimeout(function () {
-                      utils.sendToSelf(
-                        socket,
-                        '$trudesk:accounts:import:onStatusChange',
-                        data
-                      )
+                      utils.sendToSelf(socket, '$trudesk:accounts:import:onStatusChange', data)
                     }, 150)
                   }
                 })

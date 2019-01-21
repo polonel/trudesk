@@ -31,10 +31,7 @@ function updateNotifications () {
   _.each(io.sockets.sockets, function (socket) {
     var notifications = {}
     var notificationSchema = require('../models/notification')
-    notificationSchema.findAllForUser(socket.request.user._id, function (
-      err,
-      items
-    ) {
+    notificationSchema.findAllForUser(socket.request.user._id, function (err, items) {
       if (err) {
         winston.warn(err)
         return true

@@ -38,121 +38,84 @@ var notifications = require('../notifications') // Load Push Events
     ticketSchema.getTicketById(ticketObj._id, function (err, ticket) {
       if (err) return true
 
-      settingsSchema.getSettingsByName(
-        ['tps:enable', 'tps:username', 'tps:apikey'],
-        function (err, tpsSettings) {
-          var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-          var tpsUsername = _.head(
-            _.filter(tpsSettings, ['name', 'tps:username'])
-          )
-          var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+      settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+        var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
+        var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
+        var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
 
-          if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
-            tpsEnabled = false
-          } else {
-            tpsEnabled = tpsEnabled.value
-            tpsUsername = tpsUsername.value
-            tpsApiKey = tpsApiKey.value
-          }
+        if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
+          tpsEnabled = false
+        } else {
+          tpsEnabled = tpsEnabled.value
+          tpsUsername = tpsUsername.value
+          tpsApiKey = tpsApiKey.value
+        }
 
-          async.parallel(
-            [
-              function (c) {
-                var mailer = require('../mailer')
-                var emails = []
-                async.each(
-                  ticket.group.sendMailTo,
-                  function (member, cb) {
-                    if (_.isUndefined(member.email)) return cb()
-                    if (member.deleted) return cb()
+        async.parallel(
+          [
+            function (c) {
+              var mailer = require('../mailer')
+              var emails = []
+              async.each(
+                ticket.group.sendMailTo,
+                function (member, cb) {
+                  if (_.isUndefined(member.email)) return cb()
+                  if (member.deleted) return cb()
 
-                    emails.push(member.email)
+                  emails.push(member.email)
 
-                    return cb()
-                  },
-                  function (err) {
-                    if (err) return c(err)
+                  return cb()
+                },
+                function (err) {
+                  if (err) return c(err)
 
-                    emails = _.uniq(emails)
+                  emails = _.uniq(emails)
 
-                    var email = new Email({
-                      views: {
-                        root: templateDir,
-                        options: {
-                          extension: 'handlebars'
-                        }
+                  var email = new Email({
+                    views: {
+                      root: templateDir,
+                      options: {
+                        extension: 'handlebars'
                       }
-                    })
-
-                    email
-                      .render('new-ticket', { ticket: ticket })
-                      .then(function (html) {
-                        var mailOptions = {
-                          to: emails.join(),
-                          subject:
-                            'Ticket #' + ticket.uid + '-' + ticket.subject,
-                          html: html,
-                          generateTextFromHTML: true
-                        }
-
-                        mailer.sendMail(mailOptions, function (err) {
-                          if (err)
-                            winston.warn(
-                              '[trudesk:events:ticket:created] - ' + err
-                            )
-                        })
-                      })
-                      .catch(function (err) {
-                        winston.warn('[trudesk:events:ticket:created] - ' + err)
-                        return c(err)
-                      })
-                      .finally(function () {
-                        return c()
-                      })
-                  }
-                )
-              },
-              function (c) {
-                if (!ticket.group.public) return c()
-                var rolesWithPublic = permissions.getRoles('ticket:public')
-                rolesWithPublic = _.map(rolesWithPublic, 'id')
-                userSchema.getUsersByRoles(rolesWithPublic, function (
-                  err,
-                  users
-                ) {
-                  if (err) return c()
-                  var ticketPushClone = _.clone(ticket)
-                  async.each(
-                    users,
-                    function (user, cb) {
-                      ticketPushClone.group.sendMailTo.push(user._id)
-                      return saveNotification(user, ticket, cb)
-                    },
-                    function (err) {
-                      sendPushNotification(
-                        {
-                          tpsEnabled: tpsEnabled,
-                          tpsUsername: tpsUsername,
-                          tpsApiKey: tpsApiKey,
-                          hostname: hostname
-                        },
-                        { type: 1, ticket: ticketPushClone }
-                      )
-
-                      return c(err)
                     }
-                  )
-                })
-              },
-              function (c) {
-                // Public Ticket Notification is handled above.
-                if (ticket.group.public) return c()
-                async.each(
-                  ticket.group.members,
-                  function (member, cb) {
-                    if (_.isUndefined(member)) return cb()
+                  })
 
-                    return saveNotification(member, ticket, cb)
+                  email
+                    .render('new-ticket', { ticket: ticket })
+                    .then(function (html) {
+                      var mailOptions = {
+                        to: emails.join(),
+                        subject: 'Ticket #' + ticket.uid + '-' + ticket.subject,
+                        html: html,
+                        generateTextFromHTML: true
+                      }
+
+                      mailer.sendMail(mailOptions, function (err) {
+                        if (err) winston.warn('[trudesk:events:ticket:created] - ' + err)
+                      })
+                    })
+                    .catch(function (err) {
+                      winston.warn('[trudesk:events:ticket:created] - ' + err)
+                      return c(err)
+                    })
+                    .finally(function () {
+                      return c()
+                    })
+                }
+              )
+            },
+            function (c) {
+              if (!ticket.group.public) return c()
+              var rolesWithPublic = permissions.getRoles('ticket:public')
+              rolesWithPublic = _.map(rolesWithPublic, 'id')
+              userSchema.getUsersByRoles(rolesWithPublic, function (err, users) {
+                if (err) return c()
+                var ticketPushClone = _.clone(ticket)
+                async.each(
+                  users,
+                  function (user, cb) {
+                    ticketPushClone.group.sendMailTo.push(user._id)
+                    return saveNotification(user, ticket, cb)
                   },
                   function (err) {
                     sendPushNotification(
@@ -162,27 +125,50 @@ var notifications = require('../notifications') // Load Push Events
                         tpsApiKey: tpsApiKey,
                         hostname: hostname
                       },
-                      { type: 1, ticket: ticket }
+                      { type: 1, ticket: ticketPushClone }
                     )
 
                     return c(err)
                   }
                 )
-              }
-            ],
-            function (err) {
-              if (err) {
-                return winston.warn(
-                  '[trudesk:events:ticket:created] - Error: ' + err
-                )
-              }
+              })
+            },
+            function (c) {
+              // Public Ticket Notification is handled above.
+              if (ticket.group.public) return c()
+              async.each(
+                ticket.group.members,
+                function (member, cb) {
+                  if (_.isUndefined(member)) return cb()
 
-              // Send Ticket..
-              util.sendToAllConnectedClients(io, 'ticket:created', ticket)
+                  return saveNotification(member, ticket, cb)
+                },
+                function (err) {
+                  sendPushNotification(
+                    {
+                      tpsEnabled: tpsEnabled,
+                      tpsUsername: tpsUsername,
+                      tpsApiKey: tpsApiKey,
+                      hostname: hostname
+                    },
+                    { type: 1, ticket: ticket }
+                  )
+
+                  return c(err)
+                }
+              )
             }
-          )
-        }
-      )
+          ],
+          function (err) {
+            if (err) {
+              return winston.warn('[trudesk:events:ticket:created] - Error: ' + err)
+            }
+
+            // Send Ticket..
+            util.sendToAllConnectedClients(io, 'ticket:created', ticket)
+          }
+        )
+      })
     })
   })
 
@@ -315,203 +301,175 @@ var notifications = require('../notifications') // Load Push Events
     // Goes to client
     io.sockets.emit('updateComments', ticket)
 
-    settingsSchema.getSettingsByName(
-      ['tps:enable', 'tps:username', 'tps:apikey'],
-      function (err, tpsSettings) {
-        var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-        var tpsUsername = _.head(
-          _.filter(tpsSettings, ['name', 'tps:username'])
-        )
-        var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+    settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+      var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
+      var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
+      var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
 
-        if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
-          tpsEnabled = false
-        } else {
-          tpsEnabled = tpsEnabled.value
-          tpsUsername = tpsUsername.value
-          tpsApiKey = tpsApiKey.value
-        }
-
-        async.parallel(
-          [
-            function (cb) {
-              if (ticket.owner._id.toString() === comment.owner.toString())
-                return cb
-              if (
-                !_.isUndefined(ticket.assignee) &&
-                ticket.assignee._id.toString() === comment.owner.toString()
-              )
-                return cb
-
-              var notification = new NotificationSchema({
-                owner: ticket.owner,
-                title: 'Comment Added to Ticket#' + ticket.uid,
-                message: ticket.subject,
-                type: 1,
-                data: { ticket: ticket },
-                unread: true
-              })
-
-              notification.save(function (err) {
-                return cb(err)
-              })
-            },
-            function (cb) {
-              if (_.isUndefined(ticket.assignee)) return cb()
-              if (ticket.assignee._id.toString() === comment.owner.toString())
-                return cb
-              if (
-                ticket.owner._id.toString() === ticket.assignee._id.toString()
-              )
-                return cb()
-
-              var notification = new NotificationSchema({
-                owner: ticket.assignee,
-                title: 'Comment Added to Ticket#' + ticket.uid,
-                message: ticket.subject,
-                type: 2,
-                data: { ticket: ticket },
-                unread: true
-              })
-
-              notification.save(function (err) {
-                return cb(err)
-              })
-            },
-            function (cb) {
-              sendPushNotification(
-                {
-                  tpsEnabled: tpsEnabled,
-                  tpsUsername: tpsUsername,
-                  tpsApiKey: tpsApiKey,
-                  hostname: hostname
-                },
-                { type: 2, ticket: ticket }
-              )
-              return cb()
-            },
-            // Send email to subscribed users
-            function (c) {
-              var mailer = require('../mailer')
-              var emails = []
-              async.each(
-                ticket.subscribers,
-                function (member, cb) {
-                  if (_.isUndefined(member) || _.isUndefined(member.email))
-                    return cb()
-                  if (member._id.toString() === comment.owner.toString())
-                    return cb()
-                  if (member.deleted) return cb()
-
-                  emails.push(member.email)
-
-                  cb()
-                },
-                function (err) {
-                  if (err) return c(err)
-
-                  emails = _.uniq(emails)
-
-                  if (_.size(emails) < 1) {
-                    return c()
-                  }
-
-                  var email = new Email({
-                    views: {
-                      root: templateDir,
-                      options: {
-                        extension: 'handlebars'
-                      }
-                    }
-                  })
-
-                  ticket.populate('comments.owner', function (err, ticket) {
-                    if (err) winston.warn(err)
-                    if (err) return c()
-
-                    email
-                      .render('ticket-comment-added', {
-                        ticket: ticket,
-                        comment: comment
-                      })
-                      .then(function (html) {
-                        var mailOptions = {
-                          to: emails.join(),
-                          subject:
-                            'Updated: Ticket #' +
-                            ticket.uid +
-                            '-' +
-                            ticket.subject,
-                          html: html,
-                          generateTextFromHTML: true
-                        }
-
-                        mailer.sendMail(mailOptions, function (err) {
-                          if (err) {
-                            winston.warn(
-                              '[trudesk:events:sendSubscriberEmail] - ' + err
-                            )
-                          }
-                        })
-                      })
-                      .catch(function (err) {
-                        winston.warn(
-                          '[trudesk:events:sendSubscriberEmail] - ' + err
-                        )
-                        return c(err)
-                      })
-                      .finally(function () {
-                        return c()
-                      })
-                  })
-                }
-              )
-            }
-          ],
-          function () {
-            // Blank
-          }
-        )
+      if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
+        tpsEnabled = false
+      } else {
+        tpsEnabled = tpsEnabled.value
+        tpsUsername = tpsUsername.value
+        tpsApiKey = tpsApiKey.value
       }
-    )
+
+      async.parallel(
+        [
+          function (cb) {
+            if (ticket.owner._id.toString() === comment.owner.toString()) return cb
+            if (!_.isUndefined(ticket.assignee) && ticket.assignee._id.toString() === comment.owner.toString())
+              return cb
+
+            var notification = new NotificationSchema({
+              owner: ticket.owner,
+              title: 'Comment Added to Ticket#' + ticket.uid,
+              message: ticket.subject,
+              type: 1,
+              data: { ticket: ticket },
+              unread: true
+            })
+
+            notification.save(function (err) {
+              return cb(err)
+            })
+          },
+          function (cb) {
+            if (_.isUndefined(ticket.assignee)) return cb()
+            if (ticket.assignee._id.toString() === comment.owner.toString()) return cb
+            if (ticket.owner._id.toString() === ticket.assignee._id.toString()) return cb()
+
+            var notification = new NotificationSchema({
+              owner: ticket.assignee,
+              title: 'Comment Added to Ticket#' + ticket.uid,
+              message: ticket.subject,
+              type: 2,
+              data: { ticket: ticket },
+              unread: true
+            })
+
+            notification.save(function (err) {
+              return cb(err)
+            })
+          },
+          function (cb) {
+            sendPushNotification(
+              {
+                tpsEnabled: tpsEnabled,
+                tpsUsername: tpsUsername,
+                tpsApiKey: tpsApiKey,
+                hostname: hostname
+              },
+              { type: 2, ticket: ticket }
+            )
+            return cb()
+          },
+          // Send email to subscribed users
+          function (c) {
+            var mailer = require('../mailer')
+            var emails = []
+            async.each(
+              ticket.subscribers,
+              function (member, cb) {
+                if (_.isUndefined(member) || _.isUndefined(member.email)) return cb()
+                if (member._id.toString() === comment.owner.toString()) return cb()
+                if (member.deleted) return cb()
+
+                emails.push(member.email)
+
+                cb()
+              },
+              function (err) {
+                if (err) return c(err)
+
+                emails = _.uniq(emails)
+
+                if (_.size(emails) < 1) {
+                  return c()
+                }
+
+                var email = new Email({
+                  views: {
+                    root: templateDir,
+                    options: {
+                      extension: 'handlebars'
+                    }
+                  }
+                })
+
+                ticket.populate('comments.owner', function (err, ticket) {
+                  if (err) winston.warn(err)
+                  if (err) return c()
+
+                  email
+                    .render('ticket-comment-added', {
+                      ticket: ticket,
+                      comment: comment
+                    })
+                    .then(function (html) {
+                      var mailOptions = {
+                        to: emails.join(),
+                        subject: 'Updated: Ticket #' + ticket.uid + '-' + ticket.subject,
+                        html: html,
+                        generateTextFromHTML: true
+                      }
+
+                      mailer.sendMail(mailOptions, function (err) {
+                        if (err) {
+                          winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
+                        }
+                      })
+                    })
+                    .catch(function (err) {
+                      winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
+                      return c(err)
+                    })
+                    .finally(function () {
+                      return c()
+                    })
+                })
+              }
+            )
+          }
+        ],
+        function () {
+          // Blank
+        }
+      )
+    })
   })
 
   emitter.on('ticket:setAssignee', function (data) {
-    settingsSchema.getSettingsByName(
-      ['tps:enable', 'tps:username', 'tps:apikey'],
-      function (err, tpsSettings) {
-        var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
-        var tpsUsername = _.head(
-          _.filter(tpsSettings, ['name', 'tps:username'])
-        )
-        var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+    settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+      var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
+      var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
+      var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
 
-        if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
-          tpsEnabled = false
-        } else {
-          tpsEnabled = tpsEnabled.value
-          tpsUsername = tpsUsername.value
-          tpsApiKey = tpsApiKey.value
-        }
-
-        if (!tpsEnabled) return
-
-        sendPushNotification(
-          {
-            tpsEnabled: tpsEnabled,
-            tpsUsername: tpsUsername,
-            tpsApiKey: tpsApiKey,
-            hostname: data.hostname
-          },
-          {
-            type: 4,
-            ticketId: data.ticketId,
-            ticketUid: data.ticketUid,
-            assigneeId: data.assigneeId
-          }
-        )
+      if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
+        tpsEnabled = false
+      } else {
+        tpsEnabled = tpsEnabled.value
+        tpsUsername = tpsUsername.value
+        tpsApiKey = tpsApiKey.value
       }
-    )
+
+      if (!tpsEnabled) return
+
+      sendPushNotification(
+        {
+          tpsEnabled: tpsEnabled,
+          tpsUsername: tpsUsername,
+          tpsApiKey: tpsApiKey,
+          hostname: data.hostname
+        },
+        {
+          type: 4,
+          ticketId: data.ticketId,
+          ticketUid: data.ticketUid,
+          assigneeId: data.assigneeId
+        }
+      )
+    })
   })
 
   emitter.on('ticket:note:added', function (ticket) {

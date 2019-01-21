@@ -43,10 +43,7 @@ reportsController.overview = function (req, res) {
 
 reportsController.generate = function (req, res) {
   var user = req.user
-  if (
-    _.isUndefined(user) ||
-    !permissions.canThis(user.role, 'reports:create')
-  ) {
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'reports:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }

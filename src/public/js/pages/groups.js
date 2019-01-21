@@ -56,8 +56,7 @@ define('pages/groups', [
             var filteredItems = ''
             for (var $i = 0; $i < filterArrayLength; $i++) {
               if (filterArray[$i].toLowerCase().indexOf(sValue) !== -1) {
-                filteredItems +=
-                  (filteredItems.length > 1 ? ',' : '') + filterArray[$i]
+                filteredItems += (filteredItems.length > 1 ? ',' : '') + filterArray[$i]
               }
             }
 

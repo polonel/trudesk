@@ -25,9 +25,7 @@ define('modules/socket.io/ticketsUI', [
   ticketsUI.updateSubscribe = function (socket) {
     socket.removeAllListeners('ticket:subscriber:update')
     socket.on('ticket:subscriber:update', function (data) {
-      var $subscribeSwitch = $(
-        'input#subscribeSwitch[data-subscribe-userId="' + data.user + '"]'
-      )
+      var $subscribeSwitch = $('input#subscribeSwitch[data-subscribe-userId="' + data.user + '"]')
       if ($subscribeSwitch.length > 0) {
         if (data.subscribe) {
           $subscribeSwitch.prop('checked', true)

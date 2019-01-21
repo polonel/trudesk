@@ -35,21 +35,16 @@ var pluginServerUrl = 'http://plugins.trudesk.io'
 apiPlugins.installPlugin = function (req, res) {
   var packageid = req.params.packageid
 
-  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (
-    err,
-    response
-  ) {
+  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (err, response) {
     if (err) return res.status(400).json({ success: false, error: err })
 
     var plugin = JSON.parse(response.body).plugin
 
     if (!plugin || !plugin.url) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl
-        })
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl
+      })
     }
 
     request
@@ -61,10 +56,7 @@ apiPlugins.installPlugin = function (req, res) {
 
         response.on('end', function () {
           // Extract plugin
-          var pluginExtractFolder = path.join(
-            pluginPath,
-            plugin.name.toLowerCase()
-          )
+          var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase())
           rimraf(pluginExtractFolder, function (error) {
             if (error) winston.debug(error)
             if (error)
@@ -83,14 +75,10 @@ apiPlugins.installPlugin = function (req, res) {
               },
               function () {
                 rimraf(fileFullPath, function (err) {
-                  if (err)
-                    return res.status(400).json({ success: false, error: err })
+                  if (err) return res.status(400).json({ success: false, error: err })
 
                   request.get(
-                    pluginServerUrl +
-                      '/api/plugin/package/' +
-                      plugin._id +
-                      '/increasedownloads',
+                    pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads',
                     function () {
                       res.json({ success: true, plugin: plugin })
                       restartServer()
@@ -115,11 +103,7 @@ apiPlugins.installPlugin = function (req, res) {
 apiPlugins.removePlugin = function (req, res) {
   var packageid = req.params.packageid
 
-  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (
-    err,
-    response,
-    body
-  ) {
+  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (err, response, body) {
     if (err) return res.status(400).json({ success: false, error: err })
 
     var plugin = JSON.parse(body).plugin

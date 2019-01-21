@@ -55,9 +55,7 @@ apiNotices.create = function (req, res) {
   notice.save(function (err, notice) {
     if (err) {
       winston.debug(err)
-      return res
-        .status(400)
-        .send({ success: false, error: 'Invalid Post Data' })
+      return res.status(400).send({ success: false, error: 'Invalid Post Data' })
     }
 
     return res.json(notice)

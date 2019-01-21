@@ -26,13 +26,7 @@ define([
 ], function (angular, _, $, helpers, UIkit, accountsPage) {
   return angular
     .module('trudesk.controllers.accounts', [])
-    .controller('accountsCtrl', function (
-      $scope,
-      $http,
-      $timeout,
-      $window,
-      $log
-    ) {
+    .controller('accountsCtrl', function ($scope, $http, $timeout, $window, $log) {
       function checkGroupValidation () {
         var data = {}
         var form = $('#createAccountForm')
@@ -41,9 +35,7 @@ define([
         if (!data.aGrps || data.aGrps.length < 1) {
           // Validate Group
           $('label[for="caGrps"]').css('color', '#d85030')
-          $(
-            'select[name="caGrps[]"] + .selectize-control > .selectize-input'
-          ).css('border-bottom', '1px solid #d85030')
+          $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css('border-bottom', '1px solid #d85030')
           $('.aGrps-error-message')
             .removeClass('hide')
             .css('display', 'block')
@@ -53,9 +45,10 @@ define([
         }
 
         $('label[for="caGrps"]').css('color', '#4d4d4d')
-        $(
-          'select[name="caGrps[]"] + .selectize-control > .selectize-input'
-        ).css('border-bottom', '1px solid rgba(0,0,0,.12)')
+        $('select[name="caGrps[]"] + .selectize-control > .selectize-input').css(
+          'border-bottom',
+          '1px solid rgba(0,0,0,.12)'
+        )
         $('.aGrps-error-message').addClass('hide')
         return true
       }
@@ -101,18 +94,14 @@ define([
             History.pushState(
               null,
               null,
-              '/accounts/?refresh=' +
-                (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
+              '/accounts/?refresh=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
             )
 
             UIkit.modal('#accountCreateModal').hide()
           })
           .error(function (err) {
             $log.log('[trudesk:accounts:createAccount]', err)
-            helpers.UI.showSnackbar(
-              'An error occurred while creating the account. Check Console.',
-              true
-            )
+            helpers.UI.showSnackbar('An error occurred while creating the account. Check Console.', true)
           })
       }
 
@@ -147,10 +136,7 @@ define([
                 .find('.enable-account-action')
                 .removeClass('hide')
 
-              helpers.UI.showSnackbar(
-                'Account ' + username + ' Successfully Disabled',
-                false
-              )
+              helpers.UI.showSnackbar('Account ' + username + ' Successfully Disabled', false)
             } else {
               self
                 .parents('.tru-card[data-card-username]')
@@ -158,10 +144,7 @@ define([
                 .remove()
               UIkit.$html.trigger('changed.uk.dom')
 
-              helpers.UI.showSnackbar(
-                'Account ' + username + ' Successfully Deleted',
-                false
-              )
+              helpers.UI.showSnackbar('Account ' + username + ' Successfully Deleted', false)
             }
 
             running = false
@@ -214,9 +197,7 @@ define([
 
         var $menu = self.parents('.tru-card-head-menu')
         if (!_.isUndefined($menu)) {
-          $menu
-            .find('.uk-dropdown')
-            .removeClass('uk-dropdown-shown uk-dropdown-active')
+          $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active')
         }
 
         $http
@@ -245,8 +226,7 @@ define([
 
             if (
               !isEditingSelf &&
-              (loggedInAccount.role === 'user' ||
-                loggedInAccount.role === 'support') &&
+              (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') &&
               (user.role === 'admin' || user.role === 'mod')
             ) {
               // Disable editing user with higher roles.
@@ -315,17 +295,12 @@ define([
               .val(user.email)
               .parent()
               .addClass('md-input-filled')
-            form
-              .find('#aRole option[value="' + user.role + '"]')
-              .prop('selected', true)
+            form.find('#aRole option[value="' + user.role + '"]').prop('selected', true)
             if (form.find('#aRole').length > 0) {
               var $selectizeRole = form.find('#aRole')[0].selectize
               $selectizeRole.setValue(user.role, true)
 
-              if (
-                loggedInAccount.role === 'support' ||
-                loggedInAccount.role === 'user'
-              ) {
+              if (loggedInAccount.role === 'support' || loggedInAccount.role === 'user') {
                 $selectizeRole.removeOption('admin')
                 $selectizeRole.removeOption('mod')
               }
@@ -345,24 +320,18 @@ define([
             var aImageUploadForm = $('form#aUploadImageForm')
             var image = aImageUploadForm.find('img')
             var inputId = aImageUploadForm.find('input#imageUpload_id')
-            var inputUsername = aImageUploadForm.find(
-              'input#imageUpload_username'
-            )
+            var inputUsername = aImageUploadForm.find('input#imageUpload_username')
             inputId.val(user._id)
             inputUsername.val(user.username)
             if (user.image) {
               image.attr(
                 'src',
-                '/uploads/users/' +
-                  user.image +
-                  '?r=' +
-                  (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
+                '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
               )
             } else {
               image.attr(
                 'src',
-                '/uploads/users/defaultProfile.jpg?r=' +
-                  (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
+                '/uploads/users/defaultProfile.jpg?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
               )
             }
 
@@ -381,18 +350,9 @@ define([
         data.aUsername = form.find('#aUsername').val()
         data.aGrps = form.find('#aGrps').val()
         data.saveGroups = true
-        data.aRole =
-          form.find('#aRole').val().length > 0
-            ? form.find('#aRole').val()
-            : undefined
-        data.aPass =
-          form.find('#aPass').val().length > 0
-            ? form.find('#aPass').val()
-            : undefined
-        data.aPassConfirm =
-          form.find('#aPassConfirm').val().length > 0
-            ? form.find('#aPassConfirm').val()
-            : undefined
+        data.aRole = form.find('#aRole').val().length > 0 ? form.find('#aRole').val() : undefined
+        data.aPass = form.find('#aPass').val().length > 0 ? form.find('#aPass').val() : undefined
+        data.aPassConfirm = form.find('#aPassConfirm').val().length > 0 ? form.find('#aPassConfirm').val() : undefined
 
         $http({
           method: 'PUT',

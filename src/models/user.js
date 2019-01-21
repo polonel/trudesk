@@ -341,10 +341,7 @@ userSchema.statics.getUserByEmail = function (email, callback) {
     return callback('Invalid Email - UserSchema.GetUserByEmail()', null)
   }
 
-  return this.model(COLLECTION).findOne(
-    { email: new RegExp('^' + email + '$', 'i') },
-    callback
-  )
+  return this.model(COLLECTION).findOne({ email: new RegExp('^' + email + '$', 'i') }, callback)
 }
 
 /**
@@ -396,18 +393,12 @@ userSchema.statics.getUserByAccessToken = function (token, callback) {
     return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null)
   }
 
-  return this.model(COLLECTION).findOne(
-    { accessToken: token, deleted: false },
-    callback
-  )
+  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, callback)
 }
 
 userSchema.statics.getUserWithObject = function (object, callback) {
   if (!_.isObject(object)) {
-    return callback(
-      'Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()',
-      null
-    )
+    return callback('Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()', null)
   }
 
   var self = this
@@ -452,17 +443,14 @@ userSchema.statics.getAssigneeUsers = function (callback) {
   })
 
   assigneeRoles = _.uniq(assigneeRoles)
-  this.model(COLLECTION).find(
-    { role: { $in: assigneeRoles }, deleted: false },
-    function (err, users) {
-      if (err) {
-        winston.warn(err)
-        return callback(err, null)
-      }
-
-      callback(null, users)
+  this.model(COLLECTION).find({ role: { $in: assigneeRoles }, deleted: false }, function (err, users) {
+    if (err) {
+      winston.warn(err)
+      return callback(err, null)
     }
-  )
+
+    callback(null, users)
+  })
 }
 
 /**
@@ -503,19 +491,17 @@ userSchema.statics.createUser = function (data, callback) {
 
   var self = this
 
-  self
-    .model(COLLECTION)
-    .find({ username: data.username }, function (err, items) {
-      if (err) {
-        return callback(err, null)
-      }
+  self.model(COLLECTION).find({ username: data.username }, function (err, items) {
+    if (err) {
+      return callback(err, null)
+    }
 
-      if (_.size(items) > 0) {
-        return callback('Username Already Exists', null)
-      }
+    if (_.size(items) > 0) {
+      return callback('Username Already Exists', null)
+    }
 
-      return self.collection.insert(data, callback)
-    })
+    return self.collection.insert(data, callback)
+  })
 }
 
 /**
@@ -547,84 +533,81 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
     role: 'user'
   })
 
-  self
-    .model(COLLECTION)
-    .find({ username: user.username }, function (err, items) {
-      if (err) return callback(err)
-      if (_.size(items) > 0) return callback('Username already exists')
+  self.model(COLLECTION).find({ username: user.username }, function (err, items) {
+    if (err) return callback(err)
+    if (_.size(items) > 0) return callback('Username already exists')
 
-      user.save(function (err, savedUser) {
+    user.save(function (err, savedUser) {
+      if (err) return callback(err)
+
+      // Create a group for this user
+      var GroupSchema = require('./group')
+      var group = new GroupSchema({
+        name: savedUser.email,
+        members: [savedUser._id],
+        sendMailTo: [savedUser._id],
+        public: true
+      })
+
+      group.save(function (err, group) {
         if (err) return callback(err)
 
-        // Create a group for this user
-        var GroupSchema = require('./group')
-        var group = new GroupSchema({
-          name: savedUser.email,
-          members: [savedUser._id],
-          sendMailTo: [savedUser._id],
-          public: true
+        // Send welcome email
+        var path = require('path')
+        var mailer = require('../mailer')
+        var Email = require('email-templates')
+        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+
+        var email = new Email({
+          views: {
+            root: templateDir,
+            options: {
+              extension: 'handlebars'
+            }
+          }
         })
 
-        group.save(function (err, group) {
+        var settingSchema = require('./setting')
+        settingSchema.getSetting('gen:siteurl', function (err, setting) {
           if (err) return callback(err)
 
-          // Send welcome email
-          var path = require('path')
-          var mailer = require('../mailer')
-          var Email = require('email-templates')
-          var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+          if (!setting) {
+            setting = { value: '' }
+          }
 
-          var email = new Email({
-            views: {
-              root: templateDir,
-              options: {
-                extension: 'handlebars'
+          var dataObject = {
+            user: savedUser,
+            plainTextPassword: plainTextPass,
+            baseUrl: setting.value
+          }
+
+          email
+            .render('public-account-created', dataObject)
+            .then(function (html) {
+              var mailOptions = {
+                to: savedUser.email,
+                subject: 'Welcome to trudesk! - Here are your account details.',
+                html: html,
+                generateTextFromHTML: true
               }
-            }
-          })
 
-          var settingSchema = require('./setting')
-          settingSchema.getSetting('gen:siteurl', function (err, setting) {
-            if (err) return callback(err)
-
-            if (!setting) {
-              setting = { value: '' }
-            }
-
-            var dataObject = {
-              user: savedUser,
-              plainTextPassword: plainTextPass,
-              baseUrl: setting.value
-            }
-
-            email
-              .render('public-account-created', dataObject)
-              .then(function (html) {
-                var mailOptions = {
-                  to: savedUser.email,
-                  subject:
-                    'Welcome to trudesk! - Here are your account details.',
-                  html: html,
-                  generateTextFromHTML: true
+              mailer.sendMail(mailOptions, function (err) {
+                if (err) {
+                  winston.warn(err)
+                  return callback(err)
                 }
 
-                mailer.sendMail(mailOptions, function (err) {
-                  if (err) {
-                    winston.warn(err)
-                    return callback(err)
-                  }
-
-                  return callback(null, { user: savedUser, group: group })
-                })
+                return callback(null, { user: savedUser, group: group })
               })
-              .catch(function (err) {
-                winston.warn(err)
-                return callback(err)
-              })
-          })
+            })
+            .catch(function (err) {
+              winston.warn(err)
+              return callback(err)
+            })
         })
       })
     })
+  })
 }
 
 /**

@@ -12,13 +12,13 @@
 
  **/
 
-define('pages/singleTicket', [
-  'jquery',
-  'underscore',
-  'modules/socket',
-  'tomarkdown',
-  'modules/helpers'
-], function ($, _, socketClient, md, helpers) {
+define('pages/singleTicket', ['jquery', 'underscore', 'modules/socket', 'tomarkdown', 'modules/helpers'], function (
+  $,
+  _,
+  socketClient,
+  md,
+  helpers
+) {
   var st = {}
   st.init = function (callback) {
     $(document).ready(function () {
@@ -105,9 +105,7 @@ define('pages/singleTicket', [
           $event.preventDefault()
 
           var grandParent = button.parents('div.edit-comment-form')
-          var comment = button
-            .parents('div.ticket-comment')
-            .find('.comment-body')
+          var comment = button.parents('div.ticket-comment').find('.comment-body')
 
           if (grandParent.length > 0) {
             grandParent.addClass('hide')
@@ -168,17 +166,14 @@ define('pages/singleTicket', [
     var attachmentId = self.attr('data-attachmentId')
     if (attachmentId.length > 0 && ticketId.length > 0) {
       $.ajax({
-        url:
-          '/api/v1/tickets/' + ticketId + '/attachments/remove/' + attachmentId,
+        url: '/api/v1/tickets/' + ticketId + '/attachments/remove/' + attachmentId,
         type: 'DELETE',
         success: function () {
           socketClient.ui.refreshTicketAttachments(ticketId)
         },
         error: function (err) {
           var res = err.responseJSON
-          console.log(
-            '[trudesk:singleTicket:onRemoveAttachmentClick] - ' + res.error
-          )
+          console.log('[trudesk:singleTicket:onRemoveAttachmentClick] - ' + res.error)
           // helpers.showFlash(res.error, true);
           helpers.UI.showSnackbar(res.err, true)
         }
@@ -207,9 +202,7 @@ define('pages/singleTicket', [
 
     var commentId = self.attr('data-commentId')
     if (commentId.length > 0) {
-      var commentForm = $(
-        '.edit-comment-form[data-commentid="' + commentId + '"]'
-      )
+      var commentForm = $('.edit-comment-form[data-commentid="' + commentId + '"]')
       if (commentForm.length < 1) return true
       var commentText = $('.ticket-comment[data-commentid="' + commentId + '"]')
         .find('.issue-text')

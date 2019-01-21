@@ -12,22 +12,10 @@
 
  **/
 
-define([
-  'angular',
-  'underscore',
-  'jquery',
-  'modules/helpers',
-  'history'
-], function (angular, _, $, helpers) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], function (angular, _, $, helpers) {
   return angular
     .module('trudesk.controllers.plugins', [])
-    .controller('pluginsCtrl', function (
-      $scope,
-      $http,
-      $log,
-      $timeout,
-      $window
-    ) {
+    .controller('pluginsCtrl', function ($scope, $http, $log, $timeout, $window) {
       var $tableBody = $('#plugin_list_table > tbody')
 
       $scope.installedPlugins = []
@@ -63,8 +51,7 @@ define([
 
             _.each(plugins, function (p) {
               var description = 'No Description Set'
-              if (p.pluginjson.description)
-                description = p.pluginjson.description
+              if (p.pluginjson.description) description = p.pluginjson.description
 
               var loadedPlugin = _.findWhere($scope.installedPlugins, {
                 name: p.name
@@ -72,30 +59,14 @@ define([
               var hasPluginInstalled = angular.isDefined(loadedPlugin)
               var update = false
               if (hasPluginInstalled) {
-                update = compareVersions(
-                  loadedPlugin.version,
-                  '<',
-                  p.pluginjson.version
-                )
+                update = compareVersions(loadedPlugin.version, '<', p.pluginjson.version)
               }
               var canUserManage = helpers.canUser('plugins:manage')
 
-              html +=
-                '<tr data-plugin-id="' +
-                p._id +
-                '" data-plugin-name="' +
-                p.name.toLowerCase() +
-                '">'
-              html +=
-                '<td style="vertical-align: middle;">' +
-                p.name.toLowerCase() +
-                '</td>'
-              html +=
-                '<td style="vertical-align: middle;">' + description + '</td>'
-              html +=
-                '<td style="vertical-align: middle;">' +
-                p.pluginjson.version +
-                '</td>'
+              html += '<tr data-plugin-id="' + p._id + '" data-plugin-name="' + p.name.toLowerCase() + '">'
+              html += '<td style="vertical-align: middle;">' + p.name.toLowerCase() + '</td>'
+              html += '<td style="vertical-align: middle;">' + description + '</td>'
+              html += '<td style="vertical-align: middle;">' + p.pluginjson.version + '</td>'
               if (canUserManage) {
                 if (hasPluginInstalled) {
                   html +=
@@ -183,9 +154,7 @@ define([
           })
           .error(function (err) {
             if (err) {
-              $log.error(
-                '[trudesk:plugins:installPlugin] - ' + err.error.message
-              )
+              $log.error('[trudesk:plugins:installPlugin] - ' + err.error.message)
               helpers.UI.showSnackbar({
                 text: 'Error: ' + err.error.message,
                 actionTextColor: '#B92929'
@@ -226,9 +195,7 @@ define([
           })
           .error(function (err) {
             if (err) {
-              $log.error(
-                '[trudesk:plugins:removePlugin] - ' + err.error.message
-              )
+              $log.error('[trudesk:plugins:removePlugin] - ' + err.error.message)
               helpers.UI.showSnackbar({
                 text: 'Error: ' + err.error.message,
                 actionTextColor: '#B92929'
@@ -240,11 +207,7 @@ define([
       function compareVersions (v1, comparator, v2) {
         'use strict'
         comparator = comparator === '=' ? '==' : comparator
-        if (
-          ['==', '===', '<', '<=', '>', '>=', '!=', '!=='].indexOf(
-            comparator
-          ) === -1
-        ) {
+        if (['==', '===', '<', '<=', '>', '>=', '!=', '!=='].indexOf(comparator) === -1) {
           throw new Error('Invalid comparator. ' + comparator)
         }
 

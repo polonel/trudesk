@@ -102,10 +102,7 @@ reportSchema.statics.getReports = function (callback) {
 
 reportSchema.statics.getReportByType = function (type, callback) {
   if (_.isUndefined(type) || _.isNull(type))
-    return callback(
-      'Invalid Report Type - ReportSchema.GetReportByType();',
-      null
-    )
+    return callback('Invalid Report Type - ReportSchema.GetReportByType();', null)
 
   return this.model(COLLECTION)
     .find({ type: type })
@@ -114,10 +111,7 @@ reportSchema.statics.getReportByType = function (type, callback) {
 
 reportSchema.statics.getReportByStatus = function (status, callback) {
   if (_.isUndefined(status) || _.isNull(status))
-    return callback(
-      'Invalid Report Status - ReportSchema.GetReportByStatus();',
-      null
-    )
+    return callback('Invalid Report Status - ReportSchema.GetReportByStatus();', null)
 
   return this.model(COLLECTION)
     .find({ status: status })

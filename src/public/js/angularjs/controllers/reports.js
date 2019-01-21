@@ -12,24 +12,16 @@
 
  **/
 
-define([
-  'angular',
-  'underscore',
-  'jquery',
-  'moment',
-  'modules/helpers',
-  'formvalidator',
-  'history'
-], function (angular, _, $, moment, helpers) {
+define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formvalidator', 'history'], function (
+  angular,
+  _,
+  $,
+  moment,
+  helpers
+) {
   return angular
     .module('trudesk.controllers.reports', [])
-    .controller('reportsCtrl', function (
-      $scope,
-      $http,
-      $log,
-      $timeout,
-      $window
-    ) {
+    .controller('reportsCtrl', function ($scope, $http, $log, $timeout, $window) {
       $.formUtils.addValidator({
         name: 'shortDate',
         validatorFunction: function (value) {
@@ -134,10 +126,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_group__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_group__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
@@ -164,10 +153,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_priorities__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_priorities__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
@@ -194,10 +180,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_status__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_status__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
@@ -224,10 +207,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_tags__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_tags__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
@@ -254,10 +234,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_types__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_types__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
@@ -284,10 +261,7 @@ define([
             })
               .then(
                 function successCallback (response) {
-                  downloadReport(
-                    response,
-                    'report_tickets_by_users__' + data['filterDate_Start']
-                  )
+                  downloadReport(response, 'report_tickets_by_users__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)

@@ -43,16 +43,10 @@ ticketsController.content = {}
 ticketsController.pubNewIssue = function (req, res) {
   var marked = require('marked')
   var settings = require('../models/setting')
-  settings.getSettingByName('allowPublicTickets:enable', function (
-    err,
-    setting
-  ) {
+  settings.getSettingByName('allowPublicTickets:enable', function (err, setting) {
     if (err) return handleError(res, err)
     if (setting && setting.value === true) {
-      settings.getSettingByName('legal:privacypolicy', function (
-        err,
-        privacyPolicy
-      ) {
+      settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
         if (err) return handleError(res, err)
 
         var content = {}
@@ -306,10 +300,7 @@ ticketsController.processor = function (req, res) {
   async.waterfall(
     [
       function (callback) {
-        groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (
-          err,
-          grps
-        ) {
+        groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
           if (err) return callback(err)
           userGroups = grps
           if (permissions.canThis(req.user.role, 'ticket:public')) {
@@ -325,10 +316,7 @@ ticketsController.processor = function (req, res) {
         })
       },
       function (grps, callback) {
-        ticketSchema.getTicketsWithObject(grps, object, function (
-          err,
-          results
-        ) {
+        ticketSchema.getTicketsWithObject(grps, object, function (err, results) {
           if (err) return callback(err)
 
           if (!permissions.canThis(req.user.role, 'notes:view')) {
@@ -356,21 +344,14 @@ ticketsController.processor = function (req, res) {
       }
 
       // Get Pagination
-      ticketSchema.getCountWithObject(userGroups, countObject, function (
-        err,
-        totalCount
-      ) {
+      ticketSchema.getCountWithObject(userGroups, countObject, function (err, totalCount) {
         if (err) return handleError(res, err)
 
         content.data.pagination = {}
         content.data.pagination.type = processor.pagetype
         content.data.pagination.currentpage = object.page
-        content.data.pagination.start =
-          object.page === 0 ? 1 : object.page * object.limit
-        content.data.pagination.end =
-          object.page === 0
-            ? object.limit
-            : object.page * object.limit + object.limit
+        content.data.pagination.start = object.page === 0 ? 1 : object.page * object.limit
+        content.data.pagination.end = object.page === 0 ? object.limit : object.page * object.limit + object.limit
         content.data.pagination.enabled = false
 
         content.data.pagination.total = totalCount
@@ -378,17 +359,13 @@ ticketsController.processor = function (req, res) {
           content.data.pagination.enabled = true
         }
 
-        content.data.pagination.prevpage =
-          object.page === 0 ? 0 : Number(object.page) - 1
+        content.data.pagination.prevpage = object.page === 0 ? 0 : Number(object.page) - 1
         content.data.pagination.prevEnabled = object.page !== 0
         content.data.pagination.nextpage =
-          object.page * object.limit + object.limit <=
-          content.data.pagination.total
+          object.page * object.limit + object.limit <= content.data.pagination.total
             ? Number(object.page) + 1
             : object.page
-        content.data.pagination.nextEnabled =
-          object.page * object.limit + object.limit <=
-          content.data.pagination.total
+        content.data.pagination.nextEnabled = object.page * object.limit + object.limit <= content.data.pagination.total
         content.data.user = req.user
 
         res.render(processor.renderpage, content)
@@ -421,8 +398,7 @@ ticketsController.print = function (req, res) {
 
   ticketSchema.getTicketByUid(uid, function (err, ticket) {
     if (err) return handleError(res, err)
-    if (_.isNull(ticket) || _.isUndefined(ticket))
-      return res.redirect('/tickets')
+    if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
     var hasPublic = permissions.canThis(user.role, 'ticket:public')
 
@@ -430,9 +406,7 @@ ticketsController.print = function (req, res) {
       if (ticket.group.public && hasPublic) {
         // Blank to bypass
       } else {
-        winston.warn(
-          'User access ticket outside of group - UserId: ' + user._id
-        )
+        winston.warn('User access ticket outside of group - UserId: ' + user._id)
         return res.redirect('/tickets')
       }
     }
@@ -490,17 +464,14 @@ ticketsController.single = function (req, res) {
 
   ticketSchema.getTicketByUid(uid, function (err, ticket) {
     if (err) return handleError(res, err)
-    if (_.isNull(ticket) || _.isUndefined(ticket))
-      return res.redirect('/tickets')
+    if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
     var hasPublic = permissions.canThis(user.role, 'ticket:public')
     if (!_.some(ticket.group.members, user._id)) {
       if (ticket.group.public && hasPublic) {
         // Blank to bypass
       } else {
-        winston.warn(
-          'User access ticket outside of group - UserId: ' + user._id
-        )
+        winston.warn('User access ticket outside of group - UserId: ' + user._id)
         return res.redirect('/tickets')
       }
     }
@@ -546,11 +517,7 @@ ticketsController.uploadImageMDE = function (req, res) {
 
     var ext = path.extname(filename)
 
-    var savePath = path.join(
-      __dirname,
-      '../../public/uploads/tickets',
-      object.ticketId
-    )
+    var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     // var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase();
     var sanitizedFilename = chance.hash({ length: 20 }) + ext
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
@@ -586,20 +553,14 @@ ticketsController.uploadImageMDE = function (req, res) {
   busboy.on('finish', function () {
     if (error) return res.status(error.status).send(error.message)
 
-    if (
-      _.isUndefined(object.ticketId) ||
-      _.isUndefined(object.filename) ||
-      _.isUndefined(object.filePath)
-    ) {
+    if (_.isUndefined(object.ticketId) || _.isUndefined(object.filename) || _.isUndefined(object.filePath)) {
       return res.status(400).send('Invalid Form Data')
     }
 
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
-    if (!fs.existsSync(object.filePath))
-      return res.status(500).send('File Failed to Save to Disk')
+    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
-    var fileUrl =
-      '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
+    var fileUrl = '/uploads/tickets/' + object.ticketId + '/inline_' + object.filename
 
     return res.json({ filename: fileUrl, ticketId: object.ticketId })
   })
@@ -646,11 +607,7 @@ ticketsController.uploadAttachment = function (req, res) {
       return file.resume()
     }
 
-    var savePath = path.join(
-      __dirname,
-      '../../public/uploads/tickets',
-      object.ticketId
-    )
+    var savePath = path.join(__dirname, '../../public/uploads/tickets', object.ticketId)
     var sanitizedFilename = filename.replace(/[^a-z0-9.]/gi, '_').toLowerCase()
 
     if (!fs.existsSync(savePath)) fs.ensureDirSync(savePath)
@@ -686,17 +643,12 @@ ticketsController.uploadAttachment = function (req, res) {
   busboy.on('finish', function () {
     if (error) return res.status(error.status).send(error.message)
 
-    if (
-      _.isUndefined(object.ticketId) ||
-      _.isUndefined(object.ownerId) ||
-      _.isUndefined(object.filePath)
-    ) {
+    if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
       return res.status(400).send('Invalid Form Data')
     }
 
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
-    if (!fs.existsSync(object.filePath))
-      return res.status(500).send('File Failed to Save to Disk')
+    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
     ticketSchema.getTicketById(object.ticketId, function (err, ticket) {
       if (err) {
@@ -707,11 +659,7 @@ ticketsController.uploadAttachment = function (req, res) {
       var attachment = {
         owner: object.ownerId,
         name: object.filename,
-        path:
-          '/uploads/tickets/' +
-          object.ticketId +
-          '/attachment_' +
-          object.filename,
+        path: '/uploads/tickets/' + object.ticketId + '/attachment_' + object.filename,
         type: object.mimetype
       }
       ticket.attachments.push(attachment)

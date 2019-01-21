@@ -12,11 +12,7 @@
 
  **/
 
-define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
-  $,
-  Shepherd,
-  UIKit
-) {
+define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function ($, Shepherd, UIKit) {
   var tour = {}
 
   tour = new Shepherd.Tour({
@@ -95,8 +91,7 @@ define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
 
   tour.addStep('topbar', {
     title: 'Top Nav',
-    text:
-      'This is your top nav. It has quick links to frequently used functions and notifications.',
+    text: 'This is your top nav. It has quick links to frequently used functions and notifications.',
     attachTo: '.top-nav bottom'
   })
 
@@ -136,8 +131,7 @@ define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
 
   tour.addStep('messagesIcon', {
     title: 'Messages Notification',
-    text:
-      'Here you will see your notification for chat messages sent by other users.',
+    text: 'Here you will see your notification for chat messages sent by other users.',
     attachTo: '.tour-messagesNotification bottom'
   })
 
@@ -149,8 +143,7 @@ define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
 
   tour.addStep('onlineUserListButton', {
     title: 'Chat - User List',
-    text:
-      'Push this to open the user list to quickly send a message to any user.',
+    text: 'Push this to open the user list to quickly send a message to any user.',
     attachTo: '.tour-onlineUserListButton bottom',
     buttons: [],
     // advanceOn: '.tour-onlineUserListButton click',
@@ -188,8 +181,7 @@ define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
 
   tour.addStep('sidebar_tickets', {
     title: 'Tickets',
-    text:
-      "This is the core of trudesk. You'll find all your current and past tickets located here.",
+    text: "This is the core of trudesk. You'll find all your current and past tickets located here.",
     attachTo: '.navTickets right',
     buttons: [],
     when: {
@@ -214,8 +206,7 @@ define('modules/tour', ['jquery', 'shepherd', 'uikit', 'tether'], function (
 
   tour.addStep('sidebar_messages', {
     title: 'Messages',
-    text:
-      'This will take you to your messages. Messages are sent between users privately and securely.',
+    text: 'This will take you to your messages. Messages are sent between users privately and securely.',
     attachTo: '.navMessages right',
     buttons: [],
     when: {

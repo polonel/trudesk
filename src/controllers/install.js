@@ -42,25 +42,14 @@ installController.mongotest = function (req, res) {
   var data = req.body
   var dbPassword = encodeURIComponent(data.password)
   var CONNECTION_URI =
-    'mongodb://' +
-    data.username +
-    ':' +
-    dbPassword +
-    '@' +
-    data.host +
-    ':' +
-    data.port +
-    '/' +
-    data.database
+    'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
-  var child = require('child_process').fork(
-    path.join(__dirname, '../../src/install/mongotest'),
-    { env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI } }
-  )
+  var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
+    env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
+  })
   global.forks.push({ name: 'mongotest', fork: child })
   child.on('message', function (data) {
-    if (data.error)
-      return res.status(400).json({ success: false, error: data.error })
+    if (data.error) return res.status(400).json({ success: false, error: data.error })
 
     return res.json({ success: true })
   })
@@ -130,17 +119,7 @@ installController.install = function (req, res) {
   }
 
   var dbPassword = encodeURIComponent(password)
-  var conuri =
-    'mongodb://' +
-    username +
-    ':' +
-    dbPassword +
-    '@' +
-    host +
-    ':' +
-    port +
-    '/' +
-    database
+  var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
 
   async.waterfall(
     [

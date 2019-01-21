@@ -12,14 +12,14 @@
 
  **/
 
-define([
-  'angular',
-  'underscore',
-  'jquery',
-  'modules/helpers',
-  'modules/socket',
-  'uikit'
-], function (angular, _, $, helpers, socket, UIkit) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit'], function (
+  angular,
+  _,
+  $,
+  helpers,
+  socket,
+  UIkit
+) {
   return angular
     .module('trudesk.controllers.settings.backup', ['ngSanitize'])
     .controller('BackupCtrl', function ($scope, $http, $timeout, $log) {
@@ -43,17 +43,11 @@ define([
             $uploadButton.addClass('hide')
           },
           notallowed: function () {
-            helpers.UI.showSnackbar(
-              'Invalid File Type. Please upload a Zip file.',
-              true
-            )
+            helpers.UI.showSnackbar('Invalid File Type. Please upload a Zip file.', true)
           },
           error: function (err) {
             $log.error(err)
-            helpers.UI.showSnackbar(
-              'An unknown error occurred. Check Console',
-              true
-            )
+            helpers.UI.showSnackbar('An unknown error occurred. Check Console', true)
           },
           progress: function (percent) {
             percent = Math.ceil(percent)
@@ -211,20 +205,14 @@ define([
               .then(
                 function success (res) {
                   $log.log(res)
-                  helpers.UI.showSnackbar(
-                    'Restore Complete. Logging all users out...',
-                    false
-                  )
+                  helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false)
                   $timeout(function () {
                     socket.ui.emitRestoreComplete()
                   }, 2000)
                 },
                 function error (err) {
                   $log.error(err)
-                  helpers.UI.showSnackbar(
-                    'An Error Occurred. Check Console.',
-                    true
-                  )
+                  helpers.UI.showSnackbar('An Error Occurred. Check Console.', true)
                 }
               )
           },

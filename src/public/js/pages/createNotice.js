@@ -12,12 +12,7 @@
 
  **/
 
-define('pages/createNotice', [
-  'jquery',
-  'chosen',
-  'history',
-  'colorpicker'
-], function ($) {
+define('pages/createNotice', ['jquery', 'chosen', 'history', 'colorpicker'], function ($) {
   var createNotice = {}
 
   createNotice.init = function (callback) {

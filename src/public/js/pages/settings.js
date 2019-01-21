@@ -12,13 +12,13 @@
 
  **/
 
-define('pages/settings', [
-  'jquery',
-  'underscore',
-  'modules/helpers',
-  'uikit',
-  'history'
-], function ($, _, helpers, UIkit, History) {
+define('pages/settings', ['jquery', 'underscore', 'modules/helpers', 'uikit', 'history'], function (
+  $,
+  _,
+  helpers,
+  UIkit,
+  History
+) {
   var settingsPage = {}
 
   settingsPage.init = function (callback) {

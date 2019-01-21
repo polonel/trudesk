@@ -47,17 +47,12 @@ define('pages/messages', [
 
       var $recentMessages = {}
 
-      var $convoId = $('#message-content[data-conversation-id]').attr(
-        'data-conversation-id'
-      )
+      var $convoId = $('#message-content[data-conversation-id]').attr('data-conversation-id')
 
       var $loggedInAccountId = window.trudeskSessionService.getUser()._id
 
       // Setup Context Menu
-      helpers.setupContextMenu('#convo-list > ul > li', function (
-        action,
-        target
-      ) {
+      helpers.setupContextMenu('#convo-list > ul > li', function (action, target) {
         var $li = $(target)
         if (!$li.is('li')) {
           $li = $(target).parents('li')
@@ -127,17 +122,11 @@ define('pages/messages', [
           success: function (response) {
             if (response.success) {
               // Check if on conversation
-              var $convo = $(
-                '#message-content[data-conversation-id="' +
-                  response.conversation._id +
-                  '"]'
-              )
+              var $convo = $('#message-content[data-conversation-id="' + response.conversation._id + '"]')
               if ($convo.length > 0) {
                 History.pushState(null, null, '/messages', false)
               } else {
-                var $convoLI = $('#convo-list').find(
-                  'li[data-conversation-id="' + response.conversation._id + '"]'
-                )
+                var $convoLI = $('#convo-list').find('li[data-conversation-id="' + response.conversation._id + '"]')
                 if ($convoLI.length > 0) {
                   $convoLI.remove()
                 }
@@ -159,11 +148,7 @@ define('pages/messages', [
       function onSearchKeyUp () {
         var searchTerm = $searchBox.val().toLowerCase()
         $('.all-user-list li').each(function () {
-          if (
-            $(this).filter('[data-search-term *= ' + searchTerm + ']').length >
-              0 ||
-            searchTerm.length < 1
-          ) {
+          if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
             $(this).show()
           } else {
             $(this).hide()
@@ -179,8 +164,7 @@ define('pages/messages', [
 
         // Load Messages
         $.ajax({
-          url:
-            '/api/v1/messages/conversation/' + $convoId + '?page=' + $nextPage
+          url: '/api/v1/messages/conversation/' + $convoId + '?page=' + $nextPage
         })
           .done(function (data) {
             $spinner.addClass('uk-hidden')
@@ -234,10 +218,7 @@ define('pages/messages', [
           left = false
         }
 
-        var image =
-          message.owner.image === undefined
-            ? 'defaultProfile.jpg'
-            : message.owner.image
+        var image = message.owner.image === undefined ? 'defaultProfile.jpg' : message.owner.image
 
         if (left) {
           html += '<div class="message message-left">'
@@ -249,9 +230,7 @@ define('pages/messages', [
             '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' +
             message.owner.fullname +
             ' - ' +
-            moment(message.createdAt).format(
-              helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()
-            ) +
+            moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
             '"/>'
           html += '<div class="message-body">'
           html += '<p>' + message.body + '</p>'
@@ -261,9 +240,7 @@ define('pages/messages', [
           html += '<div class="message message-right">'
           html +=
             '<div class="message-body" data-uk-tooltip="{pos:\'right\', animation: false}" title="' +
-            moment(message.createdAt).format(
-              helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()
-            ) +
+            moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
             '">'
           html += '<p>' + message.body + '</p>'
           html += '</div>'
@@ -278,36 +255,22 @@ define('pages/messages', [
 
       // On user Typing
       $(window).on('$trudesk:chat:typing.conversation', function (event, data) {
-        var convoListItem = $('#convo-list').find(
-          'li[data-conversation-id="' + data.cid + '"]'
-        )
+        var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
         if (convoListItem.length > 0) {
-          $recentMessages[data.cid] = convoListItem
-            .find('.message-subject')
-            .text()
-          convoListItem
-            .find('.message-subject')
-            .text(data.fromUser.fullname + ' is typing...')
+          $recentMessages[data.cid] = convoListItem.find('.message-subject').text()
+          convoListItem.find('.message-subject').text(data.fromUser.fullname + ' is typing...')
         }
       })
 
-      $(window).on('$trudesk:chat:stoptyping.conversation', function (
-        event,
-        data
-      ) {
-        var convoListItem = $('#convo-list').find(
-          'li[data-conversation-id="' + data.cid + '"]'
-        )
+      $(window).on('$trudesk:chat:stoptyping.conversation', function (event, data) {
+        var convoListItem = $('#convo-list').find('li[data-conversation-id="' + data.cid + '"]')
         if (convoListItem.length > 0) {
           convoListItem.find('.message-subject').text($recentMessages[data.cid])
         }
       })
 
       // On Chat Message
-      $(window).on('$trudesk:chat:message.conversation', function (
-        event,
-        data
-      ) {
+      $(window).on('$trudesk:chat:message.conversation', function (event, data) {
         var message = {
           _id: data.messageId,
           conversation: data.conversation,
@@ -316,27 +279,18 @@ define('pages/messages', [
         }
 
         var html = buildMessageHTML(message)
-        var messageWrapper = $(
-          '#message-content[data-conversation-id="' +
-            message.conversation +
-            '"]'
-        )
+        var messageWrapper = $('#message-content[data-conversation-id="' + message.conversation + '"]')
         if (messageWrapper.length > 0) {
           messageWrapper.find('#messages').append(html)
         }
 
-        var convoListItem = $(
-          'li[data-conversation-id="' + data.conversation + '"]'
-        )
+        var convoListItem = $('li[data-conversation-id="' + data.conversation + '"]')
         if (convoListItem.length > 0) {
           convoListItem.attr('data-updatedAt', new Date())
           var ul = convoListItem.parent('ul')
           var li = ul.children('li')
           li.detach().sort(function (a, b) {
-            return (
-              new Date($(a).attr('data-updatedAt')) <
-              new Date($(b).attr('data-updatedAt'))
-            )
+            return new Date($(a).attr('data-updatedAt')) < new Date($(b).attr('data-updatedAt'))
           })
 
           ul.append(li)
@@ -346,9 +300,7 @@ define('pages/messages', [
             fromName = 'You'
           }
 
-          convoListItem
-            .find('.message-subject')
-            .text(fromName + ': ' + message.body)
+          convoListItem.find('.message-subject').text(fromName + ': ' + message.body)
           $recentMessages[message.conversation] = fromName + ': ' + message.body
           var timezone = helpers.getTimezone()
           convoListItem.find('.message-date').text(
@@ -361,9 +313,7 @@ define('pages/messages', [
           var convoUL = $('#convo-list > ul.message-items')
           if (convoUL.length > 0) {
             var partner = message.owner
-            if (
-              message.owner._id.toString() === $loggedInAccountId.toString()
-            ) {
+            if (message.owner._id.toString() === $loggedInAccountId.toString()) {
               partner = data.toUser
             }
             var newLI = buildConversationListItem({
@@ -412,20 +362,12 @@ define('pages/messages', [
           '" class="uk-border-circle profileImage" data-userid="' +
           data.partner._id +
           '" />'
-        html +=
-          '<span class="user-online uk-border-circle" data-user-status-id="' +
-          data.partner._id +
-          '"></span>'
+        html += '<span class="user-online uk-border-circle" data-user-status-id="' + data.partner._id + '"></span>'
         html += '</div>'
         html += '<div class="convo-info">'
-        html +=
-          '<span class="message-from">' + data.partner.fullname + '</span>'
-        html +=
-          '<span class="message-date">' +
-          moment(data.updatedAt).calendar() +
-          '</span>'
-        html +=
-          '<span class="message-subject">' + data.recentMessage + '</span>'
+        html += '<span class="message-from">' + data.partner.fullname + '</span>'
+        html += '<span class="message-date">' + moment(data.updatedAt).calendar() + '</span>'
+        html += '<span class="message-subject">' + data.recentMessage + '</span>'
         html += '</div>'
         html += '</li>'
 

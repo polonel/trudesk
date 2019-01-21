@@ -290,12 +290,7 @@ events.onSetCommentText = function (socket) {
     var ticketId = data.ticketId
     var commentId = data.commentId
     var comment = data.commentText
-    if (
-      _.isUndefined(ticketId) ||
-      _.isUndefined(commentId) ||
-      _.isUndefined(comment)
-    )
-      return true
+    if (_.isUndefined(ticketId) || _.isUndefined(commentId) || _.isUndefined(comment)) return true
 
     marked.setOptions({
       breaks: true
@@ -348,8 +343,7 @@ events.onSetNoteText = function (socket) {
     var ticketId = data.ticketId
     var noteId = data.noteId
     var note = data.noteText
-    if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note))
-      return true
+    if (_.isUndefined(ticketId) || _.isUndefined(noteId) || _.isUndefined(note)) return true
 
     marked.setOptions({
       breaks: true
@@ -405,10 +399,7 @@ events.onRefreshTicketAttachments = function (socket) {
       var user = socket.request.user
       if (_.isUndefined(user)) return true
 
-      var canRemoveAttachments = permissions.canThis(
-        user.role,
-        'ticket:removeAttachment'
-      )
+      var canRemoveAttachments = permissions.canThis(user.role, 'ticket:removeAttachment')
 
       var data = {
         ticket: ticket,

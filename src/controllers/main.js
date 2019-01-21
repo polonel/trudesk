@@ -46,10 +46,7 @@ mainController.index = function (req, res) {
     content.colorTertiary = settings.colorTertiary.value
 
     content.pageLogo = '/img/defaultLogoDark.png'
-    if (
-      settings.hasCustomPageLogo.value &&
-      settings.customPageLogoFilename.value.length > 0
-    ) {
+    if (settings.hasCustomPageLogo.value && settings.customPageLogoFilename.value.length > 0) {
       content.pageLogo = '/assets/' + settings.customPageLogoFilename.value
     }
 
@@ -63,10 +60,7 @@ mainController.about = function (req, res) {
   var pkg = require('../../package.json')
   var marked = require('marked')
   var settings = require('../models/setting')
-  settings.getSettingByName('legal:privacypolicy', function (
-    err,
-    privacyPolicy
-  ) {
+  settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
     var content = {}
     content.title = 'About'
     content.nav = 'about'
@@ -550,22 +544,16 @@ mainController.uploadFavicon = function (req, res) {
       return res.status(400).send('Invalid image data')
     }
 
-    if (!fs.existsSync(object.filePath))
-      return res.status(400).send('File failed to save to disk')
+    if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
 
     settingUtil.setSetting('gen:customfavicon', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
 
-      settingUtil.setSetting(
-        'gen:customfaviconfilename',
-        object.filename,
-        function (err) {
-          if (err)
-            return res.status(400).send('Failed to save setting to database')
+      settingUtil.setSetting('gen:customfaviconfilename', object.filename, function (err) {
+        if (err) return res.status(400).send('Failed to save setting to database')
 
-          return res.send(object.filename)
-        }
-      )
+        return res.send(object.filename)
+      })
     })
   })
 
@@ -626,22 +614,16 @@ mainController.uploadLogo = function (req, res) {
       return res.status(400).send('Invalid image data')
     }
 
-    if (!fs.existsSync(object.filePath))
-      return res.status(400).send('File failed to save to disk')
+    if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
 
     settingUtil.setSetting('gen:customlogo', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
 
-      settingUtil.setSetting(
-        'gen:customlogofilename',
-        object.filename,
-        function (err) {
-          if (err)
-            return res.status(400).send('Failed to save setting to database')
+      settingUtil.setSetting('gen:customlogofilename', object.filename, function (err) {
+        if (err) return res.status(400).send('Failed to save setting to database')
 
-          return res.send(object.filename)
-        }
-      )
+        return res.send(object.filename)
+      })
     })
   })
 
@@ -702,22 +684,16 @@ mainController.uploadPageLogo = function (req, res) {
       return res.status(400).send('Invalid image data')
     }
 
-    if (!fs.existsSync(object.filePath))
-      return res.status(400).send('File failed to save to disk')
+    if (!fs.existsSync(object.filePath)) return res.status(400).send('File failed to save to disk')
 
     settingUtil.setSetting('gen:custompagelogo', true, function (err) {
       if (err) return res.status(400).send('Failed to save setting to database')
 
-      settingUtil.setSetting(
-        'gen:custompagelogofilename',
-        object.filename,
-        function (err) {
-          if (err)
-            return res.status(400).send('Failed to save setting to database')
+      settingUtil.setSetting('gen:custompagelogofilename', object.filename, function (err) {
+        if (err) return res.status(400).send('Failed to save setting to database')
 
-          return res.send(object.filename)
-        }
-      )
+        return res.send(object.filename)
+      })
     })
   })
 

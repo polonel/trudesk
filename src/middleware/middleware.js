@@ -175,8 +175,7 @@ middleware.api = function (req, res, next) {
 
   if (_.isUndefined(accessToken) || _.isNull(accessToken)) {
     var user = req.user
-    if (_.isUndefined(user) || _.isNull(user))
-      return res.status(401).json({ error: 'Invalid Access Token' })
+    if (_.isUndefined(user) || _.isNull(user)) return res.status(401).json({ error: 'Invalid Access Token' })
 
     return next()
   }
@@ -198,9 +197,7 @@ middleware.isAdmin = function (req, res, next) {
     return next()
   }
 
-  return res
-    .status(401)
-    .json({ success: false, error: 'Not Authorized for this API call.' })
+  return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
 middleware.isMod = function (req, res, next) {
@@ -208,23 +205,15 @@ middleware.isMod = function (req, res, next) {
     return next()
   }
 
-  return res
-    .status(401)
-    .json({ success: false, error: 'Not Authorized for this API call.' })
+  return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
 middleware.isSupport = function (req, res, next) {
-  if (
-    req.user.role === 'support' ||
-    req.user.role === 'mod' ||
-    req.user.role === 'admin'
-  ) {
+  if (req.user.role === 'support' || req.user.role === 'mod' || req.user.role === 'admin') {
     return next()
   }
 
-  return res
-    .status(401)
-    .json({ success: false, error: 'Not Authorized for this API call.' })
+  return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
 module.exports = function () {

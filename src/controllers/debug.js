@@ -405,10 +405,7 @@ debugController.populatedatabase = function (req, res) {
                       ticketTags.push(t._id)
                     }
                   }
-                  var randomPriority =
-                    type.priorities[
-                      Math.floor(Math.random() * type.priorities.length)
-                    ]
+                  var randomPriority = type.priorities[Math.floor(Math.random() * type.priorities.length)]
                   var ticket = {
                     __v: 0,
                     // uid: res.value.next,
@@ -453,9 +450,7 @@ debugController.populatedatabase = function (req, res) {
 }
 
 function randomDate (start, end) {
-  return new Date(
-    start.getTime() + Math.random() * (end.getTime() - start.getTime())
-  )
+  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
 }
 
 debugController.sendmail = function (req, res) {
@@ -561,13 +556,10 @@ debugController.uploadPlugin = function (req, res) {
     }
 
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
-    if (!fs.existsSync(object.filePath))
-      return res.status(500).send('File Failed to Save to Disk')
+    if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
     var unzip = require('unzip')
-    fs.createReadStream(object.filePath).pipe(
-      unzip.Extract({ path: path.join(__dirname, '../../plugins') })
-    )
+    fs.createReadStream(object.filePath).pipe(unzip.Extract({ path: path.join(__dirname, '../../plugins') }))
 
     return res.sendStatus(200)
   })

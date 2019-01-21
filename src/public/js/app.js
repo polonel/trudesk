@@ -15,13 +15,7 @@
 // Load SASS (Webpack)
 // require('../../sass/app.sass');
 
-require([
-  'jquery',
-  'modules/helpers',
-  'angular',
-  'async',
-  'angularjs/services'
-], function ($, helpers, angular, async) {
+require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function ($, helpers, angular, async) {
   helpers.init()
 
   angular.element(document).ready(function () {

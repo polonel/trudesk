@@ -525,16 +525,10 @@ function processResponse (res, input) {
     tags: 'tags'
   }
 
-  csv.stringify(input, { header: true, columns: headers }, function (
-    err,
-    output
-  ) {
+  csv.stringify(input, { header: true, columns: headers }, function (err, output) {
     if (err) return res.status(400).json({ success: false, error: err })
 
-    res.setHeader(
-      'Content-disposition',
-      'attachment; filename=report_output.csv'
-    )
+    res.setHeader('Content-disposition', 'attachment; filename=report_output.csv')
     res.set('Content-Type', 'text/csv')
     res.send(output)
   })

@@ -109,11 +109,7 @@ define('pages/accountsImport', [
 
             // send data
             setTimeout(function () {
-              socket.accountsImporter.sendAccountData(
-                'csv',
-                state.addedUsers,
-                state.updatedUsers
-              )
+              socket.accountsImporter.sendAccountData('csv', state.addedUsers, state.updatedUsers)
             }, 1000)
           }
 
@@ -149,17 +145,11 @@ define('pages/accountsImport', [
         bar.css('width', percent + '%').text(percent + '%')
       },
       notallowed: function () {
-        helpers.UI.showSnackbar(
-          'Invalid File Type. Please upload a CSV file.',
-          true
-        )
+        helpers.UI.showSnackbar('Invalid File Type. Please upload a CSV file.', true)
       },
       error: function (err) {
         console.error(err)
-        helpers.UI.showSnackbar(
-          'An unknown error occurred. Check Console',
-          true
-        )
+        helpers.UI.showSnackbar('An unknown error occurred. Check Console', true)
       },
       allcomplete: function (response) {
         response = JSON.parse(response)
@@ -174,9 +164,7 @@ define('pages/accountsImport', [
         state.addedUsers = response.addedUsers
         state.updatedUsers = response.updatedUsers
 
-        $('#csv-review-list').val(
-          csvReviewRender(response.addedUsers, response.updatedUsers)
-        )
+        $('#csv-review-list').val(csvReviewRender(response.addedUsers, response.updatedUsers))
 
         console.log(state.csvData)
 
@@ -249,11 +237,7 @@ define('pages/accountsImport', [
 
             // send data
             setTimeout(function () {
-              socket.accountsImporter.sendAccountData(
-                'json',
-                state.addedUsers,
-                state.updatedUsers
-              )
+              socket.accountsImporter.sendAccountData('json', state.addedUsers, state.updatedUsers)
             }, 1000)
           }
 
@@ -289,17 +273,11 @@ define('pages/accountsImport', [
         bar.css('width', percent + '%').text(percent + '%')
       },
       notallowed: function () {
-        helpers.UI.showSnackbar(
-          'Invalid File Type. Please upload a JSON file.',
-          true
-        )
+        helpers.UI.showSnackbar('Invalid File Type. Please upload a JSON file.', true)
       },
       error: function (err) {
         console.error(err)
-        helpers.UI.showSnackbar(
-          'An unknown error occurred. Check Console',
-          true
-        )
+        helpers.UI.showSnackbar('An unknown error occurred. Check Console', true)
       },
       allcomplete: function (response) {
         response = JSON.parse(response)
@@ -314,9 +292,7 @@ define('pages/accountsImport', [
         state.addedUsers = response.addedUsers
         state.updatedUsers = response.updatedUsers
 
-        $('#json-review-list').val(
-          csvReviewRender(response.addedUsers, response.updatedUsers)
-        )
+        $('#json-review-list').val(csvReviewRender(response.addedUsers, response.updatedUsers))
 
         bar.css('width', '100%').text('100%')
 
@@ -353,9 +329,7 @@ define('pages/accountsImport', [
           contentHeight($wizardLdap, currentIndex)
 
           // $wizardLdap.find('.button_next').addClass('disabled').attr('aria-disabled', true).find('a').attr('disabled', true);
-          $wizardLdap
-            .find('.button_next > a')
-            .html("Connect  <i class='material-icons'>&#xE315;</i>")
+          $wizardLdap.find('.button_next > a').html("Connect  <i class='material-icons'>&#xE315;</i>")
 
           setTimeout(function () {
             $(window).resize()
@@ -366,13 +340,9 @@ define('pages/accountsImport', [
             var verifyStatus = $('#wizard_ldap_verify_text')
             var data = $connectionForm.serializeObject()
 
-            $wizardLdap
-              .find('#wizard_ldap_verify_spinner')
-              .removeClass('uk-hidden')
+            $wizardLdap.find('#wizard_ldap_verify_spinner').removeClass('uk-hidden')
             $wizardLdap.find('#wizard_ldap_verify_icon').addClass('uk-hidden')
-            $wizardLdap
-              .find('.button_next > a')
-              .html("Next  <i class='material-icons'>&#xE315;</i>")
+            $wizardLdap.find('.button_next > a').html("Next  <i class='material-icons'>&#xE315;</i>")
             setTimeout(function () {
               $.ajax({
                 url: '/accounts/import/ldap/bind',
@@ -391,9 +361,7 @@ define('pages/accountsImport', [
                   verifyStatus.text(
                     'An error occured while trying to bind to the ldap server. Please check connection settings.'
                   )
-                  $wizardLdap
-                    .find('#wizard_ldap_verify_spinner')
-                    .addClass('uk-hidden')
+                  $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden')
                   $wizardLdap
                     .find('#wizard_ldap_verify_icon')
                     .removeClass('md-color-green uk-hidden')
@@ -405,12 +373,8 @@ define('pages/accountsImport', [
                 success: function (response) {
                   if (response.success) {
                     ldapSuccess = true
-                    verifyStatus.text(
-                      'Successfully connected to ldap server. Please click next to review accounts.'
-                    )
-                    $wizardLdap
-                      .find('#wizard_ldap_verify_spinner')
-                      .addClass('uk-hidden')
+                    verifyStatus.text('Successfully connected to ldap server. Please click next to review accounts.')
+                    $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden')
                     $wizardLdap
                       .find('#wizard_ldap_verify_icon')
                       .removeClass('md-color-red uk-hidden')
@@ -420,19 +384,12 @@ define('pages/accountsImport', [
                     addedUsers = response.addedUsers
                     updatedUsers = response.updatedUsers
 
-                    $('#ldap-review-list').val(
-                      ldapReviewRender(
-                        response.addedUsers,
-                        response.updatedUsers
-                      )
-                    )
+                    $('#ldap-review-list').val(ldapReviewRender(response.addedUsers, response.updatedUsers))
                   } else {
                     verifyStatus.text(
                       'An error occured while trying to bind to the ldap server. Please check connection settings.'
                     )
-                    $wizardLdap
-                      .find('#wizard_ldap_verify_spinner')
-                      .addClass('uk-hidden')
+                    $wizardLdap.find('#wizard_ldap_verify_spinner').addClass('uk-hidden')
                     $wizardLdap
                       .find('#wizard_ldap_verify_icon')
                       .removeClass('md-color-green uk-hidden')
@@ -456,9 +413,7 @@ define('pages/accountsImport', [
 
           if (currentIndex === 1 && newIndex === 0) {
             // Verify to Connection
-            $wizardLdap
-              .find('.button_next > a')
-              .html("Connect  <i class='material-icons'>&#xE315;</i>")
+            $wizardLdap.find('.button_next > a').html("Connect  <i class='material-icons'>&#xE315;</i>")
           }
 
           if (currentIndex === 1 && newIndex === 2) {
@@ -493,11 +448,7 @@ define('pages/accountsImport', [
 
             // send data
             setTimeout(function () {
-              socket.accountsImporter.sendAccountData(
-                'ldap',
-                addedUsers,
-                updatedUsers
-              )
+              socket.accountsImporter.sendAccountData('ldap', addedUsers, updatedUsers)
             }, 1000)
           }
 
@@ -625,10 +576,7 @@ define('pages/accountsImport', [
       .actual('outerHeight')
     $(thisWizard)
       .children('.content')
-      .velocity(
-        { height: thisHeight },
-        { duration: 140, easing: [0.215, 0.61, 0.355, 1] }
-      )
+      .velocity({ height: thisHeight }, { duration: 140, easing: [0.215, 0.61, 0.355, 1] })
   }
 
   return accountsImportPage

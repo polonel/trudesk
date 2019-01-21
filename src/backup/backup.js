@@ -48,9 +48,7 @@ winston.add(winston.transports.Console, {
 
 function createZip (callback) {
   var filename = 'trudesk-' + moment().format('MMDDYYYY_HHmm') + '.zip'
-  var output = fs.createWriteStream(
-    path.join(__dirname, '../../backups/', filename)
-  )
+  var output = fs.createWriteStream(path.join(__dirname, '../../backups/', filename))
   var archive = archiver('zip', {
     zlib: { level: 9 }
   })
@@ -86,11 +84,7 @@ function copyFiles (callback) {
   fs.ensureDirSync(path.join(__dirname, '../../public/uploads/tickets'))
   fs.ensureDirSync(path.join(__dirname, '../../public/uploads/users'))
 
-  fs.copy(
-    path.join(__dirname, '../../public/uploads/'),
-    path.join(__dirname, '../../backups/dump/'),
-    callback
-  )
+  fs.copy(path.join(__dirname, '../../public/uploads/'), path.join(__dirname, '../../backups/dump/'), callback)
 }
 
 function runBackup (callback) {
@@ -102,12 +96,7 @@ function runBackup (callback) {
     mongodumpExec = path.join(__dirname, 'bin/win32/mongodump')
   }
 
-  var options = [
-    '--uri',
-    CONNECTION_URI,
-    '--out',
-    path.join(__dirname, '../../backups/dump/database/')
-  ]
+  var options = ['--uri', CONNECTION_URI, '--out', path.join(__dirname, '../../backups/dump/database/')]
   var mongodump = spawn(mongodumpExec, options)
 
   mongodump.stdout.on('data', function (data) {
@@ -120,27 +109,22 @@ function runBackup (callback) {
 
   mongodump.on('exit', function (code) {
     if (code === 0) {
-      var dbName = fs.readdirSync(
-        path.join(__dirname, '../../backups/dump/database')
-      )[0]
+      var dbName = fs.readdirSync(path.join(__dirname, '../../backups/dump/database'))[0]
       if (!dbName) {
         return callback(new Error('Unable to retrieve database name'))
       }
 
-      require('rimraf')(
-        path.join(__dirname, '../../backups/dump/database', dbName, 'session*'),
-        function (err) {
-          if (err) return callback(err)
+      require('rimraf')(path.join(__dirname, '../../backups/dump/database', dbName, 'session*'), function (err) {
+        if (err) return callback(err)
 
-          copyFiles(function (err) {
+        copyFiles(function (err) {
+          if (err) return callback(err)
+          createZip(function (err) {
             if (err) return callback(err)
-            createZip(function (err) {
-              if (err) return callback(err)
-              cleanup(callback)
-            })
+            cleanup(callback)
           })
-        }
-      )
+        })
+      })
     } else {
       callback(new Error('MongoDump falied with code ' + code))
     }
@@ -150,8 +134,7 @@ function runBackup (callback) {
 ;(function () {
   CONNECTION_URI = process.env.MONGOURI
 
-  if (!CONNECTION_URI)
-    return process.send({ error: { message: 'Invalid connection uri' } })
+  if (!CONNECTION_URI) return process.send({ error: { message: 'Invalid connection uri' } })
   var options = {
     keepAlive: 0,
     auto_reconnect: false,

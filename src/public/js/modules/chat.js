@@ -12,15 +12,13 @@
 
  **/
 
-define('modules/chat', [
-  'jquery',
-  'underscore',
-  'moment',
-  'modules/helpers',
-  'uikit',
-  'autogrow',
-  'history'
-], function ($, _, moment, helpers, UIKit) {
+define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'uikit', 'autogrow', 'history'], function (
+  $,
+  _,
+  moment,
+  helpers,
+  UIKit
+) {
   var chatClient = {}
 
   var socket
@@ -58,28 +56,18 @@ define('modules/chat', [
         if (_.isUndefined(imageUrl)) imageUrl = 'defaultProfile.jpg'
         html += '<li>'
         html +=
-          '<a class="no-ajaxy" data-action="startChat" data-chatUser="' +
-          onlineUser._id +
-          '" href="#" role="button">'
+          '<a class="no-ajaxy" data-action="startChat" data-chatUser="' + onlineUser._id + '" href="#" role="button">'
         html += '<div class="online-list-user">'
-        html +=
-          '<div class="image"><img src="/uploads/users/' + imageUrl + '"></div>'
-        html +=
-          '<span class="online-status" data-user-status-id="' +
-          onlineUser._id +
-          '"></span>'
+        html += '<div class="image"><img src="/uploads/users/' + imageUrl + '"></div>'
+        html += '<span class="online-status" data-user-status-id="' + onlineUser._id + '"></span>'
         html += '<div class="online-name">' + onlineUser.fullname + '</div>'
         html += '</div>'
         html += '</a>'
         html += '</li>'
 
         var allUserList = $('ul.user-list')
-        var userStatus = allUserList
-          .find('li[data-user-id="' + onlineUser._id + '"]')
-          .find('.online-status-offline')
-        userStatus
-          .removeClass('online-status-offline')
-          .addClass('online-status')
+        var userStatus = allUserList.find('li[data-user-id="' + onlineUser._id + '"]').find('.online-status-offline')
+        userStatus.removeClass('online-status-offline').addClass('online-status')
         userStatus.text('')
         activeCount++
       })
@@ -196,10 +184,7 @@ define('modules/chat', [
       var scroller = chatBox.find('.chat-box-messages')
       if (scroller.length > 0) {
         // Only scroll if the scroller is on bottom
-        if (
-          scroller.scrollTop() + window.innerHeight >=
-          scroller[0].scrollHeight
-        ) {
+        if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight) {
           helpers.scrollToBottom(scroller)
         }
       }
@@ -207,10 +192,7 @@ define('modules/chat', [
       scroller = $('#message-content')
       if (scroller.length > 0) {
         // Only scroll if the scroller is on bottom
-        if (
-          scroller.scrollTop() + window.innerHeight >=
-          scroller[0].scrollHeight
-        ) {
+        if (scroller.scrollTop() + window.innerHeight >= scroller[0].scrollHeight) {
           helpers.scrollToBottom(scroller)
         }
       }
@@ -229,9 +211,7 @@ define('modules/chat', [
     $(window).on('$trudesk:chat:stoptyping.chatSystem', function (event, data) {
       var chatBox = []
       var scroller
-      chatBox[0] = $(
-        '#message-content[data-conversation-id="' + data.cid + '"]'
-      )
+      chatBox[0] = $('#message-content[data-conversation-id="' + data.cid + '"]')
       chatBox[1] = $('.chat-box[data-conversation-id="' + data.cid + '"]')
       for (var i = 0; i < chatBox.length; i++) {
         chatBox[i].find('.user-is-typing-wrapper').addClass('hide')
@@ -403,9 +383,7 @@ define('modules/chat', [
         .remove()
 
       var $loggedInAccountId = loggedInAccount._id
-      var cid = $chatCloseButton
-        .parents('.chat-box[data-conversation-id]')
-        .attr('data-conversation-id')
+      var cid = $chatCloseButton.parents('.chat-box[data-conversation-id]').attr('data-conversation-id')
       socket.emit('saveChatWindow', {
         userId: $loggedInAccountId,
         convoId: cid,
@@ -577,9 +555,7 @@ define('modules/chat', [
       var username = loggedInAccount.username
       if (user.username === username) return true
 
-      var cWindow = $('.chat-box-position').find(
-        '.chat-box[data-chat-userid="' + user._id + '"]'
-      )
+      var cWindow = $('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]')
       if (cWindow.length > 0) {
         // loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages);
         cWindow.find('textarea').focus()
@@ -597,16 +573,10 @@ define('modules/chat', [
           })
         ]
       var html = '<div class="chat-box-position">'
-      html +=
-        '<div class="chat-box" data-conversation-id="' +
-        convo._id +
-        '" data-chat-userid="' +
-        user._id +
-        '">'
+      html += '<div class="chat-box" data-conversation-id="' + convo._id + '" data-chat-userid="' + user._id + '">'
       html += '<div class="chat-box-title">'
       html += '<div class="chat-box-title-buttons right">'
-      html +=
-        '<a class="chatCloseBtn"><i class="material-icons material-icons-small">close</i></a>'
+      html += '<a class="chatCloseBtn"><i class="material-icons material-icons-small">close</i></a>'
       html += '</div>'
       html += '<h4 class="chat-box-title-text-wrapper">'
       html += '<a href="#">' + user.fullname + '</a>'
@@ -616,13 +586,10 @@ define('modules/chat', [
       if (userMeta && userMeta.deletedAt) {
         html +=
           '<div class="chat-box-deletedAt">Conversation deleted at ' +
-          moment(userMeta.deletedAt).format(
-            helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()
-          ) +
+          moment(userMeta.deletedAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
           '</div>'
       }
-      html +=
-        '<div class="chat-message-list" data-chat-userid="' + user._id + '">'
+      html += '<div class="chat-message-list" data-chat-userid="' + user._id + '">'
       html += '</div>'
       html += '<div class="user-is-typing-wrapper hide">'
       html +=
@@ -631,35 +598,22 @@ define('modules/chat', [
         '" alt="' +
         user.fullname +
         '"/></a></div>'
-      html +=
-        '<div class="user-is-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'
+      html += '<div class="user-is-typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>'
       html += '</div>'
       html += '</div>'
       html += '<div class="chat-box-text">'
-      html +=
-        '<textarea class="textAreaAutogrow autogrow-short" name="message" rows="1"></textarea>'
+      html += '<textarea class="textAreaAutogrow autogrow-short" name="message" rows="1"></textarea>'
       html += '</div>'
       html += '</div>'
       html += '</div>'
 
       $('.chat-box-wrapper').append(html)
       $('.chat-box[data-chat-userid="' + user._id + '"] textarea').focus()
-      loadChatMessages(
-        $('.chat-box-position').find(
-          '.chat-box[data-chat-userid="' + user._id + '"]'
-        ),
-        convo.messages
-      )
+      loadChatMessages($('.chat-box-position').find('.chat-box[data-chat-userid="' + user._id + '"]'), convo.messages)
       helpers.hideAllpDropDowns()
-      helpers.setupScrollers(
-        '.chat-box[data-chat-userid="' + user._id + '"] > div.scrollable'
-      )
+      helpers.setupScrollers('.chat-box[data-chat-userid="' + user._id + '"] > div.scrollable')
       bindChatWindowActions(convo._id)
-      helpers.scrollToBottom(
-        $('.chat-box[data-chat-userid="' + user._id + '"]').find(
-          '.chat-box-messages'
-        )
-      )
+      helpers.scrollToBottom($('.chat-box[data-chat-userid="' + user._id + '"]').find('.chat-box-messages'))
 
       socket.emit('saveChatWindow', {
         userId: loggedInAccountId,
@@ -716,14 +670,10 @@ define('modules/chat', [
   }
 
   function createChatMessageDiv (message) {
-    var html =
-      '<div class="chat-message chat-message-user uk-clearfix" data-chat-messageId="">'
+    var html = '<div class="chat-message chat-message-user uk-clearfix" data-chat-messageId="">'
     html += '<div class="chat-text-wrapper">'
     html += '<div class="chat-text chat-text-user">'
-    html +=
-      '<div class="chat-text-inner"><span>' +
-      message.replace(/\n\r?/g, '<br>') +
-      '</span>'
+    html += '<div class="chat-text-inner"><span>' + message.replace(/\n\r?/g, '<br>') + '</span>'
     html += '</div></div></div></div>'
 
     return html

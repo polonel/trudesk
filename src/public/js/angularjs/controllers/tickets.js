@@ -24,13 +24,7 @@ define([
 ], function (angular, _, $, helpers, socket, UIkit) {
   return angular
     .module('trudesk.controllers.tickets', [])
-    .controller('ticketsCtrl', function (
-      $scope,
-      $http,
-      $window,
-      $log,
-      openFilterTicketWindow
-    ) {
+    .controller('ticketsCtrl', function ($scope, $http, $window, $log, openFilterTicketWindow) {
       $scope.openFilterTicketWindow = function () {
         openFilterTicketWindow.openWindow()
       }
@@ -78,9 +72,7 @@ define([
             // History.pushState(null, null, '/tickets/');
           })
           .error(function (err) {
-            $log.error(
-              '[trudesk:tickets:submitTicketForm] - ' + err.error.message
-            )
+            $log.error('[trudesk:tickets:submitTicketForm] - ' + err.error.message)
             helpers.UI.showSnackbar({
               text: 'Error: ' + err.error.message,
               actionTextColor: '#B92929'
@@ -93,18 +85,12 @@ define([
           var searchBoxText = $('#tickets_Search').val()
           if (searchBoxText.length < 3) return true
 
-          var queryString = '?uid={0}&fs={0}&it={0}'.formatUnicorn(
-            searchBoxText
-          )
+          var queryString = '?uid={0}&fs={0}&it={0}'.formatUnicorn(searchBoxText)
 
           History.pushState(
             null,
             null,
-            '/tickets/filter/' +
-              queryString +
-              '&r=' +
-              Math.floor(Math.random() * (99999 - 1 + 1)) +
-              1
+            '/tickets/filter/' + queryString + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1
           )
         }
       }
@@ -194,10 +180,7 @@ define([
             })
             .error(function (e) {
               $log.error('[trudesk:tickets:openTickets] - Error: ', e)
-              helpers.UI.showSnackbar(
-                'An Error occurred. Please check console.',
-                true
-              )
+              helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
             })
         })
       }
@@ -215,10 +198,7 @@ define([
             })
             .error(function (e) {
               $log.error('[trudes:tickets:setPendingTickets] - Error ', e)
-              helpers.UI.showSnackbar(
-                'An Error occurred. Please check console.',
-                true
-              )
+              helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
             })
         })
       }
@@ -236,10 +216,7 @@ define([
             })
             .error(function (e) {
               $log.error('[trudesk:tickets:closeTickets] - Error', e)
-              helpers.UI.showSnackbar(
-                'An Error occurred. Please check console.',
-                true
-              )
+              helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
             })
         })
       }
@@ -289,9 +266,7 @@ define([
           querystring += '&st=' + item
         })
 
-        var filterPriority = $ticketFilterForm
-          .find('select#filterPriority')
-          .val()
+        var filterPriority = $ticketFilterForm.find('select#filterPriority').val()
         _.each(filterPriority, function (item) {
           querystring += '&pr=' + item
         })
@@ -311,9 +286,7 @@ define([
           querystring += '&tag=' + item
         })
 
-        var filterAssignee = $ticketFilterForm
-          .find('select#filterAssignee')
-          .val()
+        var filterAssignee = $ticketFilterForm.find('select#filterAssignee').val()
         _.each(filterAssignee, function (item) {
           querystring += '&au=' + item
         })
@@ -322,11 +295,7 @@ define([
         History.pushState(
           null,
           null,
-          '/tickets/filter/' +
-            querystring +
-            '&r=' +
-            Math.floor(Math.random() * (99999 - 1 + 1)) +
-            1
+          '/tickets/filter/' + querystring + '&r=' + Math.floor(Math.random() * (99999 - 1 + 1)) + 1
         )
       }
 

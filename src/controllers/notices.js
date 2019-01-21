@@ -30,10 +30,7 @@ function handleError (res, err) {
 
 noticesController.get = function (req, res) {
   var user = req.user
-  if (
-    _.isUndefined(user) ||
-    !permissions.canThis(user.role, 'notices:create')
-  ) {
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }
@@ -57,10 +54,7 @@ noticesController.get = function (req, res) {
 
 noticesController.create = function (req, res) {
   var user = req.user
-  if (
-    _.isUndefined(user) ||
-    !permissions.canThis(user.role, 'notices:create')
-  ) {
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:create')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }

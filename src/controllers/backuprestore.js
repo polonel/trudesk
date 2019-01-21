@@ -41,10 +41,7 @@ backupRestore.getBackups = function (req, res) {
     async.forEach(
       files,
       function (f, next) {
-        fs.stat(path.join(__dirname, '../../backups/', f), function (
-          err,
-          stats
-        ) {
+        fs.stat(path.join(__dirname, '../../backups/', f), function (err, stats) {
           if (err) return next(err)
 
           var obj = {}
@@ -71,10 +68,9 @@ backupRestore.getBackups = function (req, res) {
 
 backupRestore.runBackup = function (req, res) {
   var database = require('../database')
-  var child = require('child_process').fork(
-    path.join(__dirname, '../../src/backup/backup'),
-    { env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri } }
-  )
+  var child = require('child_process').fork(path.join(__dirname, '../../src/backup/backup'), {
+    env: { FORK: 1, NODE_ENV: global.env, MONGOURI: database.connectionuri }
+  })
   global.forks.push({ name: 'backup', fork: child })
 
   var result = null
@@ -98,9 +94,7 @@ backupRestore.runBackup = function (req, res) {
 
   child.on('close', function () {
     if (!result) {
-      return res
-        .status(500)
-        .json({ success: false, error: 'An Unknown Error Occurred' })
+      return res.status(500).json({ success: false, error: 'An Unknown Error Occurred' })
     }
 
     if (result.error) {
@@ -113,10 +107,7 @@ backupRestore.runBackup = function (req, res) {
 
 backupRestore.deleteBackup = function (req, res) {
   var filename = req.params.backup
-  if (
-    _.isUndefined(filename) ||
-    !fs.existsSync(path.join(__dirname, '../../backups/', filename))
-  ) {
+  if (_.isUndefined(filename) || !fs.existsSync(path.join(__dirname, '../../backups/', filename))) {
     return res.status(400).json({ success: false, error: 'Invalid Filename' })
   }
 
@@ -131,8 +122,7 @@ backupRestore.restoreBackup = function (req, res) {
   var database = require('../database')
 
   var file = req.body.file
-  if (!file)
-    return res.status(400).json({ success: false, error: 'Invalid File' })
+  if (!file) return res.status(400).json({ success: false, error: 'Invalid File' })
 
   // CHECK IF HAS TOOLS INSTALLED
   // if (require('os').platform() === 'win32')
@@ -144,17 +134,14 @@ backupRestore.restoreBackup = function (req, res) {
   //     return res.json({success: true});
   // });
 
-  var child = require('child_process').fork(
-    path.join(__dirname, '../../src/backup/restore'),
-    {
-      env: {
-        FORK: 1,
-        NODE_ENV: global.env,
-        MONGOURI: database.connectionuri,
-        FILE: file
-      }
+  var child = require('child_process').fork(path.join(__dirname, '../../src/backup/restore'), {
+    env: {
+      FORK: 1,
+      NODE_ENV: global.env,
+      MONGOURI: database.connectionuri,
+      FILE: file
     }
-  )
+  })
   global.forks.push({ name: 'restore', fork: child })
 
   var result = null
@@ -186,9 +173,7 @@ backupRestore.restoreBackup = function (req, res) {
 
   child.on('close', function () {
     if (!result) {
-      return res
-        .status(500)
-        .json({ success: false, error: 'An Unknown Error Occurred' })
+      return res.status(500).json({ success: false, error: 'An Unknown Error Occurred' })
     }
 
     if (result.error) {
@@ -250,21 +235,14 @@ backupRestore.uploadBackup = function (req, res) {
   })
 
   busboy.on('finish', function () {
-    if (error)
-      return res
-        .status(error.status)
-        .json({ success: false, error: error.message })
+    if (error) return res.status(error.status).json({ success: false, error: error.message })
 
     if (_.isUndefined(object.filePath) || _.isUndefined(object.filename)) {
-      return res
-        .status(400)
-        .json({ success: false, error: 'Invalid Form Data' })
+      return res.status(400).json({ success: false, error: 'Invalid Form Data' })
     }
 
     if (!fs.existsSync(object.filePath))
-      return res
-        .status(400)
-        .json({ success: false, error: 'File failed to save to disk' })
+      return res.status(400).json({ success: false, error: 'File failed to save to disk' })
 
     return res.json({ success: true })
   })

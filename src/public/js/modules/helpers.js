@@ -34,19 +34,7 @@ define([
   'peity',
   'multiselect',
   'moment_timezone'
-], function (
-  $,
-  _,
-  moment,
-  UIkit,
-  CountUp,
-  Waves,
-  Selectize,
-  Snackbar,
-  ROLES,
-  Cookies,
-  Tether
-) {
+], function ($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
   var helpers = {}
 
   var easingSwiftOut = [0.4, 0, 0.2, 1]
@@ -137,9 +125,7 @@ define([
           .hasClass('expand')
       ) {
         $(this).addClass('hasSubMenuOpen')
-        var subMenu = $(this).find(
-          '#' + $(this).attr('data-nav-accordion-target')
-        )
+        var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'))
         if (subMenu.length > 0) subMenu.addClass('subMenuOpen')
       }
       var $this = $(this).find('> a')
@@ -166,9 +152,7 @@ define([
           $(this).removeClass('hasSubMenuOpen')
         })
 
-        var $target = $(
-          '#' + $this.parent('li').attr('data-nav-accordion-target')
-        )
+        var $target = $('#' + $this.parent('li').attr('data-nav-accordion-target'))
 
         if ($target.length > 0) {
           $target.toggleClass('subMenuOpen')
@@ -198,12 +182,8 @@ define([
       $('.sidebar')
         .find('.tether-element.tether-enabled')
         .hide()
-      $sidebar
-        .find('li[data-nav-accordion-target].active')
-        .addClass('hasSubMenuOpen')
-      $sidebar
-        .find('li[data-nav-accordion-target].active > ul')
-        .addClass('subMenuOpen')
+      $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen')
+      $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen')
     } else {
       setTimeout(function () {
         Tether.position()
@@ -211,12 +191,8 @@ define([
           .find('.tether-element.tether-enabled')
           .show()
       }, 500)
-      $sidebar
-        .find('li[data-nav-accordion-target]')
-        .removeClass('hasSubMenuOpen')
-      $sidebar
-        .find('ul.side-nav-accordion.side-nav-sub')
-        .removeClass('subMenuOpen')
+      $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen')
+      $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen')
     }
   }
 
@@ -297,12 +273,7 @@ define([
   }
 
   helpers.UI.sidebarTether = function (element, target) {
-    if (
-      _.isUndefined(element) ||
-      _.isUndefined(target) ||
-      element.length < 1 ||
-      target.length < 1
-    ) {
+    if (_.isUndefined(element) || _.isUndefined(target) || element.length < 1 || target.length < 1) {
       return
     }
 
@@ -318,33 +289,19 @@ define([
   helpers.UI.setNavItem = function (id) {
     var $sidebar = $('.sidebar')
     $sidebar.find('li.active').removeClass('active')
-    $sidebar
-      .find('li[data-nav-id="' + id.toLowerCase() + '"]')
-      .addClass('active')
+    $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active')
   }
 
   helpers.UI.onlineUserSearch = function () {
-    $(document).off(
-      'keyup',
-      '.online-list-search-box input[type="text"]',
-      onSearchKeyUp
-    )
-    $(document).on(
-      'keyup',
-      '.online-list-search-box input[type="text"]',
-      onSearchKeyUp
-    )
+    $(document).off('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp)
+    $(document).on('keyup', '.online-list-search-box input[type="text"]', onSearchKeyUp)
 
     function onSearchKeyUp () {
       var $searchBox = $('.online-list-search-box').find('input')
       var searchTerm = $searchBox.val().toLowerCase()
 
       $('.user-list li').each(function () {
-        if (
-          $(this).filter('[data-search-term *= ' + searchTerm + ']').length >
-            0 ||
-          searchTerm.length < 1
-        ) {
+        if ($(this).filter('[data-search-term *= ' + searchTerm + ']').length > 0 || searchTerm.length < 1) {
           $(this).show()
         } else {
           $(this).hide()
@@ -438,10 +395,7 @@ define([
   }
 
   helpers.UI.inputs = function (parent) {
-    var $mdInput =
-      typeof parent === 'undefined'
-        ? $('.md-input')
-        : $(parent).find('.md-input')
+    var $mdInput = typeof parent === 'undefined' ? $('.md-input') : $(parent).find('.md-input')
     $mdInput.each(function () {
       if (!$(this).closest('.md-input-wrapper').length) {
         var $this = $(this)
@@ -460,9 +414,7 @@ define([
           $this.wrap('<div class="md-input-wrapper"/>')
         }
 
-        $this
-          .closest('.md-input-wrapper')
-          .append('<span class="md-input-bar"/>')
+        $this.closest('.md-input-wrapper').append('<span class="md-input-bar"/>')
 
         updateInput($this)
       }
@@ -514,11 +466,7 @@ define([
 
   function updateInput (object) {
     // clear wrapper classes
-    object
-      .closest('.uk-input-group')
-      .removeClass(
-        'uk-input-group-danger uk-input-group-success uk-input-group-nocolor'
-      )
+    object.closest('.uk-input-group').removeClass('uk-input-group-danger uk-input-group-success uk-input-group-nocolor')
     object
       .closest('.md-input-wrapper')
       .removeClass(
@@ -566,9 +514,7 @@ define([
       $fabToolbar.children('i').on('click', function (e) {
         e.preventDefault()
 
-        var toolbarItems = $fabToolbar
-          .children('.md-fab-toolbar-actions')
-          .children().length
+        var toolbarItems = $fabToolbar.children('.md-fab-toolbar-actions').children().length
 
         $fabToolbar.addClass('md-fab-animated')
 
@@ -588,9 +534,7 @@ define([
       $('.page-content').on('scroll', function (e) {
         if ($fabToolbar.hasClass('md-fab-active')) {
           if (!$(e.target).closest($fabToolbar).length) {
-            $fabToolbar
-              .css({ height: '', width: '' })
-              .removeClass('md-fab-active')
+            $fabToolbar.css({ height: '', width: '' }).removeClass('md-fab-active')
 
             setTimeout(function () {
               $fabToolbar.removeClass('md-fab-animated')
@@ -620,9 +564,7 @@ define([
       $fabSheet.children('i').on('click', function (e) {
         e.preventDefault()
 
-        var sheetItems = $fabSheet
-          .children('.md-fab-sheet-actions')
-          .children('a').length
+        var sheetItems = $fabSheet.children('.md-fab-sheet-actions').children('a').length
         $fabSheet.addClass('md-fab-animated')
 
         setTimeout(function () {
@@ -639,9 +581,7 @@ define([
         .children('a')
         .on('click', function () {
           if ($fabSheet.hasClass('md-fab-active')) {
-            $fabSheet
-              .css({ height: '', width: '' })
-              .removeClass('md-fab-active')
+            $fabSheet.css({ height: '', width: '' }).removeClass('md-fab-active')
 
             setTimeout(function () {
               $fabSheet.removeClass('md-fab-animated')
@@ -652,9 +592,7 @@ define([
       $('.page-content').on('scroll', function (e) {
         if ($fabSheet.hasClass('md-fab-active')) {
           if (!$(e.target).closest($fabSheet).length) {
-            $fabSheet
-              .css({ height: '', width: '' })
-              .removeClass('md-fab-active')
+            $fabSheet.css({ height: '', width: '' }).removeClass('md-fab-active')
 
             setTimeout(function () {
               $fabSheet.removeClass('md-fab-animated')
@@ -666,9 +604,7 @@ define([
       $(document).on('click scroll', function (e) {
         if ($fabSheet.hasClass('md-fab-active')) {
           if (!$(e.target).closest($fabSheet).length) {
-            $fabSheet
-              .css({ height: '', width: '' })
-              .removeClass('md-fab-active')
+            $fabSheet.css({ height: '', width: '' }).removeClass('md-fab-active')
 
             setTimeout(function () {
               $fabSheet.removeClass('md-fab-animated')
@@ -681,10 +617,7 @@ define([
 
   helpers.UI.waves = function () {
     Waves.attach('.md-btn-wave,.md-fab-wave', ['waves-button'])
-    Waves.attach('.md-btn-wave-light,.md-fab-wave-light', [
-      'waves-button',
-      'waves-light'
-    ])
+    Waves.attach('.md-btn-wave-light,.md-fab-wave-light', ['waves-button', 'waves-light'])
     Waves.attach('.wave-box', ['waves-float'])
     Waves.init({
       delay: 300
@@ -714,9 +647,7 @@ define([
       })
     }
 
-    var $selectize = parent
-      ? $(parent).find('select')
-      : $('[data-md-selectize],.data-md-selectize')
+    var $selectize = parent ? $(parent).find('select') : $('[data-md-selectize],.data-md-selectize')
 
     $selectize.each(function () {
       var $this = $(this)
@@ -781,9 +712,7 @@ define([
             ? $this.attr('data-md-selectize-closeOnSelect')
             : false
         var maxOptions =
-          $this.attr('data-md-selectize-maxOptions') !== 'undefined'
-            ? $this.attr('data-md-selectize-maxOptions')
-            : 1000
+          $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000
         $this
           .after('<div class="selectize_fix"></div>')
           .closest('div')
@@ -1126,12 +1055,7 @@ define([
           footerHeight = tableHead.height()
         }
         scroller.css({
-          height:
-            $selector.height() -
-            tableHead.height() -
-            headHeight -
-            footerHeight +
-            'px'
+          height: $selector.height() - tableHead.height() - headHeight - footerHeight + 'px'
         })
       }
     })
@@ -1177,10 +1101,7 @@ define([
         if (type.toLowerCase() === 'service') {
           var status = $(this).attr('data-service-status')
           var color = '#fff'
-          if (
-            status.toLowerCase() === 'starting' ||
-            status.toLowerCase() === 'stopping'
-          ) {
+          if (status.toLowerCase() === 'starting' || status.toLowerCase() === 'stopping') {
             color = '#e77c3c'
           }
           if (status.toLowerCase() === 'running') {
@@ -1190,12 +1111,7 @@ define([
             color = '#e54242'
           }
 
-          html +=
-            "<span>Status: <span style='color: " +
-            color +
-            ";'>" +
-            status +
-            '</span>'
+          html += "<span>Status: <span style='color: " + color + ";'>" + status + '</span>'
         } else if (type.toLowerCase() === 'dailyticket') {
           var n = $(this).attr('data-new-count')
           var c = $(this).attr('data-closed-count')
@@ -1337,10 +1253,7 @@ define([
                 form.submit()
 
                 var preventDefault = self.attr('data-preventDefault')
-                if (
-                  _.isUndefined(preventDefault) ||
-                  preventDefault.length < 1
-                ) {
+                if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
                   e.preventDefault()
                 } else if (preventDefault.toLowerCase() === 'true') {
                   e.preventDefault()
@@ -1355,20 +1268,14 @@ define([
             if (target.length !== 0) {
               self.click(function (e) {
                 var animation = self.attr('data-action-animation')
-                if (
-                  !_.isUndefined(animation) &&
-                  animation.toLowerCase() === 'false'
-                ) {
+                if (!_.isUndefined(animation) && animation.toLowerCase() === 'false') {
                   target.animate({ scrollTop: target[0].scrollHeight }, 0)
                 } else {
                   target.animate({ scrollTop: target[0].scrollHeight }, 1000)
                 }
 
                 var preventDefault = self.attr('data-preventDefault')
-                if (
-                  _.isUndefined(preventDefault) ||
-                  preventDefault.length < 1
-                ) {
+                if (_.isUndefined(preventDefault) || preventDefault.length < 1) {
                   e.preventDefault()
                 } else if (preventDefault.toLowerCase() === 'true') {
                   e.preventDefault()
@@ -1768,10 +1675,7 @@ define([
         if (arguments.length) {
           var t = typeof arguments[0]
           var key
-          var args =
-            t === 'string' || t === 'number'
-              ? Array.prototype.slice.call(arguments)
-              : arguments[0]
+          var args = t === 'string' || t === 'number' ? Array.prototype.slice.call(arguments) : arguments[0]
 
           for (key in args) {
             str = str.replace(new RegExp('\\{' + key + '\\}', 'gi'), args[key])
