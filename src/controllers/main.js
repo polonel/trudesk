@@ -61,6 +61,13 @@ mainController.about = function (req, res) {
   var marked = require('marked')
   var settings = require('../models/setting')
   settings.getSettingByName('legal:privacypolicy', function (err, privacyPolicy) {
+    if (err)
+      return res.render('error', {
+        layout: false,
+        error: err,
+        message: err.message
+      })
+
     var content = {}
     content.title = 'About'
     content.nav = 'about'

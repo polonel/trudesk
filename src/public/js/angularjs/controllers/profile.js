@@ -172,9 +172,12 @@ define([
           )
         } else {
           generateL2Auth(function (err, key) {
-            // if (err || angular.isUndefined(key)) {
-            //    //$window.location.reload();
-            // } else {
+            if (err) {
+              $log.error(err)
+              helpers.UI.showSnackbar('An unknown error occurred. Check console.', true)
+              return
+            }
+
             $timeout(function () {
               $scope.otpEnabled = true
               angular.element(event.target).prop('checked', true)

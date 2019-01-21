@@ -15,7 +15,7 @@
 var utils = require('../helpers/utils')
 var path = require('path')
 var AnsiUp = require('ansi_up')
-var ansi_up = new AnsiUp.default()
+var ansiUp = new AnsiUp.default()
 var fileTailer = require('file-tail')
 var fs = require('fs-extra')
 
@@ -35,7 +35,7 @@ events.onLogsFetch = function (socket) {
     } else {
       var ft = fileTailer.startTailing(logFile)
       ft.on('line', function (line) {
-        utils.sendToSelf(socket, 'logs:data', ansi_up.ansi_to_html(line))
+        utils.sendToSelf(socket, 'logs:data', ansiUp.ansi_to_html(line))
       })
     }
   })

@@ -59,6 +59,14 @@ reportsController.generate = function (req, res) {
 
   var prioritySchema = require('../models/ticketpriority')
   prioritySchema.getPriorities(function (err, priorities) {
+    if (err) {
+      return res.render('error', {
+        layout: false,
+        error: err,
+        message: err.message
+      })
+    }
+
     content.data.priorities = priorities
 
     return res.render('subviews/reports/generate', content)

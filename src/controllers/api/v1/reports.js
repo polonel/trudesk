@@ -124,6 +124,7 @@ apiReports.generate.ticketsByPriority = function (req, res) {
       function (done) {
         if (_.includes(postData.groups, '-1')) {
           groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
             return done(null, grps)
           })
         } else {
@@ -199,6 +200,8 @@ apiReports.generate.ticketsByStatus = function (req, res) {
       function (done) {
         if (_.includes(postData.groups, '-1')) {
           groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
             return done(null, grps)
           })
         } else {
@@ -278,6 +281,8 @@ apiReports.generate.ticketsByTags = function (req, res) {
       function (done) {
         if (_.includes(postData.groups, '-1')) {
           groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
             return done(null, grps)
           })
         } else {
@@ -356,6 +361,8 @@ apiReports.generate.ticketsByType = function (req, res) {
       function (done) {
         if (_.includes(postData.groups, '-1')) {
           groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
             return done(null, grps)
           })
         } else {
@@ -434,6 +441,8 @@ apiReports.generate.ticketsByUser = function (req, res) {
       function (done) {
         if (_.includes(postData.groups, '-1')) {
           groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
             return done(null, grps)
           })
         } else {

@@ -15,7 +15,6 @@
 var _ = require('lodash')
 var path = require('path')
 var sass = require('node-sass')
-var nconf = require('nconf')
 var settingUtil = require('../settings/settingsUtil')
 
 var buildsass = {}

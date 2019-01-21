@@ -1,40 +1,39 @@
-var async       = require('async');
-var expect      = require('chai').expect;
-var should      = require('chai').should();
+/* eslint-disable no-unused-expressions */
+var expect = require('chai').expect
 
-var permissions = require('../../src/permissions');
+var permissions = require('../../src/permissions')
 
-describe('premissions.js', function() {
-    it('should return false', function(done) {
-        var result = permissions.canThis(undefined, 'action:action');
-        var result2 = permissions.canThis('fakerole', 'action:action');
-        expect(result).to.be.false;
-        expect(result2).to.be.false;
+describe('premissions.js', function () {
+  it('should return false', function (done) {
+    var result = permissions.canThis(undefined, 'action:action')
+    var result2 = permissions.canThis('fakerole', 'action:action')
+    expect(result).to.be.false
+    expect(result2).to.be.false
 
-        done();
-    });
+    done()
+  })
 
-    it('should allow all actions', function(done) {
-        var result = permissions.canThis('support', 'comment:create');
+  it('should allow all actions', function (done) {
+    var result = permissions.canThis('support', 'comment:create')
 
-        expect(result).to.be.true;
+    expect(result).to.be.true
 
-        done();
-    });
+    done()
+  })
 
-    it('show allow note creation', function(done) {
-        var result = permissions.canThis('support', 'notes:create');
+  it('show allow note creation', function (done) {
+    var result = permissions.canThis('support', 'notes:create')
 
-        expect(result).to.be.true;
+    expect(result).to.be.true
 
-        done();
-    });
+    done()
+  })
 
-    it('should get roles with action', function(done) {
-        var results = permissions.getRoles('ticket:create');
+  it('should get roles with action', function (done) {
+    var results = permissions.getRoles('ticket:create')
 
-        expect(results).to.have.length(4);
+    expect(results).to.have.length(4)
 
-        done();
-    });
-});
+    done()
+  })
+})

@@ -215,6 +215,7 @@ var helpers = {
         return l >= r
       },
       typeof: function (l, r) {
+        // eslint-disable-next-line
         return typeof l === r
       }
     }

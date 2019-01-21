@@ -12,7 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
 var passport = require('passport')
 var Local = require('passport-local').Strategy
 var TotpStrategy = require('passport-totp').Strategy

@@ -36,9 +36,11 @@ var notifications = require('../notifications') // Load Push Events
     var hostname = data.hostname
 
     ticketSchema.getTicketById(ticketObj._id, function (err, ticket) {
-      if (err) return true
+      if (err) return false
 
       settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+        if (err) return false
+
         var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
         var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
         var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
@@ -302,6 +304,8 @@ var notifications = require('../notifications') // Load Push Events
     io.sockets.emit('updateComments', ticket)
 
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+      if (err) return false
+
       var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
       var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
       var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
@@ -441,6 +445,8 @@ var notifications = require('../notifications') // Load Push Events
 
   emitter.on('ticket:setAssignee', function (data) {
     settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+      if (err) return false
+
       var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
       var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
       var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])

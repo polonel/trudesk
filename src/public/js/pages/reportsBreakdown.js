@@ -103,18 +103,18 @@ define('pages/reportsBreakdown', [
               fill: ['#29b955', '#ccc']
             })
 
-            var responseTime_text = $('#responseTime_text')
+            var responseTimeText = $('#responseTime_text')
             // var responseTime_graph = $('#responseTime_graph');
-            var oldResponseTime = responseTime_text.text() === '--' ? 0 : responseTime_text.text()
+            var oldResponseTime = responseTimeText.text() === '--' ? 0 : responseTimeText.text()
             var responseTime = _data.data.avgResponse
-            var responseTime_animation = new CountUp(
+            var responseTimeAnimation = new CountUp(
               'responseTime_text',
               parseInt(oldResponseTime),
               responseTime,
               0,
               1.5
             )
-            responseTime_animation.start()
+            responseTimeAnimation.start()
 
             var recentTicketsBody = $('tbody.recent-tickets')
             recentTicketsBody.html('')

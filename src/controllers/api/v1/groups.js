@@ -50,6 +50,8 @@ apiGroups.get = function (req, res) {
 
     if (hasPublic) {
       GroupSchema.getAllPublicGroups(function (err, grps) {
+        if (err) return res.status(400).json({ success: false, error: err })
+
         groups = groups.concat(grps)
 
         return res.json({ success: true, groups: groups })

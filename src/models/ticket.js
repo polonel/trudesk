@@ -16,7 +16,6 @@ var async = require('async')
 var mongoose = require('mongoose')
 var _ = require('lodash')
 var moment = require('moment')
-var hash = require('object-hash')
 // var redisCache          = require('../cache/rediscache');
 
 // Needed - For Population
@@ -338,6 +337,8 @@ ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
   self.group = groupId
 
   self.populate('group', function (err, ticket) {
+    if (err) return callback(err)
+
     var historyItem = {
       action: 'ticket:set:group',
       description: 'Ticket Group set to: ' + ticket.group.name,

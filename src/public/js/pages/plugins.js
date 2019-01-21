@@ -34,6 +34,7 @@ define('pages/plugins', ['jquery', 'modules/helpers', 'tether', 'history'], func
       })
 
       if ($('.plugin-tether').length > 0) {
+        // eslint-disable-next-line
         new Tether({
           element: '.plugin-tether',
           target: '.tether-plugins',

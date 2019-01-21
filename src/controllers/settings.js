@@ -12,11 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async')
 var _ = require('lodash')
-var jsStringEscape = require('js-string-escape')
-var settingSchema = require('../models/setting')
-var ticketTypeSchema = require('../models/tickettype')
 var permissions = require('../permissions')
 var settingsUtil = require('../settings/settingsUtil')
 

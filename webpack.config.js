@@ -32,10 +32,10 @@ module.exports = {
   resolve: {
     modules: [path.resolve(__dirname, 'src/public/js/')],
     alias: {
-      //server side
+      // server side
       roles: path.resolve(__dirname, 'src/permissions/roles'),
 
-      //client side
+      // client side
       jquery: 'vendor/jquery/jquery',
       jquery_scrollTo: 'vendor/jquery/jquery.scrollTo.min',
       jscookie: 'vendor/jscookie/js.cookie',
@@ -95,7 +95,7 @@ module.exports = {
     }
   },
   externals: {
-    //These are bunbled already
+    // These are bunbled already
     jsdom: 'jsdom',
     canvas: 'canvas'
   },

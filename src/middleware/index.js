@@ -12,36 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-
 var path = require('path')
-
 var async = require('async')
-
 var express = require('express')
-
 var mongoose = require('mongoose')
-
 var HandleBars = require('handlebars').create()
-
 var hbs = require('express-hbs')
-
 var hbsHelpers = require('../helpers/hbs/helpers')
-
 var winston = require('winston')
-
 var flash = require('connect-flash')
-
 var bodyParser = require('body-parser')
-
 var cookieParser = require('cookie-parser')
-
-var favicon = require('serve-favicon')
-
 var session = require('express-session')
-
 var MongoStore = require('connect-mongo')(session)
-
 var passportConfig = require('../passport')()
 
 var middleware = {}
@@ -57,13 +40,12 @@ module.exports = function (app, db, callback) {
     hbs.express4({
       handlebars: HandleBars,
       defaultLayout: path.join(__dirname, '../views/layout/main.hbs'),
-      partialsDir: [path.join(__dirname + '/../views/partials/'), path.join(__dirname + '/../views/subviews/reports')]
+      partialsDir: [path.join(__dirname, '../views/partials/'), path.join(__dirname, '../views/subviews/reports')]
     })
   )
   app.set('view engine', 'hbs')
   hbsHelpers.register(hbs.handlebars)
 
-  // app.use(favicon(nconf.get('base_dir') + '/public/img/favicon.ico'));
   app.use(bodyParser.urlencoded({ extended: false }))
   app.use(bodyParser.json())
   app.use(cookieParser())

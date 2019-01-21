@@ -8,7 +8,7 @@ module.exports = function (grunt) {
 
     express: {
       options: {
-        //Override Defaults
+        // Override Defaults
       },
       web: {
         options: {

@@ -1,35 +1,30 @@
 {
-  "plugins": ["node"],
-  "extends": ["standard", "plugin:node/recommended"],
+  "plugins": ["import", "prettier", "standard"],
+  "extends": ["standard", "prettier", "prettier/standard"],
   "root": true,
   "parserOptions": {
     "ecmaVersion": 5
   },
   "env": {
     "browser": true,
-    "node": true
+    "node": true,
+    "mocha": true
   },
   "rules": {
+    "standard/no-callback-literal": 0, // enable after error handing refactor
     "node/exports-style": ["error", "module.exports"],
+    "new-cap": 0,
     "no-console": "off",
-    //    "new-cap": "error",
-    "quotes": ["error", "single"],
-    "curly": ["error", "multi-or-nest"],
-    "complexity": ["error", 20],
-    "wrap-iife": ["error", "outside"],
-    "semi": ["error", "always"],
-    "no-extra-semi": "error",
-    "no-func-assign": "error",
-    "no-redeclare": "error"
+    "complexity": ["error", 20]
   },
   "globals": {
-    "angular": 1,
-    "define": 1,
-    "requirejs": 1,
-    "MG": 1,
-    "Snackbar": 1,
-    "ROLES": 1,
-    "io": 1,
-    "d3": 1
+    "angular": true,
+    "define": true,
+    "requirejs": true,
+    "MG": true,
+    "Snackbar": true,
+    "ROLES": true,
+    "io": true,
+    "d3": true
   }
 }

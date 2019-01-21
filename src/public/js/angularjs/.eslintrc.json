@@ -1,6 +1,6 @@
 {
-  "plugins": ["angular"],
-  "extends": ["eslint:recommended", "angular"],
+  "plugins": ["angular", "standard", "import"],
+  "extends": ["angular", "standard", "prettier", "prettier/standard"],
   "env": {
     "browser": true,
     "node": true
@@ -11,18 +11,16 @@
     "angular/controller-as": "off",
     "angular/controller-name": "off",
     "quotes": ["error", "single"],
-    "curly": ["error", "multi-or-nest"],
     "complexity": ["error", 20],
     "wrap-iife": ["error", "outside"],
-    "semi": ["error", "always"],
     "no-extra-semi": "error",
     "no-func-assign": "error",
     "no-redeclare": "error"
   },
   "globals": {
-    "angular": 1,
-    "define": 1,
-    "requirejs": 1,
-    "History": 1
+    "angular": true,
+    "define": true,
+    "requirejs": true,
+    "History": true
   }
 }

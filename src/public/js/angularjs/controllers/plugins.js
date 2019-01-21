@@ -226,6 +226,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'history'], functi
             cmp = -1
           }
         }
+        // eslint-disable-next-line
         return eval('0' + comparator + cmp)
       }
     })

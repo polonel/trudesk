@@ -277,6 +277,7 @@ define([
       return
     }
 
+    // eslint-disable-next-line
     new Tether({
       element: element,
       target: target,
@@ -1668,6 +1669,7 @@ define([
   }
 
   helpers.prototypes = function () {
+    // eslint-disable-next-line
     String.prototype.formatUnicorn =
       String.prototype.formatUnicorn ||
       function () {

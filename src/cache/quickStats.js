@@ -40,6 +40,8 @@ var init = function (tickets, callback) {
       function (done) {
         if (tickets) {
           ticketSchema.populate(tickets, { path: 'owner comments.owner assignee' }, function (err, _tickets) {
+            if (err) return done(err)
+
             $tickets = _tickets
 
             return done()

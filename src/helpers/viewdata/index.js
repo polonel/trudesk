@@ -312,6 +312,8 @@ viewController.getData = function (request, cb) {
       },
       function (callback) {
         viewController.getShowTourSetting(request, function (err, data) {
+          if (err) return callback(err)
+
           viewdata.showTour = data
 
           return callback()
@@ -319,6 +321,8 @@ viewController.getData = function (request, cb) {
       },
       function (callback) {
         viewController.getOverdueSetting(request, function (err, data) {
+          if (err) return callback(err)
+
           viewdata.showOverdue = data
 
           return callback()
@@ -326,6 +330,8 @@ viewController.getData = function (request, cb) {
       },
       function (callback) {
         viewController.getPluginsInfo(request, function (err, data) {
+          if (err) return callback(err)
+
           viewdata.plugins = data
 
           return callback()
@@ -589,6 +595,8 @@ viewController.getShowTourSetting = function (request, callback) {
 
     var userSchema = require('../../models/user')
     userSchema.getUser(request.user._id, function (err, user) {
+      if (err) return callback(err)
+
       var hasTourCompleted = false
 
       if (user.preferences.tourCompleted) {

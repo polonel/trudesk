@@ -11,7 +11,7 @@
  *  Updated:    1/20/19 4:43 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
-var _ = require('lodash')
+
 var winston = require('winston')
 var utils = require('../helpers/utils')
 var noticeSchema = require('../models/notice')

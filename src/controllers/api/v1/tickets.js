@@ -651,6 +651,8 @@ apiTickets.update = function (req, res) {
             if (!_.isUndefined(reqTicket.assignee) && !_.isNull(reqTicket.assignee)) {
               ticket.assignee = reqTicket.assignee
               ticket.populate('assignee', function (err, t) {
+                if (err) return cb(err)
+
                 var HistoryItem = {
                   action: 'ticket:set:assignee',
                   description: t.assignee.fullname + ' was set as assignee',

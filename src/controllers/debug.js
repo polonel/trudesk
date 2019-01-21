@@ -389,9 +389,17 @@ debugController.populatedatabase = function (req, res) {
       },
       function (done) {
         userSchema.findAll(function (err, users) {
+          if (err) return done(err)
+
           groupSchema.getAllGroups(function (err, groups) {
+            if (err) return done(err)
+
             ticketTypeSchema.getTypes(function (err, types) {
+              if (err) return done(err)
+
               tagSchema.getTags(function (err, tags) {
+                if (err) return done(err)
+
                 var loremIpsum = require('lorem-ipsum')
                 for (var i = 0; i < 100001; i++) {
                   var user = users[Math.floor(Math.random() * users.length)]
