@@ -12,189 +12,215 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'history'], function(angular, _, $, helpers, socketClient) {
-    return angular.module('trudesk.controllers.notices', [])
-        .controller('noticesCtrl', function($scope, $http, $log) {
+define([
+  'angular',
+  'underscore',
+  'jquery',
+  'modules/helpers',
+  'modules/socket',
+  'history'
+], function (angular, _, $, helpers, socketClient) {
+  return angular
+    .module('trudesk.controllers.notices', [])
+    .controller('noticesCtrl', function ($scope, $http, $log) {
+      $scope.editNotice = function ($event) {
+        if (
+          _.isNull($event.target) ||
+          _.isUndefined($event.target) ||
+          $event.target.tagName.toLowerCase() === 'label' ||
+          $event.target.tagName.toLowerCase() === 'input'
+        ) {
+          return true
+        }
 
-            $scope.editNotice = function($event) {
-                if (_.isNull($event.target) || _.isUndefined($event.target) ||
-                    $event.target.tagName.toLowerCase() === 'label' ||
-                    $event.target.tagName.toLowerCase() === 'input')
-                    return true;
+        // currentTarget = ng-click() bound to. "<tr>"
+        var id = $event.currentTarget.dataset.noticeoid
+        if (!id) return true
 
-                //currentTarget = ng-click() bound to. "<tr>"
-                var id = $event.currentTarget.dataset.noticeoid;
-                if (!id) return true;
+        History.pushState(null, null, '/notices/' + id)
+      }
 
-                History.pushState(null, null, '/notices/' + id);
-            };
+      $scope.submitCreateNoticeForm = function (event) {
+        event.preventDefault()
+        var formData = $('#createNoticeForm').serializeObject()
+        if (!formData.nName || !formData.nMessage) return false
+        var apiData = {
+          name: formData.nName,
+          message: formData.nMessage,
+          color: formData.nColor,
+          fontColor: formData.nFontColor,
+          alertWindow: formData.nAlertWindow === 'on'
+        }
 
-            $scope.submitCreateNoticeForm = function(event) {
-                event.preventDefault();
-                var formData = $('#createNoticeForm').serializeObject();
-                if (!formData.nName || !formData.nMessage) return false;
-                var apiData = {
-                    name: formData.nName,
-                    message: formData.nMessage,
-                    color: formData.nColor,
-                    fontColor: formData.nFontColor,
-                    alertWindow: (formData.nAlertWindow === 'on')
-                };
+        $http({
+          method: 'POST',
+          url: '/api/v1/notices/create',
+          data: apiData,
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .success(function () {
+            helpers.UI.showSnackbar('Notice Created Successfully.', false)
 
-                $http({
-                    method: 'POST',
-                    url: '/api/v1/notices/create',
-                    data: apiData,
-                    headers: { 'Content-Type': 'application/json'}
+            History.pushState(null, null, '/notices/')
+          })
+          .error(function (err) {
+            $log.log('[trudesk:notices:submitCreateNoticeForm] - ' + err)
+            helpers.UI.showSnackbar(err, true)
+          })
+      }
+
+      $scope.submitEditNoticeForm = function (event) {
+        event.preventDefault()
+        var noticeId = $('#__noticeId').text()
+        var formData = $('#editNoticeForm').serializeObject()
+        var apiData = {
+          name: formData.nName,
+          message: formData.nMessage,
+          color: formData.nColor,
+          fontColor: formData.nFontColor,
+          alertWindow: formData.nAlertWindow === 'on'
+        }
+
+        $http({
+          method: 'PUT',
+          url: '/api/v1/notices/' + noticeId,
+          data: apiData,
+          headers: { 'Content-Type': 'application/json' }
+        })
+          .success(function () {
+            helpers.UI.showSnackbar('Notice Saved Successfully.', false)
+
+            History.pushState(null, null, '/notices/')
+          })
+          .error(function (err) {
+            $log.log('[trudesk:notices:submitEditNoticeForm] - ' + err)
+            helpers.UI.showSnackbar(err, true)
+          })
+      }
+
+      $scope.activateNotice = function () {
+        var id = getChecked()
+        if (id.length < 1) return true
+        id = id[0]
+        var $data = { active: true }
+
+        $http
+          .get('/api/v1/notices/clearactive')
+          .success(function () {
+            $http({
+              method: 'PUT',
+              url: '/api/v1/notices/' + id,
+              data: $data,
+              headers: { 'Content-Type': 'application/json' }
+            })
+              .success(function () {
+                socketClient.ui.setShowNotice(id)
+
+                helpers.UI.showSnackbar('Notice has been activated', false)
+
+                clearChecked()
+                History.pushState(null, null, '/notices/')
+              })
+              .error(function (err) {
+                $log.log('[trudesk:notices:activateNotice] - ' + err)
+                helpers.UI.showSnackbar(err, true)
+              })
+          })
+          .error(function () {})
+
+        helpers.hideAllpDropDowns()
+      }
+
+      $scope.clearNotice = function () {
+        $http
+          .get('/api/v1/notices/clearactive')
+          .success(function () {
+            socketClient.ui.setClearNotice()
+
+            helpers.UI.showSnackbar('Notice has been deactivated', false)
+          })
+          .error(function (err) {
+            $log.log('[trudesk:notices:clearNotice] - ' + err)
+            helpers.UI.showSnackbar({
+              text: 'Error: ' + err.message,
+              actionTextColor: '#B92929'
+            })
+          })
+
+        helpers.hideAllpDropDowns()
+      }
+
+      $scope.deleteNotices = function () {
+        var ids = getChecked()
+        _.each(ids, function (id) {
+          $http
+            .delete('/api/v1/notices/' + id)
+            .success(function (data) {
+              if (!data.success) {
+                helpers.UI.showSnackbar({
+                  text: 'Error: ' + data.error,
+                  actionTextColor: '#B92929'
                 })
-                    .success(function() {
-                        helpers.UI.showSnackbar('Notice Created Successfully.', false);
+                return
+              }
 
-                        History.pushState(null, null, '/notices/');
-                    })
-                    .error(function(err) {
-                        $log.log('[trudesk:notices:submitCreateNoticeForm] - ' + err);
-                        helpers.UI.showSnackbar(err, true);
-                    });
-            };
+              removeCheckedFromGrid(id)
+              helpers.resizeDataTables('.noticesList')
+              helpers.UI.showSnackbar({ text: 'Notice Successfully Deleted' })
+            })
+            .error(function (err) {
+              $log.log('[trudesk:notices:deleteNotices] - ' + err)
+              helpers.UI.showSnackbar({
+                text: 'Error: ' + err,
+                actionTextColor: '#B92929'
+              })
+            })
+        })
+      }
 
-            $scope.submitEditNoticeForm = function(event) {
-                event.preventDefault();
-                var noticeId = $('#__noticeId').text();
-                var formData = $('#editNoticeForm').serializeObject();
-                var apiData = {
-                    name: formData.nName,
-                    message: formData.nMessage,
-                    color: formData.nColor,
-                    fontColor: formData.nFontColor,
-                    alertWindow: (formData.nAlertWindow === 'on')
-                };
+      function clearChecked () {
+        $('#noticesTable input[type="checkbox"]:checked').each(function () {
+          var vm = this
 
-                $http({
-                    method: 'PUT',
-                    url: '/api/v1/notices/' + noticeId,
-                    data: apiData,
-                    headers: { 'Content-Type': 'application/json' }
-                })
-                    .success(function() {
-                        helpers.UI.showSnackbar('Notice Saved Successfully.', false);
+          var self = $(vm)
 
-                        History.pushState(null, null, '/notices/');
-                    })
-                    .error(function(err) {
-                        $log.log('[trudesk:notices:submitEditNoticeForm] - ' + err);
-                        helpers.UI.showSnackbar(err, true);
-                    });
-            };
+          self.prop('checked', false)
+        })
+      }
 
-            $scope.activateNotice = function() {
-                var id = getChecked();
-                if (id.length < 1) return true;
-                id = id[0];
-                var $data = {active: true};
+      function getChecked () {
+        var checkedIds = []
+        $('#noticesTable input[type="checkbox"]:checked').each(function () {
+          var vm = this
 
-                $http.get('/api/v1/notices/clearactive')
-                    .success(function() {
-                        $http({
-                            method: 'PUT',
-                            url: '/api/v1/notices/' + id,
-                            data: $data,
-                            headers: {'Content-Type': 'application/json'}
-                        })
-                            .success(function() {
-                                socketClient.ui.setShowNotice(id);
+          var self = $(vm)
 
-                                helpers.UI.showSnackbar('Notice has been activated', false);
+          var $noticeTR = self.parents('tr')
+          if (!_.isUndefined($noticeTR)) {
+            var noticeOId = $noticeTR.attr('data-noticeOId')
 
-                                clearChecked();
-                                History.pushState(null, null, '/notices/');
-                            })
-                            .error(function(err) {
-                                $log.log('[trudesk:notices:activateNotice] - ' + err);
-                                helpers.UI.showSnackbar(err, true);
-                            });
-                    })
-                    .error(function() {
-
-                    });
-
-                helpers.hideAllpDropDowns();
-            };
-
-            $scope.clearNotice = function() {
-                $http.get('/api/v1/notices/clearactive')
-                    .success(function() {
-                        socketClient.ui.setClearNotice();
-
-                        helpers.UI.showSnackbar('Notice has been deactivated', false);
-                    })
-                    .error(function(err) {
-                        $log.log('[trudesk:notices:clearNotice] - ' + err);
-                        helpers.UI.showSnackbar({text: 'Error: ' + err.message, actionTextColor: '#B92929'});
-                    });
-
-                helpers.hideAllpDropDowns();
-            };
-
-            $scope.deleteNotices = function() {
-                var ids = getChecked();
-                _.each(ids, function(id) {
-                    $http.delete(
-                        '/api/v1/notices/' + id
-                    ).success(function(data) {
-                            if (!data.success) {
-                                helpers.UI.showSnackbar({text: 'Error: ' + data.error, actionTextColor: '#B92929'});
-                                return;
-                            }
-
-                            removeCheckedFromGrid(id);
-                            helpers.resizeDataTables('.noticesList');
-                            helpers.UI.showSnackbar({text: 'Notice Successfully Deleted'});
-                        }).error(function(err) {
-                        $log.log('[trudesk:notices:deleteNotices] - ' + err);
-                            helpers.UI.showSnackbar({text: 'Error: ' + err, actionTextColor: '#B92929'});
-                        });
-                });
-            };
-
-            function clearChecked() {
-                $('#noticesTable input[type="checkbox"]:checked').each(function() {
-                    var vm = this,
-                        self = $(vm);
-
-                    self.prop('checked', false);
-                });
+            if (!_.isUndefined(noticeOId) && noticeOId.length > 0) {
+              checkedIds.push(noticeOId)
             }
+          }
+        })
 
-            function getChecked() {
-                var checkedIds = [];
-                $('#noticesTable input[type="checkbox"]:checked').each(function() {
-                    var vm = this,
-                        self = $(vm);
+        return checkedIds
+      }
 
-                    var $noticeTR = self.parents('tr');
-                    if (!_.isUndefined($noticeTR)) {
-                        var noticeOId = $noticeTR.attr('data-noticeOId');
+      function removeCheckedFromGrid (id) {
+        $('#noticesTable #c_' + id + '[type="checkbox"]:checked').each(
+          function () {
+            var vm = this
 
-                        if (!_.isUndefined(noticeOId) && noticeOId.length > 0) 
-                            checkedIds.push(noticeOId);
-                        
-                    }
-                });
+            var self = $(vm)
 
-                return checkedIds;
+            var $noticeTR = self.parents('tr')
+            if (!_.isUndefined($noticeTR)) {
+              $noticeTR.remove()
             }
-
-            function removeCheckedFromGrid(id) {
-                $('#noticesTable #c_' + id + '[type="checkbox"]:checked').each(function() {
-                    var vm = this,
-                        self = $(vm);
-
-                    var $noticeTR = self.parents('tr');
-                    if (!_.isUndefined($noticeTR)) 
-                        $noticeTR.remove();
-                    
-                });
-            }
-        });
-});
+          }
+        )
+      }
+    })
+})

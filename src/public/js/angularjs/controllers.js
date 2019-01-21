@@ -12,51 +12,49 @@ Author:     Chris Brame
 
 **/
 define([
-    'jquery',
-    'angular',
-    'underscore',
+  'jquery',
+  'angular',
+  'underscore',
 
-    'angularjs/controllers/common',
-    'angularjs/controllers/profile',
-    'angularjs/controllers/accounts',
-    'angularjs/controllers/groups',
-    'angularjs/controllers/tickets',
-    'angularjs/controllers/singleTicket',
-    'angularjs/controllers/messages',
-    'angularjs/controllers/notices',
-    'angularjs/controllers/plugins',
-    'angularjs/controllers/reports',
-    'angularjs/controllers/settings',
-    'angularjs/controllers/settings-backup'
+  'angularjs/controllers/common',
+  'angularjs/controllers/profile',
+  'angularjs/controllers/accounts',
+  'angularjs/controllers/groups',
+  'angularjs/controllers/tickets',
+  'angularjs/controllers/singleTicket',
+  'angularjs/controllers/messages',
+  'angularjs/controllers/notices',
+  'angularjs/controllers/plugins',
+  'angularjs/controllers/reports',
+  'angularjs/controllers/settings',
+  'angularjs/controllers/settings-backup'
+], function ($, angular, _) {
+  return angular
+    .module('trudesk.controllers', [
+      'trudesk.controllers.common',
 
-], function($, angular, _) {
+      'trudesk.controllers.profile',
+      'trudesk.controllers.accounts',
+      'trudesk.controllers.groups',
+      'trudesk.controllers.tickets',
+      'trudesk.controllers.singleTicket',
+      'trudesk.controllers.messages',
+      'trudesk.controllers.notices',
+      'trudesk.controllers.plugins',
+      'trudesk.controllers.reports',
+      'trudesk.controllers.settings',
+      'trudesk.controllers.settings.backup'
+    ])
+    .controller('TrudeskController', function ($rootScope, $scope) {
+      $scope.submitForm = function (formName, $event) {
+        if (_.isNull(formName) || _.isUndefined(formName)) return true
 
-    return angular.module('trudesk.controllers',
-        [
-            'trudesk.controllers.common',
+        $event.preventDefault()
 
-            'trudesk.controllers.profile',
-            'trudesk.controllers.accounts',
-            'trudesk.controllers.groups',
-            'trudesk.controllers.tickets',
-            'trudesk.controllers.singleTicket',
-            'trudesk.controllers.messages',
-            'trudesk.controllers.notices',
-            'trudesk.controllers.plugins',
-            'trudesk.controllers.reports',
-            'trudesk.controllers.settings',
-            'trudesk.controllers.settings.backup'
-        ])
-        .controller('TrudeskController', function($rootScope, $scope) {
-            $scope.submitForm = function(formName, $event) {
-                if (_.isNull(formName) || _.isUndefined(formName)) return true;
-
-                $event.preventDefault();
-
-                var form = $('#' + formName);
-                if (!_.isUndefined(form)) 
-                    form.submit();
-                
-            };
-        });
-});
+        var form = $('#' + formName)
+        if (!_.isUndefined(form)) {
+          form.submit()
+        }
+      }
+    })
+})

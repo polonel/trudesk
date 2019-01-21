@@ -1,118 +1,162 @@
 /*
-      .                             .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/22/2017
- Author:     Chris Brame
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
- **/
+var winston = require('winston')
 
-var winston = require('winston'),
-    path    = require('path'),
-    fs      = require('fs'),
-    request = require('request'),
-    rimraf  = require('rimraf'),
-    mkdirp  = require('mkdirp'),
-    tar     = require('tar');
+var path = require('path')
 
-var apiPlugins = {};
+var fs = require('fs')
 
-var pluginPath = path.join(__dirname, '../../../../plugins');
+var request = require('request')
 
-var pluginServerUrl = 'http://plugins.trudesk.io';
+var rimraf = require('rimraf')
 
-apiPlugins.installPlugin = function(req, res) {
-    var packageid = req.params.packageid;
+var mkdirp = require('mkdirp')
 
-    request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response) {
-        if (err) return res.status(400).json({success: false, error: err});
+var tar = require('tar')
 
-        var plugin = JSON.parse(response.body).plugin;
+var apiPlugins = {}
 
-        if (!plugin || !plugin.url)
-            return res.status(400).json({success: false, error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl});
+var pluginPath = path.join(__dirname, '../../../../plugins')
 
-        request.get(pluginServerUrl + '/plugin/download/' + plugin.url)
-            .on('response', function(response) {
+var pluginServerUrl = 'http://plugins.trudesk.io'
 
-                var fws = fs.createWriteStream(path.join(pluginPath, plugin.url));
+apiPlugins.installPlugin = function (req, res) {
+  var packageid = req.params.packageid
 
-                response.pipe(fws);
+  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (
+    err,
+    response
+  ) {
+    if (err) return res.status(400).json({ success: false, error: err })
 
-                response.on('end', function() {
+    var plugin = JSON.parse(response.body).plugin
 
-                    //Extract plugin
-                    var pluginExtractFolder = path.join(pluginPath, plugin.name.toLowerCase());
-                    rimraf(pluginExtractFolder, function(error) {
-                        if (error) winston.debug(error);
-                        if (error) return res.json({success: false, error: 'Unable to remove plugin directory.'});
+    if (!plugin || !plugin.url) {
+      return res
+        .status(400)
+        .json({
+          success: false,
+          error: 'Invalid Plugin: Not found in repository - ' + pluginServerUrl
+        })
+    }
 
-                        var fileFullPath = path.join(pluginPath, plugin.url);
-                        mkdirp.sync(pluginExtractFolder);
+    request
+      .get(pluginServerUrl + '/plugin/download/' + plugin.url)
+      .on('response', function (response) {
+        var fws = fs.createWriteStream(path.join(pluginPath, plugin.url))
 
-                        tar.extract({C: pluginExtractFolder, file: path.join(pluginPath, plugin.url)}, function() {
-                            rimraf(fileFullPath, function(err) {
-                                if (err) return res.status(400).json({success: false, error: err});
+        response.pipe(fws)
 
-                                request.get(pluginServerUrl + '/api/plugin/package/' + plugin._id + '/increasedownloads', function() {
-                                    res.json({success: true, plugin: plugin});
-                                    restartServer();
-                                });
-                            });
-                        });
-                    });
-                });
+        response.on('end', function () {
+          // Extract plugin
+          var pluginExtractFolder = path.join(
+            pluginPath,
+            plugin.name.toLowerCase()
+          )
+          rimraf(pluginExtractFolder, function (error) {
+            if (error) winston.debug(error)
+            if (error)
+              return res.json({
+                success: false,
+                error: 'Unable to remove plugin directory.'
+              })
 
-                response.on('error', function(err) {
-                    return res.status(400).json({success: false, error: err});
-                });
-            })
-            .on('error', function(err) {
-                return res.status(400).json({success: false, error: err});
-            });
-    });
-};
+            var fileFullPath = path.join(pluginPath, plugin.url)
+            mkdirp.sync(pluginExtractFolder)
 
-apiPlugins.removePlugin = function(req, res) {
-    var packageid = req.params.packageid;
+            tar.extract(
+              {
+                C: pluginExtractFolder,
+                file: path.join(pluginPath, plugin.url)
+              },
+              function () {
+                rimraf(fileFullPath, function (err) {
+                  if (err)
+                    return res.status(400).json({ success: false, error: err })
 
-    request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function(err, response, body) {
-        if (err) return res.status(400).json({success: false, error: err});
+                  request.get(
+                    pluginServerUrl +
+                      '/api/plugin/package/' +
+                      plugin._id +
+                      '/increasedownloads',
+                    function () {
+                      res.json({ success: true, plugin: plugin })
+                      restartServer()
+                    }
+                  )
+                })
+              }
+            )
+          })
+        })
 
-        var plugin = JSON.parse(body).plugin;
-
-        if (plugin === null)
-            return res.json({success: false, error: 'Invalid Plugin'});
-
-        rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function(err) {
-            if (err) winston.debug(err);
-            if (err) return res.json({success: false, error: 'Unable to remove plugin directory.'});
-
-            res.json({success: true});
-            restartServer();
-        });
-    });
-};
-
-function restartServer() {
-    var pm2 = require('pm2');
-    pm2.connect(function(err) {
-        if (err) 
-            winston.error(err);
-        
-        pm2.restart('trudesk', function(err) {
-            if (err) 
-                return winston.error(err);
-            
-
-            pm2.disconnect();
-        });
-    });
+        response.on('error', function (err) {
+          return res.status(400).json({ success: false, error: err })
+        })
+      })
+      .on('error', function (err) {
+        return res.status(400).json({ success: false, error: err })
+      })
+  })
 }
 
-module.exports = apiPlugins;
+apiPlugins.removePlugin = function (req, res) {
+  var packageid = req.params.packageid
+
+  request.get(pluginServerUrl + '/api/plugin/package/' + packageid, function (
+    err,
+    response,
+    body
+  ) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    var plugin = JSON.parse(body).plugin
+
+    if (plugin === null) {
+      return res.json({ success: false, error: 'Invalid Plugin' })
+    }
+
+    rimraf(path.join(pluginPath, plugin.name.toLowerCase()), function (err) {
+      if (err) winston.debug(err)
+      if (err)
+        return res.json({
+          success: false,
+          error: 'Unable to remove plugin directory.'
+        })
+
+      res.json({ success: true })
+      restartServer()
+    })
+  })
+}
+
+function restartServer () {
+  var pm2 = require('pm2')
+  pm2.connect(function (err) {
+    if (err) {
+      winston.error(err)
+    }
+
+    pm2.restart('trudesk', function (err) {
+      if (err) {
+        return winston.error(err)
+      }
+
+      pm2.disconnect()
+    })
+  })
+}
+
+module.exports = apiPlugins

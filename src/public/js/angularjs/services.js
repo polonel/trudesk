@@ -13,17 +13,14 @@
  **/
 
 define([
-    'jquery',
-    'angular',
+  'jquery',
+  'angular',
 
-    'angularjs/services/session',
-    'angularjs/services/settingsService'
-
-], function($, angular) {
-
-    return angular.module('trudesk.services',
-        [
-            'trudesk.services.session',
-            'trudesk.services.settings'
-        ]);
-});
+  'angularjs/services/session',
+  'angularjs/services/settingsService'
+], function ($, angular) {
+  return angular.module('trudesk.services', [
+    'trudesk.services.session',
+    'trudesk.services.settings'
+  ])
+})

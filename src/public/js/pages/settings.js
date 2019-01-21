@@ -13,29 +13,30 @@
  **/
 
 define('pages/settings', [
-    'jquery',
-    'underscore',
-    'modules/helpers',
-    'uikit',
-    'history'
+  'jquery',
+  'underscore',
+  'modules/helpers',
+  'uikit',
+  'history'
+], function ($, _, helpers, UIkit, History) {
+  var settingsPage = {}
 
-], function($, _, helpers, UIkit, History) {
-    var settingsPage = {};
+  settingsPage.init = function (callback) {
+    $(document).ready(function () {
+      var testPage = $('#page-content').find('div[data-page="settings"]')
+      if (testPage.length < 1) {
+        if (typeof callback === 'function') {
+          return callback()
+        }
 
-    settingsPage.init = function(callback) {
-        $(document).ready(function() {
-            var testPage = $('#page-content').find('div[data-page="settings"]');
-            if (testPage.length < 1) {
-                if (typeof callback === 'function')
-                    return callback();
+        return false
+      }
 
-                return false;
-            }
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return settingsPage;
-});
+  return settingsPage
+})

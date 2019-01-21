@@ -13,56 +13,55 @@
  **/
 
 define('modules/attachmentUpload', [
-    'jquery',
-    'underscore',
-    'modules/helpers',
-    'modules/socket'
+  'jquery',
+  'underscore',
+  'modules/helpers',
+  'modules/socket'
+], function ($, _, helpers, socket) {
+  var attachmentUploader = {}
 
-], function($, _, helpers, socket) {
-    var attachmentUploader = {};
+  attachmentUploader.init = function () {
+    $(document).ready(function () {
+      $('.attachmentInput').each(function () {
+        $(this).on('change', function () {
+          var self = $(this)
+          var val = self.val()
+          if (val === '') return true
 
-    attachmentUploader.init = function() {
-        $(document).ready(function() {
-            $('.attachmentInput').each(function() {
-                $(this).on('change', function() {
-                    var self = $(this);
-                    var val = self.val();
-                    if (val === '') return true;
+          var form = $('#attachmentForm')
+          if (_.isUndefined(form) || _.isNull(form)) return false
 
-                    var form = $('#attachmentForm');
-                    if (_.isUndefined(form) || _.isNull(form)) return false;
+          var formData = new FormData($(form)[0])
 
-                    var formData = new FormData($(form)[0]);
+          $.ajax({
+            url: '/tickets/uploadattachment',
+            type: 'POST',
+            data: formData,
+            // async: false,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (data) {
+              // helpers.showFlash('Attachment Successfully Uploaded.');
+              helpers.UI.showSnackbar('Attachment Successfully Uploaded', false)
 
-                    $.ajax({
-                        url: '/tickets/uploadattachment',
-                        type: 'POST',
-                        data: formData,
-                        //async: false,
-                        cache: false,
-                        contentType: false,
-                        processData: false,
-                        success: function (data) {
-                            //helpers.showFlash('Attachment Successfully Uploaded.');
-                            helpers.UI.showSnackbar('Attachment Successfully Uploaded', false);
+              // Refresh Attachments - Socket.IO
+              if (_.isUndefined(data.ticket)) return false
 
-                            //Refresh Attachments - Socket.IO
-                            if (_.isUndefined(data.ticket)) return false;
+              socket.ui.refreshTicketAttachments(data.ticket._id)
+            },
+            error: function (err) {
+              console.log('[trudesk:attachmentUpload:onChange] Error - ' + err)
+              // helpers.showFlash(err.responseText, true);
+              helpers.UI.showSnackbar(err.responseText, true)
+            }
+          })
 
-                            socket.ui.refreshTicketAttachments(data.ticket._id);
-                        },
-                        error: function (err) {
-                            console.log('[trudesk:attachmentUpload:onChange] Error - ' + err);
-                            //helpers.showFlash(err.responseText, true);
-                            helpers.UI.showSnackbar(err.responseText, true);
-                        }
-                    });
+          self.val('')
+        })
+      })
+    })
+  }
 
-                    self.val('');
-                });
-            });
-        });
-    };
-
-    return attachmentUploader;
-});
+  return attachmentUploader
+})

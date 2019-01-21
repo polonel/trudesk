@@ -1,6 +1,6 @@
 {
   "plugins": ["node"],
-  "extends": ["eslint:recommended", "plugin:node/recommended"],
+  "extends": ["standard", "plugin:node/recommended"],
   "root": true,
   "parserOptions": {
     "ecmaVersion": 5
@@ -12,7 +12,7 @@
   "rules": {
     "node/exports-style": ["error", "module.exports"],
     "no-console": "off",
-//    "new-cap": "error",
+    //    "new-cap": "error",
     "quotes": ["error", "single"],
     "curly": ["error", "multi-or-nest"],
     "complexity": ["error", 20],

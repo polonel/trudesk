@@ -9,9 +9,9 @@
  ========================================================================
  */
 
-var mongoose        = require('mongoose');
+var mongoose = require('mongoose')
 
-var COLLECTION = 'notices';
+var COLLECTION = 'notices'
 
 /**
  * @since 1.0
@@ -30,36 +30,44 @@ var COLLECTION = 'notices';
  * @property {Boolean} active ```Required``` __[default: false]__ Is the Notice Active?
  */
 var noticeSchema = mongoose.Schema({
-    name:       { type: String, required: true },
-    date:       { type: Date, default: Date.now, required: true },
-    color:      { type: String, default: '#e74c3c', required: true },
-    fontColor:  { type: String, default: '#ffffff', required: true},
-    message:    { type: String, required: true },
-    active:     { type: Boolean, default: false, required: true },
-    activeDate: { type: Date, default: Date.now },
-    alertWindow:{ type: Boolean, default: false }
-});
+  name: { type: String, required: true },
+  date: { type: Date, default: Date.now, required: true },
+  color: { type: String, default: '#e74c3c', required: true },
+  fontColor: { type: String, default: '#ffffff', required: true },
+  message: { type: String, required: true },
+  active: { type: Boolean, default: false, required: true },
+  activeDate: { type: Date, default: Date.now },
+  alertWindow: { type: Boolean, default: false }
+})
 
-noticeSchema.pre('save', function(next) {
-    this.name = this.name.trim();
+noticeSchema.pre('save', function (next) {
+  this.name = this.name.trim()
 
-    return next();
-});
+  return next()
+})
 
-noticeSchema.statics.getNotices = function(callback) {
-    return this.model(COLLECTION).find({}).exec(callback);
-};
+noticeSchema.statics.getNotices = function (callback) {
+  return this.model(COLLECTION)
+    .find({})
+    .exec(callback)
+}
 
-noticeSchema.statics.getNotice = function(id, callback) {
-    return this.model(COLLECTION).findOne({_id: id}).exec(callback);
-};
+noticeSchema.statics.getNotice = function (id, callback) {
+  return this.model(COLLECTION)
+    .findOne({ _id: id })
+    .exec(callback)
+}
 
-noticeSchema.statics.getNoticeByName = function(name, callback) {
-    return this.model(COLLECTION).find({name: name}).exec(callback);
-};
+noticeSchema.statics.getNoticeByName = function (name, callback) {
+  return this.model(COLLECTION)
+    .find({ name: name })
+    .exec(callback)
+}
 
-noticeSchema.statics.getActive = function(callback) {
-    return this.model(COLLECTION).findOne({active: true}).exec(callback);
-};
+noticeSchema.statics.getActive = function (callback) {
+  return this.model(COLLECTION)
+    .findOne({ active: true })
+    .exec(callback)
+}
 
-module.exports = mongoose.model(COLLECTION, noticeSchema);
+module.exports = mongoose.model(COLLECTION, noticeSchema)

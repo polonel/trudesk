@@ -15,62 +15,100 @@
 
  **/
 
-define('pages/pageloader', ['async'], function(async) {
-    var pageLoader = {};
+define('pages/pageloader', ['async'], function (async) {
+  var pageLoader = {}
 
-    pageLoader.init = function(callback) {
-        require([
-            'pages/dashboard',
-            'pages/messages',
-            'pages/tickets',
-            'pages/accounts',
-            'pages/accountsImport',
-            'pages/groups',
-            'pages/profile',
-            'pages/singleTicket',
-            'pages/reports',
-            'pages/reportsBreakdown',
-            'pages/notices',
-            'pages/createNotice',
-            'pages/plugins',
-            'pages/settings',
-            'pages/logs',
-            'pages/tags',
-            'pages/settingsTicketTypes',
+  pageLoader.init = function (callback) {
+    require([
+      'pages/dashboard',
+      'pages/messages',
+      'pages/tickets',
+      'pages/accounts',
+      'pages/accountsImport',
+      'pages/groups',
+      'pages/profile',
+      'pages/singleTicket',
+      'pages/reports',
+      'pages/reportsBreakdown',
+      'pages/notices',
+      'pages/createNotice',
+      'pages/plugins',
+      'pages/settings',
+      'pages/logs',
+      'pages/tags',
+      'pages/settingsTicketTypes',
 
-            'modules/ajaximgupload',
-            'modules/attachmentUpload'
-        ], function(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) {
-            async.parallel([
-                function(done) { a.init(done); },
-                function(done) { b.init(done); },
-                function(done) { c.init(done); },
-                function(done) { d.init(done); },
-                function(done) { e.init(done); },
-                function(done) { f.init(done); },
-                function(done) { g.init(done); },
-                function(done) { h.init(done); },
-                function(done) { i.init(done); },
-                function(done) { j.init(done); },
-                function(done) { k.init(done); },
-                function(done) { l.init(done); },
-                function(done) { m.init(done); },
-                function(done) { n.init(done); },
-                function(done) { o.init(done); },
-                function(done) { p.init(done); },
-                function(done) { q.init(done); },
-                function(done) {
-                    r.init();
-                    s.init();
+      'modules/ajaximgupload',
+      'modules/attachmentUpload'
+    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) {
+      async.parallel(
+        [
+          function (done) {
+            a.init(done)
+          },
+          function (done) {
+            b.init(done)
+          },
+          function (done) {
+            c.init(done)
+          },
+          function (done) {
+            d.init(done)
+          },
+          function (done) {
+            e.init(done)
+          },
+          function (done) {
+            f.init(done)
+          },
+          function (done) {
+            g.init(done)
+          },
+          function (done) {
+            h.init(done)
+          },
+          function (done) {
+            i.init(done)
+          },
+          function (done) {
+            j.init(done)
+          },
+          function (done) {
+            k.init(done)
+          },
+          function (done) {
+            l.init(done)
+          },
+          function (done) {
+            m.init(done)
+          },
+          function (done) {
+            n.init(done)
+          },
+          function (done) {
+            o.init(done)
+          },
+          function (done) {
+            p.init(done)
+          },
+          function (done) {
+            q.init(done)
+          },
+          function (done) {
+            r.init()
+            s.init()
 
-                    return done();
-                }
-            ], function() {
-                if (typeof callback === 'function')
-                    return callback();
-            });
-        });
-    };
+            return done()
+          }
+        ],
+        function () {
+          if (typeof callback === 'function') {
+            return callback()
+          }
+        }
+      )
+    })
+  }
 
-    return pageLoader;
-});
+  return pageLoader
+})
