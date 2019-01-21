@@ -12,13 +12,16 @@
 
  **/
 
-define(['angular', 'underscore', 'jquery', 'modules/helpers', 'uikit', 'history', 'multiselect'], function (
-  angular,
-  _,
-  $,
-  helpers,
-  UIkit
-) {
+define([
+  'angular',
+  'underscore',
+  'jquery',
+  'modules/helpers',
+  'uikit',
+  'jquery_custom',
+  'history',
+  'multiselect'
+], function (angular, _, $, helpers, UIkit) {
   return angular
     .module('trudesk.controllers.groups', [])
     .controller('groupsCtrl', function ($scope, $http, $timeout, $log) {
