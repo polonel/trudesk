@@ -1,14 +1,15 @@
 var path = require('path');
 var webpack = require('webpack');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-    //context: path.resolve(__dirname, 'public/js'),
+    mode: (process.env.NODE_ENV === 'production' ? 'production' : 'development'),
     target: 'web',
     entry : {
         vendor: ['jquery', 'jquery_custom', 'angular', 'angularRoute', 'angularCookies', 'angularSanitize', 'datatables', 'dt_responsive', 'dt_grouping', 'dt_ipaddress', 'modernizr', 'underscore'],
-        truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire'),
-        'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js')
+        'trudesk.min': path.resolve(__dirname, 'src/public/js/app.js'),
+        truRequire: 'expose-loader?truRequire!' + path.resolve(__dirname, './src/public/js/truRequire')
     },
     output: {
         filename: '[name].js',
@@ -71,7 +72,7 @@ module.exports = {
             jquery_actual:  'plugins/jquery.actual',
             formvalidator:  'vendor/formvalidator/jquery.form-validator',
             qrcode:         'vendor/qrcode/jquery.qrcode.min',
-            tether:         'vendor/tether/tether',
+            tether:         'vendor/tether/tether.min',
             shepherd:       'vendor/shepherd/js/shepherd.min',
             easymde:        'vendor/easymde/dist/easymde.min',
             inlineAttachment: 'vendor/easymde/dist/inline-attachment',
@@ -89,12 +90,59 @@ module.exports = {
         rules: [
             { test: /angular\.min\.js/, use: 'exports-loader?angular' },
             { test: /uikit_combined\.min\.js/, use: 'exports-loader?UIkit' },
-            { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'), use: ExtractTextPlugin.extract({
-                fallback: 'style-loader',
-                use: [{loader: 'css-loader', options: {minimize: false}}, 'sass-loader'],
-                publicPath: '/public/css'
-            })}
+            { test: /\.sass$/, exclude: path.resolve(__dirname, 'node_modules'),
+                use:[
+                    {
+                        loader: MiniCssExtractPlugin.loader,
+                        options: {
+                            publicPath: '/public/css'
+                        }
+                    },
+                    {
+                        loader: 'css-loader',
+                        options: { minimize: true }
+                    },
+                    'postcss-loader',
+                    'sass-loader'
+                    ]
+            },
+            { test: /\.jsx$/,
+                exclude: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ['@babel/react', '@babel/env']
+                    }
+                }
+            }
         ]
+    },
+    optimization: {
+        minimizer: [
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                    ecma: 6,
+                    mangle: false
+                }
+            })
+        ],
+        splitChunks: {
+            cacheGroups: {
+                vendor: {
+                    name: 'vendor',
+                    test: 'vendor',
+                    chunks: 'initial',
+                    enforce: true
+                },
+                styles: {
+                    name: 'styles',
+                    test: /\.css$/,
+                    chunks: 'all',
+                    enforce: true
+                }
+            }
+        }
     },
     plugins: [
         new webpack.ProvidePlugin({
@@ -111,20 +159,15 @@ module.exports = {
             'window.moment': 'moment',
             setImmediate: 'async'
         }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: ['vendor'],
-            minChunks: Infinity
-        }),
         new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
         new webpack.optimize.OccurrenceOrderPlugin(),
-        new ExtractTextPlugin({
-            filename: '../css/app.min.css',
-            allChunks: true
+        new MiniCssExtractPlugin({
+            filename: 'app.min.css'
         })
     ],
     performance: {
         hints: 'warning',
-        maxEntrypointSize: 10000000,
-        maxAssetSize: 80000000
+        maxEntrypointSize: 400000,
+        maxAssetSize: 1000000
     }
 };

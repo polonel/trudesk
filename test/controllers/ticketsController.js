@@ -24,7 +24,7 @@ describe('ticketsController', function() {
         async.parallel([
             function(next) {
                 authAgent.get('/tickets/new')
-                    .set('cookie', cookie)
+                    .set('Cookie', cookie)
                     .end(function(err) {
                         expect(err).to.not.exist;
 
@@ -33,7 +33,7 @@ describe('ticketsController', function() {
             },
             function(next) {
                 authAgent.get('/tickets/open')
-                    .set('cookie', cookie)
+                    .set('Cookie', cookie)
                     .end(function(err) {
                         expect(err).to.not.exist;
 
@@ -42,7 +42,7 @@ describe('ticketsController', function() {
             },
             function(next) {
                 authAgent.get('/tickets/pending')
-                    .set('cookie', cookie)
+                    .set('Cookie', cookie)
                     .end(function(err) {
                         expect(err).to.not.exist;
 
@@ -51,7 +51,7 @@ describe('ticketsController', function() {
             },
             function(next) {
                 authAgent.get('/tickets/closed')
-                    .set('cookie', cookie)
+                    .set('Cookie', cookie)
                     .end(function(err) {
                         expect(err).to.not.exist;
 
@@ -64,7 +64,7 @@ describe('ticketsController', function() {
 
     it('/tickets/assigned - should get tickets assigned to user', function(done) {
         authAgent.get('/tickets/assigned')
-            .set('cookie', cookie)
+            .set('Cookie', cookie)
             .end(function(err) {
                 expect(err).to.not.exist;
 
@@ -74,7 +74,7 @@ describe('ticketsController', function() {
 
     it('/tickets/unassigned - should get unassigned tickets', function(done) {
         authAgent.get('/tickets/unassigned')
-            .set('cookie', cookie)
+            .set('Cookie', cookie)
             .end(function(err) {
                 expect(err).to.not.exist;
 
@@ -84,7 +84,7 @@ describe('ticketsController', function() {
 
     // it('/tickets/{uid} - should return single ticket', function(done) {
     //     authAgent.get('/tickets/1000')
-    //         .set('cookie', cookie)
+    //         .set('Cookie', cookie)
     //         .end(function(err) {
     //             expect(err).to.not.exist;
     //
