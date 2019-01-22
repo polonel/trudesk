@@ -299,6 +299,35 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal)
   router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs)
   router.get('/settings/editor', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.editor)
+  router.get('/api/v1/editor/load/:id', middleware.api, function (req, res) {
+    var templateSchema = require('../models/template')
+    templateSchema.get(req.params.id, function (err, template) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      if (!template) return res.status(400).json({ success: false, error: { message: 'Invalid Template.' } })
+
+      template.data.id = 'gjs-'
+
+      return res.json(template.data)
+    })
+  })
+  router.post('/api/v1/editor/save', middleware.api, function (req, res) {
+    return res.json({})
+    var name = req.body.template
+    delete req.body.template
+    var templateSchema = require('../models/template')
+    templateSchema.create(
+      {
+        name: name,
+        data: req.body
+      },
+      function (err, template) {
+        if (err) return res.status(500).json({ success: false, error: err })
+
+        return res.json({ success: true, tempalte: template })
+      }
+    )
+  })
 
   // Plugins
   router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get)

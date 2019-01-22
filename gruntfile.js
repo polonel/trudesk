@@ -56,7 +56,6 @@ module.exports = function (grunt) {
             'src/public/js/vendor/chosen/chosen.css',
             'src/public/js/vendor/enjoyhint/enjoyhint.css',
             'src/public/js/vendor/metricsgraphics/metricsgraphics.css',
-            // 'public/css/vendor/font-awesome.min.css',
             'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker.css',
             'public/css/plugins/simplecolorpicker/jquery.simplecolorpicker-fontawesome.css',
             'src/public/js/vendor/uikit/css/uikit.css',

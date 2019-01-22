@@ -17,6 +17,33 @@
 
 @import "../settings"
 
+#web-editor
+  height: 100% !important
+
+.gjs-field
+  select, input, textarea
+    margin: 0 !important
+  .gjs-input-unit
+    padding: 0 5px
+
+.gjs-radio-item-label
+  padding: 5px !important
+  display: block !important
+  margin: auto !important
+  height: 25px !important
+  line-height: 15px !important
+  &:before
+    content: inherit !important
+    border: none !important
+    position: relative !important
+    left: auto !important
+    top: auto !important
+    margin: inherit !important
+    width: auto !important
+    height: auto !important
+  &:after
+    content: none !important
+
 .gjs-clm-tags .gjs-sm-title, .gjs-sm-sector .gjs-sm-title
   border-top: none
 
@@ -79,7 +106,7 @@
 
 .CodeMirror
   border-radius: 3px
-  height: 450px
+  //height: 450px
   font-family: sans-serif, monospace
   letter-spacing: 0.3px
   font-size: 12px
