@@ -1,7 +1,10 @@
-<!doctype html>
-<html>
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
     <title>Ticket #{{ticket.uid}}</title>
     <link href="https://fonts.googleapis.com/css?family=Heebo:400,600,700" rel="stylesheet">
     <style>
@@ -29,48 +32,76 @@
         .strong {
             font-weight: 600;
         }
-        .logo {
-            height: 75px;
-            text-align: center;
-        }
-
-        .logo svg {
-            height: 75px;
-        }
-
-        .logo svg path {
-            fill: #222;
-        }
-
-        .logo svg circle {
-            fill: #E74C3C;
-        }
     </style>
 </head>
 <body>
-    <div>
-        <p>
-            A ticket has been submitted by {{ticket.owner.fullname}}. The ticket details are listed below.
-        </p>
-        <hr>
-        <h2>{{{ticket.subject}}}</h2>
-        <h5><span class="strong">Ticket Group:</span> {{ticket.group.name}}</h5>
-        <h5><span class="strong">Ticket Submitted by:</span> {{ticket.owner.fullname}}</h5>
-        <h5><span class="strong">Submitted Date:</span> {{ticket.date}}</h5>
-        <h5><span class="strong">Ticket Type:</span> {{ticket.type.name}}</h5>
-        <h5><span class="strong">Ticket Priority:</span> {{ticket.priority.name}}</h5>
-        <h5>
-            <span class="strong">Tags:</span>
-            <ul>
-                {{#each ticket.tags}}
-                    <li>{{name}}</li>
-                {{/each}}
-            </ul>
-        </h5>
-        <br/>
-        <h4>Ticket Issue</h4>
-        <hr/>
-        <p class="issue">{{{ticket.issue}}}</p>
-    </div>
+<table class="main-body" style="box-sizing: border-box; min-height: 150px; padding: 5px;width: 100%; height: 100%;" width="100%" height="100%">
+    <tbody style="box-sizing: border-box;">
+    <tr class="row" style="box-sizing: border-box; vertical-align: top;" valign="top">
+        <td class="main-body-cell" style="box-sizing: border-box; border-collapse: separate; font-family: Heebo, serif; font-size: 9px;">
+            <table class="container" style="box-sizing: border-box; font-family: Heebo, serif; min-height: 300px; padding: 5px;margin: auto;height: 0px; width: 90%; max-width: 550px;" width="90%" height="0">
+                <tbody style="box-sizing: border-box;">
+                <tr style="box-sizing: border-box;">
+                    <td class="container-cell" style="box-sizing: border-box; vertical-align: top; font-size: medium; border: 1px solid #cccccc; border-collapse: separate; padding: 0 0 50px;background-color: #ffffff; border-radius: 5px 5px 0 0; text-align: center;" valign="top" bgcolor="#ffffff" align="center">
+                        <table class="c1766" style="box-sizing: border-box; margin: 0 auto 10px 0;padding: 5px;width: 100%; min-height: 70px; border-radius: 5px 5px 0 0; border-collapse: separate; background-color: #eee;" width="100%" bgcolor="#eee">
+                            <tbody style="box-sizing: border-box;">
+                            <tr style="box-sizing: border-box;">
+                                <td class="cell c1776" style="box-sizing: border-box; width: 70%; vertical-align: middle; text-align: center;" width="70%" valign="middle" align="center">
+                                    <img src="https://forum.trudesk.io/uploads/default/original/1X/d74e1a34ad78927921eaf0a1b1c05df17b04f7a3.png" class="c6107" style="box-sizing: border-box; color: black; min-height: 30px; height: 30px; margin: 0 auto 0 auto; width: auto; text-align: center;" height="30">
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table class="c5785" style="box-sizing: border-box; height: 150px; margin: 0 auto 10px auto; padding: 5px 5px 5px 5px; width: 100%;" width="100%" height="150">
+                            <tbody style="box-sizing: border-box;">
+                            <tr style="box-sizing: border-box;">
+                                <td class="c5809" style="box-sizing: border-box; font-size: 12px; font-weight: 300; vertical-align: top; color: rgb(111, 119, 125); margin: 0; padding: 0; text-align: center;" valign="top" align="center">
+                                    <div class="c5909" style="box-sizing: border-box; padding: 10px; font-size: 22px; font-weight: 600; text-align: center;">New Ticket Created
+                                    </div>
+                                    <div class="c6001" style="box-sizing: border-box; padding: 10px; margin: 0 0 25px 0;">A new ticket has been created by
+                                        <strong style="box-sizing: border-box;">{{ticket.owner.fullname}}</strong>. Ticket details are below.
+                                        <br style="box-sizing: border-box;">
+                                    </div>
+                                    <table class="c8348" style="text-align: left; box-sizing: border-box; height: 150px; margin: 0 auto 10px auto; padding: 5px 5px 5px 5px; width: 100%;" width="100%" height="150">
+                                        <tbody style="box-sizing: border-box;">
+                                        <tr style="box-sizing: border-box;">
+                                            <td class="c8372" style="text-align: left; box-sizing: border-box; font-size: 12px; font-weight: 300; vertical-align: top; color: rgb(111, 119, 125); margin: 0; padding: 5px 5px 5px 5px; width: 55px;" width="55" valign="top">
+                                                {{#if ticket.owner.image}}
+                                                    <img src="//{{base_url}}/uploads/users/{{ticket.owner.image}}" class="c8604" style="box-sizing: border-box; color: black; width: 50px; height: 50px; border-radius: 25px 25px 25px 25px; border: 1px solid #cccccc;" width="50" height="50">
+                                                {{else}}
+                                                    <img src="//{{base_url}}/uploads/users/defaultProfile.jpg" class="c8604" style="box-sizing: border-box; color: black; width: 50px; height: 50px; border-radius: 25px 25px 25px 25px; border: 1px solid #cccccc;" width="50" height="50">
+                                                {{/if}}
+                                            </td>
+                                            <td class="c8381" style="text-align: left; box-sizing: border-box; font-size: 12px; font-weight: 300; vertical-align: top; color: rgb(111, 119, 125); margin: 0; padding: 0; width: 100%; border-collapse: separate;" width="100%" valign="top">
+                                                <div class="c9552" style="box-sizing: border-box; padding: 3px 3px 3px 10px; font-size: 16px; font-weight: 700;">{{ticket.subject}}
+                                                </div>
+                                                <a href="mailto:{{ticket.owner.email}}" class="c9151" style="text-align: left; box-sizing: border-box; color: #E74C3C; padding: 0 0 0 10px; text-decoration: none;">{{ticket.owner.fullname}} &lt;{{ticket.owner.email}}&gt;</a>
+                                                <div class="c10139" style="text-align: left; box-sizing: border-box; padding: 10px;">{{{ticket.issue}}}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <table class="c7208" style="box-sizing: border-box; height: 150px; margin: 0 auto 10px auto; padding: 5px 5px 5px 5px; width: 100%;" width="100%" height="150">
+                            <tbody style="box-sizing: border-box;">
+                            <tr style="box-sizing: border-box;">
+                                <td class="c7232" style="box-sizing: border-box; font-size: 12px; font-weight: 300; vertical-align: top; color: rgb(111, 119, 125); margin: 0; padding: 20px 0 0 0; text-align: center;" valign="top" align="center">
+                                    <a href="{{base_url}}/tickets/{{ticket.uid}}" class="button" style="text-decoration: none; box-sizing: border-box; font-size: 16px; padding-top: 10px; padding-left: 20px; padding-right: 20px; padding-bottom: 10px; color: rgb(255, 255, 255); text-align: center; border-radius: 3px;background-color: #e74c3c; border-collapse: separate; font-weight: 700; margin: 0 0 0 0;">View Ticket #{{ticket.uid}}</a>
+                                </td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
 </body>
 </html>

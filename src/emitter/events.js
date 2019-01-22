@@ -83,7 +83,7 @@ var notifications = require('../notifications') // Load Push Events
                   })
 
                   email
-                    .render('new-ticket', { ticket: ticket })
+                    .render('new-ticket', { base_url: hostname, ticket: ticket })
                     .then(function (html) {
                       var mailOptions = {
                         to: emails.join(),
