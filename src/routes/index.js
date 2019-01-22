@@ -298,6 +298,7 @@ function mainRoutes (router, middleware, controllers) {
   )
   router.get('/settings/legal', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.legal)
   router.get('/settings/logs', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.logs)
+  router.get('/settings/editor', middleware.redirectToLogin, middleware.loadCommonData, controllers.main.editor)
 
   // Plugins
   router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get)

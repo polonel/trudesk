@@ -27,7 +27,8 @@ define([
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
   'angularjs/controllers/settings',
-  'angularjs/controllers/settings-backup'
+  'angularjs/controllers/settings-backup',
+  'angularjs/controllers/editor'
 ], function ($, angular, _) {
   return angular
     .module('trudesk.controllers', [
@@ -43,7 +44,8 @@ define([
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
       'trudesk.controllers.settings',
-      'trudesk.controllers.settings.backup'
+      'trudesk.controllers.settings.backup',
+      'trudesk.controllers.editor'
     ])
     .controller('TrudeskController', function ($rootScope, $scope) {
       $scope.submitForm = function (formName, $event) {

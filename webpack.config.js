@@ -91,6 +91,8 @@ module.exports = {
       inlineAttachment: 'vendor/easymde/dist/inline-attachment',
       inputInlineAttachment: 'vendor/easymde/dist/input.inline-attachment',
       cm4InlineAttachment: 'vendor/easymde/dist/codemirror-4.inline-attachment',
+      grapesjs: 'vendor/grapesjs/grapes.min',
+      grapesjsEmail: 'vendor/grapesjs/grapesjs-preset-email.min',
       snackbar: 'plugins/snackbar'
     }
   },

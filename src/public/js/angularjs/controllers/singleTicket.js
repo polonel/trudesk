@@ -100,7 +100,8 @@ define([
           element: $commentReply[0],
           forceSync: true,
           minHeight: '220px', // Slighty smaller to adjust the scroll
-          toolbar: mdeToolbarItems
+          toolbar: mdeToolbarItems,
+          autoDownloadFontAwesome: false
         })
 
         commentMDE.codemirror.setOption('extraKeys', {
@@ -156,7 +157,8 @@ define([
           element: $ticketNote[0],
           forceSync: true,
           minHeight: '220px',
-          toolbar: mdeToolbarItems
+          toolbar: mdeToolbarItems,
+          autoDownloadFontAwesome: false
         })
 
         $window.inlineAttachment.editors.codemirror4.attach(noteMDE.codemirror, {

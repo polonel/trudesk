@@ -87,6 +87,18 @@ mainController.about = function (req, res) {
   })
 }
 
+mainController.editor = function (req, res) {
+  var content = {}
+  content.title = 'Editor'
+  content.nav = 'settings'
+
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+
+  return res.render('editor', content)
+}
+
 mainController.dashboard = function (req, res) {
   var content = {}
   content.title = 'Dashboard'

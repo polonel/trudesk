@@ -196,7 +196,9 @@ define('modules/ui', [
 
       mailDropList.append(html)
 
-      $('body').ajaxify()
+      var $body = $('body')
+
+      if (typeof $body.ajaxify === 'function') $body.ajaxify()
     })
   }
 

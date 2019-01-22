@@ -227,7 +227,8 @@ define([
               element: $privacyPolicy[0],
               forceSync: true,
               minHeight: '220px', // Slighty smaller to adjust the scroll
-              toolbar: mdeToolbarItems
+              toolbar: mdeToolbarItems,
+              autoDownloadFontAwesome: false
             })
 
             privacyPolicyMDE.codemirror.off('change')
