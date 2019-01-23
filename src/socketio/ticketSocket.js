@@ -259,6 +259,7 @@ events.onSetTicketIssue = function (socket) {
   socket.on('setTicketIssue', function (data) {
     var ticketId = data.ticketId
     var issue = data.issue
+    var subject = data.subject
     var ownerId = socket.request.user._id
     if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true
 
@@ -270,14 +271,18 @@ events.onSetTicketIssue = function (socket) {
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return true
 
-      ticket.setIssue(ownerId, markedIssue, function (err, t) {
+      ticket.setSubject(ownerId, subject, function (err, ticket) {
         if (err) return true
 
-        t.save(function (err, tt) {
+        ticket.setIssue(ownerId, markedIssue, function (err, t) {
           if (err) return true
 
-          // emitter.emit('ticket:updated', ticketId);
-          utils.sendToAllConnectedClients(io, 'updateTicketIssue', tt)
+          t.save(function (err, tt) {
+            if (err) return true
+
+            // emitter.emit('ticket:updated', ticketId);
+            utils.sendToAllConnectedClients(io, 'updateTicketIssue', tt)
+          })
         })
       })
     })

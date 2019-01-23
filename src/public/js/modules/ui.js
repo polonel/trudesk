@@ -526,10 +526,11 @@ define('modules/ui', [
     })
   }
 
-  socketUi.setTicketIssue = function (ticketId, issue) {
+  socketUi.setTicketIssue = function (ticketId, issue, subject) {
     var payload = {
       ticketId: ticketId,
-      issue: issue
+      issue: issue,
+      subject: subject
     }
 
     socket.emit('setTicketIssue', payload)
@@ -538,15 +539,12 @@ define('modules/ui', [
   socketUi.updateTicketIssue = function () {
     socket.removeAllListeners('updateTicketIssue')
     socket.on('updateTicketIssue', function (data) {
-      var issueText = $('.initial-issue[data-ticketid="' + data._id + '"]')
-        .find('div.issue-text')
-        .find('div.issue-body')
-      var issueForm = $('.edit-issue-form')
-      if (issueText.length > 0) {
-        issueText.html(data.issue)
-        issueForm.addClass('hide')
-        issueText.removeClass('hide')
-      }
+      var $initialIssue = $('.initial-issue[data-ticketid="' + data._id + '"]')
+      var $subjectBody = $initialIssue.find('.subject-text')
+      var $issueBody = $initialIssue.find('div.issue-text').find('div.issue-body')
+
+      $subjectBody.html(data.subject)
+      $issueBody.html(data.issue)
     })
   }
 

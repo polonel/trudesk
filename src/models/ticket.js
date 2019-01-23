@@ -382,6 +382,20 @@ ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
   return callback(null, self)
 }
 
+ticketSchema.methods.setSubject = function (ownerId, subject, callback) {
+  var self = this
+  self.subject = subject
+  var historyItem = {
+    action: 'ticket:update:subject',
+    description: 'Ticket Subject was updated.',
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  return callback(null, self)
+}
+
 /**
  * Updates a given comment inside the comment array on this ticket
  * @instance

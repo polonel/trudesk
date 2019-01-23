@@ -12,19 +12,22 @@
 
  **/
 
-define('pages/singleTicket', ['jquery', 'underscore', 'modules/socket', 'tomarkdown', 'modules/helpers'], function (
-  $,
-  _,
-  socketClient,
-  md,
-  helpers
-) {
+define('pages/singleTicket', [
+  'jquery',
+  'underscore',
+  'modules/socket',
+  'tomarkdown',
+  'modules/helpers',
+  'jquery_custom'
+], function ($, _, socketClient, md, helpers) {
   var st = {}
   st.init = function (callback) {
     $(document).ready(function () {
       socketClient.chat.updateOnlineBubbles()
 
       helpers.setupTruTabs($('.tru-tab-selectors').find('.tru-tab-selector'))
+
+      $('.off-canvas-bottom').DivResizer({})
 
       $('.comment-body img:not(.hasLinked)').each(function () {
         var $this = $(this)
@@ -62,11 +65,11 @@ define('pages/singleTicket', ['jquery', 'underscore', 'modules/socket', 'tomarkd
         self.off('click', onEditNoteClick)
         self.on('click', onEditNoteClick)
       })
-      $('.edit-issue').each(function () {
-        var self = $(this)
-        self.off('click', onEditIssueClick)
-        self.on('click', onEditIssueClick)
-      })
+      // $('.edit-issue').each(function () {
+      //   var self = $(this)
+      //   self.off('click', onEditIssueClick)
+      //   self.on('click', onEditIssueClick)
+      // })
 
       // Setup Text
       var issueText = $('.issue-text')

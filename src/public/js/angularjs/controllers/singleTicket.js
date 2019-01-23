@@ -93,6 +93,79 @@ define([
         }
       ]
 
+      var $editIssueText = $('#edit-issue-text')
+      var editIssueTextMDE = null
+      if ($editIssueText.length > 0) {
+        editIssueTextMDE = new EasyMDE({
+          element: $editIssueText[0],
+          forceSync: true,
+          height: '100px',
+          minHeight: '150px',
+          toolbar: mdeToolbarItems,
+          autoDownloadFontAwesome: false,
+          status: false
+        })
+      }
+
+      $scope.showEditWindow = function (type, showSubject) {
+        var $editWindow = $('#edit-ticket-window')
+        if ($editWindow.length < 1) return false
+        var text = ''
+        if (type.toLowerCase() === 'issue') {
+          var issueText = $('.initial-issue .issue-text > .issue-body').html()
+          text = md(issueText)
+          var id = $('#__ticketId').text()
+          $editWindow.attr('data-id', id)
+        }
+
+        if (editIssueTextMDE) {
+          editIssueTextMDE.codemirror.getDoc().setValue(text)
+        }
+
+        var $subjectWrap = $editWindow.find('.edit-subject-wrap')
+
+        if (!showSubject) {
+          $subjectWrap.hide()
+          $subjectWrap.attr('data-active', false)
+        } else {
+          var subjectText = ''
+          if (type.toLowerCase() === 'issue') {
+            subjectText = $('.initial-issue > .issue-text > .subject-text').text()
+          }
+
+          var $input = $subjectWrap.find('input')
+          $input.val(subjectText)
+          $input.parent().addClass('md-input-filled')
+          $subjectWrap.attr('data-active', true)
+        }
+
+        $editWindow.addClass('open').removeClass('closed')
+      }
+
+      $scope.hideEditWindow = function () {
+        $('#edit-ticket-window')
+          .addClass('closed')
+          .removeClass('open')
+      }
+
+      $scope.saveEditWindow = function () {
+        if (!editIssueTextMDE) return false
+        var $editTicketWindow = $('#edit-ticket-window')
+        var updateId = $editTicketWindow.attr('data-id')
+        var $subject = $editTicketWindow.find('input#edit-subject-input')
+        var $saveButton = $editTicketWindow.find('.action-panel button[data-save-type]')
+        var saveType = null
+        if ($saveButton.length > 0) saveType = $saveButton.attr('data-save-type')
+
+        if (saveType.toLowerCase() === 'issue') {
+          var subjectText = $subject.val()
+          var issueText = editIssueTextMDE.codemirror.getValue()
+
+          socket.ui.setTicketIssue(updateId, issueText, subjectText)
+          $scope.hideEditWindow()
+        }
+      }
+
       var $commentReply = $('#commentReply')
       var commentMDE = null
       if ($commentReply.length > 0) {
@@ -332,11 +405,15 @@ define([
           if (!form.isValid(null, null, false)) return true
           var issue = form.find('textarea#issueText').val()
 
-          socket.ui.setTicketIssue(id, issue)
+          // socket.ui.setTicketIssue(id, issue)
         }
       }
 
       $scope.editIssueCancelClicked = function ($event) {
+        $('#edit-issue')
+          .addClass('closed')
+          .removeClass('open')
+
         $event.preventDefault()
         var issueForm = $('.edit-issue-form')
         var issueText = $('.initial-issue')
