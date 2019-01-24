@@ -50,21 +50,21 @@ define('pages/singleTicket', [
         self.off('click', onRemoveCommentClick)
         self.on('click', onRemoveCommentClick)
       })
-      $('.edit-comment').each(function () {
-        var self = $(this)
-        self.off('click', onEditCommentClick)
-        self.on('click', onEditCommentClick)
-      })
+      // $('.edit-comment').each(function () {
+      //   var self = $(this)
+      //   self.off('click', onEditCommentClick)
+      //   self.on('click', onEditCommentClick)
+      // })
       $('.remove-note').each(function () {
         var self = $(this)
         self.off('click', onRemoveNoteClick)
         self.on('click', onRemoveNoteClick)
       })
-      $('.edit-note').each(function () {
-        var self = $(this)
-        self.off('click', onEditNoteClick)
-        self.on('click', onEditNoteClick)
-      })
+      // $('.edit-note').each(function () {
+      //   var self = $(this)
+      //   self.off('click', onEditNoteClick)
+      //   self.on('click', onEditNoteClick)
+      // })
       // $('.edit-issue').each(function () {
       //   var self = $(this)
       //   self.off('click', onEditIssueClick)

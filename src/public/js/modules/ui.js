@@ -819,9 +819,13 @@ define('modules/ui', [
               '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+          if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
             allCommentsHtml +=
-              '<div class="edit-comment" data-commentId="' + item._id + '"><i class="material-icons">&#xE254;</i></div>'
+              '<div class="edit-comment" data-commentId="' +
+              item._id +
+              "\" ng-click=\"showEditWindow('comment', false, '" +
+              item._id +
+              '\');"><i class="material-icons">&#xE254;</i></div>'
           }
 
           allCommentsHtml += '</div>' + '</div>'
@@ -886,7 +890,11 @@ define('modules/ui', [
 
           if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
             allCommentsHtml +=
-              '<div class="edit-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE254;</i></div>'
+              '<div class="edit-note" data-noteid="' +
+              item._id +
+              "\" ng-click=\"showEditWindow('note', false, '" +
+              item._id +
+              '\');"><i class="material-icons">&#xE254;</i></div>'
           }
 
           allCommentsHtml += '</div>' + '</div>'
@@ -955,11 +963,13 @@ define('modules/ui', [
             '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (helpers.canUser('commen:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+        if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
           commentsHtml +=
             '<div class="edit-comment" data-commentId="' +
             comment._id +
-            '"><i class="material-icons">&#xE254;</i></div>'
+            "\" ng-click=\"showEditWindow('comment', false, '" +
+            comment._id.toString() +
+            '\');"><i class="material-icons">&#xE254;</i></div>'
         }
 
         commentsHtml += '</div>' + '</div>'
@@ -1029,16 +1039,57 @@ define('modules/ui', [
 
         if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
           notesHtml +=
-            '<div class="edit-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE254;</i></div>'
+            '<div class="edit-note" data-noteid="' +
+            note._id +
+            "\" ng-click=\"showEditWindow('note', false, '" +
+            note._id +
+            '\');"><i class="material-icons">&#xE254;</i></div>'
         }
 
         notesHtml += '</div>' + '</div>'
       })
 
-      allCommentsContainer.html(allCommentsHtml)
-      commentContainer.html(commentsHtml)
+      // allCommentsContainer.html(allCommentsHtml)
+      // Inject Angular to new links
+      var $injector = angular.injector(['ng', 'trudesk'])
+      $injector.invoke([
+        '$compile',
+        '$rootScope',
+        function ($compile, $rootScope) {
+          var $scope = allCommentsContainer.html(allCommentsHtml).scope()
+          $compile(allCommentsContainer)($scope || $rootScope)
+          $rootScope.$digest()
+        }
+      ])
+
+      // commentContainer.html(commentsHtml)
+
+      // Inject Angular to new links
+      $injector = angular.injector(['ng', 'trudesk'])
+      $injector.invoke([
+        '$compile',
+        '$rootScope',
+        function ($compile, $rootScope) {
+          var $scope = commentContainer.html(commentsHtml).scope()
+          $compile(commentContainer)($scope || $rootScope)
+          $rootScope.$digest()
+        }
+      ])
+
       if (canViewNotes) {
-        notesContainer.html(notesHtml)
+        // notesContainer.html(notesHtml)
+
+        // Inject Angular to new links
+        $injector = angular.injector(['ng', 'trudesk'])
+        $injector.invoke([
+          '$compile',
+          '$rootScope',
+          function ($compile, $rootScope) {
+            var $scope = notesContainer.html(notesHtml).scope()
+            $compile(notesContainer)($scope || $rootScope)
+            $rootScope.$digest()
+          }
+        ])
       }
       helpers.resizeAll()
 

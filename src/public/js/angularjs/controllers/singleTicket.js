@@ -107,15 +107,30 @@ define([
         })
       }
 
-      $scope.showEditWindow = function (type, showSubject) {
+      $scope.showEditWindow = function (type, showSubject, commentNoteId) {
         var $editWindow = $('#edit-ticket-window')
         if ($editWindow.length < 1) return false
         var text = ''
+        var ticketId = $('#__ticketId').text()
+        $editWindow.attr('data-ticket-id', ticketId)
+
         if (type.toLowerCase() === 'issue') {
           var issueText = $('.initial-issue .issue-text > .issue-body').html()
           text = md(issueText)
-          var id = $('#__ticketId').text()
-          $editWindow.attr('data-id', id)
+
+          $editWindow.find('.save-btn').attr('data-save-type', 'issue')
+        } else if (type.toLowerCase() === 'comment') {
+          var commentText = $('.ticket-comment[data-commentid="' + commentNoteId + '"] .comment-body').html()
+          text = md(commentText)
+
+          $editWindow.attr('data-id', commentNoteId)
+          $editWindow.find('.save-btn').attr('data-save-type', 'comment')
+        } else if (type.toLowerCase() === 'note') {
+          var noteText = $('.ticket-note[data-noteid="' + commentNoteId + '"] .comment-body').html()
+          text = md(noteText)
+
+          $editWindow.attr('data-id', commentNoteId)
+          $editWindow.find('.save-btn').attr('data-save-type', 'note')
         }
 
         if (editIssueTextMDE) {
@@ -151,7 +166,7 @@ define([
       $scope.saveEditWindow = function () {
         if (!editIssueTextMDE) return false
         var $editTicketWindow = $('#edit-ticket-window')
-        var updateId = $editTicketWindow.attr('data-id')
+        var ticketId = $editTicketWindow.attr('data-ticket-id')
         var $subject = $editTicketWindow.find('input#edit-subject-input')
         var $saveButton = $editTicketWindow.find('.action-panel button[data-save-type]')
         var saveType = null
@@ -161,7 +176,19 @@ define([
           var subjectText = $subject.val()
           var issueText = editIssueTextMDE.codemirror.getValue()
 
-          socket.ui.setTicketIssue(updateId, issueText, subjectText)
+          socket.ui.setTicketIssue(ticketId, issueText, subjectText)
+          $scope.hideEditWindow()
+        } else if (saveType.toLowerCase() === 'comment') {
+          var commentId = $editTicketWindow.attr('data-id')
+          var commentText = editIssueTextMDE.codemirror.getValue()
+
+          socket.ui.setCommentText(ticketId, commentId, commentText)
+          $scope.hideEditWindow()
+        } else if (saveType.toLowerCase() === 'note') {
+          var noteId = $editTicketWindow.attr('data-id')
+          var noteText = editIssueTextMDE.codemirror.getValue()
+
+          socket.ui.setNoteText(ticketId, noteId, noteText)
           $scope.hideEditWindow()
         }
       }
