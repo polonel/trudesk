@@ -504,6 +504,7 @@ ticketsController.uploadImageMDE = function (req, res) {
   var error
 
   object.ticketId = req.headers.ticketid
+  if (!object.ticketId) return res.status(400).json({ success: false })
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
     if (mimetype.indexOf('image/') === -1) {

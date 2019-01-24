@@ -11,12 +11,11 @@
                 />
             </div>
             <div class="uk-margin-medium-bottom">
-                <label for="issue">Description</label>
-                <textarea class="md-input" id="issue" name="issue"
-                          data-validation="length"
-                          data-validation-length="min{{data.common.ticketSettings.minIssue}}"
-                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least {{data.common.ticketSettings.minIssue}} characters."
-                ></textarea>
+                <span>Description</span>
+                <div class="error-border-wrap">
+                    <textarea id="issue" name="issue"></textarea>
+                    <div class="editor-statusbar uk-float-left nopadding-left"></div>
+                </div>
                 <span style="display: inline-block; margin-top: 6px; font-size: 11px;" class="uk-text-muted">Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.</span>
             </div>
             <div class="uk-margin-medium-bottom">
@@ -57,19 +56,6 @@
                     </div>
                 </div>
                 <div id="priority-wrapper" data-default-priorities="{{json data.common.defaultTicketType.priorities}}">
-
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_minor" value="1" data-md-icheck checked />-->
-                        <!--<label for="priority_minor" class="mb-10 inline-label"><span class="uk-badge uk-badge-success">Normal</span></label>-->
-                    <!--</span>-->
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_critical" value="2" data-md-icheck />-->
-                        <!--<label for="priority_critical" class="mb-10 inline-label"><span class="uk-badge uk-badge-warning">Urgent</span></label>-->
-                    <!--</span>-->
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_blocker" value="3" data-md-icheck />-->
-                        <!--<label for="priority_blocker" class="mb-10 inline-label"><span class="uk-badge uk-badge-danger">Critical</span></label>-->
-                    <!--</span>-->
                 </div>
             </div>
             <div class="uk-modal-footer uk-text-right">

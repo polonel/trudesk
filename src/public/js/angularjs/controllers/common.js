@@ -90,11 +90,20 @@ define([
           function () {
             UI.$html.on('show.uk.modal', function (event) {
               var modal = $(event.target)
-
               var options
 
               var first
-              if (modal.length > 0) {
+              if (modal.length > 0 && modal.attr('id') === 'ticketCreateModal') {
+                var codeMirror = modal.find('form#createTicketForm').find('.CodeMirror')[0].CodeMirror
+                codeMirror.setValue('')
+                modal.find('.error-border-wrap').css({ border: 'none' })
+                modal.find('.mde-error').remove()
+
+                // Needed on a timeout to allow blinking cursor to render
+                $timeout(function () {
+                  codeMirror.refresh()
+                }, 150)
+
                 var $group = modal.find('select#group')
                 if (angular.isDefined($group[0])) {
                   var $groupSelectize = $group[0].selectize

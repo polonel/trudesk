@@ -19,12 +19,130 @@ define([
   'modules/helpers',
   'modules/socket',
   'uikit',
+  'easymde',
+  'inlineAttachment',
+  'inputInlineAttachment',
+  'cm4InlineAttachment',
   'history',
-  'formvalidator'
-], function (angular, _, $, helpers, socket, UIkit) {
+  'formvalidator',
+  'angularjs/services'
+], function (angular, _, $, helpers, socket, UIkit, EasyMDE) {
   return angular
-    .module('trudesk.controllers.tickets', [])
-    .controller('ticketsCtrl', function ($scope, $http, $window, $log, openFilterTicketWindow) {
+    .module('trudesk.controllers.tickets', ['trudesk.services.settings'])
+    .controller('ticketsCtrl', function (SettingsService, $scope, $http, $window, $log, openFilterTicketWindow) {
+      var mdeToolbarItems = [
+        {
+          name: 'bold',
+          action: EasyMDE.toggleBold,
+          className: 'material-icons mi-bold no-ajaxy',
+          title: 'Bold'
+        },
+        {
+          name: 'italic',
+          action: EasyMDE.toggleItalic,
+          className: 'material-icons mi-italic no-ajaxy',
+          title: 'Italic'
+        },
+        {
+          name: 'Title',
+          action: EasyMDE.toggleHeadingSmaller,
+          className: 'material-icons mi-title no-ajaxy',
+          title: 'Title'
+        },
+        '|',
+        {
+          name: 'Code',
+          action: EasyMDE.toggleCodeBlock,
+          className: 'material-icons mi-code no-ajaxy',
+          title: 'Code'
+        },
+        {
+          name: 'Quote',
+          action: EasyMDE.toggleBlockquote,
+          className: 'material-icons mi-quote no-ajaxy',
+          title: 'Quote'
+        },
+        {
+          name: 'Generic List',
+          action: EasyMDE.toggleUnorderedList,
+          className: 'material-icons mi-list no-ajaxy',
+          title: 'Generic List'
+        },
+        {
+          name: 'Numbered List',
+          action: EasyMDE.toggleOrderedList,
+          className: 'material-icons mi-numlist no-ajaxy',
+          title: 'Numbered List'
+        },
+        '|',
+        {
+          name: 'Create Link',
+          action: EasyMDE.drawLink,
+          className: 'material-icons mi-link no-ajaxy',
+          title: 'Create Link'
+        },
+        '|',
+        {
+          name: 'Toggle Preview',
+          action: EasyMDE.togglePreview,
+          className: 'material-icons mi-preview no-disable no-mobile no-ajaxy',
+          title: 'Toggle Preview'
+        }
+      ]
+
+      var $issueTextarea = $('textarea#issue:not(.hasMDE)')
+      var issueTextMDE = null
+      if ($issueTextarea.length > 0) {
+        $issueTextarea.addClass('hasMDE')
+        issueTextMDE = new EasyMDE({
+          element: $issueTextarea[0],
+          forceSync: true,
+          height: '100px',
+          minHeight: '150px',
+          toolbar: mdeToolbarItems,
+          autoDownloadFontAwesome: false,
+          status: false,
+          spellChecker: false
+        })
+      }
+
+      if (issueTextMDE != null && $issueTextarea.hasClass('hasMDE') && !$issueTextarea.hasClass('hasInlineUpload')) {
+        $issueTextarea.addClass('hasInlineUpload')
+        $window.inlineAttachment.editors.codemirror4.attach(issueTextMDE.codemirror, {
+          onFileUploadResponse: function (xhr) {
+            var result = JSON.parse(xhr.responseText)
+
+            var filename = result[this.settings.jsonFieldName]
+
+            if (result && filename) {
+              var newValue
+              if (typeof this.settings.urlText === 'function') {
+                newValue = this.settings.urlText.call(this, filename, result)
+              } else {
+                newValue = this.settings.urlText.replace(this.filenameTag, filename)
+              }
+
+              var text = this.editor.getValue().replace(this.lastValue, newValue)
+              this.editor.setValue(text)
+              this.settings.onFileUploaded.call(this, filename)
+            }
+            return false
+          },
+          onFileUploadError: function (xhr) {
+            var result = xhr.responseText
+            var text = this.editor.getValue() + ' ' + result
+            this.editor.setValue(text)
+          },
+          extraHeaders: {
+            ticketid: 'uploads'
+          },
+          errorText: 'Error uploading file: ',
+          uploadUrl: '/tickets/uploadmdeimage',
+          jsonFieldName: 'filename',
+          urlText: '![Image]({filename})'
+        })
+      }
+
       $scope.openFilterTicketWindow = function () {
         openFilterTicketWindow.openWindow()
       }
@@ -34,6 +152,33 @@ define([
         var socketId = socket.ui.socket.io.engine.id
         var data = {}
         var form = $('#createTicketForm')
+        var issueField = form.find('textarea#issue')
+
+        if (issueField.length < 1) return
+
+        var minIssueLength = SettingsService.getSettings().minIssueLength.value
+        var $mdeError = null
+        if (issueField.val().length < minIssueLength) {
+          // commentField.validate();
+          issueField.parent().css({ border: '1px solid #E74C3C' })
+          var mdeError = $(
+            '<div class="mde-error uk-float-left uk-text-left">Please enter a valid comment. Comments must contain at least ' +
+              minIssueLength +
+              ' characters.</div>'
+          )
+
+          $mdeError = issueField.siblings('.editor-statusbar').find('.mde-error')
+          if ($mdeError.length < 1) {
+            issueField.siblings('.editor-statusbar').prepend(mdeError)
+          }
+
+          return
+        }
+
+        issueField.parent().css('border', 'none')
+        $mdeError = issueField.parent().find('.mde-error')
+        if ($mdeError.length > 0) $mdeError.remove()
+
         if (!form.isValid(null, null, false)) {
           return true
         }

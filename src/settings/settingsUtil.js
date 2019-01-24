@@ -13,13 +13,9 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var jsStringEscape = require('js-string-escape')
-
 var settingSchema = require('../models/setting')
-
 var ticketTypeSchema = require('../models/tickettype')
 
 var util = {}
