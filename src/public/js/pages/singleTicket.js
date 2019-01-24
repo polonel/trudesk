@@ -29,8 +29,16 @@ define('pages/singleTicket', [
 
       $('.off-canvas-bottom').DivResizer({})
 
+      $('.issue-body img:not(.hasLinked)').each(function () {
+        setupImageLink(this)
+      })
+
       $('.comment-body img:not(.hasLinked)').each(function () {
-        var $this = $(this)
+        setupImageLink(this)
+      })
+
+      function setupImageLink (el) {
+        var $this = $(el)
         var src = $this.attr('src')
         $this.addClass('hasLinked')
         var a = $('<a>')
@@ -38,7 +46,7 @@ define('pages/singleTicket', [
           .attr('href', src)
           .attr('target', '_blank')
         $this.wrap(a)
-      })
+      }
 
       $('.remove-attachment').each(function () {
         var self = $(this)
