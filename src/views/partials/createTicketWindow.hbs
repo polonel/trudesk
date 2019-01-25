@@ -11,14 +11,6 @@
                 />
             </div>
             <div class="uk-margin-medium-bottom">
-                <span>Description</span>
-                <div class="error-border-wrap">
-                    <textarea id="issue" name="issue"></textarea>
-                    <div class="editor-statusbar uk-float-left nopadding-left"></div>
-                </div>
-                <span style="display: inline-block; margin-top: 6px; font-size: 11px;" class="uk-text-muted">Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.</span>
-            </div>
-            <div class="uk-margin-medium-bottom">
                 <label for="group" class="uk-form-label">Group</label>
                 <select class="uk-form-width-full selectize selectize-noremove" name="group" id="group" data-md-selectize-inline>
                     {{#each data.common.groups}}
@@ -44,9 +36,6 @@
                         {{/each}}
                     </select>
                 </div>
-
-
-
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="ticket_priority" class="uk-form-label">Priority</label>
@@ -57,6 +46,15 @@
                 </div>
                 <div id="priority-wrapper" data-default-priorities="{{json data.common.defaultTicketType.priorities}}">
                 </div>
+            </div>
+
+            <div class="uk-margin-medium-bottom">
+                <span>Description</span>
+                <div class="error-border-wrap">
+                    <textarea id="issue" name="issue"></textarea>
+                    <div class="editor-statusbar uk-float-left nopadding-left"></div>
+                </div>
+                <span style="display: inline-block; margin-top: 6px; font-size: 11px;" class="uk-text-muted">Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.</span>
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
