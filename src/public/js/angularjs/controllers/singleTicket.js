@@ -93,6 +93,19 @@ define([
         }
       ]
 
+      function attachFileDesc (textarea) {
+        var $el = $(textarea)
+        var attachFileDiv = $('<div></div>')
+        attachFileDiv
+          .addClass('attachFileDesc')
+          .html('<p>Attach images by dragging & dropping or pasting from clipboard.</p>')
+        $el.siblings('.CodeMirror').addClass('hasFileDesc')
+        $el
+          .siblings('.editor-statusbar')
+          .addClass('hasFileDesc')
+          .prepend(attachFileDiv)
+      }
+
       var $editIssueText = $('#edit-issue-text')
       var editIssueTextMDE = null
       if ($editIssueText.length > 0) {
@@ -140,6 +153,8 @@ define([
         jsonFieldName: 'filename',
         urlText: '![Image]({filename})'
       })
+
+      // attachFileDesc($editIssueText)
 
       $scope.showEditWindow = function (type, showSubject, commentNoteId) {
         var $editWindow = $('#edit-ticket-window')
@@ -282,6 +297,8 @@ define([
           jsonFieldName: 'filename',
           urlText: '![Image]({filename})'
         })
+
+        attachFileDesc($commentReply)
       }
 
       var $ticketNote = $('#ticket-note')
@@ -328,6 +345,8 @@ define([
           jsonFieldName: 'filename',
           urlText: '![Image]({filename})'
         })
+
+        attachFileDesc($ticketNote)
       }
 
       // Setup Assignee Drop based on Status

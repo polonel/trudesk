@@ -90,6 +90,19 @@ define([
         }
       ]
 
+      function attachFileDesc (textarea) {
+        var $el = $(textarea)
+        var attachFileDiv = $('<div></div>')
+        attachFileDiv
+          .addClass('attachFileDesc')
+          .html('<p>Attach images by dragging & dropping or pasting from clipboard.</p>')
+        $el.siblings('.CodeMirror').addClass('hasFileDesc')
+        $el
+          .siblings('.editor-statusbar')
+          .addClass('hasFileDesc')
+          .prepend(attachFileDiv)
+      }
+
       var $issueTextarea = $('textarea#issue:not(.hasMDE)')
       var issueTextMDE = null
       if ($issueTextarea.length > 0) {
@@ -141,6 +154,8 @@ define([
           jsonFieldName: 'filename',
           urlText: '![Image]({filename})'
         })
+
+        attachFileDesc($issueTextarea)
       }
 
       $scope.openFilterTicketWindow = function () {
