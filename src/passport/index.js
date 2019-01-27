@@ -38,7 +38,7 @@ module.exports = function () {
         passReqToCallback: true
       },
       function (req, username, password, done) {
-        User.findOne({ username: new RegExp('^' + username + '$', 'i') })
+        User.findOne({ username: new RegExp('^' + username.trim() + '$', 'i') })
           .select('+password +tOTPKey +tOTPPeriod')
           .exec(function (err, user) {
             if (err) {
