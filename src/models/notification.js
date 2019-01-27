@@ -79,7 +79,7 @@ notificationSchema.statics.clearNotifications = function (oId, callback) {
     return callback('Invalid UserId - NotificationSchema.ClearNotifications()', null)
   }
 
-  return this.model(COLLECTION).deleteOne({ owner: oId }, callback)
+  return this.model(COLLECTION).deleteMany({ owner: oId }, callback)
 }
 
 module.exports = mongoose.model(COLLECTION, notificationSchema)
