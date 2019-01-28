@@ -15,28 +15,28 @@
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
                             {{/canUser}}
@@ -66,9 +66,9 @@
 
                                        style="float: left;" class="relative no-ajaxy">
                                         {{#if data.ticket.assignee.image}}
-                                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt="{{data.ticket.assignee.fullname}} Profile Image"/>
                                         {{else}}
-                                            <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                            <img src="/uploads/users/defaultProfile.jpg" alt="Default Profile Image"/>
                                         {{/if}}
                                         <span class="user-offline uk-border-circle" data-user-status-id="{{data.ticket.assignee._id}}"></span>
                                         <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
@@ -83,12 +83,13 @@
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
                                         {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                           data-notifications="assigneeDropdown"
-                                           data-updateui="assigneeList"
+                                            title="Set Assignee"
+                                            data-notifications="assigneeDropdown"
+                                            data-updateui="assigneeList"
                                         {{/canUser}}
 
                                        style="float: left;" class="relative no-ajaxy">
-                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                        <img src="/uploads/users/defaultProfile.jpg" alt="Default Profile Image" />
                                         <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
                                     </a>
                                     <div class="ticket-assignee-details">
