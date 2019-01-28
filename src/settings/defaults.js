@@ -53,7 +53,7 @@ function downloadWin32MongoDBTools (callback) {
     ) {
       winston.debug('Windows platform detected. Downloading MongoDB Tools')
       fs.emptyDirSync(savePath)
-      var unzip = require('unzip')
+      var unzipper = require('unzipper')
       var file = fs.createWriteStream(path.join(savePath, filename))
       http
         .get('http://storage.trudesk.io/tools/' + filename, function (response) {
@@ -63,7 +63,7 @@ function downloadWin32MongoDBTools (callback) {
           })
           file.on('close', function () {
             fs.createReadStream(path.join(savePath, filename))
-              .pipe(unzip.Extract({ path: savePath }))
+              .pipe(unzipper.Extract({ path: savePath }))
               .on('close', function () {
                 fs.unlink(path.join(savePath, filename), callback)
               })

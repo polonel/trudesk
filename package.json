@@ -89,7 +89,7 @@
     "tar": "4.4.8",
     "thirty-two": "1.0.2",
     "uglify-js": "3.4.9",
-    "unzip": "0.1.11",
+    "unzipper": "0.9.10",
     "util": "0.11.1",
     "webpack": "4.29.0",
     "winston": "2.4.4"

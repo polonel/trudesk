@@ -566,8 +566,8 @@ debugController.uploadPlugin = function (req, res) {
     // Everything Checks out lets make sure the file exists and then add it to the attachments array
     if (!fs.existsSync(object.filePath)) return res.status(500).send('File Failed to Save to Disk')
 
-    var unzip = require('unzip')
-    fs.createReadStream(object.filePath).pipe(unzip.Extract({ path: path.join(__dirname, '../../plugins') }))
+    var unzipper = require('unzipper')
+    fs.createReadStream(object.filePath).pipe(unzipper.Extract({ path: path.join(__dirname, '../../plugins') }))
 
     return res.sendStatus(200)
   })
