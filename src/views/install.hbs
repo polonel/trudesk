@@ -749,7 +749,7 @@
             }
 
             function validateEmail(email) {
-                var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                var mailFormat = /^\w+([.-]\w+)*@\w+([.-]\w+)*(\.\w+)+$/;
                 return email.match(mailFormat);
             }
 
