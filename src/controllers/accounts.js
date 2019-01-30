@@ -221,6 +221,7 @@ accountsController.bindLdap = function (req, res) {
 
     ldap.search(searchBase, filter, function (err, results) {
       if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
+      if (_.isUndefined(results)) return res.status(400).json({ success: false, error: 'Undefined Results' })
 
       var entries = results.entries
       var foundUsers = null
