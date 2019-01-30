@@ -164,7 +164,7 @@ function ticketTypeSettingDefault (callback) {
 
         var type = _.first(types)
         if (!type) return callback('No Types Defined!')
-        if (!_.isPlainObject(type) || !_.has(type, '_id')) return callback('Invalid Type. Skipping.')
+        if (!_.isObject(type) || _.isUndefined(type._id)) return callback('Invalid Type. Skipping.')
 
         // Save default ticket type
         var defaultTicketType = new SettingsSchema({
