@@ -50,7 +50,7 @@ var userSchema = mongoose.Schema({
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
-  email: { type: String, required: true, unique: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
   role: { type: String, required: true },
   lastOnline: Date,
   title: String,
@@ -341,7 +341,7 @@ userSchema.statics.getUserByEmail = function (email, callback) {
     return callback('Invalid Email - UserSchema.GetUserByEmail()', null)
   }
 
-  return this.model(COLLECTION).findOne({ email: new RegExp('^' + email + '$', 'i') }, callback)
+  return this.model(COLLECTION).findOne({ email: email.toLowerCase() }, callback)
 }
 
 /**
