@@ -12,6 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 var _ = require('lodash')
+var async = require('async')
 var winston = require('winston')
 var utils = require('../helpers/utils')
 
@@ -19,6 +20,7 @@ var events = {}
 
 function register (socket) {
   events.updateNotifications(socket)
+  events.updateAllNotifications(socket)
   events.markNotificationRead(socket)
   events.clearNotifications(socket)
 }
@@ -31,25 +33,60 @@ function updateNotifications () {
   _.each(io.sockets.sockets, function (socket) {
     var notifications = {}
     var notificationSchema = require('../models/notification')
-    notificationSchema.findAllForUser(socket.request.user._id, function (err, items) {
-      if (err) {
-        winston.warn(err)
-        return true
+    async.parallel(
+      [
+        function (done) {
+          notificationSchema.getForUserWithLimit(socket.request.user._id, function (err, items) {
+            if (err) return done(err)
+
+            notifications.items = items
+            return done()
+          })
+        },
+        function (done) {
+          notificationSchema.getUnreadCount(socket.request.user._id, function (err, count) {
+            if (err) return done(err)
+
+            notifications.count = count
+            return done()
+          })
+        }
+      ],
+      function (err) {
+        if (err) {
+          winston.warn(err)
+          return true
+        }
+
+        utils.sendToSelf(socket, 'updateNotifications', notifications)
       }
+    )
+  })
+}
 
-      // notifications.items = _.take(items, 5);
-      notifications.items = items
-      var p = _.filter(items, { unread: true })
-      notifications.count = _.size(p)
+function updateAllNotifications (socket) {
+  var notifications = {}
+  var notificationSchema = require('../models/notification')
+  notificationSchema.findAllForUser(socket.request.user._id, function (err, items) {
+    if (err) return false
 
-      utils.sendToSelf(socket, 'updateNotifications', notifications)
-    })
+    notifications.items = items
+
+    console.log('Called')
+
+    utils.sendToSelf(socket, 'updateAllNotifications', notifications)
   })
 }
 
 events.updateNotifications = function (socket) {
   socket.on('updateNotifications', function () {
     updateNotifications(socket)
+  })
+}
+
+events.updateAllNotifications = function (socket) {
+  socket.on('updateAllNotifications', function () {
+    updateAllNotifications(socket)
   })
 }
 

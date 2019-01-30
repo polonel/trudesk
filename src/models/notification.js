@@ -54,8 +54,19 @@ notificationSchema.statics.findAllForUser = function (oId, callback) {
   var q = this.model(COLLECTION)
     .find({ owner: oId })
     .sort({ created: -1 })
+    .limit(100)
 
   return q.exec(callback)
+}
+
+notificationSchema.statics.getForUserWithLimit = function (oId, callback) {
+  if (_.isUndefined(oId)) return callback('Invalid ObjectId - NotificationSchema.GetForUserWithLimit()', null)
+
+  return this.model(COLLECTION)
+    .find({ owner: oId })
+    .sort({ created: -1 })
+    .limit(5)
+    .exec(callback)
 }
 
 notificationSchema.statics.getCount = function (oId, callback) {

@@ -361,6 +361,8 @@ define([
 
         $scope.showAllNotificationsWindow = $('#viewAllNotificationsModal')
         if ($scope.showAllNotificationsWindow.length > 0) {
+          socket.ui.emitUpdateAllNotifications()
+
           var modal = UI.modal($scope.showAllNotificationsWindow, {
             bgclose: true
           })
