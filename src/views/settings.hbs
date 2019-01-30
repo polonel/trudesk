@@ -16,6 +16,7 @@
     mailerFrom='{{data.settings.mailerFrom.value}}';
 
     mailerCheckEnabled={{data.settings.mailerCheckEnabled.value}};
+    mailerCheckPolling={{data.settings.mailerCheckPolling.value}};
     mailerCheckHost='{{data.settings.mailerCheckHost.value}}';
     mailerCheckPort={{data.settings.mailerCheckPort.value}};
     mailerCheckUsername='{{data.settings.mailerCheckUsername.value}}';
@@ -922,6 +923,27 @@
                                     <div class="uk-margin-medium-bottom">
                                         <label for="mailerCheckPassword">Password</label>
                                         <input id="mailerCheckPassword" class="md-input md-input-width-medium" name="mailerCheckPassword" type="password" ng-model="mailerCheckPassword"/>
+                                    </div>
+                                    <div class="uk-clearfix uk-margin-medium-bottom">
+                                        <div class="left">
+                                            <h6 style="padding: 0; margin: 5px 0 0 0; font-size: 16px; line-height: 14px;">Polling Interval
+                                                <i class="material-icons"
+                                                   style="color: #888;
+                                                            font-size: 16px;
+                                                            cursor: pointer;
+                                                            line-height: 18px;"
+                                                   data-uk-tooltip="{cls:'long-text'}" title="Caution: Polling too often can cause high CPU usage.">error</i>
+                                            </h6>
+                                            <h5 style="padding: 0 0 10px 0; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                How often to poll the server for new messages. (Minutes)
+                                            </h5>
+                                        </div>
+                                        <div class="right" style="position:relative;">
+                                            <div class="left" style="width: 90px; padding-right: 10px;">
+                                                <input id="mailerCheckPolling" class="md-input md-input-width-small" name="mailerCheckPolling" type="number" ng-model="mailerCheckPolling" />
+                                            </div>
+                                        </div>
+                                        <hr style="float: left; margin-top: 10px;" />
                                     </div>
                                     <div class="uk-clearfix uk-margin-medium-bottom">
                                         <div class="left">

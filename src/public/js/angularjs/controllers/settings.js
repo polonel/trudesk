@@ -119,6 +119,8 @@ define([
         $scope.shortDateFormat = SettingsService.getSettings().shortDateFormat.value
         $scope.longDateFormat = SettingsService.getSettings().longDateFormat.value
 
+        $scope.mailerCheckPolling = $scope.mailerCheckPolling / 60000
+
         var $uploadButton = $('#logo-upload-select').parent()
         var uploadLogoSettings = {
           action: '/settings/general/uploadlogo',
@@ -1029,6 +1031,10 @@ define([
           .attr('disabled', !newVal)
           .parent()
           .toggleClass('md-input-wrapper-disabled', !newVal)
+        $('input#mailerCheckPolling')
+          .attr('disabled', !newVal)
+          .parent()
+          .toggleClass('md-input-wrapper-disabled', !newVal)
         $('button#mailerCheckSubmit')
           .attr('disabled', !newVal)
           .parent()
@@ -1102,6 +1108,7 @@ define([
           .put(
             '/api/v1/settings',
             [
+              { name: 'mailer:check:polling', value: $scope.mailerCheckPolling * 60000 },
               { name: 'mailer:check:host', value: $scope.mailerCheckHost },
               { name: 'mailer:check:port', value: $scope.mailerCheckPort },
               {

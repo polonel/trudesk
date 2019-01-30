@@ -82,6 +82,7 @@ util.getSettings = function (callback) {
     s.mailerFrom = parseSetting(settings, 'mailer:from', '')
 
     s.mailerCheckEnabled = parseSetting(settings, 'mailer:check:enable', false)
+    s.mailerCheckPolling = parseSetting(settings, 'mailer:check:polling', 600000)
     s.mailerCheckHost = parseSetting(settings, 'mailer:check:host', '')
     s.mailerCheckPort = parseSetting(settings, 'mailer:check:port', 143)
     s.mailerCheckUsername = parseSetting(settings, 'mailer:check:username', '')
