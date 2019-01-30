@@ -91,7 +91,13 @@ ticketsController.getByStatus = function (req, res, next) {
     status: []
   }
 
-  var pathname = url.URL(req.url).pathname
+  var fullUrl = url.format({
+    protocol: req.protocol,
+    host: req.get('host'),
+    pathname: req.originalUrl
+  })
+
+  var pathname = new url.URL(fullUrl).pathname
   var arr = pathname.split('/')
   var tType = 'new'
   var s = 0
