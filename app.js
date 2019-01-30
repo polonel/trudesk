@@ -173,7 +173,7 @@ function dbCallback (err, db) {
           return next()
         },
         function (next) {
-          //Start Check Mail
+          // Start Check Mail
           var settingSchema = require('./src/models/setting')
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
