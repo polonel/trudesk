@@ -407,6 +407,37 @@ function addedDefaultPrioritesToTicketTypes (callback) {
   )
 }
 
+function mailTemplates (callback) {
+  var newTicket = require('./json/mailer-new-ticket')
+  var passwordReset = require('./json/mailer-password-reset')
+  var templateSchema = require('../models/template')
+  async.parallel(
+    [
+      function (done) {
+        templateSchema.findOne({ name: newTicket.name }, function (err, templates) {
+          if (err) return done(err)
+          if (!templates || templates.length < 1) {
+            return templateSchema.create(newTicket, done)
+          }
+
+          return done()
+        })
+      },
+      function (done) {
+        templateSchema.findOne({ name: passwordReset.name }, function (err, templates) {
+          if (err) return done(err)
+          if (!templates || templates.length < 1) {
+            return templateSchema.create(passwordReset, done)
+          }
+
+          return done()
+        })
+      }
+    ],
+    callback
+  )
+}
+
 settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
@@ -437,6 +468,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return normalizeTags(done)
+      },
+      function (done) {
+        return mailTemplates(done)
       }
     ],
     function () {

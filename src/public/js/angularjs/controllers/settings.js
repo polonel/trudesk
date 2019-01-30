@@ -602,6 +602,7 @@ define([
               var vm = this
               $(vm).removeClass('active')
             })
+
             $settingsWrap.find('div[data-settings-id]').each(function () {
               var vm = this
               $(vm).removeClass('active')
@@ -616,10 +617,21 @@ define([
             }
 
             if (settings === 'settings-tickets') {
-              $target
-                .find('ul>li[data-key]')
-                .first()
-                .addClass('active')
+              $scope.switchTicketType(
+                {
+                  currentTarget: $target.find('ul>li[data-key]').first()
+                },
+                false
+              )
+            }
+
+            if (settings === 'settings-mailer') {
+              $scope.switchTicketType(
+                {
+                  currentTarget: $target.find('ul>li[data-key]').first()
+                },
+                false
+              )
             }
 
             if (settings === 'settings-legal' && privacyPolicyMDE) {
@@ -1329,6 +1341,30 @@ define([
           )
       }
 
+      $scope.emailBetaChanged = function () {
+        var vm = this
+        $scope.emailBeta = vm.emailBeta
+        $http
+          .put(
+            '/api/v1/settings',
+            {
+              name: 'beta:email',
+              value: $scope.emailBeta
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            function successCallback () {},
+            function errorCallback (err) {
+              helpers.UI.showSnackbar(err, true)
+            }
+          )
+      }
+
       $scope.showCreateTicketTypeWindow = function ($event) {
         $event.preventDefault()
         var createTicketTypeModal = $('#createTicketTypeModal')
@@ -1337,8 +1373,9 @@ define([
         }
       }
 
-      $scope.switchTicketType = function ($event) {
+      $scope.switchTicketType = function ($event, animation) {
         var $currentTarget = $($event.currentTarget)
+        animation = angular.isUndefined(animation) ? true : animation
         if ($currentTarget) {
           if ($currentTarget.hasClass('active')) return true
           var key = $currentTarget.attr('data-key')
@@ -1353,35 +1390,40 @@ define([
               .find('li.active')
               .removeClass('active')
             $currentTarget.addClass('active')
-            $('div[data-ticket-type-id].active').velocity(
-              {
-                opacity: 0
-              },
-              {
-                duration: 250,
-                complete: function () {
-                  var vm = this
-                  $(vm)
-                    .removeClass('active')
-                    .addClass('hide')
+            $currentTarget
+              .parent()
+              .parent()
+              .parent()
+              .find('div[data-ticket-type-id].active')
+              .velocity(
+                {
+                  opacity: animation ? 0 : 1
+                },
+                {
+                  duration: animation ? 250 : 1,
+                  complete: function () {
+                    var vm = this
+                    $(vm)
+                      .removeClass('active')
+                      .addClass('hide')
 
-                  $keyWindow.velocity(
-                    {
-                      opacity: 1
-                    },
-                    {
-                      duration: 250,
-                      begin: function () {
-                        $keyWindow.removeClass('hide')
+                    $keyWindow.velocity(
+                      {
+                        opacity: 1
                       },
-                      complete: function () {
-                        $keyWindow.addClass('active')
+                      {
+                        duration: animation ? 250 : 1,
+                        begin: function () {
+                          $keyWindow.removeClass('hide')
+                        },
+                        complete: function () {
+                          $keyWindow.addClass('active')
+                        }
                       }
-                    }
-                  )
+                    )
+                  }
                 }
-              }
-            )
+              )
           }
         }
       }
@@ -1462,6 +1504,36 @@ define([
                 $('li[data-key="' + typeId + '"]')
                   .find('h3')
                   .text(typeName)
+              },
+              function errorCallback (err) {
+                helpers.UI.showSnackbar(err, true)
+              }
+            )
+        }
+      }
+
+      $scope.submitUpdateTemplateSubject = function ($event, templateId) {
+        $event.preventDefault()
+        var $form = $($event.currentTarget)
+        if ($form) {
+          var $subjectInput = $form.find('input')
+          var subject = $subjectInput.val()
+
+          $http
+            .put(
+              '/api/v1/settings/mailer/template/' + templateId,
+              {
+                subject: subject
+              },
+              {
+                headers: {
+                  'Content-Type': 'application/json'
+                }
+              }
+            )
+            .then(
+              function successCallback () {
+                helpers.UI.showSnackbar('Template subject updated successfully')
               },
               function errorCallback (err) {
                 helpers.UI.showSnackbar(err, true)

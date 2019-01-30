@@ -45,9 +45,11 @@ module.exports = function (app, db, callback) {
   )
   app.set('view engine', 'hbs')
   hbsHelpers.register(hbs.handlebars)
+  // Required to access handlebars in mail templates
+  global.Handlebars = hbs.handlebars
 
-  app.use(bodyParser.urlencoded({ extended: false }))
-  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({ limit: '2mb', extended: false }))
+  app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
   app.use(function (req, res, next) {

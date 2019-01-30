@@ -48,6 +48,8 @@ util.getSettings = function (callback) {
       data: {}
     }
 
+    s.emailBeta = parseSetting(settings, 'beta:email', false)
+
     s.siteTitle = parseSetting(settings, 'gen:sitetitle', 'Trudesk')
     s.siteUrl = parseSetting(settings, 'gen:siteurl', '')
     s.timezone = parseSetting(settings, 'gen:timezone', 'America/New_York')
@@ -129,6 +131,16 @@ util.getSettings = function (callback) {
             if (err) return done(err)
 
             content.data.priorities = _.sortBy(priorities, ['migrationNum', 'name'])
+
+            return done()
+          })
+        },
+        function (done) {
+          var templateSchema = require('../models/template')
+          templateSchema.find({}, function (err, templates) {
+            if (err) return done(err)
+
+            content.data.mailTemplates = _.sortBy(templates, 'name')
 
             return done()
           })

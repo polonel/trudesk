@@ -463,8 +463,9 @@ function randomDate (start, end) {
 
 debugController.sendmail = function (req, res) {
   var mailer = require('../mailer')
+  var templateSchema = require('../models/template')
   var Email = require('email-templates')
-  var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+  // var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
   var to = req.query.email
   if (to === undefined) {
@@ -472,16 +473,36 @@ debugController.sendmail = function (req, res) {
   }
 
   var email = new Email({
-    views: {
-      root: templateDir,
-      options: {
-        extension: 'handlebars'
-      }
+    render: function (view, locals) {
+      return new Promise(function (resolve, reject) {
+        if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+        templateSchema.findOne({ name: view }, function (err, template) {
+          if (err) return reject(err)
+          if (!template) return reject(new Error('Invalid Template'))
+          var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+          console.log(html)
+          email.juiceResources(html).then(resolve)
+        })
+      })
     }
   })
 
+  var ticket = {
+    uid: 100001,
+    comments: [
+      {
+        date: new Date(),
+        comment: 'TESTING',
+        owner: {
+          fullname: 'test user',
+          email: 'test@test.com'
+        }
+      }
+    ]
+  }
+
   email
-    .render('ticket-updated', {})
+    .render('ticket-updated', { base_url: global.TRUDESK_BASEURL, ticket: ticket })
     .then(function (html) {
       var mailOptions = {
         to: to,

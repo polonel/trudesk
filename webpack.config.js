@@ -36,6 +36,7 @@ module.exports = {
       roles: path.resolve(__dirname, 'src/permissions/roles'),
 
       // client side
+      handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',
       jquery_scrollTo: 'vendor/jquery/jquery.scrollTo.min',
       jscookie: 'vendor/jscookie/js.cookie',

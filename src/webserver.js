@@ -71,6 +71,7 @@ var port = process.env.PORT || 8118
         })
 
         server.listen(port, '0.0.0.0', function () {
+          global.TRUDESK_PORT = port
           winston.info('TruDesk is now listening on port: ' + port)
 
           callback()

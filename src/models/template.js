@@ -18,6 +18,9 @@ var COLLECTION = 'templates'
 
 var templateSchema = mongoose.Schema({
   name: { type: String, required: true },
+  subject: { type: String, required: true },
+  displayName: String,
+  description: String,
   data: { type: Object, required: true }
 })
 

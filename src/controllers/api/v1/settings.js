@@ -13,15 +13,10 @@
  **/
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var sanitizeHtml = require('sanitize-html')
-
 var SettingsSchema = require('../../../models/setting')
-
 var settingsUtil = require('../../../settings/settingsUtil')
 
 var apiSettings = {}
@@ -116,6 +111,25 @@ apiSettings.testMailer = function (req, res) {
     }
 
     return res.json({ success: true })
+  })
+}
+
+apiSettings.updateTemplateSubject = function (req, res) {
+  var templateSchema = require('../../../models/template')
+  var id = req.params.id
+  var subject = req.body.subject
+  if (!subject) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
+  subject = subject.trim()
+
+  templateSchema.findOne({ _id: id }, function (err, template) {
+    if (err) return defaultApiResponse(err, res)
+    if (!template) return res.status(404).json({ success: false, error: 'No Template Found' })
+
+    template.subject = subject
+
+    template.save(function (err) {
+      return defaultApiResponse(err, res)
+    })
   })
 }
 

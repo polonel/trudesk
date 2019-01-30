@@ -364,11 +364,11 @@ define([
   }
 
   helpers.UI.showSnackbar = function () {
-    if (arguments.length === 2) {
-      return helpers.UI.showSnackbar__.apply(this, arguments)
+    if (arguments.length === 1 && _.isObject(arguments[0])) {
+      return helpers.UI.showSnackbar_.apply(this, arguments)
     }
 
-    return helpers.UI.showSnackbar_.apply(this, arguments)
+    return helpers.UI.showSnackbar__.apply(this, arguments)
   }
 
   helpers.UI.showSnackbar_ = function (options) {

@@ -58,3 +58,5 @@ sonar-project.properties
 public/uploads/assets/*.*
 /src/backup/bin/
 backups/
+
+public/uploads/assets/upload/

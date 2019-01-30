@@ -132,7 +132,10 @@ viewController.getData = function (request, cb) {
                 name: 'gen:siteurl',
                 value: viewdata.hosturl
               },
-              function () {
+              function (err, setting) {
+                if (err) return callback()
+                if (!global.TRUDESK_BASEURL) global.TRUDESK_BASEURL = setting.value
+
                 return callback()
               }
             )
@@ -367,8 +370,6 @@ viewController.getUserNotifications = function (request, callback) {
       winston.warn(err.message)
       return callback(err)
     }
-
-    // data = _.take(data, 5);
 
     return callback(null, data)
   })

@@ -24,6 +24,7 @@ var Controllers = {
   notices: require('./notices'),
   plugins: require('./plugins'),
   settings: require('./settings'),
+  editor: require('./editor'),
   backuprestore: require('./backuprestore'),
   api: require('./api'),
 

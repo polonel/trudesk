@@ -1,4 +1,5 @@
 <div class="uk-grid uk-grid-collapse" data-page="settings" ng-controller="settingsCtrl" ng-init="
+    emailBeta={{data.settings.emailBeta.value}};
     siteTitle='{{data.settings.siteTitle.value}}';
     siteUrl='{{data.settings.siteUrl.value}}';
     selectedTimezone='{{data.settings.timezone.value}}';
@@ -825,6 +826,105 @@
                 </div>
 
                 <div data-settings-id="settings-mailer" {{#ifeq subnav compare='settings-mailer'}} class="active" {{/ifeq}}>
+                    <!-- Mailer Templates -->
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Enable New Email Template System - <span class="uk-text-danger">BETA</span> </h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    The new email notification system is currently in beta.
+                                    Please see <a href="https://forum.trudesk.io/t/beta-email-notification-templates">Email Notification Templates</a> for more information.
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <!-- Switch -->
+                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                    <label>
+                                        Enable
+                                        <input type="checkbox" id="emailBeta" name="emailBeta" ng-change="emailBetaChanged()" ng-model="emailBeta">
+                                        <span class="lever"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                            <div class="left">
+                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Notification Templates</h6>
+                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                    Customize email notification templates. <i class="uk-text-bold">Note: Not all templates have been converted for the beta</i>
+                                </h5>
+                            </div>
+                            <div class="right" style="position:relative;">
+                                <h4 class="uk-display-block uk-text-danger mt-20 mr-20">BETA FEATURE</h4>
+                            </div>
+                            <hr class="nomargin-top clear">
+                            <div class="panel-body2" style="">
+                                <div class="uk-grid uk-grid-collapse">
+                                    <div class="ticket-type-categories uk-width-1-4 scrollable br" style="min-height: 300px; max-height: 2000px;">
+                                        <ul class="settings-categories " style="border: none; height: auto;">
+                                            {{#forEach data.mailTemplates}}
+                                                <li data-key="{{_id}}" {{#ifeq isFirst compare=true}}class="active"{{/ifeq}} ng-click="switchTicketType($event);">
+                                                    <div class="setting-category">
+                                                        <h3>
+                                                            {{#if displayName}}
+                                                                {{displayName}}
+                                                            {{else}}
+                                                                {{name}}
+                                                            {{/if}}
+                                                        </h3>
+                                                    </div>
+                                                </li>
+                                            {{/forEach}}
+                                        </ul>
+                                    </div>
+                                    <div class="uk-width-3-4" style="padding: 20px 15px 15px 15px;">
+                                        {{#each data.mailTemplates}}
+                                            <div data-ticket-type-id="{{_id}}" {{#ifeq isFirst compare=true}}class="active" {{else}} class="hide"{{/ifeq}} style="{{#ifeq isFirst compare=true}}opacity: 1; {{else}}opacity: 0; {{/ifeq}} height: 100%;">
+                                                <div>
+                                                    <h3 class="font-light mb-5">Template Description</h3>
+                                                    <p class="mb-10" style="font-size: 13px;">{{description}}</p>
+                                                    <hr class="uk-margin-medium-bottom">
+                                                    <form ng-submit="submitUpdateTemplateSubject($event, '{{_id}}');">
+                                                        <div class="uk-input-group">
+                                                            <div class="md-input-wrapper md-input-filled">
+                                                                <label for="ticket-type-name-{{_id}}">Mail Subject</label>
+                                                                <input id="ticket-type-name-{{_id}}" type="text" class="md-input" value="{{subject}}">
+                                                            </div>
+                                                            <span class="uk-input-group-addon">
+                                                                <button type="submit" class="md-btn md-btn-small">Save</button>
+                                                            </span>
+                                                        </div>
+                                                    </form>
+                                                </div>
+
+                                                <div class="zone uk-margin-medium-top">
+                                                    <div class="z-box" style="min-height: 60px;">
+                                                        <div class="left">
+                                                            <h6 style="margin: 0; font-size: 16px; line-height: 14px;">Edit Template</h6>
+                                                            <h5 style="margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                                Customize template
+                                                            </h5>
+                                                        </div>
+                                                        <div class="right uk-width-1-3 uk-clearfix" style="position:relative;">
+                                                            <div class="uk-width-1-1 uk-float-right" style="text-align: right;">
+                                                                <a href="/settings/editor/{{name}}/" class="uk-form-file md-btn md-btn-small right" style="text-transform: none;">Open Editor</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+
+                                            </div>
+                                        {{/each}}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="setting-item-wrap uk-margin-medium-bottom">
                         <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
                             <div class="left">

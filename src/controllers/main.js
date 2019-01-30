@@ -13,13 +13,10 @@
  */
 
 var _ = require('lodash')
-
+var async = require('async')
 var path = require('path')
-
 var passport = require('passport')
-
 var winston = require('winston')
-
 var pkg = require('../../package')
 
 var mainController = {}
@@ -85,18 +82,6 @@ mainController.about = function (req, res) {
 
     return res.render('about', content)
   })
-}
-
-mainController.editor = function (req, res) {
-  var content = {}
-  content.title = 'Editor'
-  content.nav = 'settings'
-
-  content.data = {}
-  content.data.user = req.user
-  content.data.common = req.viewdata
-
-  return res.render('editor', content)
 }
 
 mainController.dashboard = function (req, res) {
@@ -287,44 +272,99 @@ mainController.forgotPass = function (req, res) {
       var mailer = require('../mailer')
       var Email = require('email-templates')
       var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
+      var templateSchema = require('../models/template')
 
-      var email = new Email({
-        views: {
-          root: templateDir,
-          options: {
-            extension: 'handlebars'
-          }
-        }
-      })
+      var email = null
 
       var data = {
         base_url: req.protocol + '://' + req.get('host'),
         user: savedUser
       }
 
-      email
-        .render('password-reset', data)
-        .then(function (html) {
-          var mailOptions = {
-            to: savedUser.email,
-            subject: '[Trudesk] Password Reset Request',
-            html: html,
-            generateTextFromHTML: true
+      async.waterfall(
+        [
+          function (next) {
+            var settingsSchema = require('../models/setting')
+            settingsSchema.getSetting('beta:email', function (err, setting) {
+              if (err) return next(err)
+              var betaEnabled = !setting ? false : setting.value
+
+              return next(null, betaEnabled)
+            })
+          },
+          function (betaEnabled, next) {
+            if (!betaEnabled) return next(null, { betaEnabled: false })
+            templateSchema.findOne({ name: 'password-reset' }, function (err, template) {
+              if (err) return next(err)
+              if (!template) return next(null, { betaEnabled: false })
+
+              email = new Email({
+                render: function (view, locals) {
+                  return new Promise(function (resolve, reject) {
+                    if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+                    templateSchema.findOne({ name: view }, function (err, template) {
+                      if (err) return reject(err)
+                      if (!template) return reject(new Error('Invalid Template'))
+                      var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                      email.juiceResources(html).then(resolve)
+                    })
+                  })
+                }
+              })
+
+              return next(null, { betaEnabled: true, template: template })
+            })
+          },
+          function (obj, next) {
+            if (obj.betaEnabled) return next(null, obj.template)
+
+            email = new Email({
+              views: {
+                root: templateDir,
+                options: {
+                  extension: 'handlebars'
+                }
+              }
+            })
+
+            return next(null, false)
+          }
+        ],
+        function (err, template) {
+          if (err) {
+            req.flash('loginMessage', 'Error: ' + err)
+            winston.warn(err)
+            return res.status(500).send(err)
           }
 
-          mailer.sendMail(mailOptions, function (err) {
-            if (err) {
+          var subject = '[Trudesk] Password Reset Request'
+          if (template) subject = global.HandleBars.compile(template.subject)(data)
+
+          email
+            .render('password-reset', data)
+            .then(function (html) {
+              var mailOptions = {
+                to: savedUser.email,
+                subject: subject,
+                html: html,
+                generateTextFromHTML: true
+              }
+
+              mailer.sendMail(mailOptions, function (err) {
+                if (err) {
+                  winston.warn(err)
+                  return res.status(400).send(err)
+                }
+                return res.status(200).send()
+              })
+            })
+            .catch(function (err) {
+              req.flash('loginMessage', 'Error: ' + err)
               winston.warn(err)
-              return res.status(400).send(err)
-            }
-            return res.status(200).send()
-          })
-        })
-        .catch(function (err) {
-          req.flash('loginMessage', 'Error: ' + err)
-          winston.warn(err)
-          return res.status(400).send(err.message)
-        })
+              return res.status(400).send(err.message)
+            })
+        }
+      )
     })
   })
 }
