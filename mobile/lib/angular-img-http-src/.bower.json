@@ -1,0 +1,40 @@
+{
+  "name": "angular-img-http-src",
+  "version": "1.0.1",
+  "authors": [
+    "Doug Moscrop <doug.moscrop@gmail.com>"
+  ],
+  "description": "Fetch images via $http and set src to a Blob URL",
+  "main": "index.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular",
+    "img",
+    "http",
+    "token-based-auth"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "1.x"
+  },
+  "homepage": "https://github.com/dmoscrop/angular-img-http-src",
+  "_release": "1.0.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.0.1",
+    "commit": "3835b5b271134daeeab0d323f792d0a1560eab87"
+  },
+  "_source": "https://github.com/dmoscrop/angular-img-http-src.git",
+  "_target": "^1.0.1",
+  "_originalSource": "angular-img-http-src",
+  "_direct": true
+}

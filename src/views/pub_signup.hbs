@@ -42,6 +42,11 @@
             border: 1px solid #ccc;
             padding: 15px;
             overflow: auto;
+            color: #222;
+        }
+
+        h2 {
+            color: #444;
         }
 
         p {
@@ -690,7 +695,7 @@
             }
 
             function validateEmail(email) {
-                var mailFormat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+                var mailFormat = /^\w+([.-]\w+)*@\w+([.-]\w+)*(\.\w+)+$/;
                 return email.match(mailFormat);
             }
 

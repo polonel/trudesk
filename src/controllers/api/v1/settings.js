@@ -12,23 +12,28 @@
 
  **/
 
-var async           = require('async'),
-    _               = require('lodash'),
-    winston         = require('winston'),
-    sanitizeHtml    = require('sanitize-html'),
+var async = require('async')
+var _ = require('lodash')
+var winston = require('winston')
+var sanitizeHtml = require('sanitize-html')
+var SettingsSchema = require('../../../models/setting')
+var settingsUtil = require('../../../settings/settingsUtil')
 
-    SettingsSchema   = require('../../../models/setting'),
-    settingsUtil     = require('../../../settings/settingsUtil');
+var apiSettings = {}
 
-var apiSettings = {};
+function defaultApiResponse (err, res) {
+  if (err) return res.status(400).json({ success: false, error: err })
 
-apiSettings.getSettings = function(req, res) {
-    settingsUtil.getSettings(function(err, settings) {
-       if (err) return res.status(400).json({success: false, error: err});
+  return res.json({ success: true })
+}
 
-       return res.json({success: true, settings: settings});
-    });
-};
+apiSettings.getSettings = function (req, res) {
+  settingsUtil.getSettings(function (err, settings) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    return res.json({ success: true, settings: settings })
+  })
+}
 
 /**
  * @api {put} /api/v1/settings/:setting Update Setting
@@ -59,53 +64,80 @@ apiSettings.getSettings = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiSettings.updateSetting = function(req, res) {
-    var postData = req.body;
-    if (_.isUndefined(postData)) return res.status(400).json({success: false, error: 'Invalid Post Data'});
+apiSettings.updateSetting = function (req, res) {
+  var postData = req.body
+  if (_.isUndefined(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-    if (!_.isArray(postData)) postData = [postData];
+  if (!_.isArray(postData)) postData = [postData]
 
-    async.each(postData, function(item, callback) {
-        SettingsSchema.getSettingByName(item.name, function(err, s) {
-            if (err) return callback(err.message);
-            if (_.isNull(s) || _.isUndefined(s)) {
-                s = new SettingsSchema({
-                    name: item.name
-                });
-            }
-
-            if (s.name === 'legal:privacypolicy')
-                {item.value = sanitizeHtml(item.value, {
-                    allowedTags: false
-                });}
-
-            s.value = item.value;
-
-            s.save(function(err) {
-                if (err) return callback(err.message);
-
-                callback();
-            });
-        });
-    }, function(err) {
-        //done
-        if (err) return res.status(400).json({success: false, error: err});
-
-        return res.json({success: true});
-    });
-};
-
-apiSettings.testMailer = function(req, res) {
-    var mailer = require('../../../mailer');
-    mailer.verify(function(err) {
-        if (err) {
-            winston.debug(err);
-            return res.status(400).json({success: false, error: err.code ? err.code : 'See Console'});
+  async.each(
+    postData,
+    function (item, callback) {
+      SettingsSchema.getSettingByName(item.name, function (err, s) {
+        if (err) return callback(err.message)
+        if (_.isNull(s) || _.isUndefined(s)) {
+          s = new SettingsSchema({
+            name: item.name
+          })
         }
 
-        return res.json({success: true});
-    });
-};
+        if (s.name === 'legal:privacypolicy') {
+          item.value = sanitizeHtml(item.value, {
+            allowedTags: false
+          })
+        }
 
+        s.value = item.value
 
-module.exports = apiSettings;
+        s.save(function (err) {
+          if (err) return callback(err.message)
+
+          callback()
+        })
+      })
+    },
+    function (err) {
+      return defaultApiResponse(err, res)
+    }
+  )
+}
+
+apiSettings.testMailer = function (req, res) {
+  var mailer = require('../../../mailer')
+  mailer.verify(function (err) {
+    if (err) {
+      winston.debug(err)
+      return res.status(400).json({ success: false, error: err.code ? err.code : 'See Console' })
+    }
+
+    return res.json({ success: true })
+  })
+}
+
+apiSettings.updateTemplateSubject = function (req, res) {
+  var templateSchema = require('../../../models/template')
+  var id = req.params.id
+  var subject = req.body.subject
+  if (!subject) return res.status(400).json({ sucess: false, error: 'Invalid PUT data' })
+  subject = subject.trim()
+
+  templateSchema.findOne({ _id: id }, function (err, template) {
+    if (err) return defaultApiResponse(err, res)
+    if (!template) return res.status(404).json({ success: false, error: 'No Template Found' })
+
+    template.subject = subject
+
+    template.save(function (err) {
+      return defaultApiResponse(err, res)
+    })
+  })
+}
+
+apiSettings.buildsass = function (req, res) {
+  var buildsass = require('../../../sass/buildsass')
+  buildsass.build(function (err) {
+    return defaultApiResponse(err, res)
+  })
+}
+
+module.exports = apiSettings

@@ -1,6 +1,6 @@
-<div class="uk-modal" id="createTagModal" ng-controller="settingsCtrl">
+<div class="uk-modal" id="createTagModal" ng-controller="commonCtrl">
     <div class="uk-modal-dialog">
-        <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag($event)">
+        <form class="uk-form-stacked" id="createTagForm" ng-submit="createTag('{{page}}', $event)">
             <div class="">
                 <h2 class="nomargin mb-5">Create a tag</h2>
                 <p class="uk-text-small uk-text-muted">Tags categorize tickets, making it easy to identify issues</p>
@@ -8,8 +8,8 @@
                 <label for="typeName">Tag Name</label>
                 <input type="text" class="md-input" id="tagName" name="tagName"
                        data-validation="length"
-                       data-validation-length="min3"
-                       data-validation-error-msg="Please enter a valid tag name. Tag name must contain at least 3 characters." />
+                       data-validation-length="min2"
+                       data-validation-error-msg="Please enter a valid tag name. Tag name must contain at least 2 characters." />
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>

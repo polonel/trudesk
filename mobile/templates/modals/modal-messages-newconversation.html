@@ -16,12 +16,12 @@
         style="min-height:50px;"
         ng-click="startConversation(user._id);">
         <div ng-if="user.image !== undefined" class="avatar avatar-small avatar-with-status">
-          <img ng-src="/uploads/users/{{user.image}}">
+          <img http-src="/uploads/users/{{user.image}}">
           <span class="online-status online-status-online" ng-if="isUserOnline(onlineUsers, user)"></span>
           <span class="online-status online-status-offline" ng-if="!isUserOnline(onlineUsers, user)"></span>
         </div>
         <div ng-if="user.image == undefined" class="avatar avatar-small avatar-with-status">
-          <img ng-src="/uploads/users/defaultProfile.jpg">
+          <img http-src="/uploads/users/defaultProfile.jpg">
           <span class="online-status online-status-online" ng-if="isUserOnline(onlineUsers, user)"></span>
           <span class="online-status online-status-offline" ng-if="!isUserOnline(onlineUsers, user)"></span>
         </div>

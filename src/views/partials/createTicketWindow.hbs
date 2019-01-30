@@ -6,22 +6,13 @@
                 <label for="subject">Subject</label>
                 <input type="text" class="md-input" id="subject" name="subject"
                        data-validation="length"
-                       data-validation-length="min10"
-                       data-validation-error-msg="Please enter a valid Subject. Subject must contain at least 10 characters."
+                       data-validation-length="min{{data.common.ticketSettings.minSubject}}"
+                       data-validation-error-msg="Please enter a valid Subject. Subject must contain at least {{data.common.ticketSettings.minSubject}} characters."
                 />
             </div>
             <div class="uk-margin-medium-bottom">
-                <label for="issue">Description</label>
-                <textarea class="md-input" id="issue" name="issue"
-                          data-validation="length"
-                          data-validation-length="min10"
-                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
-                ></textarea>
-                <span style="display: inline-block; margin-top: 6px; font-size: 11px;" class="uk-text-muted">Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.</span>
-            </div>
-            <div class="uk-margin-medium-bottom">
                 <label for="group" class="uk-form-label">Group</label>
-                <select class="uk-form-width-full selectize-white selectize-noremove" name="group" id="group" data-md-selectize-inline>
+                <select class="uk-form-width-full selectize selectize-noremove" name="group" id="group" data-md-selectize-inline>
                     {{#each data.common.groups}}
                         <option value="{{{_id}}}">{{name}}</option>
                     {{/each}}
@@ -30,7 +21,7 @@
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="padding-right: 11px; width: 30%;">
                     <label for="type" class="uk-form-label">Type</label>
-                    <select class="selectize-white" name="type" id="type" data-md-selectize-inline data-default="{{{data.common.defaultTicketType._id}}}">
+                    <select class="selectize" name="type" id="type" data-md-selectize-inline data-default="{{{data.common.defaultTicketType._id}}}">
                         {{#each data.common.ticketTypes}}
                             <option value="{{{_id}}}">{{name}}</option>
                         {{/each}}
@@ -39,38 +30,31 @@
 
                 <div class="uk-float-left" style="width: 68%;">
                     <label for="tags" class="uk-form-label">Tags</label>
-                    <select name="tags" id="tags" class="chosen-select1 selectize-white" multiple data-md-selectize-inline data-md-selectize-bottom="true">
+                    <select name="tags" id="tags" class="chosen-select1 selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                         {{#each data.common.ticketTags}}
                             <option id="TAG__{{_id}}" value="{{_id}}">{{name}}</option>
                         {{/each}}
                     </select>
                 </div>
-
-
-
             </div>
             <div class="uk-margin-medium-bottom">
                 <label for="ticket_priority" class="uk-form-label">Priority</label>
                 <div id="priorityLoader" style="display: none; height: 32px; width:32px; position: relative;">
-                    <div class="card-spinner">
+                    <div class="card-spinner" style="background: transparent !important;">
                         <div class="spinner" style="width: 24px; height: 24px;"></div>
                     </div>
                 </div>
                 <div id="priority-wrapper" data-default-priorities="{{json data.common.defaultTicketType.priorities}}">
-
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_minor" value="1" data-md-icheck checked />-->
-                        <!--<label for="priority_minor" class="mb-10 inline-label"><span class="uk-badge uk-badge-success">Normal</span></label>-->
-                    <!--</span>-->
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_critical" value="2" data-md-icheck />-->
-                        <!--<label for="priority_critical" class="mb-10 inline-label"><span class="uk-badge uk-badge-warning">Urgent</span></label>-->
-                    <!--</span>-->
-                    <!--<span class="icheck-inline">-->
-                        <!--<input class="with-gap" type="radio" name="priority" id="priority_blocker" value="3" data-md-icheck />-->
-                        <!--<label for="priority_blocker" class="mb-10 inline-label"><span class="uk-badge uk-badge-danger">Critical</span></label>-->
-                    <!--</span>-->
                 </div>
+            </div>
+
+            <div class="uk-margin-medium-bottom">
+                <span>Description</span>
+                <div class="error-border-wrap uk-clearfix">
+                    <textarea id="issue" name="issue"></textarea>
+                    <div class="editor-statusbar uk-float-left uk-width-1-1"></div>
+                </div>
+                <span style="display: inline-block; margin-top: 6px; font-size: 11px;" class="uk-text-muted">Please try to be as specific as possible. Please include any details you think may be relevant, such as troubleshooting steps you've taken.</span>
             </div>
             <div class="uk-modal-footer uk-text-right">
                 <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>

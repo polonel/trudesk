@@ -1,6 +1,6 @@
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}'; init();" ng-controller="ticketsCtrl">
     <div class="nopadding ticketContent">
-        <div class="page-title noshadow uk-clearfix">
+        <div class="page-title no-border-bottom noshadow uk-clearfix">
             <p class="uk-display-inline-block">Tickets</p>
             <div class="uk-float-right">
                 <div class="autorefresh uk-float-left uk-clearfix"></div>
@@ -10,30 +10,30 @@
                         {{#is data.pagination.prevEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a title="Previous Page" href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a title="Previous Page" href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            <li class="pagination"><a title="Previous Page" href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                         {{/is}}
 
                         {{#is data.pagination.nextEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a title="Next Page" href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a title="Next Page" href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            <li class="pagination"><a title="Next page" href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                         {{/is}}
                     </ul>
                 </div>
                 <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
-                    <div class="onoffswitch uk-float-left" style="margin-right: 5px; position: relative; top: 18px;">
+                    <div title="Auto Refresh" class="onoffswitch uk-float-left" style="margin-right: 5px; position: relative; top: 18px;">
                         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="refreshSwitch" ng-model="preferences_autoRefreshTicketGrid" ng-change="GridRefreshChanged()"
                             {{#is data.user.preferences.autoRefreshTicketGrid true}} checked {{/is}}>
                         <label class="onoffswitch-label" for="refreshSwitch">
@@ -43,13 +43,13 @@
                     </div>
                     <ul class="button-group">
                         <li class="pagination">
-                            <a id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a>
+                            <a title="Refresh" id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a>
                         </li>
                         <!--<li class="pagination">-->
                             <!--<a href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;"><i class="fa fa-large fa-search"></i></a>-->
                         <!--</li>-->
                         <li class="pagination">
-                            <a href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)">
+                            <a title="Ticket Filter" href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)">
                                 <i class="fa fa-large fa-filter"></i>
                             </a>
                         </li>
@@ -59,7 +59,7 @@
                     <ul class="button-group uk-float-left">
                         <li class="pagination relative">
                             <div class="right" data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
-                                <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
+                                <a title="Ticket Actions" href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
                                         <li><a href="#" class="no-ajaxy" role="button" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}">Create</a></li>
@@ -134,15 +134,20 @@
                     <tbody>
                     {{#each data.tickets}}
                         {{#if_eq status compare=0}}
-                            <tr class="ticket-new{{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                            <tr class="ticket-new {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox" />
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-new"><span>New</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -154,7 +159,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -162,15 +167,20 @@
                             </tr>
                         {{/if_eq}}
                         {{#is status 1}}
-                            <tr class="ticket-open{{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
+                            <tr class="ticket-open {{#overdue ../data.common.showOverdue date updated priority.overdueIn}} overdue {{/overdue}}" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-open"><span>Open</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -182,7 +192,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -192,13 +202,18 @@
                         {{#is status 2}}
                             <tr class="ticket-pending" data-ticket="{{uid}}" data-ticketOid="{{_id}}">
                                 <td class="ticket-priority" style="border-color: {{priority.htmlColor}}">
-                                    <input id="c_{{_id}}" type="checkbox" class="poloCheckbox"/>
-                                    <label for="c_{{_id}}"></label>
+                                    <input type="checkbox" id="c_{{_id}}" style="display: none;" class="svgcheckinput">
+                                    <label for="c_{{_id}}" class="svgcheck">
+                                        <svg width="16px" height="16px" viewBox="0 0 18 18">
+                                            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+                                            <polyline points="1 9 7 14 15 4"></polyline>
+                                        </svg>
+                                    </label>
                                 </td>
                                 <td class="ticket-status ticket-pending"><span>Pending</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -210,7 +225,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}
@@ -226,7 +241,7 @@
                                 <td class="ticket-status ticket-closed"><span>Closed</span></td>
                                 <td>{{uid}}</td>
                                 <td>{{subject}}</td>
-                                <td>{{{formatDate date "MMM DD, YY"}}}</td>
+                                <td>{{{formatDate date ../data.common.shortDateFormat}}}</td>
                                 <td>{{owner.fullname}}</td>
                                 <td>{{group.name}}</td>
                                 <td>
@@ -238,7 +253,7 @@
                                 </td>
                                 <td>
                                     {{#isNotNull updated}}
-                                        {{formatDate updated "MMM DD \at h:mma"}}
+                                        {{formatDate updated (concat ../data.common.shortDateFormat ../data.common.timeFormat true true)}}
                                     {{else}}
                                         --
                                     {{/isNotNull}}

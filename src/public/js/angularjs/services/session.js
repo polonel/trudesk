@@ -12,42 +12,45 @@
 
  **/
 
-define(['angular'], function(angular) {
-    angular.module('trudesk.services.session', [])
-        .factory('SessionService', function($window, $http) {
-            var SessionService;
+define(['angular'], function (angular) {
+  angular.module('trudesk.services.session', []).factory('SessionService', function ($window, $http) {
+    var SessionService
 
-            var sessionUser = null;
+    var sessionUser = null
 
-            SessionService = (function() {
-                SessionService = function() {
+    SessionService = (function () {
+      SessionService = function () {}
 
-                };
+      SessionService.prototype.init = function (callback) {
+        if (sessionUser === null || angular.isUndefined(sessionUser)) {
+          $http
+            .get('/api/v1/login')
+            .success(function (data) {
+              sessionUser = data.user
 
-                SessionService.prototype.init = function(callback) {
-                    if (sessionUser === null || angular.isUndefined(sessionUser)) {
-                        $http.get('/api/v1/login')
-                            .success(function(data) {
-                                sessionUser = data.user;
+              if (angular.isFunction(callback)) {
+                return callback(null, sessionUser)
+              }
+            })
+            .error(function (error) {
+              if (angular.isFunction(callback)) {
+                return callback(error, null)
+              }
+            })
+        }
+      }
 
-                                if (angular.isFunction(callback))
-                                    return callback(null, sessionUser);
-                            }).error(function(error) {
-                                if (angular.isFunction(callback))
-                                    return callback(error, null);
-                        });
-                    }
-                };
+      SessionService.prototype.getUser = function () {
+        return sessionUser
+      }
 
-                SessionService.prototype.getUser = function() { return sessionUser; };
+      return SessionService
+    })()
 
-                return SessionService;
-            }());
+    if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) {
+      $window.trudeskSessionService = new SessionService()
+    }
 
-            if (angular.isUndefined($window.trudeskSessionService) || $window.trudeskSessionService === null) 
-                $window.trudeskSessionService = new SessionService();
-
-            return $window.trudeskSessionService;
-        });
-});
-
+    return $window.trudeskSessionService
+  })
+})

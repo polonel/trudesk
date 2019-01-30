@@ -141,7 +141,7 @@ textarea.md-input
     &:after
       right: 50%
   > label
-    color: #727272
+    color: automatic-text-color($page_content_bg, 'muted')
     position: absolute
     top: 16px
     left: 4px
@@ -285,6 +285,12 @@ label.md-label
   > i
     font-size: 128px
 
+.uk-modal-dialog
+  background: $page_content_right_bg
+
+.uk-file-upload
+  background: lighten($page_content_right_bg, 2%)
+
 .uk-accordion-title-small
   font-size: 13px
   padding: 5px 24px 5px 10px
@@ -299,14 +305,19 @@ label.md-label
 .uk-subnav-pill
   li
     a
+      color: automatic-text-color($page_content_bg)
       transition: background-color .5s ease
       +borderRadius(3px)
 
   li:not(.uk-active) > a:hover
-    background: white
+    background: lighten($page_content_bg, 10%)
+    color: automatic-text-color(lighten($page_content_bg, 10%))
 
   >.uk-active > *
     background: $accent_color
+
+.uk-text-muted
+  color: automatic-text-color($page_content_bg, 'muted') !important
 
 .uk-badge
   background: $accent_color
@@ -327,15 +338,24 @@ label.md-label
   &.uk-badge-danger
     background: #e53935
   &.uk-badge-grey
-    background: #ccc
+    background: darken($page_content_right_bg, 5%)
   &.uk-badge-small
     font-size: 10px
     padding: 2px 4px
     +borderRadius(2px)
     line-height: 12px
+    color: rgba(0,0,0,0.75)
 
 .uk-progress
-  background: white
+  background: pre-color($page_content_right_bg)
+  &.uk-progress-disabled .uk-progress-bar
+    background-color: #ccc
+  &.uk-progress-success .uk-progress-bar
+    background-color: #7cb342
+  &.uk-progress-accent .uk-progress-bar
+    background-color: $accent_color
+  .uk-progress-bar
+    background-color: $accent_blue
 
 .uk-margin-medium-bottom
   margin-bottom: 24px !important
@@ -352,8 +372,29 @@ label.md-label
   padding-left: 12px !important
   padding-right: 12px !important
 
+.uk-datepicker-table th
+  color: automatic-text-color($page_content_right_bg, 'muted')
+.uk-datepicker-table a
+  color: $text_color
+  &:hover, &:active, &:focus
+    color: $text_color
+a.uk-datepicker-table-muted
+  color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
+  &:hover, &:active, &:focus
+    color: darken(automatic-text-color($page_content_right_bg, 'muted'), 5%)
+
+.uk-tooltip
+  background: mix(black, $page_content_bg, 65%)
+  color: automatic-text-color(mix(black, $page_content_bg, 65%))
+.uk-tooltip-top-left:after,
+.uk-tooltip-top-right:after,
+.uk-tooltip-top:after
+    border-top-color: mix(black, $page_content_bg, 65%) !important
+
 .uk-dropdown
-  background: #f5f5f5
+  background: $page_content_button_color
+  & >ul > li > a
+    color: $page_content_button_text_color
 
 .uk-dropdown.uk-datepicker
   opacity: 1
@@ -369,7 +410,8 @@ label.md-label
   &:hover
     background-color: darken($success-color, 10%)
 
-.uk-button.uk-button-accent
+.uk-button.uk-button-accent,
+.uk-button.uk-button-cancel
   background: $accent_color
   color: white
   transition: all .4s ease
@@ -379,6 +421,13 @@ label.md-label
   &:hover,&:active,&:focus
     color: white
     background: lighten($accent_color, 5%)
+
+.uk-button.uk-button-cancel
+  background: darken($page_content_right_bg, 10%)
+  color: automatic-text-color(darken($page_content_right_bg, 10%))
+  &:hover,&:active,&:focus
+    color: automatic-text-color(darken($page_content_right_bg, 10%))
+    background: darken($page_content_right_bg, 25%)
 
 .uk-color-button
   padding: 0
@@ -408,7 +457,7 @@ label.md-label
   //&:after
   //  border-right-color: $topbar_bg
   .uk-tooltip-inner
-    color: $topbar_user_text
+    color: #f6f7fa
 
 .uk-tooltip-modal
   z-index: 99999
@@ -428,8 +477,13 @@ label.md-label
 .uk-pagination>li.uk-active>span
   background: $accent_color
 
-.uk-pagination>li>a:hover
-  background: lighten($accent_color, 35%)
+.uk-pagination>li>a,
+.uk-pagination>li>span
+  color: automatic-text-color($page_content_bg)
+
+.uk-pagination>li>a:hover,.uk-pagination>li>a:active
+  background: darken($page_content_bg, 10%)
+  color: automatic-text-color($page_content_bg)
 
 .title-shadow
   box-shadow: 0 1px 3px rgba(0,0,0,.12),0 1px 2px rgba(0,0,0,.24) !important
@@ -545,7 +599,7 @@ body.shepherd-active
   position: absolute
   left: 20px
   bottom: -18px
-  color: #ddd
+  color: darken($page_content_bg, 10%)
   font-size: 20px
   margin: 0
   padding: 0
@@ -554,23 +608,31 @@ body.shepherd-active
 textarea.review-list
   width: 100%
   height: 250px
-  border: 1px solid #ccc
+  border: 1px solid $page_content_border_color
   font: 400 14px/22px Roboto, sans-serif
   padding: 7px
   resize: none
 
 .no-data-available-text
   font-size: 2em
-  color: grey
+  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
   font-weight: 300
   position: absolute
   top: 50%
   left: 50%
   transform: translate(-50%, -50%)
 
+.c3-legend-item text, .c3-text.c3-empty
+  fill: $text_color !important
+
+.uk-table thead th
+  color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+.uk-table td
+  border-bottom: 1px solid $page_content_border_color
+
 .danger-zone,
 .zone
-  border: 1px solid #ccc
+  border: 1px solid rgba(0,0,0,0.175)
   +borderRadius(3px)
   h2
     font-weight: 300
@@ -578,21 +640,112 @@ textarea.review-list
     font-weight: 600
     font-size: 14px
     line-height: 1.5
-    color: #24292e
+    color: darken($text_color, 2%)
     margin: 0
   .z-box,
   .dz-box
     padding: 16px
-    border-top: 1px solid #ccc
+    border-top: 1px solid rgba(0,0,0,0.175)
     margin-top: -1px
-    &:first-of-type
+    &:first-of-type,
+    &:only-of-type
       border-top: none
     p
       font-size: 13px
       line-height: 1.5
-      color: #24292e
+      color: $text_color
       margin-top: 0
       margin-bottom: 10px
 
 .danger-zone
   border: 1px solid $accent_danger
+
+.ms-container
+  .ms-selectable
+    background: lighten($page_content_right_bg, 5%)
+    li.ms-elem-selectable, li.ms-elem-selectable>span
+      border-color: $page_content_border_color !important
+      color: automatic-text-color(lighten($page_content_right_bg, 5%))
+      &.ms-hover
+        span
+          color: white
+  .ms-selection
+    background: lighten($page_content_right_bg, 5%)
+    li.ms-elem-selection, li.ms-elem-selection>span
+      border-color: $page_content_border_color
+      color: automatic-text-color(lighten($page_content_right_bg, 5%))
+      &.ms-hover
+        span
+          color: white
+  .ms-list
+    border-color: $page_content_border_color !important
+
+.edit-window-wrapper
+  display: flex
+  flex-direction: column
+  min-height: 0
+  padding: 10px 20px
+  margin: 0 auto
+  box-sizing: border-box
+  height: calc(100% - 11px)
+  width: 100%
+  .editor-container
+    position: relative
+    display: flex
+    flex-direction: column
+    flex-grow: 1
+    min-height: 0
+    .editor
+      display: flex
+      flex-grow: 1
+      min-height: 0
+      .code-mirror-wrap
+        display: flex
+        flex-direction: column
+        position: relative
+        flex-grow: 1
+        max-width: 100%
+        .CodeMirror
+          height: 100%
+        .editor-statusbar
+          display: none !important
+  .action-panel
+    display: flex
+    flex-shrink: 0
+    margin: 7px 0 3px 0
+    flex-wrap: wrap
+    align-items: center
+
+.clear-transitions
+  transition: none !important
+
+.off-canvas-bottom
+  position: fixed
+  display: flex
+  flex-direction: column
+  bottom: 0
+  right: 0
+  left: 0
+  height: 0
+  margin-left: auto
+  margin-right: auto
+  max-width: 750px
+  width: 100%
+  z-index: 999
+  background: $page_content_right_bg
+  transition: height 250ms ease, background 250ms ease, max-width 250ms ease
+  +boxShadow(0 -1px 40px rgba(0,0,0,0.12))
+  &.closed
+    height: 0 !important
+  &.open
+    height: 350px
+  .grippie
+    cursor: row-resize
+    padding: 4px 0
+    background: $accent_color
+    &:before
+      content: ''
+      display: block
+      width: 27px
+      margin: auto
+      border-top: 3px double #f6f7f8

@@ -20,21 +20,25 @@
 
   .chosen-container-multi .chosen-choices li.search-choice
     padding: 0 25px 0 7px
-    background: darken(#eceff6, 20%)
+    background: #3498db
     span
       color: white
       line-height: 27px
   .chosen-container .chosen-results li.highlighted
-    background: darken(#eceff6, 15%)
-    color: #55616e
+    background: #3498db
+    color: white
+
+  .chosen-container-multi .chosen-drop .result-selected
+    color: darken($page_content_right_bg, 15%)
 
   button
     padding: 5px 10px
     height: 36px
     width: 50px
     margin-left: -50px
-    background: darken(#eceff6, 8%)
-    border: 1px solid #9aa1ad
+    background: darken($page_content_right_bg, 20%)
+    border: 1px solid darken($page_content_right_bg, 20%)
+    color: automatic-text-color(darken($page_content_right_bg, 20%))
     border-left: none
     +borderRadius(0 3px 3px 0)
     z-index: 999
@@ -42,7 +46,7 @@
     position: relative
 
     i
-      color: #55616e
+      color: $text_color
 
 .chosen-container
   .chosen-drop

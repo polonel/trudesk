@@ -1,5 +1,6 @@
-#loader-wrapper
-  background: #ddd
+#loader-wrapper,
+#dot-loader
+  background: $page_content_bg
   position: absolute
   top: 0
   bottom: 0
@@ -8,6 +9,14 @@
   width: 100%
   height: 100%
   z-index: 999999
+
+@keyframes bigdotbounce
+  0%
+    -webkit-transform: translateY(0%)
+  50%
+    -webkit-transform: translateY(-150%)
+  100%
+    -webkit-transform: translateY(0%)
 
 @keyframes bounceC
   0%
@@ -38,6 +47,10 @@
 .t circle
   -webkit-animation: bounceC .7s infinite alternate ease-in-out
 
+.bigdot circle
+  animation: bigdotbounce .7s infinite alternate ease-in-out
+  -webkit-animation: bigdotbounce .7s infinite alternate ease-in-out
+
 //p
 //  font-family: $fontFamily
 //  font-size: 22px
@@ -52,10 +65,12 @@
   left: 50%
   transform: translate(-50%, -50%)
 
-.loader-wrapper
+.loader-wrapper,
+.dot-loader-wrapper
   width: 100%
   height: 100%
-  svg.t
+  svg.t,
+  svg.bigdot
     position: absolute
     top: 0
     left: 30%
@@ -75,6 +90,9 @@
   svg
     path
       fill: #323232
+
+svg.bigdot circle
+  fill: $accent_color !important
 
 .shadow
   animation: expand .35s infinite alternate ease-in-out

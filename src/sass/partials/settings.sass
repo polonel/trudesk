@@ -19,9 +19,9 @@
       top: 15px
       content: "arrow_forward_ios"
       font-size: 18px
-      color: #ccc
-    &.active
-      background: white
+      color: darken($page_content_bg, 10%)
+    &.active,&:hover
+      background: lighten($page_content_bg, 5%)
       &:before
         border-left: none
       &:after
@@ -36,7 +36,6 @@
       font-size: 16px
       font-weight: normal
 
-
 .setting-item-wrap,
 .search-results-container
   &.animate-in
@@ -47,3 +46,6 @@
     &.is-in
       transform: translateY(25px)
       opacity: 1
+
+.ticket-type-categories
+  background: darken($page_content_bg, 1%)
