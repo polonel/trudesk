@@ -28,6 +28,7 @@ class ColorSelector extends React.Component {
 
   componentDidMount () {
     helpers.UI.inputs()
+    this.setState({ selectedColor: this.props.defaultColor }, this.updateColorButton)
   }
 
   componentDidUpdate (prevProps) {

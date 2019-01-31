@@ -29,8 +29,8 @@ class SingleSelect extends React.Component {
   componentDidMount () {
     helpers.UI.selectize()
     const $select = $(this.select)
-
     $select.on('change', this.props.onSelectChange)
+    this.setState({ value: this.props.value })
   }
 
   componentWillUnmount () {
@@ -54,7 +54,7 @@ class SingleSelect extends React.Component {
     let width = '100%'
 
     if (this.select && this.select.selectize) {
-      this.select.selectize.addOption(this.props.items)
+      this.select.selectize.addOption(items)
       this.select.selectize.refreshOptions(false)
       this.select.selectize.addItem(this.state.value, true)
     }
@@ -76,7 +76,7 @@ class SingleSelect extends React.Component {
           {items.map(function (obj, i) {
             return (
               <option key={i} value={obj.value}>
-                {obj.label}
+                {obj.text}
               </option>
             )
           })}

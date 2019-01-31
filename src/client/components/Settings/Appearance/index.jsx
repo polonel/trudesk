@@ -258,14 +258,14 @@ class AppearanceSettings extends React.Component {
               <SingleSelect
                 width='60%'
                 items={[
-                  { label: 'Light (Default)', value: 'light' },
-                  { label: 'Dark', value: 'dark' },
-                  { label: 'Blue Jean', value: 'bluejean' },
-                  { label: 'Midnight', value: 'midnight' },
-                  { label: 'Moonlight', value: 'moonlight' },
-                  { label: 'Purple Rain', value: 'purplerain' },
-                  { label: 'Sandstone', value: 'sandstone' },
-                  { label: "Winter's Fire", value: 'winterfire' }
+                  { text: 'Light (Default)', value: 'light' },
+                  { text: 'Dark', value: 'dark' },
+                  { text: 'Blue Jean', value: 'bluejean' },
+                  { text: 'Midnight', value: 'midnight' },
+                  { text: 'Moonlight', value: 'moonlight' },
+                  { text: 'Purple Rain', value: 'purplerain' },
+                  { text: 'Sandstone', value: 'sandstone' },
+                  { text: "Winter's Fire", value: 'winterfire' }
                 ]}
                 value={this.state.selectedColorScheme}
                 onSelectChange={e => {
