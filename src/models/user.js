@@ -12,15 +12,15 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var async = require('async');
-var mongoose = require('mongoose');
-var winston = require('winston');
-var bcrypt = require('bcrypt');
-var _ = require('lodash');
-var Chance = require('chance');
+var async = require('async')
+var mongoose = require('mongoose')
+var winston = require('winston')
+var bcrypt = require('bcrypt')
+var _ = require('lodash')
+var Chance = require('chance')
 
-var SALT_FACTOR = 10;
-var COLLECTION = 'accounts';
+var SALT_FACTOR = 10
+var COLLECTION = 'accounts'
 
 /**
  * User Schema
@@ -47,221 +47,232 @@ var COLLECTION = 'accounts';
  * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
-        username:   { type: String, required: true, unique: true },
-        password:   { type: String, required: true, select: false },
-        fullname:   { type: String, required: true, index: true },
-        email:      { type: String, required: true, unique: true },
-        role:       { type: String, required: true },
-        lastOnline: Date,
-        title:      String,
-        image:      String,
+  username: { type: String, required: true, unique: true },
+  password: { type: String, required: true, select: false },
+  fullname: { type: String, required: true, index: true },
+  email: { type: String, required: true, unique: true, lowercase: true },
+  role: { type: String, required: true },
+  lastOnline: Date,
+  title: String,
+  image: String,
 
-        resetPassHash: { type: String, select: false},
-        resetPassExpire: { type: Date, select: false},
-        tOTPKey: { type: String, select: false },
-        tOTPPeriod: { type: Number, select: false },
-        resetL2AuthHash: { type: String, select: false },
-        resetL2AuthExpire: { type: Date, select: false },
-        hasL2Auth: { type: Boolean, required: true, default: false },
-        accessToken: { type: String, sparse: true, select: false},
+  resetPassHash: { type: String, select: false },
+  resetPassExpire: { type: Date, select: false },
+  tOTPKey: { type: String, select: false },
+  tOTPPeriod: { type: Number, select: false },
+  resetL2AuthHash: { type: String, select: false },
+  resetL2AuthExpire: { type: Date, select: false },
+  hasL2Auth: { type: Boolean, required: true, default: false },
+  accessToken: { type: String, sparse: true, select: false },
 
-        iOSDeviceTokens: [{type: String, select: false}],
+  iOSDeviceTokens: [{ type: String, select: false }],
 
-        preferences: {
-            tourCompleted: { type: Boolean, default: false },
-            autoRefreshTicketGrid: { type: Boolean, default: true },
-            openChatWindows: [{type: String, default: []}]
-        },
+  preferences: {
+    tourCompleted: { type: Boolean, default: false },
+    autoRefreshTicketGrid: { type: Boolean, default: true },
+    openChatWindows: [{ type: String, default: [] }]
+  },
 
-        deleted:    { type: Boolean, default: false }
-    });
+  deleted: { type: Boolean, default: false }
+})
 
-userSchema.set('toObject', {getters: true});
+userSchema.set('toObject', { getters: true })
 
-userSchema.pre('save', function(next) {
-    var user = this;
+userSchema.pre('save', function (next) {
+  var user = this
 
-    user.username = user.username.trim();
-    user.email = user.email.trim();
-    if (user.fullname) user.fullname = user.fullname.trim();
-    if (user.title) user.title = user.title.trim();
+  user.username = user.username.trim()
+  user.email = user.email.trim()
+  if (user.fullname) user.fullname = user.fullname.trim()
+  if (user.title) user.title = user.title.trim()
 
-    if (!user.isModified('password'))
-        return next();
+  if (!user.isModified('password')) {
+    return next()
+  }
 
-    bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
-        if (err) return next(err);
+  bcrypt.genSalt(SALT_FACTOR, function (err, salt) {
+    if (err) return next(err)
 
-        bcrypt.hash(user.password, salt, function (err, hash) {
-            if (err) return next(err);
+    bcrypt.hash(user.password, salt, function (err, hash) {
+      if (err) return next(err)
 
-            user.password = hash;
-            return next();
-        });
-    });
-});
+      user.password = hash
+      return next()
+    })
+  })
+})
 
-userSchema.methods.addAccessToken = function(callback) {
-    var user = this;
-    var date = new Date();
-    var salt = user.username.toString() + date.toISOString();
-    var chance = new Chance(salt);
-    user.accessToken = chance.hash();
-    user.save(function(err) {
-        if (err) return callback(err, null);
+userSchema.methods.addAccessToken = function (callback) {
+  var user = this
+  var date = new Date()
+  var salt = user.username.toString() + date.toISOString()
+  var chance = new Chance(salt)
+  user.accessToken = chance.hash()
+  user.save(function (err) {
+    if (err) return callback(err, null)
 
-        return callback(null, user.accessToken);
-    });
-};
+    return callback(null, user.accessToken)
+  })
+}
 
-userSchema.methods.removeAccessToken = function(callback) {
-    var user = this;
-    if (!user.accessToken) return callback();
+userSchema.methods.removeAccessToken = function (callback) {
+  var user = this
+  if (!user.accessToken) return callback()
 
-    user.accessToken = undefined;
-    user.save(function(err) {
-        if (err) return callback(err, null);
+  user.accessToken = undefined
+  user.save(function (err) {
+    if (err) return callback(err, null)
 
-        return callback();
-    });
-};
+    return callback()
+  })
+}
 
-userSchema.methods.generateL2Auth = function(callback) {
-    var user = this;
-    if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
-        var chance = new Chance();
-        var base32 = require('thirty-two');
+userSchema.methods.generateL2Auth = function (callback) {
+  var user = this
+  if (_.isUndefined(user.tOTPKey) || _.isNull(user.tOTPKey)) {
+    var chance = new Chance()
+    var base32 = require('thirty-two')
 
-        var genOTPKey = chance.string({length: 7, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'});
-        var base32GenOTPKey = base32.encode(genOTPKey).toString().replace(/=/g, '');
+    var genOTPKey = chance.string({
+      length: 7,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ23456789'
+    })
+    var base32GenOTPKey = base32
+      .encode(genOTPKey)
+      .toString()
+      .replace(/=/g, '')
 
-        user.tOTPKey = base32GenOTPKey;
-        user.hasL2Auth = true;
-        user.save(function(err) {
-            if (err) return callback(err);
+    user.tOTPKey = base32GenOTPKey
+    user.hasL2Auth = true
+    user.save(function (err) {
+      if (err) return callback(err)
 
-            return callback(null, base32GenOTPKey);
-        });
-    } else
-        return callback();
+      return callback(null, base32GenOTPKey)
+    })
+  } else {
+    return callback()
+  }
+}
 
+userSchema.methods.removeL2Auth = function (callback) {
+  var user = this
 
-};
+  user.tOTPKey = undefined
+  user.hasL2Auth = false
+  user.save(function (err) {
+    if (err) return callback(err, null)
 
-userSchema.methods.removeL2Auth = function(callback) {
-    var user = this;
+    return callback()
+  })
+}
 
-    user.tOTPKey = undefined;
-    user.hasL2Auth = false;
-    user.save(function(err) {
-        if (err) return callback(err, null);
+userSchema.methods.addDeviceToken = function (token, type, callback) {
+  if (_.isUndefined(token)) return callback('Invalid token')
+  var user = this
+  // type 1 = iOS
+  // type 2 = Android
+  if (type === 1) {
+    if (hasDeviceToken(user, token, type)) return callback(null, token)
 
-        return callback();
-    });
-};
+    user.iOSDeviceTokens.push(token)
+    user.save(function (err) {
+      if (err) return callback(err, null)
 
-userSchema.methods.addDeviceToken = function(token, type, callback) {
-    if (_.isUndefined(token)) return callback('Invalid token');
-    var user = this;
-    //type 1 = iOS
-    //type 2 = Android
-    if (type === 1) {
-        if (hasDeviceToken(user, token, type)) return callback(null, token);
+      callback(null, token)
+    })
+  }
+}
 
-        user.iOSDeviceTokens.push(token);
-        user.save(function(err) {
-            if (err) return callback(err, null);
+userSchema.methods.removeDeviceToken = function (token, type, callback) {
+  var user = this
+  if (type === 1) {
+    if (!hasDeviceToken(user, token, type)) return callback()
 
-            callback(null, token);
-        });
+    winston.debug('Removing Device: ' + token)
+    user.iOSDeviceTokens.splice(_.indexOf(this.iOSDeviceTokens, token), 1)
+    user.save(function (err, u) {
+      if (err) return callback(err, null)
+
+      return callback(null, u.iOSDeviceTokens)
+    })
+  }
+}
+
+userSchema.methods.addOpenChatWindow = function (convoId, callback) {
+  if (convoId === undefined) {
+    if (!_.isFunction(callback)) return false
+    return callback('Invalid convoId')
+  }
+  var user = this
+  var hasChatWindow =
+    _.filter(user.preferences.openChatWindows, function (value) {
+      return value.toString() === convoId.toString()
+    }).length > 0
+
+  if (hasChatWindow) {
+    if (!_.isFunction(callback)) return false
+    return callback()
+  }
+  user.preferences.openChatWindows.push(convoId.toString())
+  user.save(function (err, u) {
+    if (err) {
+      if (!_.isFunction(callback)) return false
+      return callback(err)
     }
-};
 
-userSchema.methods.removeDeviceToken = function(token, type, callback) {
-    var user = this;
-    if (type === 1) {
-        if (!hasDeviceToken(user, token, type)) return callback();
+    if (!_.isFunction(callback)) return false
+    return callback(null, u.preferences.openChatWindows)
+  })
+}
 
-        winston.debug('Removing Device: ' + token);
-        user.iOSDeviceTokens.splice(_.indexOf(this.iOSDeviceTokens, token), 1);
-        user.save(function(err, u) {
-            if (err) return callback(err, null);
+userSchema.methods.removeOpenChatWindow = function (convoId, callback) {
+  if (convoId === undefined) {
+    if (!_.isFunction(callback)) return false
+    return callback('Invalid convoId')
+  }
+  var user = this
+  var hasChatWindow =
+    _.filter(user.preferences.openChatWindows, function (value) {
+      return value.toString() === convoId.toString()
+    }).length > 0
 
-            return callback(null, u.iOSDeviceTokens);
-        });
+  if (!hasChatWindow) {
+    if (!_.isFunction(callback)) return false
+    return callback()
+  }
+  user.preferences.openChatWindows.splice(
+    _.findIndex(user.preferences.openChatWindows, function (item) {
+      return item.toString() === convoId.toString()
+    }),
+    1
+  )
+
+  user.save(function (err, u) {
+    if (err) {
+      if (!_.isFunction(callback)) return false
+      return callback(err)
     }
-};
 
-userSchema.methods.addOpenChatWindow = function(convoId, callback) {
-    if (convoId === undefined) {
-        if (!_.isFunction(callback)) return false;
-        return callback('Invalid convoId');
-    }
-    var user = this;
-    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
-         return value.toString() === convoId.toString();
-    }).length > 0);
+    if (!_.isFunction(callback)) return false
+    return callback(null, u.preferences.openChatWindows)
+  })
+}
 
-    if (hasChatWindow) {
-        if (!_.isFunction(callback)) return false;
-        return callback();
-    }
-    user.preferences.openChatWindows.push(convoId.toString());
-    user.save(function(err, u) {
-        if (err) {
-            if (!_.isFunction(callback)) return false;
-            return callback(err);
-        }
+userSchema.methods.softDelete = function (callback) {
+  var user = this
 
-        if (!_.isFunction(callback)) return false;
-        return callback(null, u.preferences.openChatWindows);
-    });
-};
+  user.deleted = true
 
-userSchema.methods.removeOpenChatWindow = function(convoId, callback) {
-    if (convoId === undefined) {
-        if (!_.isFunction(callback)) return false;
-        return callback('Invalid convoId');
-    }
-    var user = this;
-    var hasChatWindow = (_.filter(user.preferences.openChatWindows, function(value) {
-        return value.toString() === convoId.toString();
-    }).length > 0);
+  user.save(function (err) {
+    if (err) return callback(err, false)
 
-    if (!hasChatWindow) {
-        if (!_.isFunction(callback)) return false;
-        return callback();
-    }
-    user.preferences.openChatWindows.splice(_.findIndex(user.preferences.openChatWindows, function(item) {
-        return item.toString() === convoId.toString();
-    }), 1);
-
-    user.save(function(err, u) {
-        if (err) {
-            if (!_.isFunction(callback)) return false;
-            return callback(err);
-        }
-
-        if (!_.isFunction(callback)) return false;
-        return callback(null, u.preferences.openChatWindows);
-    });
-};
-
-userSchema.methods.softDelete = function(callback) {
-    var user = this;
-
-    user.deleted = true;
-
-    user.save(function(err) {
-        if (err) return callback(err, false);
-
-        callback(null, true);
-    });
-};
+    callback(null, true)
+  })
+}
 
 userSchema.statics.validate = function (password, dbPass) {
-    return bcrypt.compareSync(password, dbPass);
-};
+  return bcrypt.compareSync(password, dbPass)
+}
 
 /**
  * Gets all users
@@ -272,9 +283,9 @@ userSchema.statics.validate = function (password, dbPass) {
  *
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.findAll = function(callback) {
-    return this.model(COLLECTION).find({}, callback);
-};
+userSchema.statics.findAll = function (callback) {
+  return this.model(COLLECTION).find({}, callback)
+}
 
 /**
  * Gets user via object _id
@@ -286,13 +297,13 @@ userSchema.statics.findAll = function(callback) {
  * @param {Object} oId Object _id to Query MongoDB
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUser = function(oId, callback) {
-    if (_.isUndefined(oId))
-        return callback('Invalid ObjectId - UserSchema.GetUser()', null);
+userSchema.statics.getUser = function (oId, callback) {
+  if (_.isUndefined(oId)) {
+    return callback('Invalid ObjectId - UserSchema.GetUser()', null)
+  }
 
-
-    return this.model(COLLECTION).findOne({_id: oId}, callback);
-};
+  return this.model(COLLECTION).findOne({ _id: oId }, callback)
+}
 
 /**
  * Gets user via username
@@ -304,13 +315,16 @@ userSchema.statics.getUser = function(oId, callback) {
  * @param {String} user Username to Query MongoDB
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUserByUsername = function(user, callback) {
-    if (_.isUndefined(user))
-        return callback('Invalid Username - UserSchema.GetUserByUsername()', null);
+userSchema.statics.getUserByUsername = function (user, callback) {
+  if (_.isUndefined(user)) {
+    return callback('Invalid Username - UserSchema.GetUserByUsername()', null)
+  }
 
-
-    return this.model(COLLECTION).findOne({username: new RegExp('^' + user + '$', 'i')}).select('+password +accessToken').exec(callback);
-};
+  return this.model(COLLECTION)
+    .findOne({ username: new RegExp('^' + user + '$', 'i') })
+    .select('+password +accessToken')
+    .exec(callback)
+}
 
 /**
  * Gets user via email
@@ -322,13 +336,13 @@ userSchema.statics.getUserByUsername = function(user, callback) {
  * @param {String} email Email to Query MongoDB
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUserByEmail = function(email, callback) {
-    if (_.isUndefined(email))
-        return callback('Invalid Email - UserSchema.GetUserByEmail()', null);
+userSchema.statics.getUserByEmail = function (email, callback) {
+  if (_.isUndefined(email)) {
+    return callback('Invalid Email - UserSchema.GetUserByEmail()', null)
+  }
 
-
-    return this.model(COLLECTION).findOne({email: new RegExp('^' + email + '$', 'i')}, callback);
-};
+  return this.model(COLLECTION).findOne({ email: email.toLowerCase() }, callback)
+}
 
 /**
  * Gets user via reset password hash
@@ -340,20 +354,29 @@ userSchema.statics.getUserByEmail = function(email, callback) {
  * @param {String} hash Hash to Query MongoDB
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUserByResetHash = function(hash, callback) {
-    if (_.isUndefined(hash))
-        return callback('Invalid Hash - UserSchema.GetUserByResetHash()', null);
+userSchema.statics.getUserByResetHash = function (hash, callback) {
+  if (_.isUndefined(hash)) {
+    return callback('Invalid Hash - UserSchema.GetUserByResetHash()', null)
+  }
 
+  return this.model(COLLECTION).findOne(
+    { resetPassHash: hash, deleted: false },
+    '+resetPassHash +resetPassExpire',
+    callback
+  )
+}
 
-    return this.model(COLLECTION).findOne({resetPassHash: hash, deleted: false}, '+resetPassHash +resetPassExpire', callback);
-};
+userSchema.statics.getUserByL2ResetHash = function (hash, callback) {
+  if (_.isUndefined(hash)) {
+    return callback('Invalid Hash - UserSchema.GetUserByL2ResetHash()', null)
+  }
 
-userSchema.statics.getUserByL2ResetHash = function(hash, callback) {
-    if (_.isUndefined(hash))
-        return callback('Invalid Hash - UserSchema.GetUserByL2ResetHash()', null);
-
-    return this.model(COLLECTION).findOne({resetL2AuthHash: hash, deleted: false}, '+resetL2AuthHash +resetL2AuthExpire', callback);
-};
+  return this.model(COLLECTION).findOne(
+    { resetL2AuthHash: hash, deleted: false },
+    '+resetL2AuthHash +resetL2AuthExpire',
+    callback
+  )
+}
 
 /**
  * Gets user via API Access Token
@@ -365,36 +388,40 @@ userSchema.statics.getUserByL2ResetHash = function(hash, callback) {
  * @param {String} token Access Token to Query MongoDB
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUserByAccessToken = function(token, callback) {
-    if (_.isUndefined(token))
-        return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null);
+userSchema.statics.getUserByAccessToken = function (token, callback) {
+  if (_.isUndefined(token)) {
+    return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null)
+  }
 
+  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, callback)
+}
 
-    return this.model(COLLECTION).findOne({accessToken: token, deleted: false}, callback);
-};
+userSchema.statics.getUserWithObject = function (object, callback) {
+  if (!_.isObject(object)) {
+    return callback('Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()', null)
+  }
 
-userSchema.statics.getUserWithObject = function(object, callback) {
-    if (!_.isObject(object))
-        return callback('Invalid Object (Must be of type Object) - UserSchema.GetUserWithObject()', null);
+  var self = this
 
+  var limit = object.limit === null ? 10 : object.limit
+  var page = object.page === null ? 0 : object.page
+  var search = object.search === null ? '' : object.search
 
-    var self = this;
+  var q = self
+    .model(COLLECTION)
+    .find({}, '-password -resetPassHash -resetPassExpire')
+    .sort({ fullname: 1 })
+    .skip(page * limit)
+  if (limit !== -1) {
+    q.limit(limit)
+  }
 
-    var limit = (object.limit === null ? 10 : object.limit);
-    var page = (object.page === null ? 0 : object.page);
-    var search = (object.search === null ? '' : object.search);
+  if (!_.isEmpty(search)) {
+    q.where({ fullname: new RegExp('^' + search.toLowerCase(), 'i') })
+  }
 
-    var q = self.model(COLLECTION).find({}, '-password -resetPassHash -resetPassExpire')
-        .sort({'fullname': 1})
-        .skip(page*limit);
-    if (limit !== -1)
-        q.limit(limit);
-
-    if (!_.isEmpty(search))
-        q.where({fullname: new RegExp('^' + search.toLowerCase(), 'i') });
-
-    q.exec(callback);
-};
+  q.exec(callback)
+}
 
 /**
  * Gets users based on permissions > mod
@@ -405,25 +432,26 @@ userSchema.statics.getUserWithObject = function(object, callback) {
  *
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getAssigneeUsers = function(callback) {
-    var permissions = require('../permissions');
-    var roles = permissions.roles;
-    var assigneeRoles = [];
-    async.each(roles, function(role) {
-        if (permissions.canThis(role.id, 'ticket:assignee'))
-            assigneeRoles.push(role.id);
-    });
+userSchema.statics.getAssigneeUsers = function (callback) {
+  var permissions = require('../permissions')
+  var roles = permissions.roles
+  var assigneeRoles = []
+  async.each(roles, function (role) {
+    if (permissions.canThis(role.id, 'ticket:assignee')) {
+      assigneeRoles.push(role.id)
+    }
+  })
 
-    assigneeRoles = _.uniq(assigneeRoles);
-    this.model(COLLECTION).find({role: {$in: assigneeRoles}, deleted: false}, function(err, users) {
-        if (err) {
-            winston.warn(err);
-            return callback(err, null);
-        }
+  assigneeRoles = _.uniq(assigneeRoles)
+  this.model(COLLECTION).find({ role: { $in: assigneeRoles }, deleted: false }, function (err, users) {
+    if (err) {
+      winston.warn(err)
+      return callback(err, null)
+    }
 
-        callback(null, users);
-    });
-};
+    callback(null, users)
+  })
+}
 
 /**
  * Gets users based on roles
@@ -435,15 +463,16 @@ userSchema.statics.getAssigneeUsers = function(callback) {
  * @param {Array} roles Array of role ids
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.getUsersByRoles = function(roles, callback) {
-    if (_.isUndefined(roles)) return callback('Invalid roles array', null);
-    if (!_.isArray(roles))
-        roles = [roles];
+userSchema.statics.getUsersByRoles = function (roles, callback) {
+  if (_.isUndefined(roles)) return callback('Invalid roles array', null)
+  if (!_.isArray(roles)) {
+    roles = [roles]
+  }
 
-    var q = this.model(COLLECTION).find({role: {$in: roles}, deleted: false});
+  var q = this.model(COLLECTION).find({ role: { $in: roles }, deleted: false })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
 /**
  * Creates a user with the given data object
@@ -455,22 +484,25 @@ userSchema.statics.getUsersByRoles = function(roles, callback) {
  * @param {User} data JSON data object of new User
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-userSchema.statics.createUser = function(data, callback) {
-    if (_.isUndefined(data) || _.isUndefined(data.username))
-        return callback('Invalid User Data - UserSchema.CreateUser()', null);
+userSchema.statics.createUser = function (data, callback) {
+  if (_.isUndefined(data) || _.isUndefined(data.username)) {
+    return callback('Invalid User Data - UserSchema.CreateUser()', null)
+  }
 
-    var self = this;
+  var self = this
 
-    self.model(COLLECTION).find({'username': data.username}, function(err, items) {
-        if (err)
-          return callback(err, null);
+  self.model(COLLECTION).find({ username: data.username }, function (err, items) {
+    if (err) {
+      return callback(err, null)
+    }
 
-        if (_.size(items) > 0)
-          return callback('Username Already Exists', null);
+    if (_.size(items) > 0) {
+      return callback('Username Already Exists', null)
+    }
 
-        return self.collection.insert(data, callback);
-    });
-};
+    return self.collection.insert(data, callback)
+  })
+}
 
 /**
  * Creates a user with only Email address. Emails user password.
@@ -478,99 +510,105 @@ userSchema.statics.createUser = function(data, callback) {
  * @param email
  * @param callback
  */
-userSchema.statics.createUserFromEmail = function(email, callback) {
-    if (_.isUndefined(email))
-        return callback('Invalid User Data - UserSchema.CreatePublicUser()', null);
+userSchema.statics.createUserFromEmail = function (email, callback) {
+  if (_.isUndefined(email)) {
+    return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
+  }
 
+  var self = this
+  var Chance = require('chance')
 
-    var self = this;
-    var Chance = require('chance'),
-        chance = new Chance();
+  var chance = new Chance()
 
-    var plainTextPass = chance.string({length: 6, pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'});
+  var plainTextPass = chance.string({
+    length: 6,
+    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+  })
 
-    var user = new this({
-        username: email,
-        email: email,
-        password: plainTextPass,
-        fullname: email,
-        role:'user'
-    });
+  var user = new this({
+    username: email,
+    email: email,
+    password: plainTextPass,
+    fullname: email,
+    role: 'user'
+  })
 
-    self.model(COLLECTION).find({'username': user.username}, function(err, items) {
-        if (err) return callback(err);
-        if (_.size(items) > 0) return callback('Username already exists');
+  self.model(COLLECTION).find({ username: user.username }, function (err, items) {
+    if (err) return callback(err)
+    if (_.size(items) > 0) return callback('Username already exists')
 
-        user.save(function(err, savedUser) {
-            if (err) return callback(err);
+    user.save(function (err, savedUser) {
+      if (err) return callback(err)
 
-            // Create a group for this user
-            var GroupSchema = require('./group');
-            var group = new GroupSchema({
-                name: savedUser.email,
-                members: [savedUser._id],
-                sendMailTo: [savedUser._id],
-                public: true
-            });
+      // Create a group for this user
+      var GroupSchema = require('./group')
+      var group = new GroupSchema({
+        name: savedUser.email,
+        members: [savedUser._id],
+        sendMailTo: [savedUser._id],
+        public: true
+      })
 
-            group.save(function(err, group) {
-                if (err) return callback(err);
+      group.save(function (err, group) {
+        if (err) return callback(err)
 
-                //Send welcome email
-                var path = require('path');
-                var mailer = require('../mailer');
-                var Email = require('email-templates');
-                var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates');
+        // Send welcome email
+        var path = require('path')
+        var mailer = require('../mailer')
+        var Email = require('email-templates')
+        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-                var email = new Email({
-                    views: {
-                        root: templateDir,
-                        options: {
-                            extension: 'handlebars'
-                        }
-                    }
-                });
+        var email = new Email({
+          views: {
+            root: templateDir,
+            options: {
+              extension: 'handlebars'
+            }
+          }
+        })
 
-                var settingSchema = require('./setting');
-                settingSchema.getSetting('gen:siteurl', function(err, setting) {
-                    if (err) return callback(err) ;
+        var settingSchema = require('./setting')
+        settingSchema.getSetting('gen:siteurl', function (err, setting) {
+          if (err) return callback(err)
 
-                    if (!setting)
-                        setting = {value: ''};
+          if (!setting) {
+            setting = { value: '' }
+          }
 
-                    var dataObject = {
-                        user: savedUser,
-                        plainTextPassword: plainTextPass,
-                        baseUrl: setting.value
-                    };
+          var dataObject = {
+            user: savedUser,
+            plainTextPassword: plainTextPass,
+            baseUrl: setting.value
+          }
 
-                    email.render('public-account-created', dataObject)
-                        .then(function(html) {
-                            var mailOptions = {
-                                to: savedUser.email,
-                                subject: 'Welcome to trudesk! - Here are your account details.',
-                                html: html,
-                                generateTextFromHTML: true
-                            };
+          email
+            .render('public-account-created', dataObject)
+            .then(function (html) {
+              var mailOptions = {
+                to: savedUser.email,
+                subject: 'Welcome to trudesk! - Here are your account details.',
+                html: html,
+                generateTextFromHTML: true
+              }
 
-                            mailer.sendMail(mailOptions, function(err) {
-                                if (err){
-                                    winston.warn(err);
-                                    return callback(err);
-                                }
+              mailer.sendMail(mailOptions, function (err) {
+                if (err) {
+                  winston.warn(err)
+                  return callback(err)
+                }
 
-                                return callback(null, {user: savedUser, group: group});
-                            });
-                        })
-                        .catch(function(err) {
-                            winston.warn(err);
-                            return callback(err);
-                        });
-                });
-            });
-        });
-    });
-};
+                return callback(null, { user: savedUser, group: group })
+              })
+            })
+            .catch(function (err) {
+              winston.warn(err)
+              return callback(err)
+            })
+        })
+      })
+    })
+  })
+}
 
 /**
  * Checks if a user has device token already
@@ -589,17 +627,18 @@ userSchema.statics.createUserFromEmail = function(email, callback) {
  *   2: Android
  *   3: Windows
  */
-function hasDeviceToken(user, token, type) {
-    if (type === 1) {
-        var matches = _.filter(user.iOSDeviceTokens, function(value) {
-            if (value === token)
-                return value;
-        });
+function hasDeviceToken (user, token, type) {
+  if (type === 1) {
+    var matches = _.filter(user.iOSDeviceTokens, function (value) {
+      if (value === token) {
+        return value
+      }
+    })
 
-        return matches.length > 0;
-    }
+    return matches.length > 0
+  }
 
-    return false;
+  return false
 }
 
-module.exports = mongoose.model(COLLECTION, userSchema);
+module.exports = mongoose.model(COLLECTION, userSchema)

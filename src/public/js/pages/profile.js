@@ -12,34 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('pages/profile', [
-    'jquery',
-    'qrcode',
-    'history'
+define('pages/profile', ['jquery', 'qrcode', 'history'], function ($) {
+  var profile = {}
 
-], function($) {
-    var profile = {};
+  profile.init = function (callback) {
+    $(document).ready(function () {
+      generateQRCode()
 
-    profile.init = function(callback) {
-        $(document).ready(function() {
-            generateQRCode();
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    function generateQRCode() {
-        var $totp = $('#totp-qrcode');
-        var hasKey = $totp.attr('data-hasKey');
-        var key = $totp.attr('data-totpkey');
-        if (hasKey === 'true') 
-            $totp.qrcode({width: 242, height: 242, text: key});
-         else {
-            $('input#tOTPKey').addClass('hide');
-            $('.totp-settings-wrap .panel-body2').addClass('hide');
-        }
+  function generateQRCode () {
+    var $totp = $('#totp-qrcode')
+    var hasKey = $totp.attr('data-hasKey')
+    var key = $totp.attr('data-totpkey')
+    if (hasKey === 'true') {
+      $totp.qrcode({ width: 242, height: 242, text: key })
+    } else {
+      $('input#tOTPKey').addClass('hide')
+      $('.totp-settings-wrap .panel-body2').addClass('hide')
     }
+  }
 
-    return profile;
-});
+  return profile
+})

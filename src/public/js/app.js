@@ -15,82 +15,88 @@
 //Load SASS (Webpack)
 // require('../../sass/app.sass');
 
-global.react = {}; // Global react var for calling state outside react.
+global.react = {} // Global react var for calling state outside react.
 
-require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function($, helpers, angular, async) {
-    helpers.init();
+require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function ($, helpers, angular, async) {
+  helpers.init()
 
-    angular.element(document).ready(function() {
-        // Call the Session service before bootstrapping.
-        // Allowing the SessionUser to be populated before the controllers have access.
-        async.parallel([
-            function(done) {
-                angular.injector(['ng', 'trudesk.services.session']).get('SessionService').init(done);
-            },
-            function(done) {
-                angular.injector(['ng', 'trudesk.services.settings']).get('SettingsService').init(done);
-            }
-        ], function(err) {
-            if (err) throw new Error(err);
+  angular.element(document).ready(function () {
+    // Call the Session service before bootstrapping.
+    // Allowing the SessionUser to be populated before the controllers have access.
+    async.parallel(
+      [
+        function (done) {
+          angular
+            .injector(['ng', 'trudesk.services.session'])
+            .get('SessionService')
+            .init(done)
+        },
+        function (done) {
+          angular
+            .injector(['ng', 'trudesk.services.settings'])
+            .get('SettingsService')
+            .init(done)
+        }
+      ],
+      function (err) {
+        if (err) throw new Error(err)
 
-            require(['angularjs/main'], function() {
-                //Static Bootstraps
-                angular.bootstrap($('.top-bar'), ['trudesk']);
-                angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
-                angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
+        require(['angularjs/main'], function () {
+          // Static Bootstraps
+          angular.bootstrap($('.top-bar'), ['trudesk'])
+          angular.bootstrap($('#ticketFilterModal'), ['trudesk'])
+          angular.bootstrap($('#ticketCreateModal'), ['trudesk'])
 
-                //Dynamic Bootstrap
-                angular.bootstrap($('#page-content'), ['trudesk']);
+          // Dynamic Bootstrap
+          angular.bootstrap($('#page-content'), ['trudesk'])
 
+          require([
+            'underscore',
+            'modules/navigation',
+            'modules/socket',
+            'uikit',
+            'modules/ajaxify',
+            'modernizr',
+            'fastclick',
+            'placeholder',
+            'pace',
+            'easypiechart',
+            'idletimer'
+          ], function (_, nav, socket) {
+            // Page loading (init)
+            require(['pages/pageloader'], function (pl) {
+              // React
+              require('../../client/app.jsx')
 
-                require([
-                    'underscore',
-                    'modules/navigation',
-                    'modules/socket',
-                    'uikit',
-                    'modules/ajaxify',
-                    'modernizr',
-                    'fastclick',
-                    'placeholder',
-                    'pace',
-                    'easypiechart',
-                    'idletimer'
+              pl.init(function () {
+                nav.init()
 
-                ], function(_, nav, socket) {
-                    //Page loading (init)
-                    require(['pages/pageloader'], function(pl) {
-                        //React
-                        require('../../client/app.jsx');
+                var $event = _.debounce(function () {
+                  helpers.hideLoader(1000)
+                  helpers.countUpMe()
+                  helpers.UI.cardShow()
 
-                        pl.init(function() {
-                            nav.init();
+                  // 5min idle timer
+                  var idleTime = 5 * 60 * 1000
 
-                            var $event = _.debounce(function() {
-                                helpers.hideLoader(1000);
-                                helpers.countUpMe();
-                                helpers.UI.cardShow();
+                  $(document).idleTimer(idleTime)
+                  $(document).on('idle.idleTimer', function () {
+                    socket.chat.setUserIdle()
+                  })
 
-                                //5min idle timer
-                                var idleTime = 5 * 60 * 1000;
+                  $(document).on('active.idleTimer', function () {
+                    socket.chat.setUserActive()
+                  })
 
-                                $(document).idleTimer(idleTime);
-                                $(document).on('idle.idleTimer', function() {
-                                    socket.chat.setUserIdle();
-                                });
+                  $.event.trigger('$trudesk:ready', window)
+                }, 100)
 
-                                $(document).on('active.idleTimer', function() {
-                                    socket.chat.setUserActive();
-                                });
-
-                                $.event.trigger('$trudesk:ready', window);
-
-                            }, 100);
-
-                            $event();
-                        });
-                    });
-                });
-            });
-        });
-    });
-});
+                $event()
+              })
+            })
+          })
+        })
+      }
+    )
+  })
+})

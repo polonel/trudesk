@@ -401,7 +401,7 @@ input[type=checkbox]:not(:disabled) ~ .lever:active:after {
   user-select: none;
 }
 
-[type="radio"] + label:before,
+[type="radio"] + label:not(.gjs-radio-item-label):before,
 [type="radio"] + label:after {
   content: '';
   position: absolute;

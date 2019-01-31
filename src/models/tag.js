@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
-var COLLECTION = 'tags';
+var COLLECTION = 'tags'
 
 /**
  * Tag Schema
@@ -26,22 +26,22 @@ var COLLECTION = 'tags';
  * @property {String} name ```Required``` ```unique``` Name of Tag
  */
 var tagSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true },
-    normalized: String
-});
+  name: { type: String, required: true, unique: true },
+  normalized: String
+})
 
-tagSchema.pre('save', function(next) {
-    this.name = this.name.trim();
-    this.normalized = this.name.toLowerCase().trim();
+tagSchema.pre('save', function (next) {
+  this.name = this.name.trim()
+  this.normalized = this.name.toLowerCase().trim()
 
-    return next();
-});
+  return next()
+})
 
-tagSchema.statics.getTag = function(id, callback) {
-    var q = this.model(COLLECTION).findOne({_id: id});
+tagSchema.statics.getTag = function (id, callback) {
+  var q = this.model(COLLECTION).findOne({ _id: id })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
 /**
  * Return all Tags
@@ -52,36 +52,43 @@ tagSchema.statics.getTag = function(id, callback) {
  *
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-tagSchema.statics.getTags = function(callback) {
-    var q = this.model(COLLECTION).find({}).sort('normalized');
+tagSchema.statics.getTags = function (callback) {
+  var q = this.model(COLLECTION)
+    .find({})
+    .sort('normalized')
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-tagSchema.statics.getTagsWithLimit = function(limit, page, callback) {
-    return this.model(COLLECTION).find({})
-        .limit(limit)
-        .skip(page*limit)
-        .sort('normalized')
-        .exec(callback);
-};
+tagSchema.statics.getTagsWithLimit = function (limit, page, callback) {
+  return this.model(COLLECTION)
+    .find({})
+    .limit(limit)
+    .skip(page * limit)
+    .sort('normalized')
+    .exec(callback)
+}
 
-tagSchema.statics.getTagByName = function(tagName, callback) {
-    var q = this.model(COLLECTION).find({name: tagName}).limit(1);
+tagSchema.statics.getTagByName = function (tagName, callback) {
+  var q = this.model(COLLECTION)
+    .find({ name: tagName })
+    .limit(1)
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-tagSchema.statics.tagExist = function(tagName, callback) {
-    var q = this.model(COLLECTION).countDocuments({name: tagName});
+tagSchema.statics.tagExist = function (tagName, callback) {
+  var q = this.model(COLLECTION).countDocuments({ name: tagName })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-tagSchema.statics.getTagCount = function(callback) {
-    var q = this.model(COLLECTION).countDocuments({}).lean();
+tagSchema.statics.getTagCount = function (callback) {
+  var q = this.model(COLLECTION)
+    .countDocuments({})
+    .lean()
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-module.exports = mongoose.model(COLLECTION, tagSchema);
+module.exports = mongoose.model(COLLECTION, tagSchema)

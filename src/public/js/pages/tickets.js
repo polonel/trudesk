@@ -13,77 +13,82 @@
  */
 
 define('pages/tickets', [
-    'jquery',
-    'modules/helpers',
-    'velocity',
-    'datatables',
-    'dt_responsive',
-    'dt_grouping',
-    //'dt_foundation',
-    'dt_scroller',
-    'history'
+  'jquery',
+  'modules/helpers',
+  'velocity',
+  'datatables',
+  'dt_responsive',
+  'dt_grouping',
+  // 'dt_foundation',
+  'dt_scroller',
+  'history'
+], function ($, helpers, velocity) {
+  var ticketsPage = {}
 
-], function($, helpers, velocity) {
-    var ticketsPage = {};
+  ticketsPage.init = function (callback) {
+    $(document).ready(function () {
+      var table = $('#ticketTable')
+      table.dataTable({
+        searching: false,
+        bLengthChange: false,
+        paging: false,
+        iDisplayLength: 99999,
+        bInfo: false,
+        scrollY: '100%',
+        columnDefs: [
+          { width: '50px', targets: 0 },
+          { width: '100px', targets: 1 },
+          { width: '65px', targets: 2 },
+          { width: '25%', targets: 3 },
+          { width: '110px', targets: 4 }
+        ],
+        order: [[2, 'desc']],
+        oLanguage: {
+          sEmptyTable: 'No tickets to display.'
+        }
+      })
 
-    ticketsPage.init = function(callback) {
-        $(document).ready(function() {
-            var table = $('#ticketTable');
-            table.dataTable({
-                searching: false,
-                bLengthChange: false,
-                paging: false,
-                iDisplayLength: 99999,
-                bInfo: false,
-                scrollY: '100%',
-                columnDefs: [
-                    {'width': '50px', 'targets': 0 },
-                    {'width': '100px', 'targets': 1 },
-                    {'width': '65px', 'targets': 2 },
-                    {'width': '25%', 'targets': 3 },
-                    {'width': '110px', 'targets': 4 }
-                ],
-                order: [[2, 'desc']],
-                'oLanguage': {
-                    'sEmptyTable': 'No tickets to display.'
-                }
-            });
+      helpers.resizeAll()
 
-            helpers.resizeAll();
+      $('#ticketTable tbody').on('click', 'td', function () {
+        var i = $(this)
+          .parents('tr')
+          .attr('data-ticket')
+        var j = $(this).find('input[type=checkbox]')
+        if ($(j).length !== 0) {
+          return true
+        }
 
-            $('#ticketTable tbody').on('click', 'td', function() {
-                var i = $(this).parents('tr').attr('data-ticket');
-                var j = $(this).find('input[type=checkbox]');
-                if ($(j).length !== 0)
-                    return true;
+        History.pushState(null, 'Ticket - ' + i, '/tickets/' + i)
+      })
 
-                History.pushState(null, 'Ticket - ' + i, '/tickets/' + i);
-            });
+      // Overdue Tickets
+      // var hexDigits = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
 
+      // Function to convert hex format to a rgb color
+      // function rgb2hex(rgb) {
+      //     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
+      //     return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]).toLowerCase();
+      // }
 
-            //Overdue Tickets
-            // var hexDigits = ['0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f'];
+      // function hex(x) {
+      //     return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
+      // }
 
-            //Function to convert hex format to a rgb color
-            // function rgb2hex(rgb) {
-            //     rgb = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
-            //     return '#' + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3]).toLowerCase();
-            // }
+      $('tr.overdue td').velocity(
+        { backgroundColor: '#b71c1c', color: '#ffffff' },
+        {
+          loop: true,
+          easing: [1],
+          duration: 800
+        }
+      )
 
-            // function hex(x) {
-            //     return isNaN(x) ? '00' : hexDigits[(x - x % 16) / 16] + hexDigits[x % 16];
-            // }
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            $('tr.overdue td').velocity({backgroundColor: '#b71c1c', color: '#ffffff'}, {
-                loop: true,
-                easing: [1],
-                duration: 800
-            });
-
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return ticketsPage;
-});
+  return ticketsPage
+})

@@ -12,11 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { all } from 'redux-saga/effects';
-import SettingsSaga from './settings';
+import { all } from 'redux-saga/effects'
+import SettingsSaga from './settings'
 
-export default function* IndexSagas () {
-    yield all([
-        SettingsSaga()
-    ]);
+export default function * IndexSagas () {
+  yield all([SettingsSaga()])
 }

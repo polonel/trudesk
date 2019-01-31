@@ -12,18 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define([
-    'jquery',
-    'angular',
-
-    'angularjs/services/session',
-    'angularjs/services/settingsService'
-
-], function($, angular) {
-
-    return angular.module('trudesk.services',
-        [
-            'trudesk.services.session',
-            'trudesk.services.settings'
-        ]);
-});
+define(['jquery', 'angular', 'angularjs/services/session', 'angularjs/services/settingsService'], function (
+  $,
+  angular
+) {
+  return angular.module('trudesk.services', ['trudesk.services.session', 'trudesk.services.settings'])
+})

@@ -12,13 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _        = require('lodash');
-var mongoose = require('mongoose');
+var _ = require('lodash')
+var mongoose = require('mongoose')
 
-var COLLECTION = 'tickettypes';
+var COLLECTION = 'tickettypes'
 
-//Needed for Population
-require('./ticketpriority');
+// Needed for Population
+require('./ticketpriority')
 
 /**
  * TicketType Schema
@@ -30,23 +30,23 @@ require('./ticketpriority');
  * @property {String} name ```Required``` ```unique``` Name of Ticket Type
  */
 var ticketTypeSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true },
-    priorities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'priorities'}]
-});
+  name: { type: String, required: true, unique: true },
+  priorities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'priorities' }]
+})
 
-var autoPopulatePriorities = function(next) {
-    this.populate('priorities');
-    return next();
-};
+var autoPopulatePriorities = function (next) {
+  this.populate('priorities')
+  return next()
+}
 
-ticketTypeSchema.pre('find', autoPopulatePriorities);
-ticketTypeSchema.pre('findOne', autoPopulatePriorities);
+ticketTypeSchema.pre('find', autoPopulatePriorities)
+ticketTypeSchema.pre('findOne', autoPopulatePriorities)
 
-ticketTypeSchema.pre('save', function(next) {
-    this.name = this.name.trim();
+ticketTypeSchema.pre('save', function (next) {
+  this.name = this.name.trim()
 
-    return next();
-});
+  return next()
+})
 
 /**
  * Return all Ticket Types
@@ -57,11 +57,11 @@ ticketTypeSchema.pre('save', function(next) {
  *
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-ticketTypeSchema.statics.getTypes = function(callback) {
-    var q = this.model(COLLECTION).find({});
+ticketTypeSchema.statics.getTypes = function (callback) {
+  var q = this.model(COLLECTION).find({})
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
 /**
  * Return Single Ticket Types
@@ -73,11 +73,11 @@ ticketTypeSchema.statics.getTypes = function(callback) {
  * @param {String} id Object Id of ticket type
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-ticketTypeSchema.statics.getType = function(id, callback) {
-    var q = this.model(COLLECTION).findOne({_id: id});
+ticketTypeSchema.statics.getType = function (id, callback) {
+  var q = this.model(COLLECTION).findOne({ _id: id })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
 /**
  * Return Single Ticket Type based on given type name
@@ -89,35 +89,36 @@ ticketTypeSchema.statics.getType = function(id, callback) {
  * @param {String} name Name of Ticket Type to search for
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-ticketTypeSchema.statics.getTypeByName = function(name, callback) {
-    var q = this.model(COLLECTION).findOne({name: name});
+ticketTypeSchema.statics.getTypeByName = function (name, callback) {
+  var q = this.model(COLLECTION).findOne({ name: name })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-ticketTypeSchema.methods.addPriority = function(priorityId, callback) {
-    if (!priorityId) return callback({message: 'Invalid Priority Id'});
+ticketTypeSchema.methods.addPriority = function (priorityId, callback) {
+  if (!priorityId) return callback({ message: 'Invalid Priority Id' })
 
-    var self = this;
+  var self = this
 
-    if (!_.isArray(self.priorities))
-        self.priorities = [];
+  if (!_.isArray(self.priorities)) {
+    self.priorities = []
+  }
 
-    self.priorities.push(priorityId);
+  self.priorities.push(priorityId)
 
-    return callback(null, self);
-};
+  return callback(null, self)
+}
 
-ticketTypeSchema.methods.removePriority = function(priorityId, callback) {
-    if (!priorityId) return callback({message: 'Invalid Priority Id'});
+ticketTypeSchema.methods.removePriority = function (priorityId, callback) {
+  if (!priorityId) return callback({ message: 'Invalid Priority Id' })
 
-    var self = this;
+  var self = this
 
-    self.priorities = _.reject(self.priorities, function(p) {
-         return p._id.toString() === priorityId.toString();
-    });
+  self.priorities = _.reject(self.priorities, function (p) {
+    return p._id.toString() === priorityId.toString()
+  })
 
-    return callback(null, self);
-};
+  return callback(null, self)
+}
 
-module.exports = mongoose.model(COLLECTION, ticketTypeSchema);
+module.exports = mongoose.model(COLLECTION, ticketTypeSchema)

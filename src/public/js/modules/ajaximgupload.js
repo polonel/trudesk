@@ -12,45 +12,43 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('modules/ajaximgupload', [
-    'jquery',
-    'underscore',
-    'modules/helpers'
+define('modules/ajaximgupload', ['jquery', 'underscore', 'modules/helpers'], function ($, _, helpers) {
+  var aiu = {}
 
-], function($, _, helpers) {
-    var aiu = {};
+  aiu.init = function () {
+    $(document).ready(function () {
+      $('#profileImageInput').on('change', function () {
+        var val = $(this).val()
+        if (val === '') return true
 
-    aiu.init = function() {
-        $(document).ready(function() {
-            $('#profileImageInput').on('change', function() {
-                var val = $(this).val();
-                if (val === '') return true;
+        var form = $('#aUploadImageForm')
+        var formData = new FormData($(form)[0])
+        var timestamp = new Date().getTime()
 
-                var form = $('#aUploadImageForm');
-                var formData = new FormData($(form)[0]);
-                var timestamp = new Date().getTime();
+        $.ajax({
+          url: '/accounts/uploadImage',
+          type: 'POST',
+          data: formData,
+          // async: false,
+          cache: false,
+          contentType: false,
+          processData: false,
+          success: function (data) {
+            form.find('img').attr('src', data + '?' + timestamp)
+          },
+          error: function (err) {
+            console.log('[trudesk:ajaximgupload:onChange] Error - ', err)
+            helpers.UI.showSnackbar({
+              text: 'An error occurred. Please check console. 2',
+              actionTextColor: '#B92929'
+            })
+          }
+        })
 
-                $.ajax({
-                    url: '/accounts/uploadImage',
-                    type: 'POST',
-                    data: formData,
-                    //async: false,
-                    cache: false,
-                    contentType: false,
-                    processData: false,
-                    success: function(data) {
-                        form.find('img').attr('src', data + '?' + timestamp);
-                    },
-                    error: function(err) {
-                        console.log('[trudesk:ajaximgupload:onChange] Error - ', err);
-                        helpers.UI.showSnackbar({text: 'An error occurred. Please check console. 2', actionTextColor: '#B92929'});
-                    }
-                });
+        $(this).val('')
+      })
+    })
+  }
 
-                $(this).val('');
-            });
-        });
-    };
-
-    return aiu;
-});
+  return aiu
+})

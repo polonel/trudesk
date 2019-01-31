@@ -12,19 +12,19 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux';
-import { reducer as form } from 'redux-form';
+import { combineReducers } from 'redux'
+import { reducer as form } from 'redux-form'
 
-import shared from './shared';
-import sidebar from './sidebarReducer';
-import settings from './settings';
+import shared from './shared'
+import sidebar from './sidebarReducer'
+import settings from './settings'
 
 const IndexReducer = combineReducers({
-    shared,
-    sidebar,
-    settings,
+  shared,
+  sidebar,
+  settings,
 
-    form
-});
+  form
+})
 
-export default IndexReducer;
+export default IndexReducer

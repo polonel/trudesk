@@ -12,17 +12,16 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import axios from 'axios';
+import axios from 'axios'
 
-let api = {};
+let api = {}
 
-api.settings = {};
+api.settings = {}
 
-api.settings.update = function(settings) {
-    return axios.put('/api/v1/settings', settings)
-        .then((res) => {
-            return res.data;
-        });
-};
+api.settings.update = function (settings) {
+  return axios.put('/api/v1/settings', settings).then(res => {
+    return res.data
+  })
+}
 
-export default api;
+export default api

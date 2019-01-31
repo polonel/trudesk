@@ -1,8 +1,5 @@
 {
-  "plugins": [
-    "react",
-    "import"
-  ],
+  "plugins": ["react", "import"],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaVersion": 2017,
@@ -17,16 +14,11 @@
     "node": false,
     "mocha": false
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:import/errors",
-    "plugin:import/warnings"
-  ],
+  "extends": ["eslint:recommended", "plugin:react/recommended", "plugin:import/errors", "plugin:import/warnings"],
   "rules": {
     "node/no-unsupported-features/es-syntax": 0
   },
   "settings": {
-    "import/resolver": "webpack"
+    "import/resolver": ["node", "webpack"]
   }
 }

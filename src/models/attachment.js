@@ -12,20 +12,20 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose            = require('mongoose');
+var mongoose = require('mongoose')
 
 var attachmentSchema = mongoose.Schema({
-    owner:      { type: mongoose.Schema.Types.ObjectId, ref: 'accounts'},
-    name:       { type: String, required: true },
-    date:       { type: Date, required: true, default: Date.now },
-    path:       { type: String, required: true },
-    type:       { type: String, required: true }
-});
+  owner: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
+  name: { type: String, required: true },
+  date: { type: Date, required: true, default: Date.now },
+  path: { type: String, required: true },
+  type: { type: String, required: true }
+})
 
-attachmentSchema.pre('save', function(next) {
-    this.name = this.name.trim();
+attachmentSchema.pre('save', function (next) {
+  this.name = this.name.trim()
 
-    return next();
-});
+  return next()
+})
 
-module.exports = attachmentSchema;
+module.exports = attachmentSchema

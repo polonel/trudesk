@@ -12,24 +12,26 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { handleActions } from 'redux-actions';
-import { NAV_CHANGE } from '../actions/types';
+import { handleActions } from 'redux-actions'
+import { NAV_CHANGE } from '../actions/types'
 
 const initialState = {
-    activeItem: '',
-    activeSubItem: '',
+  activeItem: '',
+  activeSubItem: '',
 
-    plugins: null
-};
+  plugins: null
+}
 
-const sidebarReducer = handleActions({
+const sidebarReducer = handleActions(
+  {
     [NAV_CHANGE]: (state, action) => ({
-        activeItem: action.payload.activeItem,
-        activeSubItem: action.payload.activeSubItem,
+      activeItem: action.payload.activeItem,
+      activeSubItem: action.payload.activeSubItem,
 
-        plugins: null
+      plugins: null
     })
+  },
+  initialState
+)
 
-}, initialState);
-
-export default sidebarReducer;
+export default sidebarReducer

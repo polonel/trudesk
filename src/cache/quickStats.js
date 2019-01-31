@@ -12,167 +12,185 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _               = require('lodash');
-var async           = require('async');
-var ticketSchema    = require('../models/ticket');
+var _ = require('lodash')
+var async = require('async')
+var ticketSchema = require('../models/ticket')
 
 _.mixin({
-    'sortKeysBy': function (obj, comparator) {
-        var keys = _.sortBy(_.keys(obj), function (key) {
-            return comparator ? comparator(obj[key], key) : key;
-        });
+  sortKeysBy: function (obj, comparator) {
+    var keys = _.sortBy(_.keys(obj), function (key) {
+      return comparator ? comparator(obj[key], key) : key
+    })
 
-        return _.zipObject(keys, _.map(keys, function (key) {
-            return obj[key];
-        }));
-    }
-});
+    return _.zipObject(
+      keys,
+      _.map(keys, function (key) {
+        return obj[key]
+      })
+    )
+  }
+})
 
-var init = function(tickets, callback) {
-    var obj = {};
-    var $tickets = [];
+var init = function (tickets, callback) {
+  var obj = {}
+  var $tickets = []
 
-    async.series([
-        function(done) {
-            if (tickets) {
-                ticketSchema.populate(tickets, {path: 'owner comments.owner assignee'}, function(err, _tickets) {
-                    $tickets = _tickets;
+  async.series(
+    [
+      function (done) {
+        if (tickets) {
+          ticketSchema.populate(tickets, { path: 'owner comments.owner assignee' }, function (err, _tickets) {
+            if (err) return done(err)
 
-                    return done();
-                });
-            } else {
-                ticketSchema.getForCache(function(err, tickets) {
-                    if (err) return done(err);
+            $tickets = _tickets
 
-                    ticketSchema.populate(tickets, {path: 'owner comments.owner assignee'}, function(err, _tickets) {
-                        if (err) return done(err);
+            return done()
+          })
+        } else {
+          ticketSchema.getForCache(function (err, tickets) {
+            if (err) return done(err)
 
-                        $tickets = _tickets;
+            ticketSchema.populate(tickets, { path: 'owner comments.owner assignee' }, function (err, _tickets) {
+              if (err) return done(err)
 
-                        return done();
-                    });
-                });
-            }
-        },
-        function(done) {
-            buildMostRequester($tickets, function(result) {
-                obj.mostRequester = _.first(result);
+              $tickets = _tickets
 
-                return done();
-            });
-        },
-        function(done) {
-            buildMostComments($tickets, function(result) {
-                obj.mostCommenter = _.first(result);
-
-                return done();
-            });
-        },
-        function(done) {
-            buildMostAssignee($tickets, function(result) {
-                obj.mostAssignee = _.first(result);
-
-                return done();
-            });
-        },
-        function(done) {
-            buildMostActiveTicket($tickets, function(result) {
-                obj.mostActiveTicket = _.first(result);
-
-                return done();
-            });
+              return done()
+            })
+          })
         }
+      },
+      function (done) {
+        buildMostRequester($tickets, function (result) {
+          obj.mostRequester = _.first(result)
 
-    ], function(err) {
-        $tickets = null; //clear it
-        if (err) return callback(err);
+          return done()
+        })
+      },
+      function (done) {
+        buildMostComments($tickets, function (result) {
+          obj.mostCommenter = _.first(result)
 
-        return callback(null, obj);
-    });
-};
+          return done()
+        })
+      },
+      function (done) {
+        buildMostAssignee($tickets, function (result) {
+          obj.mostAssignee = _.first(result)
 
-function buildMostRequester(ticketArray, callback) {
-    var requesters = _.map(ticketArray, function(m) {
-        if (m.owner)
-            return m.owner.fullname;
+          return done()
+        })
+      },
+      function (done) {
+        buildMostActiveTicket($tickets, function (result) {
+          obj.mostActiveTicket = _.first(result)
 
-        return null;
-    });
+          return done()
+        })
+      }
+    ],
+    function (err) {
+      $tickets = null // clear it
+      if (err) return callback(err)
 
-    requesters = _.compact(requesters);
-
-    var r = _.countBy(requesters, function(k) { return k; });
-    r = _(r).value();
-
-    r = _.map(r, function(v, k) {
-        return { name: k, value: v};
-    });
-
-    r = _.sortBy(r, function(o) { return -o.value; });
-
-    return callback(r);
+      return callback(null, obj)
+    }
+  )
 }
 
-function flatten(arr) {
-    return arr.reduce(function (flat, toFlatten) {
-        return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
+function buildMostRequester (ticketArray, callback) {
+  var requesters = _.map(ticketArray, function (m) {
+    if (m.owner) {
+      return m.owner.fullname
+    }
+
+    return null
+  })
+
+  requesters = _.compact(requesters)
+
+  var r = _.countBy(requesters, function (k) {
+    return k
+  })
+  r = _(r).value()
+
+  r = _.map(r, function (v, k) {
+    return { name: k, value: v }
+  })
+
+  r = _.sortBy(r, function (o) {
+    return -o.value
+  })
+
+  return callback(r)
 }
 
-function buildMostComments(ticketArray, callback) {
-    var commenters = _.map(ticketArray, function(m) {
-        return _.map(m.comments, function(i) {
-            return i.owner.fullname;
-        });
-    });
-
-    commenters = flatten(commenters);
-
-    var c = _.countBy(commenters, function(k) {
-        return k;
-    });
-
-    c = _(c).value();
-
-    c = _.map(c, function(v, k) {
-        return { name: k, value: v};
-    });
-
-    c = _.sortBy(c, function(o) { return -o.value; });
-
-    return callback(c);
+function flatten (arr) {
+  return arr.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten)
+  }, [])
 }
 
-function buildMostAssignee(ticketArray, callback) {
-    ticketArray = _.reject(ticketArray, function(v) {
-        return (_.isUndefined(v.assignee) || _.isNull(v.assignee));
-    });
+function buildMostComments (ticketArray, callback) {
+  var commenters = _.map(ticketArray, function (m) {
+    return _.map(m.comments, function (i) {
+      return i.owner.fullname
+    })
+  })
 
-    var assignees = _.map(ticketArray, function(m) {
-        return m.assignee.fullname;
-    });
+  commenters = flatten(commenters)
 
-    var a = _.countBy(assignees, function(k) { return k; });
+  var c = _.countBy(commenters, function (k) {
+    return k
+  })
 
-    a = _(a).value();
+  c = _(c).value()
 
-    a = _.map(a, function(v, k) {
-        return { name: k, value: v};
-    });
+  c = _.map(c, function (v, k) {
+    return { name: k, value: v }
+  })
 
-    a = _.sortBy(a, function(o) { return -o.value; });
+  c = _.sortBy(c, function (o) {
+    return -o.value
+  })
 
-    return callback(a);
+  return callback(c)
 }
 
-function buildMostActiveTicket(ticketArray, callback) {
-    var tickets = _.map(ticketArray, function(m) {
-        return {uid: m.uid, cSize: _.size(m.history) };
-    });
+function buildMostAssignee (ticketArray, callback) {
+  ticketArray = _.reject(ticketArray, function (v) {
+    return _.isUndefined(v.assignee) || _.isNull(v.assignee)
+  })
 
-    tickets = _.sortBy(tickets, 'cSize').reverse();
+  var assignees = _.map(ticketArray, function (m) {
+    return m.assignee.fullname
+  })
 
-    return callback(tickets);
+  var a = _.countBy(assignees, function (k) {
+    return k
+  })
+
+  a = _(a).value()
+
+  a = _.map(a, function (v, k) {
+    return { name: k, value: v }
+  })
+
+  a = _.sortBy(a, function (o) {
+    return -o.value
+  })
+
+  return callback(a)
 }
 
-module.exports = init;
+function buildMostActiveTicket (ticketArray, callback) {
+  var tickets = _.map(ticketArray, function (m) {
+    return { uid: m.uid, cSize: _.size(m.history) }
+  })
+
+  tickets = _.sortBy(tickets, 'cSize').reverse()
+
+  return callback(tickets)
+}
+
+module.exports = init

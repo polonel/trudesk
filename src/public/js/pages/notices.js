@@ -13,55 +13,55 @@
  */
 
 define('pages/notices', [
-    'jquery',
-    'modules/helpers',
-    'colorpicker',
-    'datatables',
-    'dt_responsive',
-    'dt_grouping',
-    //'dt_foundation',
-    'dt_scroller',
-    'history'
+  'jquery',
+  'modules/helpers',
+  'colorpicker',
+  'datatables',
+  'dt_responsive',
+  'dt_grouping',
+  // 'dt_foundation',
+  'dt_scroller',
+  'history'
+], function ($, helpers) {
+  var noticesPage = {}
 
-], function($, helpers) {
-    var noticesPage = {};
+  noticesPage.init = function (callback) {
+    $(document).ready(function () {
+      var table = $('#noticesTable')
+      table.dataTable({
+        searching: false,
+        bLengthChange: false,
+        bPaginate: false,
+        bInfo: false,
+        bSort: false,
+        scrollY: '100%',
+        order: [[3, 'desc']],
+        columnDefs: [
+          { width: '50px', targets: 0 },
+          { width: '20%', targets: 1 },
+          { width: '50%', targets: 2 },
+          { width: '20%', targets: 3 },
+          { width: '50px', targets: 4 }
+        ],
+        oLanguage: {
+          sEmptyTable: 'No notices to display.'
+        }
+      })
+      //                .rowGrouping({
+      //                iGroupingColumnIndex: 5,
+      //                sGroupingColumnSortDirection: "asc",
+      //                iGroupingOrderByColumnIndex: 1,
+      //                bHideGroupingColumn: false,
+      //                bHideGroupingOrderByColumn: false
+      //            });
 
-    noticesPage.init = function(callback) {
-        $(document).ready(function() {
-            var table = $('#noticesTable');
-            table.dataTable({
-                searching: false,
-                bLengthChange: false,
-                bPaginate: false,
-                bInfo: false,
-                bSort: false,
-                scrollY: '100%',
-                order: [[3, 'desc']],
-                columnDefs: [
-                    {'width': '50px', 'targets': 0},
-                    {'width': '20%', 'targets': 1},
-                    {'width': '50%', 'targets': 2},
-                    {'width': '20%', 'targets': 3},
-                    {'width': '50px', 'targets': 4}
-                ],
-                'oLanguage': {
-                    'sEmptyTable': 'No notices to display.'
-                }
-            });
-//                .rowGrouping({
-//                iGroupingColumnIndex: 5,
-//                sGroupingColumnSortDirection: "asc",
-//                iGroupingOrderByColumnIndex: 1,
-//                bHideGroupingColumn: false,
-//                bHideGroupingOrderByColumn: false
-//            });
+      helpers.resizeDataTables('.noticesList')
 
-            helpers.resizeDataTables('.noticesList');
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return noticesPage;
-});
+  return noticesPage
+})

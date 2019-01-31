@@ -12,9 +12,9 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var mongoose    = require('mongoose');
+var mongoose = require('mongoose')
 
-var COLLECTION = 'tasks';
+var COLLECTION = 'tasks'
 
 /**
  * @since 1.0
@@ -34,17 +34,15 @@ var COLLECTION = 'tasks';
  */
 
 var taskSchema = mongoose.Schema({
-    type:    { type: Number, required: true },
-    title:   { type: String, required: true },
-    query:   { type: String, required: true },
-    nextRun: { type: Date, required: true },
-    lastRun: Date
+  type: { type: Number, required: true },
+  title: { type: String, required: true },
+  query: { type: String, required: true },
+  nextRun: { type: Date, required: true },
+  lastRun: Date
+})
 
-});
+taskSchema.statics.getTasks = function (callback) {
+  return this.model(COLLECTION).find({}, callback)
+}
 
-taskSchema.statics.getTasks = function(callback) {
-    return this.model(COLLECTION).find({}, callback);
-};
-
-
-module.exports = mongoose.model(COLLECTION, taskSchema);
+module.exports = mongoose.model(COLLECTION, taskSchema)

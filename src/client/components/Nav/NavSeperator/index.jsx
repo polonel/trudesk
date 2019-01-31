@@ -12,14 +12,12 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react';
+import React from 'react'
 
 class NavSeperator extends React.Component {
-    render() {
-        return (
-            <hr />
-        );
-    }
+  render () {
+    return <hr />
+  }
 }
 
-export default NavSeperator;
+export default NavSeperator

@@ -12,85 +12,135 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { connect } from 'react-redux'
 
-import { fetchSettings } from 'actions/settings';
+import { fetchSettings } from 'actions/settings'
 
-import Menu from 'components/Settings/subcomponents/Menu';
-import MenuItem from 'components/Settings/subcomponents/MenuItem';
-import GeneralSettings from 'components/Settings/General';
-import AppearanceSettings from 'components/Settings/Appearance';
-import TicketsSettings from 'components/Settings/Tickets';
+import Menu from 'components/Settings/subcomponents/Menu'
+import MenuItem from 'components/Settings/subcomponents/MenuItem'
+import GeneralSettings from 'components/Settings/General'
+import AppearanceSettings from 'components/Settings/Appearance'
+import TicketsSettings from 'components/Settings/Tickets'
 
 class SettingsContainer extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            title: 'Settings',
-            activeCategory: 'settings-general'
-        };
+  constructor (props) {
+    super(props)
+    this.state = {
+      title: 'Settings',
+      activeCategory: 'settings-general'
+    }
+  }
+
+  componentDidMount () {
+    const location = window.location.pathname.replace(/^(\/settings(\/?))/, '')
+    if (location) {
+      this.setState({
+        activeCategory: 'settings-' + location
+      })
     }
 
-    componentDidMount() {
-        const location = window.location.pathname.replace(/^(\/settings(\/?))/, '');
-        if (location) {
-            this.setState({
-                activeCategory: 'settings-' + location
-            });
-        }
+    this.props.fetchSettings()
+  }
 
-        this.props.fetchSettings();
-    }
+  onMenuItemClick (e, category) {
+    if (this.state.activeCategory === 'settings-' + category) return
 
-    onMenuItemClick(e, category) {
-        if (this.state.activeCategory === 'settings-' + category)
-            return;
+    this.setState({
+      activeCategory: 'settings-' + category
+    })
+  }
 
-        this.setState({
-            activeCategory: 'settings-' + category
-        });
-    }
-
-    render() {
-        return (
-            <div className='uk-grid uk-grid-collapse'>
-                <div className='uk-width-1-6 message-list full-height' data-offset="68">
-                    <div className='page-title noshadow nopadding-right' style={{borderTop: 'none', borderBottom: 'none', height: '68px', paddingLeft: '20px'}}>
-                        <div style={{position: 'relative'}}>
-                            <p style={{fontSize: '24px'}}>{this.state.title}</p>
-                        </div>
-                    </div>
-                    <div className='page-content-left noborder full-height'>
-                        <Menu>
-                            <MenuItem title='General' active={(this.state.activeCategory === 'settings-general')} onClick={(e) => { this.onMenuItemClick(e, 'general'); }} />
-                            <MenuItem title='Appearance' active={(this.state.activeCategory === 'settings-appearance')} onClick={(e) => { this.onMenuItemClick(e, 'appearance'); }} />
-                            <MenuItem title='Tickets' active={(this.state.activeCategory === 'settings-tickets')} onClick={(e) => { this.onMenuItemClick(e, 'tickets'); }} />
-                            <MenuItem title='Mailer' active={(this.state.activeCategory === 'settings-mailer')} onClick={(e) => { this.onMenuItemClick(e, 'mailer'); }} />
-                            <MenuItem title='Push Service' active={(this.state.activeCategory === 'settings-tps')} onClick={(e) => { this.onMenuItemClick(e, 'tps'); }} />
-                            <MenuItem title='Backup/Restore' active={(this.state.activeCategory === 'settings-backuprestore')} onClick={(e) => { this.onMenuItemClick(e, 'backuprestore'); }} />
-                            <MenuItem title='Legal' active={(this.state.activeCategory === 'settings-legal')} onClick={(e) => { this.onMenuItemClick(e, 'legal'); }} />
-                        </Menu>
-                    </div>
-                </div>
-                <div className='uk-width-5-6'>
-                    <div className='page-title-right noshadow page-title-border-bottom' style={{borderTop: 'none', height: '69px'}} />
-                    <div className='page-wrapper full-height scrollable no-overflow-x'>
-                        <div className='settings-wrap'>
-                            <GeneralSettings active={(this.state.activeCategory === 'settings-general')} />
-                            <AppearanceSettings active={(this.state.activeCategory === 'settings-appearance')} />
-                            <TicketsSettings active={(this.state.activeCategory === 'settings-tickets')} />
-                        </div>
-                    </div>
-                </div>
+  render () {
+    return (
+      <div className='uk-grid uk-grid-collapse'>
+        <div className='uk-width-1-6 message-list full-height' data-offset='68'>
+          <div
+            className='page-title noshadow nopadding-right'
+            style={{ borderTop: 'none', borderBottom: 'none', height: '68px', paddingLeft: '20px' }}
+          >
+            <div style={{ position: 'relative' }}>
+              <p style={{ fontSize: '24px' }}>{this.state.title}</p>
             </div>
-        );
-    }
+          </div>
+          <div className='page-content-left noborder full-height'>
+            <Menu>
+              <MenuItem
+                title='General'
+                active={this.state.activeCategory === 'settings-general'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'general')
+                }}
+              />
+              <MenuItem
+                title='Appearance'
+                active={this.state.activeCategory === 'settings-appearance'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'appearance')
+                }}
+              />
+              <MenuItem
+                title='Tickets'
+                active={this.state.activeCategory === 'settings-tickets'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'tickets')
+                }}
+              />
+              <MenuItem
+                title='Mailer'
+                active={this.state.activeCategory === 'settings-mailer'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'mailer')
+                }}
+              />
+              <MenuItem
+                title='Push Service'
+                active={this.state.activeCategory === 'settings-tps'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'tps')
+                }}
+              />
+              <MenuItem
+                title='Backup/Restore'
+                active={this.state.activeCategory === 'settings-backuprestore'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'backuprestore')
+                }}
+              />
+              <MenuItem
+                title='Legal'
+                active={this.state.activeCategory === 'settings-legal'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'legal')
+                }}
+              />
+            </Menu>
+          </div>
+        </div>
+        <div className='uk-width-5-6'>
+          <div
+            className='page-title-right noshadow page-title-border-bottom'
+            style={{ borderTop: 'none', height: '69px' }}
+          />
+          <div className='page-wrapper full-height scrollable no-overflow-x'>
+            <div className='settings-wrap'>
+              <GeneralSettings active={this.state.activeCategory === 'settings-general'} />
+              <AppearanceSettings active={this.state.activeCategory === 'settings-appearance'} />
+              <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
 }
 
 SettingsContainer.propTypes = {
-    fetchSettings: PropTypes.func.isRequired
-};
+  fetchSettings: PropTypes.func.isRequired
+}
 
-export default connect(null, {fetchSettings})(SettingsContainer);
+export default connect(
+  null,
+  { fetchSettings }
+)(SettingsContainer)

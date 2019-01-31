@@ -12,6 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import createHistory from 'history/createBrowserHistory';
+import createHistory from 'history/createBrowserHistory'
 
-export default createHistory();
+export default createHistory()

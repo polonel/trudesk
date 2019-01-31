@@ -13,45 +13,44 @@
  */
 
 define('pages/settingsTicketTypes', [
-    'jquery',
-    'modules/helpers',
-    'datatables',
-    'dt_responsive',
-    'dt_grouping',
-    'dt_scroller',
-    'history'
+  'jquery',
+  'modules/helpers',
+  'datatables',
+  'dt_responsive',
+  'dt_grouping',
+  'dt_scroller',
+  'history'
+], function ($, helpers) {
+  var settingsTicketTypesPage = {}
 
-], function($, helpers) {
-    var settingsTicketTypesPage = {};
+  settingsTicketTypesPage.init = function (callback) {
+    $(document).ready(function () {
+      var table = $('#ticketTypesTable')
+      table.dataTable({
+        searching: false,
+        bLengthChange: false,
+        bPaginate: false,
+        bInfo: false,
+        bSort: false,
+        scrollY: '100%',
+        order: [[1, 'desc']],
+        columnDefs: [
+          { width: '50px', targets: 0 },
+          { width: '100%', targets: 1 }
+          // {"width": "15%", "targets": 2}
+        ],
+        oLanguage: {
+          sEmptyTable: 'No tags to display.'
+        }
+      })
 
-    settingsTicketTypesPage.init = function(callback) {
-        $(document).ready(function() {
-            var table = $('#ticketTypesTable');
-            table.dataTable({
-                searching: false,
-                bLengthChange: false,
-                bPaginate: false,
-                bInfo: false,
-                bSort: false,
-                scrollY: '100%',
-                order: [[1, 'desc']],
-                columnDefs: [
-                    {'width': '50px', 'targets': 0},
-                    {'width': '100%', 'targets': 1}
-                    // {"width": "15%", "targets": 2}
-                ],
-                'oLanguage': {
-                    'sEmptyTable': 'No tags to display.'
-                }
-            });
+      helpers.resizeDataTables('.ticketTypeList')
 
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            helpers.resizeDataTables('.ticketTypeList');
-
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return settingsTicketTypesPage;
-});
+  return settingsTicketTypesPage
+})

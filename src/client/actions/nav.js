@@ -12,7 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { createAction } from 'redux-actions';
-import { NAV_CHANGE } from './types';
+import { createAction } from 'redux-actions'
+import { NAV_CHANGE } from './types'
 
-export const updateNavChange = createAction(NAV_CHANGE.ACTION, values => ({activeItem: values.activeItem, activeSubItem: values.activeSubItem, sessionUser: values.sessionUser }));
+export const updateNavChange = createAction(NAV_CHANGE.ACTION, values => ({
+  activeItem: values.activeItem,
+  activeSubItem: values.activeSubItem,
+  sessionUser: values.sessionUser
+}))

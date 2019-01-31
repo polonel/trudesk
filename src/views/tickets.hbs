@@ -10,30 +10,30 @@
                         {{#is data.pagination.prevEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a title="Previous Page" href="{{{data.filter.raw}}}&page={{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                                <li class="pagination"><a title="Previous Page" href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.prevpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
+                            <li class="pagination"><a title="Previous Page" href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-left"></i></a></li>
                         {{/is}}
 
                         {{#is data.pagination.nextEnabled true}}
 
                             {{#is data.pagination.type 'filter'}}
-                                <li class="pagination"><a href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a title="Next Page" href="{{{data.filter.raw}}}&page={{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{else}}
-                                <li class="pagination"><a href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                                <li class="pagination"><a title="Next Page" href="/tickets/{{data.pagination.type}}/page/{{{data.pagination.nextpage}}}" class="btn md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                             {{/is}}
 
                         {{else}}
-                            <li class="pagination"><a href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
+                            <li class="pagination"><a title="Next page" href="#" class="btn no-ajaxy md-btn-wave-light"><i class="fa fa-large fa-chevron-right"></i></a></li>
                         {{/is}}
                     </ul>
                 </div>
                 <div class="pagination uk-float-left uk-clearfix" style="margin-right: 5px;">
-                    <div class="onoffswitch uk-float-left" style="margin-right: 5px; position: relative; top: 18px;">
+                    <div title="Auto Refresh" class="onoffswitch uk-float-left" style="margin-right: 5px; position: relative; top: 18px;">
                         <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="refreshSwitch" ng-model="preferences_autoRefreshTicketGrid" ng-change="GridRefreshChanged()"
                             {{#is data.user.preferences.autoRefreshTicketGrid true}} checked {{/is}}>
                         <label class="onoffswitch-label" for="refreshSwitch">
@@ -43,13 +43,13 @@
                     </div>
                     <ul class="button-group">
                         <li class="pagination">
-                            <a id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a>
+                            <a title="Refresh" id="refreshTicketGrid" href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;" ng-click="RefreshTicketGrid($event)"><i class="fa fa-large fa-refresh"></i></a>
                         </li>
                         <!--<li class="pagination">-->
                             <!--<a href="#" class="btn md-btn-wave-light" style="border-radius: 3px; margin-right: 5px;"><i class="fa fa-large fa-search"></i></a>-->
                         <!--</li>-->
                         <li class="pagination">
-                            <a href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)">
+                            <a title="Ticket Filter" href="" class="btn no-ajaxy md-btn-wave-light" style="border-radius: 3px;" ng-click="openFilterTicketWindow($event)">
                                 <i class="fa fa-large fa-filter"></i>
                             </a>
                         </li>
@@ -59,7 +59,7 @@
                     <ul class="button-group uk-float-left">
                         <li class="pagination relative">
                             <div class="right" data-uk-dropdown="{pos: 'bottom-right', mode: 'click'}" aria-haspopup="true" aria-expanded="false">
-                                <a href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
+                                <a title="Ticket Actions" href="#" class="btn no-ajaxy" data-notifications="ticket-actions" style="border-radius: 3px;"><i class="fa fa-large fa-tasks"></i></a>
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
                                         <li><a href="#" class="no-ajaxy" role="button" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}">Create</a></li>

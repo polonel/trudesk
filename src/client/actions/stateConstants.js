@@ -12,6 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-export const PENDING = 'PENDING';
-export const ERROR = 'ERROR';
-export const SUCCESS = 'SUCCESS';
+export const PENDING = 'PENDING'
+export const ERROR = 'ERROR'
+export const SUCCESS = 'SUCCESS'

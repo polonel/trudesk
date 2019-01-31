@@ -13,11 +13,19 @@
  */
 
 // require.ensure([], function(require) {
-    define(['angular', 'angularjs/services/session', 'angularjs/controllers', 'angularRoute', 'angularCookies', 'angularSanitize'], function(angular) {
-        return angular.module('trudesk', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
-            .config(function($interpolateProvider) {
-                $interpolateProvider.startSymbol('{[{');
-                $interpolateProvider.endSymbol('}]}');
-            });
-    });
+define([
+  'angular',
+  'angularjs/services/session',
+  'angularjs/controllers',
+  'angularRoute',
+  'angularCookies',
+  'angularSanitize'
+], function (angular) {
+  return angular
+    .module('trudesk', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
+    .config(function ($interpolateProvider) {
+      $interpolateProvider.startSymbol('{[{')
+      $interpolateProvider.endSymbol('}]}')
+    })
+})
 // });

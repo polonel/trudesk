@@ -12,6 +12,8 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define(['angular', 'angularjs/services/session', 'angularRoute', 'angularCookies', 'angularSanitize'], function(angular) {
-    return angular.module('sessionLoader', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize']);
-});
+define(['angular', 'angularjs/services/session', 'angularRoute', 'angularCookies', 'angularSanitize'], function (
+  angular
+) {
+  return angular.module('sessionLoader', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize'])
+})
