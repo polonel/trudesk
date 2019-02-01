@@ -9,10 +9,10 @@
  ========================================================================
  */
 
-var mongoose        = require('mongoose');
-var _               = require('lodash');
+var mongoose = require('mongoose')
+var _ = require('lodash')
 
-var COLLECTION = 'reports';
+var COLLECTION = 'reports'
 
 /**
  * @since 1.0
@@ -32,32 +32,32 @@ var COLLECTION = 'reports';
  * @property {Array} data ```Required``` Data for the given report. *Based on report type*
  */
 var reportSchema = mongoose.Schema({
-    uid:        { type: Number, required: true, unique: true },
-    name:       { type: String, required: true },
-    type:       { type: Number, required: true },
-    runDate:    { type: Date, required: true, default: Date.now },
-    status:     { type: Number, required: true, default: 0},
-    data:       { type: [mongoose.Schema.Types.Mixed], required: true}
-});
+  uid: { type: Number, required: true, unique: true },
+  name: { type: String, required: true },
+  type: { type: Number, required: true },
+  runDate: { type: Date, required: true, default: Date.now },
+  status: { type: Number, required: true, default: 0 },
+  data: { type: [mongoose.Schema.Types.Mixed], required: true }
+})
 
-reportSchema.pre('save', function(next) {
-    if (!_.isUndefined(this.uid) || this.uid) return next();
+reportSchema.pre('save', function (next) {
+  if (!_.isUndefined(this.uid) || this.uid) return next()
 
-    var c = require('./counters');
-    var self = this;
-    c.increment('reports', function(err, res) {
-        if (err) return next(err);
+  var c = require('./counters')
+  var self = this
+  c.increment('reports', function (err, res) {
+    if (err) return next(err)
 
-        self.uid = res.value.next;
+    self.uid = res.value.next
 
-        if (_.isUndefined(self.uid)) {
-            var error = new Error('Invalid UID.');
-            return next(error);
-        }
+    if (_.isUndefined(self.uid)) {
+      var error = new Error('Invalid UID.')
+      return next(error)
+    }
 
-        return next();
-    });
-});
+    return next()
+  })
+})
 
 /**
  * Get All Reports
@@ -66,9 +66,11 @@ reportSchema.pre('save', function(next) {
  * @memberof Report
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-reportSchema.statics.getReports = function(callback) {
-    return this.model(COLLECTION).find({}).exec(callback);
-};
+reportSchema.statics.getReports = function (callback) {
+  return this.model(COLLECTION)
+    .find({})
+    .exec(callback)
+}
 
 // /**
 //  * Get only Runnable Reports
@@ -98,16 +100,22 @@ reportSchema.statics.getReports = function(callback) {
 //     });
 // };
 
-reportSchema.statics.getReportByType = function(type, callback) {
-    if (_.isUndefined(type) || _.isNull(type)) return callback('Invalid Report Type - ReportSchema.GetReportByType();', null);
+reportSchema.statics.getReportByType = function (type, callback) {
+  if (_.isUndefined(type) || _.isNull(type))
+    return callback('Invalid Report Type - ReportSchema.GetReportByType();', null)
 
-    return this.model(COLLECTION).find({type: type}).exec(callback);
-};
+  return this.model(COLLECTION)
+    .find({ type: type })
+    .exec(callback)
+}
 
-reportSchema.statics.getReportByStatus = function(status, callback) {
-    if (_.isUndefined(status) || _.isNull(status)) return callback('Invalid Report Status - ReportSchema.GetReportByStatus();', null);
+reportSchema.statics.getReportByStatus = function (status, callback) {
+  if (_.isUndefined(status) || _.isNull(status))
+    return callback('Invalid Report Status - ReportSchema.GetReportByStatus();', null)
 
-    return this.model(COLLECTION).find({status: status}).exec(callback);
-};
+  return this.model(COLLECTION)
+    .find({ status: status })
+    .exec(callback)
+}
 
-module.exports = mongoose.model(COLLECTION, reportSchema);
+module.exports = mongoose.model(COLLECTION, reportSchema)

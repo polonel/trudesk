@@ -12,89 +12,100 @@
 
  **/
 
-//Load SASS (Webpack)
+// Load SASS (Webpack)
 // require('../../sass/app.sass');
 
-require(['jquery', 'modules/helpers', 'angular', 'sessionLoader'], function($, helpers, angular) {
-    helpers.init();
+require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function ($, helpers, angular, async) {
+  helpers.init()
 
-    angular.element(document).ready(function() {
-        // Call the Session service before bootstrapping.
-        // Allowing the SessionUser to be populated before the controllers have access.
-        angular.injector(['ng', 'sessionLoader']).get('SessionService').init(function(err) {
-            if (err)
-                throw new Error(err);
+  angular.element(document).ready(function () {
+    // Call the Session service before bootstrapping.
+    // Allowing the SessionUser to be populated before the controllers have access.
+    async.parallel(
+      [
+        function (done) {
+          angular
+            .injector(['ng', 'trudesk.services.session'])
+            .get('SessionService')
+            .init(done)
+        },
+        function (done) {
+          angular
+            .injector(['ng', 'trudesk.services.settings'])
+            .get('SettingsService')
+            .init(done)
+        }
+      ],
+      function (err) {
+        if (err) throw new Error(err)
 
-            require(['angularjs/main'], function() {
-                //Static Bootstraps
-                angular.bootstrap($('.top-bar'), ['trudesk']);
-                angular.bootstrap($('#ticketFilterModal'), ['trudesk']);
-                angular.bootstrap($('#ticketCreateModal'), ['trudesk']);
+        require(['angularjs/main'], function () {
+          // Static Bootstraps
+          angular.bootstrap($('.top-bar'), ['trudesk'])
+          angular.bootstrap($('#ticketFilterModal'), ['trudesk'])
+          angular.bootstrap($('#ticketCreateModal'), ['trudesk'])
 
-                //Dynamic Bootstrap
-                angular.bootstrap($('#page-content'), ['trudesk']);
+          // Dynamic Bootstrap
+          angular.bootstrap($('#page-content'), ['trudesk'])
 
+          require([
+            'underscore',
+            'modules/navigation',
+            'modules/socket',
+            'i18next',
+            'i18nextXHR',
+            'uikit',
+            'modules/ajaxify',
+            'modernizr',
+            'fastclick',
+            'placeholder',
+            'pace',
+            'easypiechart',
+            'idletimer'
+          ], function (_, nav, socket, i18next, i18nextXHR) {
+            i18next.use(i18nextXHR).init({
+              backend: {
+                loadPath: '/locales/{{lng}}/{{ns}}.json',
+                addPath: '/debug/locales/add/{{lng}}/{{ns}}'
+              },
+              // lng: 'de',
+              ns: ['install', 'account', 'ticket', 'group', 'messages', 'client', 'common'],
+              defaultNS: 'client',
+              saveMissing: true
+            })
+            window.i18next = i18next
 
-                require([
-                    'underscore',
-                    'modules/navigation',
-                    'modules/socket',
-                    'i18next',
-                    'i18nextXHR',
-                    'uikit',
-                    'modules/ajaxify',
-                    'modernizr',
-                    'fastclick',
-                    'placeholder',
-                    'pace',
-                    'easypiechart',
-                    'idletimer'
+            // Page loading (init)
+            require(['pages/pageloader'], function (pl) {
+              pl.init(function () {
+                nav.init()
 
-                ], function(_, nav, socket, i18next, i18nextXHR) {
-                    i18next
-                        .use(i18nextXHR)
-                        .init({
-                            backend: {
-                                loadPath: '/locales/{{lng}}/{{ns}}.json',
-                                addPath: '/debug/locales/add/{{lng}}/{{ns}}'
-                            },
-                            // lng: 'de',
-                            ns: ['install', 'account', 'ticket', 'group', 'messages', 'client', 'common'],
-                            defaultNS: 'client',
-                            saveMissing: true
-                        });
-                    window.i18next = i18next;
-                    //Page loading (init)
-                    require(['pages/pageloader'], function(pl) {
-                        pl.init(function() {
-                            nav.init();
+                var $event = _.debounce(function () {
+                  helpers.hideLoader(1000)
+                  helpers.countUpMe()
+                  helpers.UI.cardShow()
 
-                            var $event = _.debounce(function() {
-                                helpers.hideLoader(1000);
-                                helpers.countUpMe();
-                                helpers.UI.cardShow();
+                  // 5min idle timer
+                  var idleTime = 5 * 60 * 1000
 
-                                //5min idle timer
-                                var idleTime = 5 * 60 * 1000;
+                  $(document).idleTimer(idleTime)
+                  $(document).on('idle.idleTimer', function () {
+                    socket.chat.setUserIdle()
+                  })
 
-                                $(document).idleTimer(idleTime);
-                                $(document).on('idle.idleTimer', function() {
-                                    socket.chat.setUserIdle();
-                                });
+                  $(document).on('active.idleTimer', function () {
+                    socket.chat.setUserActive()
+                  })
 
-                                $(document).on('active.idleTimer', function() {
-                                    socket.chat.setUserActive();
-                                });
+                  $.event.trigger('$trudesk:ready', window)
+                }, 100)
 
-                                $.event.trigger('$trudesk:ready', window);
-
-                            }, 100);
-
-                            $event();
-                        });
-                    });
-                });
-            });
-        });
-    });
-});
+                $event()
+              })
+            })
+          })
+        })
+      }
+    )
+  })
+})

@@ -12,16 +12,9 @@
 
  **/
 
-define([
-    'jquery',
-    'angular',
-
-    'angularjs/services/session'
-
-], function($, angular) {
-
-    return angular.module('trudesk.services',
-        [
-            'trudesk.services.session'
-        ]);
-});
+define(['jquery', 'angular', 'angularjs/services/session', 'angularjs/services/settingsService'], function (
+  $,
+  angular
+) {
+  return angular.module('trudesk.services', ['trudesk.services.session', 'trudesk.services.settings'])
+})

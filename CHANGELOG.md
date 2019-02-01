@@ -1,3 +1,18 @@
+## [1.0.5](https://github.com/polonel/trudesk/compare/v1.0.4...v1.0.5) (2019-01-09)
+
+
+### Bug Fixes
+
+* **api:** tickets [#124](https://github.com/polonel/trudesk/issues/124) - unable to update ticket status ([ab614a4](https://github.com/polonel/trudesk/commit/ab614a4))
+* **backup:** crash on restore ([a613612](https://github.com/polonel/trudesk/commit/a613612))
+* **backup:** restore directory fails to create ([d68a045](https://github.com/polonel/trudesk/commit/d68a045))
+* **backup:** restore sending error response to soon ([605c8d8](https://github.com/polonel/trudesk/commit/605c8d8))
+* **mailcheck:** event leak ([23eaab3](https://github.com/polonel/trudesk/commit/23eaab3))
+* **nav:** disappearing dashboard button ([32a4e87](https://github.com/polonel/trudesk/commit/32a4e87))
+* **overdue:** overdue card showing incorrect tickets ([72e2584](https://github.com/polonel/trudesk/commit/72e2584))
+* **tags:** tags with min2 were not creating ([9a22364](https://github.com/polonel/trudesk/commit/9a22364))
+* **ticket:** fix [#116](https://github.com/polonel/trudesk/issues/116) - ability to configure character limit on tickets ([88ae488](https://github.com/polonel/trudesk/commit/88ae488))
+
 ## [1.0.4](https://github.com/polonel/trudesk/compare/v1.0.3...v1.0.4) (2019-01-03)
 
 

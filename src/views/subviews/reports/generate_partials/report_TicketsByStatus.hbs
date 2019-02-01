@@ -21,18 +21,14 @@
                 <div class="uk-grid uk-grid-collapse uk-margin-medium-bottom">
                     <div class="uk-width-1-2" style="padding: 0 15px 0 0;">
                         <label for="filterDate_Start" class="uk-form-label nopadding nomargin">Date Start</label>
-                        <input id="filterDate_Start" class="filterDate_Start md-input label-fixed" name="filterDate_Start" type="text" data-uk-datepicker="{format:'YYYY-MM-DD'}"
-                               data-validation="date"
-                               data-validation-format="YYYY-MM-DD"
-                               data-validation-error-msg="Please enter a valid Date"
+                        <input id="filterDate_Start" class="filterDate_Start md-input label-fixed" name="filterDate_Start" type="text" data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}"
+                               data-validation="shortDate"
                         />
                     </div>
                     <div class="uk-width-1-2" style="padding: 0 0 0 15px;">
                         <label for="filterDate_End" class="uk-form-label nopadding nomargin">Date End</label>
-                        <input id="filterDate_End" class="filterDate_End md-input label-fixed" name="filterDate_End" type="text" data-uk-datepicker="{format:'YYYY-MM-DD'}" value="{{formatDate now 'YYYY-MM-DD'}}"
-                               data-validation="date"
-                               data-validation-format="YYYY-MM-DD"
-                               data-validation-error-msg="Please enter a valid Date"
+                        <input id="filterDate_End" class="filterDate_End md-input label-fixed" name="filterDate_End" type="text" data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}" value="{{formatDate now data.common.shortDateFormat}}"
+                               data-validation="shortDate"
                         />
                     </div>
                 </div>

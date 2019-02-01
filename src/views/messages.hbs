@@ -6,7 +6,7 @@
             <div class="page-title-border-right" style="position:relative;">
                 <p style="font-size: 24px;">{{t 'messages:Conversations'}}</p>
                 <div id="convo-actions" style="position:absolute; top: 20px; right: 15px;">
-                    <a style="display: block; height: 28px;" ng-click="showUserList($event);"><i class="material-icons no-ajaxy" style="font-size: 28px; font-weight: 300;">add</i></a>
+                    <a title="Start Conversation" style="display: block; height: 28px;" ng-click="showUserList($event);"><i class="material-icons no-ajaxy" style="font-size: 28px; font-weight: 300;">add</i></a>
                     <a class="no-ajaxy" style="display: none; height: 28px; line-height: 30px; font-size: 16px; font-weight: 300;" ng-click="hideUserList($event);">{{t 'common:Cancel'}}</a>
                 </div>
             </div>
@@ -105,9 +105,9 @@
     {{#if data.conversation}}
         <div class="uk-width-7-10 nopadding page-message" style="position:relative;">
             <div id="message-content" class="page-content page-content-right full-height scrollable" data-offset="41" style="margin-bottom: 41px !important;" data-conversation-id="{{data.conversation._id}}">
-                <span class="conversation-start">{{t 'messages:Conversation_started_on'}} {{formatDate data.conversation.createdAt 'MMM Do YYYY \at h:mma'}}</span>
+                <span class="conversation-start">{{t 'messages:Conversation_started_on'}} {{formatDate data.conversation.createdAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
                 {{#if data.conversation.requestingUserMeta.deletedAt}}
-                    <span class="conversation-deleted">{{t 'messages:Conversation_deleted_at'}} {{formatDate data.conversation.requestingUserMeta.deletedAt 'MMM Do YYYY \at h:mma'}}</span>
+                    <span class="conversation-deleted">{{t 'messages:Conversation_deleted_at'}} {{formatDate data.conversation.requestingUserMeta.deletedAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
                 {{/if}}
                 <div id="conversation-scrollspy" class="uk-text-center">
                     <i class="uk-icon-refresh uk-icon-spin uk-hidden"></i>
@@ -121,13 +121,13 @@
                                          src="/uploads/users/{{owner.image}}"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
+                                         title="{{formatDate createdAt (concat ../data.common.shortDateFormat ../data.common.timeFormat true) }}"/>
                                 {{else}}
                                     <img class="profileImage"
                                          src="/uploads/users/defaultProfile.jpg"
                                          data-userid="{{owner._id}}"
                                          data-uk-tooltip="{pos:'left', animation: false}"
-                                         title="{{formatDate createdAt 'MM/DD/YY h:mma'}}"/>
+                                         title="{{formatDate createdAt (concat ../data.common.shortDateFormat ../data.common.timeFormat true)}}"/>
                                 {{/if}}
                                 <div class="message-body">
                                     <p>{{{body}}}</p>
@@ -135,7 +135,7 @@
                             </div>
                         {{else}}
                             <div class="message message-right">
-                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{formatDate createdAt 'MM/DD/YY h:mma'}}">
+                                <div class="message-body" data-uk-tooltip="{pos:'right', animation: false}" title="{{formatDate createdAt (concat ../data.common.shortDateFormat ../data.common.timeFormat true)}}">
                                     <p>{{{body}}}</p>
                                 </div>
                             </div>

@@ -12,21 +12,18 @@
 
  **/
 
-var pluginHelpers = {};
+var pluginHelpers = {}
 
-pluginHelpers.checkPermissions = function(userRole, permissions) {
-    if (userRole === undefined || permissions === undefined)
-        return false;
+pluginHelpers.checkPermissions = function (userRole, permissions) {
+  if (userRole === undefined || permissions === undefined) return false
 
-    var permissionArray = permissions.split(' ');
-    var result = false;
-    for (var i = 0; i < permissionArray.length; i++) {
-        if (userRole.toString().toLowerCase() === permissionArray[i].toString().toLowerCase())
-            result = true;
-    }
+  var permissionArray = permissions.split(' ')
+  var result = false
+  for (var i = 0; i < permissionArray.length; i++) {
+    if (userRole.toString().toLowerCase() === permissionArray[i].toString().toLowerCase()) result = true
+  }
 
-    return result;
-};
+  return result
+}
 
-
-module.exports = pluginHelpers;
+module.exports = pluginHelpers

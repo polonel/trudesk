@@ -12,24 +12,19 @@
 
  **/
 
-define('pages/createNotice', [
-    'jquery',
-    'chosen',
-    'history',
-    'colorpicker'
+define('pages/createNotice', ['jquery', 'chosen', 'history', 'colorpicker'], function ($) {
+  var createNotice = {}
 
-], function($) {
-    var createNotice = {};
+  createNotice.init = function (callback) {
+    $(document).ready(function () {
+      $('select[name="nColor"]').simplecolorpicker({ theme: 'fontawesome' })
+      $('select[name="nFontColor"]').simplecolorpicker({ theme: 'fontawesome' })
 
-    createNotice.init = function(callback) {
-        $(document).ready(function() {
-            $('select[name="nColor"]').simplecolorpicker({theme: 'fontawesome'});
-            $('select[name="nFontColor"]').simplecolorpicker({theme: 'fontawesome'});
+      if (typeof callback === 'function') {
+        return callback()
+      }
+    })
+  }
 
-            if (typeof callback === 'function')
-                return callback();
-        });
-    };
-
-    return createNotice;
-});
+  return createNotice
+})

@@ -3,6 +3,7 @@
 </h1>
 <p align="center">
 <a href="https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9"><img src="https://img.shields.io/codacy/grade/7b3acb53c33b4a40bb32da109bbdd1a9/develop.svg?style=flat-square" /></a>
+<a href="https://standarsjs.com"><img src="https://img.shields.io/badge/code_style-standard-brightgreen.svg?style=flat-square" /></a>
 <img src="https://img.shields.io/circleci/token/ad7d2d066a75685a15c8e2fd08bd75e53b18fbb7/project/github/polonel/trudesk/develop.svg?style=flat-square" />
 <a href="http://hits.dwyl.io/polonel/trudesk"><img src="http://hits.dwyl.io/polonel/trudesk.svg" /></a>
 <a href="https://forum.trudesk.io"><img src="https://img.shields.io/discourse/https/forum.trudesk.io/topics.svg?style=flat-square" /></a>
