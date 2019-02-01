@@ -21,7 +21,6 @@
   "Status": "Status",
   "Subject": "Subject",
   "No_Data_Available": "No Data Available",
-  "_t": "Thu Jan 31 2019 23:52:44 GMT-0500 (Eastern Standard Time)",
   "No_tickets_to_display": "No_tickets_to_display",
   "Forgot_Password": "Forgot password",
   "Back_to_Login": "Back to Login",
@@ -31,5 +30,5 @@
   "Cant_login": "Can't login?",
   "Output_Log": "Output Log",
   "Main_output_log_desc": "Main output log. All errors are logged.",
-  "#": "#"
+  "_t": "Fri Feb 01 2019 00:10:40 GMT-0500 (Eastern Standard Time)"
 }

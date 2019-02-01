@@ -7,7 +7,7 @@
                 <input type="text" class="md-input" id="subject" name="subject"
                        data-validation="length"
                        data-validation-length="min{{data.common.ticketSettings.minSubject}}"
-                       data-validation-error-msg="{{t 'ticket:invalid_ticket_subject_text'}}"
+                       data-validation-error-msg="{{t 'ticket:invalid_ticket_subject_text' count=data.common.ticketSettings.minSubject}}"
                 />
             </div>
             <div class="uk-margin-medium-bottom">
