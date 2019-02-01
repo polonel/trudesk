@@ -13,16 +13,13 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var ticketSchema = require('../../../models/ticket')
-
 var groupSchema = require('../../../models/group')
-
 var csv = require('csv')
-
 var moment = require('moment')
+
+var settingsSchema = require('../../../models/setting')
 
 var apiReports = {
   generate: {}
@@ -60,6 +57,8 @@ var apiReports = {
  */
 apiReports.generate.ticketsByGroup = function (req, res) {
   var postData = req.body
+  if (!postData || !postData.startDate || !postData.endDate)
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   ticketSchema.getTicketsWithObject(
     postData.groups,
