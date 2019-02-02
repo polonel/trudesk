@@ -6,6 +6,28 @@
 * **attachments:** uploading office mime-types [#140](https://github.com/polonel/trudesk/issues/140) ([b47da40](https://github.com/polonel/trudesk/commit/b47da40))
 * **chat:** chat boxes under some buttons ([c337c76](https://github.com/polonel/trudesk/commit/c337c76))
 * **dates:** overdue on dashboard ([921e258](https://github.com/polonel/trudesk/commit/921e258))
+* **editor:** crash on invalid directory ([bc60899](https://github.com/polonel/trudesk/commit/bc60899))
+* **groups:** issue preventing save ([7208253](https://github.com/polonel/trudesk/commit/7208253))
+* **ldap:** crash if no results are returned ([8ff63ba](https://github.com/polonel/trudesk/commit/8ff63ba))
+* **login:** username whitespaces ([282d725](https://github.com/polonel/trudesk/commit/282d725))
+* **messages:** remove ajax link from start conversation ([988dfa9](https://github.com/polonel/trudesk/commit/988dfa9))
+* **notifications:** unable to clear all notifications ([4f24c8c](https://github.com/polonel/trudesk/commit/4f24c8c))
+* **reports:** invalid date format ([808a740](https://github.com/polonel/trudesk/commit/808a740))
+* **reports:** invalid date string ([0914d91](https://github.com/polonel/trudesk/commit/0914d91))
+* **socket:** high memory usage on notification updates ([b647d4c](https://github.com/polonel/trudesk/commit/b647d4c))
+* **ticket:** priority not updating in realtime ([721f42d](https://github.com/polonel/trudesk/commit/721f42d))
+* **unzip:** out dated dependency [#139](https://github.com/polonel/trudesk/issues/139) ([b0aab01](https://github.com/polonel/trudesk/commit/b0aab01))
+* **url:** invalid parse ([1738287](https://github.com/polonel/trudesk/commit/1738287))
+* **validation:** email validation for modern tlds [#130](https://github.com/polonel/trudesk/issues/130) ([febcbdf](https://github.com/polonel/trudesk/commit/febcbdf))
+
+## [1.0.6](https://github.com/polonel/trudesk/compare/v1.0.5...v1.0.6) (2019-02-02)
+
+
+### Bug Fixes
+
+* **attachments:** uploading office mime-types [#140](https://github.com/polonel/trudesk/issues/140) ([b47da40](https://github.com/polonel/trudesk/commit/b47da40))
+* **chat:** chat boxes under some buttons ([c337c76](https://github.com/polonel/trudesk/commit/c337c76))
+* **dates:** overdue on dashboard ([921e258](https://github.com/polonel/trudesk/commit/921e258))
 * **groups:** issue preventing save ([7208253](https://github.com/polonel/trudesk/commit/7208253))
 * **ldap:** crash if no results are returned ([8ff63ba](https://github.com/polonel/trudesk/commit/8ff63ba))
 * **login:** username whitespaces ([282d725](https://github.com/polonel/trudesk/commit/282d725))
