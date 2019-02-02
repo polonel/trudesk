@@ -53,7 +53,7 @@ class GeneralSettings extends React.Component {
         const timezoneAtBeginningOfyear = moment.tz(year + '-01-01', name)
         return {
           utc: timezoneAtBeginningOfyear.utcOffset(),
-          label: '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
+          text: '(GMT' + timezoneAtBeginningOfyear.format('Z') + ') ' + name,
           value: name
         }
       })
