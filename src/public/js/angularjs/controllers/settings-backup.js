@@ -81,6 +81,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
 
           $scope.checkTools()
           $scope.getBackups()
+          $scope.getDeletedTickets()
         }, 0)
       }
 
@@ -221,6 +222,65 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
             confirmButtonClass: 'md-btn-danger'
           }
         )
+      }
+
+      $scope.deletedTickets = []
+      $scope.allDeletedTickets = []
+      $scope.getDeletedTickets = function () {
+        $http.get('/api/v1/tickets/deleted').then(
+          function successCallback (response) {
+            if (!response.data || !response.data.deletedTickets) return
+
+            $scope.allDeletedTickets = response.data.deletedTickets
+            $scope.deletedTickets = $scope.allDeletedTickets.slice(0, 25)
+
+            var $deletedTicketPagination = $('.deletedTicketPagination')
+            UIkit.pagination($deletedTicketPagination, {
+              items: $scope.allDeletedTickets.length,
+              itemsOnPage: 25
+            })
+
+            $deletedTicketPagination.on('select.uk.pagination', function (e, pageIndex) {
+              $timeout(function () {
+                $scope.deletedTickets = $scope.allDeletedTickets.slice(pageIndex * 25, (pageIndex + 1) * 25)
+              }, 0)
+            })
+          },
+          function errorCallback (err) {
+            helpers.UI.showSnackbar('Error: ' + err.error, true)
+            $log.error(err)
+          }
+        )
+      }
+
+      $scope.restoreDeletedTicket = function (idx) {
+        var ticket = $scope.deletedTickets[idx]
+        if (!ticket) return false
+
+        $http
+          .post(
+            '/api/v1/tickets/deleted/restore',
+            {
+              _id: ticket._id
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            function successCallback (response) {
+              if (response.data.success) {
+                helpers.UI.showSnackbar('Ticket #' + ticket.uid + ' restored')
+                $scope.deletedTickets.splice(idx, 1)
+              }
+            },
+            function errorCallback (err) {
+              helpers.UI.showSnackbar('Error: ' + err.error)
+              $log.error(err)
+            }
+          )
       }
     })
 })

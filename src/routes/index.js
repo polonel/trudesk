@@ -357,6 +357,13 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup)
   router.get('/api/v1/tickets/stats/user/:user', middleware.api, controllers.api.tickets.getTicketStatsForUser)
   router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats)
+  router.get('/api/v1/tickets/deleted', middleware.api, middleware.isAdmin, controllers.api.tickets.getDeletedTickets)
+  router.post(
+    '/api/v1/tickets/deleted/restore',
+    middleware.api,
+    middleware.isAdmin,
+    controllers.api.tickets.restoreDeleted
+  )
   router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single)
   router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update)
   router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete)
@@ -515,7 +522,6 @@ function mainRoutes (router, middleware, controllers) {
 
   if (global.env === 'development') {
     router.get('/debug/populatedb', controllers.debug.populatedatabase)
-
     router.get('/debug/sendmail', controllers.debug.sendmail)
     router.get('/debug/mailcheck/refetch', function (req, res) {
       var mailCheck = require('../mailer/mailCheck')
