@@ -32,6 +32,7 @@ jobs:
         name: Run Build
         command: yarn run build
   build_develop:
+    parallelism: 2
     docker:
     - image: circleci/node:10-stretch
     - image: circleci/mongo:3.6
