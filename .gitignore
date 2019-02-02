@@ -40,7 +40,6 @@ coverage.html
 *.bk
 apidocs
 /docs/*.html
-/public/js/
 app.css.map
 *.diff
 private/
@@ -48,6 +47,7 @@ private/
 /coverage/
 /plugins/
 config.local.json
+public/js/
 public/css/app.min.css
 public/css/app.css
 *.aws

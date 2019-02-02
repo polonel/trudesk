@@ -16,7 +16,7 @@
     "codacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --recursive -R spec && cat ./coverage/lcov.info | cross-env CODACY_PROJECT_TOKEN=65070aca43cc4fba96eaabd4033c9528 codacy-coverage && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch",
     "webpackdev": "webpack --config webpack.config.js",
-    "webpackdist": "cross-env NODE_ENV=production && webpack --env.production -p --config webpack.config.js",
+    "webpackdist": "rimraf public/js/* && webpack --env.production -p --config webpack.config.js",
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
@@ -43,11 +43,6 @@
     "fast-csv": "2.4.1",
     "file-tail": "0.3.0",
     "fs-extra": "7.0.1",
-    "grunt": "1.0.3",
-    "grunt-contrib-cssmin": "3.0.0",
-    "grunt-contrib-uglify": "3.4.0",
-    "grunt-sass": "3.0.1",
-    "grunt-shell": "2.1.0",
     "handlebars": "4.0.12",
     "imap": "0.8.19",
     "imports-loader": "0.8.0",
@@ -91,7 +86,6 @@
     "uglify-js": "3.4.9",
     "unzipper": "0.9.10",
     "util": "0.11.1",
-    "webpack": "4.29.0",
     "winston": "2.4.4"
   },
   "devDependencies": {
@@ -106,8 +100,8 @@
     "babel-eslint": "10.0.1",
     "babel-loader": "8.0.5",
     "chai": "*",
-    "codacy-coverage": "^3.0.0",
-    "cross-env": "^5.2.0",
+    "codacy-coverage": "3.0.0",
+    "cross-env": "5.2.0",
     "css-loader": "2.1.0",
     "eslint": "5.12.1",
     "eslint-config-angular": "0.5.0",
@@ -122,6 +116,11 @@
     "eslint-plugin-standard": "4.0.0",
     "exports-loader": "0.7.0",
     "expose-loader": "0.7.5",
+    "grunt": "1.0.3",
+    "grunt-contrib-cssmin": "3.0.0",
+    "grunt-contrib-uglify": "3.4.0",
+    "grunt-sass": "3.0.1",
+    "grunt-shell": "2.1.0",
     "grunt-contrib-watch": "1.1.0",
     "grunt-express-server": "0.5.4",
     "grunt-htmlhint": "0.9.13",
@@ -142,6 +141,7 @@
     "superagent": "4.1.0",
     "supertest": "3.4.1",
     "terser-webpack-plugin": "1.2.1",
+    "webpack": "4.29.0",
     "webpack-cli": "3.2.1"
   },
   "release": {
@@ -164,9 +164,14 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "prettier-standard",
-      "git add"
+    "linters": {
+      "*.js": [
+        "prettier-standard",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "public/js/*.js"
     ]
   },
   "commitlint": {
