@@ -47,6 +47,7 @@ private/
 /coverage/
 /plugins/
 config.local.json
+public/js/
 public/css/app.min.css
 public/css/app.css
 *.aws
