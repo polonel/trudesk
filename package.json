@@ -16,7 +16,7 @@
     "codacy": "istanbul cover ./node_modules/mocha/bin/_mocha --report lcovonly -- --recursive -R spec && cat ./coverage/lcov.info | cross-env CODACY_PROJECT_TOKEN=65070aca43cc4fba96eaabd4033c9528 codacy-coverage && rm -rf ./coverage",
     "webpackwatch": "webpack --config webpack.config.js --watch",
     "webpackdev": "webpack --config webpack.config.js",
-    "webpackdist": "webpack --env.production -p --config webpack.config.js",
+    "webpackdist": "rimraf public/js/* && webpack --env.production -p --config webpack.config.js",
     "snyk-protect": "snyk protect"
   },
   "dependencies": {
@@ -164,9 +164,14 @@
     }
   },
   "lint-staged": {
-    "*.js": [
-      "prettier-standard",
-      "git add"
+    "linters": {
+      "*.js": [
+        "prettier-standard",
+        "git add"
+      ]
+    },
+    "ignore": [
+      "public/js/*.js"
     ]
   },
   "commitlint": {
