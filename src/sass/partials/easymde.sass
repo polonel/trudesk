@@ -1,11 +1,18 @@
+form#createTicketForm
+  .CodeMirror
+    .CodeMirror-cursors
+      z-index: 99
 .CodeMirror
-  height: 250px
-  border-radius: 0
+  //height: 250px
+  height: auto
+  border-radius: 0 !important
   border-color: $page_content_border_color
   background: $page_content_right_bg
   color: automatic-text-color($page_content_right_bg)
+  &.hasFileDesc
+    border-bottom: 1px dashed $page_content_border_color
 .CodeMirror-fullscreen
-  z-index: 10 !important
+  z-index: 20 !important
 
 .editor-preview
   background: $page_content_right_bg
@@ -34,6 +41,23 @@
     vertical-align: top
   &:after
     margin-top: 0
+
+.editor-statusbar
+  &.hasFileDesc
+    border: 1px solid $page_content_border_color
+    border-top-width: 0
+    background: darken($page_content_right_bg, 1%)
+  .attachFileDesc
+    display: inline-block
+    float: left
+    p
+      -webkit-user-select: none
+      -moz-user-select: none
+      -o-user-select: none
+      user-select: none
+      margin: 0
+      font-size: 12px
+      color: automatic-text-color($page_content_right_bg, 'muted')
 
 .mi-bold:after,
 .mi-italic:after,

@@ -12,9 +12,9 @@
 
  **/
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
-var COLLECTION = 'settings';
+var COLLECTION = 'settings'
 
 /**
  * Setting Schema
@@ -27,9 +27,9 @@ var COLLECTION = 'settings';
  * @property {object} value ```Required``` Value of Setting
  */
 var settingSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true },
-    value:      { type: mongoose.Schema.Types.Mixed, required: true}
-});
+  name: { type: String, required: true, unique: true },
+  value: { type: mongoose.Schema.Types.Mixed, required: true }
+})
 
 /**
  * Return all Settings
@@ -40,11 +40,13 @@ var settingSchema = mongoose.Schema({
  *
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-settingSchema.statics.getSettings = function(callback) {
-    var q = this.model(COLLECTION).find().select('name value');
+settingSchema.statics.getSettings = function (callback) {
+  var q = this.model(COLLECTION)
+    .find()
+    .select('name value')
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
 /**
  * Return Single Setting via setting name
@@ -56,18 +58,18 @@ settingSchema.statics.getSettings = function(callback) {
  * @param {String} name Name of Setting to search for
  * @param {QueryCallback} callback MongoDB Query Callback
  */
-settingSchema.statics.getSettingByName = function(name, callback) {
-    var q = this.model(COLLECTION).findOne({name: name});
+settingSchema.statics.getSettingByName = function (name, callback) {
+  var q = this.model(COLLECTION).findOne({ name: name })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-settingSchema.statics.getSettingsByName = function(names, callback) {
-    var q = this.model(COLLECTION).find({name: names});
+settingSchema.statics.getSettingsByName = function (names, callback) {
+  var q = this.model(COLLECTION).find({ name: names })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-settingSchema.statics.getSetting = settingSchema.statics.getSettingByName;
+settingSchema.statics.getSetting = settingSchema.statics.getSettingByName
 
-module.exports = mongoose.model(COLLECTION, settingSchema);
+module.exports = mongoose.model(COLLECTION, settingSchema)

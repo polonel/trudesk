@@ -12,167 +12,275 @@
 
  **/
 
-define([
-    'angular',
-    'underscore',
-    'jquery',
-    'modules/helpers',
-    'modules/socket',
-    'uikit'
-], function (angular, _, $, helpers, socket, UIkit) {
-    return angular.module('trudesk.controllers.settings.backup', ['ngSanitize'])
-        .controller('BackupCtrl', function($scope, $http, $timeout, $log) {
+define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 'uikit'], function (
+  angular,
+  _,
+  $,
+  helpers,
+  socket,
+  UIkit
+) {
+  return angular
+    .module('trudesk.controllers.settings.backup', ['ngSanitize'])
+    .controller('BackupCtrl', function ($scope, $http, $timeout, $log) {
+      function initBackupUpload () {
+        var progressbar = $('#backupUploadProgress')
 
-            function initBackupUpload() {
-                var progressbar = $('#backupUploadProgress'),
-                    $backupUploadSelect = $('#backup-upload-select'),
-                    $uploadButton = $backupUploadSelect.parent(),
-                    bar = progressbar.find('.uk-progress-bar'),
-                    settings = {
-                        action: '/api/v1/backup/upload',
-                        allow: '*.zip',
-                        type: 'json',
+        var $backupUploadSelect = $('#backup-upload-select')
 
-                        loadstart: function() {
-                            bar.css('width', '0%').text('0%');
-                            progressbar.removeClass('hide');
-                            $uploadButton.addClass('hide');
-                        },
-                        notallowed: function() {
-                            helpers.UI.showSnackbar('Invalid File Type. Please upload a Zip file.', true);
-                        },
-                        error: function(err) {
-                            $log.error(err);
-                            helpers.UI.showSnackbar('An unknown error occurred. Check Console', true);
-                        },
-                        progress: function(percent) {
-                            percent = Math.ceil(percent);
-                            bar.css('width', percent + '%').text(percent + '%');
-                        },
+        var $uploadButton = $backupUploadSelect.parent()
 
-                        allcomplete: function(response) {
-                            $log.log(response);
-                            if (!response.success)
-                                helpers.UI.showSnackbar(response.error, true);
+        var bar = progressbar.find('.uk-progress-bar')
 
-                            bar.css('width', '100%').text('100%');
+        var settings = {
+          action: '/api/v1/backup/upload',
+          allow: '*.zip',
+          type: 'json',
 
-                            $timeout(function() {
-                                progressbar.addClass('hide');
-                                $uploadButton.removeClass('hide');
-                                $scope.getBackups();
-                                $backupUploadSelect.val(null);
-                            }, 1500);
-                        }
-                    };
+          loadstart: function () {
+            bar.css('width', '0%').text('0%')
+            progressbar.removeClass('hide')
+            $uploadButton.addClass('hide')
+          },
+          notallowed: function () {
+            helpers.UI.showSnackbar('Invalid File Type. Please upload a Zip file.', true)
+          },
+          error: function (err) {
+            $log.error(err)
+            helpers.UI.showSnackbar('An unknown error occurred. Check Console', true)
+          },
+          progress: function (percent) {
+            percent = Math.ceil(percent)
+            bar.css('width', percent + '%').text(percent + '%')
+          },
 
-                UIkit.uploadSelect($backupUploadSelect, settings);
+          allcomplete: function (response) {
+            $log.log(response)
+            if (!response.success) {
+              helpers.UI.showSnackbar(response.error, true)
             }
 
-            $scope.init = function() {
-                $timeout(function() {
-                    initBackupUpload();
+            bar.css('width', '100%').text('100%')
 
-                    $scope.checkTools();
-                    $scope.getBackups();
-                }, 0);
-            };
+            $timeout(function () {
+              progressbar.addClass('hide')
+              $uploadButton.removeClass('hide')
+              $scope.getBackups()
+              $backupUploadSelect.val(null)
+              helpers.UI.playSound('success')
+            }, 1500)
+          }
+        }
 
-            $scope.backupFiles = [];
+        UIkit.uploadSelect($backupUploadSelect, settings)
+      }
 
-            $scope.loadingTools = true;
-            $scope.checkTools = function() {
-                $http.get('/api/v1/backup/hastools')
-                    .then(function success(res) {
-                        $scope.hasTools = (res.data && res.data.success);
-                    }, function error(err) {
-                        $scope.hasTools = false;
-                    }).then(function() {
-                        $scope.loadingTools = false;
-                        $scope.showNoTools = (!$scope.loading && !$scope.hasTools);
-                });
-            };
+      $scope.init = function () {
+        $timeout(function () {
+          initBackupUpload()
 
-            $scope.getBackups = function() {
-                $http.get('/api/v1/backups')
-                    .then(function success(res) {
-                        if (res.data && res.data.success === true)
-                            $scope.backupFiles = res.data.files;
-                    }, function error(err) {
-                        console.log(err);
-                    });
-            };
+          $scope.checkTools()
+          $scope.getBackups()
+          $scope.getDeletedTickets()
+        }, 0)
+      }
 
-            $scope.startbackup = function(e) {
-                var $button = $(e.currentTarget);
-                // $button.prop('disabled', true).addClass('disabled').text('Please Wait...');
-                $button.hide().parent().find('.uk-progress').removeClass('hide');
-                $http.post('/api/v1/backup')
-                    .then(function success(res) {
-                        $log.log(res);
-                        $button.parent().find('.uk-progress').addClass('hide');
-                        $button.show();
-                        $scope.getBackups();
-                    }, function error(err) {
-                        $log.error(err);
-                    });
-            };
+      $scope.backupFiles = []
 
-            $scope.deleteBackup = function(idx) {
-                var file = $scope.backupFiles[idx];
-                if (!file)
-                    return false;
+      $scope.loadingTools = true
+      $scope.checkTools = function () {
+        $http
+          .get('/api/v1/backup/hastools')
+          .then(
+            function success (res) {
+              $scope.hasTools = res.data && res.data.success
+            },
+            function error () {
+              $scope.hasTools = false
+            }
+          )
+          .then(function () {
+            $scope.loadingTools = false
+            $scope.showNoTools = !$scope.loading && !$scope.hasTools
+          })
+      }
 
-                var filename = file.filename;
+      $scope.getBackups = function () {
+        $http.get('/api/v1/backups').then(
+          function success (res) {
+            if (res.data && res.data.success === true) {
+              $scope.backupFiles = res.data.files
+            }
+          },
+          function error (err) {
+            $log.error(err)
+          }
+        )
+      }
 
-                UIkit.modal.confirm('<h2 class="text-light">Are you sure?</h2><p style="font-size: 14px;">This action is permanent and will destroy the backup file: <strong>' + filename + '</p>', function() {
-                    $http.delete('/api/v1/backup/' + filename)
-                        .then(function success(res) {
-                            $log.log(res);
-                            if (res.data && res.data.success) {
-                                $scope.getBackups();
-                                helpers.UI.showSnackbar('Backup successfully deleted', false);
-                            } else
-                                helpers.UI.showSnackbar('Unable to delete backup', true);
-                        }, function error(err) {
-                            $log.error(err);
-                        });
-                }, {
-                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
-                });
-            };
+      $scope.startbackup = function (e) {
+        var $button = $(e.currentTarget)
+        // $button.prop('disabled', true).addClass('disabled').text('Please Wait...');
+        $button
+          .hide()
+          .parent()
+          .find('.uk-progress')
+          .removeClass('hide')
+        $http.post('/api/v1/backup').then(
+          function success (res) {
+            $log.log(res)
+            $button
+              .parent()
+              .find('.uk-progress')
+              .addClass('hide')
+            $button.show()
+            helpers.UI.showSnackbar('Backup completed successfully.', false)
+            helpers.UI.playSound('success')
+            $scope.getBackups()
+          },
+          function error (err) {
+            helpers.UI.playSound('error')
+            helpers.UI.showSnackbar('Error: ' + err, true)
+            $log.error(err)
+          }
+        )
+      }
 
-            $scope.restoreFile = function(idx) {
-                var file = $scope.backupFiles[idx];
-                if (!file)
-                    return false;
+      $scope.deleteBackup = function (idx) {
+        var file = $scope.backupFiles[idx]
+        if (!file) {
+          return false
+        }
 
-                var filename = file.filename;
+        var filename = file.filename
 
-                UIkit.modal.confirm(
-                    '<h2>Are you sure?</h2>' +
-                    '<p style="font-size: 15px;"><span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> All data will be wiped from the database and restored with the selected backup file: <strong>' + filename + '</strong></p>' +
-                    '<p style="font-size: 12px;">Any users currently logged in will be presented with a blocking restore page. Preventing any further actions.' +
-                    'Once complete all users are required to log in again.</p><br /><p style="font-size: 12px; font-style: italic;">This process may take a while depending on the size of the backup.</p>',
-                    function() {
-                        socket.ui.emitShowRestoreOverlay();
+        UIkit.modal.confirm(
+          '<h2 class="text-light">Are you sure?</h2><p style="font-size: 14px;">This action is permanent and will destroy the backup file: <strong>' +
+            filename +
+            '</p>',
+          function () {
+            $http.delete('/api/v1/backup/' + filename).then(
+              function success (res) {
+                $log.log(res)
+                if (res.data && res.data.success) {
+                  $scope.getBackups()
+                  helpers.UI.showSnackbar('Backup successfully deleted', false)
+                } else {
+                  helpers.UI.showSnackbar('Unable to delete backup', true)
+                }
+              },
+              function error (err) {
+                $log.error(err)
+              }
+            )
+          },
+          {
+            labels: { Ok: 'Yes', Cancel: 'No' },
+            confirmButtonClass: 'md-btn-danger'
+          }
+        )
+      }
 
-                        $http.post('/api/v1/backup/restore', {
-                            file: filename
-                        }).then(function success(res) {
-                            $log.log(res);
-                            helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false);
-                            $timeout(function() {
-                                socket.ui.emitRestoreComplete();
-                            }, 2000);
-                        }, function error(err) {
-                            $log.error(err);
-                            helpers.UI.showSnackbar('An Error Occurred. Check Console.', true);
-                        });
-                }, {
-                    labels: {'Ok': 'Yes', 'Cancel': 'No'}, confirmButtonClass: 'md-btn-danger'
-                });
-            };
+      $scope.restoreFile = function (idx) {
+        var file = $scope.backupFiles[idx]
+        if (!file) {
+          return false
+        }
 
-        });
-});
+        var filename = file.filename
+
+        UIkit.modal.confirm(
+          '<h2>Are you sure?</h2>' +
+            '<p style="font-size: 15px;"><span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> All data will be wiped from the database and restored with the selected backup file: <strong>' +
+            filename +
+            '</strong></p>' +
+            '<p style="font-size: 12px;">Any users currently logged in will be presented with a blocking restore page. Preventing any further actions.' +
+            'Once complete all users are required to log in again.</p><br /><p style="font-size: 12px; font-style: italic;">This process may take a while depending on the size of the backup.</p>',
+          function () {
+            socket.ui.emitShowRestoreOverlay()
+
+            $http
+              .post('/api/v1/backup/restore', {
+                file: filename
+              })
+              .then(
+                function success (res) {
+                  $log.log(res)
+                  helpers.UI.showSnackbar('Restore Complete. Logging all users out...', false)
+                  $timeout(function () {
+                    socket.ui.emitRestoreComplete()
+                  }, 2000)
+                },
+                function error (err) {
+                  $log.error(err)
+                  helpers.UI.showSnackbar('An Error Occurred. Check Console.', true)
+                }
+              )
+          },
+          {
+            labels: { Ok: 'Yes', Cancel: 'No' },
+            confirmButtonClass: 'md-btn-danger'
+          }
+        )
+      }
+
+      $scope.deletedTickets = []
+      $scope.allDeletedTickets = []
+      $scope.getDeletedTickets = function () {
+        $http.get('/api/v1/tickets/deleted').then(
+          function successCallback (response) {
+            if (!response.data || !response.data.deletedTickets) return
+
+            $scope.allDeletedTickets = response.data.deletedTickets
+            $scope.deletedTickets = $scope.allDeletedTickets.slice(0, 25)
+
+            var $deletedTicketPagination = $('.deletedTicketPagination')
+            UIkit.pagination($deletedTicketPagination, {
+              items: $scope.allDeletedTickets.length,
+              itemsOnPage: 25
+            })
+
+            $deletedTicketPagination.on('select.uk.pagination', function (e, pageIndex) {
+              $timeout(function () {
+                $scope.deletedTickets = $scope.allDeletedTickets.slice(pageIndex * 25, (pageIndex + 1) * 25)
+              }, 0)
+            })
+          },
+          function errorCallback (err) {
+            helpers.UI.showSnackbar('Error: ' + err.error, true)
+            $log.error(err)
+          }
+        )
+      }
+
+      $scope.restoreDeletedTicket = function (idx) {
+        var ticket = $scope.deletedTickets[idx]
+        if (!ticket) return false
+
+        $http
+          .post(
+            '/api/v1/tickets/deleted/restore',
+            {
+              _id: ticket._id
+            },
+            {
+              headers: {
+                'Content-Type': 'application/json'
+              }
+            }
+          )
+          .then(
+            function successCallback (response) {
+              if (response.data.success) {
+                helpers.UI.showSnackbar('Ticket #' + ticket.uid + ' restored')
+                $scope.deletedTickets.splice(idx, 1)
+              }
+            },
+            function errorCallback (err) {
+              helpers.UI.showSnackbar('Error: ' + err.error)
+              $log.error(err)
+            }
+          )
+      }
+    })
+})

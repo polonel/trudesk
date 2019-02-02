@@ -12,41 +12,45 @@
 
  **/
 
-define(['angular'], function(angular) {
-    angular.module('trudesk.services.settings', [])
-        .factory('SettingsService', function($window, $http) {
-            var SettingsService;
+define(['angular'], function (angular) {
+  angular.module('trudesk.services.settings', []).factory('SettingsService', function ($window, $http) {
+    var SettingsService
 
-            var settings = null;
+    var settings = null
 
-            SettingsService = (function() {
-                SettingsService = function() {
+    SettingsService = (function () {
+      SettingsService = function () {}
 
-                };
+      SettingsService.prototype.init = function (callback) {
+        if (settings === null || angular.isUndefined(settings)) {
+          $http
+            .get('/api/v1/settings')
+            .success(function (data) {
+              settings = data.settings.data.settings
 
-                SettingsService.prototype.init = function(callback) {
-                    if (settings === null || angular.isUndefined(settings)) {
-                        $http.get('/api/v1/settings')
-                            .success(function(data) {
-                                settings = data.settings.data.settings;
+              if (angular.isFunction(callback)) {
+                return callback(null, settings)
+              }
+            })
+            .error(function (error) {
+              if (angular.isFunction(callback)) {
+                return callback(error, null)
+              }
+            })
+        }
+      }
 
-                                if (angular.isFunction(callback))
-                                    return callback(null, settings);
-                            }).error(function(error) {
-                            if (angular.isFunction(callback))
-                                return callback(error, null);
-                        });
-                    }
-                };
+      SettingsService.prototype.getSettings = function () {
+        return settings
+      }
 
-                SettingsService.prototype.getSettings = function() { return settings; };
+      return SettingsService
+    })()
 
-                return SettingsService;
-            }());
+    if (angular.isUndefined($window.trudeskSettingsService) || $window.trudeskSettingsService === null) {
+      $window.trudeskSettingsService = new SettingsService()
+    }
 
-            if (angular.isUndefined($window.trudeskSettingsService) || $window.trudeskSettingsService === null)
-                $window.trudeskSettingsService = new SettingsService();
-
-            return $window.trudeskSettingsService;
-        });
-});
+    return $window.trudeskSettingsService
+  })
+})

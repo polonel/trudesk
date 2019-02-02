@@ -1,24 +1,26 @@
 /*
-      .                             .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    11/29/2015
- Author:     Chris Brame
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
- **/
+var _ = require('lodash')
 
-var _               = require('lodash'),
-    async           = require('async'),
+var async = require('async')
 
-    GroupSchema     = require('../../../models/group'),
-    ticketSchema    = require('../../../models/ticket');
+var GroupSchema = require('../../../models/group')
 
-var apiGroups = {};
+var ticketSchema = require('../../../models/ticket')
+
+var apiGroups = {}
 
 /**
  * @api {get} /api/v1/groups Get Groups
@@ -38,24 +40,27 @@ var apiGroups = {};
  * @apiSuccess {array}      groups.members      Array of Users that are members of this group
  *
  */
-apiGroups.get = function(req, res) {
-    var user = req.user;
-    var permissions = require('../../../permissions');
-    var hasPublic = permissions.canThis(user.role, 'ticket:public');
+apiGroups.get = function (req, res) {
+  var user = req.user
+  var permissions = require('../../../permissions')
+  var hasPublic = permissions.canThis(user.role, 'ticket:public')
 
-    GroupSchema.getAllGroupsOfUser(user._id, function(err, groups) {
-        if (err) return res.status(400).json({success: false, error: err.message});
+  GroupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
+    if (err) return res.status(400).json({ success: false, error: err.message })
 
-        if (hasPublic) {
-            GroupSchema.getAllPublicGroups(function (err, grps) {
-                groups = groups.concat(grps);
+    if (hasPublic) {
+      GroupSchema.getAllPublicGroups(function (err, grps) {
+        if (err) return res.status(400).json({ success: false, error: err })
 
-                return res.json({success: true, groups: groups});
-            });
-        } else
-            return res.json({success: true, groups: groups});
-    });
-};
+        groups = groups.concat(grps)
+
+        return res.json({ success: true, groups: groups })
+      })
+    } else {
+      return res.json({ success: true, groups: groups })
+    }
+  })
+}
 
 /**
  * @api {get} /api/v1/groups/all Get Groups
@@ -76,13 +81,13 @@ apiGroups.get = function(req, res) {
  *
  */
 
-apiGroups.getAll = function(req, res) {
-    GroupSchema.getAllGroups(function(err, groups) {
-        if (err) return res.status(400).json({success: false, error: err.message});
+apiGroups.getAll = function (req, res) {
+  GroupSchema.getAllGroups(function (err, groups) {
+    if (err) return res.status(400).json({ success: false, error: err.message })
 
-        return res.json({success: true, groups: groups});
-    });
-};
+    return res.json({ success: true, groups: groups })
+  })
+}
 
 /**
  * @api {get} /api/v1/groups/:id Get Single Group
@@ -102,16 +107,16 @@ apiGroups.getAll = function(req, res) {
  * @apiSuccess {array}      groups.members      Array of Users that are members of this group
  *
  */
-apiGroups.getSingleGroup = function(req, res) {
-    var id = req.params.id;
-    if (_.isUndefined(id)) return res.status(400).json({error: 'Invalid Request'});
+apiGroups.getSingleGroup = function (req, res) {
+  var id = req.params.id
+  if (_.isUndefined(id)) return res.status(400).json({ error: 'Invalid Request' })
 
-    GroupSchema.getGroupById(id, function(err, group) {
-        if (err) return res.status(400).json({error: err.message});
+  GroupSchema.getGroupById(id, function (err, group) {
+    if (err) return res.status(400).json({ error: err.message })
 
-        return res.status(200).json({success: true, group: group});
-    });
-};
+    return res.status(200).json({ success: true, group: group })
+  })
+}
 
 /**
  * @api {post} /api/v1/groups/create Create Group
@@ -146,19 +151,19 @@ apiGroups.getSingleGroup = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiGroups.create = function(req, res) {
-    var Group = new GroupSchema();
+apiGroups.create = function (req, res) {
+  var Group = new GroupSchema()
 
-    Group.name = req.body.name;
-    Group.members = req.body.members;
-    Group.sendMailTo = req.body.sendMailTo;
+  Group.name = req.body.name
+  Group.members = req.body.members
+  Group.sendMailTo = req.body.sendMailTo
 
-    Group.save(function(err, group) {
-        if (err) return res.status(400).json({success: false, error: 'Error: ' + err.message});
+  Group.save(function (err, group) {
+    if (err) return res.status(400).json({ success: false, error: 'Error: ' + err.message })
 
-        res.json({success: true, error: null, group: group});
-    });
-};
+    res.json({ success: true, error: null, group: group })
+  })
+}
 
 /**
  * @api {put} /api/v1/groups/:id Edit Group
@@ -193,33 +198,36 @@ apiGroups.create = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiGroups.updateGroup = function(req, res) {
-    var id = req.params.id;
-    var data = req.body;
-    if (_.isUndefined(id) || _.isUndefined(data) || !_.isObject(data)) return res.status(400).json({error: 'Invalid Post Data'});
+apiGroups.updateGroup = function (req, res) {
+  var id = req.params.id
+  var data = req.body
+  if (_.isUndefined(id) || _.isUndefined(data) || !_.isObject(data))
+    return res.status(400).json({ error: 'Invalid Post Data' })
 
-    if (!_.isArray(data.members))
-        data.members = [data.members];
-    if (!_.isArray(data.sendMailTo))
-        data.sendMailTo = [data.sendMailTo];
+  if (!_.isArray(data.members)) {
+    data.members = [data.members]
+  }
+  if (!_.isArray(data.sendMailTo)) {
+    data.sendMailTo = [data.sendMailTo]
+  }
 
-    GroupSchema.getGroupById(id, function(err, group) {
-        if (err) return res.status(400).json({error: err.message});
+  GroupSchema.getGroupById(id, function (err, group) {
+    if (err) return res.status(400).json({ error: err.message })
 
-        var members = _.compact(data.members);
-        var sendMailTo = _.compact(data.sendMailTo);
+    var members = _.compact(data.members)
+    var sendMailTo = _.compact(data.sendMailTo)
 
-        group.name          = data.name;
-        group.members       = members;
-        group.sendMailTo    = sendMailTo;
+    group.name = data.name
+    group.members = members
+    group.sendMailTo = sendMailTo
 
-        group.save(function(err, savedGroup) {
-            if (err) return res.status(400).json({error: err.message});
+    group.save(function (err, savedGroup) {
+      if (err) return res.status(400).json({ error: err.message })
 
-            return res.json({success: true, group: savedGroup});
-        });
-    });
-};
+      return res.json({ success: true, group: savedGroup })
+    })
+  })
+}
 
 /**
  * @api {delete} /api/v1/groups/:id Delete Group
@@ -242,43 +250,47 @@ apiGroups.updateGroup = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiGroups.deleteGroup = function(req, res) {
-    var id = req.params.id;
-    if (_.isUndefined(id)) return res.status(400).json({success: false, error:'Error: Invalid Group Id.'});
+apiGroups.deleteGroup = function (req, res) {
+  var id = req.params.id
+  if (_.isUndefined(id)) return res.status(400).json({ success: false, error: 'Error: Invalid Group Id.' })
 
-    async.series([
-        function(next) {
-            var grps = [id];
-            ticketSchema.getTickets(grps, function(err, tickets) {
-                if (err) 
-                    return next('Error: ' + err.message);
-                
+  async.series(
+    [
+      function (next) {
+        var grps = [id]
+        ticketSchema.getTickets(grps, function (err, tickets) {
+          if (err) {
+            return next('Error: ' + err.message)
+          }
 
-                if (_.size(tickets) > 0) 
-                    return next('Error: Cannot delete a group with tickets.');
-                
+          if (_.size(tickets) > 0) {
+            return next('Error: Cannot delete a group with tickets.')
+          }
 
-                return next();
-            });
-        },
-        function(next) {
-            GroupSchema.getGroupById(id, function(err, group) {
-                if (err) return next('Error: ' + err.message);
+          return next()
+        })
+      },
+      function (next) {
+        GroupSchema.getGroupById(id, function (err, group) {
+          if (err) return next('Error: ' + err.message)
 
-                if (group.name.toLowerCase() === 'administrators') return next('Error: Unable to delete default Administrators group.');
+          if (group.name.toLowerCase() === 'administrators')
+            return next('Error: Unable to delete default Administrators group.')
 
-                group.remove(function(err, success) {
-                    if (err) return next('Error: ' + err.message);
+          group.remove(function (err, success) {
+            if (err) return next('Error: ' + err.message)
 
-                    return next(null, success);
-                });
-            });
-        }
-    ], function(err) {
-        if (err) return res.status(400).json({success: false, error: err});
+            return next(null, success)
+          })
+        })
+      }
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
 
-        return res.json({success: true});
-    });
-};
+      return res.json({ success: true })
+    }
+  )
+}
 
-module.exports = apiGroups;
+module.exports = apiGroups

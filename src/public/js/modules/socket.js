@@ -12,26 +12,26 @@
 
  **/
 
-define('modules/socket', [
-    'modules/chat',
-    'modules/ui',
+define('modules/socket', ['modules/chat', 'modules/ui', 'modules/socket.io/accountsImporter'], function (
+  chat,
+  ui,
+  accountsImporter
+) {
+  var socket = io.connect({
+    transports: ['polling', 'websocket']
+  })
+  var sClient = {
+    socket: socket
+  }
 
-    'modules/socket.io/accountsImporter'
+  ui.init(socket)
+  sClient.ui = ui
 
-], function(chat, ui, accountsImporter) {
-    var socket = io.connect();
-    var sClient = {
-        socket: socket
-    };
+  chat.init(socket)
+  sClient.chat = chat
 
-    ui.init(socket);
-    sClient.ui = ui;
+  accountsImporter.init(socket)
+  sClient.accountsImporter = accountsImporter
 
-    chat.init(socket);
-    sClient.chat = chat;
-
-    accountsImporter.init(socket);
-    sClient.accountsImporter = accountsImporter;
-
-    return sClient;
-});
+  return sClient
+})

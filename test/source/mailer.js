@@ -1,2 +1,1 @@
-
-var mailer    = require('../../src/mailer');
+// var mailer    = require('../../src/mailer');
