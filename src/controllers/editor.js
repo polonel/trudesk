@@ -36,6 +36,8 @@ editor.page = function (req, res) {
 editor.getAssets = function (req, res) {
   var imageExts = ['.gif', '.png', '.jpg', '.jpeg', '.ico', '.bmp']
 
+  fs.ensureDirSync(path.join(__dirname, '../../public/uploads/assets/upload'))
+
   fs.readdir(path.join(__dirname, '../../public/uploads/assets/upload'), function (err, files) {
     if (err) return res.status(400).json({ success: false, error: err })
 
