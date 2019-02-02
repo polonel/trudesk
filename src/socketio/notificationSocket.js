@@ -72,8 +72,6 @@ function updateAllNotifications (socket) {
 
     notifications.items = items
 
-    console.log('Called')
-
     utils.sendToSelf(socket, 'updateAllNotifications', notifications)
   })
 }
