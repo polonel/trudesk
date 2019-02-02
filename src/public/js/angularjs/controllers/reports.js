@@ -105,8 +105,10 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formval
         form.serializeArray().map(function (x) {
           data[x.name] = x.value
         })
-        var startDate = moment(data['filterDate_Start'])
-        var endDate = moment(data['filterDate_End'])
+
+        // Standardize the Dates
+        var startDate = moment(data['filterDate_Start'], helpers.getShortDateFormat()).format('MM-DD-YYYY')
+        var endDate = moment(data['filterDate_End'], helpers.getShortDateFormat()).format('MM-DD-YYYY')
 
         var groups = []
 
@@ -130,6 +132,7 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formval
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
+                  $log.error(response)
                 }
               )
               .then(function () {

@@ -40,7 +40,6 @@ coverage.html
 *.bk
 apidocs
 /docs/*.html
-/public/js/
 app.css.map
 *.diff
 private/

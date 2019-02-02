@@ -1515,6 +1515,23 @@ ticketSchema.statics.softDelete = function (oId, callback) {
   return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: true }, callback)
 }
 
+ticketSchema.statics.restoreDeleted = function (oId, callback) {
+  if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.RestoreDeleted()', null)
+
+  var self = this
+
+  return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: false }, callback)
+}
+
+ticketSchema.statics.getDeleted = function (callback) {
+  return this.model(COLLECTION)
+    .find({ deleted: true })
+    .populate('group')
+    .sort({ uid: -1 })
+    .limit(1000)
+    .exec(callback)
+}
+
 function statusToString (status) {
   var str
   switch (status) {

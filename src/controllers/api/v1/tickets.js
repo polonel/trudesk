@@ -13,15 +13,10 @@
  */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var moment = require('moment-timezone')
-
 var winston = require('winston')
-
 var permissions = require('../../../permissions')
-
 var emitter = require('../../../emitter')
 
 var apiTickets = {}
@@ -1782,6 +1777,26 @@ apiTickets.getOverdue = function (req, res) {
         return res.json({ success: true, tickets: sorted })
       })
     })
+  })
+}
+
+apiTickets.getDeletedTickets = function (req, res) {
+  var ticketSchema = require('../../../models/ticket')
+  ticketSchema.getDeleted(function (err, tickets) {
+    if (err) return res.status(500).json({ success: false, error: err })
+
+    return res.json({ success: true, count: tickets.length, deletedTickets: tickets })
+  })
+}
+
+apiTickets.restoreDeleted = function (req, res) {
+  var postData = req.body
+  if (!postData || !postData._id) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  var ticketSchema = require('../../../models/ticket')
+  ticketSchema.restoreDeleted(postData._id, function (err) {
+    if (err) return res.status(500).json({ success: false, error: err })
+
+    return res.json({ success: true })
   })
 }
 
