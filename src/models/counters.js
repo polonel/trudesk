@@ -12,25 +12,27 @@
 
  **/
 
-var mongoose = require('mongoose');
+var mongoose = require('mongoose')
 
-var COLLECTION = 'counters';
+var COLLECTION = 'counters'
 
 var countersSchema = mongoose.Schema({
-    _id: String,
-    next: Number
-});
+  _id: String,
+  next: Number
+})
 
 countersSchema.statics.increment = function (counter, callback) {
-    return this.collection.findOneAndUpdate({ _id: counter }, { $inc: { next: 1 }}, callback);
-};
+  return this.collection.findOneAndUpdate({ _id: counter }, { $inc: { next: 1 } }, callback)
+}
 
-countersSchema.statics.setCounter = function(counter, count, callback) {
-    return this.collection.findOneAndUpdate({_id: counter}, {$set: {next: count}}, callback);
-};
-    
-countersSchema.statics.findByCounter = function(counter, callback) {
-    return this.model(COLLECTION).findOne({_id: counter}).exec(callback);
-};
+countersSchema.statics.setCounter = function (counter, count, callback) {
+  return this.collection.findOneAndUpdate({ _id: counter }, { $set: { next: count } }, callback)
+}
 
-module.exports = mongoose.model(COLLECTION, countersSchema);
+countersSchema.statics.findByCounter = function (counter, callback) {
+  return this.model(COLLECTION)
+    .findOne({ _id: counter })
+    .exec(callback)
+}
+
+module.exports = mongoose.model(COLLECTION, countersSchema)

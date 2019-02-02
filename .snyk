@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.8.0
+version: v1.13.3
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:ms:20170412':
@@ -40,6 +40,14 @@ ignore:
     - pm2 > shelljs:
         reason: None given
         expires: '2017-06-16T22:52:26.705Z'
+  'npm:mailparser:20180625':
+    - mailparser:
+        reason: None given
+        expires: '2019-03-01T20:00:32.980Z'
+  'npm:mem:20180117':
+    - libnpx > yargs > os-locale > mem:
+        reason: None given
+        expires: '2019-03-01T20:00:32.980Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:marked:20170112':

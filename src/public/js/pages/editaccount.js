@@ -12,28 +12,27 @@
 
  **/
 
-define('pages/editaccount', [
-    'jquery',
-    'history'
+define('pages/editaccount', ['jquery', 'history'], function ($) {
+  var editaccount = {}
 
-], function($) {
-    var editaccount = {};
+  editaccount.init = function () {
+    $(document).ready(function () {
+      var $hoverAction = $('.hoverAction')
+      $hoverAction.parent().off('hover')
+      $hoverAction.parent().hover(
+        function () {
+          var self = $(this)
+          var hoverAction = self.find('.hoverAction')
+          hoverAction.stop().animate({ bottom: 0 }, 300)
+        },
+        function () {
+          var self = $(this)
+          var hoverAction = self.find('.hoverAction')
+          hoverAction.stop().animate({ bottom: '-256px' }, 300)
+        }
+      )
+    })
+  }
 
-    editaccount.init = function() {
-        $(document).ready(function() {
-            var $hoverAction = $('.hoverAction');
-            $hoverAction.parent().off('hover');
-            $hoverAction.parent().hover(function() {
-                var self = $(this);
-                var hoverAction = self.find('.hoverAction');
-                hoverAction.stop().animate({bottom: 0}, 300);
-            }, function() {
-                var self = $(this);
-                var hoverAction = self.find('.hoverAction');
-                hoverAction.stop().animate({bottom: '-256px'}, 300);
-            });
-        });
-    };
-
-    return editaccount;
-});
+  return editaccount
+})

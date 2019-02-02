@@ -58,3 +58,5 @@ public/uploads/assets/*.*
 /src/backup/bin/
 backups/
 restores/
+
+public/uploads/assets/upload/

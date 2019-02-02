@@ -15,28 +15,28 @@
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
                             {{/canUser}}
@@ -66,9 +66,9 @@
 
                                        style="float: left;" class="relative no-ajaxy">
                                         {{#if data.ticket.assignee.image}}
-                                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt=""/>
+                                            <img src="/uploads/users/{{data.ticket.assignee.image}}" alt="{{data.ticket.assignee.fullname}} Profile Image"/>
                                         {{else}}
-                                            <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                            <img src="/uploads/users/defaultProfile.jpg" alt="Default Profile Image"/>
                                         {{/if}}
                                         <span class="user-offline uk-border-circle" data-user-status-id="{{data.ticket.assignee._id}}"></span>
                                         <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
@@ -83,12 +83,13 @@
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
                                         {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                           data-notifications="assigneeDropdown"
-                                           data-updateui="assigneeList"
+                                            title="Set Assignee"
+                                            data-notifications="assigneeDropdown"
+                                            data-updateui="assigneeList"
                                         {{/canUser}}
 
                                        style="float: left;" class="relative no-ajaxy">
-                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                        <img src="/uploads/users/defaultProfile.jpg" alt="Default Profile Image" />
                                         <span class="drop-icon material-icons" style="">keyboard_arrow_down</span>
                                     </a>
                                     <div class="ticket-assignee-details">
@@ -236,9 +237,9 @@
                         <div class="initial-issue" data-ticketid="{{data.ticket._id}}">
                             <div class="ticket-owner-picture relative uk-clearfix uk-display-inline-block uk-float-left">
                                 {{#if data.ticket.owner.image}}
-                                    <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
+                                    <img class="profile-pic" src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
                                 {{else}}
-                                    <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt=""/>
                                 {{/if}}
 
                                 <span class="user-offline uk-border-circle" data-user-status-id="{{data.ticket.owner._id}}"></span>
@@ -267,40 +268,10 @@
                                 </div>
                             </div>
                             {{#canUser data.user "ticket:edit"}}
-                                <div class="edit-issue-form uk-clearfix hide" style="margin-bottom: 15px;">
-                                    <form id="edit-issue-form" ng-submit="updateTicketIssue()" data-abide>
-                                        <div class="edit-issue-box">
-                                            <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                      data-validation="length"
-                                                      data-validation-length="min10"
-                                                      data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
-                                            ></textarea>
-                                        </div>
-                                        <div class="right">
-                                            <button class="uk-button" type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
-                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                        </div>
-                                    </form>
-                                </div>
-                                <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}"><i class="material-icons">&#xE254;</i></div>
+                                <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
                             {{else}}
                                 {{#canEditSelf data.user data.ticket.owner 'ticket'}}
-                                    <div class="edit-issue-form uk-clearfix hide" style="margin-bottom: 15px;">
-                                        <form id="edit-issue-form" ng-submit="updateTicketIssue()">
-                                            <div class="edit-issue-box">
-                                                <textarea name="issueText" id="issueText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                          data-validation="length"
-                                                          data-validation-length="min10"
-                                                          data-validation-error-msg="Please enter a valid Issue. Issue must contain at least 10 characters."
-                                                ></textarea>
-                                            </div>
-                                            <div class="right">
-                                                <button type="reset" ng-click="editIssueCancelClicked($event)">Cancel</button>
-                                                <button type="submit" data-preventDefault="false">Save</button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}"><i class="material-icons">&#xE254;</i></div>
+                                    <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
                                 {{/canEditSelf}}
                             {{/canUser}}
                             <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
@@ -335,9 +306,9 @@
                                             <div class="ticket-comment" data-commentId="{{_id}}">
                                                 <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                     {{#if owner.image}}
-                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                        <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                     {{else}}
-                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                        <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                     {{/if}}
                                                     <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                                 </div>
@@ -362,41 +333,6 @@
                                                         {{/is}}
                                                     </div>
                                                 </div>
-                                                {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                        <form data-commentid="{{_id}}" data-abide>
-                                                            <div class="edit-comment-box">
-                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                              data-validation="length"
-                                                              data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
-                                                    ></textarea>
-                                                            </div>
-                                                            <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                {{else}}
-                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                        <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                            <form data-commentid="{{_id}}" data-abide>
-                                                                <div class="edit-comment-box">
-                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                                  data-validation="length"
-                                                                  data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
-                                                        ></textarea>
-                                                                </div>
-                                                                <div class="right">
-                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    {{/canEditSelf}}
-                                                {{/canUser}}
                                                 <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
                                                     {{#canUser ../data.common.loggedInAccount "comment:delete"}}
                                                         <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
@@ -406,10 +342,10 @@
                                                         {{/canEditSelf}}
                                                     {{/canUser}}
                                                     {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                     {{else}}
                                                         {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                            <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                            <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                         {{/canEditSelf}}
                                                     {{/canUser}}
                                                 </div>
@@ -419,9 +355,9 @@
                                             <div class="ticket-note" data-noteid="{{_id}}">
                                                 <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                     {{#if owner.image}}
-                                                        <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                        <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                     {{else}}
-                                                        <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                        <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                     {{/if}}
                                                     <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                                 </div>
@@ -440,41 +376,6 @@
                                                         <p>{{{note}}}</p>
                                                     </div>
                                                 </div>
-                                                {{#canUser ../data.common.loggedInAccount "note:edit"}}
-                                                    <div class="edit-note-form uk-clearfix hide" data-noteid="{{_id}}" style="margin-bottom: 15px;">
-                                                        <form data-noteid="{{_id}}" data-abide>
-                                                            <div class="edit-comment-box">
-                                                    <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                              data-validation="length"
-                                                              data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
-                                                    </textarea>
-                                                            </div>
-                                                            <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                {{else}}
-                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                        <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                            <form data-noteid="{{_id}}" data-abide>
-                                                                <div class="edit-comment-box">
-                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                                  data-validation="length"
-                                                                  data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
-                                                        ></textarea>
-                                                                </div>
-                                                                <div class="right">
-                                                                    <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                    <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    {{/canEditSelf}}
-                                                {{/canUser}}
                                                 <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
                                                     {{#canUser ../data.common.loggedInAccount "note:delete"}}
                                                         <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
@@ -484,10 +385,10 @@
                                                         {{/canEditSelf}}
                                                     {{/canUser}}
                                                     {{#canUser ../data.common.loggedInAccount "note:edit"}}
-                                                        <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                     {{else}}
                                                         {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                            <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                            <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                         {{/canEditSelf}}
                                                     {{/canUser}}
                                                 </div>
@@ -503,9 +404,9 @@
                                         <div class="ticket-comment" data-commentId="{{_id}}">
                                             <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                 {{#if owner.image}}
-                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                 {{else}}
-                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                 {{/if}}
                                                 <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                             </div>
@@ -522,41 +423,6 @@
                                                         <p>{{{comment}}}</p>
                                                 </div>
                                             </div>
-                                            {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                                <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                    <form data-commentid="{{_id}}" data-abide>
-                                                        <div class="edit-comment-box">
-                                                    <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                              data-validation="length"
-                                                              data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
-                                                    ></textarea>
-                                                        </div>
-                                                        <div class="right">
-                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            {{else}}
-                                                {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                        <form data-commentid="{{_id}}" data-abide>
-                                                            <div class="edit-comment-box">
-                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                                  data-validation="length"
-                                                                  data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid comment. Comment must contain at least 5 characters."
-                                                        ></textarea>
-                                                            </div>
-                                                            <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                {{/canEditSelf}}
-                                            {{/canUser}}
                                             <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
                                                 {{#canUser ../data.common.loggedInAccount "comment:delete"}}
                                                     <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
@@ -566,10 +432,10 @@
                                                     {{/canEditSelf}}
                                                 {{/canUser}}
                                                 {{#canUser ../data.common.loggedInAccount "comment:edit"}}
-                                                    <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                 {{else}}
                                                     {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                        <div class="edit-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                     {{/canEditSelf}}
                                                 {{/canUser}}
                                             </div>
@@ -585,9 +451,9 @@
                                         <div class="ticket-note" data-noteid="{{_id}}">
                                             <div class="ticket-comment-image relative uk-clearfix uk-float-left uk-display-inline-block">
                                                 {{#if owner.image}}
-                                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                                    <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                                 {{else}}
-                                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                                 {{/if}}
                                                 <span class="user-offline uk-border-circle" data-user-status-id="{{owner._id}}"></span>
                                             </div>
@@ -606,41 +472,6 @@
                                                     <p>{{{note}}}</p>
                                                 </div>
                                             </div>
-                                            {{#canUser ../data.common.loggedInAccount "note:edit"}}
-                                                <div class="edit-note-form uk-clearfix hide" data-noteid="{{_id}}" style="margin-bottom: 15px;">
-                                                    <form data-noteid="{{_id}}" data-abide>
-                                                        <div class="edit-comment-box">
-                                                    <textarea name="noteText" id="noteText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                              data-validation="length"
-                                                              data-validation-length="min5"
-                                                              data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters.">
-                                                    </textarea>
-                                                        </div>
-                                                        <div class="right">
-                                                            <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                            <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            {{else}}
-                                                {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                    <div class="edit-comment-form uk-clearfix hide" data-commentid="{{_id}}" style="margin-bottom: 15px;">
-                                                        <form data-noteid="{{_id}}" data-abide>
-                                                            <div class="edit-comment-box">
-                                                        <textarea name="commentText" id="commentText" cols="2" rows="5" data-clearOnSubmit="true" class="md-input" required
-                                                                  data-validation="length"
-                                                                  data-validation-length="min5"
-                                                                  data-validation-error-msg="Please enter a valid note. A note must contain at least 5 characters."
-                                                        ></textarea>
-                                                            </div>
-                                                            <div class="right">
-                                                                <button class="uk-button resetForm" type="reset">Cancel</button>
-                                                                <button class="uk-button" type="submit" data-preventDefault="false">Save</button>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                {{/canEditSelf}}
-                                            {{/canUser}}
                                             <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
                                                 {{#canUser ../data.common.loggedInAccount "note:delete"}}
                                                     <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
@@ -650,10 +481,10 @@
                                                     {{/canEditSelf}}
                                                 {{/canUser}}
                                                 {{#canUser ../data.common.loggedInAccount "note:edit"}}
-                                                    <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                    <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                 {{else}}
                                                     {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                        <div class="edit-note" data-noteid="{{_id}}"><i class="material-icons">&#xE254;</i></div>
+                                                        <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                     {{/canEditSelf}}
                                                 {{/canUser}}
                                             </div>
@@ -666,9 +497,9 @@
                         <!-- Comments / Notes Form -->
                         <div class="uk-width-1-1 ticket-reply uk-clearfix {{#is data.ticket.status 3}}hide{{/is}}">
                             {{#if data.common.loggedInAccount.image}}
-                                <img src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
+                                <img class="profile-pic" src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
                             {{else}}
-                                <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                             {{/if}}
                             <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
                                 <div class="tru-tab-selectors">
@@ -687,9 +518,6 @@
                                             <!--<label for="commentReply" class="uk-form-label">Comment</label>-->
                                             <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="comment-textarea"
                                                       data-keyBindSubmit="#comment-reply-submit-button"
-                                                      data-validation="length"
-                                                      data-validation-length="min5"
-                                                      data-validation-error-msg="Please enter a valid comment. Comments must contain at least 5 characters."
                                                       style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                         </div>
                                         <div class="uk-width-1-1">
@@ -765,6 +593,28 @@
 
         {{> createTagWindow page='singleticket'}}
 
+        <div id="edit-ticket-window" class="off-canvas-bottom closed">
+            <div class="edit-window-wrapper">
+                <div class="edit-subject-wrap">
+                    <label for="edit-subject-input">Subject</label>
+                    <input id="edit-subject-input" class="md-input mb-10" />
+                </div>
+                <div class="editor-container">
+                    <div class="editor">
+                        <div class="code-mirror-wrap" >
+                            <textarea id="edit-issue-text" cols="2" rows="5" class="comment-textarea"
+                                      style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="action-panel">
+                    <div class="left-buttons">
+                        <button class="save-btn uk-button uk-button-accent mr-5" ng-click="saveEditWindow();" data-save-type="issue">Save Edit</button>
+                        <button class="uk-button uk-button-cancel" ng-click="hideEditWindow();">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 
 {{#contentFor 'js-plugins'}}

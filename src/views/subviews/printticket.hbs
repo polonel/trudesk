@@ -94,9 +94,9 @@
                 <div class="comments-wrapper">
                     <div class="initial-issue">
                         {{#if data.ticket.owner.image}}
-                            <img src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
+                            <img class="profile-pic" src="/uploads/users/{{data.ticket.owner.image}}" alt=""/>
                         {{else}}
-                            <img src="/uploads/users/defaultProfile.jpg" alt=""/>
+                            <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt=""/>
                         {{/if}}
                         <div class="issue-text">
                             <h3>{{data.ticket.subject}}</h3>
@@ -114,9 +114,9 @@
                         {{#foreach data.ticket.comments}}
                             <div class="ticket-comment" data-commentId="{{_id}}">
                                 {{#if owner.image}}
-                                    <img src="/uploads/users/{{owner.image}}" alt=""/>
+                                    <img class="profile-pic" src="/uploads/users/{{owner.image}}" alt=""/>
                                 {{else}}
-                                    <img src="/uploads/users/defaultProfile.jpg" alt="" />
+                                    <img class="profile-pic" src="/uploads/users/defaultProfile.jpg" alt="" />
                                 {{/if}}
                                 <div class="issue-text">
                                     <h3>Re: {{../data.ticket.subject}}</h3>

@@ -1,23 +1,24 @@
 /*
-      .                             .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    08/05/2015
- Author:     Chris Brame
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
- **/
+var _ = require('lodash')
 
-var _ = require('lodash'),
-    winston = require('winston'),
-    NoticeSchema = require('../../../models/notice');
+var winston = require('winston')
 
-var apiNotices = {};
+var NoticeSchema = require('../../../models/notice')
 
+var apiNotices = {}
 
 /**
  * @api {post} /api/v1/notices/create Create Notice
@@ -48,19 +49,18 @@ var apiNotices = {};
      "error": "Invalid Post Data"
  }
  */
-apiNotices.create = function(req, res) {
-    var postData = req.body;
-    var notice = new NoticeSchema(postData);
-    notice.save(function(err, notice) {
-        if (err) {
-            winston.debug(err);
-            return res.status(400).send({success: false, error: 'Invalid Post Data'});
-        }
+apiNotices.create = function (req, res) {
+  var postData = req.body
+  var notice = new NoticeSchema(postData)
+  notice.save(function (err, notice) {
+    if (err) {
+      winston.debug(err)
+      return res.status(400).send({ success: false, error: 'Invalid Post Data' })
+    }
 
-        return res.json(notice);
-    });
-
-};
+    return res.json(notice)
+  })
+}
 
 /**
  * @api {put} /api/v1/notices/:nid Update Notice
@@ -94,17 +94,17 @@ apiNotices.create = function(req, res) {
      "error": "Invalid Post Data"
  }
  */
-apiNotices.updateNotice = function(req, res) {
-    var id = req.params.id;
-    NoticeSchema.getNotice(id, function(err, notice) {
-        if (err) return res.status(400).json({success: false, error: err});
-        notice.update(req.body, function(err) {
-            if (err) return res.status(400).json({success: false, error: err});
+apiNotices.updateNotice = function (req, res) {
+  var id = req.params.id
+  NoticeSchema.getNotice(id, function (err, notice) {
+    if (err) return res.status(400).json({ success: false, error: err })
+    notice.update(req.body, function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
 
-            res.json({success: true});
-        });
-    });
-};
+      res.json({ success: true })
+    })
+  })
+}
 
 /**
  * @api {get} /api/v1/notices/clearactive Clear Active Notice
@@ -126,20 +126,20 @@ apiNotices.updateNotice = function(req, res) {
      "error": {Error Object}
  }
  */
-apiNotices.clearActive = function(req, res) {
-    NoticeSchema.getNotices(function(err, notices) {
-        if (err) return res.status(400).json({success: false, error: err});
+apiNotices.clearActive = function (req, res) {
+  NoticeSchema.getNotices(function (err, notices) {
+    if (err) return res.status(400).json({ success: false, error: err })
 
-        _.each(notices, function(notice) {
-            notice.active = false;
-            notice.save(function(err) {
-                if (err) return res.status(400).json({success: false, error: err});
-            });
-        });
+    _.each(notices, function (notice) {
+      notice.active = false
+      notice.save(function (err) {
+        if (err) return res.status(400).json({ success: false, error: err })
+      })
+    })
 
-        res.json({success: true});
-    });
-};
+    res.json({ success: true })
+  })
+}
 
 /**
  * @api {delete} /api/v1/notices/:nid Delete Notice
@@ -162,17 +162,17 @@ apiNotices.clearActive = function(req, res) {
      "error": {Error Object}
  }
  */
-apiNotices.deleteNotice = function(req, res) {
-    var id = req.params.id;
-    NoticeSchema.getNotice(id, function(err, notice) {
-        if (err) return res.status(400).json({success: false, error: err});
+apiNotices.deleteNotice = function (req, res) {
+  var id = req.params.id
+  NoticeSchema.getNotice(id, function (err, notice) {
+    if (err) return res.status(400).json({ success: false, error: err })
 
-        notice.remove(function(err) {
-            if (err) return res.status(400).json({success: false, error: err});
+    notice.remove(function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
 
-            res.json({success: true});
-        });
-    });
-};
+      res.json({ success: true })
+    })
+  })
+}
 
-module.exports = apiNotices;
+module.exports = apiNotices

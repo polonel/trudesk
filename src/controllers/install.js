@@ -12,263 +12,273 @@
 
  **/
 
-var async           = require('async'),
-    path            = require('path'),
-    _               = require('lodash'),
-    winston         = require('winston'),
-    pkg         = require('../../package'),
-    Chance          = require('chance');
+var async = require('async')
+var path = require('path')
+var _ = require('lodash')
+var winston = require('winston')
+var pkg = require('../../package')
+var Chance = require('chance')
 
-var installController = {};
+var installController = {}
+installController.content = {}
 
-installController.content = {};
+installController.index = function (req, res) {
+  var content = {}
+  content.title = 'Install Trudesk'
+  content.layout = false
 
-installController.index = function(req, res) {
-    var content = {};
-    content.title = 'Install Trudesk';
-    content.layout = false;
+  content.bottom = 'Trudesk v' + pkg.version
 
-    content.bottom = 'Trudesk v' + pkg.version;
+  res.render('install', content)
+}
 
-    res.render('install', content);
-};
+installController.mongotest = function (req, res) {
+  var data = req.body
+  var dbPassword = encodeURIComponent(data.password)
+  var CONNECTION_URI =
+    'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
-installController.mongotest = function(req, res) {
-    var data = req.body;
-    var dbPassword = encodeURIComponent(data.password);
-    var CONNECTION_URI = 'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database;
+  var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
+    env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
+  })
+  global.forks.push({ name: 'mongotest', fork: child })
+  child.on('message', function (data) {
+    if (data.error) return res.status(400).json({ success: false, error: data.error })
 
-    var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), { env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI } });
-    global.forks.push({name: 'mongotest', fork: child});
-    child.on('message', function(data) {
-        if (data.error) return res.status(400).json({success: false, error: data.error});
+    return res.json({ success: true })
+  })
 
-        return res.json({success: true});
-    });
+  child.on('close', function () {
+    winston.debug('MongoTest process terminated')
+  })
+}
 
-    child.on('close', function() {
-        winston.debug('MongoTest process terminated');
-    });
-};
+installController.existingdb = function (req, res) {
+  var data = req.body
 
-installController.existingdb = function(req, res) {
-    var data        = req.body;
+  // Mongo
+  var host = data.host
+  var port = data.port
+  var database = data.database
+  var username = data.username
+  var password = data.password
 
-    //Mongo
-    var host        = data.host;
-    var port        = data.port;
-    var database    = data.database;
-    var username    = data.username;
-    var password    = data.password;
+  // Write Configfile
+  var fs = require('fs')
+  var configFile = path.join(__dirname, '../../config.json')
 
-    //Write Configfile
-    var fs = require('fs');
-    var configFile = path.join(__dirname, '../../config.json');
+  var conf = {
+    mongo: {
+      host: host,
+      port: port,
+      username: username,
+      password: password,
+      database: database
+    }
+  }
 
-    var conf = {
-        mongo: {
-            host: host,
-            port: port,
-            username: username,
-            password: password,
-            database: database
-        }
-    };
+  fs.writeFile(configFile, JSON.stringify(conf, null, 4), function (err) {
+    if (err) {
+      winston.error('FS Error: ' + err.message)
+      return res.status(400).json({ success: false, error: err.message })
+    }
 
-    fs.writeFile(configFile, JSON.stringify(conf, null, 4), function(err) {
-        if (err) {
-            winston.error('FS Error: ' + err.message);
-            return res.status(400).json({success: false, error: err.message});
-        }
+    return res.json({ success: true })
+  })
+}
 
-        return res.json({success: true});
-    });
-};
+installController.install = function (req, res) {
+  var db = require('../database')
+  var UserSchema = require('../models/user')
+  var GroupSchema = require('../models/group')
+  var Counters = require('../models/counters')
+  var TicketTypeSchema = require('../models/tickettype')
 
-installController.install = function(req, res) {
-    var db                  = require('../database');
-    var UserSchema          = require('../models/user');
-    var GroupSchema         = require('../models/group');
-    var Counters            = require('../models/counters');
-    var TicketTypeSchema    = require('../models/tickettype');
+  var data = req.body
 
-    var data = req.body;
+  // Account
+  var user = {
+    username: data['account[username]'],
+    password: data['account[password]'],
+    passconfirm: data['account[cpassword]'],
+    email: data['account[email]'],
+    fullname: data['account[fullname]']
+  }
 
-    //Account
-    var user = {
-        username: data['account[username]'],
-        password: data['account[password]'],
-        passconfirm: data['account[cpassword]'],
-        email: data['account[email]'],
-        fullname: data['account[fullname]']
-    };
+  if (!user.username || !user.password || !user.email || !user.fullname)
+    return res.status(400).json({ success: false, error: 'Invalid Post Data.' })
 
-    if (!user.username || !user.password || !user.email || !user.fullname)
-        return res.status(400).json({success: false, error: 'Invalid Post Data.'});
+  async.waterfall(
+    [
+      function (next) {
+        db.init(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        var Counter = new Counters({
+          _id: 'tickets',
+          next: 1001
+        })
 
-    async.waterfall([
-        function(next) {
-            db.init(function(err) {
-                return next(err);
-            });
-        },
-        function(next) {
-            var Counter = new Counters({
-                _id: 'tickets',
-                next: 1001
-            });
+        Counter.save(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        var Counter = new Counters({
+          _id: 'reports',
+          next: 1001
+        })
 
-            Counter.save(function(err){return next(err);});
-        },
-        function(next) {
-            var Counter = new Counters({
-                _id: 'reports',
-                next: 1001
-            });
+        Counter.save(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        var type = new TicketTypeSchema({
+          name: 'Issue'
+        })
 
-            Counter.save(function(err) {
-                return next(err);
-            });
-        },
-        function(next) {
-            var type = new TicketTypeSchema({
-                name: 'Issue'
-            });
+        type.save(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        var type = new TicketTypeSchema({
+          name: 'Task'
+        })
 
-            type.save(function(err){return next(err); });
-        },
-        function(next) {
-            var type = new TicketTypeSchema({
-                name: 'Task'
-            });
+        type.save(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        GroupSchema.getGroupByName('Administrators', function (err, group) {
+          if (err) {
+            winston.error('Database Error: ' + err.message)
+            return next('Database Error:' + err.message)
+          }
 
-            type.save(function(err){return next(err); });
-        },
-        function(next) {
-            GroupSchema.getGroupByName('Administrators', function(err, group) {
-                if (err) {
-                    winston.error('Database Error: ' + err.message);
-                    return next('Database Error:' + err.message);
-                }
+          if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) return next(null, group)
 
-                if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group))
-                    return next(null, group);
+          // Create Admin Group
+          var adminGroup = new GroupSchema({
+            name: 'Administrators',
+            members: []
+          })
 
-                //Create Admin Group
-                var adminGroup = new GroupSchema({
-                    name: 'Administrators',
-                    members: []
-                });
-
-                adminGroup.save(function(err) {
-                    if (err) {
-                        winston.error('Database Error:' + err.message);
-                        return next('Database Error:' + err.message);
-                    }
-
-                    return next(null, adminGroup);
-                });
-            });
-        },
-        function (adminGroup, next) {
-            UserSchema.getUserByUsername(user.username, function(err, admin) {
-                if (err) {
-                    winston.error('Database Error: ' + err.message);
-                    return next('Database Error: ' + err.message);
-                }
-
-                if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin))
-                    return next('Username: ' + user.username + ' already exists.');
-
-                if (user.password !== user.passconfirm) {
-                    winston.error('Passwords do not match!');
-                    return next('Passwords do not match!');
-                }
-
-                var chance = new Chance();
-                var adminUser = new UserSchema({
-                    username:   user.username,
-                    password:   user.password,
-                    fullname:   user.fullname,
-                    email:      user.email,
-                    role:       'admin',
-                    title:      'Administrator',
-                    accessToken:chance.hash()
-                });
-
-                adminUser.save(function(err, savedUser) {
-                    if (err) {
-                        winston.error('Database Error: ' + err.message);
-                        return next('Database Error: ' + err.message);
-                    }
-
-                    adminGroup.addMember(savedUser._id, function(err, success) {
-                        if (err) {
-                            winston.error('Database Error: ' + err.message);
-                            return next('Database Error: ' + err.message);
-                        }
-
-                            if (!success) {
-                                winston.error('Unable to add user to Administrator group!');
-                                return next('Unable to add user to Administrator group!');
-                            }
-
-                        adminGroup.save(function(err) {
-                            if (err) {
-                                winston.error('Database Error: ' + err.message);
-                                return next('Database Error: ' + err.message);
-                            }
-
-                            return next(null);
-                        });
-                    });
-                });
-            });
-        },
-        function(next) {
-            var S = require('../models/setting');
-            var installed = new S({
-                name: 'installed',
-                value: true
-            });
-
-            installed.save(function(err) {
-                if (err) {
-                    winston.error('DB Error: ' + err.message);
-                    return next('DB Error: ' + err.message);
-                }
-
-                return next(null);
-            });
-        }
-    ], function(err) {
-        if (err) {
-            winston.error(err);
-            return res.status(400).json({success: false, error: err});
-        }
-
-        return res.json({success: true});
-    });
-};
-
-installController.restart = function(req, res) {
-    var pm2 = require('pm2');
-    pm2.connect(function(err) {
-        if (err) {
-            winston.error(err);
-            res.status(400).send(err);
-            return;
-        }
-        pm2.restart('trudesk', function(err) {
+          adminGroup.save(function (err) {
             if (err) {
-                res.status(400).send(err);
-                return winston.error(err);
+              winston.error('Database Error:' + err.message)
+              return next('Database Error:' + err.message)
             }
 
-            pm2.disconnect();
-            res.send();
-        });
-    });
-};
+            return next(null, adminGroup)
+          })
+        })
+      },
+      function (adminGroup, next) {
+        UserSchema.getUserByUsername(user.username, function (err, admin) {
+          if (err) {
+            winston.error('Database Error: ' + err.message)
+            return next('Database Error: ' + err.message)
+          }
 
-module.exports = installController;
+          if (!_.isNull(admin) && !_.isUndefined(admin) && !_.isEmpty(admin))
+            return next('Username: ' + user.username + ' already exists.')
+
+          if (user.password !== user.passconfirm) {
+            winston.error('Passwords do not match!')
+            return next('Passwords do not match!')
+          }
+
+          var chance = new Chance()
+          var adminUser = new UserSchema({
+            username: user.username,
+            password: user.password,
+            fullname: user.fullname,
+            email: user.email,
+            role: 'admin',
+            title: 'Administrator',
+            accessToken: chance.hash()
+          })
+
+          adminUser.save(function (err, savedUser) {
+            if (err) {
+              winston.error('Database Error: ' + err.message)
+              return next('Database Error: ' + err.message)
+            }
+
+            adminGroup.addMember(savedUser._id, function (err, success) {
+              if (err) {
+                winston.error('Database Error: ' + err.message)
+                return next('Database Error: ' + err.message)
+              }
+
+              if (!success) {
+                winston.error('Unable to add user to Administrator group!')
+                return next('Unable to add user to Administrator group!')
+              }
+
+              adminGroup.save(function (err) {
+                if (err) {
+                  winston.error('Database Error: ' + err.message)
+                  return next('Database Error: ' + err.message)
+                }
+
+                return next(null)
+              })
+            })
+          })
+        })
+      },
+      function (next) {
+        var S = require('../models/setting')
+        var installed = new S({
+          name: 'installed',
+          value: true
+        })
+
+        installed.save(function (err) {
+          if (err) {
+            winston.error('DB Error: ' + err.message)
+            return next('DB Error: ' + err.message)
+          }
+
+          return next(null)
+        })
+      }
+    ],
+    function (err) {
+      if (err) {
+        winston.error(err)
+        return res.status(400).json({ success: false, error: err })
+      }
+
+      return res.json({ success: true })
+    }
+  )
+}
+
+installController.restart = function (req, res) {
+  var pm2 = require('pm2')
+  pm2.connect(function (err) {
+    if (err) {
+      winston.error(err)
+      res.status(400).send(err)
+      return
+    }
+    pm2.restart('trudesk', function (err) {
+      if (err) {
+        res.status(400).send(err)
+        return winston.error(err)
+      }
+
+      pm2.disconnect()
+      res.send()
+    })
+  })
+}
+
+module.exports = installController
