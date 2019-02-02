@@ -12,7 +12,7 @@ RUN npm config set unsafe-perm true
 
 RUN apk add --no-cache --update bash make gcc g++ python
 
-RUN npm install -g yarn && \
+RUN npm install -g yarn cross-env && \
     yarn install --production --ignore-scripts --force && \
     npm rebuild bcrypt node-sass --build-from-source && \
     yarn run build && \
