@@ -12,9 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-//Load SASS (Webpack)
-// require('../../sass/app.sass');
-
 global.react = {} // Global react var for calling state outside react.
 
 require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'], function ($, helpers, angular, async) {
@@ -65,7 +62,7 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
           ], function (_, nav, socket) {
             // Page loading (init)
             require(['pages/pageloader'], function (pl) {
-              // React
+              // React Bootstrap
               require('../../client/app.jsx')
 
               pl.init(function () {

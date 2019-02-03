@@ -82,21 +82,13 @@ var port = process.env.PORT || 8118
 
   module.exports.installServer = function (callback) {
     var router = express.Router()
-
     var controllers = require('./controllers/index.js')
-
     var path = require('path')
-
     var hbs = require('express-hbs')
-
     var hbsHelpers = require('./helpers/hbs/helpers')
-
     var bodyParser = require('body-parser')
-
     var favicon = require('serve-favicon')
-
     var pkg = require('../package.json')
-
     var routeMiddleware = require('./middleware/middleware')(app)
 
     app.set('views', path.join(__dirname, './views/'))
