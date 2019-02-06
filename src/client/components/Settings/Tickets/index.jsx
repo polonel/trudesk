@@ -55,16 +55,16 @@ class TicketsSettings extends React.Component {
     this.getTicketTags(null, 0)
     const $tagPagination = $('#tagPagination')
     this.tagsPagination = UIKit.pagination($tagPagination, {
-      items: this.props.tagsState.totalCount ? this.props.tagsState.totalCount : 0,
+      items: this.props.tagsSettings.totalCount ? this.props.tagsSettings.totalCount : 0,
       itemsOnPage: 16
     })
     $tagPagination.on('select.uk.pagination', this.getTicketTags)
   }
 
   componentDidUpdate (prevProps) {
-    if (prevProps.tagsState.totalCount !== this.props.tagsState.totalCount) {
-      this.tagsPagination.pages = Math.ceil(this.props.tagsState.totalCount / 16)
-        ? Math.ceil(this.props.tagsState.totalCount / 16)
+    if (prevProps.tagsSettings.totalCount !== this.props.tagsSettings.totalCount) {
+      this.tagsPagination.pages = Math.ceil(this.props.tagsSettings.totalCount / 16)
+        ? Math.ceil(this.props.tagsSettings.totalCount / 16)
         : 1
       this.tagsPagination.render()
       if (this.tagsPagination.currentPage > this.tagsPagination.pages - 1)
@@ -357,19 +357,19 @@ class TicketsSettings extends React.Component {
               waves={true}
               extraClass={'mt-10 right'}
               onClick={e =>
-                this.showModal(e, 'CREATE_TAG', { page: 'settings', currentPage: this.props.tagsState.currentPage })
+                this.showModal(e, 'CREATE_TAG', { page: 'settings', currentPage: this.props.tagsSettings.currentPage })
               }
             />
           }
           footer={<ul id={'tagPagination'} className={'uk-pagination'} />}
         >
           <Grid extraClass={'zone uk-margin-medium-bottom'}>
-            {this.props.tagsState.tags.size < 1 && (
+            {this.props.tagsSettings.tags.size < 1 && (
               <div style={{ width: '100%', padding: '55px', textAlign: 'center' }}>
                 <h3 style={{ fontSize: '24px', fontWeight: '300' }}>No Tags Found</h3>
               </div>
             )}
-            {this.props.tagsState.tags.map(i => {
+            {this.props.tagsSettings.tags.map(i => {
               return (
                 <GridItem width={'1-2'} key={i.get('_id')} extraClass={'tag-wrapper br bb'}>
                   <Grid extraClass={'view-tag'}>
@@ -449,7 +449,7 @@ class TicketsSettings extends React.Component {
 TicketsSettings.propTypes = {
   active: PropTypes.bool.isRequired,
   settings: PropTypes.object.isRequired,
-  tagsState: PropTypes.object.isRequired,
+  tagsSettings: PropTypes.object.isRequired,
   updateSetting: PropTypes.func.isRequired,
   getTagsWithPage: PropTypes.func.isRequired,
   tagsUpdateCurrentPage: PropTypes.func.isRequired,
@@ -458,7 +458,7 @@ TicketsSettings.propTypes = {
 
 const mapStateToProps = state => ({
   settings: state.settings.settings,
-  tagsState: state.tagsState
+  tagsSettings: state.tagsSettings
 })
 
 export default connect(
