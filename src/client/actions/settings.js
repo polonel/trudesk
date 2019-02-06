@@ -19,7 +19,8 @@ export const fetchSettings = createAction(FETCH_SETTINGS.ACTION)
 export const updateSetting = createAction(UPDATE_SETTING.ACTION, input => ({
   name: input.name,
   value: input.value,
-  stateName: input.stateName
+  stateName: input.stateName,
+  noSnackbar: input.noSnackbar ? input.noSnackbar : false
 }))
 export const updateMultipleSettings = createAction(UPDATE_MULTIPLE_SETTINGS.ACTION, settings => settings)
 export const updateColorScheme = createAction(UPDATE_COLORSCHEME.ACTION, action => action)

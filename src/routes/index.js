@@ -323,6 +323,15 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser)
   router.get('/api/v1/logout', middleware.api, controllers.api.logout)
 
+  router.get('/api/v1/count/tags', middleware.api, function (req, res) {
+    var tagSchema = require('../models/tag')
+    tagSchema.countDocuments({}, function (err, count) {
+      if (err) return res.status(500).json({ success: false, error: err })
+
+      return res.json({ success: true, count: count })
+    })
+  })
+
   router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get)
   router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search)
   router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create)

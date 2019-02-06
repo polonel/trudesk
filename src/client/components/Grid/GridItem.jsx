@@ -8,26 +8,28 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/5/19 7:12 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux'
-import { reducer as form } from 'redux-form'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import shared from './shared'
-import modal from './shared/modalReducer'
-import sidebar from './sidebarReducer'
-import settings from './settings'
-import tagsState from './tagsReducer'
+class GridItem extends React.Component {
+  render () {
+    const { width, extraClass } = this.props
+    return (
+      <div className={'uk-width-' + width + (extraClass ? ' ' + extraClass : '')} style={this.props.style}>
+        {this.props.children}
+      </div>
+    )
+  }
+}
 
-const IndexReducer = combineReducers({
-  shared,
-  modal,
-  sidebar,
-  settings,
-  tagsState,
-  form
-})
+GridItem.propTypes = {
+  width: PropTypes.string.isRequired,
+  extraClass: PropTypes.string,
+  style: PropTypes.object
+}
 
-export default IndexReducer
+export default GridItem

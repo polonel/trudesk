@@ -16,10 +16,24 @@ import { defineAction } from 'redux-define'
 import { ERROR, SUCCESS } from './stateConstants'
 
 // Shared
+export const SHOW_MODAL = defineAction('SHOW_MODAL')
+export const HIDE_MODAL = defineAction('HIDE_MODAL')
+export const CLEAR_MODAL = defineAction('CLEAR_MODAL')
 export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
 
 // Common Nav Change
 export const NAV_CHANGE = defineAction('NAV_CHANGE')
+
+// Tickets
+export const CREATE_TICKET_TYPE = defineAction('CREATE_TICKET_TYPE', [SUCCESS, ERROR])
+export const RENAME_TICKET_TYPE = defineAction('RENAME_TICKET_TYPE', [SUCCESS, ERROR])
+export const DELETE_TICKET_TYPE = defineAction('DELETE_TICKET_TYPE', [SUCCESS, ERROR])
+export const CREATE_PRIORITY = defineAction('CREATE_PRIORITY', [SUCCESS, ERROR])
+export const UPDATE_PRIORITY = defineAction('UPDATE_PRIORITY', [SUCCESS, ERROR])
+export const DELETE_PRIORITY = defineAction('DELETE_PRIORITY', [SUCCESS, ERROR])
+export const GET_TAGS_WITH_PAGE = defineAction('GET_TAGS_WITH_PAGE', [SUCCESS, ERROR])
+export const TAGS_UPDATE_CURRENT_PAGE = defineAction('TAGS_UPDATE_CURRENT_PAGE', [SUCCESS, ERROR])
+export const CREATE_TAG = defineAction('CREATE_TAG', [SUCCESS, ERROR])
 
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])

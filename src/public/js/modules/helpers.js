@@ -635,17 +635,29 @@ define([
   helpers.UI.selectize = function (parent) {
     // selectize plugins
     if (typeof $.fn.selectize !== 'undefined') {
+      Selectize.define('hidden_textbox', function (options) {
+        var self = this
+        this.showInput = function () {
+          this.$control.css({ cursor: 'pointer' })
+          this.$control_input.css({ opacity: 0, position: 'relative', left: self.rtl ? 10000 : -10000 })
+          this.isInputHidden = false
+        }
+
+        this.setup_original = this.setup
+
+        this.setup = function () {
+          self.setup_original()
+          this.$control_input.prop('disabled', 'disabled')
+        }
+      })
+
       Selectize.define('dropdown_after', function () {
         var self = this
         self.positionDropdown = function () {
           var $control = this.$control
-
           var position = $control.position()
-
           var paddingLeft = position.left
-
           var paddingTop = position.top + $control.outerHeight(true) + 32
-
           this.$dropdown.css({
             width: $control.outerWidth(),
             top: paddingTop,
@@ -666,8 +678,14 @@ define([
           $this.attr('data-md-selectize-closeOnSelect') !== 'undefined'
             ? $this.attr('data-md-selectize-closeOnSelect')
             : false
+
+        var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+
+        var plugins = ['remove_button']
+        if (!showTextBox) plugins.push('hidden_textbox')
+
         $this.after('<div class="selectize_fix"></div>').selectize({
-          plugins: ['remove_button'],
+          plugins: plugins,
           hideSelected: true,
           dropdownParent: 'body',
           closeAfterSelect: closeOnSelect,
@@ -721,17 +739,28 @@ define([
             : false
         var maxOptions =
           $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000
+        var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+
+        var plugins = ['dropdown_after', 'remove_button']
+        if (!showTextBox) plugins.push('hidden_textbox')
+
         $this
           .after('<div class="selectize_fix"></div>')
           .closest('div')
           .addClass('uk-position-relative')
           .end()
           .selectize({
-            plugins: ['dropdown_after', 'remove_button'],
+            plugins: plugins,
             dropdownParent: $this.closest('div'),
             hideSelected: true,
             closeAfterSelect: closeOnSelect,
             maxOptions: maxOptions,
+            onFocus: function () {
+              if (showTextBox) return
+
+              $this.find('.selectize-input input').attr('readonly', true)
+              $this.find('.selectize-input input, .selectize-input').css('cursor', 'pointer')
+            },
             onDropdownOpen: function ($dropdown) {
               $dropdown.hide().velocity('slideDown', {
                 begin: function () {

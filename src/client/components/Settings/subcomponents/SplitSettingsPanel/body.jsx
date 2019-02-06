@@ -8,26 +8,28 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/2/19 9:40 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux'
-import { reducer as form } from 'redux-form'
+import React from 'react'
+import PropTypes from 'prop-types'
+import { VelocityComponent } from 'velocity-react'
 
-import shared from './shared'
-import modal from './shared/modalReducer'
-import sidebar from './sidebarReducer'
-import settings from './settings'
-import tagsState from './tagsReducer'
+class SplitSettingsPanelBody extends React.Component {
+  render () {
+    const { active } = this.props
+    return (
+      <VelocityComponent animation={{ opacity: active ? 1 : 0 }} duration={750}>
+        <div className={active ? '' : 'hide'}>{this.props.component}</div>
+      </VelocityComponent>
+    )
+  }
+}
 
-const IndexReducer = combineReducers({
-  shared,
-  modal,
-  sidebar,
-  settings,
-  tagsState,
-  form
-})
+SplitSettingsPanelBody.propTypes = {
+  active: PropTypes.bool.isRequired,
+  component: PropTypes.node.isRequired
+}
 
-export default IndexReducer
+export default SplitSettingsPanelBody

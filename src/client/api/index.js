@@ -14,11 +14,96 @@
 
 import axios from 'axios'
 
+axios.defaults.headers.post['Content-Type'] = 'application/json'
+
 let api = {}
 
-api.settings = {}
+api.tickets = {}
+api.tickets.renameTicketType = (id, name) => {
+  return axios.put('/api/v1/tickets/types/' + id, { name }).then(res => {
+    return res.data
+  })
+}
 
-api.settings.update = function (settings) {
+api.tickets.createTicketType = ({ name }) => {
+  return axios.post('/api/v1/tickets/types/create', { name }).then(res => {
+    return res.data
+  })
+}
+
+api.tickets.addPriorityToType = ({ typeId, priority }) => {
+  return axios
+    .post(`/api/v1/tickets/type/${typeId}/addpriority`, {
+      priority
+    })
+    .then(res => {
+      return res.data
+    })
+}
+
+api.tickets.removePriorityFromType = ({ typeId, priority }) => {
+  return axios
+    .post(`/api/v1/tickets/type/${typeId}/removepriority`, {
+      priority
+    })
+    .then(res => {
+      return res.data
+    })
+}
+
+api.tickets.deleteTicketType = ({ id, newTypeId }) => {
+  return axios.delete(`/api/v1/tickets/types/${id}`, { data: { newTypeId } }).then(res => {
+    return res.data
+  })
+}
+api.tickets.createPriority = ({ name, overdueIn, htmlColor }) => {
+  return axios
+    .post('/api/v1/tickets/priority/create', {
+      name,
+      overdueIn,
+      htmlColor
+    })
+    .then(res => {
+      return res.data
+    })
+}
+api.tickets.updatePriority = ({ id, name, overdueIn, htmlColor }) => {
+  return axios
+    .put(`/api/v1/tickets/priority/${id}`, {
+      name,
+      overdueIn,
+      htmlColor
+    })
+    .then(res => {
+      return res.data
+    })
+}
+api.tickets.deletePriority = ({ id, newPriority }) => {
+  return axios
+    .post(`/api/v1/tickets/priority/${id}/delete`, {
+      newPriority
+    })
+    .then(res => {
+      return res.data
+    })
+}
+
+api.tickets.getTagsWithPage = ({ limit, page }) => {
+  limit = limit ? limit : 10
+  page = page ? page : 0
+  return axios.get(`/api/v1/tags/limit?limit=${limit}&page=${page}`).then(res => {
+    return res.data
+  })
+}
+
+api.tickets.createTag = ({ name }) => {
+  return axios.post(`/api/v1/tags/create`, { tag: name }).then(res => {
+    return res.data
+  })
+}
+
+api.settings = {}
+api.settings.update = settings => {
   return axios.put('/api/v1/settings', settings).then(res => {
     return res.data
   })

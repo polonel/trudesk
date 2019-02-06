@@ -21,7 +21,7 @@ class SettingItem extends React.Component {
   }
 
   render () {
-    const { title, subTitle, component, tooltip } = this.props
+    const { title, subtitle, component, tooltip } = this.props
     return (
       <div className='setting-item-wrap uk-margin-medium-bottom'>
         <div className='panel trupanel nopadding no-hover-shadow' style={{ minHeight: '60px' }}>
@@ -40,7 +40,7 @@ class SettingItem extends React.Component {
               )}
             </h6>
             <h5 style={{ padding: '0 0 10px 15px', margin: '2px 0 0 0', fontSize: '12px' }} className='uk-text-muted'>
-              {subTitle}
+              {subtitle}
             </h5>
           </div>
           <div className='right uk-width-1-3' style={{ position: 'relative', paddingTop: '5px' }}>
@@ -53,16 +53,19 @@ class SettingItem extends React.Component {
               <hr className='nomargin-top clear' />
               <div className='panel-body2' style={{ padding: '20px 15px 15px 15px' }}>
                 <div className='uk-position-relative'>
-                  <div className='zone'>
-                    {React.Children.map(this.props.children, (child, k) => (
-                      <div key={k} className='z-box uk-clearfix'>
+                  {React.Children.map(this.props.children, (child, k) => {
+                    return (
+                      <div key={k} className={'uk-clearfix'}>
                         {child}
                       </div>
-                    ))}
-                  </div>
+                    )
+                  })}
                 </div>
               </div>
             </div>
+          )}
+          {this.props.footer && (
+            <div style={{ padding: '0 15px 25px 15px', marginTop: '-15px' }}>{this.props.footer}</div>
           )}
         </div>
       </div>
@@ -72,9 +75,10 @@ class SettingItem extends React.Component {
 
 SettingItem.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.object]).isRequired,
-  subTitle: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   tooltip: PropTypes.string,
-  component: PropTypes.element
+  component: PropTypes.element,
+  footer: PropTypes.element
 }
 
 export default SettingItem

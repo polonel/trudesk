@@ -17,14 +17,12 @@ import ReactDOM from 'react-dom'
 import { applyMiddleware, createStore, compose } from 'redux'
 import { Provider } from 'react-redux'
 import createSagaMiddleware from 'redux-saga'
-
 import IndexReducer from './reducers'
 import IndexSagas from './sagas'
-
-const sagaMiddleware = createSagaMiddleware()
-
 import Sidebar from './components/Nav/Sidebar/index.jsx'
 import renderer from './renderer'
+
+const sagaMiddleware = createSagaMiddleware()
 
 /*eslint-disable */
 const composeSetup =
@@ -32,6 +30,10 @@ const composeSetup =
     ? window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__
     : compose
 /*eslint-enable */
+
+if (process.env.NODE_ENV !== 'production') {
+  localStorage.setItem('debug', 'trudesk:*')
+}
 
 const store = createStore(IndexReducer, composeSetup(applyMiddleware(sagaMiddleware)))
 

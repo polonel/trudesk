@@ -67,11 +67,17 @@ class ColorSelector extends React.Component {
     const $currentTarget = $(event.target)
     if ($currentTarget.length > 0) {
       const color = ColorSelector.getRandomColor()
+      if (this.props.onChange) {
+        event.target.value = color
+        this.props.onChange(event)
+      }
       this.setState(
         {
           selectedColor: color
         },
-        this.updateColorButton
+        () => {
+          this.updateColorButton()
+        }
       )
     }
   }
@@ -83,6 +89,8 @@ class ColorSelector extends React.Component {
 
   onInputValueChange (e) {
     const val = e.target.value
+    if (this.props.onChange) this.props.onChange(e)
+
     this.setState(
       {
         selectedColor: val
@@ -102,7 +110,7 @@ class ColorSelector extends React.Component {
 
   render () {
     return (
-      <div className='uk-width-2-3 uk-float-right'>
+      <div className={this.props.parentClass}>
         <div className='uk-float-left uk-width-1-4'>
           <button
             ref={colorButton => {
@@ -117,33 +125,66 @@ class ColorSelector extends React.Component {
             <i className='material-icons'>refresh</i>
           </button>
         </div>
-        <div className='md-input-wrapper uk-float-left md-input-filled' style={{ width: '50%' }}>
+        <div
+          className='md-input-wrapper uk-float-left md-input-filled'
+          style={{ width: this.props.hideRevert ? '70%' : '50%' }}
+        >
           <label>Color</label>
-          <input
-            type='text'
-            className='md-input'
-            value={this.state.selectedColor}
-            onChange={e => {
-              this.onInputValueChange(e)
-            }}
-          />
+          {this.props.validationEnabled && (
+            <input
+              name={this.props.inputName ? this.props.inputName : ''}
+              type='text'
+              className='md-input'
+              value={this.state.selectedColor}
+              onChange={e => {
+                this.onInputValueChange(e)
+              }}
+              data-validation='custom'
+              data-validation-regexp='^\#([0-9a-fA-F]){3,6}$'
+              data-validation-error-msg='Invalid HEX Color'
+            />
+          )}
+          {!this.props.validationEnabled && (
+            <input
+              name={this.props.inputName ? this.props.inputName : ''}
+              type='text'
+              className='md-input'
+              value={this.state.selectedColor}
+              onChange={e => {
+                this.onInputValueChange(e)
+              }}
+            />
+          )}
           <div className='md-input-bar' />
         </div>
-        <button
-          className='md-btn md-btn-small md-btn-flat mt-10 uk-float-right uk-width-1-4'
-          onClick={() => {
-            this.revertColor()
-          }}
-        >
-          Revert
-        </button>
+        {!this.props.hideRevert && (
+          <button
+            className={'md-btn md-btn-small md-btn-flat mt-10 uk-float-right uk-width-1-4'}
+            onClick={() => {
+              this.revertColor()
+            }}
+          >
+            Revert
+          </button>
+        )}
       </div>
     )
   }
 }
 
 ColorSelector.propTypes = {
-  defaultColor: PropTypes.string.isRequired
+  inputName: PropTypes.string,
+  defaultColor: PropTypes.string.isRequired,
+  hideRevert: PropTypes.bool,
+  parentClass: PropTypes.string,
+  onChange: PropTypes.func,
+  validationEnabled: PropTypes.bool
+}
+
+ColorSelector.defaultProps = {
+  defaultColor: '#878982',
+  hideRevert: false,
+  validationEnabled: false
 }
 
 export default ColorSelector

@@ -8,26 +8,13 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/4/19 12:36 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux'
-import { reducer as form } from 'redux-form'
+import { createAction } from 'redux-actions'
+import { SHOW_MODAL, HIDE_MODAL, CLEAR_MODAL } from 'actions/types'
 
-import shared from './shared'
-import modal from './shared/modalReducer'
-import sidebar from './sidebarReducer'
-import settings from './settings'
-import tagsState from './tagsReducer'
-
-const IndexReducer = combineReducers({
-  shared,
-  modal,
-  sidebar,
-  settings,
-  tagsState,
-  form
-})
-
-export default IndexReducer
+export const showModal = createAction(SHOW_MODAL.ACTION, (modalType, modalProps) => ({ modalType, modalProps }))
+export const hideModal = createAction(HIDE_MODAL.ACTION)
+export const clearModal = createAction(CLEAR_MODAL.ACTION)

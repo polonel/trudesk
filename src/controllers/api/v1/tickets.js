@@ -936,9 +936,7 @@ apiTickets.getType = function (req, res) {
  */
 apiTickets.createType = function (req, res) {
   var typeName = req.body.name
-
   var ticketTypeSchema = require('../../../models/tickettype')
-
   var ticketPrioritiesSchema = require('../../../models/ticketpriority')
 
   if (_.isUndefined(typeName) || typeName.length < 3)
@@ -1075,17 +1073,14 @@ apiTickets.typeRemovePriority = function (req, res) {
  */
 apiTickets.deleteType = function (req, res) {
   var newTypeId = req.body.newTypeId
-
   var delTypeId = req.params.id
-
+  console.log(newTypeId)
   if (_.isUndefined(newTypeId) || _.isUndefined(delTypeId)) {
     return res.status(400).json({ success: false, error: 'Invalid POST data.' })
   }
 
   var ticketTypeSchema = require('../../../models/tickettype')
-
   var ticketSchema = require('../../../models/ticket')
-
   var settingsSchema = require('../../../models/setting')
 
   async.waterfall(

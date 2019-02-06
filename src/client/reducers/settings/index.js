@@ -32,7 +32,6 @@ const settingsReducer = handleActions(
     }),
 
     [UPDATE_SETTING.SUCCESS]: (state, action) => {
-      helpers.UI.showSnackbar('Setting Saved Successfully', false)
       const updatedSetting = find(action.response.updatedSettings, { name: action.payload.name })
       return {
         loaded: state.loaded,

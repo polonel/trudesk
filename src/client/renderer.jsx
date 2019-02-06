@@ -15,9 +15,19 @@
 import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
+import ModalRoot from 'components/Modals'
 import SettingsContainer from './containers/SettingsContainer'
 
 export default function (store) {
+  if (document.querySelector('.wrapper')) {
+    const RootModal = (
+      <Provider store={store}>
+        <ModalRoot />
+      </Provider>
+    )
+    ReactDOM.render(RootModal, document.getElementById('modal-wrapper'))
+  }
+
   if (document.getElementById('settings-container')) {
     const SettingsContainerWithProvider = (
       <Provider store={store}>

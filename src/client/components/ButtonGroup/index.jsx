@@ -8,26 +8,25 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/3/19 2:13 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { combineReducers } from 'redux'
-import { reducer as form } from 'redux-form'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-import shared from './shared'
-import modal from './shared/modalReducer'
-import sidebar from './sidebarReducer'
-import settings from './settings'
-import tagsState from './tagsReducer'
+class ButtonGroup extends React.Component {
+  render () {
+    return (
+      <div className={'md-btn-group mt-5 ' + (this.props.classNames ? this.props.classNames : '')}>
+        {this.props.children}
+      </div>
+    )
+  }
+}
 
-const IndexReducer = combineReducers({
-  shared,
-  modal,
-  sidebar,
-  settings,
-  tagsState,
-  form
-})
+ButtonGroup.propTypes = {
+  classNames: PropTypes.string
+}
 
-export default IndexReducer
+export default ButtonGroup

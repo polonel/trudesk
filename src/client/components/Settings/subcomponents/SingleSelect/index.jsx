@@ -14,6 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import each from 'lodash/each'
 import $ from 'jquery'
 
 import helpers from 'lib/helpers'
@@ -22,8 +23,9 @@ class SingleSelect extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      value: this.props.value
+      value: ''
     }
+    this.onSelectChange = this.onSelectChange.bind(this)
   }
 
   componentDidMount () {
@@ -49,15 +51,36 @@ class SingleSelect extends React.Component {
     return null
   }
 
+  onSelectChange (e) {
+    if (e.target.value === '') return
+
+    this.setState({
+      value: e.target.value
+    })
+
+    if (this.state.value !== '') this.props.onSelectChange(e)
+  }
+
+  componentDidUpdate () {
+    if (this.select && this.select.selectize) {
+      const self = this
+      each(this.select.selectize.options, function (i) {
+        if (self.props.items.indexOf(i) === -1) self.select.selectize.removeOption(i.value, true)
+      })
+
+      this.select.selectize.addOption(this.props.items)
+      this.select.selectize.refreshOptions(false)
+      this.select.selectize.setValue(this.state.value, true)
+
+      each(this.props.items, function (i) {
+        self.select.selectize.updateOption(i.value, i)
+      })
+    }
+  }
+
   render () {
     const { items } = this.props
     let width = '100%'
-
-    if (this.select && this.select.selectize) {
-      this.select.selectize.addOption(items)
-      this.select.selectize.refreshOptions(false)
-      this.select.selectize.addItem(this.state.value, true)
-    }
 
     if (this.props.width) width = this.props.width
 
@@ -68,18 +91,20 @@ class SingleSelect extends React.Component {
           ref={select => {
             this.select = select
           }}
-          data-md-selectize
-          data-md-selectize-bottom
+          data-md-selectize-inline
+          data-md-selectize-notextbox={this.props.showTextbox ? 'false' : 'true'}
+          // data-md-selectize-bottom='true'
+          // data-md-selectize-top-offset='-33'
           value={this.state.value}
           onChange={this.props.onSelectChange}
         >
-          {items.map(function (obj, i) {
-            return (
-              <option key={i} value={obj.value}>
-                {obj.text}
-              </option>
-            )
-          })}
+          {/*{items.map(function (obj, i) {*/}
+          {/*return (*/}
+          {/*<option key={i} value={obj.value}>*/}
+          {/*{obj.text}*/}
+          {/*</option>*/}
+          {/*)*/}
+          {/*})}*/}
         </select>
       </div>
     )
@@ -90,6 +115,7 @@ SingleSelect.propTypes = {
   value: PropTypes.string,
   width: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  showTextbox: PropTypes.bool,
   onSelectChange: PropTypes.func.isRequired
 }
 

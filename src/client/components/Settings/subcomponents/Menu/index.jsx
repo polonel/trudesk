@@ -21,8 +21,12 @@ class Menu extends React.Component {
   }
 
   render () {
+    const { hideBorders } = this.props
     return (
-      <ul className='settings-categories scrollable' style={{ overflow: 'hidden auto' }}>
+      <ul
+        className={'settings-categories scrollable' + (hideBorders ? ' noborder ' : '')}
+        style={{ overflow: 'hidden auto' }}
+      >
         {this.props.children}
       </ul>
     )
@@ -30,6 +34,7 @@ class Menu extends React.Component {
 }
 
 Menu.propTypes = {
+  hideBorders: PropTypes.bool,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 

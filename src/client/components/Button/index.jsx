@@ -16,21 +16,29 @@ import isUndefined from 'lodash/isUndefined'
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import helpers from 'lib/helpers'
+
 class Button extends React.Component {
   constructor (props) {
     super(props)
   }
 
+  componentDidMount () {
+    helpers.UI.waves()
+  }
+
   render () {
-    const { small, flat, style, text, onClick, extraClass } = this.props
+    const { type, small, flat, style, text, onClick, waves, disabled, extraClass } = this.props
     const classBuild =
       (small ? ' md-btn-small ' : '') +
       (flat ? ' md-btn-flat ' : '') +
+      (waves ? ' md-btn-wave ' : '') +
       (style && flat ? ' md-btn-flat-' + style : style ? ' md-btn-' + style : '') +
+      (disabled ? ' disabled ' : '') +
       ' ' +
       extraClass
     return (
-      <button className={'md-btn' + classBuild} onClick={onClick}>
+      <button className={'md-btn' + classBuild} onClick={onClick} type={type ? type : 'button'} disabled={disabled}>
         {text}
       </button>
     )
@@ -38,12 +46,19 @@ class Button extends React.Component {
 }
 
 Button.propTypes = {
+  type: PropTypes.string,
   text: PropTypes.string.isRequired,
   flat: PropTypes.bool,
   style: PropTypes.string,
   small: PropTypes.bool,
+  waves: PropTypes.bool,
+  disabled: PropTypes.bool,
   extraClass: PropTypes.string,
   onClick: PropTypes.func
+}
+
+Button.defaultProps = {
+  disabled: false
 }
 
 export default Button

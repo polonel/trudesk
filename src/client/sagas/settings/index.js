@@ -46,6 +46,7 @@ function * fetchFlow ({ payload }) {
 function * updateSetting ({ payload }) {
   try {
     const response = yield call(api.settings.update, [payload])
+    if (!payload.noSnackbar) helpers.UI.showSnackbar('Setting Saved Successfully', false)
     yield put({ type: UPDATE_SETTING.SUCCESS, response, payload })
   } catch (error) {
     yield put({ type: UPDATE_SETTING.ERROR, error })

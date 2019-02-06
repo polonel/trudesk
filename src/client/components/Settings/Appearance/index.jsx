@@ -23,6 +23,8 @@ import UploadButtonWithX from 'components/Settings/subcomponents/UploadButtonWit
 import SettingSubItem from 'components/Settings/subcomponents/SettingSubItem'
 import SingleSelect from 'components/Settings/subcomponents/SingleSelect'
 import ColorSelector from 'components/Settings/subcomponents/ColorSelector'
+import Zone from 'components/Settings/subcomponents/ZoneBox/zone'
+import ZoneBox from 'components/Settings/subcomponents/ZoneBox'
 
 const colorMap = {
   light: {
@@ -131,6 +133,7 @@ class AppearanceSettings extends React.Component {
   }
 
   onBuiltInColorSelectChange (e) {
+    if (!e.target || !e.target.value) return
     this.headerBGColorSelect.setState(
       { selectedColor: colorMap[e.target.value].headerBG },
       this.headerBGColorSelect.updateColorButton
@@ -177,7 +180,7 @@ class AppearanceSettings extends React.Component {
       <div className={active ? 'active' : 'hide'}>
         <SettingItem
           title='Site Logo'
-          subTitle={
+          subtitle={
             <div>
               Upload site logo to display in top navigation. <i>Note: Resize to max width of 140px</i>
             </div>
@@ -200,7 +203,7 @@ class AppearanceSettings extends React.Component {
 
         <SettingItem
           title='Page Logo'
-          subTitle={
+          subtitle={
             <div>
               Upload logo to display within page views. <i>Note: Used on login page (515px x 125px)</i>
             </div>
@@ -220,7 +223,7 @@ class AppearanceSettings extends React.Component {
 
         <SettingItem
           title='Favicon'
-          subTitle={'Upload a custom favicon'}
+          subtitle={'Upload a custom favicon'}
           component={
             <UploadButtonWithX
               buttonText={'Upload Favicon'}
@@ -238,7 +241,7 @@ class AppearanceSettings extends React.Component {
         />
         <SettingItem
           title='Color Scheme'
-          subTitle='Select the colors for your color scheme.'
+          subtitle='Select the colors for your color scheme.'
           component={
             <Button
               text={'Save'}
@@ -251,101 +254,123 @@ class AppearanceSettings extends React.Component {
             />
           }
         >
-          <SettingSubItem
-            title='Built-in Color Scheme'
-            subTitle='Select a predefined color scheme'
-            component={
-              <SingleSelect
-                width='60%'
-                items={[
-                  { text: 'Light (Default)', value: 'light' },
-                  { text: 'Dark', value: 'dark' },
-                  { text: 'Blue Jean', value: 'bluejean' },
-                  { text: 'Midnight', value: 'midnight' },
-                  { text: 'Moonlight', value: 'moonlight' },
-                  { text: 'Purple Rain', value: 'purplerain' },
-                  { text: 'Sandstone', value: 'sandstone' },
-                  { text: "Winter's Fire", value: 'winterfire' }
-                ]}
-                value={this.state.selectedColorScheme}
-                onSelectChange={e => {
-                  this.onBuiltInColorSelectChange(e)
-                }}
+          <Zone>
+            <ZoneBox>
+              <SettingSubItem
+                title='Built-in Color Scheme'
+                subtitle='Select a predefined color scheme'
+                component={
+                  <SingleSelect
+                    width='60%'
+                    items={[
+                      { text: 'Light (Default)', value: 'light' },
+                      { text: 'Dark', value: 'dark' },
+                      { text: 'Blue Jean', value: 'bluejean' },
+                      { text: 'Midnight', value: 'midnight' },
+                      { text: 'Moonlight', value: 'moonlight' },
+                      { text: 'Purple Rain', value: 'purplerain' },
+                      { text: 'Sandstone', value: 'sandstone' },
+                      { text: "Winter's Fire", value: 'winterfire' }
+                    ]}
+                    value={this.state.selectedColorScheme}
+                    onSelectChange={e => {
+                      this.onBuiltInColorSelectChange(e)
+                    }}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Header Background'
-            subTitle='Background color of the header'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.headerBGColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorHeaderBG')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Header Background'
+                subtitle='Background color of the header'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.headerBGColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorHeaderBG')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Header Primary'
-            subTitle='Text and icon color within the header'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.headerPrimaryColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorHeaderPrimary')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Header Primary'
+                subtitle='Text and icon color within the header'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.headerPrimaryColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorHeaderPrimary')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Primary'
-            subTitle='Most text and icons'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.primaryColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorPrimary')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Primary'
+                subtitle='Most text and icons'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.primaryColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorPrimary')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Secondary'
-            subTitle='The main background color'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.secondaryColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorSecondary')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Secondary'
+                subtitle='The main background color'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.secondaryColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorSecondary')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Tertiary'
-            subTitle='Accent color, used for links, some buttons, and notifications'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.tertiaryColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorTertiary')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Tertiary'
+                subtitle='Accent color, used for links, some buttons, and notifications'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.tertiaryColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorTertiary')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
-          <SettingSubItem
-            title='Quaternary'
-            subTitle='Sidebar background color'
-            component={
-              <ColorSelector
-                ref={cs => {
-                  this.quaternaryColorSelect = cs
-                }}
-                defaultColor={this.getSettingsValue('colorQuaternary')}
+            </ZoneBox>
+            <ZoneBox>
+              <SettingSubItem
+                title='Quaternary'
+                subtitle='Sidebar background color'
+                component={
+                  <ColorSelector
+                    ref={cs => {
+                      this.quaternaryColorSelect = cs
+                    }}
+                    defaultColor={this.getSettingsValue('colorQuaternary')}
+                    parentClass={'uk-width-2-3 uk-float-right'}
+                  />
+                }
               />
-            }
-          />
+            </ZoneBox>
+          </Zone>
         </SettingItem>
       </div>
     )

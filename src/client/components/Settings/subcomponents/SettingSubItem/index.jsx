@@ -17,11 +17,12 @@ import PropTypes from 'prop-types'
 
 class SettingSubItem extends React.Component {
   render () {
-    const { title, subTitle, component, tooltip } = this.props
+    const { parentClass, title, titleCss, subtitle, component, tooltip } = this.props
+    const headCss = titleCss ? titleCss : { fontWeight: 'normal' }
     return (
-      <div>
+      <div className={parentClass}>
         <div className='uk-float-left uk-width-1-2'>
-          <h5 style={{ fontWeight: 'normal' }}>
+          <h5 style={headCss}>
             {title}
             {tooltip && (
               <i
@@ -34,7 +35,7 @@ class SettingSubItem extends React.Component {
               </i>
             )}
           </h5>
-          <p className='uk-text-muted'>{subTitle}</p>
+          <div className='p uk-text-muted'>{subtitle}</div>
         </div>
         <div className='uk-float-right uk-width-1-2 uk-clearfix' style={{ position: 'relative', marginTop: '5px' }}>
           <div className='uk-width-1-1 uk-float-right'>{component}</div>
@@ -45,10 +46,16 @@ class SettingSubItem extends React.Component {
 }
 
 SettingSubItem.propTypes = {
+  parentClass: PropTypes.string,
   title: PropTypes.string.isRequired,
-  subTitle: PropTypes.string,
+  titleCss: PropTypes.object,
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.node, PropTypes.element]),
   tooltip: PropTypes.string,
   component: PropTypes.element
+}
+
+SettingSubItem.defaultProps = {
+  parentClass: ''
 }
 
 export default SettingSubItem

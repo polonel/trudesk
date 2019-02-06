@@ -47,9 +47,14 @@ class SettingsContainer extends React.Component {
   onMenuItemClick (e, category) {
     if (this.state.activeCategory === 'settings-' + category) return
 
-    this.setState({
-      activeCategory: 'settings-' + category
-    })
+    this.setState(
+      {
+        activeCategory: 'settings-' + category
+      },
+      () => {
+        if (this.page) this.page.scrollTop = 0
+      }
+    )
   }
 
   render () {
@@ -123,7 +128,7 @@ class SettingsContainer extends React.Component {
             className='page-title-right noshadow page-title-border-bottom'
             style={{ borderTop: 'none', height: '69px' }}
           />
-          <div className='page-wrapper full-height scrollable no-overflow-x'>
+          <div className='page-wrapper full-height scrollable no-overflow-x' ref={i => (this.page = i)}>
             <div className='settings-wrap'>
               <GeneralSettings active={this.state.activeCategory === 'settings-general'} />
               <AppearanceSettings active={this.state.activeCategory === 'settings-appearance'} />
