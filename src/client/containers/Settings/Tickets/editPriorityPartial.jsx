@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import $ from 'jquery'
 
-import ColorSelector from 'components/Settings/subcomponents/ColorSelector'
+import ColorSelector from 'components/ColorSelector'
 import Button from 'components/Button'
 
 import { fetchSettings } from 'actions/settings'

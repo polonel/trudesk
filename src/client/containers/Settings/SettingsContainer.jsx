@@ -8,7 +8,7 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/6/19 6:21 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
@@ -18,11 +18,11 @@ import { connect } from 'react-redux'
 
 import { fetchSettings } from 'actions/settings'
 
-import Menu from 'components/Settings/subcomponents/Menu'
-import MenuItem from 'components/Settings/subcomponents/MenuItem'
-import GeneralSettings from 'components/Settings/General'
-import AppearanceSettings from 'components/Settings/Appearance'
-import TicketsSettings from 'components/Settings/Tickets'
+import Menu from 'components/Settings/Menu'
+import MenuItem from 'components/Settings/MenuItem'
+import GeneralSettings from './General'
+import AppearanceSettings from './Appearance'
+import TicketsSettings from './Tickets'
 
 class SettingsContainer extends React.Component {
   constructor (props) {

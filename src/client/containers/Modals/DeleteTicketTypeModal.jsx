@@ -16,9 +16,9 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { deleteTicketType } from 'actions/tickets'
-import BaseModal from 'components/Modals/BaseModal'
+import BaseModal from './BaseModal'
 import Button from 'components/Button'
-import SingleSelect from 'components/Settings/subcomponents/SingleSelect'
+import SingleSelect from 'components/SingleSelect'
 
 import helpers from 'lib/helpers'
 

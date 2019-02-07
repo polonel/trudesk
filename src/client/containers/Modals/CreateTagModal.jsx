@@ -15,7 +15,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import BaseModal from 'components/Modals/BaseModal'
+import BaseModal from './BaseModal'
 import Button from 'components/Button'
 
 import { createTag } from 'actions/tickets'

@@ -18,14 +18,14 @@ import { connect } from 'react-redux'
 import moment from 'moment-timezone'
 import { updateSetting } from 'actions/settings'
 
-import SettingItem from 'components/Settings/subcomponents/SettingItem'
+import SettingItem from 'components/Settings/SettingItem'
 
-import InputWithSave from 'components/Settings/subcomponents/InputWithSave'
-import SingleSelect from 'components/Settings/subcomponents/SingleSelect'
-import EnableSwitch from 'components/Settings/subcomponents/EnableSwitch'
-import SettingSubItem from 'components/Settings/subcomponents/SettingSubItem'
-import Zone from 'components/Settings/subcomponents/ZoneBox/zone'
-import ZoneBox from 'components/Settings/subcomponents/ZoneBox'
+import InputWithSave from 'components/Settings/InputWithSave'
+import SingleSelect from 'components/SingleSelect'
+import EnableSwitch from 'components/Settings/EnableSwitch'
+import SettingSubItem from 'components/Settings/SettingSubItem'
+import Zone from 'components/ZoneBox/zone'
+import ZoneBox from 'components/ZoneBox'
 
 class GeneralSettings extends React.Component {
   constructor (props) {

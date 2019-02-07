@@ -15,8 +15,8 @@
 import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
-import ModalRoot from 'components/Modals'
-import SettingsContainer from './containers/SettingsContainer'
+import ModalRoot from 'containers/Modals'
+import SettingsContainer from './containers/Settings/SettingsContainer'
 
 export default function (store) {
   if (document.querySelector('.wrapper')) {

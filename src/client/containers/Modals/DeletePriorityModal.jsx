@@ -15,8 +15,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import BaseModal from 'components/Modals/BaseModal'
-import SingleSelect from 'components/Settings/subcomponents/SingleSelect'
+import BaseModal from './BaseModal'
+import SingleSelect from 'components/SingleSelect'
 import Button from 'components/Button'
 
 import { deletePriority } from 'actions/tickets'

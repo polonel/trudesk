@@ -18,13 +18,13 @@ import { connect } from 'react-redux'
 
 import { updateSetting, updateMultipleSettings, updateColorScheme } from 'actions/settings'
 import Button from 'components/Button'
-import SettingItem from 'components/Settings/subcomponents/SettingItem'
-import UploadButtonWithX from 'components/Settings/subcomponents/UploadButtonWithX'
-import SettingSubItem from 'components/Settings/subcomponents/SettingSubItem'
-import SingleSelect from 'components/Settings/subcomponents/SingleSelect'
-import ColorSelector from 'components/Settings/subcomponents/ColorSelector'
-import Zone from 'components/Settings/subcomponents/ZoneBox/zone'
-import ZoneBox from 'components/Settings/subcomponents/ZoneBox'
+import SettingItem from 'components/Settings/SettingItem'
+import UploadButtonWithX from 'components/Settings/UploadButtonWithX'
+import SettingSubItem from 'components/Settings/SettingSubItem'
+import SingleSelect from 'components/SingleSelect'
+import ColorSelector from 'components/ColorSelector'
+import Zone from 'components/ZoneBox/zone'
+import ZoneBox from 'components/ZoneBox'
 
 const colorMap = {
   light: {

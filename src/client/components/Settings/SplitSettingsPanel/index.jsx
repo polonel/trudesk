@@ -15,9 +15,9 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import findIndex from 'lodash/findIndex'
-import Menu from 'components/Settings/subcomponents/Menu'
-import MenuItem from 'components/Settings/subcomponents/MenuItem'
-import SplitSettingsPanelBody from 'components/Settings/subcomponents/SplitSettingsPanel/body'
+import Menu from 'components/Settings/Menu'
+import MenuItem from 'components/Settings/MenuItem'
+import SplitSettingsPanelBody from './body'
 
 class SplitSettingsPanel extends React.Component {
   constructor (props) {

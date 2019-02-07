@@ -19,7 +19,7 @@ import some from 'lodash/some'
 import $ from 'jquery'
 import velocity from 'velocity'
 
-import BaseModal from 'components/Modals/BaseModal'
+import BaseModal from './BaseModal'
 import Button from 'components/Button'
 
 import { fetchSettings } from 'actions/settings'

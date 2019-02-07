@@ -25,9 +25,9 @@ import { showModal } from 'actions/common'
 import api from 'api/index'
 
 import Button from 'components/Button'
-import SettingSubItem from 'components/Settings/subcomponents/SettingSubItem'
+import SettingSubItem from 'components/Settings/SettingSubItem'
 import ButtonGroup from 'components/ButtonGroup'
-import EditPriorityPartial from 'components/Settings/Tickets/editPriorityPartial'
+import EditPriorityPartial from './editPriorityPartial'
 
 class TicketTypeBody extends React.Component {
   constructor (props) {

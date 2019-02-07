@@ -79,7 +79,6 @@ class SingleSelect extends React.Component {
   }
 
   render () {
-    const { items } = this.props
     let width = '100%'
 
     if (this.props.width) width = this.props.width
@@ -93,19 +92,9 @@ class SingleSelect extends React.Component {
           }}
           data-md-selectize-inline
           data-md-selectize-notextbox={this.props.showTextbox ? 'false' : 'true'}
-          // data-md-selectize-bottom='true'
-          // data-md-selectize-top-offset='-33'
           value={this.state.value}
           onChange={this.props.onSelectChange}
-        >
-          {/*{items.map(function (obj, i) {*/}
-          {/*return (*/}
-          {/*<option key={i} value={obj.value}>*/}
-          {/*{obj.text}*/}
-          {/*</option>*/}
-          {/*)*/}
-          {/*})}*/}
-        </select>
+        />
       </div>
     )
   }

@@ -18,7 +18,7 @@ import { connect } from 'react-redux'
 import { createPriority } from 'actions/tickets'
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
-import ColorSelector from 'components/Settings/subcomponents/ColorSelector'
+import ColorSelector from 'components/ColorSelector'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'

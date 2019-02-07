@@ -98,6 +98,7 @@ module.exports = {
 
       sass: path.resolve(__dirname, 'src/sass'),
       components: path.resolve(__dirname, 'src/client/components'),
+      containers: path.resolve(__dirname, 'src/client/containers'),
       actions: path.resolve(__dirname, 'src/client/actions'),
       api: path.resolve(__dirname, 'src/client/api'),
       lib: path.resolve(__dirname, 'src/public/js/modules')
