@@ -21,7 +21,8 @@ class EasyMDE extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
-      value: ''
+      value: '',
+      loaded: false
     }
   }
 
@@ -53,8 +54,13 @@ class EasyMDE extends React.Component {
   }
 
   static getDerivedStateFromProps (nextProps, state) {
-    if (nextProps.defaultValue) {
-      if (state.value === '' && nextProps.defaultValue !== state.value) return { value: nextProps.defaultValue }
+    if (typeof nextProps.defaultValue !== 'undefined') {
+      if (!state.loaded && nextProps.defaultValue !== state.value)
+        return { value: nextProps.defaultValue, loaded: true }
+    } else {
+      return {
+        loaded: true
+      }
     }
 
     return null
