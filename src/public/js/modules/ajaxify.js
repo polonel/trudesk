@@ -168,9 +168,7 @@ define('modules/ajaxify', [
     $window.bind('statechange', function () {
       // Prepare Variables
       var State = History.getState()
-
       var url = State.url
-
       var relativeUrl = url.replace(rootUrl, '')
 
       // Set Loading
@@ -188,9 +186,7 @@ define('modules/ajaxify', [
         success: function (data) {
           // Prepare
           var $data = $(documentHtml(data))
-
           var $dataBody = $data.find('.document-body:first')
-
           var $dataContent = $dataBody.find(contentSelector).filter(':first')
 
           var contentHtml
@@ -228,6 +224,11 @@ define('modules/ajaxify', [
             // Memory Leak Fix- Remove events before destroying content;
             var $oldContent = $('#page-content')
             $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change')
+
+            // Manually Unload React components from renders
+            // This will be removed once angular and ajaxy are gone (react-router will Replace)
+            if (document.getElementById('settings-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
 
             // Update the content
             $content.stop(true, true)

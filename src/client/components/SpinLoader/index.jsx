@@ -8,10 +8,30 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/7/19 7:06 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import createHistory from '../../../node_modules/history/createBrowserHistory'
+import React from 'react'
+import PropTypes from 'prop-types'
 
-export default createHistory()
+class SpinLoader extends React.Component {
+  render () {
+    return (
+      <div
+        className={'card-spinner ' + (this.props.extraClass || '') + (!this.props.active ? ' hide ' : '')}
+        style={this.props.style}
+      >
+        <div className='spinner' />
+      </div>
+    )
+  }
+}
+
+SpinLoader.propTypes = {
+  active: PropTypes.bool,
+  extraClass: PropTypes.string,
+  style: PropTypes.object
+}
+
+export default SpinLoader

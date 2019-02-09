@@ -17,8 +17,19 @@ import { delay } from 'redux-saga'
 import axios from 'axios'
 
 import api from '../../api'
-import { FETCH_SETTINGS, UPDATE_COLORSCHEME, UPDATE_MULTIPLE_SETTINGS, UPDATE_SETTING } from 'actions/types'
+import {
+  BACKUP_NOW,
+  FETCH_BACKUPS,
+  FETCH_DELETED_TICKETS,
+  FETCH_MONGODB_TOOLS,
+  FETCH_SETTINGS,
+  RESTORE_DELETED_TICKET,
+  UPDATE_COLORSCHEME,
+  UPDATE_MULTIPLE_SETTINGS,
+  UPDATE_SETTING
+} from 'actions/types'
 
+import Log from '../../logger'
 import helpers from 'lib/helpers'
 
 function fetchSettings () {
@@ -43,13 +54,13 @@ function * fetchFlow ({ payload }) {
   }
 }
 
-function * updateSetting ({ payload }) {
+function * updateSetting ({ payload, meta }) {
   try {
     const response = yield call(api.settings.update, [payload])
     if (!payload.noSnackbar) helpers.UI.showSnackbar('Setting Saved Successfully', false)
-    yield put({ type: UPDATE_SETTING.SUCCESS, response, payload })
+    yield put({ type: UPDATE_SETTING.SUCCESS, response, payload, meta })
   } catch (error) {
-    yield put({ type: UPDATE_SETTING.ERROR, error })
+    yield put({ type: UPDATE_SETTING.ERROR, error, meta })
   }
 }
 
@@ -79,9 +90,75 @@ function * updateColorScheme ({ payload }) {
   }
 }
 
+function * checkMongoDBTools ({ payload }) {
+  try {
+    const response = yield call(api.settings.hasMongoDBTools, payload)
+    yield put({ type: FETCH_MONGODB_TOOLS.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: FETCH_MONGODB_TOOLS.ERROR, error })
+  }
+}
+
+function * fetchBackups () {
+  try {
+    const response = yield call(api.settings.fetchBackups)
+    yield put({ type: FETCH_BACKUPS.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: FETCH_BACKUPS.ERROR, error })
+  }
+}
+
+function * backupNow () {
+  try {
+    yield put({ type: BACKUP_NOW.PENDING })
+    const response = yield call(api.settings.backupNow)
+    yield put({ type: BACKUP_NOW.SUCCESS, response })
+    yield put({ type: FETCH_BACKUPS.ACTION })
+    helpers.UI.showSnackbar('Backup completed successfully')
+  } catch (error) {
+    if (!error.response) return Log.error(error)
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: BACKUP_NOW.ERROR, error })
+  }
+}
+
+function * fetchDeletedTickets () {
+  try {
+    yield put({ type: FETCH_DELETED_TICKETS.PENDING })
+    const response = yield call(api.settings.fetchDeletedTickets)
+    yield put({ type: FETCH_DELETED_TICKETS.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: FETCH_DELETED_TICKETS.ERROR, error })
+  }
+}
+
+function * restoreDeletedTicket ({ payload }) {
+  try {
+    const response = yield call(api.settings.restoreDeletedTicket, payload)
+    yield put({ type: RESTORE_DELETED_TICKET.SUCCESS, response, payload })
+    helpers.UI.showSnackbar('Ticket Restored')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: RESTORE_DELETED_TICKET.ERROR, error })
+  }
+}
+
 export default function * settingsWatcher () {
   yield takeLatest(FETCH_SETTINGS.ACTION, fetchFlow)
   yield takeLatest(UPDATE_SETTING.ACTION, updateSetting)
   yield takeLatest(UPDATE_MULTIPLE_SETTINGS.ACTION, updateMultipleSettings)
   yield takeLatest(UPDATE_COLORSCHEME.ACTION, updateColorScheme)
+  yield takeLatest(FETCH_MONGODB_TOOLS.ACTION, checkMongoDBTools)
+  yield takeLatest(FETCH_BACKUPS.ACTION, fetchBackups)
+  yield takeLatest(BACKUP_NOW.ACTION, backupNow)
+  yield takeLatest(FETCH_DELETED_TICKETS.ACTION, fetchDeletedTickets)
+  yield takeLatest(RESTORE_DELETED_TICKET.ACTION, restoreDeletedTicket)
 }

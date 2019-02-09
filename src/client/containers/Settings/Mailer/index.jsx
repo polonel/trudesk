@@ -8,10 +8,29 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/7/19 12:07 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import createHistory from '../../../node_modules/history/createBrowserHistory'
+import React from 'react'
+import PropTypes from 'prop-types'
+import MailerSettings_Mailer from './mailer'
+import Mailer_MailerCheck from './mailerCheck'
 
-export default createHistory()
+class MailerSettingsContainer extends React.Component {
+  render () {
+    const { active } = this.props
+    return (
+      <div className={active ? 'active' : 'hide'}>
+        <MailerSettings_Mailer />
+        <Mailer_MailerCheck />
+      </div>
+    )
+  }
+}
+
+MailerSettingsContainer.propTypes = {
+  active: PropTypes.bool.isRequired
+}
+
+export default MailerSettingsContainer

@@ -15,6 +15,7 @@
 import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
+
 import ModalRoot from 'containers/Modals'
 import SettingsContainer from './containers/Settings/SettingsContainer'
 

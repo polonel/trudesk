@@ -212,7 +212,7 @@ class Sidebar extends React.Component {
           <SidebarItem
             text='Settings'
             icon='settings'
-            href='/settings'
+            href='/settings/general'
             class='navSettings no-ajaxy'
             hasSubmenu={true}
             subMenuTarget='settings'

@@ -13,7 +13,7 @@
  */
 
 import { defineAction } from 'redux-define'
-import { ERROR, SUCCESS } from './stateConstants'
+import { PENDING, ERROR, SUCCESS } from './stateConstants'
 
 // Shared
 export const SHOW_MODAL = defineAction('SHOW_MODAL')
@@ -40,3 +40,9 @@ export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])
 export const UPDATE_SETTING = defineAction('UPDATE_SETTING', [SUCCESS, ERROR])
 export const UPDATE_MULTIPLE_SETTINGS = defineAction('UPDATE_MULTIPLE_SETTINGS', [SUCCESS, ERROR])
 export const UPDATE_COLORSCHEME = defineAction('UPDATE_COLORSCHEME', [SUCCESS, ERROR])
+export const FETCH_MONGODB_TOOLS = defineAction('FETCH_MONGODB_TOOLS', [SUCCESS, ERROR])
+export const FETCH_BACKUPS = defineAction('FETCH_BACKUPS', [SUCCESS, ERROR])
+export const BACKUP_NOW = defineAction('BACKUP_NOW', [PENDING, SUCCESS, ERROR])
+export const FETCH_DELETED_TICKETS = defineAction('FETCH_DELETED_TICKETS', [PENDING, SUCCESS, ERROR])
+export const RESTORE_DELETED_TICKET = defineAction('RESTORE_DELETED_TICKET', [SUCCESS, ERROR])
+export const CHANGE_DELETED_TICKETS_PAGE = defineAction('CHANGE_DELETED_TICKETS_PAGE')

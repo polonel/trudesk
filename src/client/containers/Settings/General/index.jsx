@@ -36,6 +36,7 @@ class GeneralSettings extends React.Component {
   }
 
   componentDidMount () {}
+  componentWillUnmount () {}
 
   getSettingsValue (name) {
     return this.props.settings.getIn(['settings', name, 'value'])

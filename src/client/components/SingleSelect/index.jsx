@@ -75,6 +75,8 @@ class SingleSelect extends React.Component {
       each(this.props.items, function (i) {
         self.select.selectize.updateOption(i.value, i)
       })
+
+      this.props.disabled ? this.select.selectize.disable() : this.select.selectize.enable()
     }
   }
 
@@ -94,6 +96,7 @@ class SingleSelect extends React.Component {
           data-md-selectize-notextbox={this.props.showTextbox ? 'false' : 'true'}
           value={this.state.value}
           onChange={this.props.onSelectChange}
+          disabled={this.props.disabled}
         />
       </div>
     )
@@ -105,7 +108,13 @@ SingleSelect.propTypes = {
   width: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
   showTextbox: PropTypes.bool,
+  disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
   onSelectChange: PropTypes.func.isRequired
+}
+
+SingleSelect.defaultProps = {
+  showTextbox: true,
+  disabled: false
 }
 
 export default SingleSelect

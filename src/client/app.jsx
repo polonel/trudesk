@@ -17,6 +17,7 @@ import ReactDOM from 'react-dom'
 import { applyMiddleware, createStore, compose } from 'redux'
 import { Provider } from 'react-redux'
 import createSagaMiddleware from 'redux-saga'
+import { middleware as thunkMiddleware } from 'redux-saga-thunk'
 import IndexReducer from './reducers'
 import IndexSagas from './sagas'
 import Sidebar from './components/Nav/Sidebar/index.jsx'
@@ -31,11 +32,11 @@ const composeSetup =
     : compose
 /*eslint-enable */
 
-if (process.env.NODE_ENV !== 'production') {
-  localStorage.setItem('debug', 'trudesk:*')
-}
+// if (process.env.NODE_ENV !== 'production') {
+localStorage.setItem('debug', 'trudesk:*') // Enable logger
+// }
 
-const store = createStore(IndexReducer, composeSetup(applyMiddleware(sagaMiddleware)))
+const store = createStore(IndexReducer, composeSetup(applyMiddleware(thunkMiddleware, sagaMiddleware)))
 
 // This is need to call an action from angular
 // Goal: remove this once angular is fully removed
@@ -52,5 +53,6 @@ const sidebarWithProvider = (
 ReactDOM.render(sidebarWithProvider, document.getElementById('side-nav'))
 
 window.react.renderer = renderer
+window.react.dom = ReactDOM
 
 renderer(store)

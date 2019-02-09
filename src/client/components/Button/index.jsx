@@ -28,7 +28,7 @@ class Button extends React.Component {
   }
 
   render () {
-    const { type, small, flat, style, text, onClick, waves, disabled, extraClass } = this.props
+    const { type, small, flat, style, text, onClick, waves, disabled, extraClass, styleOverride } = this.props
     const classBuild =
       (small ? ' md-btn-small ' : '') +
       (flat ? ' md-btn-flat ' : '') +
@@ -38,7 +38,13 @@ class Button extends React.Component {
       ' ' +
       extraClass
     return (
-      <button className={'md-btn' + classBuild} onClick={onClick} type={type ? type : 'button'} disabled={disabled}>
+      <button
+        className={'md-btn' + classBuild}
+        onClick={onClick}
+        type={type ? type : 'button'}
+        disabled={disabled}
+        style={styleOverride}
+      >
         {text}
       </button>
     )
@@ -50,6 +56,7 @@ Button.propTypes = {
   text: PropTypes.string.isRequired,
   flat: PropTypes.bool,
   style: PropTypes.string,
+  styleOverride: PropTypes.object,
   small: PropTypes.bool,
   waves: PropTypes.bool,
   disabled: PropTypes.bool,

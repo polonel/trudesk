@@ -40,6 +40,7 @@ import GridItem from 'components/Grid/GridItem'
 import SettingItem from 'components/Settings/SettingItem'
 import SingleSelect from 'components/SingleSelect'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
+import SpinLoader from 'components/SpinLoader'
 
 class TicketsSettings extends React.Component {
   constructor (props) {
@@ -173,9 +174,8 @@ class TicketsSettings extends React.Component {
 
   onRemoveTagClicked (e, tag) {
     UIKit.modal.confirm(
-      `Really delete tag <strong>${tag.get(
-        'name'
-      )}</strong><br /><i style="font-size: 13px; color: #e53935">This will remove the tag from all associated tickets.</i>`,
+      `Really delete tag <strong>${tag.get()}</strong><br />
+        <i style="font-size: 13px; color: #e53935">This will remove the tag from all associated tickets.</i>`,
       () => {
         axios
           .delete(`/api/v1/tags/${tag.get('_id')}`)
@@ -369,6 +369,7 @@ class TicketsSettings extends React.Component {
                 <h3 style={{ fontSize: '24px', fontWeight: '300' }}>No Tags Found</h3>
               </div>
             )}
+            <SpinLoader active={this.props.tagsSettings.loading} extraClass={'panel-bg'} />
             {this.props.tagsSettings.tags.map(i => {
               return (
                 <GridItem width={'1-2'} key={i.get('_id')} extraClass={'tag-wrapper br bb'}>

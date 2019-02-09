@@ -108,5 +108,35 @@ api.settings.update = settings => {
     return res.data
   })
 }
+api.settings.hasMongoDBTools = () => {
+  return axios.get('/api/v1/backup/hastools').then(res => {
+    return res.data
+  })
+}
+api.settings.fetchBackups = () => {
+  return axios.get('/api/v1/backups').then(res => {
+    return res.data
+  })
+}
+api.settings.backupNow = () => {
+  return axios.post('/api/v1/backup').then(res => {
+    return res.data
+  })
+}
+api.settings.getBackups = () => {
+  return axios.get('/api/v1/backups').then(res => {
+    return res.data
+  })
+}
+api.settings.fetchDeletedTickets = () => {
+  return axios.get('/api/v1/tickets/deleted').then(res => {
+    return res.data
+  })
+}
+api.settings.restoreDeletedTicket = ({ _id }) => {
+  return axios.post('/api/v1/tickets/deleted/restore', { _id }).then(res => {
+    return res.data
+  })
+}
 
 export default api

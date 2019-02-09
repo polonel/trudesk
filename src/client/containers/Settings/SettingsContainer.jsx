@@ -23,6 +23,10 @@ import MenuItem from 'components/Settings/MenuItem'
 import GeneralSettings from './General'
 import AppearanceSettings from './Appearance'
 import TicketsSettings from './Tickets'
+import MailerSettingsContainer from './Mailer'
+import TPSSettingsContainer from './TPS'
+import BackupRestoreSettingsContainer from './BackupRestore'
+import LegalSettingsContainer from 'containers/Settings/Legal'
 
 class SettingsContainer extends React.Component {
   constructor (props) {
@@ -108,9 +112,9 @@ class SettingsContainer extends React.Component {
               />
               <MenuItem
                 title='Backup/Restore'
-                active={this.state.activeCategory === 'settings-backuprestore'}
+                active={this.state.activeCategory === 'settings-backup'}
                 onClick={e => {
-                  this.onMenuItemClick(e, 'backuprestore')
+                  this.onMenuItemClick(e, 'backup')
                 }}
               />
               <MenuItem
@@ -133,6 +137,10 @@ class SettingsContainer extends React.Component {
               <GeneralSettings active={this.state.activeCategory === 'settings-general'} />
               <AppearanceSettings active={this.state.activeCategory === 'settings-appearance'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
+              <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
+              <TPSSettingsContainer active={this.state.activeCategory === 'settings-tps'} />
+              <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
+              <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />
             </div>
           </div>
         </div>
@@ -142,10 +150,15 @@ class SettingsContainer extends React.Component {
 }
 
 SettingsContainer.propTypes = {
-  fetchSettings: PropTypes.func.isRequired
+  fetchSettings: PropTypes.func.isRequired,
+  sidebar: PropTypes.object.isRequired
 }
 
+const mapStateToProps = state => ({
+  sidebar: state.sidebar
+})
+
 export default connect(
-  null,
+  mapStateToProps,
   { fetchSettings }
 )(SettingsContainer)
