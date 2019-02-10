@@ -18,12 +18,13 @@ define('pages/dashboard', [
   'modules/helpers',
   'countup',
   'c3',
+  'd3',
   'moment',
   'd3pie',
   'metricsgraphics',
   'peity',
   'history'
-], function ($, _, helpers, CountUp, c3, moment) {
+], function ($, _, helpers, CountUp, c3, d3, moment) {
   var dashboardPage = {}
 
   dashboardPage.init = function (callback) {
@@ -49,6 +50,7 @@ define('pages/dashboard', [
         y_accessor: 'value',
         y_extended_ticks: true,
         show_tooltips: false,
+        area: [1],
         aggregate_rollover: true,
         transition_on_update: false
         // colors: ['#2196f3']
