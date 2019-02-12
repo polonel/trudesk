@@ -8,24 +8,34 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/10/19 2:43 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom'
 import React from 'react'
+import PropTypes from 'prop-types'
 
-import SettingsContainer from './containers/Settings/SettingsContainer'
-
-export default function (store) {
-  if (document.getElementById('settings-container')) {
-    const SettingsContainerWithProvider = (
-      <Provider store={store}>
-        <SettingsContainer />
-      </Provider>
+class DropdownItem extends React.Component {
+  render () {
+    const { closeOnClick, text, href } = this.props
+    return (
+      <li className={closeOnClick ? 'uk-dropdown-close' : ''}>
+        <a href={href} close-uk-dropdown={closeOnClick.toString()}>
+          {text}
+        </a>
+      </li>
     )
-
-    ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
   }
 }
+
+DropdownItem.propTypes = {
+  href: PropTypes.string,
+  text: PropTypes.string.isRequired,
+  closeOnClick: PropTypes.bool
+}
+
+DropdownItem.defaultProps = {
+  closeOnClick: true
+}
+
+export default DropdownItem

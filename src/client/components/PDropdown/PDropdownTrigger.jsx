@@ -8,24 +8,21 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/11/19 10:23 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom'
 import React from 'react'
+import PropTypes from 'prop-types'
 
-import SettingsContainer from './containers/Settings/SettingsContainer'
-
-export default function (store) {
-  if (document.getElementById('settings-container')) {
-    const SettingsContainerWithProvider = (
-      <Provider store={store}>
-        <SettingsContainer />
-      </Provider>
-    )
-
-    ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
+class PDropdownTrigger extends React.Component {
+  render () {
+    return <div data-notifications={this.props.target}>{this.props.children}</div>
   }
 }
+
+PDropdownTrigger.propTypes = {
+  target: PropTypes.string.isRequired
+}
+
+export default PDropdownTrigger

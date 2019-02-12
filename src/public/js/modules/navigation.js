@@ -38,12 +38,12 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
   }
 
   navigation.notifications = function () {
-    $('a[data-notifications]').each(function () {
+    $('[data-notifications]').each(function () {
       $(this).off('click', showDropdown)
       $(this).on('click', showDropdown)
     })
 
-    $('a[data-clearNotifications]').each(function () {
+    $('[data-clearNotifications]').each(function () {
       $(this).off('click', clearNotifications)
       $(this).on('click', clearNotifications)
     })
@@ -60,7 +60,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
     var hasEnjoyHint = $('.enjoyhint').length > 0
     if (hasEnjoyHint) return true
 
-    $('a[data-notifications]').each(function () {
+    $('[data-notifications]').each(function () {
       var drop = $('#' + $(this).attr('data-notifications'))
       if ($(this).has(e.target).length !== 0) {
         return
@@ -75,6 +75,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
 
   function showDropdown (e) {
     var drop = $('#' + $(this).attr('data-notifications'))
+
     // var scroll = $('#' + $(drop).attr('data-scroll'));
     if (drop.css('visibility') === 'visible') {
       drop.removeClass('pDropOpen')
@@ -146,7 +147,6 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
 
     $(drop).addClass('pDropOpen')
     $(drop).css({ position: 'absolute', left: left, top: top })
-
     e.preventDefault()
   }
 

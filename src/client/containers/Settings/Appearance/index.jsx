@@ -272,7 +272,7 @@ class AppearanceSettings extends React.Component {
                       { text: 'Sandstone', value: 'sandstone' },
                       { text: "Winter's Fire", value: 'winterfire' }
                     ]}
-                    value={this.state.selectedColorScheme}
+                    defaultValue={this.state.selectedColorScheme}
                     onSelectChange={e => {
                       this.onBuiltInColorSelectChange(e)
                     }}

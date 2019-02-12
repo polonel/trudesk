@@ -8,24 +8,21 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/10/19 2:52 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom'
 import React from 'react'
+import PropTypes from 'prop-types'
 
-import SettingsContainer from './containers/Settings/SettingsContainer'
-
-export default function (store) {
-  if (document.getElementById('settings-container')) {
-    const SettingsContainerWithProvider = (
-      <Provider store={store}>
-        <SettingsContainer />
-      </Provider>
-    )
-
-    ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
+class DropdownHeader extends React.Component {
+  render () {
+    return <li className={'uk-nav-header'}>{this.props.text}</li>
   }
 }
+
+DropdownHeader.propTypes = {
+  text: PropTypes.string.isRequired
+}
+
+export default DropdownHeader

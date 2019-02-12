@@ -8,24 +8,28 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/10/19 2:41 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { Provider } from 'react-redux'
-import ReactDOM from 'react-dom'
 import React from 'react'
+import PropTypes from 'prop-types'
 
-import SettingsContainer from './containers/Settings/SettingsContainer'
-
-export default function (store) {
-  if (document.getElementById('settings-container')) {
-    const SettingsContainerWithProvider = (
-      <Provider store={store}>
-        <SettingsContainer />
-      </Provider>
+class Dropdown extends React.Component {
+  render () {
+    const { small, children, extraClass } = this.props
+    const className = (small ? ' uk-dropdown-small ' : ' ') + (extraClass || '')
+    return (
+      <div className={'nopadding-left nopadding-right uk-dropdown uk-margin-top-remove' + className}>
+        <ul className='uk-nav uk-topbar nomargin'>{children}</ul>
+      </div>
     )
-
-    ReactDOM.render(SettingsContainerWithProvider, document.getElementById('settings-container'))
   }
 }
+
+Dropdown.propTypes = {
+  small: PropTypes.bool,
+  extraClass: PropTypes.string
+}
+
+export default Dropdown

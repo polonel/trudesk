@@ -229,6 +229,8 @@ define('modules/ajaxify', [
             // This will be removed once angular and ajaxy are gone (react-router will Replace)
             if (document.getElementById('settings-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
+            // if (document.getElementById('modal-wrapper'))
+            //   window.react.dom.unmountComponentAtNode(document.getElementById('modal-wrapper'))
 
             // Update the content
             $content.stop(true, true)

@@ -16,6 +16,7 @@ import { combineReducers } from 'redux'
 import { reducer as form } from 'redux-form'
 
 import shared from './shared'
+import common from './shared/common'
 import modal from './shared/modalReducer'
 import sidebar from './sidebarReducer'
 import settings from './settings'
@@ -23,6 +24,7 @@ import tagsSettings from './tagsReducer'
 
 const IndexReducer = combineReducers({
   shared,
+  common,
   modal,
   sidebar,
   settings,

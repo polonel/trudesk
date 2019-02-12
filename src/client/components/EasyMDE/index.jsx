@@ -15,7 +15,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
+import Log from '../../logger'
+
+import $ from 'jquery'
 import Easymde from 'easymde'
+import 'inlineAttachment'
+import 'inputInlineAttachment'
 
 class EasyMDE extends React.Component {
   constructor (props) {
@@ -28,16 +33,61 @@ class EasyMDE extends React.Component {
 
   componentDidMount () {
     this.easymde = new Easymde({
-      element: this.element[0],
+      element: this.element,
       forceSync: true,
-      minHeight: '220px',
+      minHeight: this.props.height,
       toolbar: EasyMDE.getMdeToolbarItems(),
-      autoDownloadFontAwesome: false
+      autoDownloadFontAwesome: false,
+      status: false,
+      spellChecker: false
     })
 
     this.easymde.codemirror.on('change', () => {
       this.onTextareaChanged(this.easymde.value())
     })
+
+    if (this.easymde && this.props.allowImageUpload) {
+      if (!this.props.inlineImageUploadUrl) return Log.error('Invalid inlineImageUploadUrl Prop.')
+
+      const $el = $(this.element)
+      const self = this
+      if (!$el.hasClass('hasInlineUpload')) {
+        $el.addClass('hasInlineUpload')
+        window.inlineAttachment.editors.codemirror4.attach(this.easymde.codemirror, {
+          onFileUploadResponse: function (xhr) {
+            const result = JSON.parse(xhr.responseText)
+
+            const filename = result[this.settings.jsonFieldName]
+
+            if (result && filename) {
+              let newValue
+              if (typeof this.settings.urlText === 'function') {
+                newValue = this.settings.urlText.call(this, filename, result)
+              } else {
+                newValue = this.settings.urlText.replace(this.filenameTag, filename)
+              }
+
+              const text = this.editor.getValue().replace(this.lastValue, newValue)
+              this.editor.setValue(text)
+              this.settings.onFileUploaded.call(this, filename)
+            }
+            return false
+          },
+          onFileUploadError: function (xhr) {
+            const result = xhr.responseText
+            const text = this.editor.getValue() + ' ' + result
+            this.editor.setValue(text)
+          },
+          extraHeaders: self.props.inlineImageUploadHeaders,
+          errorText: 'Error uploading file: ',
+          uploadUrl: self.props.inlineImageUploadUrl,
+          jsonFieldName: 'filename',
+          urlText: '![Image]({filename})'
+        })
+
+        EasyMDE.attachFileDesc(self.element)
+      }
+    }
   }
 
   componentDidUpdate () {
@@ -57,13 +107,22 @@ class EasyMDE extends React.Component {
     if (typeof nextProps.defaultValue !== 'undefined') {
       if (!state.loaded && nextProps.defaultValue !== state.value)
         return { value: nextProps.defaultValue, loaded: true }
-    } else {
-      return {
-        loaded: true
-      }
     }
 
     return null
+  }
+
+  static attachFileDesc (textarea) {
+    const $el = $(textarea)
+    const attachFileDiv = $('<div></div>')
+    attachFileDiv
+      .addClass('attachFileDesc')
+      .html('<p>Attach images by dragging & dropping or pasting from clipboard.</p>')
+    $el.siblings('.CodeMirror').addClass('hasFileDesc')
+    $el
+      .siblings('.editor-statusbar')
+      .addClass('hasFileDesc')
+      .prepend(attachFileDiv)
   }
 
   onTextareaChanged (value) {
@@ -139,15 +198,29 @@ class EasyMDE extends React.Component {
   render () {
     setTimeout(() => {
       this.easymde.codemirror.refresh()
-    }, 1)
-    return <textarea ref={i => (this.element = i)} value={this.state.value} onChange={e => this.onTextareaChanged(e)} />
+    }, 250)
+    return (
+      <div>
+        <textarea ref={i => (this.element = i)} value={this.state.value} onChange={e => this.onTextareaChanged(e)} />
+        <div className='editor-statusbar uk-float-left uk-width-1-1' />
+      </div>
+    )
   }
 }
 
 EasyMDE.propTypes = {
+  height: PropTypes.string,
   value: PropTypes.string,
   onChange: PropTypes.func,
-  defaultValue: PropTypes.string
+  defaultValue: PropTypes.string,
+  allowImageUpload: PropTypes.bool,
+  inlineImageUploadUrl: PropTypes.string,
+  inlineImageUploadHeaders: PropTypes.object
+}
+
+EasyMDE.defaultProps = {
+  height: '150px',
+  allowImageUpload: false
 }
 
 export default EasyMDE

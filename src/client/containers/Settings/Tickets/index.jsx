@@ -45,9 +45,6 @@ import SpinLoader from 'components/SpinLoader'
 class TicketsSettings extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      viewData: window.trudesk.viewdata
-    }
 
     this.getTicketTags = this.getTicketTags.bind(this)
   }
@@ -200,8 +197,7 @@ class TicketsSettings extends React.Component {
   }
 
   render () {
-    const { active } = this.props
-    const { viewData } = this.state
+    const { active, viewdata } = this.props
     const mappedTypes = this.getTicketTypes().map(function (type) {
       return { text: type.get('name'), value: type.get('_id') }
     })
@@ -214,7 +210,7 @@ class TicketsSettings extends React.Component {
           component={
             <SingleSelect
               items={mappedTypes}
-              value={this.getSetting('defaultTicketType')}
+              defaultValue={this.getSetting('defaultTicketType')}
               onSelectChange={e => {
                 this.onDefaultTicketTypeChange(e)
               }}
@@ -228,7 +224,7 @@ class TicketsSettings extends React.Component {
           subtitle={
             <div>
               Allow the creation of tickets by users that are unregistered. (
-              <a href={viewData.hosturl + '/newissue'}>{viewData.hosturl + '/newissue'}</a>)
+              <a href={viewdata.hosturl + '/newissue'}>{viewdata.hosturl + '/newissue'}</a>)
             </div>
           }
           component={
@@ -449,6 +445,7 @@ class TicketsSettings extends React.Component {
 
 TicketsSettings.propTypes = {
   active: PropTypes.bool.isRequired,
+  viewdata: PropTypes.object.isRequired,
   settings: PropTypes.object.isRequired,
   tagsSettings: PropTypes.object.isRequired,
   updateSetting: PropTypes.func.isRequired,
@@ -458,6 +455,7 @@ TicketsSettings.propTypes = {
 }
 
 const mapStateToProps = state => ({
+  viewdata: state.common,
   settings: state.settings.settings,
   tagsSettings: state.tagsSettings
 })

@@ -60,11 +60,11 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
             'easypiechart',
             'idletimer'
           ], function (_, nav, socket) {
+            // React Bootstrap
+            require('../../client/app.jsx')
+
             // Page loading (init)
             require(['pages/pageloader'], function (pl) {
-              // React Bootstrap
-              require('../../client/app.jsx')
-
               pl.init(function () {
                 nav.init()
 

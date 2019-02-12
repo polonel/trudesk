@@ -34,10 +34,8 @@ define('modules/ui', [
     this.onReconnect()
     this.onDisconnect()
     this.updateUsers()
-    this.updateNotifications()
+    // this.updateNotifications()
     this.updateAllNotifications()
-    // this.updateMailNotifications();
-    this.updateConversationsNotifications()
     this.updateComments()
     this.updateUi()
     this.updateTicketStatus()
@@ -138,69 +136,6 @@ define('modules/ui', [
 
   socketUi.clearAssignee = function (id) {
     socket.emit('clearAssignee', id)
-  }
-
-  socketUi.updateConversationsNotifications = function () {
-    $(document).ready(function () {
-      var btnMailNotifications = $('#btn_mail-notifications')
-      btnMailNotifications.off('click', updateMailNotificationsClicked)
-      btnMailNotifications.on('click', updateMailNotificationsClicked)
-    })
-
-    socket.removeAllListeners('updateConversationsNotifications')
-    socket.on('updateConversationsNotifications', function (data) {
-      var label = $('#btn_mail-notifications').find('> span')
-      // TODO: Fixed this once unread messages is fully impl.
-      var count = 0 // Setting this to 0 to clear label until above is impl.
-      var items = data.conversations
-      if (count < 1) {
-        label.hide()
-      } else {
-        label.text(count)
-        label.removeClass('hide')
-        label.show()
-      }
-
-      var mailDropList = $('div.mail-Messages').find('ul')
-      mailDropList.empty()
-
-      var html = ''
-
-      _.each(items, function (item) {
-        if (item.partner !== undefined) {
-          html += '<li>'
-          html += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">'
-          html += '<div class="uk-clearfix">'
-          if (item.partner.image) {
-            html +=
-              '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>'
-          } else {
-            html += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
-          }
-          html += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>'
-          html += '<div class="messageSnippet">'
-          html += '<span>' + item.recentMessage + '</span>'
-          html += '</div>'
-          html += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">'
-          html +=
-            '<time datetime="' +
-            helpers.formatDate(item.updatedAt, 'YYYY-MM-DDThh:mm') +
-            '" class="timestamp">' +
-            helpers.formatDate(item.updatedAt, 'MMM DD, YYYY') +
-            '</time>'
-          html += '</div>'
-          html += '</div>'
-          html += '</a>'
-          html += '</li>'
-        }
-      })
-
-      mailDropList.append(html)
-
-      var $body = $('body')
-
-      if (typeof $body.ajaxify === 'function') $body.ajaxify()
-    })
   }
 
   socketUi.updateTicketStatus = function () {
@@ -678,7 +613,7 @@ define('modules/ui', [
   }
 
   function updateMailNotificationsClicked (e) {
-    socket.emit('updateMailNotifications')
+    socket.emit('updateMailNotifications') // Pointless right now - No Receiver on server
     e.preventDefault()
   }
 

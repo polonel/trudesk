@@ -23,8 +23,10 @@ import AddPriorityToTypeModal from './AddPriorityToTypeModal'
 import CreatePriorityModal from './CreatePriorityModal'
 import DeletePriorityModal from './DeletePriorityModal'
 import CreateTagModal from './CreateTagModal'
+import CreateTicketModal from 'containers/Modals/CreateTicketModal'
 
 const MODAL_COMPONENTS = {
+  CREATE_TICKET: CreateTicketModal,
   CREATE_TICKET_TYPE: CreateTicketTypeModal,
   DELETE_TICKET_TYPE: DeleteTicketTypeModal,
   ADD_PRIORITY_TO_TYPE: AddPriorityToTypeModal,
@@ -35,7 +37,7 @@ const MODAL_COMPONENTS = {
 
 const ModalRoot = ({ modalType, modalProps }) => {
   if (!modalType) {
-    return <div id={'#modal-wrap'} />
+    return <div id={'modal-wrap'} />
   }
 
   const SpecificModal = MODAL_COMPONENTS[modalType]

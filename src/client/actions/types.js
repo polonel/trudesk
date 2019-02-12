@@ -25,6 +25,7 @@ export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
 export const NAV_CHANGE = defineAction('NAV_CHANGE')
 
 // Tickets
+export const CREATE_TICKET = defineAction('CREATE_TICKET', [PENDING, SUCCESS, ERROR])
 export const CREATE_TICKET_TYPE = defineAction('CREATE_TICKET_TYPE', [SUCCESS, ERROR])
 export const RENAME_TICKET_TYPE = defineAction('RENAME_TICKET_TYPE', [SUCCESS, ERROR])
 export const DELETE_TICKET_TYPE = defineAction('DELETE_TICKET_TYPE', [SUCCESS, ERROR])

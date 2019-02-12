@@ -8,31 +8,50 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/7/19 7:06 PM
+ *  Updated:    2/10/19 2:57 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class SpinLoader extends React.Component {
+import UIkit from 'uikit'
+
+class DropdownTrigger extends React.Component {
+  constructor (props) {
+    super(props)
+  }
+
+  componentDidMount () {
+    if (this.drop) {
+      UIkit.dropdown(this.drop, {
+        mode: this.props.mode,
+        pos: this.props.pos
+      })
+    }
+  }
+
+  componentWillUnmount () {
+    if (this.drop) this.drop = null
+  }
+
   render () {
     return (
-      <div
-        className={'card-spinner ' + (this.props.extraClass || '') + (!this.props.active ? ' hide ' : '')}
-        style={this.props.style}
-      >
-        <div className='spinner' style={this.props.spinnerStyle} />
+      <div ref={i => (this.drop = i)} className={'uk-position-relative'} aria-haspopup={true} aria-expanded={false}>
+        {this.props.children}
       </div>
     )
   }
 }
 
-SpinLoader.propTypes = {
-  active: PropTypes.bool,
-  extraClass: PropTypes.string,
-  style: PropTypes.object,
-  spinnerStyle: PropTypes.object
+DropdownTrigger.propTypes = {
+  mode: PropTypes.string,
+  pos: PropTypes.string
 }
 
-export default SpinLoader
+DropdownTrigger.defaultProps = {
+  mode: 'click',
+  pos: 'bottom-left'
+}
+
+export default DropdownTrigger

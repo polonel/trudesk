@@ -14,64 +14,70 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import each from 'lodash/each'
+import { each, isArray, findIndex } from 'lodash'
 import $ from 'jquery'
 
 import helpers from 'lib/helpers'
 
 class SingleSelect extends React.Component {
+  value = ''
   constructor (props) {
     super(props)
-    this.state = {
-      value: ''
-    }
+
+    if (this.props.defaultValue) this.value = this.props.defaultValue
+
     this.onSelectChange = this.onSelectChange.bind(this)
   }
 
   componentDidMount () {
     helpers.UI.selectize()
     const $select = $(this.select)
-    $select.on('change', this.props.onSelectChange)
-    this.setState({ value: this.props.value })
+
+    this.updateSelectizeItems()
+    $select.on('change', this.onSelectChange)
+    if (this.props.multiple) this.value = []
+    if (this.props.defaultValue) this.value = this.props.defaultValue
   }
 
   componentWillUnmount () {
     const selectize = this.select.selectize
-
     if (selectize) selectize.destroy()
-  }
-
-  static getDerivedStateFromProps (props, state) {
-    if (props.value !== state.value) {
-      return {
-        value: props.value
-      }
-    }
-
-    return null
   }
 
   onSelectChange (e) {
     if (e.target.value === '') return
 
-    this.setState({
-      value: e.target.value
-    })
+    if (this.props.multiple) this.value = this.select.selectize.items
+    else this.value = e.target.value
 
-    if (this.state.value !== '') this.props.onSelectChange(e)
+    if (this.value && this.props.onSelectChange) this.props.onSelectChange(e)
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (prevProps) {
+    if (prevProps.defaultValue !== this.props.defaultValue && !this.value) this.value = this.props.defaultValue
+
+    this.updateSelectizeItems()
+  }
+
+  updateSelectizeItems () {
     if (this.select && this.select.selectize) {
       const self = this
+      // Remove any options that were removed from Items array
       each(this.select.selectize.options, function (i) {
-        if (self.props.items.indexOf(i) === -1) self.select.selectize.removeOption(i.value, true)
+        const indexOfOption = findIndex(self.props.items, o => {
+          return i.value === o.value
+        })
+        if (indexOfOption === -1) {
+          self.select.selectize.removeOption(i.value, true)
+        }
       })
 
+      // Populate Options & Add existing selected values
       this.select.selectize.addOption(this.props.items)
       this.select.selectize.refreshOptions(false)
-      this.select.selectize.setValue(this.state.value, true)
+      this.select.selectize.addItem(this.value, true)
 
+      // Force an update of each item from items prop
       each(this.props.items, function (i) {
         self.select.selectize.updateOption(i.value, i)
       })
@@ -85,36 +91,45 @@ class SingleSelect extends React.Component {
 
     if (this.props.width) width = this.props.width
 
+    const value = this.props.multiple && !isArray(this.value) ? [this.value] : this.value
+
     return (
-      <div className='uk-width-1-1 uk-float-right' style={{ paddingRight: '10px', width: width }}>
-        <select
-          className='selectize'
-          ref={select => {
-            this.select = select
-          }}
-          data-md-selectize-inline
-          data-md-selectize-notextbox={this.props.showTextbox ? 'false' : 'true'}
-          value={this.state.value}
-          onChange={this.props.onSelectChange}
-          disabled={this.props.disabled}
-        />
+      <div className={'uk-clearfix'}>
+        <div className='uk-width-1-1 uk-float-right' style={{ paddingRight: '10px', width: width }}>
+          <select
+            className='selectize'
+            ref={select => {
+              this.select = select
+            }}
+            data-md-selectize-inline
+            data-md-selectize-notextbox={this.props.showTextbox ? 'false' : 'true'}
+            value={value}
+            onChange={() => {}}
+            disabled={this.props.disabled}
+            data-md-selectize-bottom='true'
+            multiple={this.props.multiple}
+            data-md-selectize-top-offset='-32'
+          />
+        </div>
       </div>
     )
   }
 }
 
 SingleSelect.propTypes = {
-  value: PropTypes.string,
   width: PropTypes.string,
   items: PropTypes.arrayOf(PropTypes.object).isRequired,
+  multiple: PropTypes.bool,
   showTextbox: PropTypes.bool,
+  defaultValue: PropTypes.string,
   disabled: PropTypes.oneOfType([PropTypes.string, PropTypes.bool]),
-  onSelectChange: PropTypes.func.isRequired
+  onSelectChange: PropTypes.func
 }
 
 SingleSelect.defaultProps = {
   showTextbox: true,
-  disabled: false
+  disabled: false,
+  multiple: false
 }
 
 export default SingleSelect

@@ -22,9 +22,11 @@ import {
   UPDATE_PRIORITY,
   CREATE_TAG,
   GET_TAGS_WITH_PAGE,
-  TAGS_UPDATE_CURRENT_PAGE
+  TAGS_UPDATE_CURRENT_PAGE,
+  CREATE_TICKET
 } from 'actions/types'
 
+export const createTicket = createAction(CREATE_TICKET.ACTION)
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const renameTicketType = createAction(RENAME_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const deleteTicketType = createAction(DELETE_TICKET_TYPE.ACTION, (id, newTypeId) => ({ id, newTypeId }))

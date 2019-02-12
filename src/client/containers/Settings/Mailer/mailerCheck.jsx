@@ -350,7 +350,7 @@ class Mailer_MailerCheck extends React.Component {
                 showTextbox={false}
                 width={'100%'}
                 items={mappedTicketTypes}
-                value={this.state.mailerCheckTicketType}
+                defaultValue={this.state.mailerCheckTicketType}
                 disabled={!this.getSetting('mailerCheckEnabled')}
                 onSelectChange={e => this.onTicketTypeSelectChanged(e)}
               />
@@ -361,7 +361,7 @@ class Mailer_MailerCheck extends React.Component {
                 showTextbox={false}
                 width={'100%'}
                 items={this.state.typePriorities}
-                value={this.state.mailerCheckTicketPriority}
+                defaultValue={this.state.mailerCheckTicketPriority}
                 disabled={!this.getSetting('mailerCheckEnabled')}
                 onSelectChange={e => this.onSingleSelectChanged(e, 'mailerCheckTicketPriority')}
               />

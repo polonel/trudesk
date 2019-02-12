@@ -13,20 +13,14 @@
  */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var moment = require('moment')
-
 var permissions = require('../../permissions')
-
 var settingSchema = require('../../models/setting')
 
 var viewController = {}
 var viewdata = {}
-viewdata.notifications = {}
 viewdata.users = {}
 
 viewController.getData = function (request, cb) {
@@ -227,21 +221,21 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
-      function (callback) {
-        viewController.getUserNotifications(request, function (err, data) {
-          if (err) return callback(err)
-
-          viewdata.notifications.items = data
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getUnreadNotificationsCount(request, function (err, count) {
-          if (err) return callback(err)
-          viewdata.notifications.unreadCount = count
-          return callback()
-        })
-      },
+      // function (callback) {
+      //   viewController.getUserNotifications(request, function (err, data) {
+      //     if (err) return callback(err)
+      //
+      //     viewdata.notifications.items = data
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getUnreadNotificationsCount(request, function (err, count) {
+      //     if (err) return callback(err)
+      //     viewdata.notifications.unreadCount = count
+      //     return callback()
+      //   })
+      // },
       function (callback) {
         viewController.getConversations(request, function (err, conversations) {
           if (err) return callback(err)

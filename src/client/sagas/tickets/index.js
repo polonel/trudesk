@@ -26,10 +26,24 @@ import {
   DELETE_PRIORITY,
   UPDATE_PRIORITY,
   CREATE_TAG,
-  GET_TAGS_WITH_PAGE
+  GET_TAGS_WITH_PAGE,
+  CREATE_TICKET
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
+
+function * createTicket ({ payload }) {
+  try {
+    const response = yield call(api.tickets.create, payload)
+    yield put({ type: CREATE_TICKET.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response)
+    yield put({ type: CREATE_TICKET.ERROR, error })
+  }
+}
 
 function * createTicketType ({ payload }) {
   try {
@@ -129,6 +143,7 @@ function * createTag ({ payload }) {
 }
 
 export default function * watcher () {
+  yield takeLatest(CREATE_TICKET.ACTION, createTicket)
   yield takeLatest(CREATE_TICKET_TYPE.ACTION, createTicketType)
   yield takeLatest(DELETE_TICKET_TYPE.ACTION, deleteTicketType)
   yield takeLatest(CREATE_PRIORITY.ACTION, createPriority)

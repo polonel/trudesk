@@ -30,9 +30,6 @@ import ZoneBox from 'components/ZoneBox'
 class GeneralSettings extends React.Component {
   constructor (props) {
     super(props)
-    this.state = {
-      viewData: window.trudesk.viewdata
-    }
   }
 
   componentDidMount () {}
@@ -85,7 +82,7 @@ class GeneralSettings extends React.Component {
         stateName='timezone'
         settingName='gen:timezone'
         items={this.getTimezones()}
-        value={this.getSettingsValue('timezone')}
+        defaultValue={this.getSettingsValue('timezone')}
         onSelectChange={e => {
           this.onTimezoneChange(e)
         }}
@@ -119,7 +116,7 @@ class GeneralSettings extends React.Component {
           title='Site Url'
           subtitle={
             <div>
-              Publicly accessible URL of this site. <i>ex: {this.state.viewData.hosturl}</i>
+              Publicly accessible URL of this site. <i>ex: {this.props.viewdata.hosturl}</i>
             </div>
           }
           component={SiteUrl}
@@ -196,10 +193,12 @@ class GeneralSettings extends React.Component {
 GeneralSettings.propTypes = {
   active: PropTypes.bool,
   updateSetting: PropTypes.func.isRequired,
+  viewdata: PropTypes.object.isRequired,
   settings: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
+  viewdata: state.common,
   settings: state.settings.settings
 })
 

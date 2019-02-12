@@ -15,6 +15,8 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { observer } from 'mobx-react'
+import { observable } from 'mobx'
 import { createPriority } from 'actions/tickets'
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -23,37 +25,15 @@ import ColorSelector from 'components/ColorSelector'
 import $ from 'jquery'
 import helpers from 'lib/helpers'
 
+@observer
 class CreatePriorityModal extends React.Component {
-  constructor (props) {
-    super(props)
-    this.state = {
-      name: '',
-      overdueIn: 2880,
-      htmlColor: '#29B995'
-    }
-  }
+  @observable name = ''
+  @observable overdueIn = 2880
+  @observable htmlColor = '#29B995'
 
   componentDidMount () {
     helpers.UI.inputs()
     helpers.formvalidator()
-  }
-
-  onPNameChanged (e) {
-    this.setState({
-      name: e.target.value
-    })
-  }
-
-  onOverdueInCahnged (e) {
-    this.setState({
-      overdueIn: e.target.value
-    })
-  }
-
-  onHtmlColorChanged (e) {
-    this.setState({
-      htmlColor: e.target.value
-    })
   }
 
   onCreatePrioritySubmit (e) {
@@ -63,9 +43,9 @@ class CreatePriorityModal extends React.Component {
 
     //  Form is valid... Submit..
     this.props.createPriority({
-      name: this.state.name,
-      overdueIn: this.state.overdueIn,
-      htmlColor: this.state.htmlColor
+      name: this.name,
+      overdueIn: this.overdueIn,
+      htmlColor: this.htmlColor
     })
   }
 
@@ -85,8 +65,8 @@ class CreatePriorityModal extends React.Component {
                   <input
                     type='text'
                     className={'md-input'}
-                    value={this.state.name}
-                    onChange={e => this.onPNameChanged(e)}
+                    value={this.name}
+                    onChange={e => (this.name = e.target.value)}
                     data-validation='length'
                     data-validation-length='min3'
                     data-validation-error-msg='Invalid name (3+ characters)'
@@ -97,8 +77,8 @@ class CreatePriorityModal extends React.Component {
                   <input
                     type='text'
                     className={'md-input'}
-                    value={this.state.overdueIn}
-                    onChange={e => this.onOverdueInCahnged(e)}
+                    value={this.overdueIn}
+                    onChange={e => (this.overdueIn = e.target.value)}
                     data-validation='number'
                     data-validation-allowing='range[1;525600]'
                     data-validation-error-msg='Invalid SLA Time (1-525600)'
@@ -109,7 +89,7 @@ class CreatePriorityModal extends React.Component {
                     hideRevert={true}
                     defaultColor={'#29B995'}
                     validationEnabled={true}
-                    onChange={e => this.onHtmlColorChanged(e)}
+                    onChange={e => (this.htmlColor = e.target.value)}
                   />
                 </div>
               </div>

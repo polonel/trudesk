@@ -19,6 +19,12 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 let api = {}
 
 api.tickets = {}
+api.tickets.create = payload => {
+  return axios.post('/api/v1/tickets/create', payload).then(res => {
+    return res.data
+  })
+}
+
 api.tickets.renameTicketType = (id, name) => {
   return axios.put('/api/v1/tickets/types/' + id, { name }).then(res => {
     return res.data
