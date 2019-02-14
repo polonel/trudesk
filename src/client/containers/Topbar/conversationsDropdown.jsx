@@ -22,6 +22,7 @@ import PDropDown from 'components/PDropdown'
 
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
+import 'history'
 
 @observer
 class ConversationsDropdownPartial extends React.Component {
@@ -43,6 +44,12 @@ class ConversationsDropdownPartial extends React.Component {
 
   onUpdateConversationsNotifications (data) {
     if (!helpers.arrayIsEqual(this.conversations, data.conversations)) this.conversations = data.conversations
+  }
+
+  static onConversationClicked (e, id) {
+    e.preventDefault()
+
+    History.pushState(null, null, `/messages/${id}`)
   }
 
   render () {
@@ -75,7 +82,10 @@ class ConversationsDropdownPartial extends React.Component {
                 .format(shortDateFormat)
               return (
                 <li key={conversation._id}>
-                  <a href={`/messages/${conversation._id}`} className='messageNotification uk-position-relative'>
+                  <a
+                    className='no-ajaxy messageNotification uk-position-relative'
+                    onClick={e => ConversationsDropdownPartial.onConversationClicked(e, conversation._id)}
+                  >
                     <div className='uk-clearfix'>
                       <div className='profilePic uk-float-left'>
                         <img src={`/uploads/users/${profilePic}`} alt='Profile Picture' />

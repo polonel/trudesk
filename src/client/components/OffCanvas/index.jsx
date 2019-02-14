@@ -8,31 +8,34 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
+ *  Updated:    2/12/19 11:46 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-define('modules/socket', ['modules/chat', 'modules/ui', 'modules/socket.io/accountsImporter'], function (
-  chat,
-  ui,
-  accountsImporter
-) {
-  var socket = io.connect({
-    transports: ['polling', 'websocket']
-  })
+import React from 'react'
+import PropTypes from 'prop-types'
 
-  var sClient = {
-    socket: socket
+class OffCanvas extends React.Component {
+  render () {
+    const { title, id, children } = this.props
+    return (
+      <div id={id} className={'uk-offcanvas'}>
+        <div className='uk-offcanvas-bar uk-offcanvas-bar-flip scrollable'>
+          {title && (
+            <div className='uk-offcanvas-title'>
+              <h3>{title}</h3>
+            </div>
+          )}
+          {children}
+        </div>
+      </div>
+    )
   }
+}
 
-  ui.init(socket)
-  sClient.ui = ui
+OffCanvas.propTypes = {
+  title: PropTypes.string,
+  id: PropTypes.string.isRequired
+}
 
-  chat.init(socket)
-  sClient.chat = chat
-
-  accountsImporter.init(socket)
-  sClient.accountsImporter = accountsImporter
-
-  return sClient
-})
+export default OffCanvas

@@ -14,11 +14,29 @@
 
 .uk-offcanvas
   background: rgba(0,0,0,0.3)
+  line-height: normal
 .uk-offcanvas-bar
   background: $sidebar_bg
   //border-left: $sidebar_border_right
 
-.online-list-sidebar
+.uk-offcanvas
+  .uk-offcanvas-title
+    height: 40px
+    width: 100%
+    background: $sidebar_item_active
+    margin-bottom: 8px
+    h3
+      font-family: "Source Sans Pro", sans-serif
+      font-size: 14px
+      text-align: center
+      width: 100%
+      display: block
+      color: automatic-text-color($topbar_bg)
+      margin: 0
+      line-height: 40px
+
+.online-list-sidebar,
+.uk-offcanvas
   h5
     font-family: "Source Sans Pro", sans-serif
     font-size: 12px

@@ -29,8 +29,8 @@ define('modules/chat', ['jquery', 'underscore', 'moment', 'modules/helpers', 'ui
     loggedInAccount = window.trudeskSessionService.getUser()
     socket = sock
 
-    socket.removeAllListeners('updateUsers')
-    socket.on('updateUsers', function (data) {
+    socket.removeAllListeners('updateUsers1')
+    socket.on('updateUsers1', function (data) {
       var html = ''
       var onlineList = $('.online-list-wrapper').find('ul.online-list')
       var username = loggedInAccount.username

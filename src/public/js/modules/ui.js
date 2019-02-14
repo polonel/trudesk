@@ -33,7 +33,7 @@ define('modules/ui', [
 
     this.onReconnect()
     this.onDisconnect()
-    this.updateUsers()
+    // this.updateUsers()
     // this.updateNotifications()
     this.updateAllNotifications()
     this.updateComments()
@@ -618,8 +618,8 @@ define('modules/ui', [
   }
 
   function updateUsersBtnClicked (e) {
-    socket.emit('updateUsers')
     e.preventDefault()
+    socket.emit('updateUsers')
   }
 
   socketUi.updateUsers = function () {
@@ -1052,93 +1052,7 @@ define('modules/ui', [
   }
 
   socketUi.updateNotifications = function () {
-    socket.removeAllListeners('updateNotifications')
-    socket.on('updateNotifications', function (data) {
-      var $notifications = $('#notifications-Messages').find('ul')
-      if ($notifications.length < 1) return
-
-      $notifications.html('')
-      // Build Notifications
-      _.each(data.items, function (item) {
-        var html = ''
-        html +=
-          '<li>' +
-          '<a class="messageNotification" href="/tickets/' +
-          item.data.ticket.uid +
-          '" role="button" data-notificationId="' +
-          item._id +
-          '" >' +
-          '<div class="uk-clearfix">'
-        if (item.unread === true) {
-          html += '<div class="messageUnread"></div>'
-        }
-
-        switch (item.type) {
-          case 0:
-            html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>'
-            break
-          case 1:
-            html += '<div class="messageIcon left"><i class="fa fa-comment-o green" style="margin-top: -5px"></i></div>'
-            break
-          case 2:
-            html += '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>'
-            break
-        }
-
-        html +=
-          '<div class="messageAuthor"><strong>' +
-          item.title +
-          '</strong></div>' +
-          '<div class="messageSnippet">' +
-          '<span>' +
-          item.message +
-          '</span>' +
-          '</div>' +
-          '<div class="messageDate">' +
-          '<time datetime="' +
-          helpers.formatDate(item.created, 'YYYY-MM-DDThh:mm') +
-          '" class="timestamp">' +
-          helpers.formatDate(item.created, 'MMM DD, YYYY') +
-          '</time>' +
-          '</div>' +
-          '</div>' +
-          '</a>' +
-          '</li>'
-
-        $notifications.append(html)
-
-        var $nLinks = $('#notifications-Messages').find('a[data-notificationId]')
-        $.each($nLinks, function (k, val) {
-          var item = $(val)
-          item.off('click')
-          item.on('click', function (e) {
-            e.preventDefault()
-            e.stopPropagation()
-            var $id = $(e.currentTarget).attr('data-notificationId')
-            var $href = $(e.currentTarget).attr('href')
-            if ($id.length < 1) return
-
-            socketUi.markNotificationRead($id)
-
-            History.pushState(null, null, $href)
-          })
-        })
-      })
-
-      var $notificationsCount = $('#btn_notifications').find('span')
-      var $bottomActions = $('#notifications').find('.bottom-actions')
-      if ($notificationsCount.length > 0) {
-        if (data.count === 0) {
-          $notificationsCount.html('0')
-          $notificationsCount.addClass('hide')
-          $bottomActions.addClass('hide')
-        } else {
-          $notificationsCount.removeClass('hide')
-          $notificationsCount.html(data.count)
-          $bottomActions.removeClass('hide')
-        }
-      }
-    })
+    socket.emit('updateNotifications')
   }
 
   socketUi.updateAllNotifications = function () {

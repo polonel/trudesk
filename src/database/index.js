@@ -13,11 +13,8 @@
  */
 
 var _ = require('lodash')
-
 var mongoose = require('mongoose')
-
 var nconf = require('nconf')
-
 var winston = require('winston')
 
 var db = {}

@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
+import { size } from 'lodash'
 
 import { showModal } from 'actions/common'
 
@@ -26,33 +27,48 @@ import DropdownSeparator from 'components/Drowdown/DropdownSeperator'
 import DropdownHeader from 'components/Drowdown/DropdownHeader'
 import DropdownTrigger from 'components/Drowdown/DropdownTrigger'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
+import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
 import NotificationsDropdownPartial from './notificationsDropdown'
 
 import socket from 'lib/socket'
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
+import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 @observer
 class TopbarContainer extends React.Component {
   @observable notificationCount = 0
+  @observable activeUserCount = 0
 
   constructor (props) {
     super(props)
     this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
+    this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
   }
 
   componentDidMount () {
-    socket.ui.socket.on('updateNotifications', this.onSocketUpdateNotifications)
+    socket.socket.on('updateNotifications', this.onSocketUpdateNotifications)
+    socket.socket.on('updateUsers', this.onSocketUpdateUsers)
+
+    // Call for an update on Mount
+    socket.ui.updateNotifications()
+    socket.ui.updateUsers()
   }
 
   componentWillUnmount () {
-    socket.ui.socket.off('updateNotifications', this.onSocketUpdateNotifications)
+    socket.socket.off('updateNotifications', this.onSocketUpdateNotifications)
+    socket.socket.off('updateUsers', this.onSocketUpdateUsers)
   }
 
   onSocketUpdateNotifications (data) {
     if (data.count !== this.notificationCount) this.notificationCount = data.count
   }
 
-  onConversationsClicked (e) {
+  onSocketUpdateUsers (data) {
+    const count = size(data)
+    if (count !== this.activeUserCount) this.activeUserCount = count
+  }
+
+  static onConversationsClicked (e) {
     e.preventDefault()
 
     socket.ui.socket.emit('updateMailNotifications') // Pointless right now - No Receiver on server
@@ -91,7 +107,7 @@ class TopbarContainer extends React.Component {
                       <a
                         title={'Conversations'}
                         className='no-ajaxy uk-vertical-align'
-                        onClick={e => this.onConversationsClicked(e)}
+                        onClick={e => TopbarContainer.onConversationsClicked(e)}
                       >
                         <i className='material-icons'>sms</i>
                       </a>
@@ -108,10 +124,18 @@ class TopbarContainer extends React.Component {
                     </PDropdownTrigger>
                   </li>
                   <li className='top-bar-icon'>
-                    <a href='#' title={'Online Users'} className='no-ajaxy'>
-                      <i className='material-icons'>perm_contact_calendar</i>
-                      <span className='online-user-count alert uk-border-circle label hide' />
-                    </a>
+                    <OffCanvasTrigger target={'online-user-list'}>
+                      <a title={'Online Users'} className='no-ajaxy'>
+                        <i className='material-icons'>perm_contact_calendar</i>
+                        <span
+                          className={
+                            'online-user-count alert uk-border-circle label ' + (this.activeUserCount < 1 ? 'hide' : '')
+                          }
+                        >
+                          {this.activeUserCount}
+                        </span>
+                      </a>
+                    </OffCanvasTrigger>
                   </li>
 
                   <li className='profile-area profile-name'>
@@ -144,6 +168,8 @@ class TopbarContainer extends React.Component {
             </section>
           </div>
         </div>
+
+        <OnlineUserListPartial timezone={viewdata.timezone} users={viewdata.users} />
       </div>
     )
   }
