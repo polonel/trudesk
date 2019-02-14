@@ -402,7 +402,7 @@ userSchema.statics.getUserByAccessToken = function (token, callback) {
     return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null)
   }
 
-  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, callback)
+  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, '+password', callback)
 }
 
 userSchema.statics.getUserWithObject = function (object, callback) {

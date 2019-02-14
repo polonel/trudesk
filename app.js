@@ -17,7 +17,6 @@ var fs = require('fs')
 var winston = require('winston')
 var nconf = require('nconf')
 var pkg = require('./package.json')
-var ws = require('./src/webserver')
 // `var memory = require('./src/memory');
 
 var isDocker = process.env.TRUDESK_DOCKER || false
@@ -59,18 +58,6 @@ winston.err = function (err) {
   winston.error(err.stack)
 }
 
-process.on('message', function (msg) {
-  if (msg === 'shutdown') {
-    winston.debug('Closing all connections...')
-
-    if (ws.server) {
-      ws.server.close()
-    }
-
-    throw new Error('Server has shutdown.')
-  }
-})
-
 if (!process.env.FORK) {
   winston.info('    .                              .o8                     oooo')
   winston.info('  .o8                             "888                     `888')
@@ -105,16 +92,6 @@ if (nconf.get('install') || (!configExists && !isDocker)) {
   launchInstallServer()
 }
 
-function loadConfig () {
-  nconf.file({
-    file: configFile
-  })
-
-  nconf.defaults({
-    base_dir: __dirname
-  })
-}
-
 function start () {
   if (!isDocker) loadConfig()
 
@@ -139,6 +116,18 @@ function launchServer (db) {
       winston.error(err)
       return
     }
+
+    process.on('message', function (msg) {
+      if (msg === 'shutdown') {
+        winston.debug('Closing all connections...')
+
+        if (ws.server) {
+          ws.server.close()
+        }
+
+        throw new Error('Server has shutdown.')
+      }
+    })
 
     async.series(
       [

@@ -192,6 +192,19 @@ middleware.api = function (req, res, next) {
 
 middleware.hasAuth = middleware.api
 
+middleware.apiv2 = function (req, res, next) {
+  var passport = require('passport')
+  passport.authenticate('jwt', { session: false }, function (err, user) {
+    if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
+    if (user) {
+      req.user = user
+      return next()
+    }
+
+    return res.status(500).json({ success: false, error: 'Unknown Error Occurred' })
+  })(req, res, next)
+}
+
 middleware.canUser = function (action) {
   return function (req, res, next) {
     if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })

@@ -16,6 +16,8 @@ var path = require('path')
 var winston = require('winston')
 var packagejson = require('../../package.json')
 
+var apiV2Routes = require('../controllers/api/v2/routes')
+
 function mainRoutes (router, middleware, controllers) {
   router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
   router.get('/healthz', function (req, res) {
@@ -326,13 +328,13 @@ function mainRoutes (router, middleware, controllers) {
     '/api/v1/plugins/install/:packageid',
     middleware.api,
     middleware.isAdmin,
-    controllers.api.plugins.installPlugin
+    controllers.api.v1.plugins.installPlugin
   )
   router.delete(
     '/api/v1/plugins/remove/:packageid',
     middleware.api,
     middleware.isAdmin,
-    controllers.api.plugins.removePlugin
+    controllers.api.v1.plugins.removePlugin
   )
 
   router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {

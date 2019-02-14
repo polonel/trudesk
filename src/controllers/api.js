@@ -29,33 +29,21 @@ var apiReportsV1 = require('./api/v1/reports')
 var apiSettingsV1 = require('./api/v1/settings')
 var apiPluginsV1 = require('./api/v1/plugins')
 
-/**
- * @since 1.0
- * @author Chris Brame <polonel@gmail.com>
- * @copyright 2015 Chris Brame
- **/
-
-/**
- * @namespace
- * @description API Controller
- * @requires {@link Ticket}
- * @requires {@link User}
- * @requires {@link Group}
- * @requires {@link TicketType}
- * @requires {@link Emitter}
- * @requires {@link Setting}
- *
- */
 var apiController = {}
-apiController.tickets = apiTicketsV1
-apiController.tags = apiTagsV1
-apiController.notices = apiNoticesV1
-apiController.users = apiUsersV1
-apiController.messages = apiMessagesV1
-apiController.groups = apiGroupsV1
-apiController.reports = apiReportsV1
-apiController.settings = apiSettingsV1
-apiController.plugins = apiPluginsV1
+apiController.v1 = {}
+apiController.v1.tickets = apiTicketsV1
+apiController.v1.tags = apiTagsV1
+apiController.v1.notices = apiNoticesV1
+apiController.v1.users = apiUsersV1
+apiController.v1.messages = apiMessagesV1
+apiController.v1.groups = apiGroupsV1
+apiController.v1.reports = apiReportsV1
+apiController.v1.settings = apiSettingsV1
+apiController.v1.plugins = apiPluginsV1
+
+apiController.v2 = {}
+apiController.v2.common = require('./api/v2/common')
+apiController.v2.tickets = require('./api/v2/tickets')
 
 apiController.import = function (req, res) {
   var fs = require('fs')

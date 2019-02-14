@@ -20,7 +20,6 @@ var pkg = require('../../package')
 var Chance = require('chance')
 
 var installController = {}
-
 installController.content = {}
 
 installController.index = function (req, res) {
@@ -68,6 +67,7 @@ installController.existingdb = function (req, res) {
 
   // Write Configfile
   var fs = require('fs')
+  var chance = new Chance()
   var configFile = path.join(__dirname, '../../config.json')
 
   var conf = {
@@ -77,6 +77,10 @@ installController.existingdb = function (req, res) {
       username: username,
       password: password,
       database: database
+    },
+    tokens: {
+      secret: chance.hash() + chance.md5(),
+      expires: 900 // 15min
     }
   }
 
@@ -321,6 +325,7 @@ installController.install = function (req, res) {
         // Write Configfile
         var fs = require('fs')
         var configFile = path.join(__dirname, '../../config.json')
+        var chance = new Chance()
 
         var conf = {
           mongo: {
@@ -329,6 +334,10 @@ installController.install = function (req, res) {
             username: username,
             password: password,
             database: database
+          },
+          tokens: {
+            secret: chance.hash() + chance.md5(),
+            expires: 900 // 15min
           }
         }
 
