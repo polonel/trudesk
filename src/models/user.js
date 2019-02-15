@@ -19,6 +19,9 @@ var bcrypt = require('bcrypt')
 var _ = require('lodash')
 var Chance = require('chance')
 
+// Required for linkage
+require('./role')
+
 var SALT_FACTOR = 10
 var COLLECTION = 'accounts'
 
@@ -51,7 +54,7 @@ var userSchema = mongoose.Schema({
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-        role:       { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
   lastOnline: Date,
   title: String,
   image: String,
@@ -77,17 +80,15 @@ var userSchema = mongoose.Schema({
 })
 
 userSchema.set('toObject', { getters: true })
-var autoPopulateRole = function(next) {
-    this.populate('role', 'name description normalized _id');
-    next();
-};
+var autoPopulateRole = function (next) {
+  this.populate('role', 'name description normalized _id')
+  next()
+}
 
-userSchema.
-    pre('findOne', autoPopulateRole).
-    pre('find', autoPopulateRole);
+userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 
-userSchema.pre('save', function(next) {
-    var user = this;
+userSchema.pre('save', function (next) {
+  var user = this
 
   user.username = user.username.trim()
   user.email = user.email.trim()
@@ -441,14 +442,13 @@ userSchema.statics.getUserWithObject = function (object, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getAssigneeUsers = function (callback) {
-    var roles = global.roles;
-    if (_.isUndefined(roles)) return callback(null, []);
+  var roles = global.roles
+  if (_.isUndefined(roles)) return callback(null, [])
 
-    var assigneeRoles = [];
-    async.each(roles, function(role) {
-        if (role.isAgent)
-            assigneeRoles.push(role._id);
-    });
+  var assigneeRoles = []
+  async.each(roles, function (role) {
+    if (role.isAgent) assigneeRoles.push(role._id)
+  })
 
   assigneeRoles = _.uniq(assigneeRoles)
   this.model(COLLECTION).find({ role: { $in: assigneeRoles }, deleted: false }, function (err, users) {
@@ -457,9 +457,9 @@ userSchema.statics.getAssigneeUsers = function (callback) {
       return callback(err, null)
     }
 
-        return callback(null, _.sortBy(users, 'fullname'));
-    });
-};
+    return callback(null, _.sortBy(users, 'fullname'))
+  })
+}
 
 /**
  * Gets users based on roles

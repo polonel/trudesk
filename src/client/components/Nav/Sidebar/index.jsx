@@ -22,9 +22,7 @@ import SubmenuItem from 'components/Nav/SubmenuItem'
 
 import { updateNavChange } from '../../../actions/nav'
 
-import Permissions from '../../../../permissions/index.js'
-
-import Helpers from 'modules/helpers'
+import Helpers from 'lib/helpers'
 
 class Sidebar extends React.Component {
   constructor (props) {
@@ -144,7 +142,7 @@ class Sidebar extends React.Component {
           class='navMessages'
           active={activeItem === 'messages'}
         />
-        {sessionUser && Permissions.canThis(sessionUser.role, 'accounts:view') && (
+        {sessionUser && Helpers.canUser('accounts:view') && (
           <SidebarItem
             text='Accounts'
             icon='&#xE7FD;'
@@ -153,7 +151,7 @@ class Sidebar extends React.Component {
             active={activeItem === 'accounts'}
           />
         )}
-        {sessionUser && Permissions.canThis(sessionUser.role, 'groups:view') && (
+        {sessionUser && Helpers.canUser('groups:view') && (
           <SidebarItem
             text='Groups'
             icon='supervisor_account'
@@ -162,7 +160,7 @@ class Sidebar extends React.Component {
             active={activeItem === 'groups'}
           />
         )}
-        {sessionUser && Permissions.canThis(sessionUser.role, 'reports:view') && (
+        {sessionUser && Helpers.canUser('reports:view') && (
           <SidebarItem
             text='Reports'
             icon='assessment'
@@ -198,7 +196,7 @@ class Sidebar extends React.Component {
 
         {/*{this.renderPlugins()}*/}
 
-        {sessionUser && Permissions.canThis(sessionUser.role, 'notices:view') && (
+        {sessionUser && Helpers.canUser('notices:view') && (
           <SidebarItem
             text='Notices'
             icon='warning'
@@ -208,7 +206,7 @@ class Sidebar extends React.Component {
           />
         )}
         <NavSeparator />
-        {sessionUser && Permissions.canThis(sessionUser.role, 'settings:edit') && (
+        {sessionUser && Helpers.canUser('settings:edit') && (
           <SidebarItem
             text='Settings'
             icon='settings'
@@ -257,7 +255,7 @@ class Sidebar extends React.Component {
                 href='/settings/legal'
                 active={activeSubItem === 'settings-legal'}
               />
-              {sessionUser && Permissions.canThis(sessionUser.role, 'settings:logs') && (
+              {sessionUser && Helpers.canUser('settings:logs') && (
                 <SubmenuItem
                   text='Logs'
                   icon='remove_from_queue'

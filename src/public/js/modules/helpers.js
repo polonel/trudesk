@@ -17,6 +17,7 @@
 define([
   'jquery',
   'underscore',
+  'lodash',
   'moment',
   'uikit',
   'countup',
@@ -33,7 +34,7 @@ define([
   'peity',
   'multiselect',
   'moment_timezone'
-], function ($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
+], function ($, _, __, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
   var helpers = {}
   var easingSwiftOut = [0.4, 0, 0.2, 1]
 
@@ -1566,22 +1567,22 @@ define([
 
   helpers.canUser = function (a) {
     var role = window.trudeskSessionService.getUser().role
+    var roles = window.trudeskSessionService.getRoles()
+
     if (_.isUndefined(role)) return false
-
-    var rolePerm = _.find(ROLES, { id: role })
+    if (_.isUndefined(roles)) return false
+    if (__.hasIn(role, '_id')) role = role._id
+    var rolePerm = _.find(roles, { _id: role })
     if (_.isUndefined(rolePerm)) return false
-
-    if (rolePerm.allowedAction === '*') return true
-
-    if (_.indexOf(rolePerm.allowedAction, '*') !== -1) return true
+    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
 
     var actionType = a.split(':')[0]
     var action = a.split(':')[1]
 
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-    var result = _.filter(rolePerm.allowedAction, function (value) {
-      if (stringStartsWith(value, actionType + ':')) return value
+    var result = _.filter(rolePerm.grants, function (value) {
+      if (__.startsWith(value, actionType + ':')) return value
     })
 
     if (_.isUndefined(result) || _.size(result) < 1) return false

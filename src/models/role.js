@@ -12,69 +12,74 @@
 
  **/
 
-var mongoose = require('mongoose');
-var _        = require('lodash');
+var mongoose = require('mongoose')
+var _ = require('lodash')
 
-var COLLECTION = 'roles';
+var COLLECTION = 'roles'
 
-var roleSchema = mongoose.Schema({
-    name:           { type: String, required: true, unique: true },
-    normalized:     String,
-    description:    String,
-    grants:         [{ type: String, required: true, default: '' }],
-    hierarchy:      { type: Boolean, required: true, default: true }
-}, {
+var roleSchema = mongoose.Schema(
+  {
+    name: { type: String, required: true, unique: true },
+    normalized: String,
+    description: String,
+    grants: [{ type: String, required: true, default: '' }],
+    hierarchy: { type: Boolean, required: true, default: true }
+  },
+  {
     toObject: { getters: true },
     toJSON: { virtuals: false }
-});
+  }
+)
 
-roleSchema.virtual('isAdmin').get(function() {
-    if (_.isUndefined(global.roles)) return false;
-    var role = _.find(global.roles, {normalized: this.normalized});
-    return _.indexOf(role.grants, 'admin:*') !== -1;
-});
+roleSchema.virtual('isAdmin').get(function () {
+  if (_.isUndefined(global.roles)) return false
+  var role = _.find(global.roles, { normalized: this.normalized })
+  return _.indexOf(role.grants, 'admin:*') !== -1
+})
 
-roleSchema.virtual('isAgent').get(function() {
-    if (_.isUndefined(global.roles)) return false;
-    var role = _.find(global.roles, {normalized: this.normalized});
-    return _.indexOf(role.grants, 'agent:*') !== -1;
-});
+roleSchema.virtual('isAgent').get(function () {
+  if (_.isUndefined(global.roles)) return false
+  var role = _.find(global.roles, { normalized: this.normalized })
+  return _.indexOf(role.grants, 'agent:*') !== -1
+})
 
-roleSchema.pre('save', function(next) {
-    this.name = this.name.trim();
-    this.normalized = this.name.toLowerCase().trim();
+roleSchema.pre('save', function (next) {
+  this.name = this.name.trim()
+  this.normalized = this.name.toLowerCase().trim()
 
-    return next();
-});
+  return next()
+})
 
-roleSchema.methods.updateGrants = function(grants, callback) {
-    this.grants = grants;
-    this.save(callback);
-};
+roleSchema.methods.updateGrants = function (grants, callback) {
+  this.grants = grants
+  this.save(callback)
+}
 
-roleSchema.methods.updateGrantsAndHierarchy = function(grants, hierarchy, callback) {
-    this.grants = grants;
-    this.hierarchy = hierarchy;
-    this.save(callback);
-};
+roleSchema.methods.updateGrantsAndHierarchy = function (grants, hierarchy, callback) {
+  this.grants = grants
+  this.hierarchy = hierarchy
+  this.save(callback)
+}
 
-roleSchema.statics.getRoles = function(callback) {
-    return this.model(COLLECTION).find({}).exec(callback);
-};
+roleSchema.statics.getRoles = function (callback) {
+  return this.model(COLLECTION)
+    .find({})
+    .exec(callback)
+}
 
-roleSchema.statics.getRole = function(id, callback) {
-    var q = this.model(COLLECTION).findOne({_id: id});
+roleSchema.statics.getRole = function (id, callback) {
+  var q = this.model(COLLECTION).findOne({ _id: id })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-roleSchema.statics.getRoleByName = function(name, callback) {
-    var q = this.model(COLLECTION).findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') });
+roleSchema.statics.getRoleByName = function (name, callback) {
+  var q = this.model(COLLECTION).findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') })
 
-    return q.exec(callback);
-};
+  return q.exec(callback)
+}
 
-//Alias
-roleSchema.statics.get = roleSchema.statics.getRole;
+// Alias
+roleSchema.statics.get = roleSchema.statics.getRole
 
-module.exports = mongoose.model(COLLECTION, roleSchema);
+module.exports = mongoose.model(COLLECTION, roleSchema)

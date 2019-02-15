@@ -166,9 +166,9 @@ function dbCallback (err, db) {
         function (next) {
           require('./src/settings/defaults').init(next)
         },
-        // function(next) {
-        //     require('./src/permissions').register(next);
-        // },
+        function (next) {
+          require('./src/permissions').register(next)
+        },
         function (next) {
           require('./src/socketserver')(ws)
           return next()

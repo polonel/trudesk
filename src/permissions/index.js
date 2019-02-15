@@ -13,30 +13,26 @@
  */
 
 var _ = require('lodash')
-var roles = require('./roles')
+var winston = require('winston')
+var roleSchema = require('../models/role')
+var roleOrder = require('../models/roleorder')
 
-var _       = require('lodash');
-var winston = require('winston');
-var roleSchema = require('../models/role');
-var roleOrder = require('../models/roleorder');
+var register = function (callback) {
+  // Register Roles
+  roleSchema.getRoles(function (err, roles) {
+    if (err) return callback(err)
 
+    roleOrder.getOrder(function (err, ro) {
+      if (err) return callback(err)
 
-var register = function(callback) {
-    // Register Roles
-    roleSchema.getRoles(function(err, roles) {
-        if (err) return callback(err);
+      winston.debug('Registering Permissions...')
+      global.roleOrder = ro
+      global.roles = roles
 
-        roleOrder.getOrder(function(err, ro) {
-            if (err) return callback(err);
-
-            winston.debug('Registering Permissions...');
-            global.roleOrder = ro;
-            global.roles = roles;
-
-            return callback();
-        });
-    });
-};
+      return callback()
+    })
+  })
+}
 
 /***
  * Checks to see if a role as the given action
@@ -45,25 +41,24 @@ var register = function(callback) {
  * @returns {boolean}
  */
 
-var canThis = function(role, a) {
-    if (_.isUndefined(role)) return false;
+var canThis = function (role, a) {
+  if (_.isUndefined(role)) return false
 
-    var roles = global.roles;
-    if (_.isUndefined(roles)) return false;
-    if (_.hasIn(role, '_id'))
-        role = role._id;
-    var rolePerm = _.find(roles, {'_id': role});
-    if (_.isUndefined(rolePerm)) return false;
-    if (_.indexOf(rolePerm.grants, '*') !== -1) return true;
+  var roles = global.roles
+  if (_.isUndefined(roles)) return false
+  if (_.hasIn(role, '_id')) role = role._id
+  var rolePerm = _.find(roles, { _id: role })
+  if (_.isUndefined(rolePerm)) return false
+  if (_.indexOf(rolePerm.grants, '*') !== -1) return true
 
-    var actionType = a.split(':')[0];
-    var action = a.split(':')[1];
+  var actionType = a.split(':')[0]
+  var action = a.split(':')[1]
 
   if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-    var result = _.filter(rolePerm.grants, function(value) {
-        if (_.startsWith(value, actionType + ':')) return value;
-    });
+  var result = _.filter(rolePerm.grants, function (value) {
+    if (_.startsWith(value, actionType + ':')) return value
+  })
 
   if (_.isUndefined(result) || _.size(result) < 1) return false
   if (_.size(result) === 1) {
@@ -81,23 +76,23 @@ var canThis = function(role, a) {
 var getRoles = function (action) {
   if (_.isUndefined(action)) return false
 
-    var rolesWithAction = [];
-    var roles = global.roles;
-    if (_.isUndefined(roles)) return [];
+  var rolesWithAction = []
+  var roles = global.roles
+  if (_.isUndefined(roles)) return []
 
   _.each(roles, function (role) {
     var actionType = action.split(':')[0]
     var theAction = action.split(':')[1]
 
-        if (_.isUndefined(actionType) || _.isUndefined(theAction)) return;
-        if (_.indexOf(role.grants, '*') !== -1) {
-            rolesWithAction.push(role);
-            return;
-        }
+    if (_.isUndefined(actionType) || _.isUndefined(theAction)) return
+    if (_.indexOf(role.grants, '*') !== -1) {
+      rolesWithAction.push(role)
+      return
+    }
 
-        var result = _.filter(role.grants, function(value) {
-            if (_.startsWith(value, actionType + ':')) return value;
-        });
+    var result = _.filter(role.grants, function (value) {
+      if (_.startsWith(value, actionType + ':')) return value
+    })
 
     if (_.isUndefined(result) || _.size(result) < 1) return
     if (_.size(result) === 1) {
@@ -125,49 +120,55 @@ var getRoles = function (action) {
   return rolesWithAction
 }
 
-function hasHierarchyEnabled(roleId) {
-    var role = _.find(global.roles, function(o) { return o._id.toString() === roleId.toString(); });
-    if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) return true;
-    return role.hierarchy;
+function hasHierarchyEnabled (roleId) {
+  var role = _.find(global.roles, function (o) {
+    return o._id.toString() === roleId.toString()
+  })
+  if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) return true
+  return role.hierarchy
 }
 
-function parseRoleHierarchy(roleId) {
-    var roleOrder = global.roleOrder;
-    var idx = _.findIndex(roleOrder, function(i) { return i.toString() === roleId.toString(); });
-    if (idx === -1) return  [];
+function parseRoleHierarchy (roleId) {
+  var roleOrder = global.roleOrder
+  var idx = _.findIndex(roleOrder, function (i) {
+    return i.toString() === roleId.toString()
+  })
+  if (idx === -1) return []
 
-    return _.rest(roleOrder, idx);
+  return _.rest(roleOrder, idx)
 }
 
-function hasPermOverRole(ownRole, extRole) {
-    var roles = parseRoleHierarchy(ownRole);
+function hasPermOverRole (ownRole, extRole) {
+  var roles = parseRoleHierarchy(ownRole)
 
-    var i = _.find(roles, function(o) { return o.toString() === extRole.toString(); });
+  var i = _.find(roles, function (o) {
+    return o.toString() === extRole.toString()
+  })
 
-    return !_.isUndefined(i);
+  return !_.isUndefined(i)
 }
 
-function isAdmin(roleId, callback) {
-    roleSchema.get(roleId, function(err, role) {
-        if (err) return callback(false);
+function isAdmin (roleId, callback) {
+  roleSchema.get(roleId, function (err, role) {
+    if (err) return callback(false)
 
-        return callback(role.isAdmin);
-    });
+    return callback(role.isAdmin)
+  })
 }
 
-function buildGrants(obj) {
-    return _.map(obj, function(v, k) {
-        return k + ':' + _.join(v, ' ');
-    });
+function buildGrants (obj) {
+  return _.map(obj, function (v, k) {
+    return k + ':' + _.join(v, ' ')
+  })
 }
 
 module.exports = {
-    register: register,
-    canThis: canThis,
-    parseRoleHierarchy: parseRoleHierarchy,
-    hasPermOverRole: hasPermOverRole,
+  register: register,
+  canThis: canThis,
+  parseRoleHierarchy: parseRoleHierarchy,
+  hasPermOverRole: hasPermOverRole,
 
-    getRoles: getRoles,
-    isAdmin: isAdmin,
-    buildGrants: buildGrants
-};
+  getRoles: getRoles,
+  isAdmin: isAdmin,
+  buildGrants: buildGrants
+}
