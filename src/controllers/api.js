@@ -13,33 +13,20 @@
  */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var permissions = require('../permissions')
-
 var userSchema = require('../models/user')
 
 // Sub APIs
-
 var apiTicketsV1 = require('./api/v1/tickets')
-
 var apiTagsV1 = require('./api/v1/tags')
-
 var apiNoticesV1 = require('./api/v1/notices')
-
 var apiUsersV1 = require('./api/v1/users')
-
 var apiMessagesV1 = require('./api/v1/messages')
-
 var apiGroupsV1 = require('./api/v1/groups')
-
 var apiReportsV1 = require('./api/v1/reports')
-
 var apiSettingsV1 = require('./api/v1/settings')
-
 var apiPluginsV1 = require('./api/v1/plugins')
 
 /**
@@ -286,8 +273,7 @@ apiController.logout = function (req, res) {
 apiController.roles = {}
 
 apiController.roles.get = function (req, res) {
-  var roles = permissions.roles
-  return res.json(roles)
+  return res.json({ success: true, roles: global.roles })
 }
 
 apiController.roles.update = function(req, res) {

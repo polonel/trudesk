@@ -54,9 +54,32 @@ function teamsDefault(callback) {
 function rolesDefault(callback) {
     var roleSchema = require('../models/role');
 
-    var userGrants = ['ticket:create editSelf attachment', 'comment:create editSelf' ];
-    var supportGrants = ['ticket:*', 'account:create edit view delete import', 'comment:editSelf create delete', 'note:create view', 'report:view', 'notice:*'];
-    var adminGrants = ['admin:*', 'agent:*', 'chat:*', 'ticket:*', 'account:*', 'group:*', 'team:*', 'department:*', 'comment:*', 'note:*', 'report:*', 'notice:*', 'setting:*', 'api:*'];
+  var userGrants = ['ticket:create editSelf attachment', 'comment:create editSelf']
+  var supportGrants = [
+    'ticket:*',
+    'agent:*',
+    'account:create edit view delete import',
+    'comment:editSelf create delete',
+    'note:create view',
+    'report:view',
+    'notice:*'
+  ]
+  var adminGrants = [
+    'admin:*',
+    'agent:*',
+    'chat:*',
+    'ticket:*',
+    'account:*',
+    'group:*',
+    'team:*',
+    'department:*',
+    'comment:*',
+    'note:*',
+    'report:*',
+    'notice:*',
+    'settings:*',
+    'api:*'
+  ]
 
   async.series(
     [

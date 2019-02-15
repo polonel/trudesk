@@ -202,11 +202,11 @@ function dbCallback (err, db) {
           winston.debug('Building dynamic sass...')
           require('./src/sass/buildsass').build(next)
         },
-        function (next) {
-          // Start Task Runners
-          require('./src/taskrunner')
-          return next()
-        },
+        // function (next) {
+        //   // Start Task Runners
+        //   require('./src/taskrunner')
+        //   return next()
+        // },
         function (next) {
           // var pm2 = require('pm2');
           // pm2.connect(true, function(err) {

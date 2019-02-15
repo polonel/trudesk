@@ -10,15 +10,10 @@
  **/
 
 var express = require('express')
-
 var router = express.Router()
-
 var controllers = require('../controllers/index.js')
-
 var path = require('path')
-
 var winston = require('winston')
-
 var packagejson = require('../../package.json')
 
 function mainRoutes (router, middleware, controllers) {
