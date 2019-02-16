@@ -14,28 +14,28 @@
                     <div id="__ticketStatus" class="hide">{{data.ticket.status}}</div>
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#canUser data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#canUser data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#canUser data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
                             {{/canUser}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#canUser data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
@@ -59,11 +59,13 @@
                             {{#if data.ticket.assignee}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
-                                       {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                           data-notifications="assigneeDropdown"
-                                           data-updateui="assigneeList"
+                                       {{#canUser data.common.loggedInAccount "tickets:update"}}
+                                           {{#canUser data.common.loggedInAccount "agent:*"}}
+                                                title="Set Assignee"
+                                                data-notifications="assigneeDropdown"
+                                                data-updateui="assigneeList"
+                                           {{/canUser}}
                                        {{/canUser}}
-
                                        style="float: left;" class="relative no-ajaxy">
                                         {{#if data.ticket.assignee.image}}
                                             <img src="/uploads/users/{{data.ticket.assignee.image}}" alt="{{data.ticket.assignee.fullname}} Profile Image"/>
@@ -82,10 +84,12 @@
                             {{else}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
-                                        {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                            title="Set Assignee"
-                                            data-notifications="assigneeDropdown"
-                                            data-updateui="assigneeList"
+                                        {{#canUser data.common.loggedInAccount "tickets:update"}}
+                                            {{#canUser data.common.loggedInAccount "agent:*"}}
+                                               title="Set Assignee"
+                                               data-notifications="assigneeDropdown"
+                                               data-updateui="assigneeList"
+                                            {{/canUser}}
                                         {{/canUser}}
 
                                        style="float: left;" class="relative no-ajaxy">
@@ -117,7 +121,7 @@
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginright5">
                                         <span>Type</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#canUser data.user "tickets:update"}}
                                             <select name="tType" id="tType" class="chosen-select1"
                                                     ng-model="selectedType"
                                                     ng-options="t.name for t in types track by t._id"
@@ -132,7 +136,7 @@
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginleft5">
                                         <span>Priority</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#canUser data.user "tickets:update"}}
                                             <select name="tPriority" id="tPriority"
                                                     ng-model="selectedPriority"
                                                     ng-options="p.name for p in selectedType.priorities track by p._id"
@@ -148,7 +152,7 @@
 
                                 <div class="uk-width-1-1 nopadding uk-clearfix">
                                         <span>Group</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#canUser data.user "tickets:update"}}
                                             <select name="tGroup" id="tGroup"
                                                     ng-model="selectedGroup"
                                                     ng-options="g.name for g in groups track by g._id"
@@ -162,7 +166,7 @@
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
                                     <span>Tags
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#canUser data.user "tickets:update"}}
                                             <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
                                                 <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
                                             </div>
@@ -186,7 +190,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{#canUser data.user "ticket:viewHistory"}}
+                        {{#canUser data.user "agent:*"}}
                             <div class="uk-width-1-1 padding-left-right-15">
                                 <div class="tru-card ticket-details" style="height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
                                     Ticket History
@@ -257,7 +261,7 @@
                                     {{#each data.ticket.attachments}}
                                         <li>
                                             <a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a>
-                                            {{#canUser ../data.user "ticket:removeAttachment"}}
+                                            {{#canUser ../data.user "tickets:removeAttachment"}}
                                                 <a href="#" class="remove-attachment" data-attachmentId="{{_id}}"><i class="fa fa-remove"></i></a>
                                             {{/canUser}}
                                         </li>
@@ -267,7 +271,7 @@
                                     {{{data.ticket.issue}}}
                                 </div>
                             </div>
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#canUser data.user "tickets:update"}}
                                 <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
                             {{else}}
                                 {{#canEditSelf data.user data.ticket.owner 'ticket'}}

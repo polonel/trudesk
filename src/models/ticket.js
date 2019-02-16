@@ -228,7 +228,7 @@ ticketSchema.methods.setAssignee = function (ownerId, userId, callback) {
   userSchema.getUser(userId, function (err, user) {
     if (err) return callback(err, null)
 
-    if (!permissions.canThis(user.role, 'ticket:assignee')) {
+    if (!permissions.canThis(user.role, 'tickets:update') && !permissions.canThis(user.role, 'agent:*')) {
       return callback('User does not have permission to be set as an assignee.', null)
     }
 

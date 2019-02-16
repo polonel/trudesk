@@ -81,7 +81,6 @@ define([
     self.UI.waves()
     self.UI.matchHeight()
     self.UI.onlineUserSearch()
-    // self.UI.notificationsLinks();
 
     var layout = self.onWindowResize()
     // Initial Call to Load Layout

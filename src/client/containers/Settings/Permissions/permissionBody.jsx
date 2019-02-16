@@ -47,6 +47,8 @@ class PermissionBody extends React.Component {
 
   @observable ticketGrants = defaultGrants()
   @observable accountGrants = defaultGrants()
+  @observable groupGrants = defaultGrants()
+  @observable reportGrants = defaultGrants()
 
   componentDidMount () {
     this.isAdmin = this.props.role.get('isAdmin') || false
@@ -75,6 +77,11 @@ class PermissionBody extends React.Component {
     }
     if (parsedGrants.accounts && !isEqual(parsedGrants.accounts, this.accountGrants))
       this.accountGrants = parsedGrants.accounts
+
+    if (parsedGrants.groups && !isEqual(parsedGrants.groups, this.groupGrants)) this.groupGrants = parsedGrants.groups
+
+    if (parsedGrants.reports && !isEqual(parsedGrants.reports, this.reportGrants))
+      this.reportGrants = parsedGrants.reports
   }
 
   onEnableSwitchChanged (e, name) {
@@ -98,6 +105,8 @@ class PermissionBody extends React.Component {
 
     obj.tickets = PermissionBody.buildPermArray(this.ticketPermGroup)
     obj.accounts = PermissionBody.buildPermArray(this.accountPermGroup)
+    obj.groups = PermissionBody.buildPermArray(this.groupPermGroup)
+    obj.reports = PermissionBody.buildPermArray(this.reportPermGroup)
 
     this.props.updatePermissions(obj)
   }
@@ -172,6 +181,20 @@ class PermissionBody extends React.Component {
             roleSpecials={PermissionBody.mapAccountSpecials()}
             grants={this.accountGrants}
             subtitle={'Account Permissions'}
+          />
+          <PermissionGroupPartial
+            ref={i => (this.groupPermGroup = i)}
+            title={'Groups'}
+            role={this.props.role}
+            grants={this.groupGrants}
+            subtitle={'Group Permissions'}
+          />
+          <PermissionGroupPartial
+            ref={i => (this.reportPermGroup = i)}
+            title={'Reports'}
+            role={this.props.role}
+            grants={this.reportGrants}
+            subtitle={'Report Permissions'}
           />
           <div>
             <div className='box uk-clearfix'>
