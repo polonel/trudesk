@@ -218,7 +218,7 @@ define([
             if (user.username === loggedInAccount.username) isEditingSelf = true
 
             var canEdit = false
-            var hasEdit = helpers.canUser('account:edit')
+            var hasEdit = helpers.canUser('accounts:update')
             if (isEditingSelf && helpers.canUserEditSelf(loggedInAccount._id, 'account')) {
               hasEdit = true
               canEdit = true
@@ -230,7 +230,7 @@ define([
             )
               canEdit = true
 
-            if (!hasEdit || !canEdit) {
+            if (!hasEdit && !canEdit) {
               // Disable editing user with higher roles.
               form
                 .find('#aPass')
@@ -307,6 +307,7 @@ define([
               })
 
               var assignableRoles = helpers.parseRoleHierarchy(loggedInAccount.role._id)
+
               _.each(items, function (role) {
                 var i = _.find(assignableRoles, function (o) {
                   return o.toString() === role.toString()

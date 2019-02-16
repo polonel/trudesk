@@ -144,5 +144,26 @@ api.settings.restoreDeletedTicket = ({ _id }) => {
     return res.data
   })
 }
+api.settings.updateRoleOrder = ({ roleOrder }) => {
+  return axios
+    .put('/api/v1/settings/updateroleorder', {
+      roleOrder
+    })
+    .then(res => {
+      return res.data
+    })
+}
+api.settings.updatePermissions = payload => {
+  return axios.put(`/api/v1/roles/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+
+api.common = {}
+api.common.fetchRoles = () => {
+  return axios.get('/api/v1/roles').then(res => {
+    return res.data
+  })
+}
 
 export default api

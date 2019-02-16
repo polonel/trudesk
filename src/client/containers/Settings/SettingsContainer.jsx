@@ -22,6 +22,7 @@ import Menu from 'components/Settings/Menu'
 import MenuItem from 'components/Settings/MenuItem'
 import GeneralSettings from './General'
 import AppearanceSettings from './Appearance'
+import PermissionsSettingsContainer from './Permissions'
 import TicketsSettings from './Tickets'
 import MailerSettingsContainer from './Mailer'
 import TPSSettingsContainer from './TPS'
@@ -90,6 +91,13 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
+                title='Permissions'
+                active={this.state.activeCategory === 'settings-permissions'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'permissions')
+                }}
+              />
+              <MenuItem
                 title='Tickets'
                 active={this.state.activeCategory === 'settings-tickets'}
                 onClick={e => {
@@ -136,6 +144,7 @@ class SettingsContainer extends React.Component {
             <div className='settings-wrap'>
               <GeneralSettings active={this.state.activeCategory === 'settings-general'} />
               <AppearanceSettings active={this.state.activeCategory === 'settings-appearance'} />
+              <PermissionsSettingsContainer active={this.state.activeCategory === 'settings-permissions'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
               <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
               <TPSSettingsContainer active={this.state.activeCategory === 'settings-tps'} />

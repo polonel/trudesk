@@ -30,26 +30,19 @@ define('pages/accounts', [
   'use strict'
   var accountsPage = {}
 
-  String.prototype.capitalizeFirstLetter = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1)
+  function capitalizeFirstLetter (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
   accountsPage.init = function (callback, reset) {
     $(document).ready(function () {
       var $accountList = $('#account_list')
-
       var $scroller = $accountList.parents('.scrollable')
-
       var $scrollspy = $('#scrollspy')
-
       var $spinner = $scrollspy.find('i')
-
       var $filterAll = $('.filter-all')
-
       var $nextPage = 1
-
       var $enabled = true
-
       var $loading = false
 
       if (reset) {
@@ -221,7 +214,7 @@ define('pages/accounts', [
       html += '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">'
     }
 
-    if (user.role === 'admin') {
+    if (user.role.isAdmin) {
       html += '<div class="tru-card-head tru-card-head-admin">'
     } else {
       html += '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">'
@@ -271,7 +264,7 @@ define('pages/accounts', [
     html += user.fullname
     html +=
       '<span class="uk-text-truncate">' +
-      (_.isUndefined(user.title) ? '' : user.title.capitalizeFirstLetter()) +
+      (_.isUndefined(user.title) ? '' : capitalizeFirstLetter(user.title)) +
       '</span>'
     html += '</h3>'
     html += '</div>'
@@ -280,7 +273,7 @@ define('pages/accounts', [
     html += '<li>'
     html += '<div class="tru-list-content">'
     html += '<span class="tru-list-heading">Role</span>'
-    html += '<span class="uk-text-small uk-text-muted">' + user.role.capitalizeFirstLetter() + '</span>'
+    html += '<span class="uk-text-small uk-text-muted">' + capitalizeFirstLetter(user.role.name) + '</span>'
     html += '</div>'
     html += '</li>'
     html += '<li>'

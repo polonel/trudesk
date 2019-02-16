@@ -13,9 +13,10 @@
  */
 
 import { all } from 'redux-saga/effects'
+import CommonSaga from './common'
 import SettingsSaga from './settings'
 import TicketSaga from './tickets'
 
 export default function * IndexSagas () {
-  yield all([TicketSaga(), SettingsSaga()])
+  yield all([CommonSaga(), TicketSaga(), SettingsSaga()])
 }

@@ -51,7 +51,7 @@ class SettingItem extends React.Component {
           {this.props.children && (
             <div>
               <hr className='nomargin-top clear' />
-              <div className='panel-body2' style={{ padding: '20px 15px 15px 15px' }}>
+              <div className='panel-body2' style={{ padding: this.props.subPanelPadding || '20px 15px 15px 15px' }}>
                 <div className='uk-position-relative'>
                   {React.Children.map(this.props.children, (child, k) => {
                     return (
@@ -78,7 +78,8 @@ SettingItem.propTypes = {
   subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.object]),
   tooltip: PropTypes.string,
   component: PropTypes.element,
-  footer: PropTypes.element
+  footer: PropTypes.element,
+  subPanelPadding: PropTypes.string
 }
 
 export default SettingItem

@@ -262,6 +262,7 @@ class AppearanceSettings extends React.Component {
                 component={
                   <SingleSelect
                     width='60%'
+                    showTextbox={false}
                     items={[
                       { text: 'Light (Default)', value: 'light' },
                       { text: 'Dark', value: 'dark' },

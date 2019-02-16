@@ -23,7 +23,8 @@ import {
   FETCH_DELETED_TICKETS,
   CHANGE_DELETED_TICKETS_PAGE,
   BACKUP_NOW,
-  RESTORE_DELETED_TICKET
+  RESTORE_DELETED_TICKET,
+  UPDATE_PERMISSIONS
 } from './types'
 
 export const fetchSettings = createAction(FETCH_SETTINGS.ACTION)
@@ -48,3 +49,4 @@ export const restoreDeletedTicket = createAction(RESTORE_DELETED_TICKET.ACTION)
 export const changeDeletedTicketsPage = createAction(CHANGE_DELETED_TICKETS_PAGE.ACTION, pageIndex => ({
   pageIndex
 }))
+export const updatePermissions = createAction(UPDATE_PERMISSIONS.ACTION)

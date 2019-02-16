@@ -13,7 +13,6 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { delay } from 'redux-saga'
 import axios from 'axios'
 
 import api from '../../api'
@@ -26,6 +25,8 @@ import {
   RESTORE_DELETED_TICKET,
   UPDATE_COLORSCHEME,
   UPDATE_MULTIPLE_SETTINGS,
+  UPDATE_PERMISSIONS,
+  UPDATE_ROLE_ORDER,
   UPDATE_SETTING
 } from 'actions/types'
 
@@ -151,6 +152,30 @@ function * restoreDeletedTicket ({ payload }) {
   }
 }
 
+function * updateRoleOrder ({ payload }) {
+  try {
+    const response = yield call(api.settings.updateRoleOrder, payload)
+    yield put({ type: UPDATE_ROLE_ORDER.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: UPDATE_ROLE_ORDER.ERROR, error })
+  }
+}
+
+function * updatePermissions ({ payload }) {
+  try {
+    yield put({ type: UPDATE_PERMISSIONS.PENDING })
+    const response = yield call(api.settings.updatePermissions, payload)
+    yield put({ type: UPDATE_PERMISSIONS.SUCCESS, response })
+    helpers.UI.showSnackbar('Updated Role. Flushing Permissions...')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: UPDATE_PERMISSIONS.ERROR, error })
+  }
+}
+
 export default function * settingsWatcher () {
   yield takeLatest(FETCH_SETTINGS.ACTION, fetchFlow)
   yield takeLatest(UPDATE_SETTING.ACTION, updateSetting)
@@ -161,4 +186,6 @@ export default function * settingsWatcher () {
   yield takeLatest(BACKUP_NOW.ACTION, backupNow)
   yield takeLatest(FETCH_DELETED_TICKETS.ACTION, fetchDeletedTickets)
   yield takeLatest(RESTORE_DELETED_TICKET.ACTION, restoreDeletedTicket)
+  yield takeLatest(UPDATE_ROLE_ORDER.ACTION, updateRoleOrder)
+  yield takeLatest(UPDATE_PERMISSIONS.ACTION, updatePermissions)
 }

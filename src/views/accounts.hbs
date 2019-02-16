@@ -4,7 +4,7 @@
         <div class="uk-grid uk-grid-collapse page-title noshadow dt-borderBottom" style="padding-left: 24px;">
             <p class="left uk-width-2-10">Accounts</p>
             <div class="uk-width-8-10 right">
-                {{#canUser data.common.loggedInAccount 'account:create'}}
+                {{#canUser data.common.loggedInAccount 'accounts:create'}}
                     <div class="md-fab-wrapper">
                         <div class="md-fab md-fab-accent md-fab-sheet">
                             <i class="material-icons text-white">person</i>
@@ -13,7 +13,7 @@
                                     <i class="material-icons">person_add</i>
                                     Create
                                 </a>
-                                {{#canUser data.common.loggedInAccount 'account:import'}}
+                                {{#canUser data.common.loggedInAccount 'accounts:import'}}
                                     <a href="/accounts/import" class="text-white">
                                         <i class="material-icons">cloud_upload</i>
                                         Import

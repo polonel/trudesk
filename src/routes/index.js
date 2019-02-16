@@ -267,6 +267,12 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/settings/general/uploadpagelogo', middleware.redirectToLogin, controllers.main.uploadPageLogo)
   router.post('/settings/general/uploadfavicon', middleware.redirectToLogin, controllers.main.uploadFavicon)
   router.get(
+    '/settings/permissions',
+    middleware.redirectToLogin,
+    middleware.loadCommonData,
+    controllers.settings.permissionsSettings
+  )
+  router.get(
     '/settings/tickets',
     middleware.redirectToLogin,
     middleware.loadCommonData,
@@ -317,13 +323,13 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/api/v1/login', controllers.api.login)
   router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser)
   router.get('/api/v1/logout', middleware.api, controllers.api.logout)
-    router.get('/api/v1/roles', middleware.api, controllers.api.roles.get);
-    router.put('/api/v1/roles', middleware.api, controllers.api.roles.update);
-    router.get('/api/v1/roles/test', function(req, res) {
-        var p = require('../permissions');
-        p.buildGrants();
-        res.send();
-    });
+  router.get('/api/v1/roles', middleware.api, controllers.api.roles.get)
+  router.put('/api/v1/roles/:id', middleware.api, controllers.api.roles.update)
+  router.get('/api/v1/roles/test', function (req, res) {
+    var p = require('../permissions')
+    p.buildGrants()
+    res.send()
+  })
 
   router.get('/api/v1/count/tags', middleware.api, function (req, res) {
     var tagSchema = require('../models/tag')
@@ -348,7 +354,7 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/api/v1/tickets/priority/:id/delete', middleware.api, controllers.api.tickets.deletePriority)
   router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities)
   router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority)
-    router.put('/api/v1/settings/updateroleorder', middleware.api, controllers.api.settings.updateRoleOrder);
+  router.put('/api/v1/settings/updateroleorder', middleware.api, controllers.api.settings.updateRoleOrder)
 
   router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue)
   router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment)
@@ -412,8 +418,6 @@ function mainRoutes (router, middleware, controllers) {
   router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey)
   router.post('/api/v1/users/:id/generatel2auth', middleware.api, controllers.api.users.generateL2Auth)
   router.post('/api/v1/users/:id/removel2auth', middleware.api, controllers.api.users.removeL2Auth)
-
-  router.get('/api/v1/roles', middleware.api, controllers.api.roles.get)
 
   router.get('/api/v1/messages', middleware.api, controllers.api.messages.get)
   router.post('/api/v1/messages/conversation/start', middleware.api, controllers.api.messages.startConversation)

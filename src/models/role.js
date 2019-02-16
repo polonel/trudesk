@@ -27,7 +27,7 @@ var roleSchema = mongoose.Schema(
   },
   {
     toObject: { getters: true },
-    toJSON: { virtuals: false }
+    toJSON: { virtuals: true }
   }
 )
 

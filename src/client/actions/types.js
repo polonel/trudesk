@@ -20,6 +20,8 @@ export const SHOW_MODAL = defineAction('SHOW_MODAL')
 export const HIDE_MODAL = defineAction('HIDE_MODAL')
 export const CLEAR_MODAL = defineAction('CLEAR_MODAL')
 export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
+export const FETCH_ROLES = defineAction('FETCH_ROLES', [SUCCESS, ERROR])
+export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERROR])
 
 // Common Nav Change
 export const NAV_CHANGE = defineAction('NAV_CHANGE')
@@ -47,3 +49,4 @@ export const BACKUP_NOW = defineAction('BACKUP_NOW', [PENDING, SUCCESS, ERROR])
 export const FETCH_DELETED_TICKETS = defineAction('FETCH_DELETED_TICKETS', [PENDING, SUCCESS, ERROR])
 export const RESTORE_DELETED_TICKET = defineAction('RESTORE_DELETED_TICKET', [SUCCESS, ERROR])
 export const CHANGE_DELETED_TICKETS_PAGE = defineAction('CHANGE_DELETED_TICKETS_PAGE')
+export const UPDATE_PERMISSIONS = defineAction('UPDATE_PERMISSIONS', [PENDING, SUCCESS, ERROR])

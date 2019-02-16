@@ -19,12 +19,18 @@ import Menu from 'components/Settings/Menu'
 import MenuItem from 'components/Settings/MenuItem'
 import SplitSettingsPanelBody from './body'
 
+import helpers from 'lib/helpers'
+
 class SplitSettingsPanel extends React.Component {
   constructor (props) {
     super(props)
     this.state = {
       activeChild: ''
     }
+  }
+
+  componentDidMount () {
+    helpers.setupScrollers()
   }
 
   componentDidUpdate () {
@@ -67,22 +73,27 @@ class SplitSettingsPanel extends React.Component {
                 className='split-panel-categories uk-width-1-4 scrollable br'
                 style={{ minHeight: '300px', maxHeight: '2000px', overflow: 'hidden auto' }}
               >
-                <Menu hideBorders={true}>
+                <Menu hideBorders={true} draggable={this.props.menuDraggable} onMenuDrag={this.props.menuOnDrag}>
                   {menuItems.map(item => {
                     return (
                       <MenuItem
                         active={this.state.activeChild === item.key}
                         key={item.key}
+                        dragKey={item.key}
                         title={item.title}
                         onClick={() => {
                           this.switchChild(item.key)
                         }}
+                        draggable={this.props.menuDraggable}
                       />
                     )
                   })}
                 </Menu>
               </div>
-              <div className='uk-width-3-4' style={{ padding: '20px 15px 15px 15px' }}>
+              <div
+                className={'uk-width-3-4' + (this.props.scrollable ? ' scrollable' : '')}
+                style={{ padding: '20px 15px 15px 15px', maxHeight: this.props.maxHeight || 'auto' }}
+              >
                 {menuItems.map(menuItem => {
                   return (
                     <SplitSettingsPanelBody
@@ -95,6 +106,7 @@ class SplitSettingsPanel extends React.Component {
               </div>
             </div>
           </div>
+          {this.props.footer && <div className={'panel-footer'}>{this.props.footer}</div>}
         </div>
       </div>
     )
@@ -105,7 +117,12 @@ SplitSettingsPanel.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.string,
   rightComponent: PropTypes.element,
-  menuItems: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.object]).isRequired
+  scrollable: PropTypes.bool,
+  maxHeight: PropTypes.string,
+  footer: PropTypes.element,
+  menuItems: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.object), PropTypes.object]).isRequired,
+  menuDraggable: PropTypes.bool,
+  menuOnDrag: PropTypes.func
 }
 
 export default SplitSettingsPanel

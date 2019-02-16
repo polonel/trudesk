@@ -1617,9 +1617,34 @@ define([
     return role.hierarchy
   }
 
+  helpers.parseRoleGrants = function (grants) {
+    // Takes an array of grants and returns object
+    if (_.isUndefined(grants) || !_.isArray(grants)) return null
+    var final = {}
+    _.each(grants, function (grant) {
+      var grantName = grant.split(':')[0]
+      var typePerm = grant.split(':')[1].split(' ')
+      typePerm = _.uniq(typePerm)
+      var obj = {}
+      obj[grantName] = {
+        all: typePerm.indexOf('*') !== -1,
+        create: typePerm.indexOf('create') !== -1,
+        view: typePerm.indexOf('view') !== -1,
+        update: typePerm.indexOf('update') !== -1,
+        delete: typePerm.indexOf('delete') !== -1,
+        special: __.without(typePerm, '*', 'create', 'view', 'update', 'delete')
+      }
+
+      final = __.merge(final, obj)
+    })
+
+    return final
+  }
+
   helpers.parseRoleHierarchy = function (roleId) {
     var roleOrder = window.trudeskSessionService.getRoleOrder()
     if (_.isUndefined(roleOrder)) return []
+    roleOrder = roleOrder.order
 
     var idx = _.findIndex(roleOrder, function (i) {
       return i.toString() === roleId.toString()
@@ -1637,6 +1662,10 @@ define([
     })
 
     return !_.isUndefined(i)
+  }
+
+  helpers.flushRoles = function () {
+    window.react.redux.store.dispatch({ type: 'FETCH_ROLES' })
   }
 
   helpers.setupContextMenu = function (selector, complete) {

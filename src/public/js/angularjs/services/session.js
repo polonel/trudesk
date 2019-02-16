@@ -45,7 +45,7 @@ define(['angular', 'async'], function (angular, async) {
                 .get('/api/v1/roles')
                 .success(function (data) {
                   roles = data.roles
-                  roleOrder = data.roleorder
+                  roleOrder = data.roleOrder
 
                   return done(null, roles)
                 })

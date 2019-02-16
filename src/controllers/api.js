@@ -273,30 +273,63 @@ apiController.logout = function (req, res) {
 apiController.roles = {}
 
 apiController.roles.get = function (req, res) {
-  return res.json({ success: true, roles: global.roles })
+  var roleSchmea = require('../models/role')
+  var roleOrderSchema = require('../models/roleorder')
+
+  var roles = []
+  var roleOrder = {}
+
+  async.parallel(
+    [
+      function (done) {
+        roleSchmea.find({}, function (err, r) {
+          if (err) return done(err)
+
+          roles = r
+
+          return done()
+        })
+      },
+      function (done) {
+        roleOrderSchema.getOrder(function (err, ro) {
+          if (err) return done(err)
+
+          roleOrder = ro
+
+          return done()
+        })
+      }
+    ],
+    function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      return res.json({ success: true, roles: roles, roleOrder: roleOrder })
+    }
+  )
 }
 
-apiController.roles.update = function(req, res) {
-    var data = req.body;
-    if (_.isUndefined(data))
-        return res.status(400).json({success: false, error: 'Invalid Post Data'});
+apiController.roles.update = function (req, res) {
+  var _id = req.params.id
+  var data = req.body
+  if (_.isUndefined(_id) || _.isUndefined(data))
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
-    var emitter = require('../emitter');
-    var permissions = require('../permissions');
-    var hierarchy = data.hierarchy ? data.hierarchy : false;
-    var cleaned = _.omit(data, ['_id', 'hierarchy']);
-    var k = permissions.buildGrants(cleaned);
-    var roleSchema = require('../models/role');
-    roleSchema.get(data._id, function(err, role) {
-        if (err) return res.status(400).json({success: false, error: err});
-        role.updateGrantsAndHierarchy(k, hierarchy, function(err) {
-            if (err) return res.status(400).json({success: false, error: err});
+  var emitter = require('../emitter')
+  var permissions = require('../permissions')
+  var hierarchy = data.hierarchy ? data.hierarchy : false
+  var cleaned = _.omit(data, ['_id', 'hierarchy'])
+  var k = permissions.buildGrants(cleaned)
+  var roleSchema = require('../models/role')
+  roleSchema.get(data._id, function (err, role) {
+    if (err) return res.status(400).json({ success: false, error: err })
+    role.updateGrantsAndHierarchy(k, hierarchy, function (err) {
+      if (err) return res.status(400).json({ success: false, error: err })
 
-            emitter.emit('$trudesk:flushRoles');
+      emitter.emit('$trudesk:flushRoles')
 
-            return res.send('OK');
-        });
-    });
-};
+      return res.send('OK')
+    })
+  })
+}
 
-module.exports = apiController;
+module.exports = apiController

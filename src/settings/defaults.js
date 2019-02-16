@@ -24,59 +24,64 @@ var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
 
-function teamsDefault(callback) {
-    var teamSchema = require('../models/team');
-    var roleSchmea = require('../models/role');
-    var userSchema = require('../models/user');
+function teamsDefault (callback) {
+  var teamSchema = require('../models/team')
+  var roleSchmea = require('../models/role')
+  var userSchema = require('../models/user')
 
-    async.series([
-        function(next) {
-            // Create default Support Team
+  async.series(
+    [
+      function (next) {
+        // Create default Support Team
+      }
+    ],
+    callback
+  )
 
-        }
-    ], callback);
+  teamSchema.create(
+    {
+      name: 'Support'
+    },
+    function (err, team) {
+      if (err) console.log(err)
 
-    teamSchema.create({
-        name: 'Support'
-    }, function(err, team) {
-        if (err) console.log(err);
+      teamSchema.getTeams(function (err, teams) {
+        if (err) return callback(err)
 
-        teamSchema.getTeams(function(err, teams) {
-            if (err) return callback(err);
+        console.log(teams)
 
-            console.log(teams);
-
-            return callback();
-        });
-    });
+        return callback()
+      })
+    }
+  )
 }
 
-function rolesDefault(callback) {
-    var roleSchema = require('../models/role');
+function rolesDefault (callback) {
+  var roleSchema = require('../models/role')
 
-  var userGrants = ['ticket:create editSelf attachment', 'comment:create editSelf']
+  var userGrants = ['ticket:create view update', 'comment:create view update']
   var supportGrants = [
-    'ticket:*',
+    'tickets:*',
     'agent:*',
-    'account:create edit view delete import',
-    'comment:editSelf create delete',
-    'note:create view',
-    'report:view',
-    'notice:*'
+    'accounts:create update view delete import',
+    'comments:create view update create delete',
+    'notes:create view',
+    'reports:view',
+    'notices:*'
   ]
   var adminGrants = [
     'admin:*',
     'agent:*',
     'chat:*',
-    'ticket:*',
-    'account:*',
-    'group:*',
-    'team:*',
-    'department:*',
-    'comment:*',
-    'note:*',
-    'report:*',
-    'notice:*',
+    'tickets:*',
+    'accounts:*',
+    'groups:*',
+    'teams:*',
+    'departments:*',
+    'comments:*',
+    'notes:*',
+    'reports:*',
+    'notices:*',
     'settings:*',
     'api:*'
   ]
@@ -88,47 +93,55 @@ function rolesDefault(callback) {
           if (err) return done(err)
           if (role) return done()
 
-                roleSchema.create({
-                    name: 'User',
-                    description: 'Default role for users',
-                    grants: userGrants
-                }, done);
-            });
-        },
-        function(done) {
-            roleSchema.getRoleByName('Support', function(err, role) {
-                if (err) return done(err);
-                if (role) {
-                    return done();
-                    // role.updateGrants(supportGrants, done);
-                } else
-                    roleSchema.create({
-                        name: 'Support',
-                        description: 'Default role for agents',
-                        grants: supportGrants
-                    }, done);
-            });
-        },
-        function(done) {
-            roleSchema.getRoleByName('Admin', function(err, role) {
-                if (err) return done(err);
-                if (role)
-                    return done();
-                    // role.updateGrants(adminGrants, done);
-                else {
-                    roleSchema.create({
-                        name: 'Admin',
-                        description: 'Default role for admins',
-                        grants: adminGrants
-                    }, done);
-                }
-            });
-        },
-        function(done) {
-            var roleOrderSchema = require('../models/roleorder');
-            roleOrderSchema.getOrder(function(err, roleOrder) {
-                if (err) return done(err);
-                if (roleOrder) return done();
+          roleSchema.create(
+            {
+              name: 'User',
+              description: 'Default role for users',
+              grants: userGrants
+            },
+            done
+          )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Support', function (err, role) {
+          if (err) return done(err)
+          if (role) {
+            return done()
+            // role.updateGrants(supportGrants, done);
+          } else
+            roleSchema.create(
+              {
+                name: 'Support',
+                description: 'Default role for agents',
+                grants: supportGrants
+              },
+              done
+            )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Admin', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+          // role.updateGrants(adminGrants, done);
+          else {
+            roleSchema.create(
+              {
+                name: 'Admin',
+                description: 'Default role for admins',
+                grants: adminGrants
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        var roleOrderSchema = require('../models/roleorder')
+        roleOrderSchema.getOrder(function (err, roleOrder) {
+          if (err) return done(err)
+          if (roleOrder) return done()
 
           roleSchema.getRoles(function (err, roles) {
             if (err) return done(err)

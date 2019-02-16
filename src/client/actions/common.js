@@ -13,8 +13,11 @@
  */
 
 import { createAction } from 'redux-actions'
-import { SHOW_MODAL, HIDE_MODAL, CLEAR_MODAL } from 'actions/types'
+import { SHOW_MODAL, HIDE_MODAL, CLEAR_MODAL, FETCH_ROLES, UPDATE_ROLE_ORDER } from 'actions/types'
 
 export const showModal = createAction(SHOW_MODAL.ACTION, (modalType, modalProps) => ({ modalType, modalProps }))
 export const hideModal = createAction(HIDE_MODAL.ACTION)
 export const clearModal = createAction(CLEAR_MODAL.ACTION)
+
+export const fetchRoles = createAction(FETCH_ROLES.ACTION)
+export const updateRoleOrder = createAction(UPDATE_ROLE_ORDER.ACTION)

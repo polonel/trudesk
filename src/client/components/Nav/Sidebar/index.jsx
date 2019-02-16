@@ -22,6 +22,8 @@ import SubmenuItem from 'components/Nav/SubmenuItem'
 
 import { updateNavChange } from '../../../actions/nav'
 
+// import Permissions from '../../../../permissions/index.js'
+
 import Helpers from 'lib/helpers'
 
 class Sidebar extends React.Component {
@@ -90,51 +92,53 @@ class Sidebar extends React.Component {
           class='navHome'
           active={activeItem === 'dashboard'}
         />
-        <SidebarItem
-          text='Tickets'
-          icon='assignment'
-          href='/tickets'
-          class='navTickets no-ajaxy'
-          hasSubmenu={true}
-          subMenuTarget='tickets'
-          active={activeItem === 'tickets'}
-        >
-          <Submenu id='tickets'>
-            <SubmenuItem
-              text='Active'
-              icon='timer'
-              href='/tickets/active'
-              active={activeSubItem === 'tickets-active'}
-            />
-            <SubmenuItem
-              text='Assigned'
-              icon='assignment_ind'
-              href='/tickets/assigned'
-              active={activeSubItem === 'tickets-assigned'}
-            />
-            <SubmenuItem
-              text='Unassigned'
-              icon='person_add_disabled'
-              href='/tickets/unassigned'
-              active={activeSubItem === 'tickets-unassigned'}
-            />
-            <NavSeparator />
-            <SubmenuItem text='New' icon='&#xE24D;' href='/tickets/new' active={activeSubItem === 'tickets-new'} />
-            <SubmenuItem
-              text='Pending'
-              icon='&#xE629;'
-              href='/tickets/pending'
-              active={activeSubItem === 'tickets-pending'}
-            />
-            <SubmenuItem text='Open' icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
-            <SubmenuItem
-              text='Closed'
-              icon='&#xE2C7;'
-              href='/tickets/closed'
-              active={activeSubItem === 'tickets-closed'}
-            />
-          </Submenu>
-        </SidebarItem>
+        {sessionUser && Helpers.canUser('tickets:view') && (
+          <SidebarItem
+            text='Tickets'
+            icon='assignment'
+            href='/tickets'
+            class='navTickets no-ajaxy'
+            hasSubmenu={true}
+            subMenuTarget='tickets'
+            active={activeItem === 'tickets'}
+          >
+            <Submenu id='tickets'>
+              <SubmenuItem
+                text='Active'
+                icon='timer'
+                href='/tickets/active'
+                active={activeSubItem === 'tickets-active'}
+              />
+              <SubmenuItem
+                text='Assigned'
+                icon='assignment_ind'
+                href='/tickets/assigned'
+                active={activeSubItem === 'tickets-assigned'}
+              />
+              <SubmenuItem
+                text='Unassigned'
+                icon='person_add_disabled'
+                href='/tickets/unassigned'
+                active={activeSubItem === 'tickets-unassigned'}
+              />
+              <NavSeparator />
+              <SubmenuItem text='New' icon='&#xE24D;' href='/tickets/new' active={activeSubItem === 'tickets-new'} />
+              <SubmenuItem
+                text='Pending'
+                icon='&#xE629;'
+                href='/tickets/pending'
+                active={activeSubItem === 'tickets-pending'}
+              />
+              <SubmenuItem text='Open' icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
+              <SubmenuItem
+                text='Closed'
+                icon='&#xE2C7;'
+                href='/tickets/closed'
+                active={activeSubItem === 'tickets-closed'}
+              />
+            </Submenu>
+          </SidebarItem>
+        )}
         <SidebarItem
           text='Messages'
           icon='chat'
@@ -229,6 +233,12 @@ class Sidebar extends React.Component {
                 icon='assignment'
                 href='/settings/tickets'
                 active={activeSubItem === 'settings-tickets'}
+              />
+              <SubmenuItem
+                text='Permissions'
+                icon='lock'
+                href='/settings/permissions'
+                active={activeSubItem === 'settings-permissions'}
               />
               <SubmenuItem
                 text='Mailer'

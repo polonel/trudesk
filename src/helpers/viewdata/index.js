@@ -313,6 +313,8 @@ viewController.getData = function (request, cb) {
             if (err) return callback(err)
 
             viewdata.roles = roles
+            viewdata.roleOrder = ro
+
             return callback()
           })
         })
