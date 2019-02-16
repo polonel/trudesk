@@ -77,7 +77,6 @@ accountsController.get = function (req, res) {
   content.data.common = req.viewdata
   content.data.accounts = {}
   content.data.page = 2
-  console.log(content.data.common.roles)
   async.waterfall(
     [
       function (callback) {

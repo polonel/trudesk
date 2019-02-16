@@ -340,9 +340,19 @@ function mainRoutes (router, middleware, controllers) {
     })
   })
 
-  router.get('/api/v1/tickets', middleware.api, controllers.api.tickets.get)
-  router.get('/api/v1/tickets/search', middleware.api, controllers.api.tickets.search)
-  router.post('/api/v1/tickets/create', middleware.api, controllers.api.tickets.create)
+  router.get('/api/v1/tickets', middleware.api, middleware.canUser('tickets:view'), controllers.api.tickets.get)
+  router.get(
+    '/api/v1/tickets/search',
+    middleware.api,
+    middleware.canUser('tickets:view'),
+    controllers.api.tickets.search
+  )
+  router.post(
+    '/api/v1/tickets/create',
+    middleware.api,
+    middleware.canUser('tickets:create'),
+    controllers.api.tickets.create
+  )
   router.get('/api/v1/tickets/type/:id', middleware.api, controllers.api.tickets.getType)
   router.post('/api/v1/tickets/type/:id/removepriority', middleware.api, controllers.api.tickets.typeRemovePriority)
   router.post('/api/v1/tickets/type/:id/addpriority', middleware.api, controllers.api.tickets.typeAddPriority)

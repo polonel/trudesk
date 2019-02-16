@@ -1575,6 +1575,7 @@ define([
     var rolePerm = _.find(roles, { _id: role })
     if (_.isUndefined(rolePerm)) return false
     if (_.indexOf(rolePerm.grants, '*') !== -1) return true
+    if (_.isUndefined(a)) return false
 
     var actionType = a.split(':')[0]
     var action = a.split(':')[1]

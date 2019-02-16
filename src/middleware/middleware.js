@@ -192,6 +192,17 @@ middleware.api = function (req, res, next) {
 
 middleware.hasAuth = middleware.api
 
+middleware.canUser = function (action) {
+  return function (req, res, next) {
+    if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+    var permissions = require('../permissions')
+    var perm = permissions.canThis(req.user.role, action)
+    if (perm) return next()
+
+    return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+  }
+}
+
 middleware.isAdmin = function (req, res, next) {
   var roles = global.roles
   var role = _.find(roles, { _id: req.user.role._id })

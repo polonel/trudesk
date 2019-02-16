@@ -34,6 +34,8 @@ import socket from 'lib/socket'
 import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdown'
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
+import helpers from 'lib/helpers'
+
 @observer
 class TopbarContainer extends React.Component {
   @observable notificationCount = 0
@@ -75,7 +77,7 @@ class TopbarContainer extends React.Component {
   }
 
   render () {
-    const { viewdata } = this.props
+    const { viewdata, sessionUser } = this.props
     return (
       <div className={'uk-grid top-nav'}>
         <div className='uk-width-1-1'>
@@ -89,18 +91,22 @@ class TopbarContainer extends React.Component {
               <div className='top-menu uk-float-right'>
                 <ul className='uk-subnav uk-margin-bottom-remove'>
                   {/* Start Create Ticket Perm */}
-                  <li className='top-bar-icon nopadding'>
-                    <button
-                      title={'Create Ticket'}
-                      className={'anchor'}
-                      onClick={() => this.props.showModal('CREATE_TICKET')}
-                    >
-                      <i className='material-icons'>&#xE145;</i>
-                    </button>
-                  </li>
-                  <li className='top-bar-icon nopadding'>
-                    <i className='material-icons'>more_vert</i>
-                  </li>
+                  {sessionUser && helpers.canUser('tickets:create') && (
+                    <div>
+                      <li className='top-bar-icon nopadding'>
+                        <button
+                          title={'Create Ticket'}
+                          className={'anchor'}
+                          onClick={() => this.props.showModal('CREATE_TICKET')}
+                        >
+                          <i className='material-icons'>&#xE145;</i>
+                        </button>
+                      </li>
+                      <li className='top-bar-icon nopadding'>
+                        <i className='material-icons'>more_vert</i>
+                      </li>
+                    </div>
+                  )}
                   {/* End Create Ticket Perm */}
                   <li className='top-bar-icon'>
                     <PDropdownTrigger target={'conversations'}>
@@ -176,11 +182,13 @@ class TopbarContainer extends React.Component {
 }
 
 TopbarContainer.propTypes = {
+  sessionUser: PropTypes.object,
   viewdata: PropTypes.object.isRequired,
   showModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
+  sessionUser: state.shared.sessionUser,
   viewdata: state.common
 })
 
