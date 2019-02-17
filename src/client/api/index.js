@@ -158,6 +158,16 @@ api.settings.updatePermissions = payload => {
     return res.data
   })
 }
+api.settings.createRole = ({ name }) => {
+  return axios.post('/api/v1/roles', { name }).then(res => {
+    return res.data
+  })
+}
+api.settings.deleteRole = ({ _id, newRoleId }) => {
+  return axios.delete(`/api/v1/roles/${_id}`, { data: { newRoleId } }).then(res => {
+    return res.data
+  })
+}
 
 api.common = {}
 api.common.fetchRoles = () => {

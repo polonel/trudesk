@@ -38,11 +38,13 @@ var register = function (callback) {
  * Checks to see if a role as the given action
  * @param role [role to check against]
  * @param a [action to check]
+ * @param adminOverride [Override permission check if idAdmin]
  * @returns {boolean}
  */
 
-var canThis = function (role, a) {
+var canThis = function (role, a, adminOverride) {
   if (_.isUndefined(role)) return false
+  if (adminOverride === true && role.isAdmin) return true
 
   var roles = global.roles
   if (_.isUndefined(roles)) return false
@@ -129,20 +131,21 @@ function hasHierarchyEnabled (roleId) {
 }
 
 function parseRoleHierarchy (roleId) {
-  var roleOrder = global.roleOrder
+  var roleOrder = global.roleOrder.order
+
   var idx = _.findIndex(roleOrder, function (i) {
     return i.toString() === roleId.toString()
   })
   if (idx === -1) return []
 
-  return _.rest(roleOrder, idx)
+  return _.slice(roleOrder, idx)
 }
 
 function hasPermOverRole (ownRole, extRole) {
-  var roles = parseRoleHierarchy(ownRole)
+  var roles = parseRoleHierarchy(extRole)
 
   var i = _.find(roles, function (o) {
-    return o.toString() === extRole.toString()
+    return o.toString() === ownRole.toString()
   })
 
   return !_.isUndefined(i)
@@ -156,6 +159,18 @@ function isAdmin (roleId, callback) {
   })
 }
 
+function isAdminSync (roleId) {
+  var roles = global.roles
+  if (!roles) return false
+  var role = _.find(roles, function (r) {
+    return r._id.toString() === roleId.toString()
+  })
+
+  if (!role) return false
+
+  return role.isAdmin
+}
+
 function buildGrants (obj) {
   return _.map(obj, function (v, k) {
     return k + ':' + _.join(v, ' ')
@@ -165,10 +180,12 @@ function buildGrants (obj) {
 module.exports = {
   register: register,
   canThis: canThis,
+  hasHierarchyEnabled: hasHierarchyEnabled,
   parseRoleHierarchy: parseRoleHierarchy,
   hasPermOverRole: hasPermOverRole,
 
   getRoles: getRoles,
   isAdmin: isAdmin,
+  isAdminSync: isAdminSync,
   buildGrants: buildGrants
 }

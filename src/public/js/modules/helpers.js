@@ -1564,9 +1564,11 @@ define([
       })
   }
 
-  helpers.canUser = function (a) {
+  helpers.canUser = function (a, adminOverride) {
     var role = window.trudeskSessionService.getUser().role
     var roles = window.trudeskSessionService.getRoles()
+
+    if (adminOverride === true && role.isAdmin) return true
 
     if (_.isUndefined(role)) return false
     if (_.isUndefined(roles)) return false
@@ -1654,17 +1656,33 @@ define([
     return _.rest(roleOrder, idx)
   }
 
-  helpers.hasPermOverRole = function (ownRole, extRole) {
-    var roles = helpers.parseRoleHierarchy(ownRole)
+  helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
+    if (action && !helpers.canUser(action)) return false
+    if (!extRole) extRole = window.trudeskSessionService.getUser().role._id
+
+    if (adminOverride === true) {
+      if (extRole && extRole.role && extRole.role.isAdmin) {
+        return true
+      } else {
+        var r = window.trudeskSessionService.getRoles()
+        var role = _.find(r, function (_role) {
+          return _role._id.toString() === extRole.toString()
+        })
+        if (!_.isUndefined(role) && role.isAdmin) return true
+      }
+    }
+
+    var roles = helpers.parseRoleHierarchy(extRole)
 
     var i = _.find(roles, function (o) {
-      return o.toString() === extRole.toString()
+      return o.toString() === ownerRole.toString()
     })
 
     return !_.isUndefined(i)
   }
 
   helpers.flushRoles = function () {
+    window.trudeskSessionService.flushRoles()
     window.react.redux.store.dispatch({ type: 'FETCH_ROLES' })
   }
 

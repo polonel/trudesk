@@ -43,7 +43,7 @@ var apiGroups = {}
 apiGroups.get = function (req, res) {
   var user = req.user
   var permissions = require('../../../permissions')
-  var hasPublic = permissions.canThis(user.role, 'ticket:public')
+  var hasPublic = permissions.canThis(user.role, 'tickets:public')
 
   GroupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
     if (err) return res.status(400).json({ success: false, error: err.message })

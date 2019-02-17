@@ -23,7 +23,9 @@ import AddPriorityToTypeModal from './AddPriorityToTypeModal'
 import CreatePriorityModal from './CreatePriorityModal'
 import DeletePriorityModal from './DeletePriorityModal'
 import CreateTagModal from './CreateTagModal'
-import CreateTicketModal from 'containers/Modals/CreateTicketModal'
+import CreateTicketModal from './CreateTicketModal'
+import CreateRoleModal from './CreateRoleModal'
+import DeleteRoleModal from './DeleteRoleModal'
 
 const MODAL_COMPONENTS = {
   CREATE_TICKET: CreateTicketModal,
@@ -32,7 +34,9 @@ const MODAL_COMPONENTS = {
   ADD_PRIORITY_TO_TYPE: AddPriorityToTypeModal,
   CREATE_PRIORITY: CreatePriorityModal,
   DELETE_PRIORITY: DeletePriorityModal,
-  CREATE_TAG: CreateTagModal
+  CREATE_TAG: CreateTagModal,
+  CREATE_ROLE: CreateRoleModal,
+  DELETE_ROLE: DeleteRoleModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

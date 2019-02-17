@@ -18,10 +18,14 @@ import axios from 'axios'
 import api from '../../api'
 import {
   BACKUP_NOW,
+  CREATE_ROLE,
+  DELETE_ROLE,
   FETCH_BACKUPS,
   FETCH_DELETED_TICKETS,
   FETCH_MONGODB_TOOLS,
+  FETCH_ROLES,
   FETCH_SETTINGS,
+  HIDE_MODAL,
   RESTORE_DELETED_TICKET,
   UPDATE_COLORSCHEME,
   UPDATE_MULTIPLE_SETTINGS,
@@ -176,6 +180,33 @@ function * updatePermissions ({ payload }) {
   }
 }
 
+function * createRole ({ payload }) {
+  try {
+    const response = yield call(api.settings.createRole, payload)
+    yield put({ type: CREATE_ROLE.SUCCESS, response })
+    yield put({ type: FETCH_ROLES.ACTION })
+    yield put({ type: HIDE_MODAL })
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: CREATE_ROLE.ERROR, error })
+  }
+}
+
+function * deleteRole ({ payload }) {
+  try {
+    const response = yield call(api.settings.deleteRole, payload)
+    yield put({ type: DELETE_ROLE.SUCCESS, response })
+    yield put({ type: FETCH_ROLES.ACTION })
+    yield put({ type: HIDE_MODAL })
+    helpers.UI.showSnackbar('Role successfully deleted')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: DELETE_ROLE.ERROR, error })
+  }
+}
+
 export default function * settingsWatcher () {
   yield takeLatest(FETCH_SETTINGS.ACTION, fetchFlow)
   yield takeLatest(UPDATE_SETTING.ACTION, updateSetting)
@@ -188,4 +219,6 @@ export default function * settingsWatcher () {
   yield takeLatest(RESTORE_DELETED_TICKET.ACTION, restoreDeletedTicket)
   yield takeLatest(UPDATE_ROLE_ORDER.ACTION, updateRoleOrder)
   yield takeLatest(UPDATE_PERMISSIONS.ACTION, updatePermissions)
+  yield takeLatest(CREATE_ROLE.ACTION, createRole)
+  yield takeLatest(DELETE_ROLE.ACTION, deleteRole)
 }

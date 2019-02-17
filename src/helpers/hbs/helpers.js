@@ -647,6 +647,28 @@ var helpers = {
     return options.inverse(this)
   },
 
+  hasPermOverRole: function (ownerRole, userRole, perm, options) {
+    if (_.isUndefined(ownerRole) || _.isUndefined(userRole) || _.isUndefined(perm)) return options.inverse(this)
+    if (
+      typeof ownerRole !== 'object' ||
+      typeof userRole !== 'object' ||
+      _.isUndefined(ownerRole._id) ||
+      _.isUndefined(userRole._id)
+    ) {
+      throw new Error('Invalid Type sent to hasPermOverRole. Should be role object')
+    }
+
+    var p = require('../../permissions')
+    if (!p.canThis(userRole, perm)) return options.inverse(this)
+    if (ownerRole._id.toString() === userRole._id.toString()) return options.fn(this)
+
+    if (userRole.isAdmin) return options.fn(this)
+    var hasHierarchyEnabled = p.hasHierarchyEnabled(userRole._id)
+    if (hasHierarchyEnabled && p.hasPermOverRole(ownerRole._id, userRole._id)) return options.fn(this)
+
+    return options.inverse(this)
+  },
+
   checkPerm: function (user, perm, options) {
     var P = require('../../permissions')
     if (_.isUndefined(user)) return options.inverse(this)
@@ -656,6 +678,16 @@ var helpers = {
     }
 
     return options.inverse(this)
+  },
+
+  checkPermOrAdmin: function (user, perm, options) {
+    if (_.isUndefined(user)) return options.inverse(this)
+    if (user.role.isAdmin) return options.fn(this)
+
+    var p = require('../../permissions')
+    if (p.canThis(user.role, perm)) return options.fn(this)
+
+    options.inverse(this)
   },
 
   checkRole: function (role, perm, options) {
@@ -782,6 +814,15 @@ var helpers = {
 
   randomNum: function () {
     return Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
+  },
+
+  shouldShowCommentSection: function (user, options) {
+    var p = require('../../permissions')
+    var hasComments = p.canThis(user.role, 'comments:create')
+    var hasNotes = p.canThis(user.role, 'tickets:notes')
+
+    if (hasComments || hasNotes) return options.fn(this)
+    return options.inverse(this)
   }
 }
 
@@ -798,8 +839,9 @@ helpers.ifLtEq = helpers.if_lteq
 helpers.unlessLtEq = helpers.unless_lteq
 helpers.foreach = helpers.forEach
 helpers.canUser = helpers.checkPerm
+helpers.canUserOrAdmin = helpers.checkPermOrAdmin
 helpers.canUserRole = helpers.checkRole
-helpers.canEditSelf = helpers.checkEditSelf
+helpers.canEditSelf = helpers.checkEditSelf // This will go away
 helpers.hasPluginPerm = helpers.checkPlugin
 helpers.inArray = helpers.hasGroup
 

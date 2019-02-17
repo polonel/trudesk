@@ -162,7 +162,7 @@ apiTickets.get = function (req, res) {
         })
       },
       function (grps, callback) {
-        if (permissions.canThis(user.role, 'ticket:public')) {
+        if (permissions.canThis(user.role, 'tickets:public')) {
           groupModel.getAllPublicGroups(function (err, publicGroups) {
             if (err) return callback(err)
 
@@ -176,11 +176,38 @@ apiTickets.get = function (req, res) {
       },
       function (grps, callback) {
         ticketModel.getTicketsWithObject(grps, object, function (err, results) {
-          if (!permissions.canThis(user.role, 'notes:view')) {
+          if (!permissions.canThis(user.role, 'comments:view')) {
+            _.each(results, function (ticket) {
+              ticket.comments = []
+            })
+          }
+
+          if (!permissions.canThis(user.role, 'tickets:notes')) {
             _.each(results, function (ticket) {
               ticket.notes = []
             })
           }
+
+          // sanitize
+          _.each(results, function (ticket) {
+            ticket.subscribers = _.map(ticket.subscribers, function (s) {
+              return s._id
+            })
+
+            ticket.history = _.map(ticket.history, function (h) {
+              var obj = {
+                date: h.date,
+                _id: h._id,
+                action: h.action,
+                description: h.description,
+                owner: _.clone(h.owner)
+              }
+              obj.owner.role = h.owner.role._id
+              return obj
+            })
+
+            ticket.owner.role = ticket.owner.role._id
+          })
 
           return callback(err, results)
         })
@@ -229,7 +256,7 @@ apiTickets.search = function (req, res) {
         })
       },
       function (grps, callback) {
-        if (permissions.canThis(req.user.role, 'ticket:public')) {
+        if (permissions.canThis(req.user.role, 'tickets:public')) {
           groupModel.getAllPublicGroups(function (err, publicGroups) {
             if (err) return callback(err)
 
@@ -243,7 +270,7 @@ apiTickets.search = function (req, res) {
       },
       function (grps, callback) {
         ticketModel.getTicketsWithSearchString(grps, searchString, function (err, results) {
-          if (!permissions.canThis(req.user.role.role, 'notes:view')) {
+          if (!permissions.canThis(req.user.role.role, 'tickets:notes')) {
             _.each(results, function (ticket) {
               ticket.notes = []
             })
@@ -549,7 +576,7 @@ apiTickets.single = function (req, res) {
     }
 
     ticket = _.clone(ticket._doc)
-    if (!permissions.canThis(req.user.role, 'notes:view')) {
+    if (!permissions.canThis(req.user.role, 'tickets:notes')) {
       delete ticket.notes
     }
 
@@ -586,7 +613,7 @@ apiTickets.update = function (req, res) {
   var user = req.user
   if (!_.isUndefined(user) && !_.isNull(user)) {
     var permissions = require('../../../permissions')
-    if (!permissions.canThis(user.role, 'ticket:update')) {
+    if (!permissions.canThis(user.role, 'tickets:update')) {
       return res.status(401).json({ success: false, error: 'Invalid Permissions' })
     }
     var oId = req.params.id
@@ -670,7 +697,7 @@ apiTickets.update = function (req, res) {
               return res.status(400).json({ success: false, error: err.message })
             }
 
-            if (!permissions.canThis(user.role, 'notes:view')) {
+            if (!permissions.canThis(user.role, 'tickets:notes')) {
               t.notes = []
             }
 
@@ -795,7 +822,7 @@ apiTickets.postComment = function (req, res) {
     t.save(function (err, tt) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
-      if (!permissions.canThis(req.user.role, 'notes:view')) {
+      if (!permissions.canThis(req.user.role, 'tickets:notes')) {
         tt.notes = []
       }
 
@@ -1322,7 +1349,7 @@ function parseTicketStats (role, tickets, callback) {
   if (_.isEmpty(tickets)) return callback({ tickets: tickets, tags: {} })
   var t = []
   var tags = {}
-  if (!permissions.canThis(role, 'notes:view')) {
+  if (!permissions.canThis(role, 'tickets:notes')) {
     _.each(tickets, function (ticket) {
       ticket.notes = []
     })

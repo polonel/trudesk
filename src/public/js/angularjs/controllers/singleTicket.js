@@ -582,8 +582,8 @@ define([
             UIkit.modal('#addTagModal').hide()
           })
           .error(function (e) {
-            $log.log('[trudesk:singleTicket:submitAddTags] - ' + e)
-            helpers.UI.showSnackbar('Error: ' + e.message, true)
+            $log.log('[trudesk:singleTicket:submitAddTags] - ', e)
+            helpers.UI.showSnackbar('Error: ' + e.error, true)
 
             UIkit.modal('#addTagModal').hide()
           })

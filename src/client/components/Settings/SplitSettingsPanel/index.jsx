@@ -71,7 +71,7 @@ class SplitSettingsPanel extends React.Component {
             <div className='uk-grid uk-grid-collapse'>
               <div
                 className='split-panel-categories uk-width-1-4 scrollable br'
-                style={{ minHeight: '300px', maxHeight: '2000px', overflow: 'hidden auto' }}
+                style={{ minHeight: '300px', overflow: 'hidden auto' }}
               >
                 <Menu hideBorders={true} draggable={this.props.menuDraggable} onMenuDrag={this.props.menuOnDrag}>
                   {menuItems.map(item => {

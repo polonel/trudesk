@@ -308,6 +308,45 @@ apiController.roles.get = function (req, res) {
   )
 }
 
+apiController.roles.create = function (req, res) {
+  var name = req.body.name
+  if (!name) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
+  var roleSchema = require('../models/role')
+  var roleOrder = require('../models/roleorder')
+
+  async.waterfall(
+    [
+      function (next) {
+        roleSchema.create({ name: name }, next)
+      },
+      function (role, next) {
+        if (!role) return next('Invalid Role')
+
+        roleOrder.getOrder(function (err, ro) {
+          if (err) return next(err)
+
+          ro.order.push(role._id)
+
+          ro.save(function (err, savedRo) {
+            if (err) return next(err)
+
+            return next(null, role, savedRo)
+          })
+        })
+      }
+    ],
+    function (err, role, roleOrder) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      global.roleOrder = roleOrder
+      global.roles.push(role)
+
+      return res.json({ success: true, role: role, roleOrder: roleOrder })
+    }
+  )
+}
+
 apiController.roles.update = function (req, res) {
   var _id = req.params.id
   var data = req.body
@@ -330,6 +369,42 @@ apiController.roles.update = function (req, res) {
       return res.send('OK')
     })
   })
+}
+
+apiController.roles.delete = function (req, res) {
+  var _id = req.params.id
+  var newRoleId = req.body.newRoleId
+  if (!_id || !newRoleId) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
+  var roleSchema = require('../models/role')
+  var roleOrderSchema = require('../models/roleorder')
+
+  async.series(
+    [
+      function (done) {
+        userSchema.updateMany({ role: _id }, { $set: { role: newRoleId } }, done)
+      },
+      function (done) {
+        roleSchema.deleteOne({ _id: _id }, done)
+      },
+      function (done) {
+        roleOrderSchema.getOrder(function (err, ro) {
+          if (err) return done(err)
+
+          ro.removeFromOrder(_id, done)
+        })
+      }
+    ],
+    function (err) {
+      if (err) return res.status(500).json({ success: false, error: err })
+
+      permissions.register(function (err) {
+        if (err) return res.status(500).json({ success: false, error: err })
+
+        return res.json({ success: true })
+      })
+    }
+  )
 }
 
 module.exports = apiController

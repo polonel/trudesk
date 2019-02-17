@@ -31,7 +31,7 @@ define('modules/ui', [
     // loggedInAccount = window.trudeskSessionService.getUser();
     socketUi.socket = socket = sock
 
-        this.flushRoles();
+    this.flushRoles()
     this.onReconnect()
     this.onDisconnect()
     // this.updateUsers()
@@ -106,16 +106,16 @@ define('modules/ui', [
   socketUi.fetchServerLogs = function () {
     socket.emit('logs:fetch')
   }
-    socketUi.flushRoles = function() {
-        socket.removeAllListeners('$trudesk:flushRoles');
-        socket.on('$trudesk:flushRoles', function() {
-            helpers.flushRoles();
-        });
-    };
+  socketUi.flushRoles = function () {
+    socket.removeAllListeners('$trudesk:flushRoles')
+    socket.on('$trudesk:flushRoles', function () {
+      helpers.flushRoles()
+    })
+  }
 
-    socketUi.sendUpdateTicketStatus = function(id, status) {
-        socket.emit('updateTicketStatus', {ticketId: id, status: status});
-    };
+  socketUi.sendUpdateTicketStatus = function (id, status) {
+    socket.emit('updateTicketStatus', { ticketId: id, status: status })
+  }
 
   socketUi.onReconnect = function () {
     socket.removeAllListeners('reconnect')
@@ -655,7 +655,12 @@ define('modules/ui', [
     socket.removeAllListeners('updateComments')
     socket.on('updateComments', function (data) {
       var ticket = data
-      var canViewNotes = helpers.canUser('notes:view')
+      var canViewNotes = helpers.canUser('tickets:notes')
+      var canViewComments = helpers.canUser('comments:view')
+
+      if (!canViewComments) ticket.comments = []
+      if (!canViewNotes) ticket.notes = []
+
       _.each(ticket.comments, function (i) {
         i.isComment = true
       })
@@ -700,9 +705,7 @@ define('modules/ui', [
         .html(ticket.notes.length)
 
       var allCommentsHtml = ''
-
       var commentsHtml = ''
-
       var notesHtml = ''
 
       // Build All Comments / Notes Section
@@ -763,14 +766,14 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'comments:delete', true)) {
             allCommentsHtml +=
               '<div class="remove-comment" data-commentId="' +
               item._id +
               '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'comments:update', true)) {
             allCommentsHtml +=
               '<div class="edit-comment" data-commentId="' +
               item._id +
@@ -834,12 +837,12 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'tickets:notes', true)) {
             allCommentsHtml +=
               '<div class="remove-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'tickets:notes', true)) {
             allCommentsHtml +=
               '<div class="edit-note" data-noteid="' +
               item._id +
@@ -907,14 +910,14 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+        if (helpers.hasPermOverRole(comment.owner.role._id, null, 'comments:delete', true)) {
           commentsHtml +=
             '<div class="remove-comment" data-commentId="' +
             comment._id +
             '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+        if (helpers.hasPermOverRole(comment.owner.role._id, null, 'comments:update', true)) {
           commentsHtml +=
             '<div class="edit-comment" data-commentId="' +
             comment._id +
@@ -983,12 +986,12 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+        if (helpers.hasPermOverRole(note.owner.role._id, null, 'tickets:notes', true)) {
           notesHtml +=
             '<div class="remove-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+        if (helpers.hasPermOverRole(note.owner.role._id, null, 'tickets:notes', true)) {
           notesHtml +=
             '<div class="edit-note" data-noteid="' +
             note._id +

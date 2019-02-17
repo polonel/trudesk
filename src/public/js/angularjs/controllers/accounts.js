@@ -219,18 +219,18 @@ define([
 
             var canEdit = false
             var hasEdit = helpers.canUser('accounts:update')
-            if (isEditingSelf && helpers.canUserEditSelf(loggedInAccount._id, 'account')) {
+            if (isEditingSelf && hasEdit) {
               hasEdit = true
               canEdit = true
             }
 
             if (
               helpers.hasHierarchyEnabled(loggedInAccount.role._id) &&
-              helpers.hasPermOverRole(loggedInAccount.role._id, user.role._id)
+              helpers.hasPermOverRole(user.role._id, loggedInAccount.role._id)
             )
               canEdit = true
 
-            if (!hasEdit && !canEdit) {
+            if (!canEdit) {
               // Disable editing user with higher roles.
               form
                 .find('#aPass')

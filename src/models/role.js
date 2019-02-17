@@ -34,12 +34,16 @@ var roleSchema = mongoose.Schema(
 roleSchema.virtual('isAdmin').get(function () {
   if (_.isUndefined(global.roles)) return false
   var role = _.find(global.roles, { normalized: this.normalized })
+  if (!role) return false
+
   return _.indexOf(role.grants, 'admin:*') !== -1
 })
 
 roleSchema.virtual('isAgent').get(function () {
   if (_.isUndefined(global.roles)) return false
   var role = _.find(global.roles, { normalized: this.normalized })
+  if (!role) return false
+
   return _.indexOf(role.grants, 'agent:*') !== -1
 })
 
@@ -77,6 +81,19 @@ roleSchema.statics.getRoleByName = function (name, callback) {
   var q = this.model(COLLECTION).findOne({ normalized: new RegExp('^' + name.trim() + '$', 'i') })
 
   return q.exec(callback)
+}
+
+roleSchema.statics.getAgentRoles = function (callback) {
+  var q = this.model(COLLECTION).find({})
+  q.exec(function (err, roles) {
+    if (err) return callback(err)
+
+    var rolesWithAgent = _.filter(roles, function (role) {
+      return _.indexOf(role.grants, 'agent:*') !== -1
+    })
+
+    return callback(null, rolesWithAgent)
+  })
 }
 
 // Alias

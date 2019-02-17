@@ -16,7 +16,7 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
-import { fetchRoles, updateRoleOrder } from 'actions/common'
+import { showModal, fetchRoles, updateRoleOrder } from 'actions/common'
 
 import Button from 'components/Button'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
@@ -51,6 +51,12 @@ class PermissionsSettingsContainer extends React.Component {
     return []
   }
 
+  onCreateRoleClicked (e) {
+    e.preventDefault()
+
+    this.props.showModal('CREATE_ROLE')
+  }
+
   render () {
     return (
       <div className={this.props.active ? '' : 'hide'}>
@@ -58,7 +64,15 @@ class PermissionsSettingsContainer extends React.Component {
           title={'Permissions'}
           tooltip={'Permission order is top down. ex: Admins at top; Users at bottom.'}
           subtitle={'Create/Modify Role Permissions'}
-          rightComponent={<Button text={'Create'} style={'success'} flat={true} waves={true} />}
+          rightComponent={
+            <Button
+              text={'Create'}
+              style={'success'}
+              flat={true}
+              waves={true}
+              onClick={e => this.onCreateRoleClicked(e)}
+            />
+          }
           menuItems={this.getRoleMenu().map(role => {
             return { key: role.get('_id'), title: role.get('name'), bodyComponent: <PermissionBody role={role} /> }
           })}
@@ -77,7 +91,8 @@ PermissionsSettingsContainer.propTypes = {
   roles: PropTypes.object.isRequired,
   roleOrder: PropTypes.object.isRequired,
   fetchRoles: PropTypes.func.isRequired,
-  updateRoleOrder: PropTypes.func.isRequired
+  updateRoleOrder: PropTypes.func.isRequired,
+  showModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -87,5 +102,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchRoles, updateRoleOrder }
+  { fetchRoles, updateRoleOrder, showModal }
 )(PermissionsSettingsContainer)
