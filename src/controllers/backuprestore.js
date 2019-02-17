@@ -161,9 +161,12 @@ backupRestore.restoreBackup = function (req, res) {
       var cache = _.find(global.forks, function (f) {
         return f.name === 'cache'
       })
+
       if (cache && cache.fork) {
         cache.fork.send({ name: 'cache:refresh:force' })
       }
+
+      require('../permissions').flustRoles()
 
       result = { success: true }
     } else {
