@@ -114,7 +114,8 @@ function runRestore (file, callback) {
     CONNECTION_URI,
     '-d',
     databaseName,
-    path.join(__dirname, '../../restores/restore_' + file, 'database', dbName)
+    path.join(__dirname, '../../restores/restore_' + file, 'database', dbName),
+    '--noIndexRestore'
   ]
   var mongodump = null
   if (platform === 'win32') {

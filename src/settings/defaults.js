@@ -24,6 +24,31 @@ var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
 
+settingsDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
+settingsDefaults.supportGrants = [
+  'tickets:*',
+  'agent:*',
+  'accounts:create update view import',
+  'comments:create view update create delete',
+  'reports:view create',
+  'notices:*'
+]
+settingsDefaults.adminGrants = [
+  'admin:*',
+  'agent:*',
+  'chat:*',
+  'tickets:*',
+  'accounts:*',
+  'groups:*',
+  'teams:*',
+  'departments:*',
+  'comments:*',
+  'reports:*',
+  'notices:*',
+  'settings:*',
+  'api:*'
+]
+
 function teamsDefault (callback) {
   var teamSchema = require('../models/team')
   var roleSchmea = require('../models/role')
@@ -59,33 +84,6 @@ function teamsDefault (callback) {
 function rolesDefault (callback) {
   var roleSchema = require('../models/role')
 
-  var userGrants = ['ticket:create view update', 'comment:create view update']
-  var supportGrants = [
-    'tickets:*',
-    'agent:*',
-    'accounts:create update view delete import',
-    'comments:create view update create delete',
-    'notes:create view',
-    'reports:view',
-    'notices:*'
-  ]
-  var adminGrants = [
-    'admin:*',
-    'agent:*',
-    'chat:*',
-    'tickets:*',
-    'accounts:*',
-    'groups:*',
-    'teams:*',
-    'departments:*',
-    'comments:*',
-    'notes:*',
-    'reports:*',
-    'notices:*',
-    'settings:*',
-    'api:*'
-  ]
-
   async.series(
     [
       function (done) {
@@ -97,7 +95,7 @@ function rolesDefault (callback) {
             {
               name: 'User',
               description: 'Default role for users',
-              grants: userGrants
+              grants: settingsDefaults.userGrants
             },
             done
           )
@@ -114,7 +112,7 @@ function rolesDefault (callback) {
               {
                 name: 'Support',
                 description: 'Default role for agents',
-                grants: supportGrants
+                grants: settingsDefaults.supportGrants
               },
               done
             )
@@ -130,7 +128,7 @@ function rolesDefault (callback) {
               {
                 name: 'Admin',
                 description: 'Default role for admins',
-                grants: adminGrants
+                grants: settingsDefaults.adminGrants
               },
               done
             )
