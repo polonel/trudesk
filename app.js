@@ -10,6 +10,7 @@
  ========================================================================
  **/
 
+var _ = require('lodash')
 var async = require('async')
 var path = require('path')
 var fs = require('fs')
@@ -168,9 +169,9 @@ function launchServer (db) {
                 winston.debug('Starting MailCheck...')
                 mailCheck.init(settings)
               })
+            } else {
+              return next()
             }
-
-            return next()
           })
         },
         function (next) {
@@ -221,9 +222,23 @@ function launchServer (db) {
           if (process.env.MEMORYLIMIT) {
             memLimit = process.env.MEMORYLIMIT
           }
+
+          var env = { FORK: 1, NODE_ENV: global.env }
+          if (isDocker) {
+            var envDocker = {
+              TD_MONGODB_SERVER: process.env.TD_MONGODB_SERVER,
+              TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
+              TD_MONGODB_USERNAME: process.env.TD_MONGODB_USERNAME,
+              TD_MONGODB_PASSWORD: process.env.TD_MONGODB_PASSWORD,
+              TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE
+            }
+
+            env = _.merge(env, envDocker)
+          }
+
           var n = fork(path.join(__dirname, '/src/cache/index.js'), {
             execArgv: ['--max-old-space-size=' + memLimit],
-            env: { FORK: 1, NODE_ENV: global.env }
+            env: env
           })
 
           global.forks.push({ name: 'cache', fork: n })
@@ -271,4 +286,4 @@ function dbCallback (err, db) {
   }
 }
 
-if (configExists || isDocker) start()
+if (!nconf.get('install') && (configExists || isDocker)) start()

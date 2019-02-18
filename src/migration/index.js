@@ -122,6 +122,8 @@ migrations.run = function (callback) {
         getDatabaseVersion(function (err, dbVer) {
           if (err) return next(err)
           if (semver.satisfies(dbVer, '1.0.6')) migrateUserRoles(next)
+
+          return next()
         })
       }
     ],

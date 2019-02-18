@@ -617,6 +617,12 @@ var helpers = {
     return options.inverse(this)
   },
 
+  isNot: function (obj, options) {
+    if (!(_.isUndefined(obj) || _.isNull(obj) || obj === true)) return options.fn(this)
+
+    return options.inverse(this)
+  },
+
   split: function (arr, sep) {
     var str = ''
     _.each(arr, function (obj) {

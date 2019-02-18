@@ -29,6 +29,7 @@ installController.index = function (req, res) {
   content.layout = false
 
   content.bottom = 'Trudesk v' + pkg.version
+  content.isDocker = process.env.TRUDESK_DOCKER || false
 
   res.render('install', content)
 }
@@ -298,6 +299,24 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        if (!process.env.TRUDESK_DOCKER) return next()
+        var S = require('../models/setting')
+        var installed = new S({
+          name: 'installed',
+          value: true
+        })
+
+        installed.save(function (err) {
+          if (err) {
+            winston.error('DB Error: ' + err.message)
+            return next('DB Error: ' + err.message)
+          }
+
+          return next()
+        })
+      },
+      function (next) {
+        if (process.env.TRUDESK_DOCKER) return next()
         // Write Configfile
         var fs = require('fs')
         var configFile = path.join(__dirname, '../../config.json')

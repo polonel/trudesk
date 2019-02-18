@@ -19,11 +19,11 @@ var winston = require('winston')
 
 var db = {}
 var mongoConnectionUri = {
-  server: process.env.MONGODB_SERVER || nconf.get('mongo:host'),
-  port: process.env.MONGODB_PORT || nconf.get('mongo:port') || '27017',
-  username: process.env.MONGODB_USERNAME || nconf.get('mongo:username'),
-  password: process.env.MONGODB_PASSWORD || nconf.get('mongo:password'),
-  database: process.env.MONGODB_DATABASE ? 'trudesk_' + process.env.MONGODB_DATABASE : nconf.get('mongo:database')
+  server: process.env.TD_MONGODB_SERVER || nconf.get('mongo:host'),
+  port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
+  username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
+  password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
+  database: process.env.TD_MONGODB_DATABASE ? 'trudesk_' + process.env.MONGODB_DATABASE : nconf.get('mongo:database')
 }
 
 var CONNECTION_URI = ''
