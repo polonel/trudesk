@@ -23,7 +23,7 @@ var mongoConnectionUri = {
   port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
   username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
   password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
-  database: process.env.TD_MONGODB_DATABASE ? 'trudesk_' + process.env.MONGODB_DATABASE : nconf.get('mongo:database')
+  database: process.env.TD_MONGODB_DATABASE || nconf.get('mongo:database')
 }
 
 var CONNECTION_URI = ''

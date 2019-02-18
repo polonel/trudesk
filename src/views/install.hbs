@@ -276,7 +276,7 @@
             <button class="btn md-btn md-btn-wave md-btn-success" data-next>Lets Start</button>
         </div>
 
-        {{#isNot isDocker}}
+        {{#isNotTrue isDocker}}
             <div class="slide hide">
                 <h2 style="margin-bottom: 25px;">MongoDB Connection</h2>
                 <p style="text-align: left;">
@@ -308,16 +308,17 @@
                 </form>
                 <a href="https://www.mongodb.com/" class="no-ajaxy" target="_blank">What is MongoDB?</a>
             </div>
-        {{/isNot}}
-
-        <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Existing Database?</h2>
-            <p style="text-align: left; margin-bottom: 20px;">
-                Is this mongodb connection an existing database or a new database?
-            </p>
-            <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="margin: 0 0 10px 0 !important;" data-next>New Database</button>
-            <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>
-        </div>
+        {{/isNotTrue}}
+        {{#isNotTrue isDocker}}
+            <div class="slide hide">
+                <h2 style="margin-bottom: 25px;">Existing Database?</h2>
+                <p style="text-align: left; margin-bottom: 20px;">
+                    Is this mongodb connection an existing database or a new database?
+                </p>
+                <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="margin: 0 0 10px 0 !important;" data-next>New Database</button>
+                <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>
+            </div>
+        {{/isNotTrue}}
         <div class="slide hide">
             <h2 style="margin-bottom: 25px;">Setup Account</h2>
             <p style="text-align: left;">
