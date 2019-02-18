@@ -13,25 +13,37 @@
  */
 
 var _ = require('lodash')
-var mongoose = require('mongoose')
 var nconf = require('nconf')
+var mongoose = require('mongoose')
 var winston = require('winston')
 
 var db = {}
+var mongoConnectionUri = {
+  server: process.env.MONGODB_SERVER || nconf.get('mongo:host'),
+  port: process.env.MONGODB_PORT || nconf.get('mongo:port') || '27017',
+  username: process.env.MONGODB_USERNAME || nconf.get('mongo:username'),
+  password: process.env.MONGODB_PASSWORD || nconf.get('mongo:password'),
+  database: process.env.MONGODB_DATABASE ? 'trudesk_' + process.env.MONGODB_DATABASE : nconf.get('mongo:database')
+}
 
-var dbPassword = encodeURIComponent(nconf.get('mongo:password'))
-
-var CONNECTION_URI =
-  'mongodb://' +
-  nconf.get('mongo:username') +
-  ':' +
-  dbPassword +
-  '@' +
-  nconf.get('mongo:host') +
-  ':' +
-  nconf.get('mongo:port') +
-  '/' +
-  nconf.get('mongo:database')
+var CONNECTION_URI = ''
+if (!mongoConnectionUri.username)
+  CONNECTION_URI =
+    'mongodb://' + mongoConnectionUri.server + ':' + mongoConnectionUri.port + '/' + mongoConnectionUri.database
+else {
+  mongoConnectionUri.password = encodeURIComponent(mongoConnectionUri.password)
+  CONNECTION_URI =
+    'mongodb://' +
+    mongoConnectionUri.username +
+    ':' +
+    mongoConnectionUri.password +
+    '@' +
+    mongoConnectionUri.server +
+    ':' +
+    mongoConnectionUri.port +
+    '/' +
+    mongoConnectionUri.database
+}
 
 var options = {
   keepAlive: 1,
@@ -43,7 +55,6 @@ var options = {
 module.exports.init = function (callback, connectionString, opts) {
   if (connectionString) CONNECTION_URI = connectionString
   if (opts) options = opts
-  if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim()
 
   if (db.connection) {
     return callback(null, db)
