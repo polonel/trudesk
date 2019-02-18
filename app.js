@@ -19,6 +19,8 @@ var pkg = require('./package.json')
 var ws = require('./src/webserver')
 // `var memory = require('./src/memory');
 
+var isDocker = process.env.TRUDESK_DOCKER || false
+
 global.forks = []
 
 nconf.argv().env()
@@ -84,7 +86,6 @@ if (!process.env.FORK) {
 }
 
 var configFile = path.join(__dirname, '/config.json')
-
 var configExists
 
 if (nconf.get('config')) {
@@ -93,33 +94,14 @@ if (nconf.get('config')) {
 
 configExists = fs.existsSync(configFile)
 
-if (process.env.HEROKU) {
-  // Build Config for Heroku
-  var configHeroku = {
-    url: 'http://localhost:8118',
-    port: '8118'
-  }
-
-  winston.info('Creating heroku config file...')
-  var config = JSON.stringify(configHeroku, null, 4)
-
-  if (configExists) {
-    fs.unlinkSync(configFile)
-  }
-
-  fs.writeFileSync(configFile, config)
-
-  start()
-}
-
-if (nconf.get('install') || (!configExists && !process.env.HEROKU)) {
+function launchInstallServer () {
   ws.installServer(function () {
     return winston.info('Trudesk Install Server Running...')
   })
 }
 
-if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
-  start()
+if (nconf.get('install') || (!configExists && !isDocker)) {
+  launchInstallServer()
 }
 
 function loadConfig () {
@@ -133,7 +115,7 @@ function loadConfig () {
 }
 
 function start () {
-  loadConfig()
+  if (!isDocker) loadConfig()
 
   var _db = require('./src/database')
 
@@ -150,11 +132,7 @@ function start () {
   })
 }
 
-function dbCallback (err, db) {
-  if (err) {
-    return start()
-  }
-
+function launchServer (db) {
   ws.init(db, function (err) {
     if (err) {
       winston.error(err)
@@ -271,3 +249,26 @@ function dbCallback (err, db) {
     )
   })
 }
+
+function dbCallback (err, db) {
+  if (err) {
+    return start()
+  }
+
+  if (isDocker) {
+    var s = require('./src/models/setting')
+    s.getSettingByName('installed', function (err, installed) {
+      if (err) return start()
+
+      if (!installed) {
+        return launchInstallServer()
+      } else {
+        return launchServer(db)
+      }
+    })
+  } else {
+    return launchServer(db)
+  }
+}
+
+if (configExists || isDocker) start()
