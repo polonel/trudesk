@@ -549,7 +549,7 @@ apiUsers.deleteUser = function (req, res) {
             return cb({ message: 'Cannot remove yourself!' })
           }
 
-          if (!permissions.canThis(req.user.role, 'account:delete')) return cb({ message: 'Access Denied' })
+          if (!permissions.canThis(req.user.role, 'accounts:delete')) return cb({ message: 'Access Denied' })
 
           // TODO: FIX THIS FOR HIERARCHY!!
           // if (req.user.role.toLowerCase() === 'support' || req.user.role.toLowerCase() === 'user') {

@@ -13,16 +13,16 @@ describe('premissions.js', function () {
     done()
   })
 
-    it('should allow comment creation', function(done) {
-        var result = permissions.canThis(global.supportRoleId, 'comment:create');
+  it('should allow comment creation', function (done) {
+    var result = permissions.canThis(global.supportRoleId, 'comments:create')
 
     expect(result).to.be.true
 
     done()
   })
 
-    it('show allow note creation', function(done) {
-        var result = permissions.canThis(global.supportRoleId, 'note:create');
+  it('show allow note creation', function (done) {
+    var result = permissions.canThis(global.supportRoleId, 'tickets:notes')
 
     expect(result).to.be.true
 
@@ -30,9 +30,9 @@ describe('premissions.js', function () {
   })
 
   it('should get roles with action', function (done) {
-    var results = permissions.getRoles('ticket:create')
+    var results = permissions.getRoles('tickets:create')
 
-        expect(results).to.have.length(3);
+    expect(results).to.have.length(3)
 
     done()
   })
