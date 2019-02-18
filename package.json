@@ -93,6 +93,7 @@
     "rimraf": "2.6.3",
     "sanitize-html": "1.18.4",
     "script-loader": "0.7.2",
+    "semver": "5.6.0",
     "serve-favicon": "2.5.0",
     "snyk": "^1.92.6",
     "socket.io": "2.1.1",

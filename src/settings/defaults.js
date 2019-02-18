@@ -166,41 +166,6 @@ function rolesDefault (callback) {
   )
 }
 
-function saveVersion (callback) {
-  SettingsSchema.getSettingByName('gen:version', function (err, setting) {
-    if (err) {
-      winston.warn(err)
-      if (_.isFunction(callback)) return callback(err)
-      return false
-    }
-
-    if (!setting) {
-      var s = new SettingsSchema({
-        name: 'gen:version',
-        value: require('../../package.json').version
-      })
-      s.save(function (err) {
-        if (err) {
-          if (_.isFunction(callback)) return callback(err)
-          return false
-        }
-
-        if (_.isFunction(callback)) return callback()
-      })
-    } else {
-      setting.value = require('../../package').version
-      setting.save(function (err) {
-        if (err) {
-          if (_.isFunction(callback)) return callback(err)
-          return false
-        }
-
-        if (_.isFunction(callback)) return callback()
-      })
-    }
-  })
-}
-
 function createDirectories (callback) {
   async.parallel(
     [
@@ -620,9 +585,6 @@ settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
     [
-      function (done) {
-        return saveVersion(done)
-      },
       function (done) {
         return createDirectories(done)
       },

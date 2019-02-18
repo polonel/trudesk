@@ -12,67 +12,126 @@
 
  **/
 
-var _               = require('lodash');
-var async           = require('async');
-var winston         = require('winston');
-var moment          = require('moment-timezone');
+var _ = require('lodash')
+var async = require('async')
+var winston = require('winston')
+var semver = require('semver')
+var moment = require('moment-timezone')
 
-var SettingsSchema  = require('../models/setting');
-var userSchema      = require('../models/user');
-var roleSchema      = require('../models/role');
+var SettingsSchema = require('../models/setting')
+var userSchema = require('../models/user')
+var roleSchema = require('../models/role')
 
-var migrations = {};
+var migrations = {}
 
-function migrateUserRoles(callback) {
-    async.waterfall([
-        function(next) {
-            roleSchema.getRoles(next);
-        },
-        function(roles, next) {
-            var adminRole = _.find(roles, {normalized: 'admin'});
-            userSchema.collection.updateMany({role: 'admin'}, { $set: { role: adminRole._id }}).then(function(res) {
-                if (res && res.result) {
-                    if (res.result.ok === 1)
-                        return next(null, roles);
+function saveVersion (callback) {
+  SettingsSchema.getSettingByName('gen:version', function (err, setting) {
+    if (err) {
+      winston.warn(err)
+      if (_.isFunction(callback)) return callback(err)
+      return false
+    }
 
-                    winston.warn(res.message);
-                    return next(res.message);
-                }
-            });
-        },
-        function(roles, next) {
-            var supportRole = _.find(roles, {normalized: 'support'});
-            userSchema.collection.updateMany({$or: [{role: 'support'}, {role:'mod'}]}, { $set: { role: supportRole._id }}).then(function(res) {
-                if (res && res.result) {
-                    if (res.result.ok === 1)
-                        return next(null, roles);
-
-                    winston.warn(res.message);
-                    return next(res.message);
-                }
-            });
-        },
-        function(roles, next) {
-            var userRole = _.find(roles, {normalized: 'user'});
-            userSchema.collection.updateMany({role: 'user'}, { $set: { role: userRole._id }}).then(function(res) {
-                if (res && res.result) {
-                    if (res.result.ok === 1)
-                        return next(null, roles);
-
-                    winston.warn(res.message);
-                    return next(res.message);
-                }
-            });
+    if (!setting) {
+      var s = new SettingsSchema({
+        name: 'gen:version',
+        value: require('../../package.json').version
+      })
+      s.save(function (err) {
+        if (err) {
+          if (_.isFunction(callback)) return callback(err)
+          return false
         }
-    ], callback);
+
+        if (_.isFunction(callback)) return callback()
+      })
+    } else {
+      if (setting.value) setting.value = require('../../package').version
+      setting.save(function (err) {
+        if (err) {
+          if (_.isFunction(callback)) return callback(err)
+          return false
+        }
+
+        if (_.isFunction(callback)) return callback()
+      })
+    }
+  })
 }
 
-migrations.run = function(callback) {
-    async.series([
-        function(next) {
-            migrateUserRoles(next);
-        }
-    ], callback);
-};
+function getDatabaseVersion (callback) {
+  SettingsSchema.getSettingByName('gen:version', function (err, setting) {
+    if (err) return callback(err)
+    // TODO: Throw error after 1.0.7 if missing ver num
+    if (!setting) return callback(null, '1.0.6')
+    return callback(null, setting.value)
+  })
+}
 
-module.exports = migrations;
+function migrateUserRoles (callback) {
+  winston.verbose('Migrating Roles...')
+  async.waterfall(
+    [
+      function (next) {
+        roleSchema.getRoles(next)
+      },
+      function (roles, next) {
+        var adminRole = _.find(roles, { normalized: 'admin' })
+        userSchema.collection.updateMany({ role: 'admin' }, { $set: { role: adminRole._id } }).then(function (res) {
+          if (res && res.result) {
+            if (res.result.ok === 1) return next(null, roles)
+
+            winston.warn(res.message)
+            return next(res.message)
+          }
+        })
+      },
+      function (roles, next) {
+        var supportRole = _.find(roles, { normalized: 'support' })
+        userSchema.collection
+          .updateMany({ $or: [{ role: 'support' }, { role: 'mod' }] }, { $set: { role: supportRole._id } })
+          .then(function (res) {
+            if (res && res.result) {
+              if (res.result.ok === 1) return next(null, roles)
+
+              winston.warn(res.message)
+              return next(res.message)
+            }
+          })
+      },
+      function (roles, next) {
+        var userRole = _.find(roles, { normalized: 'user' })
+        userSchema.collection.updateMany({ role: 'user' }, { $set: { role: userRole._id } }).then(function (res) {
+          if (res && res.result) {
+            if (res.result.ok === 1) return next(null, roles)
+
+            winston.warn(res.message)
+            return next(res.message)
+          }
+        })
+      }
+    ],
+    callback
+  )
+}
+
+migrations.run = function (callback) {
+  async.series(
+    [
+      function (next) {
+        getDatabaseVersion(function (err, dbVer) {
+          if (err) return next(err)
+          if (semver.satisfies(dbVer, '1.0.6')) migrateUserRoles(next)
+        })
+      }
+    ],
+    function (err) {
+      if (err) return callback(err)
+
+      //  Update DB Version Num
+      saveVersion(callback)
+    }
+  )
+}
+
+module.exports = migrations

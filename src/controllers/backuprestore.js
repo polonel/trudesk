@@ -166,7 +166,7 @@ backupRestore.restoreBackup = function (req, res) {
         cache.fork.send({ name: 'cache:refresh:force' })
       }
 
-      require('../permissions').flustRoles()
+      require('../permissions').flustRoles(function () {})
 
       result = { success: true }
     } else {
