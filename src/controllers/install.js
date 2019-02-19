@@ -13,15 +13,10 @@
  */
 
 var async = require('async')
-
 var path = require('path')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var pkg = require('../../package')
-
 var Chance = require('chance')
 
 var installController = {}
@@ -34,6 +29,7 @@ installController.index = function (req, res) {
   content.layout = false
 
   content.bottom = 'Trudesk v' + pkg.version
+  content.isDocker = process.env.TRUDESK_DOCKER || false
 
   res.render('install', content)
 }
@@ -95,6 +91,8 @@ installController.existingdb = function (req, res) {
 
 installController.install = function (req, res) {
   var db = require('../database')
+  var roleSchema = require('../models/role')
+  var roleOrderSchema = require('../models/roleorder')
   var UserSchema = require('../models/user')
   var GroupSchema = require('../models/group')
   var Counters = require('../models/counters')
@@ -167,6 +165,59 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        var defaults = require('../settings/defaults')
+        var roleResults = {}
+        async.parallel(
+          [
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'Admin',
+                  description: 'Default role for admins',
+                  grants: defaults.adminGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.adminRole = role
+                  return done()
+                }
+              )
+            },
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'Support',
+                  description: 'Default role for agents',
+                  grants: defaults.supportGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.supportRole = role
+                  return done()
+                }
+              )
+            },
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'Users',
+                  description: 'Default role for users',
+                  grants: defaults.userGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.userRole = role
+                  return done()
+                }
+              )
+            }
+          ],
+          function (err) {
+            return next(err, roleResults)
+          }
+        )
+      },
+      function (roleResults, next) {
         GroupSchema.getGroupByName('Administrators', function (err, group) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -189,11 +240,11 @@ installController.install = function (req, res) {
               return next('Database Error:' + err.message)
             }
 
-            return next(null, adminGroup)
+            return next(null, adminGroup, roleResults)
           })
         })
       },
-      function (adminGroup, next) {
+      function (adminGroup, roleResults, next) {
         UserSchema.getUserByUsername(user.username, function (err, admin) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -214,7 +265,7 @@ installController.install = function (req, res) {
             password: user.password,
             fullname: user.fullname,
             email: user.email,
-            role: 'admin',
+            role: roleResults.adminRole._id,
             title: 'Administrator',
             accessToken: chance.hash()
           })
@@ -248,6 +299,24 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        if (!process.env.TRUDESK_DOCKER) return next()
+        var S = require('../models/setting')
+        var installed = new S({
+          name: 'installed',
+          value: true
+        })
+
+        installed.save(function (err) {
+          if (err) {
+            winston.error('DB Error: ' + err.message)
+            return next('DB Error: ' + err.message)
+          }
+
+          return next()
+        })
+      },
+      function (next) {
+        if (process.env.TRUDESK_DOCKER) return next()
         // Write Configfile
         var fs = require('fs')
         var configFile = path.join(__dirname, '../../config.json')

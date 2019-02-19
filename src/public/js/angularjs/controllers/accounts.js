@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define([
   'angular',
@@ -196,9 +196,7 @@ define([
         if (_.isUndefined(username)) return true
 
         var $menu = self.parents('.tru-card-head-menu')
-        if (!_.isUndefined($menu)) {
-          $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active')
-        }
+        if (!_.isUndefined($menu)) $menu.find('.uk-dropdown').removeClass('uk-dropdown-shown uk-dropdown-active')
 
         $http
           .get('/api/v1/users/' + username)
@@ -213,22 +211,26 @@ define([
 
             var $userHeadingContent = $('.user-heading-content')
             $userHeadingContent.find('.js-username').text(user.username)
-            if (!user.title) {
-              $userHeadingContent.find('.js-user-title').text('')
-            } else {
-              $userHeadingContent.find('.js-user-title').text(user.title)
-            }
+            if (!user.title) $userHeadingContent.find('.js-user-title').text('')
+            else $userHeadingContent.find('.js-user-title').text(user.title)
 
             var isEditingSelf = false
-            if (user.username === loggedInAccount.username) {
-              isEditingSelf = true
+            if (user.username === loggedInAccount.username) isEditingSelf = true
+
+            var canEdit = false
+            var hasEdit = helpers.canUser('accounts:update')
+            if (isEditingSelf && hasEdit) {
+              hasEdit = true
+              canEdit = true
             }
 
             if (
-              !isEditingSelf &&
-              (loggedInAccount.role === 'user' || loggedInAccount.role === 'support') &&
-              (user.role === 'admin' || user.role === 'mod')
-            ) {
+              helpers.hasHierarchyEnabled(loggedInAccount.role._id) &&
+              helpers.hasPermOverRole(user.role._id, loggedInAccount.role._id)
+            )
+              canEdit = true
+
+            if (!canEdit) {
               // Disable editing user with higher roles.
               form
                 .find('#aPass')
@@ -295,21 +297,25 @@ define([
               .val(user.email)
               .parent()
               .addClass('md-input-filled')
-            form.find('#aRole option[value="' + user.role + '"]').prop('selected', true)
+            form.find('#aRole option[value="' + user.role._id + '"]').prop('selected', true)
             if (form.find('#aRole').length > 0) {
               var $selectizeRole = form.find('#aRole')[0].selectize
-              $selectizeRole.setValue(user.role, true)
+              $selectizeRole.setValue(user.role._id, true)
 
-              if (loggedInAccount.role === 'support' || loggedInAccount.role === 'user') {
-                $selectizeRole.removeOption('admin')
-                $selectizeRole.removeOption('mod')
-              }
+              var items = _.map($selectizeRole.options, function (m) {
+                return m.value
+              })
 
-              if (loggedInAccount.role === 'mod') {
-                $selectizeRole.removeOption('admin')
-              }
+              var assignableRoles = helpers.parseRoleHierarchy(loggedInAccount.role._id)
 
-              $selectizeRole.refreshItems()
+              _.each(items, function (role) {
+                var i = _.find(assignableRoles, function (o) {
+                  return o.toString() === role.toString()
+                })
+                if (_.isUndefined(i)) $selectizeRole.removeOption(role)
+              })
+
+              $selectizeRole.refreshOptions(false)
             }
 
             form.find('#aGrps').multiSelect('deselect_all')
@@ -323,17 +329,16 @@ define([
             var inputUsername = aImageUploadForm.find('input#imageUpload_username')
             inputId.val(user._id)
             inputUsername.val(user.username)
-            if (user.image) {
+            if (user.image)
               image.attr(
                 'src',
                 '/uploads/users/' + user.image + '?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
               )
-            } else {
+            else
               image.attr(
                 'src',
                 '/uploads/users/defaultProfile.jpg?r=' + (Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000)
               )
-            }
 
             var modal = UIkit.modal('#editAccountModal')
             if (!modal.isActive()) modal.show()

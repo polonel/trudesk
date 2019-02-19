@@ -192,29 +192,41 @@ middleware.api = function (req, res, next) {
 
 middleware.hasAuth = middleware.api
 
+middleware.canUser = function (action) {
+  return function (req, res, next) {
+    if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+    var permissions = require('../permissions')
+    var perm = permissions.canThis(req.user.role, action)
+    if (perm) return next()
+
+    return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+  }
+}
+
 middleware.isAdmin = function (req, res, next) {
-  if (req.user.role === 'admin') {
-    return next()
-  }
+  var roles = global.roles
+  var role = _.find(roles, { _id: req.user.role._id })
+  if (role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
-middleware.isMod = function (req, res, next) {
-  if (req.user.role === 'mod' || req.user.role === 'admin') {
-    return next()
-  }
+middleware.isAgentOrAdmin = function (req, res, next) {
+  var roles = global.roles
+  var userRole = _.find(roles, { _id: req.user.role._id })
+  if (userRole.role.isAgent || userRole.role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
-middleware.isSupport = function (req, res, next) {
-  if (req.user.role === 'support' || req.user.role === 'mod' || req.user.role === 'admin') {
-    return next()
-  }
+middleware.isAgent = function (req, res, next) {
+  var role = _.find(global.roles, { _id: req.user.role._id })
+  if (role.isAgent) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
+
+middleware.isSupport = middleware.isAgent
 
 module.exports = function () {
   return middleware

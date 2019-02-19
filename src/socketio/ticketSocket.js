@@ -20,6 +20,7 @@ var emitter = require('../emitter')
 var ticketSchema = require('../models/ticket')
 var prioritySchema = require('../models/ticketpriority')
 var userSchema = require('../models/user')
+var roleSchema = require('../models/role')
 var permissions = require('../permissions')
 
 var events = {}
@@ -91,10 +92,15 @@ events.onUpdateComments = function (socket) {
 
 events.onUpdateAssigneeList = function (socket) {
   socket.on('updateAssigneeList', function () {
-    userSchema.getAssigneeUsers(function (err, users) {
+    roleSchema.getAgentRoles(function (err, roles) {
       if (err) return true
+      userSchema.find({ role: { $in: roles } }, function (err, users) {
+        if (err) return true
 
-      utils.sendToSelf(socket, 'updateAssigneeList', users)
+        var sortedUser = _.sortBy(users, 'fullname')
+
+        utils.sendToSelf(socket, 'updateAssigneeList', sortedUser)
+      })
     })
   })
 }
@@ -404,7 +410,7 @@ events.onRefreshTicketAttachments = function (socket) {
       var user = socket.request.user
       if (_.isUndefined(user)) return true
 
-      var canRemoveAttachments = permissions.canThis(user.role, 'ticket:removeAttachment')
+      var canRemoveAttachments = permissions.canThis(user.role, 'tickets:removeAttachment')
 
       var data = {
         ticket: ticket,

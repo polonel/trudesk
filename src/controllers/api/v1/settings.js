@@ -12,8 +12,9 @@
 
  **/
 
-var async = require('async')
 var _ = require('lodash')
+var async = require('async')
+var emitter = require('../../../emitter')
 var winston = require('winston')
 var sanitizeHtml = require('sanitize-html')
 var SettingsSchema = require('../../../models/setting')
@@ -32,6 +33,17 @@ apiSettings.getSettings = function (req, res) {
     if (err) return res.status(400).json({ success: false, error: err })
 
     return res.json({ success: true, settings: settings })
+  })
+}
+
+apiSettings.getSingleSetting = function (req, res) {
+  settingsUtil.getSettings(function (err, settings) {
+    if (err) return res.status(400).json({ success: false, error: err })
+
+    var setting = settings.data.settings[req.params.name]
+    if (!setting) return res.status(400).json({ success: false, error: 'invalid setting' })
+
+    return res.json({ success: true, setting: setting })
   })
 }
 
@@ -70,6 +82,9 @@ apiSettings.updateSetting = function (req, res) {
 
   if (!_.isArray(postData)) postData = [postData]
 
+  var updatedSettings = []
+
+  //
   async.each(
     postData,
     function (item, callback) {
@@ -89,15 +104,19 @@ apiSettings.updateSetting = function (req, res) {
 
         s.value = item.value
 
-        s.save(function (err) {
+        s.save(function (err, savedSetting) {
           if (err) return callback(err.message)
 
-          callback()
+          updatedSettings.push(savedSetting)
+
+          return callback()
         })
       })
     },
     function (err) {
-      return defaultApiResponse(err, res)
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      return res.json({ success: true, updatedSettings: updatedSettings })
     }
   )
 }
@@ -137,6 +156,34 @@ apiSettings.buildsass = function (req, res) {
   var buildsass = require('../../../sass/buildsass')
   buildsass.build(function (err) {
     return defaultApiResponse(err, res)
+  })
+}
+
+apiSettings.updateRoleOrder = function (req, res) {
+  if (!req.body.roleOrder) return res.status(400).json({ success: false, error: 'Invalid PUT Data' })
+  var RoleOrderSchema = require('../../../models/roleorder')
+  RoleOrderSchema.getOrder(function (err, order) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+    if (!order) {
+      order = new RoleOrderSchema({
+        order: req.body.roleOrder
+      })
+      order.save(function (err, order) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        emitter.emit('$trudesk:flushRoles')
+
+        return res.json({ success: true, roleOrder: order })
+      })
+    } else {
+      order.updateOrder(req.body.roleOrder, function (err, order) {
+        if (err) return res.status(400).json({ success: false, error: err.message })
+
+        emitter.emit('$trudesk:flushRoles')
+
+        return res.json({ success: true, roleOrder: order })
+      })
+    }
   })
 }
 

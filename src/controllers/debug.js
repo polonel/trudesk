@@ -316,15 +316,9 @@ debugController.populatedatabase = function (req, res) {
   async.series(
     [
       function (done) {
-        groupSchema.remove({}, done)
-      },
-      function (done) {
-        tagSchema.remove({}, done)
-      },
-      function (done) {
-        ticketSchema.remove({}, done)
-      },
-      function (done) {
+        var roles = global.roles
+        var userRole = _.find(roles, { normalized: 'user' })
+
         users = []
         for (var i = 0; i < 11; i++) {
           var random = Math.floor(Math.random() * (10000 - 1 + 1)) + 1
@@ -336,13 +330,22 @@ debugController.populatedatabase = function (req, res) {
             email: first + '.' + last + random + '@' + chance.domain(),
             title: chance.profession(),
             password: 'password',
-            role: 'user'
+            role: userRole._id
           }
 
           users.push(user)
         }
 
         userSchema.collection.insert(users, done)
+      },
+      function (done) {
+        groupSchema.remove({}, done)
+      },
+      function (done) {
+        tagSchema.remove({}, done)
+      },
+      function (done) {
+        ticketSchema.remove({}, done)
       },
       function (done) {
         var groups = []

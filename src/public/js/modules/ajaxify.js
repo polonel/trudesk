@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define('modules/ajaxify', [
   'jquery',
@@ -168,9 +168,7 @@ define('modules/ajaxify', [
     $window.bind('statechange', function () {
       // Prepare Variables
       var State = History.getState()
-
       var url = State.url
-
       var relativeUrl = url.replace(rootUrl, '')
 
       // Set Loading
@@ -188,9 +186,7 @@ define('modules/ajaxify', [
         success: function (data) {
           // Prepare
           var $data = $(documentHtml(data))
-
           var $dataBody = $data.find('.document-body:first')
-
           var $dataContent = $dataBody.find(contentSelector).filter(':first')
 
           var contentHtml
@@ -228,6 +224,13 @@ define('modules/ajaxify', [
             // Memory Leak Fix- Remove events before destroying content;
             var $oldContent = $('#page-content')
             $oldContent.find('*').off('click click.chosen mouseup mousemove mousedown change')
+
+            // Manually Unload React components from renders
+            // This will be removed once angular and ajaxy are gone (react-router will Replace)
+            if (document.getElementById('settings-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
+            // if (document.getElementById('modal-wrapper'))
+            //   window.react.dom.unmountComponentAtNode(document.getElementById('modal-wrapper'))
 
             // Update the content
             $content.stop(true, true)

@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define('pages/accounts', [
   'underscore',
@@ -30,26 +30,19 @@ define('pages/accounts', [
   'use strict'
   var accountsPage = {}
 
-  String.prototype.capitalizeFirstLetter = function () {
-    return this.charAt(0).toUpperCase() + this.slice(1)
+  function capitalizeFirstLetter (str) {
+    return str.charAt(0).toUpperCase() + str.slice(1)
   }
 
   accountsPage.init = function (callback, reset) {
     $(document).ready(function () {
       var $accountList = $('#account_list')
-
       var $scroller = $accountList.parents('.scrollable')
-
       var $scrollspy = $('#scrollspy')
-
       var $spinner = $scrollspy.find('i')
-
       var $filterAll = $('.filter-all')
-
       var $nextPage = 1
-
       var $enabled = true
-
       var $loading = false
 
       if (reset) {
@@ -221,7 +214,7 @@ define('pages/accounts', [
       html += '<div class="tru-card tru-card-hover" data-card-username="' + user.username + '">'
     }
 
-    if (user.role === 'admin') {
+    if (user.role.isAdmin) {
       html += '<div class="tru-card-head tru-card-head-admin">'
     } else {
       html += '<div class="tru-card-head ' + (user.deleted ? 'tru-card-head-deleted' : '') + '">'
@@ -271,7 +264,7 @@ define('pages/accounts', [
     html += user.fullname
     html +=
       '<span class="uk-text-truncate">' +
-      (_.isUndefined(user.title) ? '' : user.title.capitalizeFirstLetter()) +
+      (_.isUndefined(user.title) ? '' : capitalizeFirstLetter(user.title)) +
       '</span>'
     html += '</h3>'
     html += '</div>'
@@ -280,7 +273,7 @@ define('pages/accounts', [
     html += '<li>'
     html += '<div class="tru-list-content">'
     html += '<span class="tru-list-heading">Role</span>'
-    html += '<span class="uk-text-small uk-text-muted">' + user.role.capitalizeFirstLetter() + '</span>'
+    html += '<span class="uk-text-small uk-text-muted">' + capitalizeFirstLetter(user.role.name) + '</span>'
     html += '</div>'
     html += '</li>'
     html += '<li>'

@@ -549,11 +549,14 @@ apiUsers.deleteUser = function (req, res) {
             return cb({ message: 'Cannot remove yourself!' })
           }
 
-          if (req.user.role.toLowerCase() === 'support' || req.user.role.toLowerCase() === 'user') {
-            if (user.role.toLowerCase() === 'mod' || user.role.toLowerCase() === 'admin') {
-              return cb({ message: 'Insufficient permissions' })
-            }
-          }
+          if (!permissions.canThis(req.user.role, 'accounts:delete')) return cb({ message: 'Access Denied' })
+
+          // TODO: FIX THIS FOR HIERARCHY!!
+          // if (req.user.role.toLowerCase() === 'support' || req.user.role.toLowerCase() === 'user') {
+          //     if (user.role.toLowerCase() === 'mod' || user.role.toLowerCase() === 'admin')
+          //         return cb({message: 'Insufficient permissions'});
+          //
+          // }
 
           return cb(null, user)
         })
@@ -772,6 +775,8 @@ apiUsers.generateApiKey = function (req, res) {
   var id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
 
+  if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
+
   UserSchema.getUser(id, function (err, user) {
     if (err) return res.status(400).json({ error: 'Invalid Request' })
 
@@ -805,6 +810,8 @@ apiUsers.generateApiKey = function (req, res) {
 apiUsers.removeApiKey = function (req, res) {
   var id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
+
+  if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
 
   UserSchema.getUser(id, function (err, user) {
     if (err) return res.status(400).json({ error: 'Invalid Request', fullError: err })

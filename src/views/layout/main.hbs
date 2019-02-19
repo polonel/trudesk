@@ -21,8 +21,6 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/js/vendor.js"></script>
     <script src="/js/truRequire.js"></script>
-    <script src="/js/trudesk.min.js"></script>
-
 </head>
 <body>
 <div id="loader-wrapper" class="dot-loader-wrapper loader-wrapper">
@@ -133,17 +131,18 @@
     </div>
 
     {{> topbar }}
+    {{> nav }}
 
     <div class="ajaxyContent">
-        {{> nav }}
-
-        <div id="__sidebar_route" class="hide" style="visibility: hidden">{{nav}}</div>
         <div id="page-content" style="margin-left: 57px;" ng-controller="TrudeskController">
+            <div id="__sidebar_route" class="hide" style="visibility: hidden">{{nav}}</div>
+            <div id="__sidebar_sub_route" class="hide" style="visibility: hidden">{{subnav}}</div>
             {{{body}}}
         </div>
     </div>
     {{> onlineListSidebar }}
     {{> chatdock }}
+    <div id="modal-wrapper"></div>
 </div>
 
 <audio id="newticketaudio" src="/sounds/newticket.ogg" class="uk-hidden"></audio>
@@ -165,6 +164,16 @@
         document.location = '/mobile';
     }
 </script>
+<script type="text/javascript" id="preloader">
+    // TODO: Temp. Until we pass render fully on server.
+    if (!window.trudesk)
+        window.trudesk = {};
+    window.trudesk.__PRELOADED_STATE__ = {{{stringify data.common}}};
+    window.trudesk.viewdata = {{{stringify data.common}}};
+</script>
+
+<script src="/js/trudesk.min.js"></script>
+
 </body>
 
 </html>
