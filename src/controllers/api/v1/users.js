@@ -775,6 +775,8 @@ apiUsers.generateApiKey = function (req, res) {
   var id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
 
+  if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
+
   UserSchema.getUser(id, function (err, user) {
     if (err) return res.status(400).json({ error: 'Invalid Request' })
 
@@ -808,6 +810,8 @@ apiUsers.generateApiKey = function (req, res) {
 apiUsers.removeApiKey = function (req, res) {
   var id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
+
+  if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
 
   UserSchema.getUser(id, function (err, user) {
     if (err) return res.status(400).json({ error: 'Invalid Request', fullError: err })

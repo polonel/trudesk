@@ -101,6 +101,11 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
       id = id[0]
       var $data = { active: true }
 
+      if (!helpers.canUser('notices:activate', true)) {
+        helpers.UI.showSnackbar('Unauthorized', true)
+        return false
+      }
+
       $http
         .get('/api/v1/notices/clearactive')
         .success(function () {

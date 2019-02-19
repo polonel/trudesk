@@ -105,6 +105,10 @@ class PermissionBody extends React.Component {
     return [{ title: 'Import', perm: 'import' }]
   }
 
+  static mapNoticeSpecials () {
+    return [{ title: 'Activate', perm: 'activate' }, { title: 'Deactivate', perm: 'deactivate' }]
+  }
+
   onSubmit (e) {
     e.preventDefault()
     let obj = {}
@@ -229,6 +233,7 @@ class PermissionBody extends React.Component {
             title={'Notices'}
             role={this.props.role}
             grants={this.noticeGrants}
+            roleSpecials={PermissionBody.mapNoticeSpecials()}
             subtitle={'Notice Permissions'}
           />
           <div className={'uk-margin-large-bottom'}>
