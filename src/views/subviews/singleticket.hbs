@@ -14,32 +14,32 @@
                     <div id="__ticketStatus" class="hide">{{data.ticket.status}}</div>
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
-                            {{#canUser data.user "agent:*"}}
+                            {{#canUserOrAdmin data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
-                            {{#canUser data.user "agent:*"}}
+                            {{#canUserOrAdmin data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
-                            {{#canUser data.user "agent:*"}}
+                            {{#canUserOrAdmin data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
-                            {{#canUser data.user "agent:*"}}
+                            {{#canUserOrAdmin data.user "agent:*"}}
                                 <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         <span class="drop-icon material-icons" style="left: auto; right: 22px; bottom: -18px">keyboard_arrow_down</span>
                         <div id="statusSelect" close-mouse-up class="hide">
