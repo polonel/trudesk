@@ -1,0 +1,167 @@
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    2/18/19 5:59 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
+
+var packagejson = require('../../../../package')
+
+module.exports = function (middleware, router, controllers) {
+  // ShortenVars
+  var apiv1 = middleware.api
+  var canUser = middleware.canUser
+  var apiCtrl = controllers.api
+
+  // Common
+  router.get('/api', controllers.api.index)
+  router.get('/api/v1/version', function (req, res) {
+    return res.json({ version: packagejson.version })
+  })
+  router.post('/api/v1/login', apiCtrl.login)
+  router.get('/api/v1/login', apiv1, apiCtrl.getLoggedInUser)
+  router.get('/api/v1/logout', apiv1, apiCtrl.logout)
+
+  // Roles
+  router.get('/api/v1/roles', apiv1, apiCtrl.roles.get)
+  router.post('/api/v1/roles', apiv1, middleware.isAdmin, apiCtrl.roles.create)
+  router.put('/api/v1/roles/:id', apiv1, middleware.isAdmin, apiCtrl.roles.update)
+  router.delete('/api/v1/roles/:id', apiv1, middleware.isAdmin, apiCtrl.roles.delete)
+
+  // Tickets
+  router.get('/api/v1/tickets', apiv1, canUser('tickets:view'), apiCtrl.tickets.get)
+  router.get('/api/v1/tickets/search', apiv1, canUser('tickets:view'), apiCtrl.tickets.search)
+  router.post('/api/v1/tickets/create', apiv1, canUser('tickets:create'), apiCtrl.tickets.create)
+  router.get('/api/v1/tickets/type/:id', apiv1, apiCtrl.tickets.getType)
+  router.post('/api/v1/tickets/type/:id/removepriority', apiv1, apiCtrl.tickets.typeRemovePriority)
+  router.post('/api/v1/tickets/type/:id/addpriority', apiv1, apiCtrl.tickets.typeAddPriority)
+  router.get('/api/v1/tickets/types', apiv1, apiCtrl.tickets.getTypes)
+  router.post('/api/v1/tickets/types/create', apiv1, apiCtrl.tickets.createType)
+  router.put('/api/v1/tickets/types/:id', apiv1, apiCtrl.tickets.updateType)
+  router.delete('/api/v1/tickets/types/:id', apiv1, apiCtrl.tickets.deleteType)
+  router.post('/api/v1/tickets/priority/create', apiv1, apiCtrl.tickets.createPriority)
+  router.post('/api/v1/tickets/priority/:id/delete', apiv1, apiCtrl.tickets.deletePriority)
+  router.get('/api/v1/tickets/priorities', apiv1, apiCtrl.tickets.getPriorities)
+  router.put('/api/v1/tickets/priority/:id', apiv1, apiCtrl.tickets.updatePriority)
+
+  router.get('/api/v1/tickets/overdue', apiv1, canUser('tickets:view'), apiCtrl.tickets.getOverdue)
+  router.post('/api/v1/tickets/addcomment', apiv1, canUser('comments:create'), apiCtrl.tickets.postComment)
+  router.post('/api/v1/tickets/addnote', apiv1, canUser('tickets:notes'), apiCtrl.tickets.postInternalNote)
+  router.get('/api/v1/tickets/tags', apiv1, apiCtrl.tickets.getTags)
+  router.get('/api/v1/tickets/count/tags', apiv1, apiCtrl.tickets.getTagCount)
+  router.get('/api/v1/tickets/count/tags/:timespan', apiv1, apiCtrl.tickets.getTagCount)
+  router.get('/api/v1/tickets/count/days', apiv1, apiCtrl.tickets.getTicketStats)
+  router.get('/api/v1/tickets/count/days/:timespan', apiv1, apiCtrl.tickets.getTicketStats)
+  router.get('/api/v1/tickets/count/topgroups', apiv1, apiCtrl.tickets.getTopTicketGroups)
+  router.get('/api/v1/tickets/count/topgroups/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
+  router.get('/api/v1/tickets/count/topgroups/:timespan/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
+  router.get('/api/v1/tickets/stats', apiv1, apiCtrl.tickets.getTicketStats)
+  router.get('/api/v1/tickets/stats/group/:group', apiv1, apiCtrl.tickets.getTicketStatsForGroup)
+  router.get('/api/v1/tickets/stats/user/:user', apiv1, apiCtrl.tickets.getTicketStatsForUser)
+  router.get('/api/v1/tickets/stats/:timespan', apiv1, apiCtrl.tickets.getTicketStats)
+  router.get('/api/v1/tickets/deleted', apiv1, middleware.isAdmin, apiCtrl.tickets.getDeletedTickets)
+  router.post('/api/v1/tickets/deleted/restore', apiv1, middleware.isAdmin, apiCtrl.tickets.restoreDeleted)
+  router.get('/api/v1/tickets/:uid', apiv1, canUser('tickets:view'), apiCtrl.tickets.single)
+  router.put('/api/v1/tickets/:id', apiv1, canUser('tickets:update'), apiCtrl.tickets.update)
+  router.delete('/api/v1/tickets/:id', apiv1, canUser('tickets:delete'), apiCtrl.tickets.delete)
+  router.put('/api/v1/tickets/:id/subscribe', apiv1, apiCtrl.tickets.subscribe)
+  router.delete(
+    '/api/v1/tickets/:tid/attachments/remove/:aid',
+    canUser('tickets:update'),
+    apiv1,
+    apiCtrl.tickets.removeAttachment
+  )
+
+  // Tags
+  router.get('/api/v1/count/tags', middleware.api, function (req, res) {
+    var tagSchema = require('../models/tag')
+    tagSchema.countDocuments({}, function (err, count) {
+      if (err) return res.status(500).json({ success: false, error: err })
+
+      return res.json({ success: true, count: count })
+    })
+  })
+
+  router.post('/api/v1/tags/create', apiv1, apiCtrl.tags.createTag)
+  router.get('/api/v1/tags/limit', apiv1, apiCtrl.tags.getTagsWithLimit)
+  router.put('/api/v1/tags/:id', apiv1, apiCtrl.tags.updateTag)
+  router.delete('/api/v1/tags/:id', apiv1, apiCtrl.tags.deleteTag)
+
+  // Public Tickets
+  var checkCaptcha = middleware.checkCaptcha
+  var checkOrigin = middleware.checkOrigin
+
+  router.post('/api/v1/public/users/checkemail', checkCaptcha, checkOrigin, apiCtrl.users.checkEmail)
+  router.post('/api/v1/public/tickets/create', checkCaptcha, checkOrigin, apiCtrl.tickets.createPublicTicket)
+  router.post('/api/v1/public/account/create', checkCaptcha, checkOrigin, apiCtrl.users.createPublicAccount)
+
+  // Groups
+  router.get('/api/v1/groups', apiv1, apiCtrl.groups.get)
+  router.get('/api/v1/groups/all', apiv1, apiCtrl.groups.getAll)
+  router.post('/api/v1/groups/create', apiv1, apiCtrl.groups.create)
+  router.get('/api/v1/groups/:id', apiv1, apiCtrl.groups.getSingleGroup)
+  router.delete('/api/v1/groups/:id', apiv1, apiCtrl.groups.deleteGroup)
+  router.put('/api/v1/groups/:id', apiv1, apiCtrl.groups.updateGroup)
+
+  // Users
+  router.get('/api/v1/users', apiv1, apiCtrl.users.getWithLimit)
+  router.post('/api/v1/users/create', apiv1, apiCtrl.users.create)
+  router.get('/api/v1/users/notificationCount', apiv1, apiCtrl.users.notificationCount)
+  router.get('/api/v1/users/getassignees', apiv1, apiCtrl.users.getAssingees)
+  router.get('/api/v1/users/:username', apiv1, apiCtrl.users.single)
+  router.put('/api/v1/users/:username', apiv1, apiCtrl.users.update)
+  router.post('/api/v1/users/:username/uploadprofilepic', apiCtrl.users.uploadProfilePic)
+  router.put('/api/v1/users/:username/updatepreferences', apiv1, apiCtrl.users.updatePreferences)
+  router.get('/api/v1/users/:username/enable', apiv1, apiCtrl.users.enableUser)
+  router.delete('/api/v1/users/:username', apiv1, apiCtrl.users.deleteUser)
+  router.post('/api/v1/users/:id/generateapikey', apiv1, apiCtrl.users.generateApiKey)
+  router.post('/api/v1/users/:id/removeapikey', apiv1, apiCtrl.users.removeApiKey)
+  router.post('/api/v1/users/:id/generatel2auth', apiv1, apiCtrl.users.generateL2Auth)
+  router.post('/api/v1/users/:id/removel2auth', apiv1, apiCtrl.users.removeL2Auth)
+
+  // Messages
+  router.get('/api/v1/messages', apiv1, apiCtrl.messages.get)
+  router.post('/api/v1/messages/conversation/start', apiv1, apiCtrl.messages.startConversation)
+  router.get('/api/v1/messages/conversation/:id', apiv1, apiCtrl.messages.getMessagesForConversation)
+  router.delete('/api/v1/messages/conversation/:id', apiv1, apiCtrl.messages.deleteConversation)
+  router.get('/api/v1/messages/conversations', apiv1, apiCtrl.messages.getConversations)
+  router.get('/api/v1/messages/conversations/recent', apiv1, apiCtrl.messages.getRecentConversations)
+  router.post('/api/v1/messages/send', apiv1, apiCtrl.messages.send)
+
+  // Notices
+  router.post('/api/v1/notices/create', apiv1, apiCtrl.notices.create)
+  router.get('/api/v1/notices/clearactive', apiv1, apiCtrl.notices.clearActive)
+  router.put('/api/v1/notices/:id', apiv1, apiCtrl.notices.updateNotice)
+  router.delete('/api/v1/notices/:id', apiv1, apiCtrl.notices.deleteNotice)
+
+  // Reports Generator
+  router.post('/api/v1/reports/generate/tickets_by_group', apiv1, apiCtrl.reports.generate.ticketsByGroup)
+  router.post('/api/v1/reports/generate/tickets_by_status', apiv1, apiCtrl.reports.generate.ticketsByStatus)
+  router.post('/api/v1/reports/generate/tickets_by_priority', apiv1, apiCtrl.reports.generate.ticketsByPriority)
+  router.post('/api/v1/reports/generate/tickets_by_tags', apiv1, apiCtrl.reports.generate.ticketsByTags)
+  router.post('/api/v1/reports/generate/tickets_by_type', apiv1, apiCtrl.reports.generate.ticketsByType)
+  router.post('/api/v1/reports/generate/tickets_by_user', apiv1, apiCtrl.reports.generate.ticketsByUser)
+
+  // Settings
+  router.get('/api/v1/settings', apiv1, apiCtrl.settings.getSettings)
+  router.put('/api/v1/settings', apiv1, apiCtrl.settings.updateSetting)
+  router.post('/api/v1/settings/testmailer', apiv1, apiCtrl.settings.testMailer)
+  router.put('/api/v1/settings/mailer/template/:id', apiv1, apiCtrl.settings.updateTemplateSubject)
+  router.get('/api/v1/settings/buildsass', apiv1, apiCtrl.settings.buildsass)
+  router.put('/api/v1/settings/updateroleorder', apiv1, apiCtrl.settings.updateRoleOrder)
+
+  // Backups
+  router.get('/api/v1/backups', apiv1, middleware.isAdmin, controllers.backuprestore.getBackups)
+  router.post('/api/v1/backup', apiv1, middleware.isAdmin, controllers.backuprestore.runBackup)
+  router.delete('/api/v1/backup/:backup', apiv1, middleware.isAdmin, controllers.backuprestore.deleteBackup)
+  router.post('/api/v1/backup/restore', apiv1, middleware.isAdmin, controllers.backuprestore.restoreBackup)
+  router.post('/api/v1/backup/upload', apiv1, middleware.isAdmin, controllers.backuprestore.uploadBackup)
+  router.get('/api/v1/backup/hastools', apiv1, middleware.isAdmin, controllers.backuprestore.hasBackupTools)
+}

@@ -316,171 +316,8 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get)
 
   // API
-  router.get('/api', controllers.api.index)
-  router.get('/api/v1/version', function (req, res) {
-    return res.json({ version: packagejson.version })
-  })
-  router.post('/api/v1/login', controllers.api.login)
-  router.get('/api/v1/login', middleware.api, controllers.api.getLoggedInUser)
-  router.get('/api/v1/logout', middleware.api, controllers.api.logout)
-  router.get('/api/v1/roles', middleware.api, controllers.api.roles.get)
-  router.post('/api/v1/roles', middleware.api, controllers.api.roles.create)
-  router.put('/api/v1/roles/:id', middleware.api, controllers.api.roles.update)
-  router.delete('/api/v1/roles/:id', middleware.api, controllers.api.roles.delete)
-  router.get('/api/v1/roles/test', function (req, res) {
-    var p = require('../permissions')
-    p.buildGrants()
-    res.send()
-  })
-
-  router.get('/api/v1/count/tags', middleware.api, function (req, res) {
-    var tagSchema = require('../models/tag')
-    tagSchema.countDocuments({}, function (err, count) {
-      if (err) return res.status(500).json({ success: false, error: err })
-
-      return res.json({ success: true, count: count })
-    })
-  })
-
-  router.get('/api/v1/tickets', middleware.api, middleware.canUser('tickets:view'), controllers.api.tickets.get)
-  router.get(
-    '/api/v1/tickets/search',
-    middleware.api,
-    middleware.canUser('tickets:view'),
-    controllers.api.tickets.search
-  )
-  router.post(
-    '/api/v1/tickets/create',
-    middleware.api,
-    middleware.canUser('tickets:create'),
-    controllers.api.tickets.create
-  )
-  router.get('/api/v1/tickets/type/:id', middleware.api, controllers.api.tickets.getType)
-  router.post('/api/v1/tickets/type/:id/removepriority', middleware.api, controllers.api.tickets.typeRemovePriority)
-  router.post('/api/v1/tickets/type/:id/addpriority', middleware.api, controllers.api.tickets.typeAddPriority)
-  router.get('/api/v1/tickets/types', middleware.api, controllers.api.tickets.getTypes)
-  router.post('/api/v1/tickets/types/create', middleware.api, controllers.api.tickets.createType)
-  router.put('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.updateType)
-  router.delete('/api/v1/tickets/types/:id', middleware.api, controllers.api.tickets.deleteType)
-  router.post('/api/v1/tickets/priority/create', middleware.api, controllers.api.tickets.createPriority)
-  router.post('/api/v1/tickets/priority/:id/delete', middleware.api, controllers.api.tickets.deletePriority)
-  router.get('/api/v1/tickets/priorities', middleware.api, controllers.api.tickets.getPriorities)
-  router.put('/api/v1/tickets/priority/:id', middleware.api, controllers.api.tickets.updatePriority)
-  router.put('/api/v1/settings/updateroleorder', middleware.api, controllers.api.settings.updateRoleOrder)
-
-  router.get('/api/v1/tickets/overdue', middleware.api, controllers.api.tickets.getOverdue)
-  router.post('/api/v1/tickets/addcomment', middleware.api, controllers.api.tickets.postComment)
-  router.post('/api/v1/tickets/addnote', middleware.api, controllers.api.tickets.postInternalNote)
-  router.get('/api/v1/tickets/tags', middleware.api, controllers.api.tickets.getTags)
-  router.get('/api/v1/tickets/count/tags', middleware.api, controllers.api.tickets.getTagCount)
-  router.get('/api/v1/tickets/count/tags/:timespan', middleware.api, controllers.api.tickets.getTagCount)
-  router.get('/api/v1/tickets/count/days', middleware.api, controllers.api.tickets.getTicketStats)
-  router.get('/api/v1/tickets/count/days/:timespan', middleware.api, controllers.api.tickets.getTicketStats)
-  router.get('/api/v1/tickets/count/topgroups', middleware.api, controllers.api.tickets.getTopTicketGroups)
-  router.get('/api/v1/tickets/count/topgroups/:top', middleware.api, controllers.api.tickets.getTopTicketGroups)
-  router.get(
-    '/api/v1/tickets/count/topgroups/:timespan/:top',
-    middleware.api,
-    controllers.api.tickets.getTopTicketGroups
-  )
-  router.get('/api/v1/tickets/stats', middleware.api, controllers.api.tickets.getTicketStats)
-  router.get('/api/v1/tickets/stats/group/:group', middleware.api, controllers.api.tickets.getTicketStatsForGroup)
-  router.get('/api/v1/tickets/stats/user/:user', middleware.api, controllers.api.tickets.getTicketStatsForUser)
-  router.get('/api/v1/tickets/stats/:timespan', middleware.api, controllers.api.tickets.getTicketStats)
-  router.get('/api/v1/tickets/deleted', middleware.api, middleware.isAdmin, controllers.api.tickets.getDeletedTickets)
-  router.post(
-    '/api/v1/tickets/deleted/restore',
-    middleware.api,
-    middleware.isAdmin,
-    controllers.api.tickets.restoreDeleted
-  )
-  router.get('/api/v1/tickets/:uid', middleware.api, controllers.api.tickets.single)
-  router.put('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.update)
-  router.delete('/api/v1/tickets/:id', middleware.api, controllers.api.tickets.delete)
-  router.put('/api/v1/tickets/:id/subscribe', middleware.api, controllers.api.tickets.subscribe)
-  router.delete(
-    '/api/v1/tickets/:tid/attachments/remove/:aid',
-    middleware.api,
-    controllers.api.tickets.removeAttachment
-  )
-
-  router.post('/api/v1/tags/create', middleware.api, controllers.api.tags.createTag)
-  router.get('/api/v1/tags/limit', middleware.api, controllers.api.tags.getTagsWithLimit)
-  router.put('/api/v1/tags/:id', middleware.api, controllers.api.tags.updateTag)
-  router.delete('/api/v1/tags/:id', middleware.api, controllers.api.tags.deleteTag)
-
-  router.get('/api/v1/groups', middleware.api, controllers.api.groups.get)
-  router.get('/api/v1/groups/all', middleware.api, controllers.api.groups.getAll)
-  router.post('/api/v1/groups/create', middleware.api, controllers.api.groups.create)
-  router.get('/api/v1/groups/:id', middleware.api, controllers.api.groups.getSingleGroup)
-  router.delete('/api/v1/groups/:id', middleware.api, controllers.api.groups.deleteGroup)
-  router.put('/api/v1/groups/:id', middleware.api, controllers.api.groups.updateGroup)
-
-  router.get('/api/v1/users', middleware.api, controllers.api.users.getWithLimit)
-  router.post('/api/v1/users/create', middleware.api, controllers.api.users.create)
-  router.get('/api/v1/users/notificationCount', middleware.api, controllers.api.users.notificationCount)
-  router.get('/api/v1/users/getassignees', middleware.api, controllers.api.users.getAssingees)
-  router.get('/api/v1/users/:username', middleware.api, controllers.api.users.single)
-  router.put('/api/v1/users/:username', middleware.api, controllers.api.users.update)
-  router.post('/api/v1/users/:username/uploadprofilepic', controllers.api.users.uploadProfilePic)
-  router.put('/api/v1/users/:username/updatepreferences', middleware.api, controllers.api.users.updatePreferences)
-  router.get('/api/v1/users/:username/enable', middleware.api, controllers.api.users.enableUser)
-  router.delete('/api/v1/users/:username', middleware.api, controllers.api.users.deleteUser)
-  router.post('/api/v1/users/:id/generateapikey', middleware.api, controllers.api.users.generateApiKey)
-  router.post('/api/v1/users/:id/removeapikey', middleware.api, controllers.api.users.removeApiKey)
-  router.post('/api/v1/users/:id/generatel2auth', middleware.api, controllers.api.users.generateL2Auth)
-  router.post('/api/v1/users/:id/removel2auth', middleware.api, controllers.api.users.removeL2Auth)
-
-  router.get('/api/v1/messages', middleware.api, controllers.api.messages.get)
-  router.post('/api/v1/messages/conversation/start', middleware.api, controllers.api.messages.startConversation)
-  router.get('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.getMessagesForConversation)
-  router.delete('/api/v1/messages/conversation/:id', middleware.api, controllers.api.messages.deleteConversation)
-  router.get('/api/v1/messages/conversations', middleware.api, controllers.api.messages.getConversations)
-  router.get('/api/v1/messages/conversations/recent', middleware.api, controllers.api.messages.getRecentConversations)
-  router.post('/api/v1/messages/send', middleware.api, controllers.api.messages.send)
-
-  router.post('/api/v1/notices/create', middleware.api, controllers.api.notices.create)
-  router.get('/api/v1/notices/clearactive', middleware.api, controllers.api.notices.clearActive)
-  router.put('/api/v1/notices/:id', middleware.api, controllers.api.notices.updateNotice)
-  router.delete('/api/v1/notices/:id', middleware.api, controllers.api.notices.deleteNotice)
-
-  // Reports Generator
-  router.post(
-    '/api/v1/reports/generate/tickets_by_group',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByGroup
-  )
-  router.post(
-    '/api/v1/reports/generate/tickets_by_status',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByStatus
-  )
-  router.post(
-    '/api/v1/reports/generate/tickets_by_priority',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByPriority
-  )
-  router.post(
-    '/api/v1/reports/generate/tickets_by_tags',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByTags
-  )
-  router.post(
-    '/api/v1/reports/generate/tickets_by_type',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByType
-  )
-  router.post(
-    '/api/v1/reports/generate/tickets_by_user',
-    middleware.api,
-    controllers.api.reports.generate.ticketsByUser
-  )
-
-  router.get('/api/v1/settings', middleware.api, controllers.api.settings.getSettings)
-  router.put('/api/v1/settings', middleware.api, controllers.api.settings.updateSetting)
-  router.post('/api/v1/settings/testmailer', middleware.api, controllers.api.settings.testMailer)
-  router.put('/api/v1/settings/mailer/template/:id', middleware.api, controllers.api.settings.updateTemplateSubject)
-  router.get('/api/v1/settings/buildsass', middleware.api, controllers.api.settings.buildsass)
+  // v1
+  require('../controllers/api/v1/routes')(middleware, router, controllers)
 
   router.get('/api/v1/plugins/list/installed', middleware.api, function (req, res) {
     return res.json({ success: true, loadedPlugins: global.plugins })
@@ -498,54 +335,24 @@ function mainRoutes (router, middleware, controllers) {
     controllers.api.plugins.removePlugin
   )
 
-  router.post(
-    '/api/v1/public/users/checkemail',
-    middleware.checkCaptcha,
-    middleware.checkOrigin,
-    controllers.api.users.checkEmail
-  )
-  router.post(
-    '/api/v1/public/tickets/create',
-    middleware.checkCaptcha,
-    middleware.checkOrigin,
-    controllers.api.tickets.createPublicTicket
-  )
-  router.post(
-    '/api/v1/public/account/create',
-    middleware.checkCaptcha,
-    middleware.checkOrigin,
-    controllers.api.users.createPublicAccount
-  )
-
-  router.get('/api/v1/backups', middleware.api, middleware.isAdmin, controllers.backuprestore.getBackups)
-  router.post('/api/v1/backup', middleware.api, middleware.isAdmin, controllers.backuprestore.runBackup)
-  router.delete('/api/v1/backup/:backup', middleware.api, middleware.isAdmin, controllers.backuprestore.deleteBackup)
-  router.post('/api/v1/backup/restore', middleware.api, middleware.isAdmin, controllers.backuprestore.restoreBackup)
-  router.post('/api/v1/backup/upload', middleware.api, middleware.isAdmin, controllers.backuprestore.uploadBackup)
-  router.get('/api/v1/backup/hastools', middleware.api, middleware.isAdmin, controllers.backuprestore.hasBackupTools)
-
   router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {
-    if (req.user.role === 'admin') {
-      var pm2 = require('pm2')
-      pm2.connect(function (err) {
+    var pm2 = require('pm2')
+    pm2.connect(function (err) {
+      if (err) {
+        winston.error(err)
+        res.status(400).send(err)
+        return
+      }
+      pm2.restart('trudesk', function (err) {
         if (err) {
-          winston.error(err)
           res.status(400).send(err)
-          return
+          return winston.error(err)
         }
-        pm2.restart('trudesk', function (err) {
-          if (err) {
-            res.status(400).send(err)
-            return winston.error(err)
-          }
 
-          pm2.disconnect()
-          res.json({ success: true })
-        })
+        pm2.disconnect()
+        res.json({ success: true })
       })
-    } else {
-      return res.status(401).json({ success: false, error: 'Unauthorized!' })
-    }
+    })
   })
 
   if (global.env === 'development') {
