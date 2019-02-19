@@ -159,8 +159,8 @@ define([
       $scope.showEditWindow = function (type, showSubject, commentNoteId) {
         var $editWindow = $('#edit-ticket-window')
         if ($editWindow.length < 1) return false
-        var text = ''
         var ticketId = $('#__ticketId').text()
+        var text = ''
         $editWindow.attr('data-ticket-id', ticketId)
 
         if (type.toLowerCase() === 'issue') {
@@ -193,6 +193,7 @@ define([
           $subjectWrap.attr('data-active', false)
         } else {
           var subjectText = ''
+          $subjectWrap.show()
           if (type.toLowerCase() === 'issue') {
             subjectText = $('.initial-issue > .issue-text > .subject-text').text()
           }
