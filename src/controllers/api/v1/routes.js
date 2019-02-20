@@ -106,10 +106,10 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v1/public/account/create', checkCaptcha, checkOrigin, apiCtrl.users.createPublicAccount)
 
   // Groups
-  router.get('/api/v1/groups', apiv1, canUser('groups:view'), apiCtrl.groups.get)
+  router.get('/api/v1/groups', apiv1, apiCtrl.groups.get)
   router.get('/api/v1/groups/all', apiv1, canUser('groups:view'), apiCtrl.groups.getAll)
   router.post('/api/v1/groups/create', apiv1, canUser('groups:create'), apiCtrl.groups.create)
-  router.get('/api/v1/groups/:id', apiv1, canUser('groups:view'), apiCtrl.groups.getSingleGroup)
+  router.get('/api/v1/groups/:id', apiv1, apiCtrl.groups.getSingleGroup)
   router.put('/api/v1/groups/:id', apiv1, canUser('groups:update'), apiCtrl.groups.updateGroup)
   router.delete('/api/v1/groups/:id', apiv1, canUser('groups:delete'), apiCtrl.groups.deleteGroup)
 
@@ -155,7 +155,7 @@ module.exports = function (middleware, router, controllers) {
   router.post(genBaseUrl + 'tickets_by_user', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByUser)
 
   // Settings
-  router.get('/api/v1/settings', apiv1, isAdmin, apiCtrl.settings.getSettings)
+  router.get('/api/v1/settings', apiv1, apiCtrl.settings.getSettings)
   router.put('/api/v1/settings', apiv1, isAdmin, apiCtrl.settings.updateSetting)
   router.post('/api/v1/settings/testmailer', apiv1, isAdmin, apiCtrl.settings.testMailer)
   router.put('/api/v1/settings/mailer/template/:id', apiv1, isAdmin, apiCtrl.settings.updateTemplateSubject)

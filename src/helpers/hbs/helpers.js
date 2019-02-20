@@ -693,7 +693,7 @@ var helpers = {
     var p = require('../../permissions')
     if (p.canThis(user.role, perm)) return options.fn(this)
 
-    options.inverse(this)
+    return options.inverse(this)
   },
 
   checkRole: function (role, perm, options) {

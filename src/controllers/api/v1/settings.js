@@ -32,6 +32,30 @@ apiSettings.getSettings = function (req, res) {
   settingsUtil.getSettings(function (err, settings) {
     if (err) return res.status(400).json({ success: false, error: err })
 
+    // Sanitize
+    if (!req.user.role.isAdmin) {
+      delete settings.data.settings.mailerHost
+      delete settings.data.settings.mailerSSL
+      delete settings.data.settings.mailerPort
+      delete settings.data.settings.mailerUsername
+      delete settings.data.settings.mailerPassword
+      delete settings.data.settings.mailerFrom
+      delete settings.data.settings.mailerCheckEnabled
+      delete settings.data.settings.mailerCheckPolling
+      delete settings.data.settings.mailerCheckHost
+      delete settings.data.settings.mailerCheckPort
+      delete settings.data.settings.mailerCheckPassword
+      delete settings.data.settings.mailerCheckTicketType
+      delete settings.data.settings.mailerCheckTicketPriority
+      delete settings.data.settings.mailerCheckCreateAccount
+      delete settings.data.settings.mailerCheckDeleteMessage
+      delete settings.data.settings.tpsEnabled
+      delete settings.data.settings.tpsUsername
+      delete settings.data.settings.tpsApiKey
+
+      delete settings.data.mailTemplates
+    }
+
     return res.json({ success: true, settings: settings })
   })
 }
