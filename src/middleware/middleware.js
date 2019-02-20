@@ -86,7 +86,7 @@ middleware.redirectIfUser = function (req, res, next) {
     return res.redirect('/')
   }
 
-  if (req.user.role === 'user') {
+  if (!req.user.role.isAdmin && !req.user.role.isAgent) {
     return res.redirect(301, '/tickets')
   }
 

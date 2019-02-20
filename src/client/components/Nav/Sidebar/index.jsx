@@ -85,13 +85,15 @@ class Sidebar extends React.Component {
     const { activeItem, activeSubItem, plugins, sessionUser } = this.props
     return (
       <ul className='side-nav'>
-        <SidebarItem
-          text='Dashboard'
-          icon='dashboard'
-          href='/dashboard'
-          class='navHome'
-          active={activeItem === 'dashboard'}
-        />
+        {sessionUser && Helpers.canUser('agent:*', true) && (
+          <SidebarItem
+            text='Dashboard'
+            icon='dashboard'
+            href='/dashboard'
+            class='navHome'
+            active={activeItem === 'dashboard'}
+          />
+        )}
         {sessionUser && Helpers.canUser('tickets:view') && (
           <SidebarItem
             text='Tickets'
