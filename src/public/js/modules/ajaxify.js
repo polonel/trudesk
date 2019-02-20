@@ -40,7 +40,8 @@ define('modules/ajaxify', [
 
     helpers.init(true)
     helpers.hideAllUiKitDropdowns()
-    // helpers.UI.setNavItem($('#__sidebar_route').text().toLowerCase());
+    helpers.UI.initSidebar()
+    helpers.UI.bindExpand()
 
     nav.init()
 
