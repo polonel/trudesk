@@ -157,7 +157,7 @@ class Sidebar extends React.Component {
             active={activeItem === 'accounts'}
           />
         )}
-        {sessionUser && Helpers.canUser('accounts:view') && (
+        {sessionUser && Helpers.canUser('groups:view') && (
           <SidebarItem
             text='Customer Groups'
             icon='supervisor_account'
