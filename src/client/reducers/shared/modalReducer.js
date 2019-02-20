@@ -30,7 +30,8 @@ const ModalReducer = handleActions(
     }),
 
     [HIDE_MODAL]: state => {
-      UIKit.modal(document.getElementById('uk-modal')).hide()
+      const modal = document.getElementById('uk-modal')
+      if (modal) UIKit.modal(modal).hide()
       return state
     },
 

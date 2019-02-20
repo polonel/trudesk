@@ -121,7 +121,7 @@ define(['angular', 'underscore', 'jquery', 'modules/helpers', 'modules/socket', 
               helpers.UI.showSnackbar('Notice has been activated', false)
 
               clearChecked()
-              History.pushState(null, null, '/notices/')
+              // History.pushState(null, null, '/notices/')
             })
             .error(function (err) {
               $log.log('[trudesk:notices:activateNotice] - ' + err)

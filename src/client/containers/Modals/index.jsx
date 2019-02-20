@@ -17,6 +17,7 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 // Modals
+import NoticeAlertModal from './NoticeAlertModal'
 import CreateTicketTypeModal from './CreateTicketTypeModal'
 import DeleteTicketTypeModal from './DeleteTicketTypeModal'
 import AddPriorityToTypeModal from './AddPriorityToTypeModal'
@@ -28,6 +29,7 @@ import CreateRoleModal from './CreateRoleModal'
 import DeleteRoleModal from './DeleteRoleModal'
 
 const MODAL_COMPONENTS = {
+  NOTICE_ALERT: NoticeAlertModal,
   CREATE_TICKET: CreateTicketModal,
   CREATE_TICKET_TYPE: CreateTicketTypeModal,
   DELETE_TICKET_TYPE: DeleteTicketTypeModal,

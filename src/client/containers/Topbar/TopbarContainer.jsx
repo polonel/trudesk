@@ -19,7 +19,7 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 import { size } from 'lodash'
 
-import { showModal } from 'actions/common'
+import { showModal, hideModal } from 'actions/common'
 
 import Dropdown from 'components/Drowdown'
 import DropdownItem from 'components/Drowdown/DropdownItem'
@@ -35,6 +35,7 @@ import ConversationsDropdownPartial from 'containers/Topbar/conversationsDropdow
 import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 import helpers from 'lib/helpers'
+import Cookies from 'jscookie'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -45,20 +46,52 @@ class TopbarContainer extends React.Component {
     super(props)
     this.onSocketUpdateNotifications = this.onSocketUpdateNotifications.bind(this)
     this.onSocketUpdateUsers = this.onSocketUpdateUsers.bind(this)
+
+    this.onSocketShowNotice = this.onSocketShowNotice.bind(this)
+    this.onSocketClearNotice = this.onSocketClearNotice.bind(this)
   }
 
   componentDidMount () {
     socket.socket.on('updateNotifications', this.onSocketUpdateNotifications)
     socket.socket.on('updateUsers', this.onSocketUpdateUsers)
+    socket.socket.on('$trudesk:notice:show', this.onSocketShowNotice)
+    socket.socket.on('updateClearNotice', this.onSocketClearNotice)
 
     // Call for an update on Mount
     socket.ui.updateNotifications()
     socket.ui.updateUsers()
+
+    this.showNotice(this.props.viewdata.notice, this.props.viewdata.noticeCookieName)
   }
 
   componentWillUnmount () {
     socket.socket.off('updateNotifications', this.onSocketUpdateNotifications)
     socket.socket.off('updateUsers', this.onSocketUpdateUsers)
+    socket.socket.off('$trudesk:notice:show', this.onSocketShowNotice)
+    socket.socket.off('updateClearNotice', this.onSocketClearNotice)
+  }
+
+  showNotice (notice, cookieName) {
+    // We Will move this sooner or later to somewhere more appropriate
+    if (cookieName) {
+      const showNoticeWindow = Cookies.get(cookieName) !== 'false'
+      if (showNoticeWindow)
+        this.props.showModal('NOTICE_ALERT', {
+          notice: notice,
+          noticeCookieName: cookieName,
+          shortDateFormat: this.props.viewdata.shortDateFormat,
+          timeFormat: this.props.viewdata.timeFormat
+        })
+    }
+  }
+
+  onSocketShowNotice (data) {
+    const cookieName = data.name + '_' + helpers.formatDate(data.activeDate, 'MMMDDYYYY_HHmmss')
+    this.showNotice(data, cookieName)
+  }
+
+  onSocketClearNotice () {
+    this.props.hideModal()
   }
 
   onSocketUpdateNotifications (data) {
@@ -184,7 +217,8 @@ class TopbarContainer extends React.Component {
 TopbarContainer.propTypes = {
   sessionUser: PropTypes.object,
   viewdata: PropTypes.object.isRequired,
-  showModal: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  hideModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -194,5 +228,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { showModal }
+  { showModal, hideModal }
 )(TopbarContainer)

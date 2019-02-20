@@ -276,41 +276,10 @@ define([
             })
 
             $scope.noticeAlertWindow = $('#noticeAlertWindow')
-            if ($scope.noticeAlertWindow.length > 0) {
-              var cookieName = $('#__noticeCookieName').text()
-              if (angular.isUndefined(cookieName) || _.isEmpty(cookieName)) return true
-              var shouldShowNotice =
-                $cookies.get(cookieName) === 'true' || angular.isUndefined($cookies.get(cookieName))
-
-              if (shouldShowNotice) {
-                var modal = UI.modal($scope.noticeAlertWindow, {
-                  bgclose: false
-                })
-
-                modal.show()
-              }
-            }
           },
           0,
           false
         )
-      }
-
-      $scope.confirmNoticeClick = function () {
-        if ($scope.noticeAlertWindow.length < 1) return
-        var cookieName = $('#__noticeCookieName').text()
-        var expiresDate = new Date()
-        expiresDate.setDate(expiresDate.getDate() + 1)
-        $cookies.put(cookieName, 'false', { expires: expiresDate })
-
-        UI.modal($scope.noticeAlertWindow).hide()
-      }
-
-      $scope.clearNotifications = function ($event) {
-        $event.preventDefault()
-        $event.stopPropagation()
-
-        socket.ui.clearNotifications()
       }
 
       // Fired from Topbar.hbs
@@ -336,11 +305,6 @@ define([
         if ($id.length < 1) return
 
         socket.ui.markNotificationRead($id)
-      }
-
-      $scope.closeNoticeAlert = function ($event) {
-        $event.preventDefault()
-        UI.modal('#noticeAlertWindow').hide()
       }
 
       $scope.showPrivacyPolicyModal = function ($event) {

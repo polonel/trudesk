@@ -28,8 +28,8 @@ define('modules/socket.io/noticeUI', [
   }
 
   noticeUI.updateShowNotice = function (socket) {
-    socket.removeAllListeners('updateShowNotice')
-    socket.on('updateShowNotice', function (notice) {
+    socket.removeAllListeners('$trudesk:notice:show')
+    socket.on('$trudesk:notice:show', function (notice) {
       var $noticeDiv = $('div#notice-banner')
       var $dateFormated = moment(notice.activeDate).format('MM/DD/YYYY HH:mm')
       var $message = ' - Important: ' + notice.message
@@ -42,10 +42,6 @@ define('modules/socket.io/noticeUI', [
       $('.sidebar').css('top', '105px')
 
       helpers.resizeAll()
-
-      if (notice.alertWindow) {
-        showNoticeAlertWindow(notice)
-      }
     })
   }
 

@@ -56,13 +56,16 @@ class BaseModal extends React.Component {
   render () {
     return (
       <div id={'uk-modal'} className={'uk-modal'} ref={i => (this.modal = i)}>
-        <div className='uk-modal-dialog'>{this.props.children}</div>
+        <div className={'uk-modal-dialog' + (this.props.large ? ' uk-modal-dialog-large' : '')}>
+          {this.props.children}
+        </div>
       </div>
     )
   }
 }
 
 BaseModal.propTypes = {
+  large: PropTypes.bool,
   options: PropTypes.object,
   hideModal: PropTypes.func.isRequired,
   clearModal: PropTypes.func.isRequired
