@@ -193,6 +193,8 @@ define([
       $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen')
       $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen')
     }
+
+    $(window).resize()
   }
 
   helpers.UI.bindExpand = function () {
@@ -962,17 +964,6 @@ define([
   }
 
   helpers.bindKeys = function () {
-    // var commentReply = $('#commentReply');
-    // if (commentReply.length > 0) {
-    //     commentReply.off('keydown');
-    //     commentReply.on('keydown', function(e) {
-    //         var keyCode = (e.which ? e.which : e.keyCode);
-    //         if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
-    //             $('#comment-reply').find('button[type="submit"]').trigger('click');
-    //         }
-    //     });
-    // }
-
     var ticketIssue = $('#createTicketForm').find('textarea#issue')
     if (ticketIssue.length > 0) {
       ticketIssue.off('keydown')
@@ -1012,6 +1003,8 @@ define([
       $('body > .side-nav-sub.tether-element').each(function () {
         $(this).remove()
       })
+
+      self.UI.tetherUpdate()
 
       self.resizeFullHeight()
       self.hideAllpDropDowns()
