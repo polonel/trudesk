@@ -13,7 +13,6 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import axios from 'axios'
 
 import api from '../../api'
 import { FETCH_ROLES } from 'actions/types'
@@ -33,6 +32,6 @@ function * fetchRoles ({ payload }) {
   }
 }
 
-export default function * settingsWatcher () {
+export default function * watcher () {
   yield takeLatest(FETCH_ROLES.ACTION, fetchRoles)
 }

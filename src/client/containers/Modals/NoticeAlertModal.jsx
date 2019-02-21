@@ -32,14 +32,14 @@ class NoticeAlertModal extends React.Component {
     const expiresDate = new Date()
     expiresDate.setDate(expiresDate.getDate() + 1)
     Cookies.set(this.props.noticeCookieName, 'false', { expires: expiresDate })
-    this.props.hideModal()
+    this.props.hideModal('NOTICE_ALERT')
   }
 
   render () {
     const { notice, shortDateFormat, timeFormat } = this.props
     const dateFormat = shortDateFormat + ', ' + timeFormat
     return (
-      <BaseModal options={{ bgclose: false }} large={true}>
+      <BaseModal {...this.props} options={{ bgclose: false }} large={true}>
         <div>
           <div
             style={{

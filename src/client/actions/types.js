@@ -19,6 +19,8 @@ import { PENDING, ERROR, SUCCESS } from './stateConstants'
 export const SHOW_MODAL = defineAction('SHOW_MODAL')
 export const HIDE_MODAL = defineAction('HIDE_MODAL')
 export const CLEAR_MODAL = defineAction('CLEAR_MODAL')
+export const SHOW_NOTICE = defineAction('SHOW_NOTICE', [SUCCESS])
+export const CLEAR_NOTICE = defineAction('CLEAR_NOTICE')
 export const SET_SESSION_USER = defineAction('SET_SESSION_USER')
 export const FETCH_ROLES = defineAction('FETCH_ROLES', [SUCCESS, ERROR])
 export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERROR])

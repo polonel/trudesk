@@ -55,8 +55,6 @@ define('modules/ui', [
     this.onUpdateTicketGrid()
     this.onProfileImageUpdate()
 
-    // this.updateShowNotice(socket)
-    this.updateClearNotice(socket)
     this.updateSubscribe(socket)
 
     // Logs

@@ -26,7 +26,6 @@ define('modules/socket', ['modules/chat', 'modules/ui', 'modules/socket.io/accou
   }
 
   ui.init(socket)
-  ui.updateShowNotice(socket) // Single Load TODO: REMOVE WHEN BANNER IS ON REACT
   sClient.ui = ui
 
   chat.init(socket)

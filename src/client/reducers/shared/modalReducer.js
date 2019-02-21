@@ -13,6 +13,7 @@
  */
 
 import { handleActions } from 'redux-actions'
+import { isUndefined } from 'lodash'
 import { SHOW_MODAL, HIDE_MODAL, CLEAR_MODAL } from 'actions/types'
 
 import UIKit from 'uikit'
@@ -29,9 +30,13 @@ const ModalReducer = handleActions(
       modalProps: action.payload.modalProps
     }),
 
-    [HIDE_MODAL]: state => {
+    [HIDE_MODAL]: (state, action) => {
       const modal = document.getElementById('uk-modal')
-      if (modal) UIKit.modal(modal).hide()
+      if (modal) {
+        const modalTag = modal.getAttribute('data-modal-tag')
+        if (modalTag === action.payload) UIKit.modal(modal).hide()
+        else if (isUndefined(modalTag)) UIKit.modal(modal).hide()
+      }
       return state
     },
 

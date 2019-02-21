@@ -19,7 +19,7 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 import { size } from 'lodash'
 
-import { showModal, hideModal } from 'actions/common'
+import { showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
 import Dropdown from 'components/Drowdown'
 import DropdownItem from 'components/Drowdown/DropdownItem'
@@ -36,6 +36,7 @@ import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
+import NoticeBanner from 'components/NoticeBanner'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -73,10 +74,12 @@ class TopbarContainer extends React.Component {
 
   showNotice (notice, cookieName) {
     // We Will move this sooner or later to somewhere more appropriate
+    this.props.showNotice(notice)
     if (cookieName) {
       const showNoticeWindow = Cookies.get(cookieName) !== 'false'
       if (showNoticeWindow)
         this.props.showModal('NOTICE_ALERT', {
+          modalTag: 'NOTICE_ALERT',
           notice: notice,
           noticeCookieName: cookieName,
           shortDateFormat: this.props.viewdata.shortDateFormat,
@@ -86,12 +89,18 @@ class TopbarContainer extends React.Component {
   }
 
   onSocketShowNotice (data) {
+    this.props.showNotice(data)
     const cookieName = data.name + '_' + helpers.formatDate(data.activeDate, 'MMMDDYYYY_HHmmss')
     this.showNotice(data, cookieName)
+
+    helpers.resizeAll()
   }
 
   onSocketClearNotice () {
-    this.props.hideModal()
+    this.props.clearNotice()
+    this.props.hideModal('NOTICE_ALERT')
+
+    helpers.resizeAll()
   }
 
   onSocketUpdateNotifications (data) {
@@ -112,103 +121,115 @@ class TopbarContainer extends React.Component {
   render () {
     const { viewdata, sessionUser } = this.props
     return (
-      <div className={'uk-grid top-nav'}>
-        <div className='uk-width-1-1'>
-          <div className='top-bar' data-topbar>
-            <div className='title-area uk-float-left'>
-              <div className='logo'>
-                <img src={viewdata.logoImage} alt='Logo' className={'site-logo'} />
+      <div>
+        {this.props.notice && <NoticeBanner notice={this.props.notice} />}
+        <div className={'uk-grid top-nav'}>
+          <div className='uk-width-1-1'>
+            <div className='top-bar' data-topbar>
+              <div className='title-area uk-float-left'>
+                <div className='logo'>
+                  <img src={viewdata.logoImage} alt='Logo' className={'site-logo'} />
+                </div>
               </div>
-            </div>
-            <section className='top-bar-section uk-clearfix'>
-              <div className='top-menu uk-float-right'>
-                <ul className='uk-subnav uk-margin-bottom-remove'>
-                  {/* Start Create Ticket Perm */}
-                  {sessionUser && helpers.canUser('tickets:create') && (
-                    <div>
-                      <li className='top-bar-icon nopadding'>
-                        <button
-                          title={'Create Ticket'}
-                          className={'anchor'}
-                          onClick={() => this.props.showModal('CREATE_TICKET')}
-                        >
-                          <i className='material-icons'>&#xE145;</i>
-                        </button>
-                      </li>
-                      <li className='top-bar-icon nopadding'>
-                        <i className='material-icons'>more_vert</i>
-                      </li>
-                    </div>
-                  )}
-                  {/* End Create Ticket Perm */}
-                  <li className='top-bar-icon'>
-                    <PDropdownTrigger target={'conversations'}>
-                      <a
-                        title={'Conversations'}
-                        className='no-ajaxy uk-vertical-align'
-                        onClick={e => TopbarContainer.onConversationsClicked(e)}
-                      >
-                        <i className='material-icons'>sms</i>
-                      </a>
-                    </PDropdownTrigger>
-                  </li>
-                  <li className='top-bar-icon'>
-                    <PDropdownTrigger target={'notifications'}>
-                      <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
-                        <i className='material-icons'>&#xE88E;</i>
-                        <span className={'alert uk-border-circle label ' + (this.notificationCount < 1 ? 'hide' : '')}>
-                          {this.notificationCount}
-                        </span>
-                      </a>
-                    </PDropdownTrigger>
-                  </li>
-                  <li className='top-bar-icon'>
-                    <OffCanvasTrigger target={'online-user-list'}>
-                      <a title={'Online Users'} className='no-ajaxy'>
-                        <i className='material-icons'>perm_contact_calendar</i>
-                        <span
-                          className={
-                            'online-user-count alert uk-border-circle label ' + (this.activeUserCount < 1 ? 'hide' : '')
-                          }
-                        >
-                          {this.activeUserCount}
-                        </span>
-                      </a>
-                    </OffCanvasTrigger>
-                  </li>
-
-                  <li className='profile-area profile-name'>
-                    <span>{viewdata.loggedInAccount.fullname}</span>
-                    <div className='uk-position-relative uk-display-inline-block'>
-                      <DropdownTrigger pos={'bottom-right'}>
+              <section className='top-bar-section uk-clearfix'>
+                <div className='top-menu uk-float-right'>
+                  <ul className='uk-subnav uk-margin-bottom-remove'>
+                    {/* Start Create Ticket Perm */}
+                    {sessionUser && helpers.canUser('tickets:create') && (
+                      <div>
+                        <li className='top-bar-icon nopadding'>
+                          <button
+                            title={'Create Ticket'}
+                            className={'anchor'}
+                            onClick={() => this.props.showModal('CREATE_TICKET')}
+                          >
+                            <i className='material-icons'>&#xE145;</i>
+                          </button>
+                        </li>
+                        <li className='top-bar-icon nopadding'>
+                          <i className='material-icons'>more_vert</i>
+                        </li>
+                      </div>
+                    )}
+                    {/* End Create Ticket Perm */}
+                    <li className='top-bar-icon'>
+                      <PDropdownTrigger target={'conversations'}>
                         <a
-                          href='#'
-                          title={viewdata.loggedInAccount.fullname}
-                          className={'profile-pic no-ajaxy uk-vertical-align-middle'}
+                          title={'Conversations'}
+                          className='no-ajaxy uk-vertical-align'
+                          onClick={e => TopbarContainer.onConversationsClicked(e)}
                         >
-                          <img
-                            src={'/uploads/users/' + (viewdata.loggedInAccount.image || 'defaultProfile.jpg')}
-                            alt='Profile Picture'
-                          />
+                          <i className='material-icons'>sms</i>
                         </a>
-                        <Dropdown small={true}>
-                          <DropdownHeader text={viewdata.loggedInAccount.fullname} />
-                          <DropdownItem text='Profile' href={'/profile'} />
-                          <DropdownSeparator />
-                          <DropdownItem text={'Logout'} href={'/logout'} />
-                        </Dropdown>
-                      </DropdownTrigger>
-                    </div>
-                  </li>
-                </ul>
-                <NotificationsDropdownPartial shortDateFormat={viewdata.shortDateFormat} timezone={viewdata.timezone} />
-                <ConversationsDropdownPartial shortDateFormat={viewdata.shortDateFormat} timezone={viewdata.timezone} />
-              </div>
-            </section>
-          </div>
-        </div>
+                      </PDropdownTrigger>
+                    </li>
+                    <li className='top-bar-icon'>
+                      <PDropdownTrigger target={'notifications'}>
+                        <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
+                          <i className='material-icons'>&#xE88E;</i>
+                          <span
+                            className={'alert uk-border-circle label ' + (this.notificationCount < 1 ? 'hide' : '')}
+                          >
+                            {this.notificationCount}
+                          </span>
+                        </a>
+                      </PDropdownTrigger>
+                    </li>
+                    <li className='top-bar-icon'>
+                      <OffCanvasTrigger target={'online-user-list'}>
+                        <a title={'Online Users'} className='no-ajaxy'>
+                          <i className='material-icons'>perm_contact_calendar</i>
+                          <span
+                            className={
+                              'online-user-count alert uk-border-circle label ' +
+                              (this.activeUserCount < 1 ? 'hide' : '')
+                            }
+                          >
+                            {this.activeUserCount}
+                          </span>
+                        </a>
+                      </OffCanvasTrigger>
+                    </li>
 
-        <OnlineUserListPartial timezone={viewdata.timezone} users={viewdata.users} />
+                    <li className='profile-area profile-name'>
+                      <span>{viewdata.loggedInAccount.fullname}</span>
+                      <div className='uk-position-relative uk-display-inline-block'>
+                        <DropdownTrigger pos={'bottom-right'}>
+                          <a
+                            href='#'
+                            title={viewdata.loggedInAccount.fullname}
+                            className={'profile-pic no-ajaxy uk-vertical-align-middle'}
+                          >
+                            <img
+                              src={'/uploads/users/' + (viewdata.loggedInAccount.image || 'defaultProfile.jpg')}
+                              alt='Profile Picture'
+                            />
+                          </a>
+                          <Dropdown small={true}>
+                            <DropdownHeader text={viewdata.loggedInAccount.fullname} />
+                            <DropdownItem text='Profile' href={'/profile'} />
+                            <DropdownSeparator />
+                            <DropdownItem text={'Logout'} href={'/logout'} />
+                          </Dropdown>
+                        </DropdownTrigger>
+                      </div>
+                    </li>
+                  </ul>
+                  <NotificationsDropdownPartial
+                    shortDateFormat={viewdata.shortDateFormat}
+                    timezone={viewdata.timezone}
+                  />
+                  <ConversationsDropdownPartial
+                    shortDateFormat={viewdata.shortDateFormat}
+                    timezone={viewdata.timezone}
+                  />
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <OnlineUserListPartial timezone={viewdata.timezone} users={viewdata.users} />
+        </div>
       </div>
     )
   }
@@ -218,15 +239,19 @@ TopbarContainer.propTypes = {
   sessionUser: PropTypes.object,
   viewdata: PropTypes.object.isRequired,
   showModal: PropTypes.func.isRequired,
-  hideModal: PropTypes.func.isRequired
+  hideModal: PropTypes.func.isRequired,
+  showNotice: PropTypes.func.isRequired,
+  clearNotice: PropTypes.func.isRequired,
+  notice: PropTypes.object
 }
 
 const mapStateToProps = state => ({
   sessionUser: state.shared.sessionUser,
+  notice: state.shared.notice,
   viewdata: state.common
 })
 
 export default connect(
   mapStateToProps,
-  { showModal, hideModal }
+  { showModal, hideModal, showNotice, clearNotice }
 )(TopbarContainer)

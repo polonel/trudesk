@@ -27,68 +27,8 @@ define('modules/socket.io/noticeUI', [
     socket.emit('setShowNotice', notice)
   }
 
-  noticeUI.updateShowNotice = function (socket) {
-    socket.removeAllListeners('$trudesk:notice:show')
-    socket.on('$trudesk:notice:show', function (notice) {
-      var $noticeDiv = $('div#notice-banner')
-      var $dateFormated = moment(notice.activeDate).format('MM/DD/YYYY HH:mm')
-      var $message = ' - Important: ' + notice.message
-      var $bgColor = notice.color
-      var $fontColor = notice.fontColor
-      $noticeDiv.css('background', $bgColor)
-      $noticeDiv.css('color', $fontColor)
-      $noticeDiv.html($dateFormated + $message)
-      $noticeDiv.removeClass('uk-hidden')
-      $('.sidebar').css('top', '105px')
-
-      helpers.resizeAll()
-    })
-  }
-
   noticeUI.setClearNotice = function (socket) {
     socket.emit('setClearNotice')
-  }
-
-  noticeUI.updateClearNotice = function (socket) {
-    socket.removeAllListeners('updateClearNotice')
-    socket.on('updateClearNotice', function () {
-      $('div#notice-banner').addClass('uk-hidden')
-      $('.sidebar').css('top', '75px')
-
-      helpers.resizeAll()
-
-      hideNoticeAlertWindow()
-    })
-  }
-
-  function showNoticeAlertWindow (notice) {
-    var noticeAlertWindow = $('#noticeAlertWindow')
-    if (noticeAlertWindow.length < 1) return true
-
-    var noticeTitle = noticeAlertWindow.find('#noticeTitle')
-    var noticeText = noticeAlertWindow.find('#noticeText')
-    var noticeBG = noticeAlertWindow.find('#noticeBG')
-    var noticeCookieName = noticeAlertWindow.find('#__noticeCookieName')
-    noticeCookieName.html(notice.name + '_' + moment(notice.activeDate).format('MMMDDYYYY_HHmmss'))
-
-    noticeBG.css('background-color', notice.color)
-    noticeTitle.css('color', notice.fontColor)
-
-    noticeTitle.html(notice.name)
-    noticeText.html(notice.message)
-
-    var modal = UIkit.modal(noticeAlertWindow, {
-      bgclose: false
-    })
-
-    modal.show()
-  }
-
-  function hideNoticeAlertWindow () {
-    var noticeAlertWindow = $('#noticeAlertWindow')
-    if (noticeAlertWindow.length < 1) return true
-
-    UIkit.modal(noticeAlertWindow).hide()
   }
 
   return noticeUI
