@@ -27,6 +27,7 @@ import CreateTagModal from './CreateTagModal'
 import CreateTicketModal from './CreateTicketModal'
 import CreateRoleModal from './CreateRoleModal'
 import DeleteRoleModal from './DeleteRoleModal'
+import ViewAllNotificationsModal from './ViewAllNotificationsModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -38,7 +39,8 @@ const MODAL_COMPONENTS = {
   DELETE_PRIORITY: DeletePriorityModal,
   CREATE_TAG: CreateTagModal,
   CREATE_ROLE: CreateRoleModal,
-  DELETE_ROLE: DeleteRoleModal
+  DELETE_ROLE: DeleteRoleModal,
+  VIEW_ALL_NOTIFICATIONS: ViewAllNotificationsModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

@@ -35,7 +35,7 @@ const ModalReducer = handleActions(
       if (modal) {
         const modalTag = modal.getAttribute('data-modal-tag')
         if (modalTag === action.payload) UIKit.modal(modal).hide()
-        else if (isUndefined(modalTag)) UIKit.modal(modal).hide()
+        else if (!modalTag) UIKit.modal(modal).hide()
       }
       return state
     },

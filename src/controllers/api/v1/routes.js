@@ -116,11 +116,12 @@ module.exports = function (middleware, router, controllers) {
   // Users
   router.get('/api/v1/users', apiv1, canUser('accounts:view'), apiCtrl.users.getWithLimit)
   router.post('/api/v1/users/create', apiv1, canUser('accounts:create'), apiCtrl.users.create)
+  router.get('/api/v1/users/notifications', apiv1, apiCtrl.users.getNotifications)
   router.get('/api/v1/users/notificationCount', apiv1, apiCtrl.users.notificationCount)
   router.get('/api/v1/users/getassignees', apiv1, isAgent, apiCtrl.users.getAssingees)
   router.get('/api/v1/users/:username', apiv1, canUser('accounts:view'), apiCtrl.users.single)
   router.put('/api/v1/users/:username', apiv1, canUser('accounts:update'), apiCtrl.users.update)
-  router.post('/api/v1/users/:username/uploadprofilepic', apiCtrl.users.uploadProfilePic)
+  router.post('/api/v1/users/:username/uploadprofilepic', apiv1, apiCtrl.users.uploadProfilePic)
   router.put('/api/v1/users/:username/updatepreferences', apiv1, apiCtrl.users.updatePreferences)
   router.get('/api/v1/users/:username/enable', apiv1, canUser('accounts:update'), apiCtrl.users.enableUser)
   router.delete('/api/v1/users/:username', apiv1, canUser('accounts:delete'), apiCtrl.users.deleteUser)

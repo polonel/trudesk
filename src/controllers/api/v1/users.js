@@ -13,19 +13,12 @@
  */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var permissions = require('../../../permissions')
-
 var emitter = require('../../../emitter')
-
 var UserSchema = require('../../../models/user')
-
 var groupSchema = require('../../../models/group')
-
 var notificationSchema = require('../../../models/notification')
 
 var apiUsers = {}
@@ -740,15 +733,18 @@ apiUsers.single = function (req, res) {
  }
  */
 apiUsers.notificationCount = function (req, res) {
-  UserSchema.getUser(req.user._id, function (err, user) {
-    if (err) return res.status(400).json({ error: err.message })
-    if (!user) return res.status(200).json({ count: '' })
+  notificationSchema.getUnreadCount(req.user._id, function (err, count) {
+    if (err) return res.status(400).json({ success: false, error: err.message })
 
-    notificationSchema.getUnreadCount(user._id, function (err, count) {
-      if (err) return res.status(400).json({ error: err.message })
+    return res.json({ success: true, count: count.toString() })
+  })
+}
 
-      res.json({ count: count.toString() })
-    })
+apiUsers.getNotifications = function (req, res) {
+  notificationSchema.findAllForUser(req.user._id, function (err, notifications) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+
+    return res.json({ success: true, notifications: notifications })
   })
 }
 

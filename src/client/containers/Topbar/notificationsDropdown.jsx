@@ -79,6 +79,13 @@ class NotificationsDropdownPartial extends React.Component {
             Clear Notifications
           </a>
         }
+        footerComponent={
+          <div className={'uk-text-center'}>
+            <a className={'no-ajaxy hoverUnderline'} onClick={this.props.onViewAllNotificationsClick}>
+              View All Notifications
+            </a>
+          </div>
+        }
       >
         {this.notifications.map(notification => {
           const formattedTimestamp = moment
@@ -135,7 +142,8 @@ class NotificationsDropdownPartial extends React.Component {
 
 NotificationsDropdownPartial.propTypes = {
   timezone: PropTypes.string.isRequired,
-  shortDateFormat: PropTypes.string.isRequired
+  shortDateFormat: PropTypes.string.isRequired,
+  onViewAllNotificationsClick: PropTypes.func.isRequired
 }
 
 export default NotificationsDropdownPartial

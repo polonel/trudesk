@@ -218,6 +218,7 @@ class TopbarContainer extends React.Component {
                   <NotificationsDropdownPartial
                     shortDateFormat={viewdata.shortDateFormat}
                     timezone={viewdata.timezone}
+                    onViewAllNotificationsClick={() => this.props.showModal('VIEW_ALL_NOTIFICATIONS')}
                   />
                   <ConversationsDropdownPartial
                     shortDateFormat={viewdata.shortDateFormat}

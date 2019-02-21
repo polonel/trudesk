@@ -27,7 +27,7 @@ class PDropDown extends React.Component {
   }
 
   render () {
-    const { title, titleHref, topOffset, leftOffset, rightComponent, children } = this.props
+    const { title, titleHref, topOffset, leftOffset, rightComponent, children, footerComponent } = this.props
     return (
       <div id={this.props.id} className={'p-dropdown'} data-top-offset={topOffset} data-left-offset={leftOffset}>
         <div className='actions'>
@@ -38,6 +38,14 @@ class PDropDown extends React.Component {
         <div className='items close-on-click'>
           <ul>{children}</ul>
         </div>
+        {footerComponent && (
+          <div
+            className={'bottom-actions actions uk-float-left'}
+            style={{ borderBottom: 'none', borderTop: '1px solid rgba(0,0,0,0.2)' }}
+          >
+            {footerComponent}
+          </div>
+        )}
       </div>
     )
   }
@@ -49,7 +57,8 @@ PDropDown.propTypes = {
   titleHref: PropTypes.string,
   topOffset: PropTypes.string,
   leftOffset: PropTypes.string,
-  rightComponent: PropTypes.element
+  rightComponent: PropTypes.element,
+  footerComponent: PropTypes.element
 }
 
 PDropDown.defaultProps = {
