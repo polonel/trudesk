@@ -80,7 +80,7 @@ SettingItem.propTypes = {
   component: PropTypes.element,
   footer: PropTypes.element,
   subPanelPadding: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
 }
 
 export default SettingItem

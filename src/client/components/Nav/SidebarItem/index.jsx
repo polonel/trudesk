@@ -70,7 +70,7 @@ NavButton.propTypes = {
   hasSubmenu: PropTypes.bool,
   subMenuTarget: PropTypes.string,
   active: PropTypes.bool,
-  children: PropTypes.node.isRequired
+  children: PropTypes.node
 }
 
 export default NavButton
