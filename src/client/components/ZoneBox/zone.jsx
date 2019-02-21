@@ -23,7 +23,8 @@ class Zone extends React.Component {
 }
 
 Zone.propTypes = {
-  extraClass: PropTypes.string
+  extraClass: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default Zone

@@ -12,7 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import isUndefined from 'lodash/isUndefined'
 import React from 'react'
 import PropTypes from 'prop-types'
 

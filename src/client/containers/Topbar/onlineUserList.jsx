@@ -16,14 +16,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import moment from 'moment-timezone'
 import { observer } from 'mobx-react'
-import { observable, computed, entries } from 'mobx'
-import { isUndefined, some } from 'lodash'
+import { observable, entries } from 'mobx'
+import { isUndefined } from 'lodash'
 
 import OffCanvas from 'components/OffCanvas'
 
 import UIkit from 'uikit'
 import socket from 'lib/socket'
-import helpers from 'lib/helpers'
 
 @observer
 class OnlineUserListPartial extends React.Component {

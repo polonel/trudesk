@@ -29,7 +29,8 @@ class GridItem extends React.Component {
 GridItem.propTypes = {
   width: PropTypes.string.isRequired,
   extraClass: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default GridItem

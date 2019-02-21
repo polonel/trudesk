@@ -46,7 +46,8 @@ class DropdownTrigger extends React.Component {
 
 DropdownTrigger.propTypes = {
   mode: PropTypes.string,
-  pos: PropTypes.string
+  pos: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 DropdownTrigger.defaultProps = {

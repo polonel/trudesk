@@ -29,7 +29,8 @@ class Dropdown extends React.Component {
 
 Dropdown.propTypes = {
   small: PropTypes.bool,
-  extraClass: PropTypes.string
+  extraClass: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default Dropdown

@@ -79,7 +79,8 @@ SettingItem.propTypes = {
   tooltip: PropTypes.string,
   component: PropTypes.element,
   footer: PropTypes.element,
-  subPanelPadding: PropTypes.string
+  subPanelPadding: PropTypes.string,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default SettingItem

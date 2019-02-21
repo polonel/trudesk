@@ -69,7 +69,8 @@ BaseModal.propTypes = {
   options: PropTypes.object,
   modalTag: PropTypes.string,
   hideModal: PropTypes.func.isRequired,
-  clearModal: PropTypes.func.isRequired
+  clearModal: PropTypes.func.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default connect(

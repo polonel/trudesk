@@ -13,7 +13,6 @@
  */
 
 import React from 'react'
-import PropTypes from 'prop-types'
 
 class DropdownSeparator extends React.Component {
   render () {
@@ -24,7 +23,5 @@ class DropdownSeparator extends React.Component {
     )
   }
 }
-
-DropdownSeparator.propTypes = {}
 
 export default DropdownSeparator

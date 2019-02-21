@@ -35,7 +35,8 @@ class OffCanvas extends React.Component {
 
 OffCanvas.propTypes = {
   title: PropTypes.string,
-  id: PropTypes.string.isRequired
+  id: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default OffCanvas

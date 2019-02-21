@@ -22,7 +22,8 @@ class PDropdownTrigger extends React.Component {
 }
 
 PDropdownTrigger.propTypes = {
-  target: PropTypes.string.isRequired
+  target: PropTypes.string.isRequired,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default PDropdownTrigger

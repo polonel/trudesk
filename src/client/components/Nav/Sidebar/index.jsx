@@ -82,7 +82,7 @@ class Sidebar extends React.Component {
   }
 
   render () {
-    const { activeItem, activeSubItem, plugins, sessionUser } = this.props
+    const { activeItem, activeSubItem, sessionUser } = this.props
     return (
       <ul className='side-nav'>
         {sessionUser && Helpers.canUser('agent:*', true) && (
@@ -297,7 +297,8 @@ Sidebar.propTypes = {
   updateNavChange: PropTypes.func.isRequired,
   activeItem: PropTypes.string.isRequired,
   activeSubItem: PropTypes.string.isRequired,
-  sessionUser: PropTypes.object
+  sessionUser: PropTypes.object,
+  plugins: PropTypes.array
 }
 
 const mapStateToProps = state => ({

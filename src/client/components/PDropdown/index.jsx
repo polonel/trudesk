@@ -58,7 +58,8 @@ PDropDown.propTypes = {
   topOffset: PropTypes.string,
   leftOffset: PropTypes.string,
   rightComponent: PropTypes.element,
-  footerComponent: PropTypes.element
+  footerComponent: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 PDropDown.defaultProps = {

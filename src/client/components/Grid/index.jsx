@@ -30,7 +30,8 @@ class Grid extends React.Component {
 
 Grid.propTypes = {
   extraClass: PropTypes.string,
-  style: PropTypes.object
+  style: PropTypes.object,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default Grid

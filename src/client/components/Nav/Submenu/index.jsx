@@ -96,9 +96,10 @@ class Submenu extends Component {
   }
 }
 
-Submenu.proptypes = {
+Submenu.propTypes = {
   id: PropTypes.string.isRequired,
-  subMenuOpen: PropTypes.bool
+  subMenuOpen: PropTypes.bool,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
 export default Submenu
