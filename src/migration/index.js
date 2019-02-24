@@ -80,9 +80,12 @@ function migrateUserRoles (callback) {
         userSchema.collection.updateMany({ role: 'admin' }, { $set: { role: adminRole._id } }).then(function (res) {
           if (res && res.result) {
             if (res.result.ok === 1) return next(null, roles)
-
-            winston.warn(res.message)
-            return next(res.message)
+            else {
+              winston.warn(res.message)
+              return next(res.message)
+            }
+          } else {
+            return next('Unknown Error Occurred')
           }
         })
       },
@@ -93,9 +96,12 @@ function migrateUserRoles (callback) {
           .then(function (res) {
             if (res && res.result) {
               if (res.result.ok === 1) return next(null, roles)
-
-              winston.warn(res.message)
-              return next(res.message)
+              else {
+                winston.warn(res.message)
+                return next(res.message)
+              }
+            } else {
+              return next('Unknown Error Occurred')
             }
           })
       },
@@ -104,9 +110,12 @@ function migrateUserRoles (callback) {
         userSchema.collection.updateMany({ role: 'user' }, { $set: { role: userRole._id } }).then(function (res) {
           if (res && res.result) {
             if (res.result.ok === 1) return next(null, roles)
-
-            winston.warn(res.message)
-            return next(res.message)
+            else {
+              winston.warn(res.message)
+              return next(res.message)
+            }
+          } else {
+            return next('Unknown Error Occurred')
           }
         })
       }
