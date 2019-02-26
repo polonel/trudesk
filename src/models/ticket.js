@@ -52,7 +52,7 @@ var COLLECTION = 'tickets'
  * @property {Boolean} deleted ```Required``` [default: false] If they ticket is flagged as deleted.
  * @property {TicketType} type ```Required``` Reference to the TicketType
  * @property {Number} status ```Required``` [default: 0] Ticket Status. (See {@link Ticket#setStatus})
- * @property {Number} prioirty ```Required```
+ * @property {Number} priority ```Required```
  * @property {Array} tags An array of Tags.
  * @property {String} subject ```Required``` The subject of the ticket. (Overview)
  * @property {String} issue ```Required``` Detailed information about the ticket problem/task

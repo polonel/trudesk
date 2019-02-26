@@ -8,41 +8,35 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/5/19 1:26 AM
+ *  Updated:    2/22/19 11:32 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class Grid extends React.Component {
+class PageTitle extends React.Component {
   render () {
+    const { title, rightComponent, shadow } = this.props
     return (
-      <div
-        className={
-          'uk-grid uk-clearfix' +
-          (this.props.gutterSize ? ' uk-grid-' + this.props.gutterSize : '') +
-          (this.props.collapse ? ' uk-grid-collapse' : '') +
-          (this.props.extraClass ? ' ' + this.props.extraClass : '')
-        }
-        style={this.props.style}
-      >
-        {this.props.children}
+      <div className={'nopadding'}>
+        <div className={'uk-width-1-1 page-title dt-borderBottom pl-25 uk-clearfix' + (!shadow ? ' noshadow' : '')}>
+          <p className={'uk-float-left'}>{title}</p>
+          <div className={'uk-float-right uk-clearfix uk-width-1-2'}>{rightComponent}</div>
+        </div>
       </div>
     )
   }
 }
 
-Grid.propTypes = {
-  extraClass: PropTypes.string,
-  gutterSize: PropTypes.string,
-  collapse: PropTypes.bool,
-  style: PropTypes.object,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+PageTitle.propTypes = {
+  title: PropTypes.string.isRequired,
+  shadow: PropTypes.bool,
+  rightComponent: PropTypes.element
 }
 
-Grid.defaultProps = {
-  collapse: false
+PageTitle.defaultProps = {
+  shadow: false
 }
 
-export default Grid
+export default PageTitle

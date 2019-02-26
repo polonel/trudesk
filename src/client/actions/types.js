@@ -40,6 +40,11 @@ export const GET_TAGS_WITH_PAGE = defineAction('GET_TAGS_WITH_PAGE', [SUCCESS, E
 export const TAGS_UPDATE_CURRENT_PAGE = defineAction('TAGS_UPDATE_CURRENT_PAGE', [SUCCESS, ERROR])
 export const CREATE_TAG = defineAction('CREATE_TAG', [SUCCESS, ERROR])
 
+// Accounts
+export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR])
+export const SAVE_EDIT_ACCOUNT = defineAction('SAVE_EDIT_ACCOUNT', [PENDING, SUCCESS, ERROR])
+export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
+
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])
 export const UPDATE_SETTING = defineAction('UPDATE_SETTING', [SUCCESS, ERROR])

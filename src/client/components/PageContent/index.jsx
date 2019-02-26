@@ -8,41 +8,33 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/5/19 1:26 AM
+ *  Updated:    2/22/19 11:40 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
 import React from 'react'
 import PropTypes from 'prop-types'
 
-class Grid extends React.Component {
+import helpers from 'lib/helpers'
+
+class PageContent extends React.Component {
+  componentDidMount () {
+    helpers.resizeFullHeight()
+    helpers.setupScrollers()
+  }
+
   render () {
     return (
-      <div
-        className={
-          'uk-grid uk-clearfix' +
-          (this.props.gutterSize ? ' uk-grid-' + this.props.gutterSize : '') +
-          (this.props.collapse ? ' uk-grid-collapse' : '') +
-          (this.props.extraClass ? ' ' + this.props.extraClass : '')
-        }
-        style={this.props.style}
-      >
-        {this.props.children}
+      <div id={this.props.id} className={'page-content no-border-top full-height scrollable p-25'}>
+        <div className={'pb-100'}>{this.props.children}</div>
       </div>
     )
   }
 }
 
-Grid.propTypes = {
-  extraClass: PropTypes.string,
-  gutterSize: PropTypes.string,
-  collapse: PropTypes.bool,
-  style: PropTypes.object,
+PageContent.propTypes = {
+  id: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 
-Grid.defaultProps = {
-  collapse: false
-}
-
-export default Grid
+export default PageContent

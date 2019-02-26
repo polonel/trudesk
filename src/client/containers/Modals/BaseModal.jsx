@@ -55,8 +55,19 @@ class BaseModal extends React.Component {
 
   render () {
     return (
-      <div id={'uk-modal'} className={'uk-modal'} ref={i => (this.modal = i)} data-modal-tag={this.props.modalTag}>
-        <div className={'uk-modal-dialog' + (this.props.large ? ' uk-modal-dialog-large' : '')}>
+      <div
+        id={'uk-modal'}
+        className={'uk-modal' + (this.props.parentExtraClass ? ' ' + this.props.parentExtraClass : '')}
+        ref={i => (this.modal = i)}
+        data-modal-tag={this.props.modalTag}
+      >
+        <div
+          className={
+            'uk-modal-dialog' +
+            (this.props.large ? ' uk-modal-dialog-large' : '') +
+            (this.props.extraClass ? ' ' + this.props.extraClass : '')
+          }
+        >
           {this.props.children}
         </div>
       </div>
@@ -70,6 +81,8 @@ BaseModal.propTypes = {
   modalTag: PropTypes.string,
   hideModal: PropTypes.func.isRequired,
   clearModal: PropTypes.func.isRequired,
+  parentExtraClass: PropTypes.string,
+  extraClass: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 

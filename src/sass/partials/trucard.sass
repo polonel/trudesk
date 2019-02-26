@@ -26,12 +26,16 @@
     position: relative
     border-bottom: 1px solid rgba(0,0,0,.12)
     &.tru-card-head-admin,
+    &.tru-card-head-agent,
     &.tru-card-head-deleted
-      background: #3498db
+      background: $accent_blue
+      border-bottom: none
       .tru-card-head-text
         color: white
       .tru-icon
         color: white !important
+    &.tru-card-head-agent
+      background: $accent_agent
     &.tru-card-head-deleted
       background: $accent_danger !important
   .tru-card-head-menu

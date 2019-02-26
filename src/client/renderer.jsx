@@ -16,9 +16,20 @@ import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
 
-import SettingsContainer from './containers/Settings/SettingsContainer'
+import SettingsContainer from 'containers/Settings/SettingsContainer'
+import AccountsContainer from 'containers/Accounts'
 
 export default function (store) {
+  if (document.getElementById('accounts-container')) {
+    const AccountsContainerWithProvider = (
+      <Provider store={store}>
+        <AccountsContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(AccountsContainerWithProvider, document.getElementById('accounts-container'))
+  }
+
   if (document.getElementById('settings-container')) {
     const SettingsContainerWithProvider = (
       <Provider store={store}>

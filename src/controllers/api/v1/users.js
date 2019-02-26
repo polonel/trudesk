@@ -87,7 +87,9 @@ apiUsers.getWithLimit = function (req, res) {
                     })
                   })
 
-                  user.groups = _.map(groups, 'name')
+                  user.groups = _.map(groups, function (group) {
+                    return { name: group.name, _id: group._id }
+                  })
 
                   result.push(stripUserFields(user))
                   return c()
@@ -334,9 +336,12 @@ apiUsers.createPublicAccount = function (req, res) {
  */
 apiUsers.update = function (req, res) {
   var username = req.params.username
+  if (_.isNull(username) || _.isUndefined(username))
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
   var data = req.body
   // saveGroups - Profile saving where groups are not sent
-  var saveGroups = data.saveGroups
+  var saveGroups = data.saveGroups || true
   var obj = {
     fullname: data.aFullname,
     title: data.aTitle,
@@ -358,6 +363,7 @@ apiUsers.update = function (req, res) {
       user: function (done) {
         UserSchema.getUserByUsername(username, function (err, user) {
           if (err) return done(err)
+          if (!user) return done('Invalid User Object')
 
           obj._id = user._id
 
@@ -380,28 +386,36 @@ apiUsers.update = function (req, res) {
           user.save(function (err, nUser) {
             if (err) return done(err)
 
-            var resUser = stripUserFields(nUser)
+            nUser.populate('role', function (err, populatedUser) {
+              if (err) return done(err)
+              var resUser = stripUserFields(populatedUser)
 
-            done(null, resUser)
+              return done(null, resUser)
+            })
           })
         })
       },
       groups: function (done) {
         if (!saveGroups) return done()
+        var userGroups = []
         groupSchema.getAllGroups(function (err, groups) {
           if (err) return done(err)
           async.each(
             groups,
             function (grp, callback) {
               if (_.includes(obj.groups, grp._id.toString())) {
-                if (grp.isMember(obj._id)) return callback()
+                if (grp.isMember(obj._id)) {
+                  userGroups.push(grp)
+                  return callback()
+                }
                 grp.addMember(obj._id, function (err, result) {
                   if (err) return callback(err)
 
                   if (result) {
                     grp.save(function (err) {
                       if (err) return callback(err)
-                      callback()
+                      userGroups.push(grp)
+                      return callback()
                     })
                   } else {
                     return callback()
@@ -415,7 +429,7 @@ apiUsers.update = function (req, res) {
                     grp.save(function (err) {
                       if (err) return callback(err)
 
-                      callback()
+                      return callback()
                     })
                   } else {
                     return callback()
@@ -426,7 +440,7 @@ apiUsers.update = function (req, res) {
             function (err) {
               if (err) return done(err)
 
-              done()
+              return done(null, userGroups)
             }
           )
         })
@@ -438,7 +452,12 @@ apiUsers.update = function (req, res) {
         return res.status(400).json({ success: false, error: err })
       }
 
-      return res.json({ success: true, user: results.user })
+      var user = results.user.toJSON()
+      user.groups = results.groups.map(function (g) {
+        return { _id: g._id, name: g.name }
+      })
+
+      return res.json({ success: true, user: user })
     }
   )
 }
@@ -1055,7 +1074,6 @@ function stripUserFields (user) {
   user.password = undefined
   user.accessToken = undefined
   user.__v = undefined
-  // user.role = undefined;
   user.tOTPKey = undefined
   user.iOSDeviceTokens = undefined
 

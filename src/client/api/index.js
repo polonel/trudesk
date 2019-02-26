@@ -108,6 +108,22 @@ api.tickets.createTag = ({ name }) => {
   })
 }
 
+api.accounts = {}
+api.accounts.getWithPage = payload => {
+  const limit = payload && payload.limit ? payload.limit : 25
+  const page = payload && payload.page ? payload.page : 0
+  let search = payload && payload.search ? payload.search : ''
+  if (search) search = `&search=${search}`
+  return axios.get(`/api/v1/users?limit=${limit}&page=${page}${search}`).then(res => {
+    return res.data
+  })
+}
+api.accounts.updateUser = payload => {
+  return axios.put(`/api/v1/users/${payload.aUsername}`, payload).then(res => {
+    return res.data
+  })
+}
+
 api.settings = {}
 api.settings.update = settings => {
   return axios.put('/api/v1/settings', settings).then(res => {

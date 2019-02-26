@@ -8,16 +8,13 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:46 PM
+ *  Updated:    2/24/19 2:46 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { all } from 'redux-saga/effects'
-import CommonSaga from './common'
-import SettingsSaga from './settings'
-import TicketSaga from './tickets'
-import AccountSaga from './accounts'
+import { createAction } from 'redux-actions'
+import { FETCH_ACCOUNTS, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
 
-export default function * IndexSagas () {
-  yield all([CommonSaga(), TicketSaga(), SettingsSaga(), AccountSaga()])
-}
+export const fetchAccounts = createAction(FETCH_ACCOUNTS.ACTION, payload => payload, () => ({ thunk: true }))
+export const saveEditAccount = createAction(SAVE_EDIT_ACCOUNT.ACTION)
+export const unloadAccounts = createAction(UNLOAD_ACCOUNTS.ACTION, payload => payload, () => ({ thunk: true }))

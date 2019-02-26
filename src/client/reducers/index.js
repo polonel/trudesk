@@ -21,12 +21,14 @@ import modal from './shared/modalReducer'
 import sidebar from './sidebarReducer'
 import settings from './settings'
 import tagsSettings from './tagsReducer'
+import accountsState from './accountsReducer'
 
 const IndexReducer = combineReducers({
   shared,
   common,
   modal,
   sidebar,
+  accountsState,
   settings,
   tagsSettings,
   form
