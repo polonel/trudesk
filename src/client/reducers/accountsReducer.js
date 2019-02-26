@@ -12,8 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { fromJS, Map, List } from 'immutable'
-import produce from 'immer'
+import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import { FETCH_ACCOUNTS, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
 
