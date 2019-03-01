@@ -19,7 +19,7 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 
 import { showModal } from 'actions/common'
-import { fetchAccounts, unloadAccounts } from 'actions/accounts'
+import { fetchAccounts, deleteAccount, enableAccount, unloadAccounts } from 'actions/accounts'
 
 import TruCard from 'components/TruCard'
 import PageTitle from 'components/PageTitle'
@@ -69,8 +69,18 @@ class AccountsContainer extends React.Component {
     })
   }
 
+  onDeleteAccountClicked (e, user) {
+    e.preventDefault()
+    this.props.deleteAccount({ username: user.get('username') })
+  }
+
+  onEnableAccountClicked (e, user) {
+    e.preventDefault()
+    this.props.enableAccount({ username: user.get('username') })
+  }
+
   getUsersWithPage (page) {
-    this.props.fetchAccounts({ page, limit: 25 }).then(({ response, payload }) => {
+    this.props.fetchAccounts({ page, limit: 25 }).then(({ response }) => {
       if (response.count < 25) this.hasMore = false
     })
   }
@@ -99,15 +109,29 @@ class AccountsContainer extends React.Component {
     const items = this.props.accountsState.accounts.map(user => {
       const userImage = user.get('image') || 'defaultProfile.jpg'
       let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditAccountClicked(e, user)} />]
-      if (user.get('deleted')) actionMenu.push(<DropdownItem key={2} text={'Enable'} />)
-      else actionMenu.push(<DropdownItem key={1} text={'Delete'} extraClass={'uk-text-danger'} />)
+      if (user.get('deleted'))
+        actionMenu.push(<DropdownItem key={2} text={'Enable'} onClick={e => this.onEnableAccountClicked(e, user)} />)
+      else
+        actionMenu.push(
+          <DropdownItem
+            key={1}
+            text={'Delete'}
+            extraClass={'uk-text-danger'}
+            onClick={e => this.onDeleteAccountClicked(e, user)}
+          />
+        )
       const isAdmin = user.getIn(['role', 'isAdmin']) || false
       const isAgent = user.getIn(['role', 'isAgent']) || false
+      const isDeleted = user.get('deleted') || false
       return (
         <GridItem key={user.get('_id')} width={'1-5'} extraClass={'mb-25'}>
           <TruCard
             menu={actionMenu}
-            extraHeadClass={(isAdmin ? 'tru-card-head-admin' : '') + (!isAdmin && isAgent ? 'tru-card-head-agent' : '')}
+            extraHeadClass={
+              (isAdmin ? 'tru-card-head-admin' : '') +
+              (!isAdmin && isAgent ? 'tru-card-head-agent' : '') +
+              (isDeleted ? ' tru-card-head-deleted' : '')
+            }
             header={
               <div>
                 <div className='account-image relative uk-display-inline-block'>
@@ -226,6 +250,8 @@ class AccountsContainer extends React.Component {
 
 AccountsContainer.propTypes = {
   fetchAccounts: PropTypes.func.isRequired,
+  deleteAccount: PropTypes.func.isRequired,
+  enableAccount: PropTypes.func.isRequired,
   unloadAccounts: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
@@ -241,5 +267,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchAccounts, unloadAccounts, showModal }
+  { fetchAccounts, deleteAccount, enableAccount, unloadAccounts, showModal }
 )(AccountsContainer)

@@ -14,7 +14,14 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { CREATE_ACCOUNT, FETCH_ACCOUNTS, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
+import {
+  CREATE_ACCOUNT,
+  DELETE_ACCOUNT,
+  ENABLE_ACCOUNT,
+  FETCH_ACCOUNTS,
+  SAVE_EDIT_ACCOUNT,
+  UNLOAD_ACCOUNTS
+} from 'actions/types'
 
 const initialState = {
   accounts: List([])
@@ -50,6 +57,30 @@ const reducer = handleActions(
       return {
         ...state,
         accounts: state.accounts.set(accountIndex, fromJS(resUser))
+      }
+    },
+
+    [DELETE_ACCOUNT.SUCCESS]: (state, action) => {
+      const isDisabled = action.response.disabled
+      const accountIndex = state.accounts.findIndex(u => {
+        return u.get('username') === action.payload.username
+      })
+      let withDisabled
+      withDisabled = state.accounts.setIn([accountIndex, 'deleted'], isDisabled)
+      if (!isDisabled) withDisabled = state.accounts.delete(accountIndex)
+      return {
+        ...state,
+        accounts: withDisabled
+      }
+    },
+
+    [ENABLE_ACCOUNT.SUCCESS]: (state, action) => {
+      const accountIndex = state.accounts.findIndex(u => {
+        return u.get('username') === action.payload.username
+      })
+      return {
+        ...state,
+        accounts: state.accounts.setIn([accountIndex, 'deleted'], false)
       }
     },
 

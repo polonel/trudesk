@@ -13,7 +13,15 @@
  */
 
 import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
-import { CREATE_ACCOUNT, FETCH_ACCOUNTS, HIDE_MODAL, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
+import {
+  CREATE_ACCOUNT,
+  DELETE_ACCOUNT,
+  ENABLE_ACCOUNT,
+  FETCH_ACCOUNTS,
+  HIDE_MODAL,
+  SAVE_EDIT_ACCOUNT,
+  UNLOAD_ACCOUNTS
+} from 'actions/types'
 
 import Log from '../../logger'
 
@@ -62,6 +70,33 @@ function * saveEditAccount ({ payload }) {
   }
 }
 
+function * deleteAccount ({ payload }) {
+  try {
+    const response = yield call(api.accounts.deleteAccount, payload)
+    yield put({ type: DELETE_ACCOUNT.SUCCESS, response, payload })
+    if (response.disabled) helpers.UI.showSnackbar('Account is linked to existing tickets. Account Disabled')
+    else helpers.UI.showSnackbar('Account deleted successfully')
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: DELETE_ACCOUNT.ERROR, error })
+  }
+}
+
+function * enableAccount ({ payload }) {
+  try {
+    const response = yield call(api.accounts.enableAccount, payload)
+    yield put({ type: ENABLE_ACCOUNT.SUCCESS, response, payload })
+    helpers.UI.showSnackbar('Account has been enabled')
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: ENABLE_ACCOUNT.ERROR, error })
+  }
+}
+
 function * unloadThunk ({ payload, meta }) {
   try {
     yield put({ type: UNLOAD_ACCOUNTS.SUCCESS, payload, meta })
@@ -74,5 +109,7 @@ export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
+  yield takeLatest(DELETE_ACCOUNT.ACTION, deleteAccount)
+  yield takeLatest(ENABLE_ACCOUNT.ACTION, enableAccount)
   yield takeLatest(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
 }

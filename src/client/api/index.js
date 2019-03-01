@@ -129,6 +129,16 @@ api.accounts.updateUser = payload => {
     return res.data
   })
 }
+api.accounts.deleteAccount = ({ username }) => {
+  return axios.delete(`/api/v1/users/${username}`).then(res => {
+    return res.data
+  })
+}
+api.accounts.enableAccount = ({ username }) => {
+  return axios.get(`/api/v1/users/${username}/enable`).then(res => {
+    return res.data
+  })
+}
 
 api.settings = {}
 api.settings.update = settings => {
