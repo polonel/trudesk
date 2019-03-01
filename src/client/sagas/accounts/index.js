@@ -72,6 +72,7 @@ function * saveEditAccount ({ payload }) {
 
 function * deleteAccount ({ payload }) {
   try {
+    yield put({ type: DELETE_ACCOUNT.PENDING, payload })
     const response = yield call(api.accounts.deleteAccount, payload)
     yield put({ type: DELETE_ACCOUNT.SUCCESS, response, payload })
     if (response.disabled) helpers.UI.showSnackbar('Account is linked to existing tickets. Account Disabled')
@@ -109,7 +110,7 @@ export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
-  yield takeLatest(DELETE_ACCOUNT.ACTION, deleteAccount)
-  yield takeLatest(ENABLE_ACCOUNT.ACTION, enableAccount)
+  yield takeEvery(DELETE_ACCOUNT.ACTION, deleteAccount)
+  yield takeEvery(ENABLE_ACCOUNT.ACTION, enableAccount)
   yield takeLatest(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
 }

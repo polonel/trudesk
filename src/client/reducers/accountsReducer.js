@@ -60,6 +60,16 @@ const reducer = handleActions(
       }
     },
 
+    [DELETE_ACCOUNT.PENDING]: (state, action) => {
+      const accountIndex = state.accounts.findIndex(u => {
+        return u.get('username') === action.payload.username
+      })
+      return {
+        ...state,
+        accounts: state.accounts.setIn([accountIndex, 'loading'], true)
+      }
+    },
+
     [DELETE_ACCOUNT.SUCCESS]: (state, action) => {
       const isDisabled = action.response.disabled
       const accountIndex = state.accounts.findIndex(u => {
@@ -67,6 +77,7 @@ const reducer = handleActions(
       })
       let withDisabled
       withDisabled = state.accounts.setIn([accountIndex, 'deleted'], isDisabled)
+      withDisabled = withDisabled.setIn([accountIndex, 'loading'], false)
       if (!isDisabled) withDisabled = state.accounts.delete(accountIndex)
       return {
         ...state,

@@ -16,11 +16,13 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import DropdownTrigger from 'components/Drowdown/DropdownTrigger'
 import Dropdown from 'components/Drowdown'
+import SpinLoader from 'components/SpinLoader'
 
 class TruCard extends React.Component {
   render () {
     return (
-      <div className={'tru-card-wrapper'}>
+      <div className={'tru-card-wrapper uk-position-relative'}>
+        {this.props.loaderActive && <SpinLoader active={this.props.loaderActive} />}
         <div className={'tru-card tru-card-hover'}>
           <div className={'tru-card-head ' + (this.props.extraHeadClass || '')}>
             {this.props.menu && (
@@ -50,7 +52,12 @@ TruCard.propTypes = {
   menu: PropTypes.arrayOf(PropTypes.element),
   header: PropTypes.element.isRequired,
   extraHeadClass: PropTypes.string,
-  content: PropTypes.element.isRequired
+  content: PropTypes.element.isRequired,
+  loaderActive: PropTypes.bool
+}
+
+TruCard.defaultProps = {
+  loaderActive: false
 }
 
 export default TruCard

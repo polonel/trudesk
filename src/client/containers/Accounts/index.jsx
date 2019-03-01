@@ -126,6 +126,7 @@ class AccountsContainer extends React.Component {
       return (
         <GridItem key={user.get('_id')} width={'1-5'} extraClass={'mb-25'}>
           <TruCard
+            loaderActive={user.get('loading')}
             menu={actionMenu}
             extraHeadClass={
               (isAdmin ? 'tru-card-head-admin' : '') +
