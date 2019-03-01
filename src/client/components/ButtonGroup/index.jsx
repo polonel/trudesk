@@ -18,7 +18,7 @@ import PropTypes from 'prop-types'
 class ButtonGroup extends React.Component {
   render () {
     return (
-      <div className={'md-btn-group mt-5 ' + (this.props.classNames ? this.props.classNames : '')}>
+      <div className={'md-btn-group mt-5' + (this.props.classNames ? ' ' + this.props.classNames : '')}>
         {this.props.children}
       </div>
     )

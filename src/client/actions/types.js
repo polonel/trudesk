@@ -42,6 +42,7 @@ export const CREATE_TAG = defineAction('CREATE_TAG', [SUCCESS, ERROR])
 
 // Accounts
 export const FETCH_ACCOUNTS = defineAction('FETCH_ACCOUNTS', [PENDING, SUCCESS, ERROR])
+export const CREATE_ACCOUNT = defineAction('CREATE_ACCOUNT', [PENDING, SUCCESS, ERROR])
 export const SAVE_EDIT_ACCOUNT = defineAction('SAVE_EDIT_ACCOUNT', [PENDING, SUCCESS, ERROR])
 export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 

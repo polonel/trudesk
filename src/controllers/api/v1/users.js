@@ -194,31 +194,40 @@ apiUsers.create = function (req, res) {
       return res.status(400).json(response)
     }
 
-    response.account = a
+    a.populate('role', function (err, populatedAccount) {
+      if (err) return res.status(500).json({ success: false, error: err })
 
-    async.each(
-      postData.aGrps,
-      function (id, done) {
-        if (_.isUndefined(id)) return done(null)
-        groupSchema.getGroupById(id, function (err, grp) {
-          if (err) return done(err)
-          if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID')
+      response.account = populatedAccount.toObject()
+      delete response.account.password
 
-          grp.addMember(a._id, function (err, success) {
+      var groups = []
+
+      async.each(
+        postData.aGrps,
+        function (id, done) {
+          if (_.isUndefined(id)) return done(null)
+          groupSchema.getGroupById(id, function (err, grp) {
             if (err) return done(err)
+            if (!grp) return done('Invalid Group (' + id + ') - Group not found. Check Group ID')
 
-            grp.save(function (err) {
+            grp.addMember(a._id, function (err, success) {
               if (err) return done(err)
-              done(null, success)
+
+              grp.save(function (err) {
+                if (err) return done(err)
+                groups.push(grp)
+                done(null, success)
+              })
             })
           })
-        })
-      },
-      function (err) {
-        if (err) return res.status(400).json({ success: false, error: err })
-        return res.json(response)
-      }
-    )
+        },
+        function (err) {
+          if (err) return res.status(400).json({ success: false, error: err })
+          response.account.groups = groups
+          return res.json(response)
+        }
+      )
+    })
   })
 }
 
@@ -789,11 +798,13 @@ apiUsers.getNotifications = function (req, res) {
 apiUsers.generateApiKey = function (req, res) {
   var id = req.params.id
   if (_.isUndefined(id) || _.isNull(id)) return res.status(400).json({ error: 'Invalid Request' })
-
-  if (!req.user.isAdmin && req.user._id.toString() !== id) return res.status(401).json({ success: 'Unauthorized' })
+  if (!req.user.role.isAdmin && req.user._id.toString() !== id)
+    return res.status(401).json({ success: false, error: 'Unauthorized' })
 
   UserSchema.getUser(id, function (err, user) {
-    if (err) return res.status(400).json({ error: 'Invalid Request' })
+    if (err || !user) return res.status(400).json({ success: false, error: 'Invalid Request' })
+
+    // if (user.accessToken) return res.status(400).json({ success: false, error: 'User already has generated token' })
 
     user.addAccessToken(function (err, token) {
       if (err) return res.status(400).json({ error: 'Invalid Request' })

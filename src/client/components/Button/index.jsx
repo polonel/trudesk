@@ -14,7 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-
+import { merge } from 'lodash'
 import helpers from 'lib/helpers'
 
 class Button extends React.Component {
@@ -27,24 +27,47 @@ class Button extends React.Component {
   }
 
   render () {
-    const { type, small, flat, style, text, onClick, waves, disabled, extraClass, styleOverride } = this.props
+    const {
+      type,
+      small,
+      flat,
+      style,
+      text,
+      onClick,
+      waves,
+      disabled,
+      extraClass,
+      styleOverride,
+      hasDropdown
+    } = this.props
     const classBuild =
       (small ? ' md-btn-small ' : '') +
       (flat ? ' md-btn-flat ' : '') +
       (waves ? ' md-btn-wave ' : '') +
-      (style && flat ? ' md-btn-flat-' + style : style ? ' md-btn-' + style : '') +
+      (style && (style && flat) ? ' md-btn-flat-' + style : style ? ' md-btn-' + style : '') +
       (disabled ? ' disabled ' : '') +
       ' ' +
       extraClass
+    let renderStyleOverride = styleOverride
+    if (small) {
+      if (renderStyleOverride) merge(renderStyleOverride, { maxHeight: '27px' })
+      else renderStyleOverride = { maxHeight: '27px' }
+      if (hasDropdown) merge(renderStyleOverride, { paddingRight: '12px' })
+    }
     return (
       <button
-        className={'md-btn' + classBuild}
+        className={'uk-clearfix md-btn' + classBuild}
         onClick={onClick}
         type={type ? type : 'button'}
         disabled={disabled}
-        style={styleOverride}
+        style={renderStyleOverride}
       >
-        {text}
+        <div className={'uk-float-left'}> {text}</div>
+        {hasDropdown && (
+          <i className={'material-icons'} style={{ fontSize: '18px', margin: '5px 0 0 5px' }}>
+            
+          </i>
+        )}
       </button>
     )
   }
@@ -56,6 +79,7 @@ Button.propTypes = {
   flat: PropTypes.bool,
   style: PropTypes.string,
   styleOverride: PropTypes.object,
+  hasDropdown: PropTypes.bool,
   small: PropTypes.bool,
   waves: PropTypes.bool,
   disabled: PropTypes.bool,
@@ -64,7 +88,11 @@ Button.propTypes = {
 }
 
 Button.defaultProps = {
-  disabled: false
+  disabled: false,
+  hasDropdown: false,
+  flat: false,
+  waves: true,
+  type: 'button'
 }
 
 export default Button

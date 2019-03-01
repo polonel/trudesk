@@ -205,62 +205,6 @@ define('pages/singleTicket', [
     }
   }
 
-  function onEditCommentClick (e) {
-    var self = $(e.currentTarget)
-    if (_.isUndefined(self)) {
-      return true
-    }
-
-    var commentId = self.attr('data-commentId')
-    if (commentId.length > 0) {
-      var commentForm = $('.edit-comment-form[data-commentid="' + commentId + '"]')
-      if (commentForm.length < 1) return true
-      var commentText = $('.ticket-comment[data-commentid="' + commentId + '"]')
-        .find('.issue-text')
-        .find('.comment-body')
-
-      // Setup Text
-      var commentHtml = commentText.html()
-      if (!_.isUndefined(commentHtml)) {
-        // commentHtml = commentHtml.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-        // commentHtml = commentHtml.replace(/(<([^>]+)>)/ig,"");
-        commentHtml = commentHtml.trim()
-        commentHtml = md(commentHtml)
-        commentForm.find('textarea').val(commentHtml)
-      }
-
-      commentText.addClass('hide')
-      commentForm.removeClass('hide')
-    }
-  }
-
-  function onEditNoteClick (e) {
-    var self = $(e.currentTarget)
-    if (_.isUndefined(self)) {
-      return true
-    }
-
-    var noteId = self.attr('data-noteId')
-    if (noteId.length > 0) {
-      var noteForm = $('.edit-note-form[data-noteid="' + noteId + '"]')
-      if (noteForm.length < 1) return true
-      var noteText = $('.ticket-note[data-noteid="' + noteId + '"]')
-        .find('.issue-text')
-        .find('.comment-body')
-
-      // Setup Text
-      var noteHtml = noteText.html()
-      if (!_.isUndefined(noteHtml)) {
-        noteHtml = noteHtml.trim()
-        noteHtml = md(noteHtml)
-        noteForm.find('textarea').val(noteHtml)
-      }
-
-      noteText.addClass('hide')
-      noteForm.removeClass('hide')
-    }
-  }
-
   function onRemoveNoteClick (e) {
     var self = $(e.currentTarget)
     if (_.isUndefined(self)) {
@@ -271,18 +215,6 @@ define('pages/singleTicket', [
     var noteId = self.attr('data-noteid')
     if (noteId.length > 0 && ticketId.length > 0) {
       socketClient.ui.removeNote(ticketId, noteId)
-    }
-  }
-
-  function onEditIssueClick () {
-    var issueForm = $('.edit-issue-form')
-    var issueText = $('.initial-issue')
-      .find('.issue-text')
-      .find('.issue-body')
-
-    if (!issueText.hasClass('hide')) {
-      issueText.addClass('hide')
-      issueForm.removeClass('hide')
     }
   }
 

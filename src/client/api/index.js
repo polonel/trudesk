@@ -109,6 +109,12 @@ api.tickets.createTag = ({ name }) => {
 }
 
 api.accounts = {}
+api.accounts.create = payload => {
+  return axios.post('/api/v1/users/create', payload).then(res => {
+    return res.data
+  })
+}
+
 api.accounts.getWithPage = payload => {
   const limit = payload && payload.limit ? payload.limit : 25
   const page = payload && payload.page ? payload.page : 0

@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { fromJS, Map, List } from 'immutable'
+import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 
 import { GET_TAGS_WITH_PAGE, TAGS_UPDATE_CURRENT_PAGE } from 'actions/types'

@@ -17,8 +17,6 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
-import axios from 'axios'
-import Log from '../../logger'
 
 import { showModal } from 'actions/common'
 import { fetchAccounts, unloadAccounts } from 'actions/accounts'
@@ -29,6 +27,11 @@ import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 import PageContent from 'components/PageContent'
 import DropdownItem from 'components/Drowdown/DropdownItem'
+import DropdownTrigger from 'components/Drowdown/DropdownTrigger'
+import DropdownHeader from 'components/Drowdown/DropdownHeader'
+import Dropdown from 'components/Drowdown'
+import ButtonGroup from 'components/ButtonGroup'
+import Button from 'components/Button'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import helpers from 'lib/helpers'
@@ -158,11 +161,42 @@ class AccountsContainer extends React.Component {
         <PageTitle
           title={'Accounts'}
           rightComponent={
-            <div className={'uk-push-1-4 uk-width-3-4 pr-20'}>
-              <div className='md-input-wrapper' style={{ marginTop: '10px' }}>
-                <label className={'uk-form-label'}>Find Account</label>
-                <input type='text' className={'md-input uk-margin-remove'} onKeyUp={e => this.onSearchKeyUp(e)} />
-                <div className='md-input-bar' />
+            <div className={'uk-grid uk-grid-collapse'}>
+              <div className={'uk-width-3-4 pr-10'}>
+                <div className='md-input-wrapper' style={{ marginTop: '10px' }}>
+                  <label className={'uk-form-label'}>Find Account</label>
+                  <input type='text' className={'md-input uk-margin-remove'} onKeyUp={e => this.onSearchKeyUp(e)} />
+                  <div className='md-input-bar' />
+                </div>
+              </div>
+              <div className={'uk-width-1-4 mt-15 pr-20 uk-clearfix'}>
+                <ButtonGroup classNames={'uk-clearfix uk-float-right'}>
+                  <Button
+                    text={'Create'}
+                    hasDropdown={false}
+                    flat={false}
+                    small={true}
+                    waves={false}
+                    extraClass={'hover-accent'}
+                    onClick={() => this.props.showModal('CREATE_ACCOUNT')}
+                  />
+                  {helpers.canUser('accounts:import', true) && (
+                    <DropdownTrigger mode={'click'} pos={'bottom-right'} offset={5} extraClass={'uk-float-right'}>
+                      <Button
+                        text={''}
+                        hasDropdown={true}
+                        small={true}
+                        waves={false}
+                        styleOverride={{ padding: '0 5px 0 0' }}
+                        extraClass={'pr-5 no-border-radius nbl bg-accent md-color-white hover-accent'}
+                      />
+                      <Dropdown small={true}>
+                        <DropdownHeader text={'Account Actions'} />
+                        <DropdownItem text={'Import'} href={'/accounts/import'} />
+                      </Dropdown>
+                    </DropdownTrigger>
+                  )}
+                </ButtonGroup>
               </div>
             </div>
           }
@@ -195,10 +229,12 @@ AccountsContainer.propTypes = {
   unloadAccounts: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired,
+  shared: PropTypes.object.isRequired,
   accountsState: PropTypes.object.isRequired
 }
 
 const mapStateToProps = state => ({
+  shared: state.shared,
   accountsState: state.accountsState,
   common: state.common
 })

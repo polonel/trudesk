@@ -14,7 +14,7 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { FETCH_ACCOUNTS, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
+import { CREATE_ACCOUNT, FETCH_ACCOUNTS, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
 
 const initialState = {
   accounts: List([])
@@ -30,6 +30,15 @@ const reducer = handleActions(
       return {
         ...state,
         accounts: fromJS(arr)
+      }
+    },
+
+    [CREATE_ACCOUNT.SUCCESS]: (state, action) => {
+      const resAccount = action.response.account
+      const insertedAccount = state.accounts.push(fromJS(resAccount))
+      return {
+        ...state,
+        accounts: insertedAccount.sortBy(account => account.get('fullname'))
       }
     },
 

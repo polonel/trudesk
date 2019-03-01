@@ -265,6 +265,20 @@ label.md-label
   .md-btn
     vertical-align: top
     margin-left: 0 !important
+    &.no-border-radius
+      +borderRadius(0)
+    &:hover,&:active,&:focus
+      box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.18) !important
+    &.no-shadow
+      box-shadow: none !important
+      border: 1px solid rgba(0,0,0,0.18)
+      &:hover,&:active,&:focus
+        box-shadow: none !important
+        background: rgba(0,0,0,0.01)
+    &.hover-accent
+      &:hover,&:active,&:focus
+        color: #fff
+        background: $accent_color
     &:first-child
       border-top-right-radius: 0
       border-bottom-right-radius: 0

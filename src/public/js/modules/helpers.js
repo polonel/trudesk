@@ -798,10 +798,10 @@ define([
     })
   }
 
-  helpers.UI.multiSelect = function () {
+  helpers.UI.multiSelect = function (options) {
     $('.multiselect').each(function () {
       var self = $(this)
-      self.multiSelect()
+      self.multiSelect(options)
     })
   }
 

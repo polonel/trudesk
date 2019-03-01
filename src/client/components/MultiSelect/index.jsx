@@ -21,7 +21,10 @@ import helpers from 'lib/helpers'
 class MultiSelect extends React.Component {
   componentDidMount () {
     const $select = $(this.select)
-    helpers.UI.multiSelect()
+    helpers.UI.multiSelect({
+      afterSelect: this.props.onChange,
+      afterDeselect: this.props.onChange
+    })
 
     if (this.props.initialSelected) {
       $select.multiSelect('select', this.props.initialSelected)

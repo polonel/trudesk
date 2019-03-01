@@ -12,7 +12,6 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
 var nconf = require('nconf')
 var mongoose = require('mongoose')
 var winston = require('winston')

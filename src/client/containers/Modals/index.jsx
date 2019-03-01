@@ -28,6 +28,7 @@ import CreateTicketModal from './CreateTicketModal'
 import CreateRoleModal from './CreateRoleModal'
 import DeleteRoleModal from './DeleteRoleModal'
 import ViewAllNotificationsModal from './ViewAllNotificationsModal'
+import CreateAccountModal from './CreateAccountModal'
 import EditAccountModal from './EditAccountModal'
 
 const MODAL_COMPONENTS = {
@@ -42,6 +43,7 @@ const MODAL_COMPONENTS = {
   CREATE_ROLE: CreateRoleModal,
   DELETE_ROLE: DeleteRoleModal,
   VIEW_ALL_NOTIFICATIONS: ViewAllNotificationsModal,
+  CREATE_ACCOUNT: CreateAccountModal,
   EDIT_ACCOUNT: EditAccountModal
 }
 

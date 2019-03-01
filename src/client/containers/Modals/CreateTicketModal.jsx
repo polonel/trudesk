@@ -151,7 +151,7 @@ class CreateTicketModal extends React.Component {
               className={'md-input'}
               data-validation='length'
               data-validation-length={`min${viewdata.ticketSettings.minSubject}`}
-              data-validation-error-msg={`Please enter a valid Subject. Subject must contain a least ${
+              data-validation-error-msg={`Please enter a valid Subject. Subject must contain at least ${
                 viewdata.ticketSettings.minSubject
               } characters.`}
             />

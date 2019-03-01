@@ -13,7 +13,6 @@
  */
 
 import { handleActions } from 'redux-actions'
-import { isUndefined } from 'lodash'
 import { SHOW_MODAL, HIDE_MODAL, CLEAR_MODAL } from 'actions/types'
 
 import UIKit from 'uikit'

@@ -202,7 +202,7 @@ class EditAccountModal extends React.Component {
               <MultiSelect
                 items={groups}
                 initialSelected={user.groups.map(i => i._id)}
-                onChange={e => this.onGroupSelectChange(e)}
+                onChange={() => {}}
                 ref={r => (this.groupSelect = r)}
               />
             </div>

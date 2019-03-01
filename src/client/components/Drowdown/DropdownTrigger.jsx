@@ -26,7 +26,8 @@ class DropdownTrigger extends React.Component {
     if (this.drop) {
       UIkit.dropdown(this.drop, {
         mode: this.props.mode,
-        pos: this.props.pos
+        pos: this.props.pos,
+        offset: this.props.offset
       })
     }
   }
@@ -37,7 +38,12 @@ class DropdownTrigger extends React.Component {
 
   render () {
     return (
-      <div ref={i => (this.drop = i)} className={'uk-position-relative'} aria-haspopup={true} aria-expanded={false}>
+      <div
+        ref={i => (this.drop = i)}
+        className={'uk-position-relative' + (this.props.extraClass ? ' ' + this.props.extraClass : '')}
+        aria-haspopup={true}
+        aria-expanded={false}
+      >
         {this.props.children}
       </div>
     )
@@ -47,6 +53,8 @@ class DropdownTrigger extends React.Component {
 DropdownTrigger.propTypes = {
   mode: PropTypes.string,
   pos: PropTypes.string,
+  offset: PropTypes.number,
+  extraClass: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
 }
 

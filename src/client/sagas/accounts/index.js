@@ -13,7 +13,7 @@
  */
 
 import { call, put, takeLatest, takeEvery } from 'redux-saga/effects'
-import { FETCH_ACCOUNTS, HIDE_MODAL, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
+import { CREATE_ACCOUNT, FETCH_ACCOUNTS, HIDE_MODAL, SAVE_EDIT_ACCOUNT, UNLOAD_ACCOUNTS } from 'actions/types'
 
 import Log from '../../logger'
 
@@ -31,6 +31,20 @@ function * fetchAccounts ({ payload, meta }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: FETCH_ACCOUNTS.ERROR, error })
+  }
+}
+
+function * createAccount ({ payload }) {
+  try {
+    const response = yield call(api.accounts.create, payload)
+    yield put({ type: CREATE_ACCOUNT.SUCCESS, response })
+    yield put({ type: HIDE_MODAL.ACTION })
+    helpers.UI.showSnackbar('Account created successfully')
+  } catch (error) {
+    const errorText = error.response.data.error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    Log.error(errorText, error.response || error)
+    yield put({ type: CREATE_ACCOUNT.ERROR, error })
   }
 }
 
@@ -57,7 +71,8 @@ function * unloadThunk ({ payload, meta }) {
 }
 
 export default function * watcher () {
+  yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
-  yield takeEvery(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
+  yield takeLatest(UNLOAD_ACCOUNTS.ACTION, unloadThunk)
 }
