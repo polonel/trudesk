@@ -1649,6 +1649,36 @@ define([
     return _.rest(roleOrder, idx)
   }
 
+  helpers.getLoggedInRoleHierarchy = function () {
+    var loggedInRole = window.trudeskSessionService.getUser().role
+    return helpers.parseRoleHierarchy(loggedInRole._id)
+  }
+
+  helpers.getRolesByHierarchy = function () {
+    var roleOrder = helpers.getLoggedInRoleHierarchy()
+    var roles = window.trudeskSessionService.getRoles()
+    var returnedRoles = []
+    _.each(roles, function (r) {
+      var idx = _.findIndex(roleOrder, function (i) {
+        return i.toString() === r._id.toString()
+      })
+      if (idx !== -1) returnedRoles.push(roles[idx])
+    })
+
+    return returnedRoles
+  }
+
+  helpers.hasHierarchyOverRole = function (roleToCheck) {
+    var loggedInRole = window.trudeskSessionService.getUser().role
+    var roleOrder = helpers.parseRoleHierarchy(loggedInRole._id)
+    if (roleOrder.length < 1) return false
+    var idx = _.findIndex(roleOrder, function (i) {
+      return i.toString() === roleToCheck.toString()
+    })
+
+    return idx !== -1
+  }
+
   helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
     if (action && !helpers.canUser(action)) return false
     if (!extRole) extRole = window.trudeskSessionService.getUser().role._id

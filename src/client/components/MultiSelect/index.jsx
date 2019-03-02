@@ -30,6 +30,11 @@ class MultiSelect extends React.Component {
       $select.multiSelect('select', this.props.initialSelected)
       $select.multiSelect('refresh')
     }
+
+    if (this.props.disabled) {
+      $select.attr('disabled', 'disabled')
+      $select.multiSelect('refresh')
+    }
   }
 
   getSelected () {
@@ -59,7 +64,8 @@ MultiSelect.propTypes = {
   id: PropTypes.string,
   items: PropTypes.array.isRequired,
   initialSelected: PropTypes.array,
-  onChange: PropTypes.func.isRequired
+  onChange: PropTypes.func.isRequired,
+  disabled: PropTypes.bool
 }
 
 export default MultiSelect

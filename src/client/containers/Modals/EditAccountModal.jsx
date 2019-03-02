@@ -86,6 +86,7 @@ class EditAccountModal extends React.Component {
 
   onSubmitSaveAccount (e) {
     e.preventDefault()
+    if (!this.props.edit) return
     const data = {
       aUsername: this.props.user.username,
       aFullname: this.name,
@@ -102,9 +103,10 @@ class EditAccountModal extends React.Component {
   }
 
   render () {
-    const { user } = this.props
+    const { user, edit } = this.props
     const profilePicture = user.image || 'defaultProfile.jpg'
-    const roles = this.props.common.roles.map(role => {
+    const parsedRoles = helpers.getRolesByHierarchy()
+    const roles = parsedRoles.map(role => {
       return { text: role.name, value: role._id }
     })
     const groups = this.props.common.groups.map(group => {
@@ -115,28 +117,39 @@ class EditAccountModal extends React.Component {
         <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
           <div className='uk-width-1-1'>
             <div style={{ width: '82px', height: '82px', float: 'left', marginRight: '24px', position: 'relative' }}>
-              <form className={'form nomargin'} encType={'multipart/form-data'}>
+              {edit && (
+                <form className={'form nomargin'} encType={'multipart/form-data'}>
+                  <div className='mediumProfilePic' style={{ position: 'relative' }}>
+                    <input name={'_id'} type='hidden' value={user._id} readOnly={true} />
+                    <input name={'username'} type='hidden' value={user.username} readOnly={true} />
+                    <input
+                      type='file'
+                      style={{ display: 'none' }}
+                      ref={r => (this.uploadImageInput = r)}
+                      onChange={e => this.onImageUploadChanged(e)}
+                    />
+                    <img
+                      src={`/uploads/users/${profilePicture}`}
+                      alt='Profile Picture'
+                      ref={r => (this.uploadProfileImage = r)}
+                    />
+                  </div>
+                  <div className='profile-picture-controls'>
+                    <span className='btn-file' onClick={e => this.onFileBtnClick(e)}>
+                      <i className='material-icons'>file_upload</i>
+                    </span>
+                  </div>
+                </form>
+              )}
+              {!edit && (
                 <div className='mediumProfilePic' style={{ position: 'relative' }}>
-                  <input name={'_id'} type='hidden' value={user._id} readOnly={true} />
-                  <input name={'username'} type='hidden' value={user.username} readOnly={true} />
-                  <input
-                    type='file'
-                    style={{ display: 'none' }}
-                    ref={r => (this.uploadImageInput = r)}
-                    onChange={e => this.onImageUploadChanged(e)}
-                  />
                   <img
                     src={`/uploads/users/${profilePicture}`}
                     alt='Profile Picture'
                     ref={r => (this.uploadProfileImage = r)}
                   />
                 </div>
-                <div className='profile-picture-controls'>
-                  <span className='btn-file' onClick={e => this.onFileBtnClick(e)}>
-                    <i className='material-icons'>file_upload</i>
-                  </span>
-                </div>
-              </form>
+              )}
             </div>
             <div className='user-heading-content'>
               <h2>
@@ -156,6 +169,7 @@ class EditAccountModal extends React.Component {
                   className={'md-input'}
                   value={this.name}
                   onChange={e => this.onInputChanged(e, 'name')}
+                  disabled={!edit}
                 />
               </div>
               <div className='uk-float-left uk-width-1-2'>
@@ -165,19 +179,24 @@ class EditAccountModal extends React.Component {
                   className={'md-input'}
                   value={this.title}
                   onChange={e => this.onInputChanged(e, 'title')}
+                  disabled={!edit}
                 />
               </div>
             </div>
-            <div className='uk-margin-medium-bottom uk-clearfix'>
-              <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
-                <label className={'uk-form-label'}>Password</label>
-                <input type='password' className={'md-input'} />
+            {edit && (
+              <div>
+                <div className='uk-margin-medium-bottom uk-clearfix'>
+                  <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
+                    <label className={'uk-form-label'}>Password</label>
+                    <input type='password' className={'md-input'} />
+                  </div>
+                  <div className='uk-float-left uk-width-1-2'>
+                    <label className={'uk-form-label'}>Confirm Password</label>
+                    <input type='password' className={'md-input'} />
+                  </div>
+                </div>
               </div>
-              <div className='uk-float-left uk-width-1-2'>
-                <label className={'uk-form-label'}>Confirm Password</label>
-                <input type='password' className={'md-input'} />
-              </div>
-            </div>
+            )}
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Email</label>
               <input
@@ -185,6 +204,7 @@ class EditAccountModal extends React.Component {
                 className={'md-input'}
                 value={this.email}
                 onChange={e => this.onInputChanged(e, 'email')}
+                disabled={!edit}
               />
             </div>
             <div className='uk-margin-medium-bottom'>
@@ -195,6 +215,7 @@ class EditAccountModal extends React.Component {
                 showTextbox={false}
                 defaultValue={user.role._id}
                 onSelectChange={e => this.onRoleSelectChange(e)}
+                disabled={!edit}
               />
             </div>
             <div className='uk-margin-medium-bottom'>
@@ -204,11 +225,19 @@ class EditAccountModal extends React.Component {
                 initialSelected={user.groups.map(i => i._id)}
                 onChange={() => {}}
                 ref={r => (this.groupSelect = r)}
+                disabled={!edit}
               />
             </div>
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
-              <Button text={'Save Account'} flat={true} waves={true} style={'primary'} type={'submit'} />
+              <Button
+                text={'Save Account'}
+                flat={true}
+                waves={true}
+                style={'primary'}
+                type={'submit'}
+                disabled={!edit}
+              />
             </div>
           </form>
         </div>
@@ -218,9 +247,14 @@ class EditAccountModal extends React.Component {
 }
 
 EditAccountModal.propTypes = {
+  edit: PropTypes.bool.isRequired,
   user: PropTypes.object.isRequired,
   common: PropTypes.object.isRequired,
   saveEditAccount: PropTypes.func.isRequired
+}
+
+EditAccountModal.defaultProps = {
+  edit: false
 }
 
 const mapStateToProps = state => ({

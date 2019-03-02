@@ -62,7 +62,9 @@ class AccountsContainer extends React.Component {
 
   onEditAccountClicked (e, user) {
     e.preventDefault(e)
+    const canEditAccount = helpers.hasHierarchyOverRole(user.getIn(['role', '_id']))
     this.props.showModal('EDIT_ACCOUNT', {
+      edit: canEditAccount,
       user: user.toJS(),
       roles: this.props.common.roles,
       groups: this.props.common.groups

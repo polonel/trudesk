@@ -37,7 +37,6 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/dashboard',
       'pages/messages',
       'pages/tickets',
-      'pages/accounts',
       'pages/accountsImport',
       'pages/groups',
       'pages/profile',
@@ -54,7 +53,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
 
       'modules/ajaximgupload',
       'modules/attachmentUpload'
-    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r, s) {
+    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p, q, r) {
       async.parallel(
         [
           function (done) {
@@ -106,11 +105,8 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
             p.init(done)
           },
           function (done) {
-            q.init(done)
-          },
-          function (done) {
+            q.init()
             r.init()
-            s.init()
 
             return done()
           }
