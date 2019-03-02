@@ -60,3 +60,5 @@ public/uploads/assets/*.*
 backups/
 
 public/uploads/assets/upload/
+
+stats\.json
