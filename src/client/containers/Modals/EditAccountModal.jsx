@@ -207,17 +207,19 @@ class EditAccountModal extends React.Component {
                 disabled={!edit}
               />
             </div>
-            <div className='uk-margin-medium-bottom'>
-              <label className={'uk-form-label'}>Role</label>
-              <SingleSelect
-                items={roles}
-                width={'100'}
-                showTextbox={false}
-                defaultValue={user.role._id}
-                onSelectChange={e => this.onRoleSelectChange(e)}
-                disabled={!edit}
-              />
-            </div>
+            {edit && (
+              <div className='uk-margin-medium-bottom'>
+                <label className={'uk-form-label'}>Role</label>
+                <SingleSelect
+                  items={roles}
+                  width={'100'}
+                  showTextbox={false}
+                  defaultValue={user.role._id}
+                  onSelectChange={e => this.onRoleSelectChange(e)}
+                  disabled={!edit}
+                />
+              </div>
+            )}
             <div className='uk-margin-medium-bottom'>
               <label className='uk-form-label'>Groups</label>
               <MultiSelect
