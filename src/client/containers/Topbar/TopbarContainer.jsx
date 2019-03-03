@@ -108,6 +108,7 @@ class TopbarContainer extends React.Component {
   }
 
   onSocketUpdateUsers (data) {
+    delete data[this.props.sessionUser.username]
     const count = size(data)
     if (count !== this.activeUserCount) this.activeUserCount = count
   }
@@ -229,7 +230,11 @@ class TopbarContainer extends React.Component {
             </div>
           </div>
 
-          <OnlineUserListPartial timezone={viewdata.timezone} users={viewdata.users} />
+          <OnlineUserListPartial
+            timezone={viewdata.timezone}
+            users={viewdata.users}
+            sessionUser={this.props.sessionUser}
+          />
         </div>
       </div>
     )

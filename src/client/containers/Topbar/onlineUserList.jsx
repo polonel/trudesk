@@ -94,6 +94,7 @@ class OnlineUserListPartial extends React.Component {
             <div className='online-list-wrapper'>
               <ul className='online-list'>
                 {entries(this.activeUsers).map(([key, value]) => {
+                  if (this.props.sessionUser && value.user._id === this.props.sessionUser._id) return
                   const image = value.user.image || 'defaultProfile.jpg'
                   return (
                     <li key={key}>
@@ -123,6 +124,7 @@ class OnlineUserListPartial extends React.Component {
             </div>
             <ul className='user-list'>
               {users.map(user => {
+                if (this.props.sessionUser && user._id === this.props.sessionUser._id) return
                 const image = user.image || 'defaultProfile.jpg'
                 return (
                   <li key={user._id} data-search-term={user.fullname.toLowerCase()}>
@@ -154,6 +156,7 @@ class OnlineUserListPartial extends React.Component {
 }
 
 OnlineUserListPartial.propTypes = {
+  sessionUser: PropTypes.object,
   timezone: PropTypes.string.isRequired,
   users: PropTypes.array.isRequired
 }
