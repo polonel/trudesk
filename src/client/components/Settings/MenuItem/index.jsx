@@ -38,7 +38,7 @@ MenuItem.propTypes = {
   active: PropTypes.bool,
   onClick: PropTypes.func.isRequired,
   draggable: PropTypes.bool,
-  dragKey: PropTypes.string
+  dragKey: PropTypes.oneOfType([PropTypes.string, PropTypes.number])
 }
 
 export default MenuItem

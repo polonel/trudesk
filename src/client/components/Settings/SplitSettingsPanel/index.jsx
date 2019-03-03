@@ -115,7 +115,7 @@ class SplitSettingsPanel extends React.Component {
 
 SplitSettingsPanel.propTypes = {
   title: PropTypes.string.isRequired,
-  subtitle: PropTypes.string,
+  subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   rightComponent: PropTypes.element,
   scrollable: PropTypes.bool,
   maxHeight: PropTypes.string,
