@@ -213,9 +213,11 @@
             <div class="page-message nopadding" style="margin-left: 360px;">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
-                            Add Comment
-                        </a>
+                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "comments:create"}}
+                            <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
+                                Add Comment
+                            </a>
+                        {{/hasPermOverRole}}
                     </div>
                     <div class="onoffswitch subscribeSwitch uk-float-right" style="margin-right: 10px; position: relative; top: 18px;">
                         <input type="checkbox" name="subscribeSwitch" class="onoffswitch-checkbox" id="subscribeSwitch" ng-model="subscribed" ng-change="SubscriberChange()"
@@ -250,7 +252,6 @@
                             </div>
                             <div class="issue-text">
                                 <h3 class="subject-text">{{data.ticket.subject}}</h3>
-                                <!--<input id="subjectText" name="subjectText" type="text" class="md-input" value="{{data.ticket.subject}}" />-->
                                 <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                                 <br>
                                 <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD HH:mm"}}" >
@@ -261,9 +262,9 @@
                                     {{#each data.ticket.attachments}}
                                         <li>
                                             <a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a>
-                                            {{#canUser ../data.common.loggedInAccount "tickets:removeAttachment"}}
+                                            {{#canUserOrAdmin ../data.common.loggedInAccount "tickets:removeAttachment"}}
                                                 <a href="#" class="remove-attachment" data-attachmentId="{{_id}}"><i class="fa fa-remove"></i></a>
-                                            {{/canUser}}
+                                            {{/canUserOrAdmin}}
                                         </li>
                                     {{/each}}
                                 </ul>
@@ -271,20 +272,16 @@
                                     {{{data.ticket.issue}}}
                                 </div>
                             </div>
-                            {{#canUserOrAdmin data.common.loggedInAccount "tickets:update"}}
+                            {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                 <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
-                            {{else}}
-                                {{#canEditSelf data.user data.ticket.owner 'ticket'}}
-                                    <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
-                                {{/canEditSelf}}
-                            {{/canUserOrAdmin}}
-                            <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
-                                <div class="add-attachment {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
+                                <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
+                                    <div class="add-attachment {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
 
-                                <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
-                                <input type="hidden" name="ownerId" value="{{data.common.loggedInAccount._id}}" />
-                                <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
-                            </form>
+                                    <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
+                                    <input type="hidden" name="ownerId" value="{{data.common.loggedInAccount._id}}" />
+                                    <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
+                                </form>
+                            {{/hasPermOverRole}}
                         </div>
                         <div class="tru-tabs comments-notes-tab uk-clearfix {{#compare (size data.ticket.commentsAndNotes) '<' 1}} hide {{/compare}}" style="padding: 20px 0 !important;" data-ticketId="{{data.ticket._id}}">
                             <div class="tru-tab-selectors" style="margin-left: 110px;">
