@@ -80,7 +80,7 @@ class NotificationsDropdownPartial extends React.Component {
           </a>
         }
         footerComponent={
-          <div className={'uk-text-center'}>
+          <div className={'uk-text-center' + (this.notifications.length < 1 ? ' hide' : '')}>
             <a className={'no-ajaxy hoverUnderline'} onClick={this.props.onViewAllNotificationsClick}>
               View All Notifications
             </a>
