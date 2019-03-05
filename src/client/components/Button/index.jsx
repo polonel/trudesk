@@ -62,7 +62,7 @@ class Button extends React.Component {
         disabled={disabled}
         style={renderStyleOverride}
       >
-        <div className={'uk-float-left'}> {text}</div>
+        <div className={'uk-float-left uk-width-1-1 uk-text-center'}> {text}</div>
         {hasDropdown && (
           <i className={'material-icons'} style={{ fontSize: '18px', margin: '5px 0 0 5px' }}>
             

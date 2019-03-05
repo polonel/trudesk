@@ -100,8 +100,6 @@ function * checkMongoDBTools ({ payload }) {
     const response = yield call(api.settings.hasMongoDBTools, payload)
     yield put({ type: FETCH_MONGODB_TOOLS.SUCCESS, response })
   } catch (error) {
-    const errorText = error.response.data.error
-    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     yield put({ type: FETCH_MONGODB_TOOLS.ERROR, error })
   }
 }
