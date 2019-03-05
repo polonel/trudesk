@@ -94,7 +94,7 @@ events.onUpdateAssigneeList = function (socket) {
   socket.on('updateAssigneeList', function () {
     roleSchema.getAgentRoles(function (err, roles) {
       if (err) return true
-      userSchema.find({ role: { $in: roles } }, function (err, users) {
+      userSchema.find({ role: { $in: roles }, deleted: false }, function (err, users) {
         if (err) return true
 
         var sortedUser = _.sortBy(users, 'fullname')

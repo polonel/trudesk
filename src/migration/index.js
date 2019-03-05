@@ -16,7 +16,6 @@ var _ = require('lodash')
 var async = require('async')
 var winston = require('winston')
 var semver = require('semver')
-var moment = require('moment-timezone')
 
 var SettingsSchema = require('../models/setting')
 var userSchema = require('../models/user')
