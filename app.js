@@ -158,16 +158,18 @@ function launchServer (db) {
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
-              return next()
+              return next(err)
             }
 
             if (mailCheckEnabled && mailCheckEnabled.value) {
               settingSchema.getSettings(function (err, settings) {
-                if (err) return next()
+                if (err) return next(err)
 
                 var mailCheck = require('./src/mailer/mailCheck')
                 winston.debug('Starting MailCheck...')
                 mailCheck.init(settings)
+
+                return next()
               })
             } else {
               return next()
@@ -256,7 +258,9 @@ function launchServer (db) {
           return next()
         }
       ],
-      function () {
+      function (err) {
+        if (err) throw new Error(err)
+
         ws.listen(function () {
           winston.info('trudesk Ready')
         })

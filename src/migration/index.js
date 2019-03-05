@@ -54,6 +54,7 @@ function saveVersion (callback) {
         }
 
         if (_.isFunction(callback)) return callback()
+        return true
       })
     }
   })
@@ -69,7 +70,7 @@ function getDatabaseVersion (callback) {
 }
 
 function migrateUserRoles (callback) {
-  winston.verbose('Migrating Roles...')
+  winston.debug('Migrating Roles...')
   async.waterfall(
     [
       function (next) {
@@ -77,17 +78,22 @@ function migrateUserRoles (callback) {
       },
       function (roles, next) {
         var adminRole = _.find(roles, { normalized: 'admin' })
-        userSchema.collection.updateMany({ role: 'admin' }, { $set: { role: adminRole._id } }).then(function (res) {
-          if (res && res.result) {
-            if (res.result.ok === 1) return next(null, roles)
-            else {
-              winston.warn(res.message)
-              return next(res.message)
+        userSchema.collection
+          .updateMany({ role: 'admin' }, { $set: { role: adminRole._id } })
+          .then(function (res) {
+            if (res && res.result) {
+              if (res.result.ok === 1) return next(null, roles)
+              else {
+                winston.warn(res.message)
+                return next(res.message)
+              }
+            } else {
+              return next('Unknown Error Occurred')
             }
-          } else {
-            return next('Unknown Error Occurred')
-          }
-        })
+          })
+          .catch(function (err) {
+            return next(err)
+          })
       },
       function (roles, next) {
         var supportRole = _.find(roles, { normalized: 'support' })
@@ -104,20 +110,28 @@ function migrateUserRoles (callback) {
               return next('Unknown Error Occurred')
             }
           })
+          .catch(function (err) {
+            return next(err)
+          })
       },
       function (roles, next) {
         var userRole = _.find(roles, { normalized: 'user' })
-        userSchema.collection.updateMany({ role: 'user' }, { $set: { role: userRole._id } }).then(function (res) {
-          if (res && res.result) {
-            if (res.result.ok === 1) return next(null, roles)
-            else {
-              winston.warn(res.message)
-              return next(res.message)
+        userSchema.collection
+          .updateMany({ role: 'user' }, { $set: { role: userRole._id } })
+          .then(function (res) {
+            if (res && res.result) {
+              if (res.result.ok === 1) return next(null, roles)
+              else {
+                winston.warn(res.message)
+                return next(res.message)
+              }
+            } else {
+              return next('Unknown Error Occurred')
             }
-          } else {
-            return next('Unknown Error Occurred')
-          }
-        })
+          })
+          .catch(function (err) {
+            return next(err)
+          })
       }
     ],
     callback
@@ -130,7 +144,7 @@ migrations.run = function (callback) {
       function (next) {
         getDatabaseVersion(function (err, dbVer) {
           if (err) return next(err)
-          if (semver.satisfies(dbVer, '1.0.6')) migrateUserRoles(next)
+          if (semver.satisfies(dbVer, '1.0.6')) return migrateUserRoles(next)
 
           return next()
         })
@@ -140,7 +154,7 @@ migrations.run = function (callback) {
       if (err) return callback(err)
 
       //  Update DB Version Num
-      saveVersion(callback)
+      return saveVersion(callback)
     }
   )
 }
