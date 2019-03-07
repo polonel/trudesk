@@ -126,7 +126,7 @@ class AccountsContainer extends React.Component {
       const isAgent = user.getIn(['role', 'isAgent']) || false
       const isDeleted = user.get('deleted') || false
       return (
-        <GridItem key={user.get('_id')} width={'1-5'} extraClass={'mb-25'}>
+        <GridItem key={user.get('_id')} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
           <TruCard
             loaderActive={user.get('loading')}
             menu={actionMenu}
