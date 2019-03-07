@@ -96,12 +96,12 @@ class CreateTicketModal extends React.Component {
     const $form = $(e.target)
 
     let data = {}
-    if (this.state.issueText.length < 1) return
+    if (this.issueText.length < 1) return
     const minIssueLength = this.props.viewdata.ticketSettings.minIssue
     let $mdeError
     const $issueTextbox = $(this.issueMde.element)
     const $errorBorderWrap = $issueTextbox.parents('.error-border-wrap')
-    if (this.state.issueText.length < minIssueLength) {
+    if (this.issueText.length < minIssueLength) {
       $errorBorderWrap.css({ border: '1px solid #E74C3C' })
       const mdeError = $(
         `<div class="mde-error uk-float-left uk-text-left">Please enter a valid issue. Issue must contain at least ${minIssueLength} characters</div>`
@@ -130,6 +130,7 @@ class CreateTicketModal extends React.Component {
   }
 
   render () {
+    console.log('RENDER')
     const { viewdata } = this.props
     const mappedGroups = this.props.viewdata.groups.map(grp => {
       return { text: grp.name, value: grp._id }
@@ -239,7 +240,7 @@ class CreateTicketModal extends React.Component {
             <div className='error-border-wrap uk-clearfix'>
               <EasyMDE
                 ref={i => (this.issueMde = i)}
-                onChange={e => this.setState({ issueText: e })}
+                onChange={val => (this.issueText = val)}
                 allowImageUpload={true}
                 inlineImageUploadUrl={'/tickets/uploadmdeimage'}
                 inlineImageUploadHeaders={{ ticketid: 'uploads' }}
