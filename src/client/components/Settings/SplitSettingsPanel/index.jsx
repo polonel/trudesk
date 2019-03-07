@@ -48,7 +48,7 @@ class SplitSettingsPanel extends React.Component {
   }
 
   render () {
-    const { title, subtitle, rightComponent, menuItems } = this.props
+    const { title, subtitle, rightComponent, menuItems, tooltip } = this.props
     return (
       <div className='setting-item-wrap uk-margin-medium-bottom'>
         <div
@@ -58,6 +58,16 @@ class SplitSettingsPanel extends React.Component {
           <div className='left'>
             <h6 style={{ padding: '0 0 0 15px', margin: '15px 0 0 0', fontSize: '16px', lineHeight: '14px' }}>
               {title}
+              {tooltip && (
+                <i
+                  className='material-icons'
+                  style={{ color: '#888', fontSize: '16px', cursor: 'pointer', lineHeight: '3px', marginLeft: '4px' }}
+                  data-uk-tooltip="{cls:'long-text'}"
+                  title={tooltip}
+                >
+                  error
+                </i>
+              )}
             </h6>
             <h5 style={{ padding: '0 0 10px 15px', margin: '2px 0 0 0', fontSize: '12px' }} className={'uk-text-muted'}>
               {subtitle}
@@ -70,7 +80,7 @@ class SplitSettingsPanel extends React.Component {
           <div className='panel-body2'>
             <div className='uk-grid uk-grid-collapse'>
               <div
-                className='split-panel-categories uk-width-1-4 scrollable br'
+                className='split-panel-categories uk-width-1-4 uk-width-large-1-5 scrollable br'
                 style={{ minHeight: '300px', overflow: 'hidden auto' }}
               >
                 <Menu hideBorders={true} draggable={this.props.menuDraggable} onMenuDrag={this.props.menuOnDrag}>
@@ -91,7 +101,7 @@ class SplitSettingsPanel extends React.Component {
                 </Menu>
               </div>
               <div
-                className={'uk-width-3-4' + (this.props.scrollable ? ' scrollable' : '')}
+                className={'uk-width-3-4 uk-width-large-4-5' + (this.props.scrollable ? ' scrollable' : '')}
                 style={{ padding: '20px 15px 15px 15px', maxHeight: this.props.maxHeight || 'auto' }}
               >
                 {menuItems.map(menuItem => {
@@ -116,6 +126,7 @@ class SplitSettingsPanel extends React.Component {
 SplitSettingsPanel.propTypes = {
   title: PropTypes.string.isRequired,
   subtitle: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
+  tooltip: PropTypes.string,
   rightComponent: PropTypes.element,
   scrollable: PropTypes.bool,
   maxHeight: PropTypes.string,

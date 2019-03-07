@@ -63,7 +63,12 @@ class PermissionsSettingsContainer extends React.Component {
         <SplitSettingsPanel
           title={'Permissions'}
           tooltip={'Permission order is top down. ex: Admins at top; Users at bottom.'}
-          subtitle={'Create/Modify Role Permissions'}
+          subtitle={
+            <div>
+              Create/Modify Role Permissions{' '}
+              <span className={'uk-text-danger'}>Note: Changes take affect after page refresh</span>
+            </div>
+          }
           rightComponent={
             <Button
               text={'Create'}

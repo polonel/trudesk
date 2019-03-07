@@ -65,7 +65,7 @@ class SettingsContainer extends React.Component {
   render () {
     return (
       <div className='uk-grid uk-grid-collapse'>
-        <div className='uk-width-1-6 message-list full-height' data-offset='68'>
+        <div className='uk-width-1-6 uk-width-xLarge-1-10 message-list full-height' data-offset='68'>
           <div
             className='page-title noshadow nopadding-right'
             style={{ borderTop: 'none', borderBottom: 'none', height: '68px', paddingLeft: '20px' }}
@@ -135,7 +135,7 @@ class SettingsContainer extends React.Component {
             </Menu>
           </div>
         </div>
-        <div className='uk-width-5-6'>
+        <div className='uk-width-5-6 uk-width-xLarge-9-10'>
           <div
             className='page-title-right noshadow page-title-border-bottom'
             style={{ borderTop: 'none', height: '69px' }}
