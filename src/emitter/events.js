@@ -43,12 +43,11 @@ var notifications = require('../notifications') // Load Push Events
         ['tps:enable', 'tps:username', 'tps:apikey', 'gen:siteurl', 'beta:email'],
         function (err, tpsSettings) {
           if (err) return false
-
           var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
           var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
-          var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
-          var baseUrl = _.head(_.filter(tpsSettings), ['name', 'gen:siteurl']).value
-          var betaEnabled = _.head(_.filter(tpsSettings), ['name', 'beta:email'])
+          var tpsApiKey = _.head(_.filter(tpsSettings, ['name', 'tps:apikey']))
+          var baseUrl = _.head(_.filter(tpsSettings, ['name', 'gen:siteurl'])).value
+          var betaEnabled = _.head(_.filter(tpsSettings, ['name', 'beta:email']))
 
           betaEnabled = !betaEnabled ? false : betaEnabled.value
 
