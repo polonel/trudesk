@@ -4,7 +4,7 @@ executors:
   docker-executor:
     docker:
       - image: circleci/node:10-stretch
-        working_directory: ~/trudesk
+    working_directory: ~/trudesk
 
 commands:
   yarninstall:
