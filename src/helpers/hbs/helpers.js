@@ -618,7 +618,8 @@ var helpers = {
   },
 
   isNotTrue: function (obj, options) {
-    if (obj === true || obj.toLowerCase() === 'true') return options.inverse(this)
+    if (obj === true || (typeof obj.toLowerCase === 'function' && obj.toLowerCase() === 'true'))
+      return options.inverse(this)
 
     return options.fn(this)
   },

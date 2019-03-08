@@ -336,7 +336,8 @@ apiTickets.create = function (req, res) {
   response.success = true
 
   var postData = req.body
-  if (!_.isObject(postData)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (!_.isObject(postData) || !postData.subject || !postData.issue)
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   var socketId = _.isUndefined(postData.socketId) ? '' : postData.socketId
 

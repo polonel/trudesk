@@ -189,41 +189,8 @@ function launchServer (db) {
         //   return next()
         // },
         function (next) {
-          // var pm2 = require('pm2');
-          // pm2.connect(true, function(err) {
-          //    if (err) throw err;
-          //    pm2.start({
-          //        script: path.join(__dirname, '/src/cache/index.js'),
-          //        name: 'trudesk:cache',
-          //        output: path.join(__dirname, '/logs/cache.log'),
-          //        error: path.join(__dirname, '/logs/cache.log'),
-          //        env: {
-          //            FORK: 1,
-          //            NODE_ENV: global.env
-          //        }
-          //    }, function(err) {
-          //        pm2.disconnect();
-          //        if (err) throw err;
-          //
-          //        process.on('message', function(message) {
-          //            if (message.data.cache) {
-          //                var nodeCache = require('./src/cache/node-cache');
-          //                global.cache = new nodeCache({
-          //                    data:  message.data.cache.data,
-          //                    checkperiod: 0
-          //                });
-          //            }
-          //        });
-          //
-          //        next();
-          //    });
-          // });
-
           var fork = require('child_process').fork
-          var memLimit = '2048'
-          if (process.env.MEMORYLIMIT) {
-            memLimit = process.env.MEMORYLIMIT
-          }
+          var memLimit = nconf.get('memlimit') || '2048'
 
           var env = { FORK: 1, NODE_ENV: global.env }
           if (isDocker) {
