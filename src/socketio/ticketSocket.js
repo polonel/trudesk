@@ -70,6 +70,7 @@ events.onUpdateTicketStatus = function (socket) {
           emitter.emit('ticket:updated', ticketId)
           utils.sendToAllConnectedClients(io, 'updateTicketStatus', {
             tid: t._id,
+            owner: t.owner,
             status: status
           })
         })

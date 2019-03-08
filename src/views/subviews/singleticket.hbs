@@ -15,28 +15,44 @@
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
                             {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
-                                <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-new"><span>New</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
                             {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
-                                <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                        <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-open"><span>Open</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
                             {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
-                                <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
                             {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
-                                <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
                             {{/canUserOrAdmin}}

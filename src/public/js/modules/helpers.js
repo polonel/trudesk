@@ -1680,7 +1680,7 @@ define([
   }
 
   helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
-    if (action && !helpers.canUser(action)) return false
+    if (action && !helpers.canUser(action, adminOverride)) return false
     if (!extRole) extRole = window.trudeskSessionService.getUser().role._id
 
     if (adminOverride === true) {

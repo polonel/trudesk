@@ -273,10 +273,12 @@ define('modules/ui', [
 
           // Setup assignee list
           if (assigneeListBtn.length > 0) {
-            assigneeListBtn.attr('data-notifications', 'assigneeDropdown')
-            assigneeListBtn.attr('data-updateui', 'assigneeList')
-            nav.notifications()
-            socketUi.updateUi()
+            if (helpers.hasPermOverRole(payload.owner.role._id, null, 'agent:*', true)) {
+              assigneeListBtn.attr('data-notifications', 'assigneeDropdown')
+              assigneeListBtn.attr('data-updateui', 'assigneeList')
+              nav.notifications()
+              socketUi.updateUi()
+            }
           }
         }
       }
