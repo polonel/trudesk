@@ -103,7 +103,7 @@ workflows:
   nightly:
     triggers:
       - schedule:
-          cron: "45 * * * *"
+          cron: "0 0 * * *"
           filters:
             branches:
               only: develop
