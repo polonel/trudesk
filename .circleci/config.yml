@@ -1,5 +1,11 @@
 version: 2.1
 
+executors:
+  docker-executor:
+    docker:
+      - image: circleci/node:10-stretch
+        working_directory: ~/trudesk
+
 commands:
   yarninstall:
     steps:
@@ -33,7 +39,6 @@ jobs:
         command: yarn run build
   build_docker_next:
     executor: docker-executor
-    working_directory: ~/trudesk
     steps:
       - checkout
       - setup_remote_docker:
