@@ -13,6 +13,9 @@
  */
 
 var _ = require('lodash')
+var nconf = require('nconf')
+  .argv()
+  .env()
 var async = require('async')
 var express = require('express')
 var WebServer = express()
@@ -20,7 +23,7 @@ var winston = require('winston')
 var middleware = require('./middleware')
 var routes = require('./routes')
 var server = require('http').createServer(WebServer)
-var port = process.env.PORT || 8118
+var port = nconf.get('port') || 8118
 
 ;(function (app) {
   'use strict'
