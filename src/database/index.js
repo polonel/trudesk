@@ -44,6 +44,8 @@ else {
     mongoConnectionUri.database
 }
 
+if (process.env.MONGODB_URI) CONNECTION_URI = process.env.MONGODB_URI
+
 var options = {
   keepAlive: 1,
   connectTimeoutMS: 30000,
