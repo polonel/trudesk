@@ -229,11 +229,11 @@
             <div class="page-message nopadding" style="margin-left: 360px;">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "comments:create"}}
+                        {{#canUser data.common.loggedInAccount "comments:create"}}
                             <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
                                 Add Comment
                             </a>
-                        {{/hasPermOverRole}}
+                        {{/canUser}}
                     </div>
                     <div class="onoffswitch subscribeSwitch uk-float-right" style="margin-right: 10px; position: relative; top: 18px;">
                         <input type="checkbox" name="subscribeSwitch" class="onoffswitch-checkbox" id="subscribeSwitch" ng-model="subscribed" ng-change="SubscriberChange()"
