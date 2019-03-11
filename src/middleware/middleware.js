@@ -212,9 +212,8 @@ middleware.isAdmin = function (req, res, next) {
 }
 
 middleware.isAgentOrAdmin = function (req, res, next) {
-  var roles = global.roles
-  var userRole = _.find(roles, { _id: req.user.role._id })
-  if (userRole.role.isAgent || userRole.role.isAdmin) return next()
+  var role = _.find(global.roles, { _id: req.user.role._id })
+  if (role.isAgent || role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }

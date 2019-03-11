@@ -13,7 +13,6 @@
  */
 
 import { combineReducers } from 'redux'
-import { reducer as form } from 'redux-form'
 
 import shared from './shared'
 import common from './shared/common'
@@ -30,8 +29,7 @@ const IndexReducer = combineReducers({
   sidebar,
   accountsState,
   settings,
-  tagsSettings,
-  form
+  tagsSettings
 })
 
 export default IndexReducer
