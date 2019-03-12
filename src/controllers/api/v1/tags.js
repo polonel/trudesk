@@ -13,11 +13,8 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var TagSchema = require('../../../models/tag')
-
 var apiTags = {}
 
 /**
@@ -62,15 +59,37 @@ apiTags.getTagsWithLimit = function (req, res) {
   var page = qs.page ? qs.page : 0
 
   var tagSchema = require('../../../models/tag')
-  try {
-    tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function (err, tags) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
+  var result = { success: true }
 
-      return res.json({ success: true, tags: tags })
-    })
-  } catch (e) {
-    return res.status(400).json({ success: false, error: 'Invalid Limit and/or page' })
-  }
+  async.parallel(
+    [
+      function (done) {
+        try {
+          tagSchema.getTagsWithLimit(parseInt(limit), parseInt(page), function (err, tags) {
+            if (err) return done(err)
+
+            result.tags = tags
+            return done()
+          })
+        } catch (e) {
+          return done({ message: 'Invalid Limit and/or page' })
+        }
+      },
+      function (done) {
+        tagSchema.countDocuments({}, function (err, count) {
+          if (err) return done(err)
+          result.count = count
+
+          return done()
+        })
+      }
+    ],
+    function (err) {
+      if (err) return res.status(500).json({ success: false, error: err.message })
+
+      return res.json(result)
+    }
+  )
 }
 
 /**

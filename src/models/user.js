@@ -1,16 +1,16 @@
 /*
-     .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 var async = require('async')
 var mongoose = require('mongoose')
@@ -18,6 +18,9 @@ var winston = require('winston')
 var bcrypt = require('bcrypt')
 var _ = require('lodash')
 var Chance = require('chance')
+
+// Required for linkage
+require('./role')
 
 var SALT_FACTOR = 10
 var COLLECTION = 'accounts'
@@ -51,7 +54,7 @@ var userSchema = mongoose.Schema({
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  role: { type: String, required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
   lastOnline: Date,
   title: String,
   image: String,
@@ -77,6 +80,12 @@ var userSchema = mongoose.Schema({
 })
 
 userSchema.set('toObject', { getters: true })
+var autoPopulateRole = function (next) {
+  this.populate('role', 'name description normalized _id')
+  next()
+}
+
+userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 
 userSchema.pre('save', function (next) {
   var user = this
@@ -433,13 +442,12 @@ userSchema.statics.getUserWithObject = function (object, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getAssigneeUsers = function (callback) {
-  var permissions = require('../permissions')
-  var roles = permissions.roles
+  var roles = global.roles
+  if (_.isUndefined(roles)) return callback(null, [])
+
   var assigneeRoles = []
   async.each(roles, function (role) {
-    if (permissions.canThis(role.id, 'ticket:assignee')) {
-      assigneeRoles.push(role.id)
-    }
+    if (role.isAgent) assigneeRoles.push(role._id)
   })
 
   assigneeRoles = _.uniq(assigneeRoles)
@@ -449,7 +457,7 @@ userSchema.statics.getAssigneeUsers = function (callback) {
       return callback(err, null)
     }
 
-    callback(null, users)
+    return callback(null, _.sortBy(users, 'fullname'))
   })
 }
 

@@ -1,3 +1,17 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    1/20/19 5:31 AM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
 .tru-card-intro
   transform: scale(0)
   opacity: 0.02
@@ -251,6 +265,20 @@ label.md-label
   .md-btn
     vertical-align: top
     margin-left: 0 !important
+    &.no-border-radius
+      +borderRadius(0)
+    &:hover,&:active,&:focus
+      box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 2px 4px rgba(0,0,0,0.18) !important
+    &.no-shadow
+      box-shadow: none !important
+      border: 1px solid rgba(0,0,0,0.18)
+      &:hover,&:active,&:focus
+        box-shadow: none !important
+        background: rgba(0,0,0,0.01)
+    &.hover-accent
+      &:hover,&:active,&:focus
+        color: #fff
+        background: $accent_color
     &:first-child
       border-top-right-radius: 0
       border-bottom-right-radius: 0
@@ -339,6 +367,7 @@ label.md-label
     background: #e53935
   &.uk-badge-grey
     background: darken($page_content_right_bg, 5%)
+    color: automatic-text-color(darken($page_content_right_bg, 5%), 'muted')
   &.uk-badge-small
     font-size: 10px
     padding: 2px 4px
@@ -650,7 +679,7 @@ textarea.review-list
     &:first-of-type,
     &:only-of-type
       border-top: none
-    p
+    p,.p
       font-size: 13px
       line-height: 1.5
       color: $text_color

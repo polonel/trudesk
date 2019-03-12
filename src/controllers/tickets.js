@@ -309,7 +309,7 @@ ticketsController.processor = function (req, res) {
         groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
           if (err) return callback(err)
           userGroups = grps
-          if (permissions.canThis(req.user.role, 'ticket:public')) {
+          if (permissions.canThis(req.user.role, 'tickets:public')) {
             groupSchema.getAllPublicGroups(function (err, groups) {
               if (err) return callback(err)
               userGroups = groups.concat(grps)
@@ -325,7 +325,7 @@ ticketsController.processor = function (req, res) {
         ticketSchema.getTicketsWithObject(grps, object, function (err, results) {
           if (err) return callback(err)
 
-          if (!permissions.canThis(req.user.role, 'notes:view')) {
+          if (!permissions.canThis(req.user.role, 'tickets:notes')) {
             _.each(results, function (ticket) {
               ticket.notes = []
             })
@@ -406,7 +406,7 @@ ticketsController.print = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'ticket:public')
+    var hasPublic = permissions.canThis(user.role, 'tickets:public')
 
     if (!_.some(ticket.group.members, user._id)) {
       if (ticket.group.public && hasPublic) {
@@ -417,7 +417,7 @@ ticketsController.print = function (req, res) {
       }
     }
 
-    if (!permissions.canThis(user.role, 'notes:view')) {
+    if (!permissions.canThis(user.role, 'tickets:notes')) {
       ticket.notes = []
     }
 
@@ -472,7 +472,7 @@ ticketsController.single = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'ticket:public')
+    var hasPublic = permissions.canThis(user.role, 'tickets:public')
     if (!_.some(ticket.group.members, user._id)) {
       if (ticket.group.public && hasPublic) {
         // Blank to bypass
@@ -482,9 +482,9 @@ ticketsController.single = function (req, res) {
       }
     }
 
-    if (!permissions.canThis(user.role, 'notes:view')) {
-      ticket.notes = []
-    }
+    if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+
+    if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
 
     content.data.ticket = ticket
     content.data.ticket.priorityname = ticket.priority.name

@@ -3,7 +3,7 @@
   "extends": ["standard", "prettier", "prettier/standard"],
   "root": true,
   "parserOptions": {
-    "ecmaVersion": 5
+    "ecmaVersion": 2015
   },
   "env": {
     "browser": true,

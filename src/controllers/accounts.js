@@ -77,7 +77,6 @@ accountsController.get = function (req, res) {
   content.data.common = req.viewdata
   content.data.accounts = {}
   content.data.page = 2
-
   async.waterfall(
     [
       function (callback) {
@@ -484,6 +483,7 @@ accountsController.uploadImage = function (req, res) {
   })
 
   busboy.on('file', function (fieldname, file, filename, encoding, mimetype) {
+    console.log(file)
     if (mimetype.indexOf('image/') === -1) {
       error = {
         status: 400,

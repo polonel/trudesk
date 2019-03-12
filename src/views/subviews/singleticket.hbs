@@ -14,32 +14,48 @@
                     <div id="__ticketStatus" class="hide">{{data.ticket.status}}</div>
                     <div class="floating-ticket-status" data-ticketId="{{data.ticket._id}}">
                         {{#is data.ticket.status 0}}
-                            {{#canUser data.user "ticket:edit"}}
-                                <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                            {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-new"><span>New</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-new"><span>New</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
-                            {{#canUser data.user "ticket:edit"}}
-                                <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                            {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                        <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-open"><span>Open</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-open"><span>Open</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
-                            {{#canUser data.user "ticket:edit"}}
-                                <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                            {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-pending"><span>Pending</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
-                            {{#canUser data.user "ticket:edit"}}
-                                <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                            {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                                {{/hasPermOverRole}}
                             {{else}}
                                 <div class="ticket-status ticket-closed"><span>Closed</span></div>
-                            {{/canUser}}
+                            {{/canUserOrAdmin}}
                         {{/is}}
                         <span class="drop-icon material-icons" style="left: auto; right: 22px; bottom: -18px">keyboard_arrow_down</span>
                         <div id="statusSelect" close-mouse-up class="hide">
@@ -59,11 +75,13 @@
                             {{#if data.ticket.assignee}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
-                                       {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                           data-notifications="assigneeDropdown"
-                                           data-updateui="assigneeList"
-                                       {{/canUser}}
-
+                                       {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                           {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                                title="Set Assignee"
+                                                data-notifications="assigneeDropdown"
+                                                data-updateui="assigneeList"
+                                           {{/canUserOrAdmin}}
+                                       {{/hasPermOverRole}}
                                        style="float: left;" class="relative no-ajaxy">
                                         {{#if data.ticket.assignee.image}}
                                             <img src="/uploads/users/{{data.ticket.assignee.image}}" alt="{{data.ticket.assignee.fullname}} Profile Image"/>
@@ -82,11 +100,13 @@
                             {{else}}
                                 <div class="ticket-assignee uk-clearfix" data-ticketId="{{data.ticket._id}}">
                                     <a role="button"
-                                        {{#canUser data.common.loggedInAccount "ticket:setAssignee"}}
-                                            title="Set Assignee"
-                                            data-notifications="assigneeDropdown"
-                                            data-updateui="assigneeList"
-                                        {{/canUser}}
+                                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                            {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
+                                               title="Set Assignee"
+                                               data-notifications="assigneeDropdown"
+                                               data-updateui="assigneeList"
+                                            {{/canUserOrAdmin}}
+                                        {{/hasPermOverRole}}
 
                                        style="float: left;" class="relative no-ajaxy">
                                         <img src="/uploads/users/defaultProfile.jpg" alt="Default Profile Image" />
@@ -117,7 +137,7 @@
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginright5">
                                         <span>Type</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                             <select name="tType" id="tType" class="chosen-select1"
                                                     ng-model="selectedType"
                                                     ng-options="t.name for t in types track by t._id"
@@ -126,13 +146,13 @@
                                             </select>
                                         {{else}}
                                             <div id="tType" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.type.name}}</div>
-                                        {{/canUser}}
+                                        {{/hasPermOverRole}}
                                     </div>
                                 </div>
                                 <div class="uk-width-1-2 uk-float-left nopadding">
                                     <div class="marginleft5">
                                         <span>Priority</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                             <select name="tPriority" id="tPriority"
                                                     ng-model="selectedPriority"
                                                     ng-options="p.name for p in selectedType.priorities track by p._id"
@@ -142,13 +162,13 @@
                                             </select>
                                         {{else}}
                                             <div id="tPriority" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.priorityname}}</div>
-                                        {{/canUser}}
+                                        {{/hasPermOverRole}}
                                     </div>
                                 </div>
 
                                 <div class="uk-width-1-1 nopadding uk-clearfix">
                                         <span>Group</span>
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                             <select name="tGroup" id="tGroup"
                                                     ng-model="selectedGroup"
                                                     ng-options="g.name for g in groups track by g._id"
@@ -158,11 +178,11 @@
                                             </select>
                                         {{else}}
                                             <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
-                                        {{/canUser}}
+                                        {{/hasPermOverRole}}
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
                                     <span>Tags
-                                        {{#canUser data.user "ticket:edit"}}
+                                        {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                             <div id="editTags" style="display: inline;" {{#compare data.ticket.status '==' 3}}class="hide"{{/compare}}>-
                                                 <a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>
                                             </div>
@@ -174,7 +194,7 @@
                                                     <!--<a href="#" style="font-size: 11px;" class="no-ajaxy" ng-click="showTags($event)" data-uk-modal="{bgclose:false}">Edit Tags</a>-->
                                                 <!--</div>-->
                                             <!--{{/canEditSelf}}-->
-                                        {{/canUser}}
+                                        {{/hasPermOverRole}}
 
                                     </span>
                                     <div class="tag-list uk-clearfix" data-ticketId="{{data.ticket._id}}">
@@ -186,7 +206,7 @@
                                 </div>
                             </div>
                         </div>
-                        {{#canUser data.user "ticket:viewHistory"}}
+                        {{#canUserOrAdmin data.common.loggedInAccount "agent:*"}}
                             <div class="uk-width-1-1 padding-left-right-15">
                                 <div class="tru-card ticket-details" style="height: 250px; padding-right: 0 !important; padding-bottom: 0 !important;">
                                     Ticket History
@@ -202,16 +222,18 @@
                                     </div>
                                 </div>
                             </div>
-                        {{/canUser}}
+                        {{/canUserOrAdmin}}
                     </div>
                 </div>
             </div>
             <div class="page-message nopadding" style="margin-left: 360px;">
                 <div class="page-title-right noshadow">
                     <div class="page-top-comments uk-float-right">
-                        <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
-                            Add Comment
-                        </a>
+                        {{#canUser data.common.loggedInAccount "comments:create"}}
+                            <a href="#" class="btn no-ajaxy" data-action="scrolltobottom" data-targetScroll=".page-content-right" data-preventDefault="true">
+                                Add Comment
+                            </a>
+                        {{/canUser}}
                     </div>
                     <div class="onoffswitch subscribeSwitch uk-float-right" style="margin-right: 10px; position: relative; top: 18px;">
                         <input type="checkbox" name="subscribeSwitch" class="onoffswitch-checkbox" id="subscribeSwitch" ng-model="subscribed" ng-change="SubscriberChange()"
@@ -246,7 +268,6 @@
                             </div>
                             <div class="issue-text">
                                 <h3 class="subject-text">{{data.ticket.subject}}</h3>
-                                <!--<input id="subjectText" name="subjectText" type="text" class="md-input" value="{{data.ticket.subject}}" />-->
                                 <a href="mailto:{{data.ticket.owner.email}}">{{{data.ticket.owner.fullname}}} &lt;{{{data.ticket.owner.email}}}&gt;</a>
                                 <br>
                                 <time datetime="{{formatDate data.ticket.date "YYYY-MM-DD HH:mm"}}" >
@@ -257,9 +278,9 @@
                                     {{#each data.ticket.attachments}}
                                         <li>
                                             <a href="{{path}}" class="no-ajaxy" target="_blank">{{name}}</a>
-                                            {{#canUser ../data.user "ticket:removeAttachment"}}
+                                            {{#canUserOrAdmin ../data.common.loggedInAccount "tickets:removeAttachment"}}
                                                 <a href="#" class="remove-attachment" data-attachmentId="{{_id}}"><i class="fa fa-remove"></i></a>
-                                            {{/canUser}}
+                                            {{/canUserOrAdmin}}
                                         </li>
                                     {{/each}}
                                 </ul>
@@ -267,20 +288,16 @@
                                     {{{data.ticket.issue}}}
                                 </div>
                             </div>
-                            {{#canUser data.user "ticket:edit"}}
+                            {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
                                 <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
-                            {{else}}
-                                {{#canEditSelf data.user data.ticket.owner 'ticket'}}
-                                    <div class="edit-issue {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showEditWindow('issue', true);"><i class="material-icons">&#xE254;</i></div>
-                                {{/canEditSelf}}
-                            {{/canUser}}
-                            <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
-                                <div class="add-attachment {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
+                                <form id="attachmentForm" action="/ticket/uploadattachment" method="post" class="form nomargin" enctype="multipart/form-data">
+                                    <div class="add-attachment {{#compare data.ticket.status '==' 3}}hide{{/compare}}" ng-click="showUploadAttachment($event)"><i class="material-icons">&#xE226;</i></div>
 
-                                <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
-                                <input type="hidden" name="ownerId" value="{{data.user._id}}" />
-                                <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
-                            </form>
+                                    <input type="hidden" name="ticketId" value="{{data.ticket._id}}" />
+                                    <input type="hidden" name="ownerId" value="{{data.common.loggedInAccount._id}}" />
+                                    <input class="attachmentInput hide" name="ticket_{{data.ticket.uid}}_attachment" type="file" value="" />
+                                </form>
+                            {{/hasPermOverRole}}
                         </div>
                         <div class="tru-tabs comments-notes-tab uk-clearfix {{#compare (size data.ticket.commentsAndNotes) '<' 1}} hide {{/compare}}" style="padding: 20px 0 !important;" data-ticketId="{{data.ticket._id}}">
                             <div class="tru-tab-selectors" style="margin-left: 110px;">
@@ -290,9 +307,11 @@
                                 <a id="tab-public-comments" href="#" class="tru-tab-selector no-ajaxy" data-tabid="1" data-ticketid="{{data.ticket._id}}">Comments
                                     <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.comments}}</span>
                                 </a>
-                                <a id="tab-internal-notes" href="#" class="tru-tab-selector no-ajaxy" data-tabid="2" data-ticketid="{{data.ticket._id}}">Notes
-                                    <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.notes}}</span>
-                                </a>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role 'tickets:notes'}}
+                                    <a id="tab-internal-notes" href="#" class="tru-tab-selector no-ajaxy" data-tabid="2" data-ticketid="{{data.ticket._id}}">Notes
+                                        <span class="uk-badge uk-badge-grey uk-badge-small">{{size data.ticket.notes}}</span>
+                                    </a>
+                                {{/hasPermOverRole}}
 
                                 <span class="tru-tab-highlighter"></span>
                                 <span class="tru-tab-hr tru-tab-hr-lighten"></span>
@@ -334,20 +353,13 @@
                                                     </div>
                                                 </div>
                                                 <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
-                                                    {{#canUser ../data.common.loggedInAccount "comment:delete"}}
+                                                    {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role 'comments:delete'}}
                                                         <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                    {{else}}
-                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                            <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                        {{/canEditSelf}}
-                                                    {{/canUser}}
-                                                    {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                    {{/hasPermOverRole}}
+                                                    {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role "comments:update"}}
                                                         <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                     {{else}}
-                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
-                                                            <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
-                                                        {{/canEditSelf}}
-                                                    {{/canUser}}
+                                                    {{/hasPermOverRole}}
                                                 </div>
                                             </div>
                                         {{/is}}
@@ -377,20 +389,12 @@
                                                     </div>
                                                 </div>
                                                 <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
-                                                    {{#canUser ../data.common.loggedInAccount "note:delete"}}
+                                                    {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role "tickets:notes"}}
                                                         <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                    {{else}}
-                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                            <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                        {{/canEditSelf}}
-                                                    {{/canUser}}
-                                                    {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                    {{/hasPermOverRole}}
+                                                    {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role "tickets:notes"}}
                                                         <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
-                                                    {{else}}
-                                                        {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                            <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
-                                                        {{/canEditSelf}}
-                                                    {{/canUser}}
+                                                    {{/hasPermOverRole}}
                                                 </div>
                                             </div>
                                         {{/is}}
@@ -424,14 +428,14 @@
                                                 </div>
                                             </div>
                                             <div class="comment-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
-                                                {{#canUser ../data.common.loggedInAccount "comment:delete"}}
+                                                {{#canUser ../data.common.loggedInAccount "comments:delete"}}
                                                     <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                                 {{else}}
                                                     {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
                                                         <div class="remove-comment" data-commentId="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
                                                     {{/canEditSelf}}
                                                 {{/canUser}}
-                                                {{#canUser ../data.common.loggedInAccount "comment:edit"}}
+                                                {{#canUser ../data.common.loggedInAccount "comments:edit"}}
                                                     <div class="edit-comment" data-commentId="{{_id}}" ng-click="showEditWindow('comment', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
                                                 {{else}}
                                                     {{#canEditSelf ../data.common.loggedInAccount owner 'comment'}}
@@ -473,20 +477,12 @@
                                                 </div>
                                             </div>
                                             <div class="comment-actions note-actions {{#compare ../data.ticket.status '==' 3}}hide{{/compare}}">
-                                                {{#canUser ../data.common.loggedInAccount "note:delete"}}
+                                                {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role "tickets:notes"}}
                                                     <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                {{else}}
-                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                        <div class="remove-note" data-noteid="{{_id}}"><i class="material-icons">&#xE5CD;</i></div>
-                                                    {{/canEditSelf}}
-                                                {{/canUser}}
-                                                {{#canUser ../data.common.loggedInAccount "note:edit"}}
+                                                {{/hasPermOverRole}}
+                                                {{#hasPermOverRole owner.role ../data.common.loggedInAccount.role "tickets:notes"}}
                                                     <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
-                                                {{else}}
-                                                    {{#canEditSelf ../data.common.loggedInAccount owner 'note'}}
-                                                        <div class="edit-note" data-noteid="{{_id}}" ng-click="showEditWindow('note', false, '{{_id}}');"><i class="material-icons">&#xE254;</i></div>
-                                                    {{/canEditSelf}}
-                                                {{/canUser}}
+                                                {{/hasPermOverRole}}
                                             </div>
                                         </div>
                                     {{/foreach}}
@@ -495,6 +491,7 @@
                         </div>
 
                         <!-- Comments / Notes Form -->
+                        {{#shouldShowCommentSection data.common.loggedInAccount}}
                         <div class="uk-width-1-1 ticket-reply uk-clearfix {{#is data.ticket.status 3}}hide{{/is}}">
                             {{#if data.common.loggedInAccount.image}}
                                 <img class="profile-pic" src="/uploads/users/{{data.common.loggedInAccount.image}}" alt=""/>
@@ -503,36 +500,41 @@
                             {{/if}}
                             <div class="tru-tabs uk-clearfix" style="padding-left: 85px">
                                 <div class="tru-tab-selectors">
-                                    <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">Comment</a>
-                                    {{#canUser data.common.loggedInAccount 'notes:create'}}
-                                        <a href="#" class="tru-tab-selector no-ajaxy" data-tabid="1">Internal Note</a>
+                                    {{#canUser data.common.loggedInAccount 'comments:create'}}
+                                        <a href="#" class="tru-tab-selector no-ajaxy active" data-tabid="0">Comment</a>
+                                    {{/canUser}}
+                                    {{#canUser data.common.loggedInAccount 'tickets:notes'}}
+                                        <a href="#" class="tru-tab-selector no-ajaxy{{#canUser data.common.loggedInAccount 'comments:create'}}{{else}} active{{/canUser}}"
+                                           data-tabid="1">Internal Note</a>
                                     {{/canUser}}
 
                                     <span class="tru-tab-highlighter"></span>
                                 </div>
 
-                                <div class="tru-tab-section" data-tabid="0">
-                                    <form id="comment-reply" action="#" method="post" class="uk-form-stacked" ng-submit="submitComment($event);">
-                                        <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
-                                        <div class="comment-box" style="padding: 0; width: 100%;">
-                                            <!--<label for="commentReply" class="uk-form-label">Comment</label>-->
-                                            <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="comment-textarea"
-                                                      data-keyBindSubmit="#comment-reply-submit-button"
-                                                      style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
-                                        </div>
-                                        <div class="uk-width-1-1">
-                                            <div class="uk-float-right">
-                                                <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
-                                                        data-action="scrolltobottom"
-                                                        data-targetScroll=".page-content-right"
-                                                        data-preventDefault="false">Post Comment</button>
+                                {{#canUser data.common.loggedInAccount 'comments:create'}}
+                                    <div class="tru-tab-section" data-tabid="0">
+                                        <form id="comment-reply" action="#" method="post" class="uk-form-stacked" ng-submit="submitComment($event);">
+                                            <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
+                                            <div class="comment-box" style="padding: 0; width: 100%;">
+                                                <!--<label for="commentReply" class="uk-form-label">Comment</label>-->
+                                                <textarea name="commentReply" id="commentReply" cols="2" rows="5" data-clearOnSubmit="true" class="comment-textarea"
+                                                          data-keyBindSubmit="#comment-reply-submit-button"
+                                                          style="background: inherit; border-width: 0; border-bottom-width: 1px;"></textarea>
                                             </div>
-                                        </div>
-                                    </form>
-                                </div>
+                                            <div class="uk-width-1-1">
+                                                <div class="uk-float-right">
+                                                    <button id="comment-reply-submit-button" type="submit" class="uk-button uk-button-accent" style="padding: 10px 15px;"
+                                                            data-action="scrolltobottom"
+                                                            data-targetScroll=".page-content-right"
+                                                            data-preventDefault="false">Post Comment</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                {{/canUser}}
 
-                                {{#canUser data.common.loggedInAccount 'notes:create'}}
-                                    <div class="tru-tab-section hidden" data-tabid="1">
+                                {{#canUser data.common.loggedInAccount 'tickets:notes'}}
+                                    <div class="tru-tab-section{{#canUser data.common.loggedInAccount 'comments:create'}} hidden{{/canUser}}" data-tabid="1">
                                         <form id="internal-note" action="#" method="post" class="uk-form-stacked" ng-submit="submitInternalNote($event);">
                                             <input name="ticketId" type="hidden" value="{{data.ticket._id}}"/>
                                             <div class="comment-box" style="padding: 0; width: 100%;">
@@ -555,6 +557,7 @@
                                 {{/canUser}}
                             </div>
                         </div>
+                        {{/shouldShowCommentSection}}
                     </div>
                 </div>
             </div>
@@ -616,6 +619,8 @@
             </div>
         </div>
     </div>
+<!--NOTE TO SELF: DO NOT REMOVE THIS CLOSING DIV!!-->
+</div>
 
 {{#contentFor 'js-plugins'}}
 

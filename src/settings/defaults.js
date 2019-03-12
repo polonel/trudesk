@@ -24,6 +24,148 @@ var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
 
+settingsDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
+settingsDefaults.supportGrants = [
+  'tickets:*',
+  'agent:*',
+  'accounts:create update view import',
+  'comments:create view update create delete',
+  'reports:view create',
+  'notices:*'
+]
+settingsDefaults.adminGrants = [
+  'admin:*',
+  'agent:*',
+  'chat:*',
+  'tickets:*',
+  'accounts:*',
+  'groups:*',
+  'teams:*',
+  'departments:*',
+  'comments:*',
+  'reports:*',
+  'notices:*',
+  'settings:*',
+  'api:*'
+]
+
+function teamsDefault (callback) {
+  var teamSchema = require('../models/team')
+  var roleSchmea = require('../models/role')
+  var userSchema = require('../models/user')
+
+  async.series(
+    [
+      function (next) {
+        // Create default Support Team
+      }
+    ],
+    callback
+  )
+
+  teamSchema.create(
+    {
+      name: 'Support'
+    },
+    function (err, team) {
+      if (err) console.log(err)
+
+      teamSchema.getTeams(function (err, teams) {
+        if (err) return callback(err)
+
+        console.log(teams)
+
+        return callback()
+      })
+    }
+  )
+}
+
+function rolesDefault (callback) {
+  var roleSchema = require('../models/role')
+
+  async.series(
+    [
+      function (done) {
+        roleSchema.getRoleByName('User', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+
+          roleSchema.create(
+            {
+              name: 'User',
+              description: 'Default role for users',
+              grants: settingsDefaults.userGrants
+            },
+            done
+          )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Support', function (err, role) {
+          if (err) return done(err)
+          if (role) {
+            return done()
+            // role.updateGrants(supportGrants, done);
+          } else
+            roleSchema.create(
+              {
+                name: 'Support',
+                description: 'Default role for agents',
+                grants: settingsDefaults.supportGrants
+              },
+              done
+            )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Admin', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+          // role.updateGrants(adminGrants, done);
+          else {
+            roleSchema.create(
+              {
+                name: 'Admin',
+                description: 'Default role for admins',
+                grants: settingsDefaults.adminGrants
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        var roleOrderSchema = require('../models/roleorder')
+        roleOrderSchema.getOrder(function (err, roleOrder) {
+          if (err) return done(err)
+          if (roleOrder) return done()
+
+          roleSchema.getRoles(function (err, roles) {
+            if (err) return done(err)
+
+            var roleOrder = []
+            roleOrder.push(_.find(roles, { name: 'Admin' })._id)
+            roleOrder.push(_.find(roles, { name: 'Support' })._id)
+            roleOrder.push(_.find(roles, { name: 'User' })._id)
+
+            roleOrderSchema.create(
+              {
+                order: roleOrder
+              },
+              done
+            )
+          })
+        })
+      }
+    ],
+    function (err) {
+      if (err) throw err
+      return callback()
+    }
+  )
+}
+
 function createDirectories (callback) {
   async.parallel(
     [
@@ -447,7 +589,10 @@ settingsDefaults.init = function (callback) {
         return createDirectories(done)
       },
       function (done) {
-        downloadWin32MongoDBTools(done)
+        return downloadWin32MongoDBTools(done)
+      },
+      function (done) {
+        return rolesDefault(done)
       },
       function (done) {
         return timezoneDefault(done)
@@ -475,9 +620,7 @@ settingsDefaults.init = function (callback) {
       }
     ],
     function () {
-      if (_.isFunction(callback)) {
-        return callback()
-      }
+      if (_.isFunction(callback)) return callback()
     }
   )
 }

@@ -1,0 +1,82 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    1/20/19 4:46 PM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
+@import '../../../../../src/sass/mixins.sass'
+@import '../../../../../src/sass/_settings.sass'
+
+//Hack to not show popout menu on reposition
+body > .side-nav-sub.tether-element
+  display: none !important
+  visibility: hidden !important
+  opacity: 0 !important
+  z-index: -9999 !important
+  height: 0 !important
+  width: 0 !important
+  -webkit-transition: none !important
+  -moz-transition: none !important
+  -o-transition: none !important
+  transition: none !important
+
+// used when expanding the sidebar on page load
+.no-animation
+  transition: none !important
+
+#page-content
+  transition: margin 0.2s ease
+  &.expanded-sidebar
+    margin-left: 215px !important
+
+.sidebar
+  @media only screen and (min-width: 40.063em) and (max-width: 64em)
+    position: absolute
+    top: 75px
+    left: 0
+    width: 57px
+    max-width: 57px
+    z-index: 9999
+    overflow: hidden
+
+  background: $sidebar_bg
+  color: $sidebar_text
+  width: 57px
+  position: fixed
+  top: 75px
+  left: 0
+  bottom: 0
+  +boxShadow($sidebar_box_shadow)
+  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
+  transition: width 0.2s ease
+  z-index: 10
+  //border-right: $sidebar_border_right
+  #expand-menu
+    overflow: hidden
+  &.expand
+    width: 215px
+    ul.side-nav
+      li.hasSubMenu:after
+        opacity: 1
+    .side-nav-bottom-panel
+      width: 215px
+      a
+        width: 215px
+        padding: 0 0 0 60px !important
+        font-size: 100%
+
+ul.side-nav
+  list-style: none outside none
+  line-height: 1.6
+  display: block
+  margin: 0
+  //padding: 0.875rem 0
+  padding: 0

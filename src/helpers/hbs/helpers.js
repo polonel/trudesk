@@ -1,15 +1,15 @@
 /*
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
  */
 
 /*
@@ -44,6 +44,10 @@ var helpers = {
     }
 
     return options.inverse(this)
+  },
+
+  stringify: function (s) {
+    return JSON.stringify(s)
   },
 
   and: function (a, b, options) {
@@ -613,6 +617,13 @@ var helpers = {
     return options.inverse(this)
   },
 
+  isNotTrue: function (obj, options) {
+    if (obj === true || (typeof obj.toLowerCase === 'function' && obj.toLowerCase() === 'true'))
+      return options.inverse(this)
+
+    return options.fn(this)
+  },
+
   split: function (arr, sep) {
     var str = ''
     _.each(arr, function (obj) {
@@ -637,6 +648,34 @@ var helpers = {
     return options.inverse(this)
   },
 
+  isOwner: function (user, owner, options) {
+    if (user._id.toString() === owner._id.toString()) return options.fn(this)
+
+    return options.inverse(this)
+  },
+
+  hasPermOverRole: function (ownerRole, userRole, perm, options) {
+    if (_.isUndefined(ownerRole) || _.isUndefined(userRole) || _.isUndefined(perm)) return options.inverse(this)
+    if (
+      typeof ownerRole !== 'object' ||
+      typeof userRole !== 'object' ||
+      _.isUndefined(ownerRole._id) ||
+      _.isUndefined(userRole._id)
+    ) {
+      throw new Error('Invalid Type sent to hasPermOverRole. Should be role object')
+    }
+
+    var p = require('../../permissions')
+    if (!p.canThis(userRole, perm)) return options.inverse(this)
+    if (ownerRole._id.toString() === userRole._id.toString()) return options.fn(this)
+
+    if (userRole.isAdmin) return options.fn(this)
+    var hasHierarchyEnabled = p.hasHierarchyEnabled(userRole._id)
+    if (hasHierarchyEnabled && p.hasPermOverRole(ownerRole._id, userRole._id)) return options.fn(this)
+
+    return options.inverse(this)
+  },
+
   checkPerm: function (user, perm, options) {
     var P = require('../../permissions')
     if (_.isUndefined(user)) return options.inverse(this)
@@ -644,6 +683,16 @@ var helpers = {
     if (P.canThis(user.role, perm)) {
       return options.fn(this)
     }
+
+    return options.inverse(this)
+  },
+
+  checkPermOrAdmin: function (user, perm, options) {
+    if (_.isUndefined(user)) return options.inverse(this)
+    if (user.role.isAdmin) return options.fn(this)
+
+    var p = require('../../permissions')
+    if (p.canThis(user.role, perm)) return options.fn(this)
 
     return options.inverse(this)
   },
@@ -772,6 +821,15 @@ var helpers = {
 
   randomNum: function () {
     return Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000
+  },
+
+  shouldShowCommentSection: function (user, options) {
+    var p = require('../../permissions')
+    var hasComments = p.canThis(user.role, 'comments:create')
+    var hasNotes = p.canThis(user.role, 'tickets:notes')
+
+    if (hasComments || hasNotes) return options.fn(this)
+    return options.inverse(this)
   }
 }
 
@@ -788,8 +846,9 @@ helpers.ifLtEq = helpers.if_lteq
 helpers.unlessLtEq = helpers.unless_lteq
 helpers.foreach = helpers.forEach
 helpers.canUser = helpers.checkPerm
+helpers.canUserOrAdmin = helpers.checkPermOrAdmin
 helpers.canUserRole = helpers.checkRole
-helpers.canEditSelf = helpers.checkEditSelf
+helpers.canEditSelf = helpers.checkEditSelf // This will go away
 helpers.hasPluginPerm = helpers.checkPlugin
 helpers.inArray = helpers.hasGroup
 

@@ -63,24 +63,19 @@
                                 <div class="uk-dropdown uk-dropdown-xsmall uk-dropdown-bottom">
                                     <ul class="uk-nav">
                                         <li><a href="#" class="no-ajaxy" role="button" data-uk-modal="{target:'#ticketCreateModal',bgclose:false}">Create</a></li>
-                                        <li><hr style="margin: 5px 0;"></li>
-                                        {{#canUser data.user "ticket:Edit"}}
+                                        {{#canUserOrAdmin data.user "agent:*"}}
+                                            <li><hr style="margin: 5px 0;"></li>
                                             <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">Set Open</a></li>
                                             <li><a href="#" class="no-ajaxy" role="button" ng-click="setPendingTickets()">Set Pending</a></li>
                                             <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
                                         {{else}}
-                                            {{#canUser data.user "ticket:editSelf"}}
-                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setOpenTickets()">Set Open</a></li>
-                                                <!--<li><a href="#" class="no-ajaxy" role="button" ng-click="setPendingTickets()">Set Pending</a></li>-->
-                                                <li><a href="#" class="no-ajaxy" role="button" ng-click="setClosedTickets()">Set Closed</a></li>
-                                            {{/canUser}}
-                                        {{/canUser}}
-                                        {{#canUser data.user "ticket:delete"}}
+                                        {{/canUserOrAdmin}}
+                                        {{#canUserOrAdmin data.user "tickets:delete"}}
                                             <li><hr style="margin: 5px 0;"></li>
                                             <li>
                                                 <a class="no-ajaxy" href="#" role="button" style="color: red;" ng-click="deleteTickets()">Delete</a>
                                             </li>
-                                        {{/canUser}}
+                                        {{/canUserOrAdmin}}
                                     </ul>
                                 </div>
                             </div>
@@ -108,7 +103,7 @@
                         <th>Subject</th>
                         <th>Created</th>
                         <th>Requester</th>
-                        <th>Group</th>
+                        <th>Customer</th>
                         <th>Assignee</th>
                         <th>Updated</th>
                     </tr>

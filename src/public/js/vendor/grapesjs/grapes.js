@@ -105,17 +105,18 @@
   \*****************************************************/
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
-          var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__
-          /*!
-           * Backbone.Undo.js v0.2
-           *
-           * Copyright (c)2013 Oliver Sartun
-           * Released under the MIT License
-           *
-           * Documentation and full license available at
-           * https://github.com/osartun/Backbone.Undo.js
-           */
-
+          var __WEBPACK_AMD_DEFINE_FACTORY__,
+            __WEBPACK_AMD_DEFINE_ARRAY__,
+            __WEBPACK_AMD_DEFINE_RESULT__
+            /*!
+             * Backbone.Undo.js v0.2
+             *
+             * Copyright (c)2013 Oliver Sartun
+             * Released under the MIT License
+             *
+             * Documentation and full license available at
+             * https://github.com/osartun/Backbone.Undo.js
+             */
           ;(function (factory) {
             if (true) {
               // AMD support
@@ -982,13 +983,13 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           /* WEBPACK VAR INJECTION */ ;(function (global) {
-            var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__ //     Backbone.js 1.2.1
+            var __WEBPACK_AMD_DEFINE_ARRAY__,
+              __WEBPACK_AMD_DEFINE_RESULT__ //     Backbone.js 1.2.1
 
-            //     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-            //     Backbone may be freely distributed under the MIT license.
-            //     For all details and documentation:
-            //     http://backbonejs.org
-
+              //     (c) 2010-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+              //     Backbone may be freely distributed under the MIT license.
+              //     For all details and documentation:
+              //     http://backbonejs.org
             ;(function (factory) {
               // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
               // We use `self` instead of `window` for `WebWorker` support.
@@ -2935,11 +2936,11 @@
   \**************************************************************************/
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
-          var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__ //     Underscore.js 1.8.3
-          //     http://underscorejs.org
-          //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-          //     Underscore may be freely distributed under the MIT license.
-
+          var __WEBPACK_AMD_DEFINE_ARRAY__,
+            __WEBPACK_AMD_DEFINE_RESULT__ //     Underscore.js 1.8.3
+            //     http://underscorejs.org
+            //     (c) 2009-2015 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+            //     Underscore may be freely distributed under the MIT license.
           ;(function () {
             // Baseline setup
             // --------------
@@ -4543,13 +4544,13 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           /* WEBPACK VAR INJECTION */ ;(function (global) {
-            var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__ //     Backbone.js 1.3.3
+            var __WEBPACK_AMD_DEFINE_ARRAY__,
+              __WEBPACK_AMD_DEFINE_RESULT__ //     Backbone.js 1.3.3
 
-            //     (c) 2010-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-            //     Backbone may be freely distributed under the MIT license.
-            //     For all details and documentation:
-            //     http://backbonejs.org
-
+              //     (c) 2010-2016 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+              //     Backbone may be freely distributed under the MIT license.
+              //     For all details and documentation:
+              //     http://backbonejs.org
             ;(function (factory) {
               // Establish the root object, `window` (`self`) in the browser, or `global` on the server.
               // We use `self` instead of `window` for `WebWorker` support.
@@ -6549,9 +6550,10 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__
+          var __WEBPACK_AMD_DEFINE_FACTORY__,
+            __WEBPACK_AMD_DEFINE_RESULT__
 
-          /*! cash-dom 1.3.7, https://github.com/kenwheeler/cash @license MIT */
+            /*! cash-dom 1.3.7, https://github.com/kenwheeler/cash @license MIT */
           ;(function (root, factory) {
             if (true) {
               !((__WEBPACK_AMD_DEFINE_FACTORY__ = factory),
@@ -25223,7 +25225,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (setImmediate) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (setImmediate) {
             Object.defineProperty(exports, '__esModule', {
               value: true
             })
@@ -25792,11 +25795,11 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           /* WEBPACK VAR INJECTION */ ;(function (global, module) {
-            var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__ //     Underscore.js 1.9.1
-            //     http://underscorejs.org
-            //     (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
-            //     Underscore may be freely distributed under the MIT license.
-
+            var __WEBPACK_AMD_DEFINE_ARRAY__,
+              __WEBPACK_AMD_DEFINE_RESULT__ //     Underscore.js 1.9.1
+              //     http://underscorejs.org
+              //     (c) 2009-2018 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
+              //     Underscore may be freely distributed under the MIT license.
             ;(function () {
               // Baseline setup
               // --------------
@@ -28331,7 +28334,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var _backbone = __webpack_require__(/*! backbone */ './node_modules/backbone/backbone.js')
 
             var _backbone2 = _interopRequireDefault(_backbone)
@@ -30535,7 +30539,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var _backbone = __webpack_require__(/*! backbone */ './node_modules/backbone/backbone.js')
 
             var _backbone2 = _interopRequireDefault(_backbone)
@@ -31704,7 +31709,6 @@
             build: function build (model) {
               var json = model.toJSON()
               this.beforeEach(json)
-
               ;(0, _underscore.each)(
                 json,
                 function (v, attr) {
@@ -38346,7 +38350,6 @@
                       delete obj[prop]
                     }
                   })
-
                   ;(0, _underscore.forEach)(['classes', 'components'], function (prop) {
                     if ((0, _underscore.isEmpty)(defaults[prop]) && !obj[prop].length) {
                       delete obj[prop]
@@ -41598,7 +41601,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (Backbone) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (Backbone) {
             Object.defineProperty(exports, '__esModule', {
               value: true
             })
@@ -42025,7 +42029,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var _underscore = __webpack_require__(/*! underscore */ './node_modules/underscore/underscore.js')
 
             var _mixins = __webpack_require__(/*! utils/mixins */ './src/utils/mixins.js')
@@ -44185,7 +44190,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (Backbone) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (Backbone) {
             var $ = Backbone.$
 
             module.exports = Backbone.View.extend({
@@ -46508,7 +46514,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var Backbone = __webpack_require__(/*! backbone */ './node_modules/backbone/backbone.js')
             var ButtonView = __webpack_require__(/*! ./ButtonView */ './src/panels/view/ButtonView.js')
 
@@ -55154,7 +55161,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var TraitView = __webpack_require__(/*! ./TraitView */ './src/trait_manager/view/TraitView.js')
             var $ = __webpack_require__(/*! backbone */ './node_modules/backbone/backbone.js').$
 
@@ -59407,7 +59415,8 @@
         /*! no static exports found */
         /***/ function (module, exports, __webpack_require__) {
           'use strict'
-          /* WEBPACK VAR INJECTION */ ;(function (_) {
+          /* WEBPACK VAR INJECTION */
+          ;(function (_) {
             var _extends =
               Object.assign ||
               function (target) {

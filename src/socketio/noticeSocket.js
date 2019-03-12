@@ -36,7 +36,7 @@ events.onShowNotice = function (socket) {
           return true
         }
 
-        utils.sendToAllConnectedClients(io, 'updateShowNotice', notice)
+        utils.sendToAllConnectedClients(io, '$trudesk:notice:show', notice)
       })
     })
   })

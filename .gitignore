@@ -34,6 +34,7 @@ config.json
 import.csv
 /src/mailer/templates/promo/
 *.pem
+/public/js/
 /public/uploads/tickets/
 /public/uploads/users/
 coverage.html
@@ -59,3 +60,5 @@ public/uploads/assets/*.*
 backups/
 
 public/uploads/assets/upload/
+
+stats\.json

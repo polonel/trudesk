@@ -1,3 +1,17 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    1/20/19 5:31 AM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
 .site-logo
   width: 140px !important
 .site-logo-login
@@ -5,6 +19,8 @@
 
 .accent-text
   color: $accent_color !important
+.success-text
+  color: $accent_success !important
 
 .right
   max-width: 100%
@@ -41,12 +57,17 @@
 .bl
   border-left: 1px solid rgba(0,0,0,0.15) !important
 
-.noborder
+.noborder,
+.nb
   border: none !important
-.no-border-top
+.no-border-top,
+.nbt
   border-top: 0 !important
-.no-border-bottom
+.no-border-bottom,
+.nbb
   border-bottom: none !important
+.nbl
+  border-left: none !important
 
 .nomargin,
 .nm
@@ -76,19 +97,43 @@
   margin-top: 5px !important
 .mt-10
   margin-top: 10px !important
+.mt-15
+  margin-top: 15px !important
 .mt-20
   margin-top: 20px !important
-.mb-10
-  margin-bottom: 10px !important
 .mb-5
   margin-bottom: 5px !important
+.mb-10
+  margin-bottom: 10px !important
+.mb-15
+  margin-bottom: 15px !important
+.mb-25
+  margin-bottom: 25px !important
 .mr-10
   margin-right: 10px !important
 .mr-15
   margin-right: 15px !important
 
+.p-0
+  padding: 0 !important
+.pt-0
+  padding-top: 0 !important
+.pr-5
+  padding-right: 5px !important
 .pr-10
   padding-right: 10px !important
+.pr-20
+  padding-right: 20px !important
+.pr-25
+  padding-right: 25px !important
+.pl-0
+  padding-left: 0 !important
+.pl-25
+  padding-left: 25px !important
+.pb-25
+  padding-bottom: 25px !important
+.pb-100
+  padding-bottom: 100px !important
 
 .padding-left-right-15
   padding-left: 15px !important
@@ -99,6 +144,9 @@
   padding: 10px !important
 .padding-15
   padding: 15px !important
+.p-25,
+.padding-25
+  padding: 25px !important
 .padtop20
   padding-top: 20px !important
 .padright20
@@ -138,12 +186,20 @@
 
 .text-white
   color: #fff !important
+.text-dark
+  color: rgba(25,25,25, 0.7) !important
 .bg-white
   background: #fff !important
 .bg-accent
   background: $accent_color !important
 .bg-accent-noimportant
   background: $accent_color
+.bg-success
+  background: $accent_success !important
+.bg-danger
+  background: $accent_danger !important
+.bg-warn
+  background: $accent_warn !important
 
 .font-weight-300,
 .font-light,
@@ -346,6 +402,13 @@ a.button
       box-shadow: 0 10px 20px rgba(0,0,0,.19),0 6px 6px rgba(0,0,0,.23)
   .panel-body
     padding: 15px
+  .panel-footer
+    display: block
+    border-top: 1px solid darken($trupanel_bg, 15%)
+    padding: 15px
+
+.panel-bg
+  background: $trupanel_bg !important
 
 .tru-card-content
   padding: 16px

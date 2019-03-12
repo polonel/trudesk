@@ -30,11 +30,8 @@ module.exports = {
     publicPath: '/js/'
   },
   resolve: {
-    modules: [path.resolve(__dirname, 'src/public/js/')],
+    modules: [path.resolve(__dirname, 'src/public/js/'), 'node_modules'],
     alias: {
-      // server side
-      roles: path.resolve(__dirname, 'src/permissions/roles'),
-
       // client side
       handlebars: 'vendor/handlebars/handlebars',
       jquery: 'vendor/jquery/jquery',
@@ -94,8 +91,17 @@ module.exports = {
       cm4InlineAttachment: 'vendor/easymde/dist/codemirror-4.inline-attachment',
       grapesjs: 'vendor/grapesjs/grapes.min',
       grapesjsEmail: 'vendor/grapesjs/grapesjs-preset-email.min',
-      snackbar: 'plugins/snackbar'
-    }
+      snackbar: 'plugins/snackbar',
+
+      sass: path.resolve(__dirname, 'src/sass'),
+      components: path.resolve(__dirname, 'src/client/components'),
+      containers: path.resolve(__dirname, 'src/client/containers'),
+      actions: path.resolve(__dirname, 'src/client/actions'),
+      api: path.resolve(__dirname, 'src/client/api'),
+      lib: path.resolve(__dirname, 'src/public/js/modules')
+    },
+
+    extensions: ['.js', '.jsx', '.ts', 'tsx']
   },
   externals: {
     // These are bunbled already
@@ -130,7 +136,11 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/react', '@babel/env']
+            presets: ['@babel/react', '@babel/env'],
+            plugins: [
+              ['@babel/plugin-proposal-decorators', { legacy: true }],
+              ['@babel/plugin-proposal-class-properties', { loose: true }]
+            ]
           }
         }
       }
