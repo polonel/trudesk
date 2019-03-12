@@ -195,6 +195,7 @@ function launchServer (db) {
           var env = { FORK: 1, NODE_ENV: global.env }
           if (isDocker) {
             var envDocker = {
+              TRUDESK_DOCKER: process.env.TRUDESK_DOCKER,
               TD_MONGODB_SERVER: process.env.TD_MONGODB_SERVER,
               TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
               TD_MONGODB_USERNAME: process.env.TD_MONGODB_USERNAME,
@@ -237,7 +238,7 @@ function launchServer (db) {
 }
 
 function dbCallback (err, db) {
-  if (err) {
+  if (err || !db) {
     return start()
   }
 
