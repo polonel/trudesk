@@ -35,31 +35,14 @@ var port = nconf.get('port') || 8118
   module.exports.app = app
   module.exports.init = function (db, callback, p) {
     if (p !== undefined) port = p
-    async.series(
+    async.parallel(
       [
-        function (next) {
-          var settingSchema = require('./models/setting')
-          settingSchema.getSetting('gen:timezone', function (err, setting) {
-            if (err || !setting || !setting.value) {
-              if (err) {
-                winston.warn(err)
-              }
-
-              global.timezone = 'America/New_York'
-              return next()
-            }
-
-            global.timezone = setting.value
-
-            return next()
-          })
-        },
-        function (next) {
+        function (done) {
           middleware(app, db, function (middleware, store) {
             module.exports.sessionStore = store
             routes(app, middleware)
 
-            return next()
+            return done()
           })
         }
       ],

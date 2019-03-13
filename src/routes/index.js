@@ -11,12 +11,10 @@
 
 var express = require('express')
 var router = express.Router()
-var controllers = require('../controllers/index.js')
+var controllers = require('../controllers')
 var path = require('path')
 var winston = require('winston')
 var packagejson = require('../../package.json')
-
-var apiV2Routes = require('../controllers/api/v2/routes')
 
 function mainRoutes (router, middleware, controllers) {
   router.get('/', middleware.redirectToDashboardIfLoggedIn, controllers.main.index)
@@ -40,7 +38,7 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/login', function (req, res) {
     return res.redirect('/')
   })
-  router.get('/logint', controllers.main.index)
+
   router.post('/login', controllers.main.loginPost)
   router.get('/l2auth', controllers.main.l2authget)
   router.post('/l2auth', controllers.main.l2AuthPost)
@@ -320,6 +318,8 @@ function mainRoutes (router, middleware, controllers) {
   // API
   // v1
   require('../controllers/api/v1/routes')(middleware, router, controllers)
+  // v2
+  require('../controllers/api/v2/routes')(middleware, router, controllers)
 
   router.get('/api/v1/plugins/list/installed', middleware.api, function (req, res) {
     return res.json({ success: true, loadedPlugins: global.plugins })

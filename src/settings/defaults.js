@@ -247,11 +247,15 @@ function timezoneDefault (callback) {
         winston.debug('Timezone set to ' + setting.value)
         moment.tz.setDefault(setting.value)
 
+        global.timezone = setting.value
+
         if (_.isFunction(callback)) return callback()
       })
     } else {
       winston.debug('Timezone set to ' + setting.value)
       moment.tz.setDefault(setting.value)
+
+      global.timezone = setting.value
 
       if (_.isFunction(callback)) return callback()
     }

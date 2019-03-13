@@ -41,13 +41,12 @@ apiUtils.generateJWTToken = function (dbUser, callback) {
   delete resUser.__v
   delete resUser.preferences
   delete resUser.accessToken
-  delete resUser.role
   delete resUser.deleted
   delete resUser.hasL2Auth
 
   var secret = nconf.get('tokens') ? nconf.get('tokens').secret : false
-  var expires = nconf.get('tokens') ? nconf.get('tokens').expires : false
-  if (!secret || !expires) return callback({ error: { message: 'Invalid Server Configuration' } })
+  var expires = nconf.get('tokens') ? nconf.get('tokens').expires : 3600
+  if (!secret || !expires) return callback({ message: 'Invalid Server Configuration' })
 
   require('../../models/group').getAllGroupsOfUserNoPopulate(dbUser._id, function (err, grps) {
     if (err) return callback(err)

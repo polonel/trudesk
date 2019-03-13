@@ -21,16 +21,16 @@ module.exports = function (middleware, router, controllers) {
   var isAgent = middleware.isAgent
   var isAgentOrAdmin = middleware.isAgentOrAdmin
   var canUser = middleware.canUser
-  var apiCtrl = controllers.api
+  var apiCtrl = controllers.api.v1
 
   // Common
   router.get('/api', controllers.api.index)
   router.get('/api/v1/version', function (req, res) {
     return res.json({ version: packagejson.version })
   })
-  router.post('/api/v1/login', apiCtrl.login)
-  router.get('/api/v1/login', apiv1, apiCtrl.getLoggedInUser)
-  router.get('/api/v1/logout', apiv1, apiCtrl.logout)
+  router.post('/api/v1/login', apiCtrl.common.login)
+  router.get('/api/v1/login', apiv1, apiCtrl.common.getLoggedInUser)
+  router.get('/api/v1/logout', apiv1, apiCtrl.common.logout)
 
   // Roles
   router.get('/api/v1/roles', apiv1, apiCtrl.roles.get)

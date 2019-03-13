@@ -83,6 +83,7 @@ if (nconf.get('config')) {
 configExists = fs.existsSync(configFile)
 
 function launchInstallServer () {
+  var ws = require('./src/webserver')
   ws.installServer(function () {
     return winston.info('Trudesk Install Server Running...')
   })
@@ -90,6 +91,16 @@ function launchInstallServer () {
 
 if (nconf.get('install') || (!configExists && !isDocker)) {
   launchInstallServer()
+}
+
+function loadConfig () {
+  nconf.file({
+    file: configFile
+  })
+
+  nconf.defaults({
+    base_dir: __dirname
+  })
 }
 
 function start () {
@@ -111,23 +122,12 @@ function start () {
 }
 
 function launchServer (db) {
+  var ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {
       winston.error(err)
       return
     }
-
-    process.on('message', function (msg) {
-      if (msg === 'shutdown') {
-        winston.debug('Closing all connections...')
-
-        if (ws.server) {
-          ws.server.close()
-        }
-
-        throw new Error('Server has shutdown.')
-      }
-    })
 
     async.series(
       [
