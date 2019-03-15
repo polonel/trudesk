@@ -33,7 +33,8 @@ define([
   'velocity',
   'peity',
   'multiselect',
-  'moment_timezone'
+  'moment_timezone',
+  'waypoints'
 ], function ($, _, __, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
   var helpers = {}
   var easingSwiftOut = [0.4, 0, 0.2, 1]
@@ -1896,6 +1897,141 @@ define([
     }
 
     return isEqual(value, other)
+  }
+
+  helpers.UI.hierarchicalShow = function (element) {
+    var $hierarchicalShow = $('.hierarchical_show')
+
+    if ($hierarchicalShow.length) {
+      $hierarchicalShow.each(function () {
+        var timeout = $(this).attr('data-show-delay') ? parseInt($(this).attr('data-show-delay')) : 0
+        var $this = $(this)
+        var thisChildrenLength = $this.children().length
+        var baseDelay = 100
+
+        $this.children().each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.waypoint({
+            handler: function () {
+              $this.addClass('hierarchical_show_inView')
+              setTimeout(function () {
+                $this
+                  .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+                  .children()
+                  .css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+              }, thisChildrenLength * baseDelay + 1200)
+              this.destroy()
+            },
+            context: 'window',
+            offset: '90%'
+          })
+        }, timeout)
+      })
+    }
+    if (element) {
+      var $this = $(element).addClass('hierarchical_show hierarchical_show_inView')
+      var thisChildrenLength = $this.children().length
+      var baseDelay = 100
+
+      $this.children().each(function (index) {
+        $(this).css({
+          '-webkit-animation-delay': index * baseDelay + 'ms',
+          'animation-delay': index * baseDelay + 'ms'
+        })
+      })
+
+      $this.addClass('')
+      setTimeout(function () {
+        $this
+          .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+          .children()
+          .css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+      }, thisChildrenLength * baseDelay + 1200)
+    }
+  }
+
+  helpers.UI.hierarchicalSlide = function (element) {
+    var $hierarchicalSlide = $('.hierarchical_slide')
+    if ($hierarchicalSlide.length) {
+      $hierarchicalSlide.each(function () {
+        var $this = $(this)
+        var $thisChildren = $this.attr('data-slide-children')
+          ? $this.children($this.attr('data-slide-children'))
+          : $this.children()
+        var thisChildrenLength = $thisChildren.length
+        var thisContext = $this.attr('data-slide-context')
+          ? $this.closest($this.attr('data-slide-context'))[0]
+          : 'window'
+        var delay = $this.attr('data-delay') ? parseInt($this.attr('data-delay')) : 0
+        var baseDelay = 100
+
+        if (thisChildrenLength >= 1) {
+          $thisChildren.each(function (index) {
+            $(this).css({
+              '-webkit-animation-delay': index * baseDelay + 'ms',
+              'animation-delay': index * baseDelay + 'ms'
+            })
+          })
+
+          setTimeout(function () {
+            $this.waypoint({
+              handler: function () {
+                $this.addClass('hierarchical_slide_inView')
+                setTimeout(function () {
+                  $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+                  $thisChildren.css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+                }, thisChildrenLength * baseDelay + 1200)
+                this.destroy()
+              },
+              context: thisContext,
+              offset: '90%'
+            })
+          }, delay)
+        }
+      })
+    }
+
+    if (element) {
+      var $this = $(element).addClass('hierarchical_slide hierarchical_slide_inView')
+      var $thisChildren = $this.attr('data-slide-children')
+        ? $this.children($this.attr('data-slide-children'))
+        : $this.children()
+      var thisChildrenLength = $thisChildren.length
+      // var thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
+      var baseDelay = 100
+
+      if (thisChildrenLength >= 1) {
+        $thisChildren.each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+          $thisChildren.css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+        }, thisChildrenLength * baseDelay + 1200)
+      }
+    }
   }
 
   return helpers

@@ -1,0 +1,107 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    3/15/19 1:38 AM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
+@-webkit-keyframes hierarchical_show
+  0%
+    opacity: 0
+    -webkit-transform: scale3d(0.2, 0.2, 2)
+    transform: scale3d(0.2, 0.2, 2)
+
+  40%
+    opacity: 1
+
+  100%
+    -webkit-transform: scale3d(1, 1, 1)
+    transform: scale3d(1, 1, 1)
+
+
+@keyframes hierarchical_show
+  0%
+    opacity: 0
+    -webkit-transform: scale3d(0.2, 0.2, 2)
+    transform: scale3d(0.2, 0.2, 2)
+
+  40%
+    opacity: 1
+
+  100%
+    -webkit-transform: scale3d(1, 1, 1)
+    transform: scale3d(1, 1, 1)
+
+
+.hierarchical_show
+  will-change: transform, opacity
+  > *
+    visibility: hidden
+
+.hierarchical_show_inView > *
+  -webkit-animation-fill-mode: both
+  animation-fill-mode: both
+  -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+  -webkit-animation-duration: 560ms
+  animation-duration: 560ms
+  -webkit-animation-name: hierarchical_show
+  animation-name: hierarchical_show
+  visibility: visible
+
+@-webkit-keyframes hierarchical_slide
+  0%
+    opacity: 0
+    -webkit-transform: translate3d(0, 160%, 0)
+    transform: translate3d(0, 160%, 0)
+
+  33%
+    opacity: 1
+
+  100%
+    -webkit-transform: translate3d(0, 0, 0)
+    transform: translate3d(0, 0, 0)
+
+
+@keyframes hierarchical_slide
+  0%
+    opacity: 0
+    -webkit-transform: translate3d(0, 160%, 0)
+    transform: translate3d(0, 160%, 0)
+
+  33%
+    opacity: 1
+
+  100%
+    -webkit-transform: translate3d(0, 0, 0)
+    transform: translate3d(0, 0, 0)
+
+
+.hierarchical_slide
+  will-change: transform, opacity
+  > *
+    visibility: hidden
+
+.hierarchical_slide_inView > *
+  -webkit-animation-fill-mode: both
+  animation-fill-mode: both
+  -webkit-animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
+  -webkit-animation-duration: 560ms
+  animation-duration: 560ms
+  -webkit-animation-name: hierarchical_slide
+  animation-name: hierarchical_slide
+  visibility: visible
+
+.fast_animation
+  -webkit-animation-duration: 280ms
+  -moz-animation-duration: 280ms
+  -o-animation-duration: 280ms
+  animation-duration: 280ms
