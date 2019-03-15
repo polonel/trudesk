@@ -97,7 +97,21 @@ function rolesDefault (callback) {
               description: 'Default role for users',
               grants: settingsDefaults.userGrants
             },
-            done
+            function (err, userRole) {
+              if (err) return done(err)
+              SettingsSchema.getSetting('role:user:default', function (err, roleUserDefault) {
+                if (err) return done(err)
+                if (roleUserDefault) return done()
+
+                SettingsSchema.create(
+                  {
+                    name: 'role:user:default',
+                    value: userRole._id
+                  },
+                  done
+                )
+              })
+            }
           )
         })
       },
@@ -393,9 +407,7 @@ function normalizeTags (callback) {
 function checkPriorities (callback) {
   var ticketSchema = require('../models/ticket')
   var migrateP1 = false
-
   var migrateP2 = false
-
   var migrateP3 = false
 
   async.parallel(
