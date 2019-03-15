@@ -49,6 +49,7 @@ class PermissionBody extends React.Component {
   @observable ticketGrants = defaultGrants()
   @observable commentGrants = defaultGrants()
   @observable accountGrants = defaultGrants()
+  @observable teamGrants = defaultGrants()
   @observable groupGrants = defaultGrants()
   @observable reportGrants = defaultGrants()
   @observable noticeGrants = defaultGrants()
@@ -83,6 +84,8 @@ class PermissionBody extends React.Component {
 
     if (parsedGrants.accounts && !isEqual(parsedGrants.accounts, this.accountGrants))
       this.accountGrants = parsedGrants.accounts
+
+    if (parsedGrants.teams && !isEqual(parsedGrants.teams, this.teamGrants)) this.teamGrants = parsedGrants.teams
 
     if (parsedGrants.groups && !isEqual(parsedGrants.groups, this.groupGrants)) this.groupGrants = parsedGrants.groups
 
@@ -123,6 +126,7 @@ class PermissionBody extends React.Component {
     obj.tickets = PermissionBody.buildPermArray(this.ticketPermGroup)
     obj.comments = PermissionBody.buildPermArray(this.commentPermGroup)
     obj.accounts = PermissionBody.buildPermArray(this.accountPermGroup)
+    obj.teams = PermissionBody.buildPermArray(this.teamPermGroup)
     obj.groups = PermissionBody.buildPermArray(this.groupPermGroup)
     obj.reports = PermissionBody.buildPermArray(this.reportPermGroup)
     obj.notices = PermissionBody.buildPermArray(this.noticePermGroup)
@@ -213,6 +217,13 @@ class PermissionBody extends React.Component {
             roleSpecials={PermissionBody.mapAccountSpecials()}
             grants={this.accountGrants}
             subtitle={'Account Permissions'}
+          />
+          <PermissionGroupPartial
+            ref={i => (this.teamPermGroup = i)}
+            title={'Teams'}
+            role={this.props.role}
+            grants={this.teamGrants}
+            subtitle={'Team Permissions'}
           />
           <PermissionGroupPartial
             ref={i => (this.groupPermGroup = i)}

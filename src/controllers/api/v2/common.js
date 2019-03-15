@@ -13,9 +13,7 @@
  */
 
 var _ = require('lodash')
-var nconf = require('nconf')
-var jwt = require('jsonwebtoken')
-var userSchema = require('../../../models/user')
+var User = require('../../../models/user')
 var apiUtils = require('../apiUtils')
 
 var commonV2 = {}
@@ -24,13 +22,13 @@ commonV2.login = function (req, res) {
   var username = req.body.username
   var password = req.body.password
 
-  if (!username || !password) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+  if (!username || !password) return apiUtils.sendApiError_InvalidPostData(res)
 
-  userSchema.getUserByUsername(username, function (err, user) {
-    if (err) return res.status(401).json({ success: false, error: err.message })
-    if (!user) return res.status(401).json({ success: false, error: 'Invalid Username/Password' })
+  User.getUserByUsername(username, function (err, user) {
+    if (err) return apiUtils.sendApiError(res, 401, err.message)
+    if (!user) return apiUtils.sendApiError(res, 401, 'Invalid Username/Password')
 
-    if (!userSchema.validate(password, user.password))
+    if (!User.validate(password, user.password))
       return res.status(401).json({ success: false, error: 'Invalid Username/Password' })
 
     apiUtils.generateJWTToken(user, function (err, tokens) {
@@ -40,6 +38,18 @@ commonV2.login = function (req, res) {
   })
 }
 
-commonV2.token = function (req, res) {}
+commonV2.token = function (req, res) {
+  var refreshToken = req.body.refreshToken
+  if (!refreshToken) return apiUtils.sendApiError_InvalidPostData(res)
+
+  User.getUserByAccessToken(refreshToken, function (err, user) {
+    if (err || !user) return apiUtils.sendApiError(res, 401)
+
+    apiUtils.generateJWTToken(user, function (err, tokens) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+      return apiUtils.sendApiSuccess(res, { token: tokens.token, refreshToken: tokens.refreshToken })
+    })
+  })
+}
 
 module.exports = commonV2

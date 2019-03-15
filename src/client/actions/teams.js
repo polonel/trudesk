@@ -8,28 +8,13 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
+ *  Updated:    3/12/19 11:32 PM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var Controllers = {
-  install: require('./install'),
-  main: require('./main'),
-  tickets: require('./tickets'),
-  messages: require('./messages'),
-  servers: require('./servers'),
-  accounts: require('./accounts'),
-  groups: require('./groups'),
-  teams: require('./teams'),
-  reports: require('./reports'),
-  notices: require('./notices'),
-  plugins: require('./plugins'),
-  settings: require('./settings'),
-  editor: require('./editor'),
-  backuprestore: require('./backuprestore'),
-  api: require('./api'),
+import { createAction } from 'redux-actions'
+import { FETCH_TEAMS, UNLOAD_TEAMS } from 'actions/types'
 
-  debug: require('./debug')
-}
+export const fetchTeams = createAction(FETCH_TEAMS.ACTION, payload => payload, () => ({ thunk: true }))
 
-module.exports = Controllers
+export const unloadTeams = createAction(UNLOAD_TEAMS.ACTION, payload => payload, () => ({ thunk: true }))

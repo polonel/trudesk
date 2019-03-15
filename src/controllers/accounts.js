@@ -75,76 +75,8 @@ accountsController.get = function (req, res) {
   content.data = {}
   content.data.user = req.user
   content.data.common = req.viewdata
-  content.data.accounts = {}
-  content.data.page = 2
-  async.waterfall(
-    [
-      function (callback) {
-        userSchema.getUserWithObject({ limit: 20 }, function (err, results) {
-          callback(err, results)
-        })
-      },
-      function (users, callback) {
-        // return callback(null, users);
 
-        var result = []
-        async.waterfall(
-          [
-            function (cc) {
-              groupSchema.getAllGroups(function (err, grps) {
-                if (err) return cc(err)
-                var g = grps.slice(0)
-                g.members = undefined
-                g.sendMailTo = undefined
-                content.data.allGroups = g
-                cc(null, grps)
-              })
-            },
-            function (grps, cc) {
-              async.eachSeries(
-                users,
-                function (u, c) {
-                  var user = u.toObject()
-
-                  var groups = _.filter(grps, function (g) {
-                    return _.some(g.members, function (m) {
-                      if (m) {
-                        return m._id.toString() === user._id.toString()
-                      }
-                    })
-                  })
-
-                  user.groups = _.map(groups, 'name')
-
-                  result.push(user)
-                  c()
-                },
-                function (err) {
-                  if (err) return callback(err)
-                  cc(null, result)
-                }
-              )
-            }
-          ],
-          function (err, results) {
-            if (err) return callback(err)
-            callback(null, results)
-          }
-        )
-      }
-    ],
-    function (err, rr) {
-      if (err)
-        return res.render('error', {
-          message: err.message,
-          error: err,
-          layout: false
-        })
-      content.data.accounts = _.sortBy(rr, 'fullname')
-
-      res.render('accounts', content)
-    }
-  )
+  return res.render('accounts', content)
 }
 
 accountsController.importPage = function (req, res) {

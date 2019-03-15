@@ -45,5 +45,6 @@ apiController.v1.roles = require('./api/v1/roles')
 apiController.v2 = {}
 apiController.v2.common = require('./api/v2/common')
 apiController.v2.tickets = require('./api/v2/tickets')
+apiController.v2.teams = require('./api/v2/teams')
 
 module.exports = apiController

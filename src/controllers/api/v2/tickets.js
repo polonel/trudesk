@@ -17,6 +17,11 @@ var Ticket = require('../../../models/ticket')
 
 var ticketsV2 = {}
 
+ticketsV2.create = function (req, res) {
+  var postTicket = req.body
+  if (!postTicket) return apiUtils.sendApiError_InvalidPostData(res)
+}
+
 ticketsV2.get = function (req, res) {
   var query = req.query
   var limit = query.limit || 100
@@ -38,6 +43,30 @@ ticketsV2.single = function (req, res) {
     if (err) return apiUtils.sendApiError(res, 500, err)
 
     return apiUtils.sendApiSuccess(res, { ticket: ticket })
+  })
+}
+
+ticketsV2.update = function (req, res) {
+  var uid = req.params.uid
+  var putTicket = req.body.ticket
+  if (!uid || !putTicket) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+
+  Ticket.getTicketByUid(uid, function (err, ticket) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    return apiUtils.sendApiSuccess(res, ticket)
+  })
+}
+
+ticketsV2.delete = function (req, res) {
+  var uid = req.params.uid
+  if (!uid) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
+
+  Ticket.softDeleteUid(uid, function (err, success) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+    if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete ticket')
+
+    return apiUtils.sendApiSuccess(res, { deleted: true })
   })
 }
 

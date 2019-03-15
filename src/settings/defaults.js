@@ -29,6 +29,7 @@ settingsDefaults.supportGrants = [
   'tickets:*',
   'agent:*',
   'accounts:create update view import',
+  'teams:create update view',
   'comments:create view update create delete',
   'reports:view create',
   'notices:*'

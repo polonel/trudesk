@@ -17,7 +17,8 @@ import CommonSaga from './common'
 import SettingsSaga from './settings'
 import TicketSaga from './tickets'
 import AccountSaga from './accounts'
+import TeamSaga from './teams'
 
 export default function * IndexSagas () {
-  yield all([CommonSaga(), TicketSaga(), SettingsSaga(), AccountSaga()])
+  yield all([CommonSaga(), TicketSaga(), SettingsSaga(), AccountSaga(), TeamSaga()])
 }

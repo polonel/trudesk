@@ -8,28 +8,32 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
+ *  Updated:    3/14/19 12:09 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var Controllers = {
-  install: require('./install'),
-  main: require('./main'),
-  tickets: require('./tickets'),
-  messages: require('./messages'),
-  servers: require('./servers'),
-  accounts: require('./accounts'),
-  groups: require('./groups'),
-  teams: require('./teams'),
-  reports: require('./reports'),
-  notices: require('./notices'),
-  plugins: require('./plugins'),
-  settings: require('./settings'),
-  editor: require('./editor'),
-  backuprestore: require('./backuprestore'),
-  api: require('./api'),
+var _ = require('lodash')
+var permissions = require('../permissions')
+var Team = require('../models/team')
 
-  debug: require('./debug')
+var teamController = {}
+
+teamController.get = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'teams:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Teams'
+  content.nav = 'teams'
+
+  content.data = {}
+  content.data.user = req.user
+  content.data.common = req.viewdata
+  content.data.teams = {}
+
+  return res.render('team', content)
 }
 
-module.exports = Controllers
+module.exports = teamController

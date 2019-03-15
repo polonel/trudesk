@@ -8,28 +8,39 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    1/20/19 4:43 PM
+ *  Updated:    3/14/19 12:26 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var Controllers = {
-  install: require('./install'),
-  main: require('./main'),
-  tickets: require('./tickets'),
-  messages: require('./messages'),
-  servers: require('./servers'),
-  accounts: require('./accounts'),
-  groups: require('./groups'),
-  teams: require('./teams'),
-  reports: require('./reports'),
-  notices: require('./notices'),
-  plugins: require('./plugins'),
-  settings: require('./settings'),
-  editor: require('./editor'),
-  backuprestore: require('./backuprestore'),
-  api: require('./api'),
+import { fromJS, List } from 'immutable'
+import { handleActions } from 'redux-actions'
+import { FETCH_TEAMS, UNLOAD_TEAMS } from 'actions/types'
 
-  debug: require('./debug')
+const initialState = {
+  teams: List([])
 }
 
-module.exports = Controllers
+const reducer = handleActions(
+  {
+    [FETCH_TEAMS.SUCCESS]: (state, action) => {
+      let arr = state.teams.toArray()
+      action.payload.response.teams.map(i => {
+        arr.push(i)
+      })
+      return {
+        ...state,
+        teams: fromJS(arr)
+      }
+    },
+
+    [UNLOAD_TEAMS.SUCCESS]: state => {
+      return {
+        ...state,
+        teams: state.teams.clear()
+      }
+    }
+  },
+  initialState
+)
+
+export default reducer

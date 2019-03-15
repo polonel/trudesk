@@ -24,9 +24,7 @@ import {
 } from 'actions/types'
 
 import Log from '../../logger'
-
 import api from '../../api'
-
 import helpers from 'lib/helpers'
 
 function * fetchAccounts ({ payload, meta }) {

@@ -1515,6 +1515,12 @@ ticketSchema.statics.softDelete = function (oId, callback) {
   return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: true }, callback)
 }
 
+ticketSchema.statics.softDeleteUid = function (uid, callback) {
+  if (_.isUndefined(uid)) return callback({ message: 'Invalid UID - TicketSchema.SoftDeleteUid()' })
+
+  return this.model(COLLECTION).findOneAndUpdate({ uid: uid }, { deleted: true }, callback)
+}
+
 ticketSchema.statics.restoreDeleted = function (oId, callback) {
   if (_.isUndefined(oId)) return callback('Invalid ObjectID - TicketSchema.RestoreDeleted()', null)
 

@@ -48,6 +48,11 @@ export const DELETE_ACCOUNT = defineAction('DELETE_ACCOUNT', [PENDING, SUCCESS, 
 export const ENABLE_ACCOUNT = defineAction('ENABLE_ACCOUNT', [SUCCESS, ERROR])
 export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 
+// Teams
+export const FETCH_TEAMS = defineAction('FETCH_TEAMS', [PENDING, SUCCESS, ERROR])
+
+export const UNLOAD_TEAMS = defineAction('UNLOAD_TEAMS', [SUCCESS])
+
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])
 export const UPDATE_SETTING = defineAction('UPDATE_SETTING', [SUCCESS, ERROR])

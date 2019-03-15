@@ -233,6 +233,9 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/groups/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.getCreate)
   router.get('/groups/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.edit)
 
+  // Teams
+  router.get('/teams', middleware.redirectToLogin, middleware.loadCommonData, controllers.teams.get)
+
   // Reports
   router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview)
   router.get('/reports/overview', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview)

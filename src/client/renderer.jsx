@@ -18,6 +18,7 @@ import React from 'react'
 
 import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
+import TeamsContainer from 'containers/Teams'
 
 export default function (store) {
   if (document.getElementById('accounts-container')) {
@@ -28,6 +29,16 @@ export default function (store) {
     )
 
     ReactDOM.render(AccountsContainerWithProvider, document.getElementById('accounts-container'))
+  }
+
+  if (document.getElementById('teams-container')) {
+    const TeamsContainerWithProvider = (
+      <Provider store={store}>
+        <TeamsContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(TeamsContainerWithProvider, document.getElementById('teams-container'))
   }
 
   if (document.getElementById('settings-container')) {

@@ -13,11 +13,21 @@
  */
 
 module.exports = function (middleware, router, controllers) {
+  // Shorten Vars
+  var apiv2Auth = middleware.apiv2
+  var apiv2 = controllers.api.v2
+
   // Common
   router.post('/api/v2/login', controllers.api.v2.common.login)
-  router.get('/api/v2/token', controllers.api.v2.common.token)
+  router.post('/api/v2/token', controllers.api.v2.common.token)
 
   // Tickets
-  router.get('/api/v2/tickets', middleware.apiv2, controllers.api.v2.tickets.get)
-  router.get('/api/v2/tickets/:uid', middleware.apiv2, controllers.api.v2.tickets.single)
+  router.get('/api/v2/tickets', apiv2Auth, apiv2.tickets.get)
+  router.post('/api/v2/tickets', apiv2Auth, apiv2.tickets.create)
+  router.get('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.single)
+  router.put('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.update)
+  router.delete('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.delete)
+
+  // Teams
+  router.get('/api/v2/teams', apiv2Auth, apiv2.teams.get)
 }

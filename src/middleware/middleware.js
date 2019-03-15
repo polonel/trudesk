@@ -193,6 +193,9 @@ middleware.api = function (req, res, next) {
 middleware.hasAuth = middleware.api
 
 middleware.apiv2 = function (req, res, next) {
+  // ByPass auth for now if user is set through session
+  if (req.user) return next()
+
   var passport = require('passport')
   passport.authenticate('jwt', { session: false }, function (err, user) {
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })

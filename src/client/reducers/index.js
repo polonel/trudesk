@@ -21,6 +21,7 @@ import sidebar from './sidebarReducer'
 import settings from './settings'
 import tagsSettings from './tagsReducer'
 import accountsState from './accountsReducer'
+import teamsState from './teamsReducer'
 
 const IndexReducer = combineReducers({
   shared,
@@ -28,6 +29,7 @@ const IndexReducer = combineReducers({
   modal,
   sidebar,
   accountsState,
+  teamsState,
   settings,
   tagsSettings
 })

@@ -12,112 +12,130 @@
 
  **/
 
-var _               = require('lodash');
-var mongoose        = require('mongoose');
+var _ = require('lodash')
+var mongoose = require('mongoose')
 
-//Refs
-require('./user');
+// Refs
+require('./user')
 
-var COLLECTION = 'teams';
+var COLLECTION = 'teams'
 
 var teamSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true },
-    members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
-});
+  name: { type: String, required: true, unique: true },
+  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
+})
 
-teamSchema.pre('save', function(next) {
-    this.name = this.name.trim();
+teamSchema.pre('save', function (next) {
+  this.name = this.name.trim()
 
-    return next();
-});
+  return next()
+})
 
-teamSchema.methods.addMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.AddMember()');
+teamSchema.methods.addMember = function (memberId, callback) {
+  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.AddMember()')
 
-    if (this.members === null) this.members = [];
+  if (this.members === null) this.members = []
 
-    if (isMember(this.members, memberId)) return callback(null, false);
+  if (isMember(this.members, memberId)) return callback(null, false)
 
-    this.members.push(memberId);
-    this.members = _.uniq(this.members);
+  this.members.push(memberId)
+  this.members = _.uniq(this.members)
 
-    return callback(null, true);
-};
-
-teamSchema.methods.removeMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.RemoveMember()');
-
-    if (!isMember(this.members, memberId)) return callback(null, false);
-
-    this.members.splice(_.indexOf(this.members, _.find(this.members, {'_id' : memberId})), 1);
-
-    this.members = _.uniq(this.members);
-
-    return callback(null, true);
-};
-
-teamSchema.methods.isMember = function(memberId) {
-    return isMember(this.members, memberId);
-};
-
-teamSchema.statics.getTeamByName = function(name, callback) {
-    if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()');
-
-    var q = this.model(COLLECTION).findOne({name: new RegExp('^' + name.trim() + '$', 'i')})
-        .populate('members', '_id username fullname email image title');
-
-    return q.exec(callback);
-};
-
-teamSchema.statics.getTeams = function(callback) {
-    var q = this.model(COLLECTION).find({})
-        .populate('members', '_id username fullname email image title')
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-teamSchema.statics.getTeamsNoPopulate = function(callback) {
-    var q = this.model(COLLECTION).find({}).sort('name');
-
-    return q.exec(callback);
-};
-
-teamSchema.statics.getTeamsOfUser = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUser()');
-
-    var q = this.model(COLLECTION).find({members: userId})
-        .populate('members', '_id username fullname email image title')
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-teamSchema.statics.getTeamsOfUserNoPopulate = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUserNoPopulate()');
-
-    var q = this.model(COLLECTION).find({members: userId})
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-teamSchema.statics.getTeam = function(id, callback) {
-    if (_.isUndefined(id)) return callback('Invalid TeamId - TeamSchema.GetTeam()');
-
-    var q = this.model(COLLECTION).findOne({_id: id})
-        .populate('members', '_id username fullname email image title');
-
-    return q.exec(callback);
-};
-
-function isMember(arr, id) {
-    var matches = _.filter(arr, function (value) {
-        if (value._id.toString() === id.toString()) 
-            return value;
-    });
-
-    return matches.length > 0;
+  return callback(null, true)
 }
 
-module.exports = mongoose.model(COLLECTION, teamSchema);
+teamSchema.methods.removeMember = function (memberId, callback) {
+  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.RemoveMember()')
+
+  if (!isMember(this.members, memberId)) return callback(null, false)
+
+  this.members.splice(_.indexOf(this.members, _.find(this.members, { _id: memberId })), 1)
+
+  this.members = _.uniq(this.members)
+
+  return callback(null, true)
+}
+
+teamSchema.methods.isMember = function (memberId) {
+  return isMember(this.members, memberId)
+}
+
+teamSchema.statics.getWithObject = function (obj, callback) {
+  if (!obj) return callback({ message: 'Invalid Team Object - TeamSchema.GetWithObject()' })
+
+  var q = this.model(COLLECTION)
+    .find({})
+    .skip(obj.limit * obj.page)
+    .limit(obj.limit)
+    .populate('members', '_id username fullname email image title')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeamByName = function (name, callback) {
+  if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()')
+
+  var q = this.model(COLLECTION)
+    .findOne({ name: new RegExp('^' + name.trim() + '$', 'i') })
+    .populate('members', '_id username fullname email image title')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeams = function (callback) {
+  var q = this.model(COLLECTION)
+    .find({})
+    .populate('members', '_id username fullname email image title')
+    .sort('name')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeamsNoPopulate = function (callback) {
+  var q = this.model(COLLECTION)
+    .find({})
+    .sort('name')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeamsOfUser = function (userId, callback) {
+  if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUser()')
+
+  var q = this.model(COLLECTION)
+    .find({ members: userId })
+    .populate('members', '_id username fullname email image title')
+    .sort('name')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeamsOfUserNoPopulate = function (userId, callback) {
+  if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUserNoPopulate()')
+
+  var q = this.model(COLLECTION)
+    .find({ members: userId })
+    .sort('name')
+
+  return q.exec(callback)
+}
+
+teamSchema.statics.getTeam = function (id, callback) {
+  if (_.isUndefined(id)) return callback('Invalid TeamId - TeamSchema.GetTeam()')
+
+  var q = this.model(COLLECTION)
+    .findOne({ _id: id })
+    .populate('members', '_id username fullname email image title')
+
+  return q.exec(callback)
+}
+
+function isMember (arr, id) {
+  var matches = _.filter(arr, function (value) {
+    if (value._id.toString() === id.toString()) return value
+  })
+
+  return matches.length > 0
+}
+
+module.exports = mongoose.model(COLLECTION, teamSchema)
