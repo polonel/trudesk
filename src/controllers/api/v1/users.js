@@ -182,7 +182,7 @@ apiUsers.create = function (req, res) {
     password: postData.aPass,
     fullname: postData.aFullname,
     email: postData.aEmail,
-    accesstoken: chance.hash(),
+    accessToken: chance.hash(),
     role: postData.aRole
   })
 

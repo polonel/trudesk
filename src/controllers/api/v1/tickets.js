@@ -456,7 +456,7 @@ apiTickets.createPublicTicket = function (req, res) {
           password: plainTextPass,
           fullname: postData.user.fullname,
           email: postData.user.email,
-          accesstoken: chance.hash(),
+          accessToken: chance.hash(),
           role: roleDefault.value
         })
 
