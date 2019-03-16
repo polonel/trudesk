@@ -180,6 +180,28 @@ function rolesDefault (callback) {
   )
 }
 
+function defaultUserRole (callback) {
+  var roleOrderSchema = require('../models/roleorder')
+  roleOrderSchema.getOrder(function (err, roleOrder) {
+    if (err) return callback(err)
+    if (!roleOrder) return callback()
+
+    SettingsSchema.getSetting('role:user:default', function (err, roleDefault) {
+      if (err) return callback(err)
+      if (roleDefault) return callback()
+
+      var lastId = _.last(roleOrder.order)
+      SettingsSchema.create(
+        {
+          name: 'role:user:default',
+          value: lastId
+        },
+        callback
+      )
+    })
+  })
+}
+
 function createDirectories (callback) {
   async.parallel(
     [
@@ -605,6 +627,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return rolesDefault(done)
+      },
+      function (done) {
+        return defaultUserRole(done)
       },
       function (done) {
         return timezoneDefault(done)
