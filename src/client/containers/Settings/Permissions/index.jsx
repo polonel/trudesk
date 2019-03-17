@@ -17,8 +17,11 @@ import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
 
 import { showModal, fetchRoles, updateRoleOrder } from 'actions/common'
+import { updateSetting } from 'actions/settings'
 
 import Button from 'components/Button'
+import SettingItem from 'components/Settings/SettingItem'
+import SingleSelect from 'components/SingleSelect'
 import SplitSettingsPanel from 'components/Settings/SplitSettingsPanel'
 import PermissionBody from './permissionBody'
 
@@ -27,6 +30,12 @@ import $ from 'jquery'
 class PermissionsSettingsContainer extends React.Component {
   componentDidMount () {
     this.props.fetchRoles()
+  }
+
+  getSetting (name) {
+    return this.props.settings.getIn(['settings', name, 'value'])
+      ? this.props.settings.getIn(['settings', name, 'value'])
+      : ''
   }
 
   onRoleOrderChanged (e) {
@@ -57,9 +66,34 @@ class PermissionsSettingsContainer extends React.Component {
     this.props.showModal('CREATE_ROLE')
   }
 
+  onDefaultUserRoleChange (e) {
+    this.props.updateSetting({ name: 'role:user:default', value: e.target.value, stateName: 'defaultUserRole' })
+  }
+
   render () {
+    const mappedRoles = this.props.roles
+      .map(role => {
+        return { text: role.get('name'), value: role.get('_id') }
+      })
+      .toArray()
+
     return (
       <div className={this.props.active ? '' : 'hide'}>
+        <SettingItem
+          title={'Default New User Role'}
+          subtitle={'Role assigned to users created during sign-up and public tickets'}
+          component={
+            <SingleSelect
+              items={mappedRoles}
+              defaultValue={this.getSetting('defaultUserRole')}
+              onSelectChange={e => {
+                this.onDefaultUserRoleChange(e)
+              }}
+              width={'50%'}
+              showTextbox={false}
+            />
+          }
+        />
         <SplitSettingsPanel
           title={'Permissions'}
           tooltip={'Permission order is top down. ex: Admins at top; Users at bottom.'}
@@ -95,17 +129,20 @@ PermissionsSettingsContainer.propTypes = {
   active: PropTypes.bool.isRequired,
   roles: PropTypes.object.isRequired,
   roleOrder: PropTypes.object.isRequired,
+  settings: PropTypes.object.isRequired,
   fetchRoles: PropTypes.func.isRequired,
   updateRoleOrder: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  updateSetting: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   roles: state.shared.roles,
-  roleOrder: state.shared.roleOrder
+  roleOrder: state.shared.roleOrder,
+  settings: state.settings.settings
 })
 
 export default connect(
   mapStateToProps,
-  { fetchRoles, updateRoleOrder, showModal }
+  { fetchRoles, updateRoleOrder, showModal, updateSetting }
 )(PermissionsSettingsContainer)

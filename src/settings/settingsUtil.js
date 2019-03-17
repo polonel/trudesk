@@ -77,6 +77,8 @@ util.getSettings = function (callback) {
     s.minSubjectLength = parseSetting(settings, 'ticket:minlength:subject', 10)
     s.minIssueLength = parseSetting(settings, 'ticket:minlength:issue', 10)
 
+    s.defaultUserRole = parseSetting(settings, 'role:user:default', '')
+
     s.mailerEnabled = parseSetting(settings, 'mailer:enable', false)
     s.mailerHost = parseSetting(settings, 'mailer:host', '')
     s.mailerSSL = parseSetting(settings, 'mailer:ssl', false)

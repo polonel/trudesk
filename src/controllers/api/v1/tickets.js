@@ -433,6 +433,18 @@ apiTickets.createPublicTicket = function (req, res) {
   async.waterfall(
     [
       function (next) {
+        var settingSchmea = require('../../../models/setting')
+        settingSchmea.getSetting('role:user:default', function (err, roleDefault) {
+          if (err) return next(err)
+          if (!roleDefault) {
+            winston.error('No Default User Role Set. (Settings > Permissions > Default User Role)')
+            return next('No Default Role Set')
+          }
+
+          return next(null, roleDefault)
+        })
+      },
+      function (roleDefault, next) {
         var UserSchema = require('../../../models/user')
         plainTextPass = chance.string({
           length: 6,
@@ -444,7 +456,8 @@ apiTickets.createPublicTicket = function (req, res) {
           password: plainTextPass,
           fullname: postData.user.fullname,
           email: postData.user.email,
-          role: 'user'
+          accessToken: chance.hash(),
+          role: roleDefault.value
         })
 
         user.save(function (err, savedUser) {

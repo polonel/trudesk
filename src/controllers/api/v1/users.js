@@ -174,11 +174,15 @@ apiUsers.create = function (req, res) {
   if (postData.aPass !== postData.aPassConfirm)
     return res.status(400).json({ success: false, error: 'Invalid Password Match' })
 
+  var Chance = require('chance')
+  var chance = new Chance()
+
   var account = new UserSchema({
     username: postData.aUsername,
     password: postData.aPass,
     fullname: postData.aFullname,
     email: postData.aEmail,
+    accessToken: chance.hash(),
     role: postData.aRole
   })
 
@@ -268,13 +272,25 @@ apiUsers.createPublicAccount = function (req, res) {
   async.waterfall(
     [
       function (next) {
+        var SettingSchema = require('../../../models/setting')
+        SettingSchema.getSetting('role:user:default', function (err, roleDefault) {
+          if (err) return next(err)
+          if (!roleDefault) {
+            winston.error('No Default User Role Set. (Settings > Permissions > Default User Role)')
+            return next({ message: 'No Default Role Set. Please contact administrator.' })
+          }
+
+          return next(null, roleDefault)
+        })
+      },
+      function (roleDefault, next) {
         var UserSchema = require('../../../models/user')
         user = new UserSchema({
           username: postData.user.email,
           password: postData.user.password,
           fullname: postData.user.fullname,
           email: postData.user.email,
-          role: 'user'
+          role: roleDefault.value
         })
 
         user.save(function (err, savedUser) {
