@@ -1,3 +1,14 @@
+## [1.0.8](https://github.com/polonel/trudesk/compare/v1.0.7...v1.0.8) (2019-03-17)
+
+
+### Bug Fixes
+
+* **accounts:** new users have accessToken by default ([4f36bb4](https://github.com/polonel/trudesk/commit/4f36bb4))
+* **accounts:** space between group names ([24a590b](https://github.com/polonel/trudesk/commit/24a590b))
+* **mailer:** new-ticket template showing large profile pic ([213bc05](https://github.com/polonel/trudesk/commit/213bc05))
+* **signup:** [#167](https://github.com/polonel/trudesk/issues/167) ([5828301](https://github.com/polonel/trudesk/commit/5828301))
+* **theme:** dark theme dropdown select color ([53751bd](https://github.com/polonel/trudesk/commit/53751bd))
+
 ## [1.0.7](https://github.com/polonel/trudesk/compare/v1.0.6...v1.0.7) (2019-03-12)
 
 
