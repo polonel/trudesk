@@ -193,7 +193,7 @@
     },
     "ignore": [
       "public/js/*.js",
-      "/src/public/js/vendor/**/*.min.js"
+      "src/public/js/vendor/**/*.min.js"
     ]
   },
   "commitlint": {
