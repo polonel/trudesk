@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.0.8",
+  "version": "1.0.9-beta",
   "private": true,
   "engines": {
     "node": ">=9.10.0"
@@ -192,7 +192,8 @@
       ]
     },
     "ignore": [
-      "public/js/*.js"
+      "public/js/*.js",
+      "/src/public/js/vendor/**/*.min.js"
     ]
   },
   "commitlint": {
