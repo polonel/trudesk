@@ -171,7 +171,7 @@ class AccountsContainer extends React.Component {
                     <span className='tru-list-heading'>Groups</span>
                     <span className='uk-text-small uk-text-muted uk-text-truncate'>
                       {user.get('groups').map(group => {
-                        return group.get('name') + (user.get('groups').length > 1 ? ', ' : '')
+                        return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '')
                       })}
                     </span>
                   </div>

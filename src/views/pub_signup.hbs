@@ -370,6 +370,17 @@
                 </a>
             </div>
         </div>
+        <div id="accountCreateError" class="hide">
+            <h2 style="margin-bottom: 25px; text-align: left;">An Error has occurred</h2>
+            <p style="text-align: justify;">
+                An Unknown Error has occurred
+            </p>
+            <div style="width: 100%; margin-top: 50px;">
+                <a href="/signup" class="no-ajaxy" style="width: 100%; padding: 0; margin: 0;">
+                    <button class="btn md-btn md-btn-wave md-btn-danger" type="button" style="width: 100%; margin-bottom: 10px !important;">Start Over</button>
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -522,7 +533,7 @@
                     error: function(e) {
                         $checkEmailBtn.prop('disabled', false).text('Next');
                         window.Snackbar.show({
-                            text: 'An Error occurred.',
+                            text: 'Invalid Captcha',
                             actionTextColor: 'red'
                         });
 
@@ -647,9 +658,19 @@
                     url: '/api/v1/public/account/create',
                     data: JSON.stringify(data),
                     contentType: 'application/json',
+                    error: function(response) {
+                        console.log(response)
+                        $('.activeSlide').removeClass('activeSlide').addClass('hide')
+                        var $errorSlide = $('#accountCreateError')
+                        $errorSlide.removeClass('hide')
+                        $errorSlide.find('p').html(response.responseJSON.error)
+                    },
                     success: function(response) {
                         if (!response.success) {
                             //TODO: Show Error Slide
+                            var $errorSlide = $('#accountCreateError')
+                            $errorSlide.removeClass('hide')
+                            $errorSlide.find('p').html('Error: ' + response.error)
                         } else {
                             $('span#spanfullname').text(userInfo.fullname);
                             $('span#spanemail').text(userInfo.email);
@@ -657,9 +678,6 @@
                             showAccountCreated();
                         }
                     },
-                    error: function(err) {
-                        console.error(err);
-                    }
                 })
             }
 
