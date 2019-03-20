@@ -161,7 +161,7 @@ var notifications = require('../notifications') // Load Push Events
                           tpsEnabled: tpsEnabled,
                           tpsUsername: tpsUsername,
                           tpsApiKey: tpsApiKey,
-                          hostname: hostname
+                          hostname: hostname || baseUrl
                         },
                         { type: 1, ticket: ticketPushClone }
                       )
@@ -187,7 +187,7 @@ var notifications = require('../notifications') // Load Push Events
                         tpsEnabled: tpsEnabled,
                         tpsUsername: tpsUsername,
                         tpsApiKey: tpsApiKey,
-                        hostname: hostname
+                        hostname: hostname || baseUrl
                       },
                       { type: 1, ticket: ticket }
                     )

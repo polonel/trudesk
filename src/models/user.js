@@ -522,11 +522,13 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
+
+  var self = this
+
   var settingSchema = require('./setting')
   settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
     if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
 
-    var self = this
     var Chance = require('chance')
 
     var chance = new Chance()
@@ -536,7 +538,7 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
       pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
     })
 
-    var user = new this({
+    var user = new self({
       username: email,
       email: email,
       password: plainTextPass,
