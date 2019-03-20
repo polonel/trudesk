@@ -1,3 +1,12 @@
+## [1.0.9](https://github.com/polonel/trudesk/compare/v1.0.8...v1.0.9) (2019-03-20)
+
+
+### Bug Fixes
+
+* **accounts:** import failing due to role changes ([893af61](https://github.com/polonel/trudesk/commit/893af61))
+* **mailcheck:** [#170](https://github.com/polonel/trudesk/issues/170) ([10c36fa](https://github.com/polonel/trudesk/commit/10c36fa))
+* **tps:** missing host name in some cases ([c3704b5](https://github.com/polonel/trudesk/commit/c3704b5))
+
 ## [1.0.8](https://github.com/polonel/trudesk/compare/v1.0.7...v1.0.8) (2019-03-17)
 
 
