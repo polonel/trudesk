@@ -522,96 +522,100 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
   if (_.isUndefined(email)) {
     return callback('Invalid User Data - UserSchema.CreatePublicUser()', null)
   }
+  var settingSchema = require('./setting')
+  settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
+    if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
 
-  var self = this
-  var Chance = require('chance')
+    var self = this
+    var Chance = require('chance')
 
-  var chance = new Chance()
+    var chance = new Chance()
 
-  var plainTextPass = chance.string({
-    length: 6,
-    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
-  })
+    var plainTextPass = chance.string({
+      length: 6,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    })
 
-  var user = new this({
-    username: email,
-    email: email,
-    password: plainTextPass,
-    fullname: email,
-    role: 'user'
-  })
+    var user = new this({
+      username: email,
+      email: email,
+      password: plainTextPass,
+      fullname: email,
+      role: userRoleDefault.value
+    })
 
-  self.model(COLLECTION).find({ username: user.username }, function (err, items) {
-    if (err) return callback(err)
-    if (_.size(items) > 0) return callback('Username already exists')
-
-    user.save(function (err, savedUser) {
+    self.model(COLLECTION).find({ username: user.username }, function (err, items) {
       if (err) return callback(err)
+      if (_.size(items) > 0) return callback('Username already exists')
 
-      // Create a group for this user
-      var GroupSchema = require('./group')
-      var group = new GroupSchema({
-        name: savedUser.email,
-        members: [savedUser._id],
-        sendMailTo: [savedUser._id],
-        public: true
-      })
-
-      group.save(function (err, group) {
+      user.save(function (err, savedUser) {
         if (err) return callback(err)
 
-        // Send welcome email
-        var path = require('path')
-        var mailer = require('../mailer')
-        var Email = require('email-templates')
-        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
-        var email = new Email({
-          views: {
-            root: templateDir,
-            options: {
-              extension: 'handlebars'
-            }
-          }
+        // Create a group for this user
+        var GroupSchema = require('./group')
+        var group = new GroupSchema({
+          name: savedUser.email,
+          members: [savedUser._id],
+          sendMailTo: [savedUser._id],
+          public: true
         })
 
-        var settingSchema = require('./setting')
-        settingSchema.getSetting('gen:siteurl', function (err, setting) {
+        group.save(function (err, group) {
           if (err) return callback(err)
 
-          if (!setting) {
-            setting = { value: '' }
-          }
+          // Send welcome email
+          var path = require('path')
+          var mailer = require('../mailer')
+          var Email = require('email-templates')
+          var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-          var dataObject = {
-            user: savedUser,
-            plainTextPassword: plainTextPass,
-            baseUrl: setting.value
-          }
-
-          email
-            .render('public-account-created', dataObject)
-            .then(function (html) {
-              var mailOptions = {
-                to: savedUser.email,
-                subject: 'Welcome to trudesk! - Here are your account details.',
-                html: html,
-                generateTextFromHTML: true
+          var email = new Email({
+            views: {
+              root: templateDir,
+              options: {
+                extension: 'handlebars'
               }
+            }
+          })
 
-              mailer.sendMail(mailOptions, function (err) {
-                if (err) {
-                  winston.warn(err)
-                  return callback(err)
+          var settingSchema = require('./setting')
+          settingSchema.getSetting('gen:siteurl', function (err, setting) {
+            if (err) return callback(err)
+
+            if (!setting) {
+              setting = { value: '' }
+            }
+
+            var dataObject = {
+              user: savedUser,
+              plainTextPassword: plainTextPass,
+              baseUrl: setting.value
+            }
+
+            email
+              .render('public-account-created', dataObject)
+              .then(function (html) {
+                var mailOptions = {
+                  to: savedUser.email,
+                  subject: 'Welcome to trudesk! - Here are your account details.',
+                  html: html,
+                  generateTextFromHTML: true
                 }
 
-                return callback(null, { user: savedUser, group: group })
+                mailer.sendMail(mailOptions, function (err) {
+                  if (err) {
+                    winston.warn(err)
+                    return callback(err)
+                  }
+
+                  return callback(null, { user: savedUser, group: group })
+                })
               })
-            })
-            .catch(function (err) {
-              winston.warn(err)
-              return callback(err)
-            })
+              .catch(function (err) {
+                winston.warn(err)
+                return callback(err)
+              })
+          })
         })
       })
     })
