@@ -78,7 +78,7 @@ mailCheck.init = function (settings) {
   var MAILERCHECK_USER = s.mailerCheckUsername.value
   var MAILERCHECK_PASS = s.mailerCheckPassword.value
   var MAILERCHECK_PORT = s.mailerCheckPort.value
-  var MAILERCHECK_TLS = s.mailerCheckPort.value === '993' ? { value: true } : false
+  var MAILERCHECK_TLS = s.mailerCheckPort.value === '993'
   var POLLING_INTERVAL = s.mailerCheckPolling.value
 
   if (!MAILERCHECK_ENABLED) return true
