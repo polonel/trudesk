@@ -600,7 +600,7 @@ apiUsers.deleteUser = function (req, res) {
       },
       function (user, cb) {
         var ticketSchema = require('../../../models/ticket')
-        ticketSchema.getTicketsByRequester(user._id, function (err, tickets) {
+        ticketSchema.find({ owner: user._id }, function (err, tickets) {
           if (err) return cb(err)
 
           var hasTickets = _.size(tickets) > 0
