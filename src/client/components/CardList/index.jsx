@@ -23,11 +23,12 @@ class CardList extends React.Component {
   }
 
   render () {
-    const { header, children } = this.props
+    const { header, headerRightComponent, children, extraClass } = this.props
     return (
-      <div className={'md-card-list-wrapper'}>
+      <div className={'md-card-list-wrapper' + (extraClass ? ' ' + extraClass : '')}>
         <div className={'md-card-list'}>
           {header && <div className={'md-card-list-header heading_list'}>{header}</div>}
+          {headerRightComponent && <div className={'md-card-list-header-right'}>{headerRightComponent}</div>}
           <ul className={'hierarchical_slide'} data-delay='100ms'>
             {children}
           </ul>
@@ -39,7 +40,9 @@ class CardList extends React.Component {
 
 CardList.propTypes = {
   header: PropTypes.string,
-  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+  headerRightComponent: PropTypes.element,
+  children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,
+  extraClass: PropTypes.string
 }
 
 export default CardList

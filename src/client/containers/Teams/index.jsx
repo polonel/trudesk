@@ -62,50 +62,58 @@ class TeamsContainer extends React.Component {
     })
   }
 
+  onEditTeamClick (e, id) {
+    e.preventDefault()
+    console.log(id)
+  }
+
   render () {
     const items = this.props.teamsState.teams.map(team => {
       let actionMenu = [<DropdownItem key={0} text={'Edit'} />]
       if (helpers.canUser('teams:delete', true))
         actionMenu.push(<DropdownItem key={1} text={'Delete'} extraClass={'uk-text-danger'} />)
       return (
-        <GridItem key={team.get('_id')} width={'8-10'} extraClass={'uk-container-center'}>
-          <TruCard
-            loaderActive={team.get('loading')}
-            extraContentClass={'p-10'}
-            menu={actionMenu}
-            header={
-              <div className={'pt-15 pb-15'}>
-                <h3>{team.get('name')}</h3>
-              </div>
-            }
-            content={
-              <div className={'uk-clearfix'}>
-                <h6 style={{ margin: '0 0 8px 0', lineHeight: 1, fontSize: 13 }}>Members</h6>
-                {team.get('members').map(member => {
-                  const memberImage = member.get('image') ? member.get('image') : 'defaultProfile.jpg'
-                  return (
-                    <div key={member.get('_id')}>
-                      <div
-                        className={'uk-display-inline-block uk-float-left'}
-                        style={{ marginRight: 3 }}
-                        data-uk-tooltip='{pos: `bottom`}'
-                        title={member.get('fullname')}
-                      >
-                        <img
-                          src={`/uploads/users/${memberImage}`}
-                          height={25}
-                          width={25}
-                          className={'round'}
-                          alt={member.get('fullname')}
-                        />
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-            }
-          />
-        </GridItem>
+        <CardList
+          key={team.get('_id')}
+          header={team.get('name')}
+          headerRightComponent={<a onClick={e => this.onEditTeamClick(e, team.get('_id'))}>Edit Team</a>}
+          extraClass={'mb-50'}
+        >
+          {team.get('members').map(member => {
+            const inputId = `${team.get('_id')}_${member.get('_id')}`
+            const profilePic = member.get('image') || 'defaultProfile.jpg'
+            return (
+              <CardListItem key={member.get('_id')}>
+                <div className={'uk-float-left'} style={{ padding: '6px 8px 0 0' }}>
+                  <input type='checkbox' id={inputId} style={{ display: 'none' }} className='svgcheckinput' />
+                  <label htmlFor={inputId} className='svgcheck'>
+                    <svg width='16px' height='16px' viewBox='0 0 18 18'>
+                      <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+                      <polyline points='1 9 7 14 15 4' />
+                    </svg>
+                  </label>
+                </div>
+                <div className={'avatar-wrapper uk-float-left'}>
+                  <img src={`/uploads/users/${profilePic}`} alt={member.get('username')} className={'round'} />
+                </div>
+                <div className={'uk-float-left'} style={{ padding: '0 8px', width: 220, lineHeight: '34px' }}>
+                  <span
+                    style={{
+                      textOverflow: 'ellipsis',
+                      display: 'inline-block',
+                      verticalAlign: 'top',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      width: '100%'
+                    }}
+                  >
+                    {member.get('fullname')}
+                  </span>
+                </div>
+              </CardListItem>
+            )
+          })}
+        </CardList>
       )
     })
     return (
@@ -128,39 +136,7 @@ class TeamsContainer extends React.Component {
           >
             <Grid gutterSize={'medium'}>
               <GridItem width={'8-10'} extraClass={'uk-container-center'}>
-                <CardList header={'Header'}>
-                  <CardListItem>
-                    <div>Test</div>
-                  </CardListItem>
-                  <CardListItem>
-                    <div className={'uk-float-left'} style={{ padding: '6px 8px 0 0' }}>
-                      <input type='checkbox' id='c_{{_id}}' style={{ display: 'none' }} className='svgcheckinput' />
-                      <label htmlFor='c_{{_id}}' className='svgcheck'>
-                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
-                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-                          <polyline points='1 9 7 14 15 4' />
-                        </svg>
-                      </label>
-                    </div>
-                    <div className={'avatar-wrapper uk-float-left'}>
-                      <img src='/uploads/users/defaultProfile.jpg' alt='ProfilePicture' className={'round'} />
-                    </div>
-                    <div className={'uk-float-left'} style={{ padding: '0 8px', width: 220, lineHeight: '34px' }}>
-                      <span
-                        style={{
-                          textOverflow: 'ellipsis',
-                          display: 'inline-block',
-                          verticalAlign: 'top',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          width: '100%'
-                        }}
-                      >
-                        Chris Brame
-                      </span>
-                    </div>
-                  </CardListItem>
-                </CardList>
+                {items}
               </GridItem>
             </Grid>
           </InfiniteScroll>

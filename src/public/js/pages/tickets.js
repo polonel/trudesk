@@ -38,7 +38,7 @@ define('pages/tickets', [
           { width: '50px', targets: 0 },
           { width: '50px', targets: 1 },
           { width: '65px', targets: 2 },
-          { width: '20%', targets: 3 },
+          { width: '23%', targets: 3 },
           { width: '110px', targets: 4 }
         ],
         order: [[2, 'desc']],
