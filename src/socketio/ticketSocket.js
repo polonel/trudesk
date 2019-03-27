@@ -35,6 +35,7 @@ function register (socket) {
   events.onSetTicketType(socket)
   events.onSetTicketPriority(socket)
   events.onSetTicketGroup(socket)
+  events.onSetTicketDueDate(socket)
   events.onSetTicketIssue(socket)
   events.onSetCommentText(socket)
   events.onRemoveComment(socket)
@@ -256,6 +257,31 @@ events.onSetTicketGroup = function (socket) {
             emitter.emit('ticket:updated', ticketId)
             utils.sendToAllConnectedClients(io, 'updateTicketGroup', tt)
           })
+        })
+      })
+    })
+  })
+}
+
+events.onSetTicketDueDate = function (socket) {
+  socket.on('setTicketDueDate', function (data) {
+    var ticketId = data.ticketId
+    var dueDate = data.dueDate
+    var ownerId = socket.request.user._id
+
+    if (_.isUndefined(ticketId) || _.isUndefined(dueDate)) return true
+
+    ticketSchema.getTicketById(ticketId, function (err, ticket) {
+      if (err) return true
+
+      ticket.setTicketDueDate(ownerId, dueDate, function (err, t) {
+        if (err) return true
+
+        t.save(function (err, tt) {
+          if (err) return true
+
+          emitter.emit('ticket:updated', ticketId)
+          utils.sendToAllConnectedClients(io, 'updateTicketDueDate', tt)
         })
       })
     })

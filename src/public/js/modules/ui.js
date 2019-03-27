@@ -191,6 +191,7 @@ define('modules/ui', [
         var ticketTypeSelect = $('select#tType')
         var ticketPriority = $('select#tPriority')
         var ticketGroup = $('select#tGroup')
+        var ticketDueDate = $('input#tDueDate')
         var ticketTags = $('div#editTags')
 
         var addAttachments = $('form#attachmentForm > div.add-attachment')
@@ -220,6 +221,10 @@ define('modules/ui', [
 
           if (ticketGroup.length > 0) {
             ticketGroup.prop('disabled', true)
+          }
+
+          if (ticketDueDate.length > 0) {
+            ticketDueDate.prop('disabled', true)
           }
 
           if (ticketTags.length > 0) {
@@ -253,6 +258,10 @@ define('modules/ui', [
 
           if (ticketGroup.length > 0) {
             ticketGroup.prop('disabled', false)
+          }
+
+          if (ticketDueDate.length > 0) {
+            ticketDueDate.prop('disabled', false)
           }
 
           if (ticketTags.length > 0) {
@@ -471,6 +480,15 @@ define('modules/ui', [
         }
       }
     })
+  }
+
+  socketUi.setTicketDueDate = function (ticketId, dueDate) {
+    var payload = {
+      ticketId: ticketId,
+      dueDate: dueDate
+    }
+
+    socket.emit('setTicketDueDate', payload)
   }
 
   socketUi.setTicketIssue = function (ticketId, issue, subject) {

@@ -95,6 +95,7 @@ var ticketSchema = mongoose.Schema({
   subject: { type: String, required: true },
   issue: { type: String, required: true },
   closedDate: { type: Date },
+  dueDate: { type: Date },
   comments: [commentSchema],
   notes: [noteSchema],
   attachments: [attachmentSchema],
@@ -348,6 +349,21 @@ ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
 
     callback(null, ticket)
   })
+}
+
+ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
+  var self = this
+  self.dueDate = dueDate
+
+  var historyItem = {
+    action: 'ticket:set:duedate',
+    description: 'Ticket Due Date set to: ' + self.dueDate,
+    owner: ownerId
+  }
+
+  self.history.push(historyItem)
+
+  callback(null, self)
 }
 
 /**

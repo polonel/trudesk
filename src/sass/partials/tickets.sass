@@ -26,36 +26,55 @@ div#accountsTable_wrapper
 
 .ticket-status span
   display: block
-  width: 65px
+  width: 25px
   line-height: 25px
   height: 25px
   text-align: center
   font-size: 12px
-  font-weight: 300
+  font-weight: 600
   font-family: "Roboto", sans-serif
-  color: white
-  background: $ticket_status_closed
+  //color: white
+  //background: $ticket_status_closed
+  //border: 2px solid $ticket_status_closed
   +borderRadius(3px)
 
 .ticket-status.ticket-open span,
 .ticket-status-open
   background: $ticket_status_open !important
+  color: white !important
 .ticket-status.ticket-new span,
 .ticket-status-new
   background: $ticket_status_new !important
+  color: white !important
 .ticket-status.ticket-pending span,
 .ticket-status-pending
   background: $ticket_status_pending !important
+  color: white !important
 .ticket-status.ticket-closed span,
 .ticket-status-closed
   background: $ticket_status_closed !important
+  color: white !important
+
+.floating-ticket-status
+  .ticket-status,
+  .ticket-status span
+    width: 65px !important
+  .ticket-status
+    &.ticket-new span
+      background: $ticket_status_new !important
+      color: white !important
+    &.ticket-open span
+      background: $ticket_status_open !important
+      color: white !important
+    &.ticket-pending span
+      background: $ticket_status_pending !important
+      color: white !important
+    &.ticket-closed span
+      background: $ticket_status_closed !important
+      color: white !important
 
 .ticket-priority
   border-left: 10px solid transparent
-  &.ticket-priority-2
-    border-color: #8e24aa
-  &.ticket-priority-3
-    border-color: #e65100
 
 .floating-ticket-status
   position: absolute

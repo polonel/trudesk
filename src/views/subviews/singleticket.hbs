@@ -1,7 +1,9 @@
 <div ng-init="
+    ticketId='{{data.ticket._id}}';
     ticketType='{{data.ticket.type._id}}';
     ticketPriority='{{data.ticket.priority._id}}';
     ticketGroup='{{data.ticket.group._id}}';
+    dueDate='{{formatDate data.ticket.dueDate data.common.shortDateFormat}}';
     subscribed={{isSubscribed data.ticket.subscribers data.common.loggedInAccount._id}};
     user='{{data.common.loggedInAccount._id}}';">
 
@@ -179,6 +181,26 @@
                                         {{else}}
                                             <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
                                         {{/hasPermOverRole}}
+                                </div>
+                                <div class="uk-width-1-1 p-0">
+                                    <span>Due Date</span>
+                                    {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <input
+                                            id="tDueDate"
+                                            type="text"
+                                            readonly
+                                            class="md-input small-font p-0"
+                                            data-ticketId="{{data.ticket._id}}"
+                                            data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}"
+                                            data-validation="shortDate"
+                                            style="width: 97%"
+                                            ng-model="dueDate"
+                                            ng-change="updateTicketDueDate($event)"
+                                            {{#compare data.ticket.status '==' 3}}disabled{{/compare}}
+                                    />
+                                    {{else}}
+                                        <div id="tDueDate" class="input-box" ng-bind="dueDate"></div>
+                                    {{/hasPermOverRole}}
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
                                     <span>Tags

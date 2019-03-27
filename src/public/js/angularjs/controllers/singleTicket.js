@@ -32,6 +32,7 @@ define([
     .module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
     .controller('singleTicket', function (SessionService, $window, $rootScope, $scope, $http, $timeout, $q, $log) {
       $scope.loggedInAccount = SessionService.getUser()
+      onSocketUpdateTicketDueDate()
 
       var mdeToolbarItems = [
         {
@@ -477,6 +478,31 @@ define([
         if (id.length > 0) {
           socket.ui.setTicketGroup(id, $scope.selectedGroup)
         }
+      }
+
+      $scope.updateTicketDueDate = function () {
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, $scope.dueDate)
+        }
+      }
+
+      function onSocketUpdateTicketDueDate () {
+        socket.socket.removeAllListeners('updateTicketDueDate')
+        socket.socket.on('updateTicketDueDate', function (data) {
+          $timeout(function () {
+            if ($scope.ticketId === data._id)
+              $scope.dueDate = helpers.formatDate(data.dueDate, helpers.getShortDateFormat())
+          }, 0)
+          // var dueDateInput = $('input#tDueDate[data-ticketId="' + data._id + '"]')
+          // if (dueDateInput.length > 0) {
+          //   $scope.dueDate = helpers.formatDate(data.duedate, helpers.getShortDateFormat())
+          // } else {
+          //   dueDateInput = $('div#tDueDate[data-ticketId="' + data._id + '"]')
+          //   if (dueDateInput.length > 0)
+          //     dueDateInput.html(helpers.formatDate(data.duedate, helpers.getShortDateFormat()))
+          // }
+        })
       }
 
       $scope.updateTicketIssue = function () {
