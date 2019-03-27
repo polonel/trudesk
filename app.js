@@ -16,6 +16,8 @@ var path = require('path')
 var fs = require('fs')
 var winston = require('winston')
 var nconf = require('nconf')
+var Chance = require('chance')
+var chance = new Chance()
 var pkg = require('./package.json')
 // `var memory = require('./src/memory');
 
@@ -76,6 +78,14 @@ if (!process.env.FORK) {
 var configFile = path.join(__dirname, '/config.json')
 var configExists
 
+nconf.defaults({
+  base_dir: __dirname,
+  tokens: {
+    secret: chance.hash() + chance.md5(),
+    expires: 900
+  }
+})
+
 if (nconf.get('config')) {
   configFile = path.resolve(__dirname, nconf.get('config'))
 }
@@ -96,10 +106,6 @@ if (nconf.get('install') || (!configExists && !isDocker)) {
 function loadConfig () {
   nconf.file({
     file: configFile
-  })
-
-  nconf.defaults({
-    base_dir: __dirname
   })
 }
 
@@ -122,17 +128,6 @@ function start () {
 }
 
 function launchServer (db) {
-  var Chance = require('chance')
-  var chance = new Chance()
-
-  if (!nconf.get('tokens')) {
-    nconf.set('tokens:secret', chance.hash() + chance.md5())
-    nconf.set('tokens:expires', 900)
-    nconf.save(function (err) {
-      if (err) winston.warn(err)
-    })
-  }
-
   var ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {

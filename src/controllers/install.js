@@ -51,6 +51,7 @@ installController.mongotest = function (req, res) {
   })
 
   child.on('close', function () {
+    global.forks = _.without(global.forks, { name: 'mongotest' })
     winston.debug('MongoTest process terminated')
   })
 }
