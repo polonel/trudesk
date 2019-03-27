@@ -91,7 +91,7 @@ module.exports = function () {
     new JwtStrategy(
       {
         jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-        secretOrKey: nconf.get('tokens').secret,
+        secretOrKey: nconf.get('tokens') ? nconf.get('tokens').secret : false,
         ignoreExpiration: true
       },
       function (jwtPayload, done) {

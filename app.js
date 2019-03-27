@@ -122,6 +122,17 @@ function start () {
 }
 
 function launchServer (db) {
+  var Chance = require('chance')
+  var chance = new Chance()
+
+  if (!nconf.get('tokens')) {
+    nconf.set('tokens:secret', chance.hash() + chance.md5())
+    nconf.set('tokens:expires', 900)
+    nconf.save(function (err) {
+      if (err) winston.warn(err)
+    })
+  }
+
   var ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {
