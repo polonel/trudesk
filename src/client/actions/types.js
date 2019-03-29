@@ -50,7 +50,9 @@ export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 
 // Teams
 export const FETCH_TEAMS = defineAction('FETCH_TEAMS', [PENDING, SUCCESS, ERROR])
-
+export const CREATE_TEAM = defineAction('CREATE_TEAM', [PENDING, SUCCESS, ERROR])
+export const SAVE_EDIT_TEAM = defineAction('SAVE_EDIT_TEAM', [PENDING, SUCCESS, ERROR])
+export const DELETE_TEAM = defineAction('DELETE_TEAM', [PENDING, SUCCESS, ERROR])
 export const UNLOAD_TEAMS = defineAction('UNLOAD_TEAMS', [SUCCESS])
 
 // Settings

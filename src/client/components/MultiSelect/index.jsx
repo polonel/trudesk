@@ -14,6 +14,7 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
+import { each } from 'lodash'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -33,6 +34,21 @@ class MultiSelect extends React.Component {
 
     if (this.props.disabled) {
       $select.attr('disabled', 'disabled')
+      $select.multiSelect('refresh')
+    }
+  }
+
+  componentDidUpdate (prevProps) {
+    const $select = $(this.select)
+    $select.empty().multiSelect('refresh')
+    each(this.props.items, i => {
+      $select.append(`<option value='${i.value}'>${i.text}</option>`)
+    })
+
+    $select.multiSelect('refresh')
+
+    if (this.props.initialSelected) {
+      $select.multiSelect('select', this.props.initialSelected)
       $select.multiSelect('refresh')
     }
   }

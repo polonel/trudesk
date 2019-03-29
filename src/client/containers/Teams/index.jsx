@@ -18,7 +18,8 @@ import { connect } from 'react-redux'
 import { observable } from 'mobx'
 import { observer } from 'mobx-react'
 
-import { fetchTeams, unloadTeams } from 'actions/teams'
+import { fetchTeams, unloadTeams, deleteTeam } from 'actions/teams'
+import { showModal } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
@@ -26,11 +27,11 @@ import Grid from 'components/Grid'
 import GridItem from 'components/Grid/GridItem'
 import DropdownItem from 'components/Dropdown/DropdownItem'
 import TruCard from 'components/TruCard'
-import CardList from 'components/CardList'
-import CardListItem from 'components/CardList/CardListItem'
 import InfiniteScroll from 'react-infinite-scroller'
 
 import helpers from 'lib/helpers'
+import Button from 'components/Button'
+import UIKit from 'uikit'
 
 @observer
 class TeamsContainer extends React.Component {
@@ -62,63 +63,124 @@ class TeamsContainer extends React.Component {
     })
   }
 
-  onEditTeamClick (e, id) {
+  onCreateTeamClick (e) {
     e.preventDefault()
-    console.log(id)
+    this.props.showModal('CREATE_TEAM')
+  }
+
+  onEditTeamClick (e, team) {
+    e.preventDefault()
+    if (team.members) {
+      team.members = team.members.map(m => {
+        return m._id
+      })
+    } else {
+      team.members = []
+    }
+
+    this.props.showModal('EDIT_TEAM', { team })
+  }
+
+  onDeleteTeamClick (e, _id) {
+    e.preventDefault()
+    UIKit.modal.confirm(
+      `<h2>Are you sure?</h2>
+        <p style="font-size: 15px;">
+            <span class="uk-text-danger" style="font-size: 15px;">This is a permanent action.</span> 
+        </p>
+        <p style="font-size: 12px;">
+            Agents may lose access to resources once this team is deleted.
+        </p>
+        `,
+      () => {
+        this.props.deleteTeam({ _id })
+      },
+      {
+        labels: { Ok: 'Yes', Cancel: 'No' },
+        confirmButtonClass: 'md-btn-danger'
+      }
+    )
   }
 
   render () {
     const items = this.props.teamsState.teams.map(team => {
-      let actionMenu = [<DropdownItem key={0} text={'Edit'} />]
+      let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditTeamClick(e, team.toJS())} />]
       if (helpers.canUser('teams:delete', true))
-        actionMenu.push(<DropdownItem key={1} text={'Delete'} extraClass={'uk-text-danger'} />)
+        actionMenu.push(
+          <DropdownItem
+            key={1}
+            text={'Delete'}
+            extraClass={'uk-text-danger'}
+            onClick={e => this.onDeleteTeamClick(e, team.get('_id'))}
+          />
+        )
       return (
-        <CardList
-          key={team.get('_id')}
-          header={team.get('name')}
-          headerRightComponent={<a onClick={e => this.onEditTeamClick(e, team.get('_id'))}>Edit Team</a>}
-          extraClass={'mb-50'}
-        >
-          {team.get('members').map(member => {
-            const inputId = `${team.get('_id')}_${member.get('_id')}`
-            const profilePic = member.get('image') || 'defaultProfile.jpg'
-            return (
-              <CardListItem key={member.get('_id')}>
-                <div className={'uk-float-left'} style={{ padding: '6px 8px 0 0' }}>
-                  <input type='checkbox' id={inputId} style={{ display: 'none' }} className='svgcheckinput' />
-                  <label htmlFor={inputId} className='svgcheck'>
-                    <svg width='16px' height='16px' viewBox='0 0 18 18'>
-                      <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-                      <polyline points='1 9 7 14 15 4' />
-                    </svg>
-                  </label>
+        <GridItem key={team.get('_id')} width={'1-4'} xLargeWidth={'1-5'} extraClass={'mb-25'}>
+          <TruCard
+            menu={actionMenu}
+            header={<h2 className={'p-15 nomargin font-light uk-text-left'}>{team.get('name')}</h2>}
+            content={
+              <div>
+                <h5 style={{ fontWeight: 500 }}>Team Members</h5>
+                <div className={'uk-clearfix'}>
+                  {!team.get('members') ||
+                    (team.get('members').size < 1 && (
+                      <div>
+                        <h5 style={{ margin: '0 0 15px 0' }}>No Members</h5>
+                      </div>
+                    ))}
+                  {team.get('members') &&
+                    team.get('members').size > 0 &&
+                    team.get('members').map(user => {
+                      const profilePic = user.get('image') || 'defaultProfile.jpg'
+                      return (
+                        <div
+                          key={user.get('_id')}
+                          className={'uk-float-left uk-position-relative mb-10'}
+                          data-uk-tooltip={'{pos: "bottom"}'}
+                          title={user.get('fullname')}
+                        >
+                          <img
+                            style={{ width: 25, height: 25, marginRight: 5 }}
+                            className={'round'}
+                            src={`/uploads/users/${profilePic}`}
+                            alt={user.get('fullname')}
+                          />
+                          <span
+                            data-user-status-id={user.get('_id')}
+                            className='user-offline uk-border-circle'
+                            style={{ width: 13, height: 13 }}
+                          />
+                        </div>
+                      )
+                    })}
                 </div>
-                <div className={'avatar-wrapper uk-float-left'}>
-                  <img src={`/uploads/users/${profilePic}`} alt={member.get('username')} className={'round'} />
-                </div>
-                <div className={'uk-float-left'} style={{ padding: '0 8px', width: 220, lineHeight: '34px' }}>
-                  <span
-                    style={{
-                      textOverflow: 'ellipsis',
-                      display: 'inline-block',
-                      verticalAlign: 'top',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      width: '100%'
-                    }}
-                  >
-                    {member.get('fullname')}
-                  </span>
-                </div>
-              </CardListItem>
-            )
-          })}
-        </CardList>
+              </div>
+            }
+          />
+        </GridItem>
       )
     })
     return (
       <div>
-        <PageTitle title={'Teams'} shadow={true} />
+        <PageTitle
+          title={'Teams'}
+          shadow={true}
+          rightComponent={
+            <div className={'uk-grid uk-grid-collapse'}>
+              <div className={'uk-width-1-1 mt-15 uk-text-right'}>
+                <Button
+                  text={'Create'}
+                  flat={false}
+                  small={true}
+                  waves={false}
+                  extraClass={'hover-accent'}
+                  onClick={e => this.onCreateTeamClick(e)}
+                />
+              </div>
+            </div>
+          }
+        />
         <PageContent id={'teams-page-content'}>
           <InfiniteScroll
             pageStart={this.pageStart}
@@ -134,11 +196,7 @@ class TeamsContainer extends React.Component {
             useWindow={false}
             getScrollParent={() => document.getElementById('teams-page-content')}
           >
-            <Grid gutterSize={'medium'}>
-              <GridItem width={'8-10'} extraClass={'uk-container-center'}>
-                {items}
-              </GridItem>
-            </Grid>
+            <Grid gutterSize={'medium'}>{items}</Grid>
           </InfiniteScroll>
         </PageContent>
       </div>
@@ -149,7 +207,9 @@ class TeamsContainer extends React.Component {
 TeamsContainer.propTypes = {
   teamsState: PropTypes.object.isRequired,
   fetchTeams: PropTypes.func.isRequired,
-  unloadTeams: PropTypes.func.isRequired
+  unloadTeams: PropTypes.func.isRequired,
+  deleteTeam: PropTypes.func.isRequired,
+  showModal: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -158,5 +218,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchTeams, unloadTeams }
+  { fetchTeams, unloadTeams, deleteTeam, showModal }
 )(TeamsContainer)

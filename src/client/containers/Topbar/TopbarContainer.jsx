@@ -137,20 +137,20 @@ class TopbarContainer extends React.Component {
                   <ul className='uk-subnav uk-margin-bottom-remove'>
                     {/* Start Create Ticket Perm */}
                     {sessionUser && helpers.canUser('tickets:create') && (
-                      <div>
-                        <li className='top-bar-icon nopadding'>
-                          <button
-                            title={'Create Ticket'}
-                            className={'anchor'}
-                            onClick={() => this.props.showModal('CREATE_TICKET')}
-                          >
-                            <i className='material-icons'>&#xE145;</i>
-                          </button>
-                        </li>
-                        <li className='top-bar-icon nopadding'>
-                          <i className='material-icons'>more_vert</i>
-                        </li>
-                      </div>
+                      <li className='top-bar-icon nopadding'>
+                        <button
+                          title={'Create Ticket'}
+                          className={'anchor'}
+                          onClick={() => this.props.showModal('CREATE_TICKET')}
+                        >
+                          <i className='material-icons'>&#xE145;</i>
+                        </button>
+                      </li>
+                    )}
+                    {sessionUser && helpers.canUser('tickets:create') && (
+                      <li className='top-bar-icon nopadding'>
+                        <i className='material-icons'>more_vert</i>
+                      </li>
                     )}
                     {/* End Create Ticket Perm */}
                     <li className='top-bar-icon'>

@@ -50,4 +50,56 @@ apiTeams.get = function (req, res) {
   })
 }
 
+apiTeams.create = function (req, res) {
+  var postData = req.body
+  if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
+
+  Team.create(postData, function (err, team) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    team.populate('members', function (err, team) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+      return apiUtils.sendApiSuccess(res, { team: team })
+    })
+  })
+}
+
+apiTeams.update = function (req, res) {
+  var id = req.params.id
+  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Team Id')
+
+  var putData = req.body
+  if (!putData) return apiUtils.sendApiError_InvalidPostData(res)
+
+  Team.findOne({ _id: id }, function (err, team) {
+    if (err || !team) return apiUtils.sendApiError(res, 400, 'Invalid Team')
+
+    if (putData.name) team.name = putData.name
+    if (putData.members) team.members = putData.members
+
+    team.save(function (err, team) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+      team.populate('members', function (err, team) {
+        if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+        return apiUtils.sendApiSuccess(res, { team: team })
+      })
+    })
+  })
+}
+
+apiTeams.delete = function (req, res) {
+  var id = req.params.id
+  if (!id) return apiUtils.sendApiError(res, 400, 'Invalid Team Id')
+
+  Team.deleteOne({ _id: id }, function (err, success) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+    if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete team. Contact your administrator.')
+
+    return apiUtils.sendApiSuccess(res, { _id: id })
+  })
+}
+
 module.exports = apiTeams

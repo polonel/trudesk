@@ -30,4 +30,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Teams
   router.get('/api/v2/teams', apiv2Auth, apiv2.teams.get)
+  router.post('/api/v2/teams', apiv2Auth, apiv2.teams.create)
+  router.put('/api/v2/teams/:id', apiv2Auth, apiv2.teams.update)
+  router.delete('/api/v2/teams/:id', apiv2Auth, apiv2.teams.delete)
 }

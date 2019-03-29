@@ -130,7 +130,6 @@ class CreateTicketModal extends React.Component {
   }
 
   render () {
-    console.log('RENDER')
     const { viewdata } = this.props
     const mappedGroups = this.props.viewdata.groups.map(grp => {
       return { text: grp.name, value: grp._id }

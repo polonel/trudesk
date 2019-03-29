@@ -148,6 +148,21 @@ api.teams.getWithPage = payload => {
     return res.data
   })
 }
+api.teams.create = payload => {
+  return axios.post('/api/v2/teams', payload).then(res => {
+    return res.data
+  })
+}
+api.teams.updateTeam = payload => {
+  return axios.put(`/api/v2/teams/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+api.teams.deleteTeam = ({ _id }) => {
+  return axios.delete(`/api/v2/teams/${_id}`).then(res => {
+    return res.data
+  })
+}
 
 api.settings = {}
 api.settings.update = settings => {

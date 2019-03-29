@@ -30,6 +30,8 @@ import DeleteRoleModal from './DeleteRoleModal'
 import ViewAllNotificationsModal from './ViewAllNotificationsModal'
 import CreateAccountModal from './CreateAccountModal'
 import EditAccountModal from './EditAccountModal'
+import CreateTeamModal from './CreateTeamModal'
+import EditTeamModal from './EditTeamModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -44,7 +46,9 @@ const MODAL_COMPONENTS = {
   DELETE_ROLE: DeleteRoleModal,
   VIEW_ALL_NOTIFICATIONS: ViewAllNotificationsModal,
   CREATE_ACCOUNT: CreateAccountModal,
-  EDIT_ACCOUNT: EditAccountModal
+  EDIT_ACCOUNT: EditAccountModal,
+  CREATE_TEAM: CreateTeamModal,
+  EDIT_TEAM: EditTeamModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

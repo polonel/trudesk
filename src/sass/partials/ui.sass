@@ -275,10 +275,6 @@ label.md-label
       &:hover,&:active,&:focus
         box-shadow: none !important
         background: rgba(0,0,0,0.01)
-    &.hover-accent
-      &:hover,&:active,&:focus
-        color: #fff
-        background: $accent_color
     &:first-child
       border-top-right-radius: 0
       border-bottom-right-radius: 0
@@ -287,6 +283,12 @@ label.md-label
     &:last-child
       border-top-left-radius: 0
       border-bottom-left-radius: 0
+
+.md-btn
+  &.hover-accent
+    &:hover
+      color: #fff
+      background: $accent_color
 
 .md-color-white
   color: white !important

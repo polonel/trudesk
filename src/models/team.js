@@ -1,16 +1,16 @@
 /*
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    11/1/2018
- Author:     Chris Brame
-
- **/
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    3/28/19 2:13 AM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 var _ = require('lodash')
 var mongoose = require('mongoose')
@@ -22,7 +22,12 @@ var COLLECTION = 'teams'
 
 var teamSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
+  normalized: { type: String, required: true, unique: true, lowercase: true },
   members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
+})
+
+teamSchema.pre('validate', function () {
+  this.normalized = this.name.trim().toLowerCase()
 })
 
 teamSchema.pre('save', function (next) {
@@ -67,6 +72,7 @@ teamSchema.statics.getWithObject = function (obj, callback) {
     .find({})
     .skip(obj.limit * obj.page)
     .limit(obj.limit)
+    .sort('name')
     .populate('members', '_id username fullname email image title')
 
   return q.exec(callback)
@@ -76,7 +82,7 @@ teamSchema.statics.getTeamByName = function (name, callback) {
   if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()')
 
   var q = this.model(COLLECTION)
-    .findOne({ name: new RegExp('^' + name.trim() + '$', 'i') })
+    .findOne({ normalized: name })
     .populate('members', '_id username fullname email image title')
 
   return q.exec(callback)
