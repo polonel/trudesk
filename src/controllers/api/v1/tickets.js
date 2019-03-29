@@ -654,7 +654,7 @@ apiTickets.update = function (req, res) {
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.group)) {
-              ticket.group = reqTicket.group._id
+              ticket.group = reqTicket.group._id || reqTicket.group
 
               ticket.populate('group', function () {
                 return cb()
