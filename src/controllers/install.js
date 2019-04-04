@@ -206,7 +206,7 @@ installController.install = function (req, res) {
             function (done) {
               roleSchema.create(
                 {
-                  name: 'Users',
+                  name: 'User',
                   description: 'Default role for users',
                   grants: defaults.userGrants
                 },
