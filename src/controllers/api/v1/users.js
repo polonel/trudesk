@@ -366,7 +366,7 @@ apiUsers.update = function (req, res) {
 
   var data = req.body
   // saveGroups - Profile saving where groups are not sent
-  var saveGroups = data.saveGroups || true
+  var saveGroups = !_.isUndefined(data.saveGroups) ? data.saveGroups : true
   var obj = {
     fullname: data.aFullname,
     title: data.aTitle,
@@ -421,54 +421,57 @@ apiUsers.update = function (req, res) {
         })
       },
       groups: function (done) {
-        if (!saveGroups) return done()
-        var userGroups = []
-        groupSchema.getAllGroups(function (err, groups) {
-          if (err) return done(err)
-          async.each(
-            groups,
-            function (grp, callback) {
-              if (_.includes(obj.groups, grp._id.toString())) {
-                if (grp.isMember(obj._id)) {
-                  userGroups.push(grp)
-                  return callback()
+        if (!saveGroups) {
+          groupSchema.getAllGroupsOfUser(obj._id, done)
+        } else {
+          var userGroups = []
+          groupSchema.getAllGroups(function (err, groups) {
+            if (err) return done(err)
+            async.each(
+              groups,
+              function (grp, callback) {
+                if (_.includes(obj.groups, grp._id.toString())) {
+                  if (grp.isMember(obj._id)) {
+                    userGroups.push(grp)
+                    return callback()
+                  }
+                  grp.addMember(obj._id, function (err, result) {
+                    if (err) return callback(err)
+
+                    if (result) {
+                      grp.save(function (err) {
+                        if (err) return callback(err)
+                        userGroups.push(grp)
+                        return callback()
+                      })
+                    } else {
+                      return callback()
+                    }
+                  })
+                } else {
+                  // Remove Member from group
+                  grp.removeMember(obj._id, function (err, result) {
+                    if (err) return callback(err)
+                    if (result) {
+                      grp.save(function (err) {
+                        if (err) return callback(err)
+
+                        return callback()
+                      })
+                    } else {
+                      return callback()
+                    }
+                  })
                 }
-                grp.addMember(obj._id, function (err, result) {
-                  if (err) return callback(err)
+              },
+              function (err) {
+                if (err) return done(err)
 
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-                      userGroups.push(grp)
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              } else {
-                // Remove Member from group
-                grp.removeMember(obj._id, function (err, result) {
-                  if (err) return callback(err)
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
+                return done(null, userGroups)
               }
-            },
-            function (err) {
-              if (err) return done(err)
-
-              return done(null, userGroups)
-            }
-          )
-        })
+            )
+          })
+        }
       }
     },
     function (err, results) {
