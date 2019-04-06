@@ -18,6 +18,7 @@ var moment = require('moment-timezone')
 var winston = require('winston')
 var permissions = require('../../../permissions')
 var emitter = require('../../../emitter')
+var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
 
@@ -361,9 +362,12 @@ apiTickets.create = function (req, res) {
     ticket.owner = req.user._id
   }
 
+  ticket.subject = sanitizeHtml(ticket.subject).trim()
+
   var marked = require('marked')
   var tIssue = ticket.issue
   tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+  tIssue = sanitizeHtml(tIssue).trim()
   ticket.issue = marked(tIssue)
   ticket.history = [HistoryItem]
   ticket.subscribers = [req.user._id]
@@ -514,8 +518,8 @@ apiTickets.createPublicTicket = function (req, res) {
             group: group._id,
             type: ticketType._id,
             priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
-            subject: postData.ticket.subject,
-            issue: postData.ticket.issue,
+            subject: sanitizeHtml(postData.ticket.subject).trim(),
+            issue: sanitizeHtml(postData.ticket.issue).trim(),
             history: [HistoryItem],
             subscribers: [savedUser._id]
           })
@@ -523,6 +527,7 @@ apiTickets.createPublicTicket = function (req, res) {
           var marked = require('marked')
           var tIssue = ticket.issue
           tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+          tIssue = sanitizeHtml(tIssue).trim()
           ticket.issue = marked(tIssue)
 
           ticket.save(function (err, t) {
@@ -647,7 +652,7 @@ apiTickets.update = function (req, res) {
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.subject)) {
-              ticket.subject = reqTicket.subject
+              ticket.subject = sanitizeHtml(reqTicket.subject).trim()
             }
 
             return cb()
@@ -679,7 +684,7 @@ apiTickets.update = function (req, res) {
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue)) {
-              ticket.issue = reqTicket.issue
+              ticket.issue = sanitizeHtml(reqTicket.issue).trim()
             }
 
             return cb()
@@ -817,6 +822,8 @@ apiTickets.postComment = function (req, res) {
     marked.setOptions({
       breaks: true
     })
+
+    comment = sanitizeHtml(comment).trim()
 
     var Comment = {
       owner: owner,

@@ -15,6 +15,7 @@ var _ = require('lodash')
 var async = require('async')
 var winston = require('winston')
 var marked = require('marked')
+var sanitizeHtml = require('sanitize-html')
 var utils = require('../helpers/utils')
 var emitter = require('../emitter')
 var ticketSchema = require('../models/ticket')
@@ -333,6 +334,8 @@ events.onSetCommentText = function (socket) {
     marked.setOptions({
       breaks: true
     })
+
+    comment = sanitizeHtml(comment).trim()
 
     var markedComment = marked(comment)
 

@@ -16,6 +16,7 @@ var async = require('async')
 var mongoose = require('mongoose')
 var _ = require('lodash')
 var moment = require('moment')
+var sanitizeHtml = require('sanitize-html')
 // var redisCache          = require('../cache/rediscache');
 
 // Needed - For Population
@@ -386,7 +387,7 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
  */
 ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
   var self = this
-  self.issue = issue
+  self.issue = sanitizeHtml(issue).trim()
   var historyItem = {
     action: 'ticket:update:issue',
     description: 'Ticket Issue was updated.',
@@ -773,7 +774,7 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
     .populate('type tags group')
     .populate('group.members', 'username fullname email role image title')
     .populate('group.sendMailTo', 'username fullname email role image title')
-    .sort('-uid')
+    .sort({ uid: -1 })
 
   if (limit !== -1) {
     q.skip(page * limit).limit(limit)
@@ -808,7 +809,7 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
     }
 
     if (!_.isUndefined(object.filter.unassigned)) {
-      q.where({ assignee: { $exits: false } })
+      q.where({ assignee: { $exists: false } })
     }
 
     if (!_.isUndefined(object.filter.owner)) {
@@ -845,15 +846,15 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
 
 ticketSchema.statics.getCountWithObject = function (grpId, object, callback) {
   if (_.isUndefined(grpId)) {
-    return callback('Invalid GroupId - TicketSchema.GetTickets()', null)
+    return callback('Invalid GroupId - TicketSchema.GetCountWithObject()', null)
   }
 
   if (!_.isArray(grpId)) {
-    return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetTicketsWithObject()', null)
+    return callback('Invalid GroupId (Must be of type Array) - TicketSchema.GetCountWithObject()', null)
   }
 
   if (!_.isObject(object)) {
-    return callback('Invalid Object (Must be of type Object) - TicketSchema.GetTicketsWithObject()', null)
+    return callback('Invalid Object (Must be of type Object) - TicketSchema.GetCountWithObject()', null)
   }
 
   var self = this
