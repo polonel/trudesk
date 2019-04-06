@@ -82,6 +82,7 @@ const reducer = handleActions(
         ticket.assignee ? ticket.assignee._id : undefined,
         action.sessionUser._id
       )
+
       const idx = state.tickets.findIndex(t => {
         return t.get('_id') === ticket._id
       })

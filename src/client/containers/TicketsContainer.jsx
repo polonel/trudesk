@@ -33,8 +33,7 @@ import Dropdown from 'components/Dropdown'
 
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
-import $ from 'jquery'
-import 'velocity'
+import anime from 'animejs'
 import moment from 'moment-timezone'
 
 import SpinLoader from 'components/SpinLoader'
@@ -51,19 +50,37 @@ class TicketsContainer extends React.Component {
   componentDidMount () {
     socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
 
-    this.props.fetchTickets({ page: this.props.page, type: this.props.view })
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view })
+  }
 
-    $('tr.overdue td').velocity(
-      { backgroundColor: '#b71c1c', color: '#ffffff' },
-      {
-        loop: true,
-        easing: [1],
-        duration: 800
-      }
-    )
+  componentDidUpdate () {
+    if (this.timeline) {
+      this.timeline.pause()
+      this.timeline.seek(0)
+    }
+
+    anime.remove('tr.overdue td')
+
+    this.timeline = anime.timeline({
+      direction: 'alternate',
+      duration: 800,
+      autoPlay: false,
+      easing: 'steps(1)',
+      loop: true
+    })
+
+    this.timeline.add({
+      targets: 'tr.overdue td',
+      backgroundColor: '#b71c1c',
+      color: '#ffffff'
+    })
+
+    this.timeline.play()
   }
 
   componentWillUnmount () {
+    anime.remove('tr.overdue td')
+    this.timeline = null
     this.props.unloadTickets()
     socket.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
   }
@@ -166,12 +183,22 @@ class TicketsContainer extends React.Component {
                 ? helpers.formatDate(ticket.get('dueDate'), helpers.getShortDateFormat())
                 : '--'
 
-              const overdue = () => {}
+              const isOverdue = () => {
+                if (!this.props.common.showOverdue || ticket.get('status') === 2) return false
+                const overdueIn = ticket.getIn(['priority', 'overdueIn'])
+                const now = moment()
+                let updated = ticket.get('updated')
+                if (updated) updated = moment(updated)
+                else updated = moment(ticket.get('date'))
+
+                const timeout = updated.clone().add(overdueIn, 'm')
+                return now.isAfter(timeout)
+              }
 
               return (
                 <TableRow
-                  className={`ticket-${status()}`}
                   key={ticket.get('_id')}
+                  className={`ticket-${status()} ${isOverdue() ? 'overdue' : ''}`}
                   clickable={true}
                   onClick={e => {
                     const td = e.target.closest('td')
@@ -234,7 +261,8 @@ TicketsContainer.propTypes = {
   fetchTickets: PropTypes.func.isRequired,
   unloadTickets: PropTypes.func.isRequired,
   ticketUpdated: PropTypes.func.isRequired,
-  showModal: PropTypes.func.isRequired
+  showModal: PropTypes.func.isRequired,
+  common: PropTypes.object.isRequired
 }
 
 TicketsContainer.defaultProps = {
@@ -245,7 +273,8 @@ TicketsContainer.defaultProps = {
 const mapStateToProps = state => ({
   tickets: state.ticketsState.tickets,
   totalCount: state.ticketsState.totalCount,
-  loading: state.ticketsState.loading
+  loading: state.ticketsState.loading,
+  common: state.common
 })
 
 export default connect(

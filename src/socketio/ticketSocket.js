@@ -66,10 +66,10 @@ events.onUpdateTicketStatus = function (socket) {
       ticket.setStatus(ownerId, status, function (err, t) {
         if (err) return true
 
-        t.save(function (err) {
+        t.save(function (err, t) {
           if (err) return true
 
-          emitter.emit('ticket:updated', ticketId)
+          emitter.emit('ticket:updated', t)
           utils.sendToAllConnectedClients(io, 'updateTicketStatus', {
             tid: t._id,
             owner: t.owner,
@@ -148,7 +148,7 @@ events.onSetAssignee = function (socket) {
                 ticketUid: ticket.uid,
                 hostname: socket.handshake.headers.host
               })
-              emitter.emit('ticket:updated', ticketId)
+              emitter.emit('ticket:updated', ticket)
               utils.sendToAllConnectedClients(io, 'updateAssignee', ticket)
             })
           })
@@ -176,7 +176,7 @@ events.onSetTicketType = function (socket) {
           ticketSchema.populate(tt, 'type', function (err) {
             if (err) return true
 
-            emitter.emit('ticket:updated', ticketId)
+            emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketType', tt)
           })
         })
@@ -205,7 +205,7 @@ events.onSetTicketPriority = function (socket) {
           t.save(function (err, tt) {
             if (err) return true
 
-            emitter.emit('ticket:updated', ticketId)
+            emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt)
           })
         })
@@ -227,7 +227,7 @@ events.onClearAssignee = function (socket) {
         t.save(function (err, tt) {
           if (err) return true
 
-          emitter.emit('ticket:updated', ticketId)
+          emitter.emit('ticket:updated', tt)
           utils.sendToAllConnectedClients(io, 'updateAssignee', tt)
         })
       })
@@ -255,7 +255,7 @@ events.onSetTicketGroup = function (socket) {
           ticketSchema.populate(tt, 'group', function (err) {
             if (err) return true
 
-            emitter.emit('ticket:updated', ticketId)
+            emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketGroup', tt)
           })
         })
@@ -281,7 +281,7 @@ events.onSetTicketDueDate = function (socket) {
         t.save(function (err, tt) {
           if (err) return true
 
-          emitter.emit('ticket:updated', ticketId)
+          emitter.emit('ticket:updated', tt)
           utils.sendToAllConnectedClients(io, 'updateTicketDueDate', tt)
         })
       })
