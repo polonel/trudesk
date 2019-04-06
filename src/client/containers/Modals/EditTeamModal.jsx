@@ -78,6 +78,7 @@ class EditTeamModal extends React.Component {
       })
       .toArray()
     const selectedMembers = this.props.team.members
+
     return (
       <BaseModal {...this.props} options={{ bgclose: false }}>
         <div className={'mb-25'}>
@@ -92,7 +93,7 @@ class EditTeamModal extends React.Component {
               value={this.name}
               onChange={e => this.onInputChange(e)}
               data-validation='length'
-              data-validation-length={'2-15'}
+              data-validation-length={'2-25'}
               data-validation-error-msg={'Please enter a valid Team name. (Must contain 2 characters)'}
             />
           </div>

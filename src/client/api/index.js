@@ -19,6 +19,14 @@ axios.defaults.headers.post['Content-Type'] = 'application/json'
 let api = {}
 
 api.tickets = {}
+api.tickets.getWithPage = payload => {
+  const limit = payload.limit ? payload.limit : 100
+  const page = payload.page ? payload.page : 0
+  const type = payload.type ? payload.type : 'all'
+  return axios.get(`/api/v2/tickets?type=${type}&page=${page}&limit=${limit}`).then(res => {
+    return res.data
+  })
+}
 api.tickets.create = payload => {
   return axios.post('/api/v1/tickets/create', payload).then(res => {
     return res.data
@@ -140,6 +148,13 @@ api.accounts.enableAccount = ({ username }) => {
   })
 }
 
+api.groups = {}
+api.groups.get = () => {
+  return axios.get('/api/v1/groups').then(res => {
+    return res.data
+  })
+}
+
 api.teams = {}
 api.teams.getWithPage = payload => {
   const limit = payload && payload.limit ? payload.limit : 25
@@ -160,6 +175,28 @@ api.teams.updateTeam = payload => {
 }
 api.teams.deleteTeam = ({ _id }) => {
   return axios.delete(`/api/v2/teams/${_id}`).then(res => {
+    return res.data
+  })
+}
+
+api.departments = {}
+api.departments.get = () => {
+  return axios.get('/api/v2/departments').then(res => {
+    return res.data
+  })
+}
+api.departments.create = payload => {
+  return axios.post('/api/v2/departments', payload).then(res => {
+    return res.data
+  })
+}
+api.departments.update = payload => {
+  return axios.put(`/api/v2/departments/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+api.departments.delete = ({ _id }) => {
+  return axios.delete(`/api/v2/departments/${_id}`).then(res => {
     return res.data
   })
 }

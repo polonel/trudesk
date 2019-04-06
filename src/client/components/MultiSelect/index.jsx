@@ -40,15 +40,27 @@ class MultiSelect extends React.Component {
 
   componentDidUpdate (prevProps) {
     const $select = $(this.select)
-    $select.empty().multiSelect('refresh')
-    each(this.props.items, i => {
-      $select.append(`<option value='${i.value}'>${i.text}</option>`)
-    })
+    if (!helpers.arrayIsEqual(prevProps.items, this.props.items)) {
+      $select.empty().multiSelect('refresh')
+      each(this.props.items, i => {
+        $select.append(`<option value='${i.value}'>${i.text}</option>`)
+      })
 
-    $select.multiSelect('refresh')
+      $select.multiSelect('refresh')
 
-    if (this.props.initialSelected) {
-      $select.multiSelect('select', this.props.initialSelected)
+      if (this.props.initialSelected) {
+        $select.multiSelect('select', this.props.initialSelected)
+        $select.multiSelect('refresh')
+      }
+    } else {
+      if (prevProps.initialSelected !== this.props.initialSelected) {
+        $select.multiSelect('select', this.props.initialSelected)
+        $select.multiSelect('refresh')
+      }
+    }
+
+    if (prevProps.disabled !== this.props.disabled) {
+      $select.attr('disabled', this.props.disabled)
       $select.multiSelect('refresh')
     }
   }
@@ -57,6 +69,26 @@ class MultiSelect extends React.Component {
     const $select = $(this.select)
     if (!$select) return []
     return $select.val()
+  }
+
+  selectAll () {
+    const $select = $(this.select)
+    if ($select) {
+      if (this.props.items && this.props.items.length > 0) {
+        $select.multiSelect('select_all')
+        $select.multiSelect('refresh')
+      }
+    }
+  }
+
+  deselectAll () {
+    const $select = $(this.select)
+    if ($select) {
+      if (this.props.items && this.props.items.length > 0) {
+        $select.multiSelect('deselect_all')
+        $select.multiSelect('refresh')
+      }
+    }
   }
 
   render () {

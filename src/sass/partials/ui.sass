@@ -658,8 +658,32 @@ textarea.review-list
 
 .uk-table thead th
   color: automatic-text-color(lighten($page_content_right_bg, 10%), 'muted')
+  border-bottom-width: 1px !important
 .uk-table td
   border-bottom: 1px solid $page_content_border_color
+.uk-table-striped tbody tr:nth-of-type(odd)
+  background: lighten($page_content_bg, 2%)
+.uk-table-striped tbody tr:nth-of-type(even)
+  background: darken($page_content_bg, 2%)
+
+.sticky-header
+  thead, thead th
+    position: sticky
+    position: -webkit-sticky
+    top: 0
+    z-index: 15
+    background: $page_content_bg
+    border-bottom: none !important
+  thead th:after
+    content: ''
+    position: absolute
+    left: 0
+    bottom: 0
+    width: 100%
+    border-bottom: 1px solid $page_content_border_color
+
+.fixed-width
+  table-layout: fixed
 
 .danger-zone,
 .zone

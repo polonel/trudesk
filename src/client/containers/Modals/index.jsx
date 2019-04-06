@@ -32,6 +32,8 @@ import CreateAccountModal from './CreateAccountModal'
 import EditAccountModal from './EditAccountModal'
 import CreateTeamModal from './CreateTeamModal'
 import EditTeamModal from './EditTeamModal'
+import CreateDepartmentModal from './CreateDepartmentModal'
+import EditDepartmentModal from './EditDepartmentModal'
 
 const MODAL_COMPONENTS = {
   NOTICE_ALERT: NoticeAlertModal,
@@ -48,7 +50,9 @@ const MODAL_COMPONENTS = {
   CREATE_ACCOUNT: CreateAccountModal,
   EDIT_ACCOUNT: EditAccountModal,
   CREATE_TEAM: CreateTeamModal,
-  EDIT_TEAM: EditTeamModal
+  EDIT_TEAM: EditTeamModal,
+  CREATE_DEPARTMENT: CreateDepartmentModal,
+  EDIT_DEPARTMENT: EditDepartmentModal
 }
 
 const ModalRoot = ({ modalType, modalProps }) => {

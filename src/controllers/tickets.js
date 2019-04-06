@@ -291,6 +291,7 @@ ticketsController.processor = function (req, res) {
   content.title = processor.title
   content.nav = processor.nav
   content.subnav = processor.subnav
+  content.view = processor.pagetype
 
   content.data = {}
   content.data.user = req.user
@@ -365,12 +366,12 @@ ticketsController.processor = function (req, res) {
           content.data.pagination.enabled = true
         }
 
-        content.data.pagination.prevpage = object.page === 0 ? 0 : Number(object.page) - 1
+        object.page = Number(object.page)
+
+        content.data.pagination.prevpage = object.page === 0 ? 0 : object.page - 1
         content.data.pagination.prevEnabled = object.page !== 0
         content.data.pagination.nextpage =
-          object.page * object.limit + object.limit <= content.data.pagination.total
-            ? Number(object.page) + 1
-            : object.page
+          object.page * object.limit + object.limit <= content.data.pagination.total ? object.page + 1 : object.page
         content.data.pagination.nextEnabled = object.page * object.limit + object.limit <= content.data.pagination.total
         content.data.user = req.user
 

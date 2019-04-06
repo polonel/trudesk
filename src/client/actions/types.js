@@ -29,7 +29,10 @@ export const UPDATE_ROLE_ORDER = defineAction('UPDATE_ROLE_ORDER', [SUCCESS, ERR
 export const NAV_CHANGE = defineAction('NAV_CHANGE')
 
 // Tickets
+export const FETCH_TICKETS = defineAction('FETCH_TICKETS', [SUCCESS, PENDING, ERROR])
 export const CREATE_TICKET = defineAction('CREATE_TICKET', [PENDING, SUCCESS, ERROR])
+export const UNLOAD_TICKETS = defineAction('UNLOAD_TICKETS', [SUCCESS])
+export const TICKET_UPDATED = defineAction('TICKET_UPDATED', [SUCCESS])
 export const CREATE_TICKET_TYPE = defineAction('CREATE_TICKET_TYPE', [SUCCESS, ERROR])
 export const RENAME_TICKET_TYPE = defineAction('RENAME_TICKET_TYPE', [SUCCESS, ERROR])
 export const DELETE_TICKET_TYPE = defineAction('DELETE_TICKET_TYPE', [SUCCESS, ERROR])
@@ -48,12 +51,22 @@ export const DELETE_ACCOUNT = defineAction('DELETE_ACCOUNT', [PENDING, SUCCESS, 
 export const ENABLE_ACCOUNT = defineAction('ENABLE_ACCOUNT', [SUCCESS, ERROR])
 export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 
+// Groups
+export const FETCH_GROUPS = defineAction('FETCH_GROUPS', [PENDING, SUCCESS, ERROR])
+export const UNLOAD_GROUPS = defineAction('UNLOAD_GROUPS', [SUCCESS])
+
 // Teams
 export const FETCH_TEAMS = defineAction('FETCH_TEAMS', [PENDING, SUCCESS, ERROR])
 export const CREATE_TEAM = defineAction('CREATE_TEAM', [PENDING, SUCCESS, ERROR])
 export const SAVE_EDIT_TEAM = defineAction('SAVE_EDIT_TEAM', [PENDING, SUCCESS, ERROR])
 export const DELETE_TEAM = defineAction('DELETE_TEAM', [PENDING, SUCCESS, ERROR])
 export const UNLOAD_TEAMS = defineAction('UNLOAD_TEAMS', [SUCCESS])
+
+// Departments
+export const FETCH_DEPARTMENTS = defineAction('FETCH_DEPARTMENTS', [PENDING, SUCCESS, ERROR])
+export const CREATE_DEPARTMENT = defineAction('CREATE_DEPARTMENT', [PENDING, SUCCESS, ERROR])
+export const UPDATE_DEPARTMENT = defineAction('UPDATE_DEPARTMENT', [SUCCESS, PENDING, ERROR])
+export const DELETE_DEPARTMENT = defineAction('DELETE_DEPARTMENT', [SUCCESS, PENDING, ERROR])
 
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])

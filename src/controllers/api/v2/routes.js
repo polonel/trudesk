@@ -33,4 +33,10 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/teams', apiv2Auth, apiv2.teams.create)
   router.put('/api/v2/teams/:id', apiv2Auth, apiv2.teams.update)
   router.delete('/api/v2/teams/:id', apiv2Auth, apiv2.teams.delete)
+
+  // Departments
+  router.get('/api/v2/departments', apiv2Auth, apiv2.departments.get)
+  router.post('/api/v2/departments', apiv2Auth, apiv2.departments.create)
+  router.put('/api/v2/departments/:id', apiv2Auth, apiv2.departments.update)
+  router.delete('/api/v2/departments/:id', apiv2Auth, apiv2.departments.delete)
 }

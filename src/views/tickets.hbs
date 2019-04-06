@@ -1,3 +1,16 @@
+<div id="tickets-container"
+     data-view="{{view}}"
+     data-current-page="{{data.pagination.currentpage}}"
+     data-prev-page="{{data.pagination.prevpage}}"
+     data-next-page="{{data.pagination.nextpage}}"
+     data-prev-enabled="{{data.pagination.prevEnabled}}"
+     data-next-enabled="{{data.pagination.nextEnabled}}"></div>
+
+
+
+
+
+
 <div ng-init="preferences_autoRefreshTicketGrid={{data.user.preferences.autoRefreshTicketGrid}}; username='{{data.user.username}}';" ng-controller="ticketsCtrl">
     <div class="nopadding ticketContent">
         <div class="page-title no-border-bottom noshadow uk-clearfix">

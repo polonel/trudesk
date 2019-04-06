@@ -315,13 +315,14 @@ var notifications = require('../notifications') // Load Push Events
   }
 
   emitter.on('ticket:updated', function (ticket) {
-    io.sockets.emit('updateTicketStatus', {
-      tid: ticket._id,
-      owner: ticket.owner,
-      status: ticket.status
-    })
+    // io.sockets.emit('updateTicketStatus', {
+    //   tid: ticket._id,
+    //   owner: ticket.owner,
+    //   status: ticket.status
+    // })
 
-    io.sockets.emit('ticket:updategrid')
+    io.sockets.emit('$trudesk:client:ticket:updated', { ticket: ticket })
+    // io.sockets.emit('ticket:updategrid')
   })
 
   emitter.on('ticket:deleted', function (oId) {

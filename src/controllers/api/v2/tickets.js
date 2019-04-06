@@ -12,8 +12,11 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+var async = require('async')
+var winston = require('winston')
 var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
+var Group = require('../../../models/group')
 
 var ticketsV2 = {}
 
@@ -24,16 +27,84 @@ ticketsV2.create = function (req, res) {
 
 ticketsV2.get = function (req, res) {
   var query = req.query
-  var limit = query.limit || 100
+  var limit = 50
+  var page = 0
+  var type = req.query.type || 'all'
 
-  var queryObject = {
-    limit: limit
+  try {
+    limit = query.limit ? parseInt(query.limit) : 50
+    page = query.page ? parseInt(query.page) : 0
+  } catch (e) {
+    winston.debug(e)
+    return apiUtils.sendApiError_InvalidPostData(res)
   }
 
-  Ticket.getTicketsWithObject(req.user.groups, queryObject, function (err, tickets) {
-    if (err) return apiUtils.sendApiError(res, 500, err)
-    apiUtils.sendApiSuccess(res, { tickets: tickets, count: tickets.length })
-  })
+  var queryObject = {
+    limit: limit,
+    page: page
+  }
+
+  async.waterfall(
+    [
+      function (next) {
+        Group.getAllGroupsOfUser(req.user._id, next)
+      },
+      function (groups, next) {
+        var mappedGroups = groups.map(function (g) {
+          return g._id
+        })
+
+        switch (type.toLowerCase()) {
+          case 'active':
+            queryObject.status = [0, 1, 2]
+            break
+          case 'assigned':
+            queryObject.filter = {
+              assignee: [req.user._id]
+            }
+            break
+          case 'unassigned':
+            queryObject.unassigned = true
+            break
+          case 'new':
+            queryObject.status = [0]
+            break
+          case 'open':
+            queryObject.status = [1]
+            break
+          case 'pending':
+            queryObject.status = [2]
+            break
+          case 'closed':
+            queryObject.status = [3]
+        }
+
+        Ticket.getTicketsWithObject(mappedGroups, queryObject, function (err, tickets) {
+          if (err) return next(err)
+          return next(null, mappedGroups, tickets)
+        })
+      },
+      function (mappedGroups, tickets, done) {
+        Ticket.getCountWithObject(mappedGroups, queryObject, function (err, count) {
+          if (err) return done(err)
+
+          return done(null, {
+            tickets: tickets,
+            totalCount: count
+          })
+        })
+      }
+    ],
+    function (err, resultObject) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+      return apiUtils.sendApiSuccess(res, {
+        tickets: resultObject.tickets,
+        count: resultObject.tickets.length,
+        totalCount: resultObject.totalCount
+      })
+    }
+  )
 }
 
 ticketsV2.single = function (req, res) {

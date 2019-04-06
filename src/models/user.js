@@ -80,6 +80,7 @@ var userSchema = mongoose.Schema({
 })
 
 userSchema.set('toObject', { getters: true })
+
 var autoPopulateRole = function (next) {
   this.populate('role', 'name description normalized _id')
   next()

@@ -61,14 +61,14 @@ define('pages/tickets', [
         History.pushState(null, 'Ticket - ' + i, '/tickets/' + i)
       })
 
-      $('tr.overdue td').velocity(
-        { backgroundColor: '#b71c1c', color: '#ffffff' },
-        {
-          loop: true,
-          easing: [1],
-          duration: 800
-        }
-      )
+      // $('tr.overdue td').velocity(
+      //   { backgroundColor: '#b71c1c', color: '#ffffff' },
+      //   {
+      //     loop: true,
+      //     easing: [1],
+      //     duration: 800
+      //   }
+      // )
 
       if (typeof callback === 'function') {
         return callback()

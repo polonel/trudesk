@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import { call, put, takeLatest } from 'redux-saga/effects'
+import { call, put, takeLatest, takeEvery, select } from 'redux-saga/effects'
 import { isUndefined } from 'lodash'
 import Log from '../../logger'
 
@@ -27,10 +27,28 @@ import {
   UPDATE_PRIORITY,
   CREATE_TAG,
   GET_TAGS_WITH_PAGE,
-  CREATE_TICKET
+  CREATE_TICKET,
+  FETCH_TICKETS,
+  UNLOAD_TICKETS,
+  TICKET_UPDATED
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
+
+const getSessionUser = state => state.shared.sessionUser
+
+function * fetchTickets ({ payload }) {
+  yield put({ type: FETCH_TICKETS.PENDING, payload })
+  try {
+    const response = yield call(api.tickets.getWithPage, payload)
+    yield put({ type: FETCH_TICKETS.SUCCESS, response })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: FETCH_TICKETS.ERROR, error })
+    Log.error(errorText, error)
+  }
+}
 
 function * createTicket ({ payload }) {
   try {
@@ -42,6 +60,23 @@ function * createTicket ({ payload }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
     yield put({ type: CREATE_TICKET.ERROR, error })
+  }
+}
+
+function * unloadThunk ({ payload, meta }) {
+  try {
+    yield put({ type: UNLOAD_TICKETS.SUCCESS, payload, meta })
+  } catch (error) {
+    Log.error(error)
+  }
+}
+
+function * ticketUpdated ({ payload }) {
+  try {
+    const sessionUser = yield select(getSessionUser)
+    yield put({ type: TICKET_UPDATED.SUCCESS, payload, sessionUser })
+  } catch (error) {
+    Log.error(error)
   }
 }
 
@@ -143,7 +178,10 @@ function * createTag ({ payload }) {
 }
 
 export default function * watcher () {
+  yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)
   yield takeLatest(CREATE_TICKET.ACTION, createTicket)
+  yield takeLatest(UNLOAD_TICKETS.ACTION, unloadThunk)
+  yield takeEvery(TICKET_UPDATED.ACTION, ticketUpdated)
   yield takeLatest(CREATE_TICKET_TYPE.ACTION, createTicketType)
   yield takeLatest(DELETE_TICKET_TYPE.ACTION, deleteTicketType)
   yield takeLatest(CREATE_PRIORITY.ACTION, createPriority)
