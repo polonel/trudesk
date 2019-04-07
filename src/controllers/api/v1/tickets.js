@@ -288,6 +288,7 @@ apiTickets.search = function (req, res) {
         success: true,
         error: null,
         count: _.size(results),
+        totalCount: _.size(results),
         tickets: _.sortBy(results, 'uid').reverse()
       })
     }

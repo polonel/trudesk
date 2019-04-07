@@ -40,7 +40,10 @@ const getSessionUser = state => state.shared.sessionUser
 function * fetchTickets ({ payload }) {
   yield put({ type: FETCH_TICKETS.PENDING, payload })
   try {
-    const response = yield call(api.tickets.getWithPage, payload)
+    let response = null
+    if (payload.type === 'search') response = yield call(api.tickets.search, payload)
+    else response = yield call(api.tickets.getWithPage, payload)
+
     yield put({ type: FETCH_TICKETS.SUCCESS, response })
   } catch (error) {
     const errorText = error.response ? error.response.data.error : error

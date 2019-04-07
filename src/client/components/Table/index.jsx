@@ -26,7 +26,7 @@ class Table extends React.Component {
       (stickyHeader ? ' sticky-header fixed-width' : '') +
       (extraClass ? ' ' + extraClass : '')
     return (
-      <table className={tableClass} style={this.props.style}>
+      <table className={tableClass} style={this.props.style} ref={this.props.tableRef}>
         {headers && (
           <thead>
             <tr>{headers}</tr>
@@ -41,6 +41,7 @@ class Table extends React.Component {
 
 Table.propTypes = {
   headers: PropTypes.arrayOf(PropTypes.element),
+  tableRef: PropTypes.func,
   striped: PropTypes.bool,
   stickyHeader: PropTypes.bool,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired,

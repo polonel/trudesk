@@ -15,8 +15,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { without, uniq } from 'lodash'
+import { each, without, uniq } from 'lodash'
 
+import Log from '../logger'
+import axios from 'axios'
 import { fetchTickets, unloadTickets, ticketUpdated } from 'actions/tickets'
 import { showModal } from 'actions/common'
 
@@ -96,7 +98,57 @@ class TicketsContainer extends React.Component {
     this.selectedTickets = uniq(this.selectedTickets)
   }
 
-  onSetStatus (status) {}
+  onSetStatus (status) {
+    let statusText = ''
+    switch (status) {
+      case 0:
+        statusText = 'New'
+        break
+      case 1:
+        statusText = 'Open'
+        break
+      case 2:
+        statusText = 'Pending'
+        break
+      case 3:
+        statusText = 'Closed'
+    }
+
+    each(this.selectedTickets, id => {
+      axios
+        .put(`/api/v1/tickets/${id}`, { status })
+        .then(res => {
+          if (res.data.success) {
+            helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` })
+            this._clearChecked()
+          } else {
+            helpers.UI.showSnackbar('An unknown error occurred.', true)
+            Log.error(res.data.error)
+          }
+        })
+        .catch(error => {
+          Log.error(error)
+          helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
+        })
+    })
+  }
+
+  onSearchKeypress (e) {
+    e.persist()
+    if (e.charCode === 13) {
+      const searchString = e.target.value
+      if (searchString.length < 1) this.props.unloadTickets().then(this.props.fetchTickets({ type: this.props.view }))
+      else this.props.unloadTickets().then(this.props.fetchTickets({ type: 'search', searchString }))
+    }
+  }
+
+  _clearChecked () {
+    this.selectedTickets = []
+    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]')
+    checkboxes.forEach(item => {
+      item.checked = false
+    })
+  }
 
   render () {
     return (
@@ -121,24 +173,31 @@ class TicketsContainer extends React.Component {
                 <Dropdown small={true} width={120}>
                   <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
                   <DropdownSeparator />
-                  <DropdownItem
-                    text={'Set Open'}
-                    onClick={() => {
-                      console.log(this.selectedTickets)
-                    }}
-                  />
-                  <DropdownItem text={'Set Pending'} />
-                  <DropdownItem text={'Set Closed'} />
+                  <DropdownItem text={'Set Open'} onClick={() => this.onSetStatus(1)} />
+                  <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
+                  <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
                   <DropdownSeparator />
                   <DropdownItem text={'Delete'} extraClass={'text-danger'} />
                 </Dropdown>
               </DropdownTrigger>
+              <div className={'uk-float-right'}>
+                <div className='search-box uk-float-left nb' style={{ marginTop: 8, paddingLeft: 0 }}>
+                  <input
+                    type='text'
+                    id='tickets_Search'
+                    placeholder={'Search'}
+                    className={'ticket-top-search'}
+                    onKeyPress={e => this.onSearchKeypress(e)}
+                  />
+                </div>
+              </div>
             </div>
           }
         />
         <PageContent padding={0} paddingBottom={0} extraClass={'uk-position-relative'}>
           <SpinLoader active={this.props.loading} />
           <Table
+            tableRef={ref => (this.ticketsTable = ref)}
             style={{ margin: 0 }}
             extraClass={'pDataTable'}
             stickyHeader={true}

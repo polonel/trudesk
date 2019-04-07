@@ -62,7 +62,9 @@ const reducer = handleActions(
       return {
         ...state,
         tickets: fromJS(action.response.tickets || []),
-        totalCount: fromJS(action.response.totalCount.toString()),
+        totalCount: action.response.totalCount
+          ? fromJS(action.response.totalCount.toString())
+          : action.response.tickets.length.toString(),
         loading: false
       }
     },

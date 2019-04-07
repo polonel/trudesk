@@ -27,6 +27,11 @@ api.tickets.getWithPage = payload => {
     return res.data
   })
 }
+api.tickets.search = payload => {
+  return axios.get(`/api/v1/tickets/search/?search=${payload.searchString}&limit=100`).then(res => {
+    return res.data
+  })
+}
 api.tickets.create = payload => {
   return axios.post('/api/v1/tickets/create', payload).then(res => {
     return res.data

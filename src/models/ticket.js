@@ -1065,6 +1065,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'username fullname email role image title'
           )
           .populate('type tags group')
+          .limit(100)
 
         q.exec(function (err, results) {
           if (err) return callback(err)
@@ -1086,6 +1087,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'username fullname email role image title'
           )
           .populate('type tags group')
+          .limit(100)
 
         q.exec(function (err, results) {
           if (err) return callback(err)
@@ -1107,6 +1109,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
             'username fullname email role image title'
           )
           .populate('type tags group')
+          .limit(100)
 
         q.exec(function (err, results) {
           if (err) return callback(err)
@@ -1119,7 +1122,7 @@ ticketSchema.statics.getTicketsWithSearchString = function (grps, search, callba
     function (err) {
       if (err) return callback(err, null)
 
-      var t = _.uniq(_.flatten(tickets), function (i) {
+      var t = _.uniqBy(_.flatten(tickets), function (i) {
         return i.uid
       })
 
