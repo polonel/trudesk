@@ -168,8 +168,17 @@ class TicketsContainer extends React.Component {
                 prevPage={this.props.prevPage}
                 nextPage={this.props.nextPage}
               />
+              <PageTitleButton
+                fontAwesomeIcon={'fa-refresh'}
+                onButtonClick={e => {
+                  e.preventDefault()
+                  this.props
+                    .unloadTickets()
+                    .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }))
+                }}
+              />
               <DropdownTrigger pos={'bottom-right'} offset={5} extraClass={'uk-float-left'}>
-                <PageTitleButton />
+                <PageTitleButton fontAwesomeIcon={'fa-tasks'} />
                 <Dropdown small={true} width={120}>
                   <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
                   <DropdownSeparator />
@@ -215,6 +224,13 @@ class TicketsContainer extends React.Component {
               <TableHeader key={9} text={'Updated'} />
             ]}
           >
+            {this.props.tickets.size < 1 && (
+              <TableRow clickable={false}>
+                <TableCell colSpan={10}>
+                  <h5 style={{ margin: 10 }}>No Tickets Found</h5>
+                </TableCell>
+              </TableRow>
+            )}
             {this.props.tickets.map(ticket => {
               const status = () => {
                 switch (ticket.get('status')) {

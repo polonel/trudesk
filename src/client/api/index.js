@@ -20,7 +20,7 @@ let api = {}
 
 api.tickets = {}
 api.tickets.getWithPage = payload => {
-  const limit = payload.limit ? payload.limit : 100
+  const limit = payload.limit ? payload.limit : 50
   const page = payload.page ? payload.page : 0
   const type = payload.type ? payload.type : 'all'
   return axios.get(`/api/v2/tickets?type=${type}&page=${page}&limit=${limit}`).then(res => {
