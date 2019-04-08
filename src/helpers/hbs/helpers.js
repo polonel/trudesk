@@ -671,6 +671,7 @@ var helpers = {
     if (ownerRole._id.toString() === userRole._id.toString()) return options.fn(this)
 
     if (userRole.isAdmin) return options.fn(this)
+    if (userRole.isAgent) return options.fn(this)
     var hasHierarchyEnabled = p.hasHierarchyEnabled(userRole._id)
     if (hasHierarchyEnabled && p.hasPermOverRole(ownerRole._id, userRole._id)) return options.fn(this)
 
