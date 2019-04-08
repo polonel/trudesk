@@ -83,7 +83,7 @@
                         <label for="filterAssignee" class="uk-form-label" style="padding-bottom: 0; margin-bottom: 0;">Assignee:</label>
                         <select name="filterAssignee" id="filterAssignee" class="selectize" multiple="multiple" data-md-selectize-inline data-md-selectize-bottom="true" data-md-selectize-top-offset="-12">
                             {{#each data.common.users}}
-                                {{#canUserRole role "ticket:assingee"}}
+                                {{#canUserRole role "agent:*"}}
                                     <option value="{{_id}}">{{fullname}}</option>
                                 {{/canUserRole}}
                             {{/each}}
