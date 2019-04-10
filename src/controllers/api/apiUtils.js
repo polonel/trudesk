@@ -63,4 +63,14 @@ apiUtils.generateJWTToken = function (dbUser, callback) {
   })
 }
 
+apiUtils.stripUserFields = function (user) {
+  user.password = undefined
+  user.accessToken = undefined
+  user.__v = undefined
+  user.tOTPKey = undefined
+  user.iOSDeviceTokens = undefined
+
+  return user
+}
+
 module.exports = apiUtils

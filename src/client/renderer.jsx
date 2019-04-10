@@ -47,9 +47,11 @@ export default function (store) {
   }
 
   if (document.getElementById('accounts-container')) {
+    const title = document.getElementById('accounts-container').getAttribute('data-title')
+    const view = document.getElementById('accounts-container').getAttribute('data-view')
     const AccountsContainerWithProvider = (
       <Provider store={store}>
-        <AccountsContainer />
+        <AccountsContainer title={title} view={view} />
       </Provider>
     )
 

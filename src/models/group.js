@@ -30,10 +30,18 @@ var COLLECTION = 'groups'
  */
 var groupSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'accounts',
+      autopopulate: { select: '_id username email image title fullname' }
+    }
+  ],
   sendMailTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
   public: { type: Boolean, required: true, default: false }
 })
+
+groupSchema.plugin(require('mongoose-autopopulate'))
 
 groupSchema.pre('save', function (next) {
   this.name = this.name.trim()

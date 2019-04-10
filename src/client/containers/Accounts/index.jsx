@@ -82,7 +82,7 @@ class AccountsContainer extends React.Component {
   }
 
   getUsersWithPage (page) {
-    this.props.fetchAccounts({ page, limit: 25 }).then(({ response }) => {
+    this.props.fetchAccounts({ page, limit: 25, type: this.props.view }).then(({ response }) => {
       if (response.count < 25) this.hasMore = false
     })
   }
@@ -124,6 +124,7 @@ class AccountsContainer extends React.Component {
         )
       const isAdmin = user.getIn(['role', 'isAdmin']) || false
       const isAgent = user.getIn(['role', 'isAgent']) || false
+      const customer = !isAdmin && !isAgent
       const isDeleted = user.get('deleted') || false
       return (
         <GridItem key={user.get('_id')} width={'1-5'} xLargeWidth={'1-6'} extraClass={'mb-25'}>
@@ -167,15 +168,39 @@ class AccountsContainer extends React.Component {
                   </div>
                 </li>
                 <li>
-                  <div className='tru-list-content'>
-                    <span className='tru-list-heading'>Groups</span>
-                    <span className='uk-text-small uk-text-muted uk-text-truncate'>
-                      {user.get('groups').map(group => {
-                        return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '')
-                      })}
-                    </span>
-                  </div>
+                  {customer && user.get('groups') && (
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Groups</span>
+                      <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                        {user.get('groups').map(group => {
+                          return group.get('name') + (user.get('groups').toArray().length > 1 ? ', ' : '')
+                        })}
+                      </span>
+                    </div>
+                  )}
+                  {!customer && user.get('teams') && (
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Teams</span>
+                      <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                        {user.get('teams').map(team => {
+                          return team.get('name') + (user.get('teams').toArray().length > 1 ? ', ' : '')
+                        })}
+                      </span>
+                    </div>
+                  )}
                 </li>
+                {!customer && user.get('departments') && (
+                  <li>
+                    <div className='tru-list-content'>
+                      <span className='tru-list-heading'>Departments</span>
+                      <span className='uk-text-small uk-text-muted uk-text-truncate'>
+                        {user.get('departments').map(department => {
+                          return department.get('name') + (user.get('departments').toArray().length > 1 ? ', ' : '')
+                        })}
+                      </span>
+                    </div>
+                  </li>
+                )}
               </ul>
             }
           />
@@ -186,7 +211,7 @@ class AccountsContainer extends React.Component {
     return (
       <div>
         <PageTitle
-          title={'Accounts'}
+          title={this.props.title}
           rightComponent={
             <div className={'uk-grid uk-grid-collapse'}>
               <div className={'uk-width-3-4 pr-10'}>
@@ -252,6 +277,8 @@ class AccountsContainer extends React.Component {
 }
 
 AccountsContainer.propTypes = {
+  title: PropTypes.string.isRequired,
+  view: PropTypes.string.isRequired,
   fetchAccounts: PropTypes.func.isRequired,
   deleteAccount: PropTypes.func.isRequired,
   enableAccount: PropTypes.func.isRequired,
@@ -260,6 +287,11 @@ AccountsContainer.propTypes = {
   common: PropTypes.object.isRequired,
   shared: PropTypes.object.isRequired,
   accountsState: PropTypes.object.isRequired
+}
+
+AccountsContainer.defaultProps = {
+  title: 'Accounts',
+  view: 'customers'
 }
 
 const mapStateToProps = state => ({

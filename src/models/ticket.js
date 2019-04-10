@@ -737,6 +737,30 @@ ticketSchema.statics.getTickets = function (grpIds, callback) {
  *    status: 1
  * }
  */
+ticketSchema.statics.getTicketsByDepartments = function (departments, object, callback) {
+  if (!departments || !_.isObject(departments) || !object)
+    return callback('Invalid Data - TicketSchema.GetTicketsByDepartments()')
+
+  var self = this
+
+  if (_.some(departments, { allGroups: true })) {
+    groupSchema.find({}, function (err, groups) {
+      if (err) return callback({ error: err })
+      return self.getTicketsWithObject(groups, object, callback)
+    })
+  } else {
+    var groups = _.flattenDeep(
+      departments.map(function (d) {
+        return d.groups.map(function (g) {
+          return g._id
+        })
+      })
+    )
+
+    return self.getTicketsWithObject(groups, object, callback)
+  }
+}
+
 ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
   if (_.isUndefined(grpId)) {
     return callback('Invalid GroupId - TicketSchema.GetTickets()', null)
@@ -752,10 +776,8 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
 
   var self = this
 
-  var limit = object.limit === null ? 10 : object.limit
-
-  var page = object.page === null ? 0 : object.page
-
+  var limit = !object.limit ? 10 : object.limit
+  var page = !object.page ? 0 : object.page
   var _status = object.status
 
   if (!_.isUndefined(object.filter) && !_.isUndefined(object.filter.groups)) {
@@ -772,8 +794,6 @@ ticketSchema.statics.getTicketsWithObject = function (grpId, object, callback) {
     )
     .populate('assignee', 'username fullname email role image title')
     .populate('type tags group')
-    .populate('group.members', 'username fullname email role image title')
-    .populate('group.sendMailTo', 'username fullname email role image title')
     .sort({ uid: -1 })
 
   if (limit !== -1) {

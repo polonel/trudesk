@@ -231,6 +231,7 @@ define([
   helpers.UI.setupSidebarTether = function () {
     var sidebarElements = [
       { element: '#side-nav-sub-tickets', target: 'tickets' },
+      { element: '#side-nav-sub-accounts', target: 'accounts' },
       { element: '#side-nav-sub-reports', target: 'reports' },
       { element: '#side-nav-sub-settings', target: 'settings' }
     ]

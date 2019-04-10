@@ -79,6 +79,63 @@ accountsController.get = function (req, res) {
   return res.render('accounts', content)
 }
 
+accountsController.getCustomers = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Customers'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-customers'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'customers'
+
+  return res.render('accounts', content)
+}
+
+accountsController.getAgents = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Agents'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-agents'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'agents'
+
+  return res.render('accounts', content)
+}
+
+accountsController.getAdmins = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Admins'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-admins'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'admins'
+
+  return res.render('accounts', content)
+}
+
 accountsController.importPage = function (req, res) {
   var user = req.user
   if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:import')) {

@@ -17,17 +17,19 @@ var mongoose = require('mongoose')
 
 // Refs
 require('./group')
-require('./team')
+var Teams = require('./team')
 
 var COLLECTION = 'departments'
 
 var departmentSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   normalized: { type: String },
-  teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams' }],
+  teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams', autopopulate: true }],
   allGroups: { type: Boolean, default: false },
-  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups' }]
+  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups', autopopulate: true }]
 })
+
+departmentSchema.plugin(require('mongoose-autopopulate'))
 
 departmentSchema.pre('save', function (next) {
   this.name = this.name.trim()
@@ -36,107 +38,17 @@ departmentSchema.pre('save', function (next) {
   return next()
 })
 
-var autoPopulate = function (next) {
-  this.populate('teams groups')
+departmentSchema.statics.getUserDepartments = function (userId, callback) {
+  var self = this
 
-  next()
-}
+  Teams.getTeamsOfUser(userId, function (err, teams) {
+    if (err) return callback({ error: err })
 
-departmentSchema.pre('findOne', autoPopulate).pre('find', autoPopulate)
-
-departmentSchema.methods.addMember = function (memberId, callback) {
-  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.AddMember()')
-
-  if (this.members === null) this.members = []
-
-  if (isMember(this.members, memberId)) return callback(null, false)
-
-  this.members.push(memberId)
-  this.members = _.uniq(this.members)
-
-  return callback(null, true)
-}
-
-departmentSchema.methods.removeMember = function (memberId, callback) {
-  if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.RemoveMember()')
-
-  if (!isMember(this.members, memberId)) return callback(null, false)
-
-  this.members.splice(_.indexOf(this.members, _.find(this.members, { _id: memberId })), 1)
-
-  this.members = _.uniq(this.members)
-
-  return callback(null, true)
-}
-
-departmentSchema.methods.isMember = function (memberId) {
-  return isMember(this.members, memberId)
-}
-
-departmentSchema.statics.getByName = function (name, callback) {
-  if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()')
-
-  var q = this.model(COLLECTION)
-    .findOne({ name: name })
-    .populate('members', '_id username fullname email image title')
-
-  return q.exec(callback)
-}
-
-departmentSchema.statics.getAll = function (callback) {
-  var q = this.model(COLLECTION)
-    .find({})
-    .populate('members', '_id username fullname email image title')
-    .sort('name')
-
-  return q.exec(callback)
-}
-
-departmentSchema.statics.getNoPopulate = function (callback) {
-  var q = this.model(COLLECTION)
-    .find({})
-    .sort('name')
-
-  return q.exec(callback)
-}
-
-departmentSchema.statics.getByUser = function (userId, callback) {
-  if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUser()')
-
-  var q = this.model(COLLECTION)
-    .find({ members: userId })
-    .populate('members', '_id username fullname email image title')
-    .sort('name')
-
-  return q.exec(callback)
-}
-
-departmentSchema.statics.getByUserNoPopulate = function (userId, callback) {
-  if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUserNoPopulate()')
-
-  var q = this.model(COLLECTION)
-    .find({ members: userId })
-    .sort('name')
-
-  return q.exec(callback)
-}
-
-departmentSchema.statics.get = function (id, callback) {
-  if (_.isUndefined(id)) return callback('Invalid TeamId - TeamSchema.GetTeam()')
-
-  var q = this.model(COLLECTION)
-    .findOne({ _id: id })
-    .populate('members', '_id username fullname email image title')
-
-  return q.exec(callback)
-}
-
-function isMember (arr, id) {
-  var matches = _.filter(arr, function (value) {
-    if (value._id.toString() === id.toString()) return value
+    return self
+      .model(COLLECTION)
+      .find({ teams: { $in: teams } })
+      .exec(callback)
   })
-
-  return matches.length > 0
 }
 
 module.exports = mongoose.model(COLLECTION, departmentSchema)

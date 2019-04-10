@@ -22,17 +22,11 @@ import SubmenuItem from 'components/Nav/SubmenuItem'
 
 import { updateNavChange } from '../../../actions/nav'
 
-// import Permissions from '../../../../permissions/index.js'
-
 import Helpers from 'lib/helpers'
 
 class Sidebar extends React.Component {
   constructor (props) {
     super(props)
-
-    // window.react.updateSidebar = (data) => {
-    //     this.props.updateNavChange(data);
-    // };
   }
 
   componentDidMount () {
@@ -155,7 +149,36 @@ class Sidebar extends React.Component {
             href='/accounts'
             class='navAccounts'
             active={activeItem === 'accounts'}
-          />
+            subMenuTarget='accounts'
+            hasSubmenu={sessionUser && Helpers.canUser('agent:*', true)}
+          >
+            {sessionUser && Helpers.canUser('agent:*', true) && (
+              <Submenu id='accounts'>
+                <SubmenuItem
+                  href={'/accounts/customers'}
+                  text={'Customers'}
+                  icon={'account_box'}
+                  active={activeSubItem === 'accounts-customers'}
+                />
+                {sessionUser && Helpers.canUser('agent:*', true) && (
+                  <SubmenuItem
+                    href={'/accounts/agents'}
+                    text={'Agents'}
+                    icon={'account_circle'}
+                    active={activeSubItem === 'accounts-agents'}
+                  />
+                )}
+                {sessionUser && Helpers.canUser('admin:*') && (
+                  <SubmenuItem
+                    href={'/accounts/admins'}
+                    text={'Admins'}
+                    icon={'how_to_reg'}
+                    active={activeSubItem === 'accounts-admins'}
+                  />
+                )}
+              </Submenu>
+            )}
+          </SidebarItem>
         )}
         {sessionUser && Helpers.canUser('groups:view') && (
           <SidebarItem
@@ -250,7 +273,7 @@ class Sidebar extends React.Component {
               />
               <SubmenuItem
                 text='Permissions'
-                icon='lock'
+                icon='security'
                 href='/settings/permissions'
                 active={activeSubItem === 'settings-permissions'}
               />

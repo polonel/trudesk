@@ -221,7 +221,15 @@ function mainRoutes (router, middleware, controllers) {
 
   // Accounts
   router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile)
-  router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get)
+  router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getCustomers)
+  router.get(
+    '/accounts/customers',
+    middleware.redirectToLogin,
+    middleware.loadCommonData,
+    controllers.accounts.getCustomers
+  )
+  router.get('/accounts/agents', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getAgents)
+  router.get('/accounts/admins', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getAdmins)
   router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage)
   router.get('/accounts/import', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.importPage)
   router.post('/accounts/import/csv/upload', middleware.redirectToLogin, controllers.accounts.uploadCSV)

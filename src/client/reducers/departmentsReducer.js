@@ -14,7 +14,13 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { CREATE_DEPARTMENT, DELETE_DEPARTMENT, FETCH_DEPARTMENTS, UPDATE_DEPARTMENT } from 'actions/types'
+import {
+  CREATE_DEPARTMENT,
+  DELETE_DEPARTMENT,
+  FETCH_DEPARTMENTS,
+  UNLOAD_DEPARTMENTS,
+  UPDATE_DEPARTMENT
+} from 'actions/types'
 
 const initialState = {
   departments: List([])
@@ -58,6 +64,13 @@ const reducer = handleActions(
       return {
         ...state,
         departments: state.departments.delete(idx)
+      }
+    },
+
+    [UNLOAD_DEPARTMENTS.SUCCESS]: state => {
+      return {
+        ...state,
+        departments: state.departments.clear()
       }
     }
   },

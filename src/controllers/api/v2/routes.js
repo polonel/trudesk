@@ -21,12 +21,19 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/login', controllers.api.v2.common.login)
   router.post('/api/v2/token', controllers.api.v2.common.token)
 
+  // Accounts
+  router.get('/api/v2/accounts', middleware.api, apiv2.accounts.get)
+  router.put('/api/v2/accounts/:username', middleware.api, apiv2.accounts.update)
+
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, apiv2.tickets.get)
   router.post('/api/v2/tickets', apiv2Auth, apiv2.tickets.create)
   router.get('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.single)
   router.put('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.update)
   router.delete('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.delete)
+
+  // Groups
+  router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
 
   // Teams
   router.get('/api/v2/teams', apiv2Auth, apiv2.teams.get)
@@ -39,4 +46,6 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/departments', apiv2Auth, apiv2.departments.create)
   router.put('/api/v2/departments/:id', apiv2Auth, apiv2.departments.update)
   router.delete('/api/v2/departments/:id', apiv2Auth, apiv2.departments.delete)
+
+  router.get('/api/v2/departments/test', middleware.api, apiv2.departments.test)
 }

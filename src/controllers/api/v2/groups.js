@@ -8,6 +8,21 @@
  *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
  *  ========================================================================
  *  Author:     Chris Brame
- *  Updated:    2/14/19 12:06 AM
+ *  Updated:    4/8/19 1:00 AM
  *  Copyright (c) 2014-2019. All rights reserved.
  */
+
+var apiUtils = require('../apiUtils')
+var Group = require('../../../models/group')
+
+var apiGroups = {}
+
+apiGroups.get = function (req, res) {
+  Group.find({}, function (err, groups) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    return apiUtils.sendApiSuccess(res, { groups: groups })
+  })
+}
+
+module.exports = apiGroups

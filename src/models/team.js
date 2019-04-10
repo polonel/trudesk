@@ -23,8 +23,16 @@ var COLLECTION = 'teams'
 var teamSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   normalized: { type: String, required: true, unique: true, lowercase: true },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'accounts',
+      autopopulate: { select: '_id username fullname email title image' }
+    }
+  ]
 })
+
+teamSchema.plugin(require('mongoose-autopopulate'))
 
 teamSchema.pre('validate', function () {
   this.normalized = this.name.trim().toLowerCase()

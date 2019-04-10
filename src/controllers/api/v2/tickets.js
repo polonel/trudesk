@@ -12,11 +12,13 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
+var _ = require('lodash')
 var async = require('async')
 var winston = require('winston')
 var apiUtils = require('../apiUtils')
 var Ticket = require('../../../models/ticket')
 var Group = require('../../../models/group')
+var Department = require('../../../models/department')
 
 var ticketsV2 = {}
 
@@ -47,7 +49,27 @@ ticketsV2.get = function (req, res) {
   async.waterfall(
     [
       function (next) {
-        Group.getAllGroupsOfUser(req.user._id, next)
+        if (req.user.role.isAdmin || req.user.role.isAgent) {
+          Department.getUserDepartments(req.user._id, function (err, departments) {
+            if (err) return next(err)
+
+            if (_.some(departments, { allGroups: true })) {
+              Group.find({}, next)
+            } else {
+              var groups = _.flattenDeep(
+                departments.map(function (d) {
+                  return d.groups.map(function (g) {
+                    return g._id
+                  })
+                })
+              )
+
+              return next(null, groups)
+            }
+          })
+        } else {
+          Group.getAllGroupsOfUser(req.user._id, next)
+        }
       },
       function (groups, next) {
         var mappedGroups = groups.map(function (g) {

@@ -41,6 +41,19 @@ apiDepartments.create = function (req, res) {
   })
 }
 
+apiDepartments.test = function (req, res) {
+  Department.getUserDepartments(req.user._id, function (err, departments) {
+    if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+    var ticketSchema = require('../../../models/ticket')
+    ticketSchema.getTicketsByDepartments(departments, {}, function (err, tickets) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+      return apiUtils.sendApiSuccess(res, { departments: departments, tickets: tickets })
+    })
+  })
+}
+
 apiDepartments.update = function (req, res) {
   var putData = req.body
   var id = req.params.id

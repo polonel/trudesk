@@ -13,11 +13,8 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var GroupSchema = require('../../../models/group')
-
 var ticketSchema = require('../../../models/ticket')
 
 var apiGroups = {}

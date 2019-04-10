@@ -66,6 +66,7 @@
     "moment-duration-format": "2.2.2",
     "moment-timezone": "0.5.23",
     "mongoose": "5.4.5",
+    "mongoose-autopopulate": "0.9.1",
     "nconf": "0.10.0",
     "netmask": "1.0.6",
     "node-cache": "4.2.0",

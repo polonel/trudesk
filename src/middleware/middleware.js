@@ -197,7 +197,7 @@ middleware.apiv2 = function (req, res, next) {
   if (req.user) return next()
 
   var passport = require('passport')
-  passport.authenticate('jwt', { session: false }, function (err, user) {
+  passport.authenticate('jwt', { session: true }, function (err, user) {
     if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
     if (user) {
       req.user = user

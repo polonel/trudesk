@@ -24,19 +24,21 @@ import {
 } from 'actions/types'
 
 const initialState = {
-  accounts: List([])
+  accounts: List([]),
+  type: 'customers'
 }
 
 const reducer = handleActions(
   {
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
       let arr = state.accounts.toArray()
-      action.payload.response.users.map(i => {
+      action.payload.response.accounts.map(i => {
         arr.push(i)
       })
       return {
         ...state,
-        accounts: fromJS(arr)
+        accounts: fromJS(arr),
+        type: action.payload.payload.type
       }
     },
 
@@ -54,9 +56,20 @@ const reducer = handleActions(
       const accountIndex = state.accounts.findIndex(u => {
         return u.get('_id') === resUser._id
       })
+
+      const customer = !resUser.role.isAdmin && !resUser.role.isAgent
+
+      let accounts = null
+      if ((state.type === 'agents' || state.type === 'admins') && !customer)
+        state.accounts.set(accountIndex, fromJS(resUser))
+      else if ((state.type === 'agents' || state.type === 'admins') && customer)
+        accounts = state.accounts.remove(accountIndex)
+      else if (state.type === 'customers' && !customer) accounts = state.accounts.remove(accountIndex)
+      else if (state.type === 'customers' && customer) accounts = state.accounts.set(accountIndex, fromJS(resUser))
+
       return {
         ...state,
-        accounts: state.accounts.set(accountIndex, fromJS(resUser))
+        accounts: accounts
       }
     },
 

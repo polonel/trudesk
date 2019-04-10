@@ -50,7 +50,7 @@ var COLLECTION = 'accounts'
  * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true, lowercase: true },
@@ -91,7 +91,7 @@ userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
 userSchema.pre('save', function (next) {
   var user = this
 
-  user.username = user.username.trim()
+  user.username = user.username.toLowerCase().trim()
   user.email = user.email.trim()
   if (user.fullname) user.fullname = user.fullname.trim()
   if (user.title) user.title = user.title.trim()
@@ -335,6 +335,8 @@ userSchema.statics.getUserByUsername = function (user, callback) {
     .select('+password +accessToken')
     .exec(callback)
 }
+
+userSchema.statics.getByUsername = userSchema.statics.getUserByUsername
 
 /**
  * Gets user via email
@@ -623,6 +625,85 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
       })
     })
   })
+}
+
+userSchema.statics.getCustomers = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+  return self
+    .model(COLLECTION)
+    .find({}, '-password -resetPassHash -resetPassExpire')
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var customerRoleIds = _.filter(accounts, function (a) {
+        return !a.role.isAdmin && !a.role.isAgent
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      self
+        .find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+        .exec(callback)
+    })
+}
+
+userSchema.statics.getAgents = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({})
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var agentRoleIds = _.filter(accounts, function (a) {
+        return a.role.isAgent
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      self
+        .model(COLLECTION)
+        .find({ role: { $in: agentRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+        .exec(callback)
+    })
+}
+
+userSchema.statics.getAdmins = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({})
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var adminRoleIds = _.filter(accounts, function (a) {
+        return a.role.isAdmin
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      self
+        .model(COLLECTION)
+        .find({ role: { $in: adminRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+        .exec(callback)
+    })
 }
 
 /**

@@ -13,7 +13,14 @@
  */
 
 import { call, put, takeLatest } from 'redux-saga/effects'
-import { CREATE_DEPARTMENT, DELETE_DEPARTMENT, FETCH_DEPARTMENTS, HIDE_MODAL, UPDATE_DEPARTMENT } from 'actions/types'
+import {
+  CREATE_DEPARTMENT,
+  DELETE_DEPARTMENT,
+  FETCH_DEPARTMENTS,
+  HIDE_MODAL,
+  UNLOAD_DEPARTMENTS,
+  UPDATE_DEPARTMENT
+} from 'actions/types'
 import api from '../../api'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
@@ -68,9 +75,18 @@ function * deleteDepartment ({ payload }) {
   }
 }
 
+function * unloadDepartments ({ payload, meta }) {
+  try {
+    yield put({ type: UNLOAD_DEPARTMENTS.SUCCESS, payload, meta })
+  } catch (error) {
+    Log.error(error)
+  }
+}
+
 export default function * watcher () {
   yield takeLatest(FETCH_DEPARTMENTS.ACTION, fetchDepartments)
   yield takeLatest(CREATE_DEPARTMENT.ACTION, createDepartment)
   yield takeLatest(UPDATE_DEPARTMENT.ACTION, updateDepartment)
   yield takeLatest(DELETE_DEPARTMENT.ACTION, deleteDepartment)
+  yield takeLatest(UNLOAD_DEPARTMENTS.ACTION, unloadDepartments)
 }

@@ -473,24 +473,61 @@ ticketsController.single = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'tickets:public')
-    if (!_.some(ticket.group.members, user._id)) {
-      if (ticket.group.public && hasPublic) {
-        // Blank to bypass
-      } else {
-        winston.warn('User access ticket outside of group - UserId: ' + user._id)
-        return res.redirect('/tickets')
+    var departmentSchema = require('../models/department')
+    async.waterfall(
+      [
+        function (next) {
+          if (!req.user.role.isAdmin && !req.user.role.isAgent) return next(null, ticket.group.members)
+
+          departmentSchema.getUserDepartments(req.user._id, function (err, departments) {
+            if (err) return next(err)
+            if (_.some(departments, { allGroups: true })) {
+              return groupSchema.find({}, next)
+            }
+
+            var groups = _.flattenDeep(
+              departments.map(function (d) {
+                return d.groups
+              })
+            )
+
+            return next(null, groups)
+          })
+        },
+        function (userGroups, next) {
+          var hasPublic = permissions.canThis(user.role, 'tickets:public')
+          var groupIds = userGroups.map(function (g) {
+            return g._id
+          })
+
+          if (!_.some(groupIds, ticket.group._id)) {
+            if (ticket.group.public && hasPublic) {
+              // Blank to bypass
+            } else {
+              winston.warn('User access ticket outside of group - UserId: ' + user._id)
+              return res.redirect('/tickets')
+            }
+          }
+
+          if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+
+          if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
+
+          content.data.ticket = ticket
+          content.data.ticket.priorityname = ticket.priority.name
+
+          return next()
+        }
+      ],
+      function (err) {
+        if (err) {
+          winston.warn(err)
+          return res.redirect('/tickets')
+        }
+
+        return res.render('subviews/singleticket', content)
       }
-    }
-
-    if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
-
-    if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
-
-    content.data.ticket = ticket
-    content.data.ticket.priorityname = ticket.priority.name
-
-    return res.render('subviews/singleticket', content)
+    )
   })
 }
 

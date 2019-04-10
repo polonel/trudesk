@@ -46,6 +46,7 @@ class MultiSelect extends React.Component {
         $select.append(`<option value='${i.value}'>${i.text}</option>`)
       })
 
+      $select.attr('disabled', false)
       $select.multiSelect('refresh')
 
       if (this.props.initialSelected) {
@@ -59,10 +60,8 @@ class MultiSelect extends React.Component {
       }
     }
 
-    if (prevProps.disabled !== this.props.disabled) {
-      $select.attr('disabled', this.props.disabled)
-      $select.multiSelect('refresh')
-    }
+    $select.attr('disabled', this.props.disabled)
+    $select.multiSelect('refresh')
   }
 
   getSelected () {
