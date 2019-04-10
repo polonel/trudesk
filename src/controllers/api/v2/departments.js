@@ -42,15 +42,10 @@ apiDepartments.create = function (req, res) {
 }
 
 apiDepartments.test = function (req, res) {
-  Department.getUserDepartments(req.user._id, function (err, departments) {
+  Department.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 
-    var ticketSchema = require('../../../models/ticket')
-    ticketSchema.getTicketsByDepartments(departments, {}, function (err, tickets) {
-      if (err) return apiUtils.sendApiError(res, 500, err.message)
-
-      return apiUtils.sendApiSuccess(res, { departments: departments, tickets: tickets })
-    })
+    return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
   })
 }
 

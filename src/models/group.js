@@ -112,6 +112,32 @@ groupSchema.statics.getGroupByName = function (name, callback) {
   return q.exec(callback)
 }
 
+groupSchema.statics.getWithObject = function (obj, callback) {
+  var limit = obj.limit ? Number(obj.limit) : 100
+  var page = obj.page ? Number(obj.page) : 0
+  var userId = obj.userId
+
+  if (userId) {
+    return this.model(COLLECTION)
+      .find({ members: userId })
+      .limit(limit)
+      .skip(page * limit)
+      .populate('members', '_id username fullname email role preferences image title')
+      .populate('sendMailTo', '_id username fullname email role preferences image title')
+      .sort('name')
+      .exec(callback)
+  }
+
+  return this.model(COLLECTION)
+    .find({})
+    .limit(limit)
+    .skip(page * limit)
+    .populate('members', '_id username fullname email role preferences image title')
+    .populate('sendMailTo', '_id username fullname email role preferences image title')
+    .sort('name')
+    .exec(callback)
+}
+
 groupSchema.statics.getAllGroups = function (callback) {
   var q = this.model(COLLECTION)
     .find({})

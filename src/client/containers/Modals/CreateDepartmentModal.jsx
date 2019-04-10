@@ -36,7 +36,7 @@ class CreateDepartmentModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchTeams()
-    this.props.fetchGroups()
+    this.props.fetchGroups({ type: 'all' })
 
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()

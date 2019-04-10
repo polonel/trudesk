@@ -434,7 +434,7 @@ define([
       })
 
       var groupHttpGet = $http
-        .get('/api/v1/groups')
+        .get('/api/v2/groups')
         .success(function (data) {
           _.each(data.groups, function (item) {
             $scope.groups.push(item)

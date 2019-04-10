@@ -131,7 +131,7 @@ api.accounts.create = payload => {
 api.accounts.getWithPage = payload => {
   const limit = payload && payload.limit ? payload.limit : 25
   const page = payload && payload.page ? payload.page : 0
-  const type = payload && payload.type ? payload.type : 'customers'
+  const type = payload && payload.type ? payload.type : 'all'
   let search = payload && payload.search ? payload.search : ''
   if (search) search = `&search=${search}`
 
@@ -156,8 +156,12 @@ api.accounts.enableAccount = ({ username }) => {
 }
 
 api.groups = {}
-api.groups.get = () => {
-  return axios.get('/api/v2/groups').then(res => {
+api.groups.get = payload => {
+  const limit = payload && payload.limit ? payload.limit : 25
+  const page = payload && payload.page ? payload.page : 0
+  const type = payload && payload.type ? `&type=${payload.type}` : ''
+
+  return axios.get(`/api/v2/groups?limit=${limit}&page=${page}${type}`).then(res => {
     return res.data
   })
 }

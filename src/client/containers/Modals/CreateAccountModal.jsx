@@ -19,6 +19,7 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 
 import { createAccount } from 'actions/accounts'
+import { fetchGroups, unloadGroups } from 'actions/groups'
 
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -39,6 +40,8 @@ class CreateAccountModal extends React.Component {
   selectedRole = ''
 
   componentDidMount () {
+    this.props.fetchGroups()
+
     helpers.UI.inputs()
     helpers.formvalidator()
   }
@@ -103,9 +106,12 @@ class CreateAccountModal extends React.Component {
     const roles = this.props.common.roles.map(role => {
       return { text: role.name, value: role._id }
     })
-    const groups = this.props.common.groups.map(group => {
-      return { text: group.name, value: group._id }
-    })
+    const groups = this.props.groups
+      .map(group => {
+        return { text: group.get('name'), value: group.get('_id') }
+      })
+      .toArray()
+
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
         <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
@@ -241,14 +247,18 @@ class CreateAccountModal extends React.Component {
 
 CreateAccountModal.propTypes = {
   common: PropTypes.object.isRequired,
-  createAccount: PropTypes.func.isRequired
+  groups: PropTypes.object.isRequired,
+  createAccount: PropTypes.func.isRequired,
+  fetchGroups: PropTypes.func.isRequired,
+  unloadGroups: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-  common: state.common
+  common: state.common,
+  groups: state.groupsState.groups
 })
 
 export default connect(
   mapStateToProps,
-  { createAccount }
+  { createAccount, fetchGroups, unloadGroups }
 )(CreateAccountModal)

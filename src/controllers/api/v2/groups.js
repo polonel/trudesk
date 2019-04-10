@@ -14,15 +14,36 @@
 
 var apiUtils = require('../apiUtils')
 var Group = require('../../../models/group')
+var Department = require('../../../models/department')
 
 var apiGroups = {}
 
 apiGroups.get = function (req, res) {
-  Group.find({}, function (err, groups) {
-    if (err) return apiUtils.sendApiError(res, 500, err.message)
+  var limit = Number(req.query.limit) || 10
+  var page = Number(req.query.page) || 0
+  var type = req.query.type || 'user'
 
-    return apiUtils.sendApiSuccess(res, { groups: groups })
-  })
+  if (type === 'all') {
+    Group.getWithObject({ limit: limit, page: page }, function (err, groups) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+      return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
+    })
+  } else {
+    if (req.user.role.isAdmin || req.user.role.isAgent) {
+      Department.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
+        if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+        return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
+      })
+    } else {
+      Group.getAllGroupsOfUser(req.user._id, function (err, groups) {
+        if (err) return apiUtils.sendApiError(res, 500, err.message)
+
+        return apiUtils.sendApiSuccess(res, { groups: groups, count: groups.length })
+      })
+    }
+  }
 }
 
 module.exports = apiGroups
