@@ -23,9 +23,10 @@ const initialState = {
 const reducer = handleActions(
   {
     [FETCH_GROUPS.SUCCESS]: (state, action) => {
+      const groups = fromJS(action.response.groups)
       return {
         ...state,
-        groups: fromJS(action.response.groups)
+        groups: groups.sortBy(group => group.get('name'))
       }
     },
 

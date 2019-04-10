@@ -34,6 +34,13 @@ accountsApi.get = function (req, res) {
   }
 
   switch (type) {
+    case 'all':
+      User.getUserWithObject(obj, function (err, accounts) {
+        if (err) return apiUtil.sendApiError(res, 500, err.message)
+
+        return apiUtil.sendApiSuccess(res, { accounts: accounts, count: accounts.length })
+      })
+      break
     case 'customers':
       User.getCustomers(obj, function (err, accounts) {
         if (err) return apiUtil.sendApiError(res, 500, err.message)

@@ -34,7 +34,7 @@ class EditTeamModal extends React.Component {
   @observable members = []
 
   componentDidMount () {
-    this.props.fetchAccounts()
+    this.props.fetchAccounts({ type: 'all' })
     this.name = this.props.team.name
 
     helpers.UI.inputs()

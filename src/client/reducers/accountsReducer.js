@@ -38,7 +38,7 @@ const reducer = handleActions(
       return {
         ...state,
         accounts: fromJS(arr),
-        type: action.payload.payload.type
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers'
       }
     },
 

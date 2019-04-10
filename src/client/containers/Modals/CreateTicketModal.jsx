@@ -21,6 +21,8 @@ import { head, orderBy } from 'lodash'
 import axios from 'axios'
 import Log from '../../logger'
 import { createTicket } from 'actions/tickets'
+import { fetchGroups } from 'actions/groups'
+
 import $ from 'jquery'
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
@@ -44,6 +46,7 @@ class CreateTicketModal extends React.Component {
   }
 
   componentDidMount () {
+    this.props.fetchGroups()
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
@@ -131,9 +134,12 @@ class CreateTicketModal extends React.Component {
 
   render () {
     const { viewdata } = this.props
-    const mappedGroups = this.props.viewdata.groups.map(grp => {
-      return { text: grp.name, value: grp._id }
-    })
+    const mappedGroups = this.props.groups
+      .map(grp => {
+        return { text: grp.get('name'), value: grp.get('_id') }
+      })
+      .toArray()
+
     const mappedTicketTypes = this.props.viewdata.ticketTypes.map(type => {
       return { text: type.name, value: type._id }
     })
@@ -262,14 +268,17 @@ class CreateTicketModal extends React.Component {
 
 CreateTicketModal.propTypes = {
   viewdata: PropTypes.object.isRequired,
-  createTicket: PropTypes.func.isRequired
+  groups: PropTypes.object.isRequired,
+  createTicket: PropTypes.func.isRequired,
+  fetchGroups: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-  viewdata: state.common
+  viewdata: state.common,
+  groups: state.groupsState.groups
 })
 
 export default connect(
   mapStateToProps,
-  { createTicket }
+  { createTicket, fetchGroups }
 )(CreateTicketModal)

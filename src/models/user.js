@@ -432,7 +432,7 @@ userSchema.statics.getUserWithObject = function (object, callback) {
     q.where({ fullname: new RegExp('^' + search.toLowerCase(), 'i') })
   }
 
-  q.exec(callback)
+  return q.exec(callback)
 }
 
 /**
