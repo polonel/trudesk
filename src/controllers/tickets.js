@@ -477,7 +477,9 @@ ticketsController.single = function (req, res) {
     async.waterfall(
       [
         function (next) {
-          if (!req.user.role.isAdmin && !req.user.role.isAgent) return next(null, ticket.group.members)
+          if (!req.user.role.isAdmin && !req.user.role.isAgent) {
+            return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
+          }
 
           departmentSchema.getUserDepartments(req.user._id, function (err, departments) {
             if (err) return next(err)
