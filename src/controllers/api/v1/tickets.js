@@ -222,6 +222,26 @@ apiTickets.get = function (req, res) {
   )
 }
 
+apiTickets.getByGroup = function (req, res) {
+  var groupId = req.params.id
+  if (!groupId) return res.status(400).json({ success: false, error: 'Invalid Group Id' })
+
+  var limit = req.query.limit ? Number(req.query.limit) : 50
+  var page = req.query.page ? Number(req.query.page) : 0
+
+  var obj = {
+    limit: limit,
+    page: page
+  }
+
+  var ticketSchema = require('../../../models/ticket')
+  ticketSchema.getTicketsWithObject([groupId], obj, function (err, tickets) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+
+    return res.json({ success: true, tickets: tickets, count: tickets.length })
+  })
+}
+
 /**
  * @api {get} /api/v1/tickets/search/?search={searchString} Get Tickets by Search String
  * @apiName search
