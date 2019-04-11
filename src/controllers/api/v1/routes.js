@@ -66,6 +66,13 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/tickets/count/topgroups', apiv1, apiCtrl.tickets.getTopTicketGroups)
   router.get('/api/v1/tickets/count/topgroups/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
   router.get('/api/v1/tickets/count/topgroups/:timespan/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
+  router.get(
+    '/api/v1/tickets/count/group/:id',
+    apiv1,
+    isAgentOrAdmin,
+    canUser('tickets:view'),
+    apiCtrl.tickets.getCountByGroup
+  )
   router.get('/api/v1/tickets/stats', apiv1, apiCtrl.tickets.getTicketStats)
   router.get('/api/v1/tickets/stats/group/:group', apiv1, apiCtrl.tickets.getTicketStatsForGroup)
   router.get('/api/v1/tickets/stats/user/:user', apiv1, apiCtrl.tickets.getTicketStatsForUser)

@@ -242,6 +242,48 @@ apiTickets.getByGroup = function (req, res) {
   })
 }
 
+apiTickets.getCountByGroup = function (req, res) {
+  var groupId = req.params.id
+  if (!groupId) return res.status(400).json({ success: false, error: 'Invalid Group Id' })
+  if (_.isUndefined(req.query.type) || _.isUndefined(req.query.value))
+    return res.status(400).json({ success: false, error: 'Invalid QueryString' })
+
+  var type = req.query.type
+  var value = req.query.value
+  // var limit = req.query.limit ? Number(req.query.limit) : -1
+  // var page = req.query.page ? Number(req.query.page) : 0
+
+  var ticketSchema = require('../../../models/ticket')
+
+  var obj = {
+    // limit: limit,
+    // page: page
+  }
+
+  switch (type.toLowerCase()) {
+    case 'status':
+      obj.status = [Number(value)]
+      ticketSchema.getCountWithObject([groupId], obj, function (err, count) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        return res.json({ success: true, count: count })
+      })
+      break
+    case 'tickettype':
+      obj.filter = {
+        types: [value]
+      }
+      ticketSchema.getCountWithObject([groupId], obj, function (err, count) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        return res.json({ success: true, count: count })
+      })
+      break
+    default:
+      return res.status(400).json({ success: false, error: 'Unsupported type query' })
+  }
+}
+
 /**
  * @api {get} /api/v1/tickets/search/?search={searchString} Get Tickets by Search String
  * @apiName search
