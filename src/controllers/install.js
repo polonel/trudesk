@@ -39,6 +39,9 @@ installController.mongotest = function (req, res) {
   var CONNECTION_URI =
     'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
+  if (data.port === '---')
+    CONNECTION_URI = 'mongodb+srv://' + data.username + ':' + dbPassword + '@' + data.host + '/' + data.database
+
   var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
   })
@@ -124,6 +127,7 @@ installController.install = function (req, res) {
 
   var dbPassword = encodeURIComponent(password)
   var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
+  if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
   async.waterfall(
     [
@@ -334,7 +338,8 @@ installController.install = function (req, res) {
             port: port,
             username: username,
             password: password,
-            database: database
+            database: database,
+            shard: port === '---'
           },
           tokens: {
             secret: chance.hash() + chance.md5(),

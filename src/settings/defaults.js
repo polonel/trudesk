@@ -220,8 +220,12 @@ function createDirectories (callback) {
 function downloadWin32MongoDBTools (callback) {
   var http = require('http')
   var os = require('os')
+  var semver = require('semver')
+  var dbVersion = require('../database').db.version || '3.6.9'
+  var fileVersion = semver(dbVersion).major + '.' + semver(dbVersion).minor
+
   if (os.platform() === 'win32') {
-    var filename = 'mongodb-tools.3.6.9-win32x64.zip'
+    var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
     var savePath = path.join(__dirname, '../backup/bin/win32/')
     fs.ensureDirSync(savePath)
     if (
