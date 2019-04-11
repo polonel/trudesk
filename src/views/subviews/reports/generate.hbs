@@ -22,6 +22,7 @@
                                 <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_tags');">Tickets by Tags</a></li>
                                 <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_types');">Tickets by Types</a></li>
                                 <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_users');">Tickets by Users</a></li>
+                                <li style="margin-bottom: 5px;"><a href="#" class="no-ajaxy" ng-click="selectReport($event, 'tickets_by_assignees');">Tickets by Assignees</a></li>
                             </ul>
                         </div>
                     </div>
@@ -47,6 +48,9 @@
                     </div>
                     <div id="report_tickets_by_users" class="hide">
                         {{> generate_partials/report_TicketsByUsers }}
+                    </div>
+                    <div id="report_tickets_by_assignees" class="hide">
+                        {{> generate_partials/report_TicketsByAssignees }}
                     </div>
                 </div>
             </div>

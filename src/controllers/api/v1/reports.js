@@ -482,6 +482,55 @@ apiReports.generate.ticketsByUser = function (req, res) {
   )
 }
 
+apiReports.generate.ticketsByAssignee = function (req, res) {
+  var postData = req.body
+  async.waterfall(
+    [
+      function (done) {
+        if (_.includes(postData.groups, '-1')) {
+          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
+            return done(null, grps)
+          })
+        } else {
+          return done(null, postData.groups)
+        }
+      },
+      function (grps, done) {
+        ticketSchema.getTicketsWithObject(
+          grps,
+          {
+            limit: -1,
+            page: 0,
+            filter: {
+              date: {
+                start: postData.startDate,
+                end: postData.endDate
+              },
+              assignee: postData.assignees
+            }
+          },
+          function (err, tickets) {
+            if (err) return done(err)
+
+            var input = processReportData(tickets)
+
+            tickets = null
+
+            return done(null, input)
+          }
+        )
+      }
+    ],
+    function (err, input) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      return processResponse(res, input)
+    }
+  )
+}
+
 function processReportData (tickets) {
   var input = []
   for (var i = 0; i < tickets.length; i++) {

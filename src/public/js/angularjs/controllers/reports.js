@@ -90,6 +90,9 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formval
           case 'tickets_by_users':
             changeView('#report_tickets_by_users')
             break
+          case 'tickets_by_assignees':
+            changeView('#report_tickets_by_assignees')
+            break
           default:
             break
         }
@@ -265,6 +268,33 @@ define(['angular', 'underscore', 'jquery', 'moment', 'modules/helpers', 'formval
               .then(
                 function successCallback (response) {
                   downloadReport(response, 'report_tickets_by_users__' + data['filterDate_Start'])
+                },
+                function errorCallback (response) {
+                  $log.log(response.statusText)
+                }
+              )
+              .then(function () {
+                hideLoader()
+              })
+            break
+          case 'assignees':
+            showLoader()
+            var assignees = form.find('select#assignees').val()
+            groups = form.find('select#groups').val()
+            $http({
+              method: 'POST',
+              url: '/api/v1/reports/generate/tickets_by_assignee',
+              data: {
+                startDate: startDate,
+                endDate: endDate,
+                groups: groups,
+                assignees: assignees
+              },
+              headers: { 'Content-Type': 'application/json' }
+            })
+              .then(
+                function successCallback (response) {
+                  downloadReport(response, 'report_tickets_by_assignee__' + data['filterDate_Start'])
                 },
                 function errorCallback (response) {
                   $log.log(response.statusText)
