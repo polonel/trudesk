@@ -716,6 +716,7 @@ apiTickets.update = function (req, res) {
     var ticketModel = require('../../../models/ticket')
     ticketModel.getTicketById(oId, function (err, ticket) {
       if (err) return res.status(400).json({ success: false, error: err.message })
+      if (!ticket) return res.status(400).json({ success: false, error: 'Unable to locate ticket. Aborting...' })
       async.parallel(
         [
           function (cb) {
