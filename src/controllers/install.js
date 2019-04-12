@@ -137,6 +137,16 @@ installController.install = function (req, res) {
         }, conuri)
       },
       function (next) {
+        var SettingsSchema = require('../models/setting')
+
+        var s = new SettingsSchema({
+          name: 'gen:version',
+          value: require('../../package.json').version
+        })
+
+        return s.save(next)
+      },
+      function (next) {
         var Counter = new Counters({
           _id: 'tickets',
           next: 1001

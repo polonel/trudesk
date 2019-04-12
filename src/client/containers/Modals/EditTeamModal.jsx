@@ -31,7 +31,6 @@ import $ from 'jquery'
 @observer
 class EditTeamModal extends React.Component {
   @observable name = ''
-  @observable members = []
 
   componentDidMount () {
     this.props.fetchAccounts({ type: 'all' })

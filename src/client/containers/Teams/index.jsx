@@ -139,64 +139,7 @@ class TeamsContainer extends React.Component {
         </TableRow>
       )
     })
-    const items = this.props.teamsState.teams.map(team => {
-      let actionMenu = [<DropdownItem key={0} text={'Edit'} onClick={e => this.onEditTeamClick(e, team.toJS())} />]
-      if (helpers.canUser('teams:delete', true))
-        actionMenu.push(
-          <DropdownItem
-            key={1}
-            text={'Delete'}
-            extraClass={'uk-text-danger'}
-            onClick={e => this.onDeleteTeamClick(e, team.get('_id'))}
-          />
-        )
-      return (
-        <GridItem key={team.get('_id')} width={'1-4'} xLargeWidth={'1-5'} extraClass={'mb-25'}>
-          <TruCard
-            menu={actionMenu}
-            header={<h2 className={'p-15 nomargin font-light uk-text-left'}>{team.get('name')}</h2>}
-            content={
-              <div>
-                <h5 style={{ fontWeight: 500 }}>Team Members</h5>
-                <div className={'uk-clearfix'}>
-                  {!team.get('members') ||
-                    (team.get('members').size < 1 && (
-                      <div>
-                        <h5 style={{ margin: '0 0 15px 0' }}>No Members</h5>
-                      </div>
-                    ))}
-                  {team.get('members') &&
-                    team.get('members').size > 0 &&
-                    team.get('members').map(user => {
-                      const profilePic = user.get('image') || 'defaultProfile.jpg'
-                      return (
-                        <div
-                          key={user.get('_id')}
-                          className={'uk-float-left uk-position-relative mb-10'}
-                          data-uk-tooltip={'{pos: "bottom"}'}
-                          title={user.get('fullname')}
-                        >
-                          <img
-                            style={{ width: 25, height: 25, marginRight: 5 }}
-                            className={'round'}
-                            src={`/uploads/users/${profilePic}`}
-                            alt={user.get('fullname')}
-                          />
-                          <span
-                            data-user-status-id={user.get('_id')}
-                            className='user-offline uk-border-circle'
-                            style={{ width: 13, height: 13 }}
-                          />
-                        </div>
-                      )
-                    })}
-                </div>
-              </div>
-            }
-          />
-        </GridItem>
-      )
-    })
+
     return (
       <div>
         <PageTitle

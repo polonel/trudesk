@@ -20,6 +20,8 @@ import { observable } from 'mobx'
 
 import { createAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
+import { fetchTeams, unloadTeams } from 'actions/teams'
+import { fetchRoles } from 'actions/common'
 
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -38,9 +40,12 @@ class CreateAccountModal extends React.Component {
   @observable email = ''
   @observable title = ''
   selectedRole = ''
+  @observable isAgentRole = false
 
   componentDidMount () {
-    this.props.fetchGroups()
+    this.props.fetchGroups({ type: 'all' })
+    this.props.fetchTeams()
+    this.props.fetchRoles()
 
     helpers.UI.inputs()
     helpers.formvalidator()
@@ -56,6 +61,12 @@ class CreateAccountModal extends React.Component {
 
   onRoleSelectChange (e) {
     this.selectedRole = e.target.value
+
+    const roleObject = this.props.roles.find(role => {
+      return role.get('_id') === this.selectedRole
+    })
+
+    this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
 
     if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
     else this.roleSelectErrorMessage.classList.add('hide')
@@ -103,12 +114,21 @@ class CreateAccountModal extends React.Component {
   }
 
   render () {
-    const roles = this.props.common.roles.map(role => {
-      return { text: role.name, value: role._id }
-    })
+    const roles = this.props.roles
+      .map(role => {
+        return { text: role.get('name'), value: role.get('_id') }
+      })
+      .toArray()
+
     const groups = this.props.groups
       .map(group => {
         return { text: group.get('name'), value: group.get('_id') }
+      })
+      .toArray()
+
+    const teams = this.props.teams
+      .map(team => {
+        return { text: team.get('name'), value: team.get('_id') }
       })
       .toArray()
 
@@ -219,21 +239,33 @@ class CreateAccountModal extends React.Component {
                 Please select a role for this user
               </span>
             </div>
-            <div className='uk-margin-medium-bottom'>
-              <label className='uk-form-label'>Groups</label>
-              <MultiSelect
-                items={groups}
-                onChange={e => this.onGroupSelectChange(e)}
-                ref={r => (this.groupSelect = r)}
-              />
-              <span
-                className={'hide help-block'}
-                style={{ display: 'inline-block', marginTop: '3px', fontWeight: 'bold', color: '#d85030' }}
-                ref={r => (this.groupSelectErrorMessage = r)}
-              >
-                Please select a group for this user.
-              </span>
-            </div>
+            {!this.isAgentRole && (
+              <div>
+                <div className='uk-margin-medium-bottom'>
+                  <label className='uk-form-label'>Groups</label>
+                  <MultiSelect
+                    items={groups}
+                    onChange={e => this.onGroupSelectChange(e)}
+                    ref={r => (this.groupSelect = r)}
+                  />
+                  <span
+                    className={'hide help-block'}
+                    style={{ display: 'inline-block', marginTop: '3px', fontWeight: 'bold', color: '#d85030' }}
+                    ref={r => (this.groupSelectErrorMessage = r)}
+                  >
+                    Please select a group for this user.
+                  </span>
+                </div>
+              </div>
+            )}
+            {this.isAgentRole && (
+              <div>
+                <div className='uk-margin-medium-bottom'>
+                  <label className='uk-form-label'>Teams</label>
+                  <MultiSelect items={teams} onChange={() => {}} ref={r => (this.teamSelect = r)} />
+                </div>
+              </div>
+            )}
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
@@ -248,17 +280,24 @@ class CreateAccountModal extends React.Component {
 CreateAccountModal.propTypes = {
   common: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
+  teams: PropTypes.object.isRequired,
+  roles: PropTypes.object.isRequired,
   createAccount: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
-  unloadGroups: PropTypes.func.isRequired
+  unloadGroups: PropTypes.func.isRequired,
+  fetchTeams: PropTypes.func.isRequired,
+  unloadTeams: PropTypes.func.isRequired,
+  fetchRoles: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
+  roles: state.shared.roles,
   common: state.common,
-  groups: state.groupsState.groups
+  groups: state.groupsState.groups,
+  teams: state.teamsState.teams
 })
 
 export default connect(
   mapStateToProps,
-  { createAccount, fetchGroups, unloadGroups }
+  { createAccount, fetchGroups, unloadGroups, fetchTeams, unloadTeams, fetchRoles }
 )(CreateAccountModal)

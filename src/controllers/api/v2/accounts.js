@@ -22,6 +22,10 @@ var Department = require('../../../models/department')
 
 var accountsApi = {}
 
+accountsApi.create = function (req, res) {
+  var postData = req.body
+}
+
 accountsApi.get = function (req, res) {
   var query = req.query
   var type = query.type || 'customers'

@@ -50,7 +50,7 @@ class EditAccountModal extends React.Component {
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
 
-    this.props.fetchGroups()
+    this.props.fetchGroups({ type: 'all' })
     this.props.fetchTeams()
     this.props.fetchDepartments()
   }

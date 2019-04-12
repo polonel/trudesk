@@ -566,15 +566,6 @@ function addedDefaultPrioritesToTicketTypes (callback) {
                 prioritiesToAdd = _.map(priorities, '_id')
               }
 
-              // } else {
-              //   _.each(priorities, function(priority) {
-              //       if (!_.find(type.priorities, {'_id': priority._id})) {
-              //           winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
-              //           prioritiesToAdd.push(priority._id);
-              //       }
-              //   });
-              // }
-
               if (prioritiesToAdd.length < 1) {
                 return done()
               }
@@ -665,7 +656,8 @@ settingsDefaults.init = function (callback) {
         return mailTemplates(done)
       }
     ],
-    function () {
+    function (err) {
+      if (err) winston.debug(err)
       if (_.isFunction(callback)) return callback()
     }
   )
