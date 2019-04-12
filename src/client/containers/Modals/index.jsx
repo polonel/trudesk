@@ -30,6 +30,8 @@ import DeleteRoleModal from './DeleteRoleModal'
 import ViewAllNotificationsModal from './ViewAllNotificationsModal'
 import CreateAccountModal from './CreateAccountModal'
 import EditAccountModal from './EditAccountModal'
+import CreateGroupModal from './CreateGroupModal'
+import EditGroupModal from './EditGroupModal'
 import CreateTeamModal from './CreateTeamModal'
 import EditTeamModal from './EditTeamModal'
 import CreateDepartmentModal from './CreateDepartmentModal'
@@ -49,6 +51,8 @@ const MODAL_COMPONENTS = {
   VIEW_ALL_NOTIFICATIONS: ViewAllNotificationsModal,
   CREATE_ACCOUNT: CreateAccountModal,
   EDIT_ACCOUNT: EditAccountModal,
+  CREATE_GROUP: CreateGroupModal,
+  EDIT_GROUP: EditGroupModal,
   CREATE_TEAM: CreateTeamModal,
   EDIT_TEAM: EditTeamModal,
   CREATE_DEPARTMENT: CreateDepartmentModal,

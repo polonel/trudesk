@@ -23,13 +23,9 @@ const initialState = {
 const reducer = handleActions(
   {
     [FETCH_TEAMS.SUCCESS]: (state, action) => {
-      let arr = state.teams.toArray()
-      action.payload.response.teams.map(i => {
-        arr.push(i)
-      })
       return {
         ...state,
-        teams: fromJS(arr)
+        teams: fromJS(action.payload.response.teams)
       }
     },
 

@@ -1505,7 +1505,8 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
   async.waterfall(
     [
       function (callback) {
-        ticketModel.getTickets([groupId], function (err, tickets) {
+        var obj = { limit: 10000, page: 0 }
+        ticketModel.getTicketsWithObject([groupId], obj, function (err, tickets) {
           if (err) return callback(err)
           parseTicketStats(req.user.role, tickets, function (data) {
             tags = data.tags

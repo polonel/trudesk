@@ -156,12 +156,27 @@ api.accounts.enableAccount = ({ username }) => {
 }
 
 api.groups = {}
+api.groups.create = payload => {
+  return axios.post('/api/v2/groups', payload).then(res => {
+    return res.data
+  })
+}
 api.groups.get = payload => {
   const limit = payload && payload.limit ? payload.limit : 25
   const page = payload && payload.page ? payload.page : 0
   const type = payload && payload.type ? `&type=${payload.type}` : ''
 
   return axios.get(`/api/v2/groups?limit=${limit}&page=${page}${type}`).then(res => {
+    return res.data
+  })
+}
+api.groups.update = payload => {
+  return axios.put(`/api/v2/groups/${payload._id}`, payload).then(res => {
+    return res.data
+  })
+}
+api.groups.delete = ({ _id }) => {
+  return axios.delete(`/api/v2/groups/${_id}`).then(res => {
     return res.data
   })
 }

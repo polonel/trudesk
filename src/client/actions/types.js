@@ -53,6 +53,9 @@ export const UNLOAD_ACCOUNTS = defineAction('UNLOAD_ACCOUNTS', [SUCCESS])
 
 // Groups
 export const FETCH_GROUPS = defineAction('FETCH_GROUPS', [PENDING, SUCCESS, ERROR])
+export const CREATE_GROUP = defineAction('CREATE_GROUP', [SUCCESS, PENDING, ERROR])
+export const UPDATE_GROUP = defineAction('UPDATE_GROUP', [SUCCESS, PENDING, ERROR])
+export const DELETE_GROUP = defineAction('DELETE_GROUP', [SUCCESS, PENDING, ERROR])
 export const UNLOAD_GROUPS = defineAction('UNLOAD_GROUPS', [SUCCESS])
 
 // Teams

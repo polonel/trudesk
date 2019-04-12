@@ -234,6 +234,8 @@ define('modules/ajaxify', [
               window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
             if (document.getElementById('accounts-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('accounts-container'))
+            if (document.getElementById('groups-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('groups-container'))
             if (document.getElementById('teams-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('teams-container'))
             if (document.getElementById('departments-container'))

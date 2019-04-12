@@ -19,6 +19,7 @@ import React from 'react'
 import TicketsContainer from 'containers/TicketsContainer'
 import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
+import GroupsContainer from 'containers/Groups'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 
@@ -56,6 +57,16 @@ export default function (store) {
     )
 
     ReactDOM.render(AccountsContainerWithProvider, document.getElementById('accounts-container'))
+  }
+
+  if (document.getElementById('groups-container')) {
+    const GroupsContainerWithProvider = (
+      <Provider store={store}>
+        <GroupsContainer />
+      </Provider>
+    )
+
+    ReactDOM.render(GroupsContainerWithProvider, document.getElementById('groups-container'))
   }
 
   if (document.getElementById('teams-container')) {

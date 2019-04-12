@@ -23,6 +23,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Accounts
   router.get('/api/v2/accounts', middleware.api, apiv2.accounts.get)
+  router.get('/api/v2/accounts', apiv2Auth, apiv2.accounts.create)
   router.put('/api/v2/accounts/:username', middleware.api, apiv2.accounts.update)
 
   // Tickets
@@ -34,6 +35,9 @@ module.exports = function (middleware, router, controllers) {
 
   // Groups
   router.get('/api/v2/groups', apiv2Auth, apiv2.groups.get)
+  router.post('/api/v2/groups', apiv2Auth, apiv2.groups.create)
+  router.put('/api/v2/groups/:id', apiv2Auth, apiv2.groups.update)
+  router.delete('/api/v2/groups/:id', apiv2Auth, apiv2.groups.delete)
 
   // Teams
   router.get('/api/v2/teams', apiv2Auth, apiv2.teams.get)

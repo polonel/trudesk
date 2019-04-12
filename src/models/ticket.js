@@ -1037,6 +1037,7 @@ ticketSchema.statics.getTicketsByRequester = function (userId, callback) {
   var q = self
     .model(COLLECTION)
     .find({ owner: userId, deleted: false })
+    .limit(10000)
     .populate(
       'owner assignee comments.owner notes.owner subscribers history.owner',
       'username fullname email role image title'

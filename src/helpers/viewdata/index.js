@@ -491,27 +491,39 @@ viewController.loggedInAccount = function (request, callback) {
 
 viewController.getGroups = function (request, callback) {
   var groupSchema = require('../../models/group')
-  groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
-    if (err) {
-      winston.debug(err)
-      return callback(err)
-    }
+  var Department = require('../../models/department')
+  if (request.user.role.isAdmin || request.user.role.isAgent) {
+    Department.getDepartmentGroupsOfUser(request.user._id, function (err, groups) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-    var p = require('../../permissions')
-    if (p.canThis(request.user.role, 'ticket:public')) {
-      groupSchema.getAllPublicGroups(function (err, groups) {
-        if (err) {
-          winston.debug(err)
-          return callback(err)
-        }
+      return callback(null, groups)
+    })
+  } else {
+    groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-        data = data.concat(groups)
+      var p = require('../../permissions')
+      if (p.canThis(request.user.role, 'ticket:public')) {
+        groupSchema.getAllPublicGroups(function (err, groups) {
+          if (err) {
+            winston.debug(err)
+            return callback(err)
+          }
+
+          data = data.concat(groups)
+          return callback(null, data)
+        })
+      } else {
         return callback(null, data)
-      })
-    } else {
-      return callback(null, data)
-    }
-  })
+      }
+    })
+  }
 }
 
 viewController.getTypes = function (request, callback) {

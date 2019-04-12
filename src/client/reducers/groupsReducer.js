@@ -14,7 +14,7 @@
 
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
-import { FETCH_GROUPS, UNLOAD_GROUPS } from 'actions/types'
+import { CREATE_GROUP, DELETE_GROUP, FETCH_GROUPS, UNLOAD_GROUPS, UPDATE_GROUP } from 'actions/types'
 
 const initialState = {
   groups: List([])
@@ -27,6 +27,37 @@ const reducer = handleActions(
       return {
         ...state,
         groups: groups.sortBy(group => group.get('name'))
+      }
+    },
+
+    [CREATE_GROUP.SUCCESS]: (state, action) => {
+      const resGroup = action.response.group
+      const withInsertedGroup = state.groups.push(fromJS(resGroup))
+
+      return {
+        ...state,
+        groups: withInsertedGroup.sortBy(team => team.get('name'))
+      }
+    },
+
+    [UPDATE_GROUP.SUCCESS]: (state, action) => {
+      const resGroup = action.response.group
+      const groupIndex = state.groups.findIndex(g => {
+        return g.get('_id') === resGroup._id
+      })
+      return {
+        ...state,
+        groups: state.groups.set(groupIndex, fromJS(resGroup))
+      }
+    },
+
+    [DELETE_GROUP.SUCCESS]: (state, action) => {
+      const idx = state.groups.findIndex(g => {
+        return g.get('_id') === action.payload._id
+      })
+      return {
+        ...state,
+        groups: state.groups.delete(idx)
       }
     },
 
