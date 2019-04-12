@@ -31,7 +31,8 @@ import {
   FETCH_TICKETS,
   UNLOAD_TICKETS,
   TICKET_UPDATED,
-  DELETE_TICKET
+  DELETE_TICKET,
+  TICKET_EVENT
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
@@ -92,6 +93,15 @@ function * ticketUpdated ({ payload }) {
   try {
     const sessionUser = yield select(getSessionUser)
     yield put({ type: TICKET_UPDATED.SUCCESS, payload, sessionUser })
+  } catch (error) {
+    Log.error(error)
+  }
+}
+
+function * ticketEvent ({ payload }) {
+  try {
+    const sessionUser = yield select(getSessionUser)
+    yield put({ type: TICKET_EVENT.SUCCESS, payload, sessionUser })
   } catch (error) {
     Log.error(error)
   }
@@ -200,6 +210,7 @@ export default function * watcher () {
   yield takeEvery(DELETE_TICKET.ACTION, deleteTicket)
   yield takeLatest(UNLOAD_TICKETS.ACTION, unloadThunk)
   yield takeEvery(TICKET_UPDATED.ACTION, ticketUpdated)
+  yield takeEvery(TICKET_EVENT.ACTION, ticketEvent)
   yield takeLatest(CREATE_TICKET_TYPE.ACTION, createTicketType)
   yield takeLatest(DELETE_TICKET_TYPE.ACTION, deleteTicketType)
   yield takeLatest(CREATE_PRIORITY.ACTION, createPriority)

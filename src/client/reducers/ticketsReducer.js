@@ -15,7 +15,14 @@
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import isUndefined from 'lodash/isUndefined'
-import { CREATE_TICKET, FETCH_TICKETS, TICKET_UPDATED, UNLOAD_TICKETS, DELETE_TICKET } from 'actions/types'
+import {
+  CREATE_TICKET,
+  FETCH_TICKETS,
+  TICKET_UPDATED,
+  UNLOAD_TICKETS,
+  DELETE_TICKET,
+  TICKET_EVENT
+} from 'actions/types'
 
 const initialState = {
   tickets: List([]),
@@ -103,6 +110,26 @@ const reducer = handleActions(
       return {
         ...state,
         tickets: state.tickets.delete(idx)
+      }
+    },
+
+    [TICKET_EVENT.SUCCESS]: (state, action) => {
+      const type = action.payload.type
+      switch (type) {
+        case 'deleted': {
+          const id = action.payload.data
+          const idx = state.tickets.findIndex(ticket => {
+            return ticket.get('_id') === id
+          })
+          return {
+            ...state,
+            tickets: state.tickets.delete(idx)
+          }
+        }
+        default:
+          return {
+            ...state
+          }
       }
     },
 

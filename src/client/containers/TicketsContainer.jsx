@@ -19,7 +19,7 @@ import { each, without, uniq } from 'lodash'
 
 import Log from '../logger'
 import axios from 'axios'
-import { fetchTickets, deleteTicket, unloadTickets, ticketUpdated } from 'actions/tickets'
+import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
 import { showModal } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
@@ -48,9 +48,11 @@ class TicketsContainer extends React.Component {
     super(props)
 
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
+    this.onTicketDeleted = this.onTicketDeleted.bind(this)
   }
   componentDidMount () {
     socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
+    socket.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
 
     this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view })
   }
@@ -85,10 +87,15 @@ class TicketsContainer extends React.Component {
     this.timeline = null
     this.props.unloadTickets()
     socket.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
+    socket.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
   }
 
   onTicketUpdated (data) {
     this.props.ticketUpdated(data)
+  }
+
+  onTicketDeleted (id) {
+    this.props.ticketEvent({ type: 'deleted', data: id })
   }
 
   onTicketCheckChanged (e, id) {
@@ -341,6 +348,7 @@ TicketsContainer.propTypes = {
   loading: PropTypes.bool.isRequired,
   fetchTickets: PropTypes.func.isRequired,
   deleteTicket: PropTypes.func.isRequired,
+  ticketEvent: PropTypes.func.isRequired,
   unloadTickets: PropTypes.func.isRequired,
   ticketUpdated: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
@@ -361,5 +369,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchTickets, deleteTicket, unloadTickets, ticketUpdated, showModal }
+  { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated, showModal }
 )(TicketsContainer)
