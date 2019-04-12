@@ -19,7 +19,7 @@ import { each, without, uniq } from 'lodash'
 
 import Log from '../logger'
 import axios from 'axios'
-import { fetchTickets, unloadTickets, ticketUpdated } from 'actions/tickets'
+import { fetchTickets, deleteTicket, unloadTickets, ticketUpdated } from 'actions/tickets'
 import { showModal } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
@@ -133,6 +133,12 @@ class TicketsContainer extends React.Component {
     })
   }
 
+  onDeleteClicked () {
+    each(this.selectedTickets, id => {
+      this.props.deleteTicket({ id })
+    })
+  }
+
   onSearchKeypress (e) {
     e.persist()
     if (e.charCode === 13) {
@@ -186,7 +192,7 @@ class TicketsContainer extends React.Component {
                   <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
                   <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
                   <DropdownSeparator />
-                  <DropdownItem text={'Delete'} extraClass={'text-danger'} />
+                  <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
                 </Dropdown>
               </DropdownTrigger>
               <div className={'uk-float-right'}>
@@ -334,6 +340,7 @@ TicketsContainer.propTypes = {
   totalCount: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
   fetchTickets: PropTypes.func.isRequired,
+  deleteTicket: PropTypes.func.isRequired,
   unloadTickets: PropTypes.func.isRequired,
   ticketUpdated: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
@@ -354,5 +361,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchTickets, unloadTickets, ticketUpdated, showModal }
+  { fetchTickets, deleteTicket, unloadTickets, ticketUpdated, showModal }
 )(TicketsContainer)

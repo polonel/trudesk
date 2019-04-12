@@ -30,7 +30,8 @@ import {
   CREATE_TICKET,
   FETCH_TICKETS,
   UNLOAD_TICKETS,
-  TICKET_UPDATED
+  TICKET_UPDATED,
+  DELETE_TICKET
 } from 'actions/types'
 
 import helpers from 'lib/helpers'
@@ -56,13 +57,26 @@ function * fetchTickets ({ payload }) {
 function * createTicket ({ payload }) {
   try {
     const response = yield call(api.tickets.create, payload)
-    yield put({ type: CREATE_TICKET.SUCCESS, response })
+    const sessionUser = yield select(getSessionUser)
+    yield put({ type: CREATE_TICKET.SUCCESS, response, sessionUser })
     yield put({ type: HIDE_MODAL.ACTION })
   } catch (error) {
     const errorText = error.response.data.error
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response)
     yield put({ type: CREATE_TICKET.ERROR, error })
+  }
+}
+
+function * deleteTicket ({ payload }) {
+  try {
+    const response = yield call(api.tickets.delete, payload)
+    yield put({ type: DELETE_TICKET.SUCCESS, payload, response })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    yield put({ type: DELETE_TICKET.ERROR, error })
+    Log.error(errorText, error)
   }
 }
 
@@ -183,6 +197,7 @@ function * createTag ({ payload }) {
 export default function * watcher () {
   yield takeLatest(FETCH_TICKETS.ACTION, fetchTickets)
   yield takeLatest(CREATE_TICKET.ACTION, createTicket)
+  yield takeEvery(DELETE_TICKET.ACTION, deleteTicket)
   yield takeLatest(UNLOAD_TICKETS.ACTION, unloadThunk)
   yield takeEvery(TICKET_UPDATED.ACTION, ticketUpdated)
   yield takeLatest(CREATE_TICKET_TYPE.ACTION, createTicketType)

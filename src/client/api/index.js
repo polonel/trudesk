@@ -38,6 +38,12 @@ api.tickets.create = payload => {
   })
 }
 
+api.tickets.delete = ({ id }) => {
+  return axios.delete(`/api/v1/tickets/${id}`).then(res => {
+    return res.data
+  })
+}
+
 api.tickets.renameTicketType = (id, name) => {
   return axios.put('/api/v1/tickets/types/' + id, { name }).then(res => {
     return res.data

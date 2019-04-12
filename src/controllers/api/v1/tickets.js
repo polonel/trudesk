@@ -310,13 +310,16 @@ apiTickets.search = function (req, res) {
 
   var ticketModel = require('../../../models/ticket')
   var groupModel = require('../../../models/group')
+  var departmentModel = require('../../../models/department')
 
   async.waterfall(
     [
       function (callback) {
-        groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
-          callback(err, grps)
-        })
+        if (req.user.role.isAdmin || req.user.role.isAgent) {
+          return departmentModel.getDepartmentGroupsOfUser(req.user._id, callback)
+        } else {
+          return groupModel.getAllGroupsOfUserNoPopulate(req.user._id, callback)
+        }
       },
       function (grps, callback) {
         if (permissions.canThis(req.user.role, 'tickets:public')) {
@@ -443,14 +446,23 @@ apiTickets.create = function (req, res) {
       return res.status(400).json(response)
     }
 
-    emitter.emit('ticket:created', {
-      hostname: req.headers.host,
-      socketId: socketId,
-      ticket: t
-    })
+    t.populate('group owner', function (err, tt) {
+      if (err) {
+        response.success = false
+        response.error = err
+        winston.debug(response)
+        return res.status(400).json(response)
+      }
 
-    response.ticket = t
-    res.json(response)
+      emitter.emit('ticket:created', {
+        hostname: req.headers.host,
+        socketId: socketId,
+        ticket: tt
+      })
+
+      response.ticket = tt
+      res.json(response)
+    })
   })
 }
 

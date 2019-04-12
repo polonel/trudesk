@@ -31,6 +31,7 @@ export const NAV_CHANGE = defineAction('NAV_CHANGE')
 // Tickets
 export const FETCH_TICKETS = defineAction('FETCH_TICKETS', [SUCCESS, PENDING, ERROR])
 export const CREATE_TICKET = defineAction('CREATE_TICKET', [PENDING, SUCCESS, ERROR])
+export const DELETE_TICKET = defineAction('DELETE_TICKET', [SUCCESS, PENDING, ERROR])
 export const UNLOAD_TICKETS = defineAction('UNLOAD_TICKETS', [SUCCESS])
 export const TICKET_UPDATED = defineAction('TICKET_UPDATED', [SUCCESS])
 export const CREATE_TICKET_TYPE = defineAction('CREATE_TICKET_TYPE', [SUCCESS, ERROR])

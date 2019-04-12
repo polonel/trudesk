@@ -26,12 +26,14 @@ import {
   CREATE_TICKET,
   FETCH_TICKETS,
   UNLOAD_TICKETS,
-  TICKET_UPDATED
+  TICKET_UPDATED,
+  DELETE_TICKET
 } from 'actions/types'
 
 export const fetchTickets = createAction(FETCH_TICKETS.ACTION)
 export const createTicket = createAction(CREATE_TICKET.ACTION)
 export const ticketUpdated = createAction(TICKET_UPDATED.ACTION)
+export const deleteTicket = createAction(DELETE_TICKET.ACTION)
 export const unloadTickets = createAction(UNLOAD_TICKETS.ACTION, payload => payload, () => ({ thunk: true }))
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const renameTicketType = createAction(RENAME_TICKET_TYPE.ACTION, input => ({ name: input.name }))

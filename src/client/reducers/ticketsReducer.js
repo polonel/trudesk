@@ -15,7 +15,7 @@
 import { fromJS, List } from 'immutable'
 import { handleActions } from 'redux-actions'
 import isUndefined from 'lodash/isUndefined'
-import { FETCH_TICKETS, TICKET_UPDATED, UNLOAD_TICKETS } from 'actions/types'
+import { CREATE_TICKET, FETCH_TICKETS, TICKET_UPDATED, UNLOAD_TICKETS, DELETE_TICKET } from 'actions/types'
 
 const initialState = {
   tickets: List([]),
@@ -73,6 +73,36 @@ const reducer = handleActions(
       return {
         ...state,
         loading: false
+      }
+    },
+
+    [CREATE_TICKET.SUCCESS]: (state, action) => {
+      const ticket = action.response.ticket
+      const inView = hasInView(
+        state.viewType,
+        ticket.status,
+        ticket.assignee ? ticket.assignee._id : undefined,
+        action.sessionUser._id
+      )
+
+      if (!inView) return { ...state }
+
+      const withTicket = state.tickets.insert(0, fromJS(ticket))
+
+      return {
+        ...state,
+        tickets: withTicket
+      }
+    },
+
+    [DELETE_TICKET.SUCCESS]: (state, action) => {
+      const idx = state.tickets.findIndex(ticket => {
+        return ticket.get('_id') === action.payload.id
+      })
+
+      return {
+        ...state,
+        tickets: state.tickets.delete(idx)
       }
     },
 
