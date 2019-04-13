@@ -13,6 +13,7 @@
  */
 
 var apiUtils = require('../apiUtils')
+var Ticket = require('../../../models/ticket')
 var Group = require('../../../models/group')
 var Department = require('../../../models/department')
 
@@ -90,11 +91,16 @@ apiGroups.delete = function (req, res) {
   var id = req.params.id
   if (!id) return apiUtils.sendApiError_InvalidPostData(res)
 
-  Group.deleteOne({ _id: id }, function (err, success) {
+  Ticket.countDocuments({ group: { $in: [id] } }, function (err, tickets) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
-    if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete group. Contact your administrator.')
+    if (tickets > 0) return apiUtils.sendApiError(res, 400, 'Unable to delete group with tickets.')
 
-    return apiUtils.sendApiSuccess(res, { _id: id })
+    Group.deleteOne({ _id: id }, function (err, success) {
+      if (err) return apiUtils.sendApiError(res, 500, err.message)
+      if (!success) return apiUtils.sendApiError(res, 500, 'Unable to delete group. Contact your administrator.')
+
+      return apiUtils.sendApiSuccess(res, { _id: id })
+    })
   })
 }
 
