@@ -18,11 +18,12 @@ define(['angular', 'async'], function (angular, async) {
 
     SessionService = function () {
       var sessionUser = null
+      var groups = null
       var roles = null
       var roleOrder = null
 
       SessionService.prototype.init = function (callback) {
-        async.parallel(
+        async.series(
           {
             user: function (done) {
               if (sessionUser === null || angular.isUndefined(sessionUser)) {
@@ -37,6 +38,21 @@ define(['angular', 'async'], function (angular, async) {
                     return done(error, null)
                   })
               } else return done()
+            },
+            groups: function (done) {
+              if (groups !== null && angular.isUndefined(groups)) return done()
+
+              $http
+                .get('/api/v1/users/' + sessionUser.username + '/groups')
+                .success(function (data) {
+                  groups = data.groups
+                  sessionUser.groups = groups
+
+                  return done(null, groups)
+                })
+                .error(function (err) {
+                  return done(err, null)
+                })
             },
             roles: function (done) {
               if (roles !== null && angular.isUndefined(roles)) return done()

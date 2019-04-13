@@ -446,7 +446,7 @@ apiTickets.create = function (req, res) {
       return res.status(400).json(response)
     }
 
-    t.populate('group owner', function (err, tt) {
+    t.populate('group owner priority', function (err, tt) {
       if (err) {
         response.success = false
         response.error = err

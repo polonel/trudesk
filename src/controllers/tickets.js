@@ -298,87 +298,9 @@ ticketsController.processor = function (req, res) {
   content.data.common = req.viewdata
 
   var object = processor.object
-  object.limit = object.limit === 1 ? 10 : object.limit
+  content.data.page = object.page
 
-  content.data.filter = object.filter
-
-  var userGroups = []
-
-  async.waterfall(
-    [
-      function (callback) {
-        groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
-          if (err) return callback(err)
-          userGroups = grps
-          if (permissions.canThis(req.user.role, 'tickets:public')) {
-            groupSchema.getAllPublicGroups(function (err, groups) {
-              if (err) return callback(err)
-              userGroups = groups.concat(grps)
-
-              return callback(null, userGroups)
-            })
-          } else {
-            return callback(err, userGroups)
-          }
-        })
-      },
-      function (grps, callback) {
-        ticketSchema.getTicketsWithObject(grps, object, function (err, results) {
-          if (err) return callback(err)
-
-          if (!permissions.canThis(req.user.role, 'tickets:notes')) {
-            _.each(results, function (ticket) {
-              ticket.notes = []
-            })
-          }
-
-          return callback(null, results)
-        })
-      }
-    ],
-    function (err, results) {
-      if (err) return handleError(res, err)
-
-      // Ticket Data
-      content.data.tickets = results
-
-      var countObject = {
-        status: object.status,
-        assignedSelf: object.assignedSelf,
-        assignedUserId: object.user,
-        unassigned: object.unassigned,
-        filter: object.filter
-      }
-
-      // Get Pagination
-      ticketSchema.getCountWithObject(userGroups, countObject, function (err, totalCount) {
-        if (err) return handleError(res, err)
-
-        content.data.pagination = {}
-        content.data.pagination.type = processor.pagetype
-        content.data.pagination.currentpage = object.page
-        content.data.pagination.start = object.page === 0 ? 1 : object.page * object.limit
-        content.data.pagination.end = object.page === 0 ? object.limit : object.page * object.limit + object.limit
-        content.data.pagination.enabled = false
-
-        content.data.pagination.total = totalCount
-        if (content.data.pagination.total > object.limit) {
-          content.data.pagination.enabled = true
-        }
-
-        object.page = Number(object.page)
-
-        content.data.pagination.prevpage = object.page === 0 ? 0 : object.page - 1
-        content.data.pagination.prevEnabled = object.page !== 0
-        content.data.pagination.nextpage =
-          object.page * object.limit + object.limit <= content.data.pagination.total ? object.page + 1 : object.page
-        content.data.pagination.nextEnabled = object.page * object.limit + object.limit <= content.data.pagination.total
-        content.data.user = req.user
-
-        res.render(processor.renderpage, content)
-      })
-    }
-  )
+  return res.render(processor.renderpage, content)
 }
 
 /**

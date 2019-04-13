@@ -32,25 +32,26 @@ import TableCell from 'components/Table/TableCell'
 import PageTitleButton from 'components/PageTitleButton'
 import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import Dropdown from 'components/Dropdown'
+import SpinLoader from 'components/SpinLoader'
+import DropdownItem from 'components/Dropdown/DropdownItem'
+import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
 
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
 import anime from 'animejs'
 import moment from 'moment-timezone'
 
-import SpinLoader from 'components/SpinLoader'
-import DropdownItem from 'components/Dropdown/DropdownItem'
-import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
-
 class TicketsContainer extends React.Component {
   selectedTickets = []
   constructor (props) {
     super(props)
 
+    this.onTicketCreated = this.onTicketCreated.bind(this)
     this.onTicketUpdated = this.onTicketUpdated.bind(this)
     this.onTicketDeleted = this.onTicketDeleted.bind(this)
   }
   componentDidMount () {
+    socket.socket.on('$trudesk:client:ticket:created', this.onTicketCreated)
     socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     socket.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
 
@@ -86,8 +87,13 @@ class TicketsContainer extends React.Component {
     anime.remove('tr.overdue td')
     this.timeline = null
     this.props.unloadTickets()
+    socket.socket.off('$trudesk:client:ticket:created', this.onTicketCreated)
     socket.socket.off('$trudesk:client:ticket:updated', this.onTicketUpdated)
     socket.socket.off('$trudesk:client:ticket:deleted', this.onTicketDeleted)
+  }
+
+  onTicketCreated (ticket) {
+    if (this.props.page === '0') this.props.ticketEvent({ type: 'created', data: ticket })
   }
 
   onTicketUpdated (data) {
@@ -198,8 +204,10 @@ class TicketsContainer extends React.Component {
                   <DropdownItem text={'Set Open'} onClick={() => this.onSetStatus(1)} />
                   <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
                   <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
-                  <DropdownSeparator />
-                  <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
+                  {helpers.canUser('tickets:delete', true) && <DropdownSeparator />}
+                  {helpers.canUser('tickets:delete', true) && (
+                    <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
+                  )}
                 </Dropdown>
               </DropdownTrigger>
               <div className={'uk-float-right'}>
@@ -339,8 +347,8 @@ class TicketsContainer extends React.Component {
 TicketsContainer.propTypes = {
   view: PropTypes.string.isRequired,
   page: PropTypes.string.isRequired,
-  prevPage: PropTypes.string.isRequired,
-  nextPage: PropTypes.string.isRequired,
+  prevPage: PropTypes.number.isRequired,
+  nextPage: PropTypes.number.isRequired,
   prevEnabled: PropTypes.bool.isRequired,
   nextEnabled: PropTypes.bool.isRequired,
   tickets: PropTypes.object.isRequired,
@@ -357,12 +365,16 @@ TicketsContainer.propTypes = {
 
 TicketsContainer.defaultProps = {
   view: 'active',
-  page: 0
+  page: 0,
+  prevEnabled: true,
+  nextEnabled: true
 }
 
 const mapStateToProps = state => ({
   tickets: state.ticketsState.tickets,
   totalCount: state.ticketsState.totalCount,
+  prevPage: state.ticketsState.prevPage,
+  nextPage: state.ticketsState.nextPage,
   loading: state.ticketsState.loading,
   common: state.common
 })

@@ -15,19 +15,12 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
-import { observable } from 'mobx'
-import { observer } from 'mobx-react'
 
 import { fetchTeams, unloadTeams, deleteTeam } from 'actions/teams'
 import { showModal } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
 import PageContent from 'components/PageContent'
-import Grid from 'components/Grid'
-import GridItem from 'components/Grid/GridItem'
-import DropdownItem from 'components/Dropdown/DropdownItem'
-import TruCard from 'components/TruCard'
-import InfiniteScroll from 'react-infinite-scroller'
 
 import helpers from 'lib/helpers'
 import Button from 'components/Button'

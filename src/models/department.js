@@ -81,4 +81,13 @@ departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback)
   })
 }
 
+departmentSchema.statics.getDepartmentsByGroup = function (groupId, callback) {
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({ $or: [{ groups: groupId }, { allGroups: true }] })
+    .exec(callback)
+}
+
 module.exports = mongoose.model(COLLECTION, departmentSchema)

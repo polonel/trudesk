@@ -15,7 +15,6 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import helpers from 'lib/helpers'
 import $ from 'jquery'
 
 class TitlePagination extends React.Component {
@@ -28,7 +27,7 @@ class TitlePagination extends React.Component {
     return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
   }
 
-  calcStartEnd (page, limit) {
+  static calcStartEnd (page, limit) {
     page = Number(page)
     limit = Number(limit)
     const start = page === 0 ? '1' : page * limit
@@ -38,19 +37,7 @@ class TitlePagination extends React.Component {
   }
 
   render () {
-    const {
-      start,
-      end,
-      limit,
-      total,
-      prevEnabled,
-      nextEnabled,
-      currentPage,
-      prevPage,
-      nextPage,
-      type,
-      filter
-    } = this.props
+    const { limit, total, prevEnabled, nextEnabled, currentPage, prevPage, nextPage, type, filter } = this.props
     const link = page => {
       if (!type) return '#'
       if (type.toLowerCase() === 'filter') {
@@ -60,7 +47,7 @@ class TitlePagination extends React.Component {
       }
     }
 
-    const startEnd = this.calcStartEnd(currentPage, limit)
+    const startEnd = TitlePagination.calcStartEnd(currentPage, limit)
 
     return (
       <div className={'pagination uk-float-left uk-clearfix'} ref={r => (this.parent = r)}>
@@ -94,8 +81,6 @@ class TitlePagination extends React.Component {
 }
 
 TitlePagination.propTypes = {
-  start: PropTypes.string,
-  end: PropTypes.string,
   limit: PropTypes.number,
   total: PropTypes.string,
   type: PropTypes.string,
@@ -103,8 +88,8 @@ TitlePagination.propTypes = {
   prevEnabled: PropTypes.bool.isRequired,
   nextEnabled: PropTypes.bool.isRequired,
   currentPage: PropTypes.string,
-  prevPage: PropTypes.string,
-  nextPage: PropTypes.string
+  prevPage: PropTypes.number,
+  nextPage: PropTypes.number
 }
 
 TitlePagination.defaultProps = {

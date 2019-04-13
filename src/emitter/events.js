@@ -28,6 +28,9 @@ var Email = require('email-templates')
 var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 var permissions = require('../permissions')
 
+var socketUtils = require('../helpers/utils')
+var sharedVars = require('../socketio/index').shared
+
 var notifications = require('../notifications') // Load Push Events
 
 ;(function () {
@@ -79,6 +82,8 @@ var notifications = require('../notifications') // Load Push Events
                     })
                   )
 
+                  members = _.concat(members, ticket.group.members)
+
                   members = _.uniqBy(members, function (i) {
                     return i._id
                   })
@@ -86,8 +91,16 @@ var notifications = require('../notifications') // Load Push Events
                   async.each(
                     members,
                     function (member, cb) {
-                      if (_.isUndefined(member.email)) return cb()
                       if (member.deleted) return cb()
+                      socketUtils.sendToUser(
+                        sharedVars.sockets,
+                        sharedVars.usersOnline,
+                        member.username,
+                        '$trudesk:client:ticket:created',
+                        ticket
+                      )
+
+                      if (_.isUndefined(member.email)) return cb()
 
                       emails.push(member.email)
 
@@ -188,27 +201,48 @@ var notifications = require('../notifications') // Load Push Events
               function (c) {
                 // Public Ticket Notification is handled above.
                 if (ticket.group.public) return c()
-                async.each(
-                  ticket.group.members,
-                  function (member, cb) {
-                    if (_.isUndefined(member)) return cb()
 
-                    return saveNotification(member, ticket, cb)
-                  },
-                  function (err) {
-                    sendPushNotification(
-                      {
-                        tpsEnabled: tpsEnabled,
-                        tpsUsername: tpsUsername,
-                        tpsApiKey: tpsApiKey,
-                        hostname: hostname || baseUrl
-                      },
-                      { type: 1, ticket: ticket }
-                    )
+                departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
+                  if (err) return c(err)
 
-                    return c(err)
-                  }
-                )
+                  var members = _.flattenDeep(
+                    departments.map(function (department) {
+                      return department.teams.map(function (team) {
+                        return team.members.map(function (member) {
+                          return member
+                        })
+                      })
+                    })
+                  )
+
+                  members = _.concat(members, ticket.group.members)
+
+                  members = _.uniqBy(members, function (i) {
+                    return i._id
+                  })
+
+                  async.each(
+                    members,
+                    function (member, cb) {
+                      if (_.isUndefined(member)) return cb()
+
+                      return saveNotification(member, ticket, cb)
+                    },
+                    function (err) {
+                      sendPushNotification(
+                        {
+                          tpsEnabled: tpsEnabled,
+                          tpsUsername: tpsUsername,
+                          tpsApiKey: tpsApiKey,
+                          hostname: hostname || baseUrl
+                        },
+                        { type: 1, ticket: ticket }
+                      )
+
+                      return c(err)
+                    }
+                  )
+                })
               }
             ],
             function (err) {

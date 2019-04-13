@@ -26,21 +26,10 @@ import DepartmentsContainer from 'containers/Departments'
 export default function (store) {
   if (document.getElementById('tickets-container')) {
     const view = document.getElementById('tickets-container').getAttribute('data-view')
-    const page = document.getElementById('tickets-container').getAttribute('data-current-page')
-    const prevPage = document.getElementById('tickets-container').getAttribute('data-prev-page')
-    const nextPage = document.getElementById('tickets-container').getAttribute('data-next-page')
-    const prevEnabled = document.getElementById('tickets-container').getAttribute('data-prev-enabled')
-    const nextEnabled = document.getElementById('tickets-container').getAttribute('data-next-enabled')
+    const page = document.getElementById('tickets-container').getAttribute('data-page')
     const TicketsContainerWithProvider = (
       <Provider store={store}>
-        <TicketsContainer
-          view={view}
-          page={page}
-          prevPage={prevPage}
-          nextPage={nextPage}
-          prevEnabled={prevEnabled.toLowerCase() === 'true'}
-          nextEnabled={nextEnabled.toLowerCase() === 'true'}
-        />
+        <TicketsContainer view={view} page={page} />
       </Provider>
     )
 

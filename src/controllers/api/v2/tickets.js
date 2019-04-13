@@ -29,13 +29,11 @@ ticketsV2.create = function (req, res) {
 
 ticketsV2.get = function (req, res) {
   var query = req.query
-  var limit = 50
-  var page = 0
-  var type = req.query.type || 'all'
+  var type = query.type || 'all'
 
   try {
-    limit = query.limit ? parseInt(query.limit) : 50
-    page = query.page ? parseInt(query.page) : 0
+    var limit = query.limit ? parseInt(query.limit) : 50
+    var page = query.page ? parseInt(query.page) : 0
   } catch (e) {
     winston.debug(e)
     return apiUtils.sendApiError_InvalidPostData(res)
@@ -123,7 +121,10 @@ ticketsV2.get = function (req, res) {
       return apiUtils.sendApiSuccess(res, {
         tickets: resultObject.tickets,
         count: resultObject.tickets.length,
-        totalCount: resultObject.totalCount
+        totalCount: resultObject.totalCount,
+        page: page,
+        prevPage: page === 0 ? 0 : page - 1,
+        nextPage: page * limit + limit <= resultObject.totalCount ? page + 1 : page
       })
     }
   )

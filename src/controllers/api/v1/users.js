@@ -1023,6 +1023,34 @@ apiUsers.getAssingees = function (req, res) {
   })
 }
 
+apiUsers.getGroups = function (req, res) {
+  if (req.user.role.isAdmin || req.user.role.isAgent) {
+    var departmentSchema = require('../../../models/department')
+    departmentSchema.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      var mappedGroups = groups.map(function (g) {
+        return g._id
+      })
+
+      return res.json({ success: true, groups: mappedGroups })
+    })
+  } else {
+    if (req.user.username !== req.params.username)
+      return res.status(400).json({ success: false, error: 'Invalid API Call' })
+
+    groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      var mappedGroups = groups.map(function (g) {
+        return g._id
+      })
+
+      return res.json({ success: true, groups: mappedGroups })
+    })
+  }
+}
+
 apiUsers.uploadProfilePic = function (req, res) {
   var fs = require('fs')
   var path = require('path')

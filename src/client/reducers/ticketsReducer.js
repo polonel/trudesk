@@ -28,31 +28,48 @@ const initialState = {
   tickets: List([]),
   totalCount: '',
   viewType: 'active',
-  loading: false
+  loading: false,
+  nextPage: 1,
+  prevPage: 0
 }
 
 // Util function until custom views are finished
-function hasInView (view, status, assignee, userId) {
+function hasInView (view, status, assignee, userId, userGroupIds, groupId) {
+  let hasView = false
+  let hasGroup = false
   switch (view) {
     case 'all':
-      return [0, 1, 2, 3].indexOf(status) !== -1
+      hasView = [0, 1, 2, 3].indexOf(status) !== -1
+      break
     case 'active':
-      return [0, 1, 2].indexOf(status) !== -1
+      hasView = [0, 1, 2].indexOf(status) !== -1
+      break
     case 'assigned':
-      return assignee === userId
+      hasView = assignee === userId
+      break
     case 'unassigned':
-      return isUndefined(assignee)
+      hasView = isUndefined(assignee)
+      break
     case 'new':
-      return status === 0
+      hasView = status === 0
+      break
     case 'open':
-      return status === 1
+      hasView = status === 1
+      break
     case 'pending':
-      return status === 2
+      hasView = status === 2
+      break
     case 'closed':
-      return status === 3
+      hasView = status === 3
+      break
     default:
-      return false
+      hasView = false
   }
+
+  if (isUndefined(userGroupIds) || isUndefined(groupId)) hasGroup = false
+  else hasGroup = userGroupIds.indexOf(groupId) !== -1
+
+  return hasGroup && hasView
 }
 
 const reducer = handleActions(
@@ -69,6 +86,8 @@ const reducer = handleActions(
       return {
         ...state,
         tickets: fromJS(action.response.tickets || []),
+        prevPage: fromJS(action.response.prevPage),
+        nextPage: fromJS(action.response.nextPage),
         totalCount: action.response.totalCount
           ? fromJS(action.response.totalCount.toString())
           : action.response.tickets.length.toString(),
@@ -84,22 +103,24 @@ const reducer = handleActions(
     },
 
     [CREATE_TICKET.SUCCESS]: (state, action) => {
-      const ticket = action.response.ticket
-      const inView = hasInView(
-        state.viewType,
-        ticket.status,
-        ticket.assignee ? ticket.assignee._id : undefined,
-        action.sessionUser._id
-      )
-
-      if (!inView) return { ...state }
-
-      const withTicket = state.tickets.insert(0, fromJS(ticket))
-
-      return {
-        ...state,
-        tickets: withTicket
-      }
+      return { ...state }
+      // This is handle with a socket.io event...
+      // const ticket = action.response.ticket
+      // const inView = hasInView(
+      //   state.viewType,
+      //   ticket.status,
+      //   ticket.assignee ? ticket.assignee._id : undefined,
+      //   action.sessionUser._id
+      // )
+      //
+      // if (!inView) return { ...state }
+      //
+      // const withTicket = state.tickets.insert(0, fromJS(ticket))
+      //
+      // return {
+      //   ...state,
+      //   tickets: withTicket
+      // }
     },
 
     [DELETE_TICKET.SUCCESS]: (state, action) => {
@@ -116,6 +137,13 @@ const reducer = handleActions(
     [TICKET_EVENT.SUCCESS]: (state, action) => {
       const type = action.payload.type
       switch (type) {
+        case 'created': {
+          const ticket = action.payload.data
+          return {
+            ...state,
+            tickets: state.tickets.insert(0, fromJS(ticket))
+          }
+        }
         case 'deleted': {
           const id = action.payload.data
           const idx = state.tickets.findIndex(ticket => {
@@ -135,16 +163,20 @@ const reducer = handleActions(
 
     [TICKET_UPDATED.SUCCESS]: (state, action) => {
       const ticket = action.payload.ticket
-      const inView = hasInView(
-        state.viewType,
-        ticket.status,
-        ticket.assignee ? ticket.assignee._id : undefined,
-        action.sessionUser._id
-      )
+      const userGroupIds = action.sessionUser.groups
 
       const idx = state.tickets.findIndex(t => {
         return t.get('_id') === ticket._id
       })
+
+      const inView = hasInView(
+        state.viewType,
+        ticket.status,
+        ticket.assignee ? ticket.assignee._id : undefined,
+        action.sessionUser._id,
+        userGroupIds,
+        ticket.group._id
+      )
 
       if (!inView && idx !== -1) {
         return {
@@ -163,12 +195,12 @@ const reducer = handleActions(
         }
       }
 
-      if (ticket.status === 3) {
-        return {
-          ...state,
-          tickets: state.tickets.delete(idx)
-        }
-      }
+      // if (ticket.status === 3) {
+      //   return {
+      //     ...state,
+      //     tickets: state.tickets.delete(idx)
+      //   }
+      // }
 
       return {
         ...state,
