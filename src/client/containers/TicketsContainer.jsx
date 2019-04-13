@@ -170,6 +170,20 @@ class TicketsContainer extends React.Component {
   }
 
   render () {
+    const loadingItems = []
+    for (let i = 0; i < 51; i++) {
+      const cells = []
+      for (let k = 0; k < 10; k++) {
+        cells.push(
+          <TableCell className={'vam'}>
+            <div className={'loadingTextAnimation'} />
+          </TableCell>
+        )
+      }
+
+      loadingItems.push(<TableRow>{cells}</TableRow>)
+    }
+
     return (
       <div>
         <PageTitle
@@ -225,7 +239,7 @@ class TicketsContainer extends React.Component {
           }
         />
         <PageContent padding={0} paddingBottom={0} extraClass={'uk-position-relative'}>
-          <SpinLoader active={this.props.loading} />
+          {/*<SpinLoader active={this.props.loading} />*/}
           <Table
             tableRef={ref => (this.ticketsTable = ref)}
             style={{ margin: 0 }}
@@ -245,98 +259,100 @@ class TicketsContainer extends React.Component {
               <TableHeader key={9} text={'Updated'} />
             ]}
           >
-            {this.props.tickets.size < 1 && (
+            {!this.props.loading && this.props.tickets.size < 1 && (
               <TableRow clickable={false}>
                 <TableCell colSpan={10}>
                   <h5 style={{ margin: 10 }}>No Tickets Found</h5>
                 </TableCell>
               </TableRow>
             )}
-            {this.props.tickets.map(ticket => {
-              const status = () => {
-                switch (ticket.get('status')) {
-                  case 0:
-                    return 'new'
-                  case 1:
-                    return 'open'
-                  case 2:
-                    return 'pending'
-                  case 3:
-                    return 'closed'
+            {this.props.loading && loadingItems}
+            {!this.props.loading &&
+              this.props.tickets.map(ticket => {
+                const status = () => {
+                  switch (ticket.get('status')) {
+                    case 0:
+                      return 'new'
+                    case 1:
+                      return 'open'
+                    case 2:
+                      return 'pending'
+                    case 3:
+                      return 'closed'
+                  }
                 }
-              }
-              const assignee = () => {
-                const a = ticket.get('assignee')
-                return !a ? '--' : a.get('fullname')
-              }
-              const updated = ticket.get('updated')
-                ? helpers.formatDate(ticket.get('updated'), helpers.getShortDateFormat()) +
-                  ', ' +
-                  helpers.formatDate(ticket.get('updated'), helpers.getTimeFormat())
-                : '--'
+                const assignee = () => {
+                  const a = ticket.get('assignee')
+                  return !a ? '--' : a.get('fullname')
+                }
+                const updated = ticket.get('updated')
+                  ? helpers.formatDate(ticket.get('updated'), helpers.getShortDateFormat()) +
+                    ', ' +
+                    helpers.formatDate(ticket.get('updated'), helpers.getTimeFormat())
+                  : '--'
 
-              const dueDate = ticket.get('dueDate')
-                ? helpers.formatDate(ticket.get('dueDate'), helpers.getShortDateFormat())
-                : '--'
+                const dueDate = ticket.get('dueDate')
+                  ? helpers.formatDate(ticket.get('dueDate'), helpers.getShortDateFormat())
+                  : '--'
 
-              const isOverdue = () => {
-                if (!this.props.common.showOverdue || ticket.get('status') === 2) return false
-                const overdueIn = ticket.getIn(['priority', 'overdueIn'])
-                const now = moment()
-                let updated = ticket.get('updated')
-                if (updated) updated = moment(updated)
-                else updated = moment(ticket.get('date'))
+                const isOverdue = () => {
+                  if (!this.props.common.showOverdue || ticket.get('status') === 2) return false
+                  const overdueIn = ticket.getIn(['priority', 'overdueIn'])
+                  const now = moment()
+                  let updated = ticket.get('updated')
+                  if (updated) updated = moment(updated)
+                  else updated = moment(ticket.get('date'))
 
-                const timeout = updated.clone().add(overdueIn, 'm')
-                return now.isAfter(timeout)
-              }
+                  const timeout = updated.clone().add(overdueIn, 'm')
+                  return now.isAfter(timeout)
+                }
 
-              return (
-                <TableRow
-                  key={ticket.get('_id')}
-                  className={`ticket-${status()} ${isOverdue() ? 'overdue' : ''}`}
-                  clickable={true}
-                  onClick={e => {
-                    const td = e.target.closest('td')
-                    const input = td.getElementsByTagName('input')
-                    if (input.length > 0) return false
-                    History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`)
-                  }}
-                >
-                  <TableCell
-                    className={'ticket-priority nbb vam'}
-                    style={{ borderColor: ticket.getIn(['priority', 'htmlColor']), padding: '18px 15px' }}
+                return (
+                  <TableRow
+                    key={ticket.get('_id')}
+                    className={`ticket-${status()} ${isOverdue() ? 'overdue' : ''}`}
+                    clickable={true}
+                    onClick={e => {
+                      const td = e.target.closest('td')
+                      const input = td.getElementsByTagName('input')
+                      if (input.length > 0) return false
+                      History.pushState(null, `Ticket-${ticket.get('uid')}`, `/tickets/${ticket.get('uid')}`)
+                    }}
                   >
-                    <input
-                      type='checkbox'
-                      id={`c_${ticket.get('_id')}`}
-                      style={{ display: 'none' }}
-                      onChange={e => this.onTicketCheckChanged(e, ticket.get('_id'))}
-                      className='svgcheckinput'
-                    />
-                    <label htmlFor={`c_${ticket.get('_id')}`} className='svgcheck'>
-                      <svg width='16px' height='16px' viewBox='0 0 18 18'>
-                        <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
-                        <polyline points='1 9 7 14 15 4' />
-                      </svg>
-                    </label>
-                  </TableCell>
-                  <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
-                    <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
-                  </TableCell>
-                  <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
-                  <TableCell className={'vam nbb'}>{ticket.get('subject')}</TableCell>
-                  <TableCell className={'vam nbb'}>
-                    {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
-                  </TableCell>
-                  <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
-                  <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
-                  <TableCell className={'vam nbb'}>{assignee()}</TableCell>
-                  <TableCell className={'vam nbb'}>{dueDate}</TableCell>
-                  <TableCell className={'vam nbb'}>{updated}</TableCell>
-                </TableRow>
-              )
-            })}
+                    <TableCell
+                      className={'ticket-priority nbb vam'}
+                      style={{ borderColor: ticket.getIn(['priority', 'htmlColor']), padding: '18px 15px' }}
+                    >
+                      <input
+                        type='checkbox'
+                        id={`c_${ticket.get('_id')}`}
+                        style={{ display: 'none' }}
+                        onChange={e => this.onTicketCheckChanged(e, ticket.get('_id'))}
+                        className='svgcheckinput'
+                      />
+                      <label htmlFor={`c_${ticket.get('_id')}`} className='svgcheck'>
+                        <svg width='16px' height='16px' viewBox='0 0 18 18'>
+                          <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+                          <polyline points='1 9 7 14 15 4' />
+                        </svg>
+                      </label>
+                    </TableCell>
+                    <TableCell className={`ticket-status ticket-${status()} vam nbb uk-text-center`}>
+                      <span className={'uk-display-inline-block'}>{status()[0].toUpperCase()}</span>
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>{ticket.get('uid')}</TableCell>
+                    <TableCell className={'vam nbb'}>{ticket.get('subject')}</TableCell>
+                    <TableCell className={'vam nbb'}>
+                      {helpers.formatDate(ticket.get('date'), helpers.getShortDateFormat())}
+                    </TableCell>
+                    <TableCell className={'vam nbb'}>{ticket.getIn(['owner', 'fullname'])}</TableCell>
+                    <TableCell className={'vam nbb'}>{ticket.getIn(['group', 'name'])}</TableCell>
+                    <TableCell className={'vam nbb'}>{assignee()}</TableCell>
+                    <TableCell className={'vam nbb'}>{dueDate}</TableCell>
+                    <TableCell className={'vam nbb'}>{updated}</TableCell>
+                  </TableRow>
+                )
+              })}
           </Table>
         </PageContent>
       </div>
