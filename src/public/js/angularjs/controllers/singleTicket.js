@@ -487,12 +487,21 @@ define([
         }
       }
 
+      $scope.clearDueDate = function ($event) {
+        $event.preventDefault()
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, null)
+        }
+      }
+
       function onSocketUpdateTicketDueDate () {
         socket.socket.removeAllListeners('updateTicketDueDate')
         socket.socket.on('updateTicketDueDate', function (data) {
           $timeout(function () {
             if ($scope.ticketId === data._id)
-              $scope.dueDate = helpers.formatDate(data.dueDate, helpers.getShortDateFormat())
+              if (data.dueDate) $scope.dueDate = helpers.formatDate(data.dueDate, helpers.getShortDateFormat())
+              else $scope.dueDate = ''
           }, 0)
           // var dueDateInput = $('input#tDueDate[data-ticketId="' + data._id + '"]')
           // if (dueDateInput.length > 0) {

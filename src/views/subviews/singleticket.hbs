@@ -201,6 +201,7 @@
                                 <div class="uk-width-1-1 p-0">
                                     <span>Due Date</span>
                                     {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    - <a href="#" class="no-ajaxy" ng-click="clearDueDate($event)">Clear</a>
                                     <input
                                             id="tDueDate"
                                             type="text"
