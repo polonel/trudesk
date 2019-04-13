@@ -13,7 +13,7 @@
  */
 
 define(['angular', 'underscore', 'jquery'], function (angular, _, $) {
-  return angular.module('trudesk.controllers.accounts', []).controller('accountsCtrl', function ($scope) {
+  return angular.module('trudesk.controllers.accounts', []).controller('accountsCtrl', function ($scope, $timeout) {
     $scope.selectAccountsImport = function (event, type) {
       if ($(event.currentTarget).hasClass('card-disabled')) {
         return false
@@ -45,6 +45,22 @@ define(['angular', 'underscore', 'jquery'], function (angular, _, $) {
       $('#csv-import-selector').removeClass('card-disabled')
       $('#json-import-selector').removeClass('card-disabled')
       $('#ldap-import-selector').removeClass('card-disabled')
+    }
+
+    $scope.accountEditPic = function () {
+      throttledAccountPicClick()
+    }
+
+    function throttledAccountPicClick () {
+      $timeout(function () {
+        var $profileImageInput = $('#profileImageInput')
+        $profileImageInput.on('click', function (event) {
+          // This function is a firefox hack to stop it from spawning 100000 file dialogs
+          event.stopPropagation()
+        })
+
+        $profileImageInput.trigger('click')
+      }, 0)
     }
   })
 })
