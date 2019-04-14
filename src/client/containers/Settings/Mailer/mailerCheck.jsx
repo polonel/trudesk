@@ -272,7 +272,7 @@ class Mailer_MailerCheck extends React.Component {
                       marginLeft: '5px'
                     }}
                     data-uk-tooltip="{cls:'long-text'}"
-                    title={'Caution: Polling too often can cause hight CPU usage'}
+                    title={'Caution: Polling too often can cause high CPU usage'}
                   >
                     error
                   </i>
