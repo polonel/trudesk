@@ -27,12 +27,13 @@ import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
 import $ from 'jquery'
+import SpinLoader from 'components/SpinLoader'
 
 @observer
 class EditGroupModal extends React.Component {
   @observable name = ''
   componentDidMount () {
-    this.props.fetchAccounts({ type: 'customers' })
+    this.props.fetchAccounts({ type: 'customers', limit: -1 })
     this.name = this.props.group.name
 
     helpers.UI.inputs()
@@ -74,8 +75,9 @@ class EditGroupModal extends React.Component {
     })
     return (
       <BaseModal>
+        <SpinLoader active={this.props.accountsLoading} />
         <div className={'mb-25'}>
-          <h2>Create Group</h2>
+          <h2>Edit Group</h2>
         </div>
         <form className={'uk-form-stacked'} onSubmit={e => this.onFormSubmit(e)}>
           <div className={'uk-margin-medium-bottom'}>
@@ -114,11 +116,13 @@ EditGroupModal.propTypes = {
   accounts: PropTypes.object.isRequired,
   updateGroup: PropTypes.func.isRequired,
   fetchAccounts: PropTypes.func.isRequired,
-  unloadAccounts: PropTypes.func.isRequired
+  unloadAccounts: PropTypes.func.isRequired,
+  accountsLoading: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = state => ({
-  accounts: state.accountsState.accounts
+  accounts: state.accountsState.accounts,
+  accountsLoading: state.accountsState.loading
 })
 
 export default connect(

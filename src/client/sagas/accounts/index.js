@@ -28,6 +28,7 @@ import api from '../../api'
 import helpers from 'lib/helpers'
 
 function * fetchAccounts ({ payload, meta }) {
+  yield put({ type: FETCH_ACCOUNTS.PENDING })
   try {
     const response = yield call(api.accounts.getWithPage, payload)
     yield put({ type: FETCH_ACCOUNTS.SUCCESS, payload: { response, payload }, meta })

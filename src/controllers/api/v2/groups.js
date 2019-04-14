@@ -35,7 +35,7 @@ apiGroups.create = function (req, res) {
 }
 
 apiGroups.get = function (req, res) {
-  var limit = Number(req.query.limit) || 10
+  var limit = Number(req.query.limit) || 50
   var page = Number(req.query.page) || 0
   var type = req.query.type || 'user'
 

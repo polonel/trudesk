@@ -122,12 +122,13 @@ accountsApi.create = function (req, res) {
 accountsApi.get = function (req, res) {
   var query = req.query
   var type = query.type || 'customers'
-  var limit = query.limit ? Number(query.limit) : 10
+  var limit = query.limit ? Number(query.limit) : 25
   var page = query.page ? Number(query.page) : 0
 
   var obj = {
-    limit: limit,
-    page: page
+    limit: limit === -1 ? 999999 : limit,
+    page: page,
+    showDeleted: query.showDeleted && query.showDeleted === 'true'
   }
 
   switch (type) {

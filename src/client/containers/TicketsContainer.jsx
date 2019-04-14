@@ -296,7 +296,7 @@ class TicketsContainer extends React.Component {
                   : '--'
 
                 const isOverdue = () => {
-                  if (!this.props.common.showOverdue || ticket.get('status') === 2) return false
+                  if (!this.props.common.showOverdue || [2, 3].indexOf(ticket.get('status')) !== -1) return false
                   const overdueIn = ticket.getIn(['priority', 'overdueIn'])
                   const now = moment()
                   let updated = ticket.get('updated')

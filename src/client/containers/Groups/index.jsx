@@ -71,32 +71,37 @@ class GroupsContainer extends React.Component {
       return (
         <TableRow key={group.get('_id')} className={'vam nbb'}>
           <TableCell style={{ fontWeight: 500, padding: '18px 15px' }}>{group.get('name')}</TableCell>
-          <TableCell style={{ padding: '13px 8px 8px 8px' }}>
+          <TableCell style={{ padding: '13px 20px 8px 8px' }}>
             {group.get('members') &&
               group.get('members').size > 0 &&
-              group.get('members').map(user => {
-                const profilePic = user.get('image') || 'defaultProfile.jpg'
-                return (
-                  <div
-                    key={user.get('_id')}
-                    className={'uk-float-left uk-position-relative mb-10'}
-                    data-uk-tooltip={'{pos: "bottom"}'}
-                    title={user.get('fullname')}
-                  >
-                    <img
-                      style={{ width: 25, height: 25, marginRight: 5 }}
-                      className={'round'}
-                      src={`/uploads/users/${profilePic}`}
-                      alt={user.get('fullname')}
-                    />
-                    <span
-                      data-user-status-id={user.get('_id')}
-                      className='user-offline uk-border-circle'
-                      style={{ width: 13, height: 13 }}
-                    />
-                  </div>
-                )
-              })}
+              group
+                .get('members')
+                .filter(user => {
+                  return !user.get('deleted')
+                })
+                .map(user => {
+                  const profilePic = user.get('image') || 'defaultProfile.jpg'
+                  return (
+                    <div
+                      key={user.get('_id')}
+                      className={'uk-float-left uk-position-relative mb-10'}
+                      data-uk-tooltip={'{pos: "bottom"}'}
+                      title={user.get('fullname')}
+                    >
+                      <img
+                        style={{ width: 25, height: 25, marginRight: 5 }}
+                        className={'round'}
+                        src={`/uploads/users/${profilePic}`}
+                        alt={user.get('fullname')}
+                      />
+                      <span
+                        data-user-status-id={user.get('_id')}
+                        className='user-offline uk-border-circle'
+                        style={{ width: 13, height: 13 }}
+                      />
+                    </div>
+                  )
+                })}
             {!group.get('members') && <div />}
           </TableCell>
           <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>

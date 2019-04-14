@@ -68,7 +68,7 @@ var userSchema = mongoose.Schema({
   hasL2Auth: { type: Boolean, required: true, default: false },
   accessToken: { type: String, sparse: true, select: false },
 
-  iOSDeviceTokens: [{ type: String, select: false }],
+  iOSDeviceTokens: { type: [String], select: false },
 
   preferences: {
     tourCompleted: { type: Boolean, default: false },
@@ -428,6 +428,8 @@ userSchema.statics.getUserWithObject = function (object, callback) {
     q.limit(limit)
   }
 
+  if (!object.showDeleted) q.where({ deleted: false })
+
   if (!_.isEmpty(search)) {
     q.where({ fullname: new RegExp('^' + search.toLowerCase(), 'i') })
   }
@@ -643,12 +645,15 @@ userSchema.statics.getCustomers = function (obj, callback) {
         return a.role._id
       })
 
-      self
+      var q = self
         .find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
         .sort({ fullname: 1 })
         .skip(page * limit)
         .limit(limit)
-        .exec(callback)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
     })
 }
 
@@ -669,13 +674,16 @@ userSchema.statics.getAgents = function (obj, callback) {
         return a.role._id
       })
 
-      self
+      var q = self
         .model(COLLECTION)
         .find({ role: { $in: agentRoleIds } }, '-password -resetPassHash -resetPassExpire')
         .sort({ fullname: 1 })
         .skip(page * limit)
         .limit(limit)
-        .exec(callback)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
     })
 }
 
@@ -696,13 +704,16 @@ userSchema.statics.getAdmins = function (obj, callback) {
         return a.role._id
       })
 
-      self
+      var q = self
         .model(COLLECTION)
         .find({ role: { $in: adminRoleIds } }, '-password -resetPassHash -resetPassExpire')
         .sort({ fullname: 1 })
         .skip(page * limit)
         .limit(limit)
-        .exec(callback)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
     })
 }
 

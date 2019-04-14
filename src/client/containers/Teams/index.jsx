@@ -93,29 +93,34 @@ class TeamsContainer extends React.Component {
           <TableCell style={{ padding: '13px 8px 8px 8px' }}>
             {team.get('members') &&
               team.get('members').size > 0 &&
-              team.get('members').map(user => {
-                const profilePic = user.get('image') || 'defaultProfile.jpg'
-                return (
-                  <div
-                    key={user.get('_id')}
-                    className={'uk-float-left uk-position-relative mb-10'}
-                    data-uk-tooltip={'{pos: "bottom"}'}
-                    title={user.get('fullname')}
-                  >
-                    <img
-                      style={{ width: 25, height: 25, marginRight: 5 }}
-                      className={'round'}
-                      src={`/uploads/users/${profilePic}`}
-                      alt={user.get('fullname')}
-                    />
-                    <span
-                      data-user-status-id={user.get('_id')}
-                      className='user-offline uk-border-circle'
-                      style={{ width: 13, height: 13 }}
-                    />
-                  </div>
-                )
-              })}
+              team
+                .get('members')
+                .filter(user => {
+                  return !user.get('deleted')
+                })
+                .map(user => {
+                  const profilePic = user.get('image') || 'defaultProfile.jpg'
+                  return (
+                    <div
+                      key={user.get('_id')}
+                      className={'uk-float-left uk-position-relative mb-10'}
+                      data-uk-tooltip={'{pos: "bottom"}'}
+                      title={user.get('fullname')}
+                    >
+                      <img
+                        style={{ width: 25, height: 25, marginRight: 5 }}
+                        className={'round'}
+                        src={`/uploads/users/${profilePic}`}
+                        alt={user.get('fullname')}
+                      />
+                      <span
+                        data-user-status-id={user.get('_id')}
+                        className='user-offline uk-border-circle'
+                        style={{ width: 13, height: 13 }}
+                      />
+                    </div>
+                  )
+                })}
           </TableCell>
           <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>
             <ButtonGroup>

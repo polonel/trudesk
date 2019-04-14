@@ -1884,20 +1884,38 @@ apiTickets.getOverdue = function (req, res) {
     }
 
     var ticketSchema = require('../../../models/ticket')
+    var departmentSchema = require('../../../models/department')
     var groupSchema = require('../../../models/group')
-    groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
-      grps = grps.map(function (g) {
-        return g._id.toString()
-      })
-      ticketSchema.getOverdue(grps, function (err, objs) {
+
+    async.waterfall(
+      [
+        function (next) {
+          if (!req.user.role.isAdmin && !req.user.role.isAgent) {
+            return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
+          } else {
+            return departmentSchema.getDepartmentGroupsOfUser(req.user._id, next)
+          }
+        },
+        function (groups, next) {
+          var groupIds = groups.map(function (g) {
+            return g._id
+          })
+
+          ticketSchema.getOverdue(groupIds, function (err, tickets) {
+            if (err) return next(err)
+
+            var sorted = _.sortBy(tickets, 'uid').reverse()
+
+            return next(null, sorted)
+          })
+        }
+      ],
+      function (err, overdueTickets) {
         if (err) return res.status(400).json({ success: false, error: err.message })
 
-        var sorted = _.sortBy(objs, 'uid').reverse()
-
-        return res.json({ success: true, tickets: sorted })
-      })
-    })
+        return res.json({ success: true, tickets: overdueTickets })
+      }
+    )
   })
 }
 

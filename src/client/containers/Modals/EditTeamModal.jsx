@@ -27,13 +27,14 @@ import helpers from 'lib/helpers'
 import Button from 'components/Button'
 import MultiSelect from 'components/MultiSelect'
 import $ from 'jquery'
+import SpinLoader from 'components/SpinLoader'
 
 @observer
 class EditTeamModal extends React.Component {
   @observable name = ''
 
   componentDidMount () {
-    this.props.fetchAccounts({ type: 'all' })
+    this.props.fetchAccounts({ type: 'all', limit: -1 })
     this.name = this.props.team.name
 
     helpers.UI.inputs()
@@ -70,16 +71,18 @@ class EditTeamModal extends React.Component {
   render () {
     const mappedAccounts = this.props.accounts
       .filter(account => {
-        return account.getIn(['role', 'isAgent']) === true
+        return account.getIn(['role', 'isAgent']) === true && !account.get('deleted')
       })
       .map(account => {
         return { text: account.get('fullname'), value: account.get('_id') }
       })
       .toArray()
+
     const selectedMembers = this.props.team.members
 
     return (
       <BaseModal {...this.props} options={{ bgclose: false }}>
+        <SpinLoader active={this.props.accountsLoading} />
         <div className={'mb-25'}>
           <h2>Edit Team</h2>
         </div>
@@ -120,11 +123,13 @@ EditTeamModal.propTypes = {
   fetchAccounts: PropTypes.func.isRequired,
   unloadAccounts: PropTypes.func.isRequired,
   saveEditTeam: PropTypes.func.isRequired,
-  accounts: PropTypes.object.isRequired
+  accounts: PropTypes.object.isRequired,
+  accountsLoading: PropTypes.bool.isRequired
 }
 
 const mapStateToProps = state => ({
-  accounts: state.accountsState.accounts
+  accounts: state.accountsState.accounts,
+  accountsLoading: state.accountsState.loading
 })
 
 export default connect(

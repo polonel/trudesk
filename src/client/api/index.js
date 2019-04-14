@@ -140,10 +140,13 @@ api.accounts.getWithPage = payload => {
   const type = payload && payload.type ? payload.type : 'all'
   let search = payload && payload.search ? payload.search : ''
   if (search) search = `&search=${search}`
+  const showDeleted = payload && payload.showDeleted ? payload.showDeleted : false
 
-  return axios.get(`/api/v2/accounts?type=${type}&limit=${limit}&page=${page}${search}`).then(res => {
-    return res.data
-  })
+  return axios
+    .get(`/api/v2/accounts?type=${type}&limit=${limit}&page=${page}${search}&showDeleted=${showDeleted}`)
+    .then(res => {
+      return res.data
+    })
 }
 api.accounts.updateUser = payload => {
   return axios.put(`/api/v2/accounts/${payload.username}`, payload).then(res => {
@@ -168,7 +171,7 @@ api.groups.create = payload => {
   })
 }
 api.groups.get = payload => {
-  const limit = payload && payload.limit ? payload.limit : 25
+  const limit = payload && payload.limit ? payload.limit : 50
   const page = payload && payload.page ? payload.page : 0
   const type = payload && payload.type ? `&type=${payload.type}` : ''
 

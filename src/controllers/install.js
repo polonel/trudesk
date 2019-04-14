@@ -144,7 +144,9 @@ installController.install = function (req, res) {
           value: require('../../package.json').version
         })
 
-        return s.save(next)
+        return s.save(function (err) {
+          return next(err)
+        })
       },
       function (next) {
         var Counter = new Counters({

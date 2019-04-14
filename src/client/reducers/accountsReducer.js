@@ -25,11 +25,19 @@ import {
 
 const initialState = {
   accounts: List([]),
-  type: 'customers'
+  type: 'customers',
+  loading: false
 }
 
 const reducer = handleActions(
   {
+    [FETCH_ACCOUNTS.PENDING]: state => {
+      return {
+        ...state,
+        loading: true
+      }
+    },
+
     [FETCH_ACCOUNTS.SUCCESS]: (state, action) => {
       let arr = state.accounts.toArray()
       action.payload.response.accounts.map(i => {
@@ -38,7 +46,8 @@ const reducer = handleActions(
       return {
         ...state,
         accounts: fromJS(arr),
-        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers'
+        type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
+        loading: false
       }
     },
 

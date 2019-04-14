@@ -33,7 +33,7 @@ class CreateTeamModal extends React.Component {
   @observable name = ''
 
   componentDidMount () {
-    this.props.fetchAccounts()
+    this.props.fetchAccounts({ limit: -1 })
 
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
@@ -68,7 +68,7 @@ class CreateTeamModal extends React.Component {
   render () {
     const mappedAccounts = this.props.accounts
       .filter(account => {
-        return account.getIn(['role', 'isAgent']) === true
+        return account.getIn(['role', 'isAgent']) === true && !account.get('deleted')
       })
       .map(account => {
         return { text: account.get('fullname'), value: account.get('_id') }

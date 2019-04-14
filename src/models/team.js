@@ -27,7 +27,7 @@ var teamSchema = mongoose.Schema({
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'accounts',
-      autopopulate: { select: '_id username fullname email title image' }
+      autopopulate: { select: '-hasL2Auth -preferences -__v' }
     }
   ]
 })
@@ -81,7 +81,6 @@ teamSchema.statics.getWithObject = function (obj, callback) {
     .skip(obj.limit * obj.page)
     .limit(obj.limit)
     .sort('name')
-    .populate('members', '_id username fullname email image title')
 
   return q.exec(callback)
 }
@@ -89,9 +88,7 @@ teamSchema.statics.getWithObject = function (obj, callback) {
 teamSchema.statics.getTeamByName = function (name, callback) {
   if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()')
 
-  var q = this.model(COLLECTION)
-    .findOne({ normalized: name })
-    .populate('members', '_id username fullname email image title')
+  var q = this.model(COLLECTION).findOne({ normalized: name })
 
   return q.exec(callback)
 }
@@ -99,7 +96,6 @@ teamSchema.statics.getTeamByName = function (name, callback) {
 teamSchema.statics.getTeams = function (callback) {
   var q = this.model(COLLECTION)
     .find({})
-    .populate('members', '_id username fullname email image title')
     .sort('name')
 
   return q.exec(callback)
@@ -108,7 +104,6 @@ teamSchema.statics.getTeams = function (callback) {
 teamSchema.statics.getTeamsByIds = function (ids, callback) {
   return this.model(COLLECTION)
     .find({ _id: { $in: ids } })
-    .populate('members', '_id username fullname email image title')
     .sort('name')
     .exec(callback)
 }
@@ -126,7 +121,6 @@ teamSchema.statics.getTeamsOfUser = function (userId, callback) {
 
   var q = this.model(COLLECTION)
     .find({ members: userId })
-    .populate('members', '_id username fullname email image title')
     .sort('name')
 
   return q.exec(callback)
@@ -145,9 +139,7 @@ teamSchema.statics.getTeamsOfUserNoPopulate = function (userId, callback) {
 teamSchema.statics.getTeam = function (id, callback) {
   if (_.isUndefined(id)) return callback('Invalid TeamId - TeamSchema.GetTeam()')
 
-  var q = this.model(COLLECTION)
-    .findOne({ _id: id })
-    .populate('members', '_id username fullname email image title')
+  var q = this.model(COLLECTION).findOne({ _id: id })
 
   return q.exec(callback)
 }
