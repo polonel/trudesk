@@ -52,6 +52,7 @@ class GroupsContainer extends React.Component {
         <p style="font-size: 12px;">
             Agents may lose access to resources once this group is deleted.
         </p>
+        <span>Groups that are associated with ticket cannot be deleted.</span>
         `,
       () => {
         this.props.deleteGroup({ _id })

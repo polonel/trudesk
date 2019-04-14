@@ -72,7 +72,7 @@ class CreateAccountModal extends React.Component {
     else this.roleSelectErrorMessage.classList.add('hide')
   }
 
-  onGroupSelectChange (values) {
+  onGroupSelectChange () {
     const selectedGroups = this.groupSelect.getSelected()
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
     else this.groupSelectErrorMessage.classList.add('hide')
@@ -91,23 +91,26 @@ class CreateAccountModal extends React.Component {
       if (isValid) isValid = false
     } else this.roleSelectErrorMessage.classList.add('hide')
 
-    const selectedGroups = this.groupSelect.getSelected()
-    if (!selectedGroups || selectedGroups.length < 1) {
-      this.groupSelectErrorMessage.classList.remove('hide')
-      if (isValid) isValid = false
-    } else this.groupSelectErrorMessage.classList.add('hide')
+    const selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
+    if (selectedGroups) {
+      if (selectedGroups.length < 1) {
+        this.groupSelectErrorMessage.classList.remove('hide')
+        if (isValid) isValid = false
+      } else this.groupSelectErrorMessage.classList.add('hide')
+    }
 
     if (!isValid) return
 
     const payload = {
-      aUsername: this.username,
-      aPass: this.password,
-      aPassConfirm: this.passwordConfirm,
-      aFullname: this.fullname,
-      aTitle: this.title,
-      aEmail: this.email,
-      aRole: this.selectedRole,
-      aGrps: this.groupSelect.getSelected()
+      username: this.username,
+      fullname: this.fullname,
+      title: this.title,
+      email: this.email,
+      groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
+      teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
+      role: this.selectedRole,
+      password: this.password.length > 1 ? this.password : undefined,
+      passwordConfirm: this.passwordConfirm.length > 1 ? this.passwordConfirm : undefined
     }
 
     this.props.createAccount(payload)

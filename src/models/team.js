@@ -105,6 +105,14 @@ teamSchema.statics.getTeams = function (callback) {
   return q.exec(callback)
 }
 
+teamSchema.statics.getTeamsByIds = function (ids, callback) {
+  return this.model(COLLECTION)
+    .find({ _id: { $in: ids } })
+    .populate('members', '_id username fullname email image title')
+    .sort('name')
+    .exec(callback)
+}
+
 teamSchema.statics.getTeamsNoPopulate = function (callback) {
   var q = this.model(COLLECTION)
     .find({})

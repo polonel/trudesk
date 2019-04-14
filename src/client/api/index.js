@@ -129,7 +129,7 @@ api.tickets.createTag = ({ name }) => {
 
 api.accounts = {}
 api.accounts.create = payload => {
-  return axios.post('/api/v1/users/create', payload).then(res => {
+  return axios.post('/api/v2/accounts', payload).then(res => {
     return res.data
   })
 }

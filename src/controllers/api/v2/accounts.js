@@ -24,6 +24,99 @@ var accountsApi = {}
 
 accountsApi.create = function (req, res) {
   var postData = req.body
+  if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
+
+  var savedId = null
+
+  async.series(
+    {
+      user: function (next) {
+        User.create(
+          {
+            username: postData.username,
+            email: postData.email,
+            password: postData.password,
+            fullname: postData.fullname,
+            title: postData.title,
+            role: postData.role
+          },
+          function (err, user) {
+            if (err) return apiUtil.sendApiError(res, 500, err.message)
+
+            savedId = user._id
+
+            return user.populate('role', next)
+          }
+        )
+      },
+      groups: function (next) {
+        if (!postData.groups) return next(null, [])
+
+        Group.getGroups(postData.groups, function (err, groups) {
+          if (err) return next(err)
+
+          async.each(
+            groups,
+            function (group, callback) {
+              group.addMember(savedId, function (err) {
+                if (err) return callback(err)
+                group.save(callback)
+              })
+            },
+            function (err) {
+              if (err) return next(err)
+
+              return next(null, groups)
+            }
+          )
+        })
+      },
+      teams: function (next) {
+        if (!postData.teams) return next()
+
+        Team.getTeamsByIds(postData.teams, function (err, teams) {
+          if (err) return next(err)
+
+          async.each(
+            teams,
+            function (team, callback) {
+              team.addMember(savedId, function () {
+                team.save(callback)
+              })
+            },
+            function (err) {
+              if (err) return next(err)
+
+              return next(null, teams)
+            }
+          )
+        })
+      },
+      departments: function (next) {
+        Department.getUserDepartments(savedId, next)
+      }
+    },
+    function (err, results) {
+      if (err) return apiUtil.sendApiError(res, 500, err.message)
+
+      var user = results.user.toJSON()
+      user.groups = results.groups.map(function (g) {
+        return { _id: g._id, name: g.name }
+      })
+
+      if ((user.role.isAgent || user.role.isAdmin) && results.teams) {
+        user.teams = results.teams.map(function (t) {
+          return { _id: t._id, name: t.name }
+        })
+
+        user.departments = results.departments.map(function (d) {
+          return { _id: d._id, name: d.name }
+        })
+      }
+
+      return apiUtil.sendApiSuccess(res, { account: user })
+    }
+  )
 }
 
 accountsApi.get = function (req, res) {

@@ -175,13 +175,13 @@ class TicketsContainer extends React.Component {
       const cells = []
       for (let k = 0; k < 10; k++) {
         cells.push(
-          <TableCell className={'vam'}>
+          <TableCell key={k} className={'vam'}>
             <div className={'loadingTextAnimation'} />
           </TableCell>
         )
       }
 
-      loadingItems.push(<TableRow>{cells}</TableRow>)
+      loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>)
     }
 
     return (
@@ -253,7 +253,7 @@ class TicketsContainer extends React.Component {
               <TableHeader key={3} width={'23%'} text={'Subject'} />,
               <TableHeader key={4} width={110} text={'Created'} />,
               <TableHeader key={5} width={125} text={'Requester'} />,
-              <TableHeader key={6} text={'Customer'} />,
+              <TableHeader key={6} width={175} text={'Customer'} />,
               <TableHeader key={7} text={'Assignee'} />,
               <TableHeader key={8} width={110} text={'Due Date'} />,
               <TableHeader key={9} text={'Updated'} />

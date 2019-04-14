@@ -22,9 +22,9 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v2/token', controllers.api.v2.common.token)
 
   // Accounts
-  router.get('/api/v2/accounts', middleware.api, apiv2.accounts.get)
-  router.get('/api/v2/accounts', apiv2Auth, apiv2.accounts.create)
-  router.put('/api/v2/accounts/:username', middleware.api, apiv2.accounts.update)
+  router.get('/api/v2/accounts', apiv2Auth, apiv2.accounts.get)
+  router.post('/api/v2/accounts', apiv2Auth, apiv2.accounts.create)
+  router.put('/api/v2/accounts/:username', apiv2Auth, apiv2.accounts.update)
 
   // Tickets
   router.get('/api/v2/tickets', apiv2Auth, apiv2.tickets.get)

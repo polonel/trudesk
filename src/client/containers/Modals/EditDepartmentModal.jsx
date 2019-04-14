@@ -36,7 +36,7 @@ class EditDepartmentModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchTeams()
-    this.props.fetchGroups()
+    this.props.fetchGroups({ type: 'all' })
 
     this.name = this.props.department.get('name')
     this.allGroups = this.props.department.get('allGroups')

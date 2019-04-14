@@ -164,6 +164,16 @@ groupSchema.statics.getAllPublicGroups = function (callback) {
   return q.exec(callback)
 }
 
+groupSchema.statics.getGroups = function (groupIds, callback) {
+  if (_.isUndefined(groupIds)) return callback('Invalid Array of Group IDs - GroupSchema.GetGroups()')
+
+  this.model(COLLECTION)
+    .find({ _id: { $in: groupIds } })
+    .populate('members', '_id username fullname email role preferences image title')
+    .sort('name')
+    .exec(callback)
+}
+
 groupSchema.statics.getAllGroupsOfUser = function (userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid UserId - GroupSchema.GetAllGroupsOfUser()')
 
