@@ -36,7 +36,7 @@ describe('api/users.js', function () {
       aPassConfirm: 'password',
       aFullname: 'New User',
       aEmail: 'new.user.1@trudesk.io',
-      aRole: 'user',
+      aRole: global.userRoleId,
       aTitle: 'My New Title',
       aGrps: []
     }
@@ -124,7 +124,7 @@ describe('api/users.js', function () {
         function (user, cb) {
           var u = {
             aTitle: 'The Title',
-            aRole: 'support'
+            aRole: global.userRoleId
           }
 
           cb(null, u)

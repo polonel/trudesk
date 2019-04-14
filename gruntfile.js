@@ -20,7 +20,7 @@ module.exports = function (grunt) {
 
     watch: {
       web: {
-        files: ['*.js', 'src/**/*.js', 'plugins/**/*.js', '!src/public/**/*.js'],
+        files: ['*.js', 'src/**/*.js', 'plugins/**/*.js', '!src/public/**/*.js', '!src/client/**/*.js'],
         tasks: ['express:web'],
         options: {
           nospawn: true,

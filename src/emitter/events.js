@@ -1,16 +1,16 @@
 /*
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 var _ = require('lodash')
 var path = require('path')
@@ -21,11 +21,15 @@ var util = require('../helpers/utils')
 var templateSchema = require('../models/template')
 var ticketSchema = require('../models/ticket')
 var userSchema = require('../models/user')
+var departmentSchema = require('../models/department')
 var NotificationSchema = require('../models/notification')
 var settingsSchema = require('../models/setting')
 var Email = require('email-templates')
 var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 var permissions = require('../permissions')
+
+var socketUtils = require('../helpers/utils')
+var sharedVars = require('../socketio/index').shared
 
 var notifications = require('../notifications') // Load Push Events
 
@@ -43,12 +47,11 @@ var notifications = require('../notifications') // Load Push Events
         ['tps:enable', 'tps:username', 'tps:apikey', 'gen:siteurl', 'beta:email'],
         function (err, tpsSettings) {
           if (err) return false
-
           var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
           var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
-          var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
-          var baseUrl = _.head(_.filter(tpsSettings), ['name', 'gen:siteurl']).value
-          var betaEnabled = _.head(_.filter(tpsSettings), ['name', 'beta:email'])
+          var tpsApiKey = _.head(_.filter(tpsSettings, ['name', 'tps:apikey']))
+          var baseUrl = _.head(_.filter(tpsSettings, ['name', 'gen:siteurl'])).value
+          var betaEnabled = _.head(_.filter(tpsSettings, ['name', 'beta:email']))
 
           betaEnabled = !betaEnabled ? false : betaEnabled.value
 
@@ -65,83 +68,106 @@ var notifications = require('../notifications') // Load Push Events
               function (c) {
                 var mailer = require('../mailer')
                 var emails = []
-                async.each(
-                  ticket.group.sendMailTo,
-                  function (member, cb) {
-                    if (_.isUndefined(member.email)) return cb()
-                    if (member.deleted) return cb()
 
-                    emails.push(member.email)
+                departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
+                  if (err) return c(err)
 
-                    return cb()
-                  },
-                  function (err) {
-                    if (err) return c(err)
+                  var members = _.flattenDeep(
+                    departments.map(function (department) {
+                      return department.teams.map(function (team) {
+                        return team.members.map(function (member) {
+                          return member
+                        })
+                      })
+                    })
+                  )
 
-                    emails = _.uniq(emails)
+                  members = _.concat(members, ticket.group.members)
 
-                    var email = null
-                    if (betaEnabled) {
-                      email = new Email({
-                        // views: {
-                        //   root: templateDir,
-                        //   options: {
-                        //     extension: 'handlebars'
-                        //   }
-                        // }
-                        render: function (view, locals) {
-                          return new Promise(function (resolve, reject) {
-                            if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
-                            templateSchema.findOne({ name: view }, function (err, template) {
-                              if (err) return reject(err)
-                              if (!template) return reject(new Error('Invalid Template'))
-                              var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
-                              email.juiceResources(html).then(resolve)
+                  members = _.uniqBy(members, function (i) {
+                    return i._id
+                  })
+
+                  async.each(
+                    members,
+                    function (member, cb) {
+                      if (member.deleted) return cb()
+                      socketUtils.sendToUser(
+                        sharedVars.sockets,
+                        sharedVars.usersOnline,
+                        member.username,
+                        '$trudesk:client:ticket:created',
+                        ticket
+                      )
+
+                      if (_.isUndefined(member.email)) return cb()
+
+                      emails.push(member.email)
+
+                      return cb()
+                    },
+                    function (err) {
+                      if (err) return c(err)
+
+                      emails = _.uniq(emails)
+
+                      var email = null
+                      if (betaEnabled) {
+                        email = new Email({
+                          render: function (view, locals) {
+                            return new Promise(function (resolve, reject) {
+                              if (!global.Handlebars) return reject(new Error('Could not load global.Handlebars'))
+                              templateSchema.findOne({ name: view }, function (err, template) {
+                                if (err) return reject(err)
+                                if (!template) return reject(new Error('Invalid Template'))
+                                var html = global.Handlebars.compile(template.data['gjs-fullHtml'])(locals)
+                                email.juiceResources(html).then(resolve)
+                              })
+                            })
+                          }
+                        })
+                      } else {
+                        email = new Email({
+                          views: {
+                            root: templateDir,
+                            options: {
+                              extension: 'handlebars'
+                            }
+                          }
+                        })
+                      }
+                      templateSchema.findOne({ name: 'new-ticket' }, function (err, template) {
+                        if (err) return c(err)
+                        if (!template) return c()
+
+                        var context = { base_url: baseUrl, ticket: ticket }
+
+                        email
+                          .render('new-ticket', context)
+                          .then(function (html) {
+                            var subjectParsed = global.HandleBars.compile(template.subject)(context)
+                            var mailOptions = {
+                              to: emails.join(),
+                              subject: subjectParsed,
+                              html: html,
+                              generateTextFromHTML: true
+                            }
+
+                            mailer.sendMail(mailOptions, function (err) {
+                              if (err) winston.warn('[trudesk:events:ticket:created] - ' + err)
                             })
                           })
-                        }
-                      })
-                    } else {
-                      email = new Email({
-                        views: {
-                          root: templateDir,
-                          options: {
-                            extension: 'handlebars'
-                          }
-                        }
+                          .catch(function (err) {
+                            winston.warn('[trudesk:events:ticket:created] - ' + err)
+                            return c(err)
+                          })
+                          .finally(function () {
+                            return c()
+                          })
                       })
                     }
-                    templateSchema.findOne({ name: 'new-ticket' }, function (err, template) {
-                      if (err) return c(err)
-                      if (!template) return c()
-
-                      var context = { base_url: baseUrl, ticket: ticket }
-
-                      email
-                        .render('new-ticket', context)
-                        .then(function (html) {
-                          var subjectParsed = global.HandleBars.compile(template.subject)(context)
-                          var mailOptions = {
-                            to: emails.join(),
-                            subject: subjectParsed,
-                            html: html,
-                            generateTextFromHTML: true
-                          }
-
-                          mailer.sendMail(mailOptions, function (err) {
-                            if (err) winston.warn('[trudesk:events:ticket:created] - ' + err)
-                          })
-                        })
-                        .catch(function (err) {
-                          winston.warn('[trudesk:events:ticket:created] - ' + err)
-                          return c(err)
-                        })
-                        .finally(function () {
-                          return c()
-                        })
-                    })
-                  }
-                )
+                  )
+                })
               },
               function (c) {
                 if (!ticket.group.public) return c()
@@ -162,7 +188,7 @@ var notifications = require('../notifications') // Load Push Events
                           tpsEnabled: tpsEnabled,
                           tpsUsername: tpsUsername,
                           tpsApiKey: tpsApiKey,
-                          hostname: hostname
+                          hostname: hostname || baseUrl
                         },
                         { type: 1, ticket: ticketPushClone }
                       )
@@ -175,27 +201,48 @@ var notifications = require('../notifications') // Load Push Events
               function (c) {
                 // Public Ticket Notification is handled above.
                 if (ticket.group.public) return c()
-                async.each(
-                  ticket.group.members,
-                  function (member, cb) {
-                    if (_.isUndefined(member)) return cb()
 
-                    return saveNotification(member, ticket, cb)
-                  },
-                  function (err) {
-                    sendPushNotification(
-                      {
-                        tpsEnabled: tpsEnabled,
-                        tpsUsername: tpsUsername,
-                        tpsApiKey: tpsApiKey,
-                        hostname: hostname
-                      },
-                      { type: 1, ticket: ticket }
-                    )
+                departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
+                  if (err) return c(err)
 
-                    return c(err)
-                  }
-                )
+                  var members = _.flattenDeep(
+                    departments.map(function (department) {
+                      return department.teams.map(function (team) {
+                        return team.members.map(function (member) {
+                          return member
+                        })
+                      })
+                    })
+                  )
+
+                  members = _.concat(members, ticket.group.members)
+
+                  members = _.uniqBy(members, function (i) {
+                    return i._id
+                  })
+
+                  async.each(
+                    members,
+                    function (member, cb) {
+                      if (_.isUndefined(member)) return cb()
+
+                      return saveNotification(member, ticket, cb)
+                    },
+                    function (err) {
+                      sendPushNotification(
+                        {
+                          tpsEnabled: tpsEnabled,
+                          tpsUsername: tpsUsername,
+                          tpsApiKey: tpsApiKey,
+                          hostname: hostname || baseUrl
+                        },
+                        { type: 1, ticket: ticket }
+                      )
+
+                      return c(err)
+                    }
+                  )
+                })
               }
             ],
             function (err) {
@@ -316,16 +363,19 @@ var notifications = require('../notifications') // Load Push Events
   }
 
   emitter.on('ticket:updated', function (ticket) {
-    io.sockets.emit('updateTicketStatus', {
-      tid: ticket._id,
-      status: ticket.status
-    })
+    // io.sockets.emit('updateTicketStatus', {
+    //   tid: ticket._id,
+    //   owner: ticket.owner,
+    //   status: ticket.status
+    // })
 
-    io.sockets.emit('ticket:updategrid')
+    io.sockets.emit('$trudesk:client:ticket:updated', { ticket: ticket })
+    // io.sockets.emit('ticket:updategrid')
   })
 
   emitter.on('ticket:deleted', function (oId) {
     io.sockets.emit('ticket:delete', oId)
+    io.sockets.emit('$trudesk:client:ticket:deleted', oId)
   })
 
   emitter.on('ticket:subscriber:update', function (data) {
@@ -518,5 +568,11 @@ var notifications = require('../notifications') // Load Push Events
 
   emitter.on('trudesk:profileImageUpdate', function (data) {
     io.sockets.emit('trudesk:profileImageUpdate', data)
+  })
+
+  emitter.on('$trudesk:flushRoles', function () {
+    require('../permissions').register(function () {
+      io.sockets.emit('$trudesk:flushRoles')
+    })
   })
 })()

@@ -758,6 +758,67 @@ angular
       }
     }
   })
+  .factory('Roles', function ($q, $http, $localStorage) {
+    return {
+      flushRoles: function () {
+        return new Promise(function (resolve, reject) {
+          $http
+            .get('http://' + $localStorage.server + '/api/v1/roles', {
+              headers: {
+                accesstoken: $localStorage.accessToken
+              }
+            })
+            .then(function (res) {
+              if (res.data) {
+                var obj = { roles: $localStorage.roles.roles, roleOrder: $localStorage.roles.roleOrder }
+                if (res.data.roles) obj.roles = res.data.roles
+                if (res.data.roleOrder) obj.roleOrder = res.data.roleOrder
+
+                $localStorage.roles = obj
+
+                return resolve(obj)
+              }
+            })
+            .catch(function (err) {
+              return reject(err)
+            })
+        })
+      },
+      canUser: function (a) {
+        var roles = $localStorage.roles.roles
+        var rolePerm = _.find(roles, function (r) {
+          return r._id.toString() === $localStorage.loggedInUser.role._id.toString()
+        })
+
+        if (_.isUndefined(rolePerm)) return false
+
+        var role = rolePerm._id
+        if (_.indexOf(rolePerm.grants, '*') !== -1) return true
+
+        var actionType = a.split(':')[0]
+        var action = a.split(':')[1]
+
+        if (_.isUndefined(actionType) || _.isUndefined(action)) return false
+
+        var result = _.filter(rolePerm.grants, function (value) {
+          if (value.lastIndexOf(actionType + ':') === 0) return value
+          // if (_.startsWith(value, actionType + ':')) return value
+        })
+
+        if (_.isUndefined(result) || _.size(result) < 1) return false
+        if (_.size(result) === 1) {
+          if (result[0] === '*') return true
+        }
+
+        var typePerm = result[0].split(':')[1].split(' ')
+        typePerm = _.uniq(typePerm)
+
+        if (_.indexOf(typePerm, '*') !== -1) return true
+
+        return _.indexOf(typePerm, action) !== -1
+      }
+    }
+  })
   .factory('Users', function ($q, $http, $localStorage) {
     return {
       getImage: function (url) {
@@ -1137,7 +1198,6 @@ angular
       }
     }
   })
-
 ;(function () {
   return angular.module('trudesk.controllers', [
     'trudesk.controllers.login',
@@ -1769,7 +1829,6 @@ angular
               delete list[i].accessToken
               delete list[i].deleted
               delete list[i].groups
-              delete list[i].iOSDeviceTokens
               delete list[i].lastOnline
               delete list[i].preferences
               delete list[i].role
@@ -2209,7 +2268,8 @@ angular
     $ionicPopover,
     $ionicActionSheet,
     Tickets,
-    Users
+    Users,
+    Roles
   ) {
     $ionicNavBarDelegate.showBackButton(true)
 
@@ -2237,10 +2297,12 @@ angular
       note: ''
     }
 
-    $scope.isSupport =
-      $localStorage.loggedInUser.role === 'admin' ||
-      $localStorage.loggedInUser.role === 'mod' ||
-      $localStorage.loggedInUser.role === 'support'
+    $scope.hasNotes = Roles.canUser('tickets:notes')
+    $scope.isAgent = Roles.canUser('agent:*') || Roles.canUser('admin:*')
+    Roles.flushRoles().then(function () {
+      $scope.hasNotes = Roles.canUser('tickets:notes')
+      $scope.isAgent = Roles.canUser('agent:*') || Roles.canUser('admin:*')
+    })
 
     $ionicModal
       .fromTemplateUrl('templates/modals/modal-ticket-details.html', {
@@ -2288,7 +2350,7 @@ angular
       if ($scope.ticket.assignee !== undefined && $scope.ticket.assignee.image === undefined)
         $scope.ticket.assignee.image = 'defaultProfile.jpg'
 
-      if ($scope.isSupport)
+      if ($scope.hasNotes)
         $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date')
       else $scope.ticket.commentsMerged = $scope.ticket.comments
     })
@@ -2460,7 +2522,7 @@ angular
             .then(function successCallback (response) {
               $scope.ticket = response.data.ticket
               //Merge Arrays for Note Displaying
-              if ($scope.isSupport)
+              if ($scope.hasNotes)
                 $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date')
               else $scope.ticket.commentsMerged = $scope.ticket.comments
 
@@ -2494,7 +2556,7 @@ angular
             .then(function successCallback (response) {
               $scope.ticket = response.data.ticket
 
-              if ($scope.isSupport)
+              if ($scope.hasNotes)
                 $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date')
               else $scope.ticket.commentsMerged = $scope.tickets.comments
 
@@ -2529,7 +2591,7 @@ angular
           if ($scope.ticket.assignee !== undefined && $scope.ticket.assignee.image === undefined)
             $scope.ticket.assignee.image = 'defaultProfile.jpg'
 
-          if ($scope.isSupport)
+          if ($scope.hasNotes)
             $scope.ticket.commentsMerged = _.sortBy(_.union($scope.ticket.comments, $scope.ticket.notes), 'date')
           else $scope.ticket.commentsMerged = $scope.ticket.comments
 
@@ -2577,7 +2639,8 @@ angular
     Tickets,
     Users,
     Groups,
-    TicketTypes
+    TicketTypes,
+    Roles
   ) {
     $ionicNavBarDelegate.showBackButton(true)
 
@@ -2622,10 +2685,14 @@ angular
       ticket: ''
     }
 
-    $scope.isSupport =
-      $localStorage.loggedInUser.role == 'admin' ||
-      $localStorage.loggedInUser.role == 'mod' ||
-      $localStorage.loggedInUser.role == 'support'
+    $scope.hasNotes = Roles.canUser('tickets:notes')
+    $scope.isAgent = Roles.canUser('agent:*') || Roles.canUser('admin:*')
+    Roles.flushRoles().then(function () {
+      $timeout(function () {
+        $scope.hasNotes = Roles.canUser('tickets:notes')
+        $scope.isAgent = Roles.canUser('agent:*') || Roles.canUser('admin:*')
+      }, 1)
+    })
 
     $scope.showSnackbar = function (text, error) {
       if (_.isUndefined(error)) error = false
@@ -2648,7 +2715,7 @@ angular
       $ionicListDelegate.closeOptionButtons()
       var buttons = [{ text: 'Add Comment' }]
 
-      if ($scope.isSupport) {
+      if ($scope.isAgent) {
         buttons.push({ text: 'Open' })
         buttons.push({ text: 'Pending' })
         buttons.push({ text: 'Closed' })

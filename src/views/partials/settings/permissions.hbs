@@ -1,0 +1,395 @@
+<div data-settings-id="settings-permissions" {{#ifeq subnav compare='settings-permissions'}} class="active" {{/ifeq}} ng-controller="PermissionsCtrl" ng-init="init();">
+    <!-- Permissions -->
+    <div class="setting-item-wrap uk-margin-medium-bottom">
+        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+            <div class="left">
+                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Permissions
+                    <i class="material-icons"
+                       style="color: #888;
+                              font-size: 16px;
+                              cursor: pointer;
+                              line-height: 18px;"
+                       data-uk-tooltip="{cls:'long-text'}" title="Permission order is top down. ex: Admins at top; Users at bottom">help</i>
+                </h6>
+                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                    Create / Modify User Permissions
+                </h5>
+            </div>
+            <div class="right" style="position:relative;">
+                <div style="margin: 12px 15px 0 0;">
+                    <button class="uk-float-right md-btn md-btn-flat md-btn-flat-success md-btn-wave-light" ng-click="showCreateRoleWindow($event);">Create</button>
+                </div>
+            </div>
+            <hr class="nomargin-top clear">
+            <div class="panel-body2" style="">
+                <div class="uk-grid uk-grid-collapse">
+                    <div class="uk-width-1-4 permission-roles br scrollable" style="min-height: 400px; max-height: 2000px;">
+                        <ul id="permissionList" class="settings-categories" style="border: none; height: auto;">
+                            {{#forEach data.roles}}
+                                <li data-key="{{_id}}" class="nopadding {{#ifeq isFirst compare=true}} active {{/ifeq}}" ng-click="switchRoles($event);">
+                                    <div class="setting-category clearfix" style="padding: 10px 20px">
+                                        <span class="drag-handle uk-display-inline-block uk-float-left mr-10" style="padding-top: 2px;"><i class="material-icons">drag_handle</i></span>
+                                        <h3>{{name}}</h3>
+                                    </div>
+                                </li>
+                            {{/forEach}}
+                        </ul>
+                    </div>
+                    <div class="uk-width-3-4" style="padding: 20px 15px 15px 15px;">
+                        {{#each data.roles}}
+                            <div data-role-id="{{_id}}" {{#ifeq isFirst compare=true}}class="active" {{else}} class="hide"{{/ifeq}} style="{{#ifeq isFirst compare=true}}opacity: 1; {{else}}opacity: 0; {{/ifeq}} height: 100%;">
+                                <form id="role-{{_id}}-permissions" ng-submit="saveRolePermissions('{{_id}}', $event);" data-role-id="{{_id}}">
+                                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                            <div class="left">
+                                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Admin
+                                                    <i class="material-icons"
+                                                       style="color: #888;
+                                                              font-size: 16px;
+                                                              cursor: pointer;
+                                                              line-height: 18px;"
+                                                       data-uk-tooltip="{cls:'long-text'}" title="Role is considered an admin. Enabling management of the trudesk instance.">help</i>
+                                                </h6>
+                                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                    Is this role defined as an admin role?
+                                                </h5>
+                                            </div>
+                                            <div class="right" style="position:relative;">
+                                                <!-- Switch -->
+                                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                    <label>
+                                                        Yes
+                                                        <input type="checkbox" id="perm-is-admin-{{id}}" name="perm-is-admin" {{#compare isAdmin '===' true}} checked {{/compare}}>
+                                                        <span class="lever"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                            <div class="left">
+                                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Support Agent
+                                                    <i class="material-icons"
+                                                       style="color: #888;
+                                                              font-size: 16px;
+                                                              cursor: pointer;
+                                                              line-height: 18px;"
+                                                       data-uk-tooltip="{cls:'long-text'}" title="Role is considered an agent role. Enabling agent views and displaying in agent lists.">help</i>
+                                                </h6>
+                                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                    Is this role defined as an agent role?
+                                                </h5>
+                                            </div>
+                                            <div class="right" style="position:relative;">
+                                                <!-- Switch -->
+                                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                    <label>
+                                                        Yes
+                                                        <input type="checkbox" id="perm-is-agent-{{id}}" name="perm-is-agent" {{#compare isAgent '===' true}} checked {{/compare}}>
+                                                        <span class="lever"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                                        <div class="panel trupanel nopadding no-hover-shadow" style="min-height: 60px;">
+                                            <div class="left">
+                                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Enable Hierarchy</h6>
+                                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                    Allow this role to manage resources owned by roles defined under it
+                                                </h5>
+                                            </div>
+                                            <div class="right" style="position:relative;">
+                                                <!-- Switch -->
+                                                <div class="md-switch md-green" style="margin: 20px 0 0 0;">
+                                                    <label>
+                                                        Enabled
+                                                        <input type="checkbox" id="perm-enable-hierarchy-{{id}}" name="perm-enable-hierarchy" {{#compare hierarchy '===' true}} checked {{/compare}}>
+                                                        <span class="lever"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tickets -->
+                                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                                            <div class="left">
+                                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Tickets</h6>
+                                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                    Ticket Permissions
+                                                </h5>
+                                            </div>
+                                            <div class="right" style="position:relative;">
+                                                <!-- Switch -->
+                                                <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                    <label>
+                                                        All
+                                                        <input type="checkbox" id="perm-tickets-all-{{id}}" name="perm-tickets-all" {{#canUserRole _id 'ticket:*'}} checked {{/canUserRole}}>
+                                                        <span class="lever"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+                                            <!-- Create Tickets-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Create</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-tickets-create-{{id}}" name="perm-tickets-create" {{#canUserRole _id "ticket:create"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--View Tickets-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">View</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-tickets-view-{{id}}" name="perm-tickets-view" {{#canUserRole _id "ticket:view"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--Edit Tickets-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Edit</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-tickets-edit-{{id}}" name="perm-tickets-edit" {{#canUserRole _id "ticket:edit"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--Delete Tickets-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Delete</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-tickets-delete-{{id}}" name="perm-tickets-delete" {{#canUserRole _id "ticket:delete"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <!-- Accounts -->
+                                    <div class="setting-item-wrap uk-margin-medium-bottom">
+                                        <div class="panel trupanel nopadding no-hover-shadow uk-overflow-hidden" style="min-height: 60px; height: auto;">
+                                            <div class="left">
+                                                <h6 style="padding: 0 0 0 15px; margin: 15px 0 0 0; font-size: 16px; line-height: 14px;">Accounts</h6>
+                                                <h5 style="padding: 0 0 10px 15px; margin: 2px 0 0 0; font-size: 12px;" class="uk-text-muted">
+                                                    Account Permissions
+                                                </h5>
+                                            </div>
+                                            <div class="right" style="position:relative;">
+                                                <!-- Switch -->
+                                                <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                    <label>
+                                                        All
+                                                        <input type="checkbox" id="perm-accounts-all-{{id}}" name="perm-accounts-all" {{#canUserRole _id 'accounts:*'}} checked {{/canUserRole}}>
+                                                        <span class="lever"></span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!-- Create Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Create</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-create-{{id}}" name="perm-accounts-create" {{#canUserRole _id "account:create"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--View Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">View</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-view-{{id}}" name="perm-accounts-view" {{#canUserRole _id "account:view"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--Edit Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Edit</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-edit-{{id}}" name="perm-accounts-edit" {{#canUserRole _id "account:edit"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="nomargin-top clear">
+
+                                            <!--Delete Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Delete</h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-delete-{{id}}" name="perm-accounts-delete" {{#canUserRole _id "account:delete"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--<hr class="nomargin-top clear">-->
+
+                                            <!--Import Accounts-->
+                                            <div class="panel-body2 bg-warn" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 class="text-dark" style="padding: 0 0 0 15px; margin: 20px 0; font-size: 18px; line-height: 14px;">Special Permissions</h6>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <!--<hr class="nomargin-top clear">-->
+
+                                            <!--Import Accounts-->
+                                            <div class="panel-body2" style="padding: 0 10px;">
+                                                <div class="uk-clearfix">
+                                                    <div class="left">
+                                                        <h6 style="padding: 0 0 0 15px; margin: 20px 0; font-size: 16px; line-height: 14px;">Import
+                                                            <i class="material-icons"
+                                                               style="color: #888;
+                                                              font-size: 14px;
+                                                              cursor: pointer;
+                                                              vertical-align: middle;"
+                                                               data-uk-tooltip="{cls:'long-text'}" title="Requires Create Permission">help</i>
+                                                        </h6>
+                                                    </div>
+                                                    <div class="right" style="position:relative;">
+                                                        <!-- Switch -->
+                                                        <div class="md-switch md-green" style="margin: 18px 0 0 0;">
+                                                            <label>
+                                                                Allow
+                                                                <input type="checkbox" id="perm-accounts-import-{{id}}" name="perm-accounts-import" {{#canUserRole _id "account:import"}} checked {{/canUserRole}}>
+                                                                <span class="lever"></span>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div style="margin-top: 25px;">
+                                        <div class="box uk-clearfix">
+                                            <div class="uk-float-right" style="padding-top: 10px;">
+                                                <button type="submit" class="md-btn md-btn-success">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="mt-10 mb-10" />
+
+                                    <div style="margin-top: 25px;">
+                                        <h2 class="text-light">Danger Zone</h2>
+                                        <div class="danger-zone">
+                                            <div class="dz-box uk-clearfix">
+                                                <div class="uk-float-left">
+                                                    <h5>Delete this Role</h5>
+                                                    <p>Once you delete this permission role, there is no going back. <br /> All users with this role will need a new role during deletion.</p>
+                                                </div>
+                                                <div class="uk-float-right" style="padding-top: 10px;">
+                                                    <button type="button" class="md-btn md-btn-small md-btn-danger" ng-click="showDeleteTicketType('{{_id}}', true)">Delete</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        {{/each}}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,16 +1,16 @@
-/**
-  .                              .o8                     oooo
-.o8                             "888                     `888
-.o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-"888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
-========================================================================
-Created:    02/10/2015
-Author:     Chris Brame
-
-**/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 define([
   'jquery',
   'angular',
@@ -26,8 +26,6 @@ define([
   'angularjs/controllers/notices',
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
-  'angularjs/controllers/settings',
-  'angularjs/controllers/settings-backup',
   'angularjs/controllers/editor',
   'angularjs/controllers/settingsElasticSearch'
 ], function ($, angular, _) {
@@ -44,21 +42,8 @@ define([
       'trudesk.controllers.notices',
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
-      'trudesk.controllers.settings',
-      'trudesk.controllers.settings.backup',
       'trudesk.controllers.editor',
       'trudesk.controllers.settingsElasticSearch'
     ])
-    .controller('TrudeskController', function ($rootScope, $scope) {
-      $scope.submitForm = function (formName, $event) {
-        if (_.isNull(formName) || _.isUndefined(formName)) return true
-
-        $event.preventDefault()
-
-        var form = $('#' + formName)
-        if (!_.isUndefined(form)) {
-          form.submit()
-        }
-      }
-    })
+    .controller('TrudeskController', function ($rootScope, $scope) {})
 })

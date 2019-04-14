@@ -291,93 +291,16 @@ ticketsController.processor = function (req, res) {
   content.title = processor.title
   content.nav = processor.nav
   content.subnav = processor.subnav
+  content.view = processor.pagetype
 
   content.data = {}
   content.data.user = req.user
   content.data.common = req.viewdata
 
   var object = processor.object
-  object.limit = object.limit === 1 ? 10 : object.limit
+  content.data.page = object.page
 
-  content.data.filter = object.filter
-
-  var userGroups = []
-
-  async.waterfall(
-    [
-      function (callback) {
-        groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
-          if (err) return callback(err)
-          userGroups = grps
-          if (permissions.canThis(req.user.role, 'ticket:public')) {
-            groupSchema.getAllPublicGroups(function (err, groups) {
-              if (err) return callback(err)
-              userGroups = groups.concat(grps)
-
-              return callback(null, userGroups)
-            })
-          } else {
-            return callback(err, userGroups)
-          }
-        })
-      },
-      function (grps, callback) {
-        ticketSchema.getTicketsWithObject(grps, object, function (err, results) {
-          if (err) return callback(err)
-
-          if (!permissions.canThis(req.user.role, 'notes:view')) {
-            _.each(results, function (ticket) {
-              ticket.notes = []
-            })
-          }
-
-          return callback(null, results)
-        })
-      }
-    ],
-    function (err, results) {
-      if (err) return handleError(res, err)
-
-      // Ticket Data
-      content.data.tickets = results
-
-      var countObject = {
-        status: object.status,
-        assignedSelf: object.assignedSelf,
-        assignedUserId: object.user,
-        unassigned: object.unassigned,
-        filter: object.filter
-      }
-
-      // Get Pagination
-      ticketSchema.getCountWithObject(userGroups, countObject, function (err, totalCount) {
-        if (err) return handleError(res, err)
-
-        content.data.pagination = {}
-        content.data.pagination.type = processor.pagetype
-        content.data.pagination.currentpage = object.page
-        content.data.pagination.start = object.page === 0 ? 1 : object.page * object.limit
-        content.data.pagination.end = object.page === 0 ? object.limit : object.page * object.limit + object.limit
-        content.data.pagination.enabled = false
-
-        content.data.pagination.total = totalCount
-        if (content.data.pagination.total > object.limit) {
-          content.data.pagination.enabled = true
-        }
-
-        content.data.pagination.prevpage = object.page === 0 ? 0 : Number(object.page) - 1
-        content.data.pagination.prevEnabled = object.page !== 0
-        content.data.pagination.nextpage =
-          object.page * object.limit + object.limit <= content.data.pagination.total
-            ? Number(object.page) + 1
-            : object.page
-        content.data.pagination.nextEnabled = object.page * object.limit + object.limit <= content.data.pagination.total
-        content.data.user = req.user
-
-        res.render(processor.renderpage, content)
-      })
-    }
-  )
+  return res.render(processor.renderpage, content)
 }
 
 /**
@@ -406,7 +329,7 @@ ticketsController.print = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'ticket:public')
+    var hasPublic = permissions.canThis(user.role, 'tickets:public')
 
     if (!_.some(ticket.group.members, user._id)) {
       if (ticket.group.public && hasPublic) {
@@ -417,7 +340,7 @@ ticketsController.print = function (req, res) {
       }
     }
 
-    if (!permissions.canThis(user.role, 'notes:view')) {
+    if (!permissions.canThis(user.role, 'tickets:notes')) {
       ticket.notes = []
     }
 
@@ -472,24 +395,63 @@ ticketsController.single = function (req, res) {
     if (err) return handleError(res, err)
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
-    var hasPublic = permissions.canThis(user.role, 'ticket:public')
-    if (!_.some(ticket.group.members, user._id)) {
-      if (ticket.group.public && hasPublic) {
-        // Blank to bypass
-      } else {
-        winston.warn('User access ticket outside of group - UserId: ' + user._id)
-        return res.redirect('/tickets')
+    var departmentSchema = require('../models/department')
+    async.waterfall(
+      [
+        function (next) {
+          if (!req.user.role.isAdmin && !req.user.role.isAgent) {
+            return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
+          }
+
+          departmentSchema.getUserDepartments(req.user._id, function (err, departments) {
+            if (err) return next(err)
+            if (_.some(departments, { allGroups: true })) {
+              return groupSchema.find({}, next)
+            }
+
+            var groups = _.flattenDeep(
+              departments.map(function (d) {
+                return d.groups
+              })
+            )
+
+            return next(null, groups)
+          })
+        },
+        function (userGroups, next) {
+          var hasPublic = permissions.canThis(user.role, 'tickets:public')
+          var groupIds = userGroups.map(function (g) {
+            return g._id
+          })
+
+          if (!_.some(groupIds, ticket.group._id)) {
+            if (ticket.group.public && hasPublic) {
+              // Blank to bypass
+            } else {
+              winston.warn('User access ticket outside of group - UserId: ' + user._id)
+              return res.redirect('/tickets')
+            }
+          }
+
+          if (!permissions.canThis(user.role, 'comments:view')) ticket.comments = []
+
+          if (!permissions.canThis(user.role, 'tickets:notes')) ticket.notes = []
+
+          content.data.ticket = ticket
+          content.data.ticket.priorityname = ticket.priority.name
+
+          return next()
+        }
+      ],
+      function (err) {
+        if (err) {
+          winston.warn(err)
+          return res.redirect('/tickets')
+        }
+
+        return res.render('subviews/singleticket', content)
       }
-    }
-
-    if (!permissions.canThis(user.role, 'notes:view')) {
-      ticket.notes = []
-    }
-
-    content.data.ticket = ticket
-    content.data.ticket.priorityname = ticket.priority.name
-
-    return res.render('subviews/singleticket', content)
+    )
   })
 }
 

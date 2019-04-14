@@ -13,11 +13,8 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var GroupSchema = require('../../../models/group')
-
 var ticketSchema = require('../../../models/ticket')
 
 var apiGroups = {}
@@ -43,23 +40,36 @@ var apiGroups = {}
 apiGroups.get = function (req, res) {
   var user = req.user
   var permissions = require('../../../permissions')
-  var hasPublic = permissions.canThis(user.role, 'ticket:public')
+  var hasPublic = permissions.canThis(user.role, 'tickets:public')
 
-  GroupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
-    if (err) return res.status(400).json({ success: false, error: err.message })
+  if (user.role.isAgent || user.role.isAdmin) {
+    GroupSchema.getAllGroups(function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
 
-    if (hasPublic) {
-      GroupSchema.getAllPublicGroups(function (err, grps) {
-        if (err) return res.status(400).json({ success: false, error: err })
+      if (!hasPublic)
+        groups = _.filter(function (g) {
+          return !g.public
+        })
 
-        groups = groups.concat(grps)
-
-        return res.json({ success: true, groups: groups })
-      })
-    } else {
       return res.json({ success: true, groups: groups })
-    }
-  })
+    })
+  } else {
+    GroupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      if (hasPublic) {
+        GroupSchema.getAllPublicGroups(function (err, grps) {
+          if (err) return res.status(400).json({ success: false, error: err })
+
+          groups = groups.concat(grps)
+
+          return res.json({ success: true, groups: groups })
+        })
+      } else {
+        return res.json({ success: true, groups: groups })
+      }
+    })
+  }
 }
 
 /**

@@ -25,6 +25,7 @@ var events = {}
 function register (socket) {
   events.onSetUserIdle(socket)
   events.onSetUserActive(socket)
+  events.onUpdateUsers(socket)
   events.updateOnlineBubbles(socket)
   events.updateConversationsNotifications(socket)
   events.spawnChatWindow(socket)
@@ -44,6 +45,10 @@ function eventLoop () {
   updateUsers()
   updateOnlineBubbles()
   updateConversationsNotifications()
+}
+
+events.onUpdateUsers = function (socket) {
+  socket.on('updateUsers', updateUsers)
 }
 
 events.onSetUserIdle = function (socket) {

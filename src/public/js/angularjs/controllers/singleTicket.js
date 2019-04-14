@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define([
   'angular',
@@ -32,6 +32,7 @@ define([
     .module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
     .controller('singleTicket', function (SessionService, $window, $rootScope, $scope, $http, $timeout, $q, $log) {
       $scope.loggedInAccount = SessionService.getUser()
+      onSocketUpdateTicketDueDate()
 
       var mdeToolbarItems = [
         {
@@ -159,8 +160,8 @@ define([
       $scope.showEditWindow = function (type, showSubject, commentNoteId) {
         var $editWindow = $('#edit-ticket-window')
         if ($editWindow.length < 1) return false
-        var text = ''
         var ticketId = $('#__ticketId').text()
+        var text = ''
         $editWindow.attr('data-ticket-id', ticketId)
 
         if (type.toLowerCase() === 'issue') {
@@ -193,6 +194,7 @@ define([
           $subjectWrap.attr('data-active', false)
         } else {
           var subjectText = ''
+          $subjectWrap.show()
           if (type.toLowerCase() === 'issue') {
             subjectText = $('.initial-issue > .issue-text > .subject-text').text()
           }
@@ -432,7 +434,7 @@ define([
       })
 
       var groupHttpGet = $http
-        .get('/api/v1/groups')
+        .get('/api/v2/groups')
         .success(function (data) {
           _.each(data.groups, function (item) {
             $scope.groups.push(item)
@@ -476,6 +478,40 @@ define([
         if (id.length > 0) {
           socket.ui.setTicketGroup(id, $scope.selectedGroup)
         }
+      }
+
+      $scope.updateTicketDueDate = function () {
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, $scope.dueDate)
+        }
+      }
+
+      $scope.clearDueDate = function ($event) {
+        $event.preventDefault()
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, null)
+        }
+      }
+
+      function onSocketUpdateTicketDueDate () {
+        socket.socket.removeAllListeners('updateTicketDueDate')
+        socket.socket.on('updateTicketDueDate', function (data) {
+          $timeout(function () {
+            if ($scope.ticketId === data._id)
+              if (data.dueDate) $scope.dueDate = helpers.formatDate(data.dueDate, helpers.getShortDateFormat())
+              else $scope.dueDate = ''
+          }, 0)
+          // var dueDateInput = $('input#tDueDate[data-ticketId="' + data._id + '"]')
+          // if (dueDateInput.length > 0) {
+          //   $scope.dueDate = helpers.formatDate(data.duedate, helpers.getShortDateFormat())
+          // } else {
+          //   dueDateInput = $('div#tDueDate[data-ticketId="' + data._id + '"]')
+          //   if (dueDateInput.length > 0)
+          //     dueDateInput.html(helpers.formatDate(data.duedate, helpers.getShortDateFormat()))
+          // }
+        })
       }
 
       $scope.updateTicketIssue = function () {
@@ -582,8 +618,8 @@ define([
             UIkit.modal('#addTagModal').hide()
           })
           .error(function (e) {
-            $log.log('[trudesk:singleTicket:submitAddTags] - ' + e)
-            helpers.UI.showSnackbar('Error: ' + e.message, true)
+            $log.log('[trudesk:singleTicket:submitAddTags] - ', e)
+            helpers.UI.showSnackbar('Error: ' + e.error, true)
 
             UIkit.modal('#addTagModal').hide()
           })

@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define('pages/singleTicket', [
   'jquery',
@@ -205,62 +205,6 @@ define('pages/singleTicket', [
     }
   }
 
-  function onEditCommentClick (e) {
-    var self = $(e.currentTarget)
-    if (_.isUndefined(self)) {
-      return true
-    }
-
-    var commentId = self.attr('data-commentId')
-    if (commentId.length > 0) {
-      var commentForm = $('.edit-comment-form[data-commentid="' + commentId + '"]')
-      if (commentForm.length < 1) return true
-      var commentText = $('.ticket-comment[data-commentid="' + commentId + '"]')
-        .find('.issue-text')
-        .find('.comment-body')
-
-      // Setup Text
-      var commentHtml = commentText.html()
-      if (!_.isUndefined(commentHtml)) {
-        // commentHtml = commentHtml.replace(/(<br>)|(<br \/>)|(<p>)|(<\/p>)/g, "\r\n");
-        // commentHtml = commentHtml.replace(/(<([^>]+)>)/ig,"");
-        commentHtml = commentHtml.trim()
-        commentHtml = md(commentHtml)
-        commentForm.find('textarea').val(commentHtml)
-      }
-
-      commentText.addClass('hide')
-      commentForm.removeClass('hide')
-    }
-  }
-
-  function onEditNoteClick (e) {
-    var self = $(e.currentTarget)
-    if (_.isUndefined(self)) {
-      return true
-    }
-
-    var noteId = self.attr('data-noteId')
-    if (noteId.length > 0) {
-      var noteForm = $('.edit-note-form[data-noteid="' + noteId + '"]')
-      if (noteForm.length < 1) return true
-      var noteText = $('.ticket-note[data-noteid="' + noteId + '"]')
-        .find('.issue-text')
-        .find('.comment-body')
-
-      // Setup Text
-      var noteHtml = noteText.html()
-      if (!_.isUndefined(noteHtml)) {
-        noteHtml = noteHtml.trim()
-        noteHtml = md(noteHtml)
-        noteForm.find('textarea').val(noteHtml)
-      }
-
-      noteText.addClass('hide')
-      noteForm.removeClass('hide')
-    }
-  }
-
   function onRemoveNoteClick (e) {
     var self = $(e.currentTarget)
     if (_.isUndefined(self)) {
@@ -271,18 +215,6 @@ define('pages/singleTicket', [
     var noteId = self.attr('data-noteid')
     if (noteId.length > 0 && ticketId.length > 0) {
       socketClient.ui.removeNote(ticketId, noteId)
-    }
-  }
-
-  function onEditIssueClick () {
-    var issueForm = $('.edit-issue-form')
-    var issueText = $('.initial-issue')
-      .find('.issue-text')
-      .find('.issue-body')
-
-    if (!issueText.hasClass('hide')) {
-      issueText.addClass('hide')
-      issueForm.removeClass('hide')
     }
   }
 

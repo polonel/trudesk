@@ -72,7 +72,7 @@ noticesController.create = function (req, res) {
 
 noticesController.edit = function (req, res) {
   var user = req.user
-  if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:edit')) {
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'notices:update')) {
     req.flash('message', 'Permission Denied.')
     return res.redirect('/')
   }

@@ -20,6 +20,8 @@ var Controllers = {
   servers: require('./servers'),
   accounts: require('./accounts'),
   groups: require('./groups'),
+  teams: require('./teams'),
+  departments: require('./departments'),
   reports: require('./reports'),
   notices: require('./notices'),
   plugins: require('./plugins'),

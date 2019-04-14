@@ -1,29 +1,29 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 'use strict'
 
 define([
   'jquery',
   'underscore',
+  'lodash',
   'moment',
   'uikit',
   'countup',
   'waves',
   'selectize',
   'snackbar',
-  'roles',
   'jscookie',
   'tether',
   'formvalidator',
@@ -33,10 +33,10 @@ define([
   'velocity',
   'peity',
   'multiselect',
-  'moment_timezone'
-], function ($, _, moment, UIkit, CountUp, Waves, Selectize, Snackbar, ROLES, Cookies, Tether) {
+  'moment_timezone',
+  'waypoints'
+], function ($, _, __, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
   var helpers = {}
-
   var easingSwiftOut = [0.4, 0, 0.2, 1]
 
   helpers.loaded = false
@@ -67,11 +67,10 @@ define([
     // self.UI.expandSidebar();
     // self.UI.tooltipSidebar();
 
-    self.UI.setupDataTethers()
-    self.UI.initSidebar()
-    self.UI.bindExpand()
-    self.UI.setupSidebarTether()
-    self.UI.bindAccordion()
+    // self.UI.initSidebar()
+    // self.UI.bindExpand()
+    // self.UI.setupSidebarTether()
+    // self.UI.bindAccordion()
 
     self.UI.fabToolbar()
     self.UI.fabSheet()
@@ -83,7 +82,6 @@ define([
     self.UI.waves()
     self.UI.matchHeight()
     self.UI.onlineUserSearch()
-    // self.UI.notificationsLinks();
 
     var layout = self.onWindowResize()
     // Initial Call to Load Layout
@@ -165,6 +163,12 @@ define([
 
   helpers.UI.bindAccordion = function () {
     $('li[data-nav-accordion]').each(function () {
+      // Remove hasSubMenuOpen from LI and subMenuOpen from submenu UL to prevent menu from staying open after page load
+      $(this).removeClass('hasSubMenuOpen')
+      var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'))
+      if (subMenu.length > 0) {
+        if (subMenu.attr('id') !== 'side-nav-accordion-plugins') subMenu.removeClass('subMenuOpen')
+      }
       if (
         $(this).hasClass('active') &&
         $(this)
@@ -172,7 +176,6 @@ define([
           .hasClass('expand')
       ) {
         $(this).addClass('hasSubMenuOpen')
-        var subMenu = $(this).find('#' + $(this).attr('data-nav-accordion-target'))
         if (subMenu.length > 0) subMenu.addClass('subMenuOpen')
       }
       var $this = $(this).find('> a')
@@ -186,9 +189,7 @@ define([
             .hasClass('expand')
         ) {
           var href = $(this).attr('href')
-          if (href !== '#') {
-            History.pushState(null, null, href)
-          }
+          if (href !== '#') History.pushState(null, null, href)
           return true
         }
 
@@ -226,9 +227,7 @@ define([
     $sidebar.toggleClass('expand')
     $('#page-content').toggleClass('expanded-sidebar')
     if ($sidebar.hasClass('expand')) {
-      $('.sidebar')
-        .find('.tether-element.tether-enabled')
-        .hide()
+      $sidebar.find('.tether-element.tether-enabled').hide()
       $sidebar.find('li[data-nav-accordion-target].active').addClass('hasSubMenuOpen')
       $sidebar.find('li[data-nav-accordion-target].active > ul').addClass('subMenuOpen')
     } else {
@@ -237,10 +236,12 @@ define([
         $('.sidebar')
           .find('.tether-element.tether-enabled')
           .show()
-      }, 500)
+      }, 250)
       $sidebar.find('li[data-nav-accordion-target]').removeClass('hasSubMenuOpen')
       $sidebar.find('ul.side-nav-accordion.side-nav-sub').removeClass('subMenuOpen')
     }
+
+    $(window).resize()
   }
 
   helpers.UI.bindExpand = function () {
@@ -297,6 +298,7 @@ define([
   helpers.UI.setupSidebarTether = function () {
     var sidebarElements = [
       { element: '#side-nav-sub-tickets', target: 'tickets' },
+      { element: '#side-nav-sub-accounts', target: 'accounts' },
       { element: '#side-nav-sub-reports', target: 'reports' },
       { element: '#side-nav-sub-settings', target: 'settings' }
     ]
@@ -359,6 +361,12 @@ define([
     var $sidebar = $('.sidebar')
     $sidebar.find('li.active').removeClass('active')
     $sidebar.find('li[data-nav-id="' + id.toLowerCase() + '"]').addClass('active')
+  }
+
+  helpers.UI.tetherUpdate = function () {
+    setTimeout(function () {
+      Tether.position()
+    }, 500)
   }
 
   helpers.UI.onlineUserSearch = function () {
@@ -696,17 +704,29 @@ define([
   helpers.UI.selectize = function (parent) {
     // selectize plugins
     if (typeof $.fn.selectize !== 'undefined') {
+      Selectize.define('hidden_textbox', function (options) {
+        var self = this
+        this.showInput = function () {
+          this.$control.css({ cursor: 'pointer' })
+          this.$control_input.css({ opacity: 0, position: 'relative', left: self.rtl ? 10000 : -10000 })
+          this.isInputHidden = false
+        }
+
+        this.setup_original = this.setup
+
+        this.setup = function () {
+          self.setup_original()
+          this.$control_input.prop('disabled', 'disabled')
+        }
+      })
+
       Selectize.define('dropdown_after', function () {
         var self = this
         self.positionDropdown = function () {
           var $control = this.$control
-
           var position = $control.position()
-
           var paddingLeft = position.left
-
           var paddingTop = position.top + $control.outerHeight(true) + 32
-
           this.$dropdown.css({
             width: $control.outerWidth(),
             top: paddingTop,
@@ -727,8 +747,14 @@ define([
           $this.attr('data-md-selectize-closeOnSelect') !== 'undefined'
             ? $this.attr('data-md-selectize-closeOnSelect')
             : false
+
+        var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+
+        var plugins = ['remove_button']
+        if (!showTextBox) plugins.push('hidden_textbox')
+
         $this.after('<div class="selectize_fix"></div>').selectize({
-          plugins: ['remove_button'],
+          plugins: plugins,
           hideSelected: true,
           dropdownParent: 'body',
           closeAfterSelect: closeOnSelect,
@@ -782,17 +808,28 @@ define([
             : false
         var maxOptions =
           $this.attr('data-md-selectize-maxOptions') !== 'undefined' ? $this.attr('data-md-selectize-maxOptions') : 1000
+        var showTextBox = $this.attr('data-md-selectize-notextbox') !== 'true'
+
+        var plugins = ['dropdown_after', 'remove_button']
+        if (!showTextBox) plugins.push('hidden_textbox')
+
         $this
           .after('<div class="selectize_fix"></div>')
           .closest('div')
           .addClass('uk-position-relative')
           .end()
           .selectize({
-            plugins: ['dropdown_after', 'remove_button'],
+            plugins: plugins,
             dropdownParent: $this.closest('div'),
             hideSelected: true,
             closeAfterSelect: closeOnSelect,
             maxOptions: maxOptions,
+            onFocus: function () {
+              if (showTextBox) return
+
+              $this.find('.selectize-input input').attr('readonly', true)
+              $this.find('.selectize-input input, .selectize-input').css('cursor', 'pointer')
+            },
             onDropdownOpen: function ($dropdown) {
               $dropdown.hide().velocity('slideDown', {
                 begin: function () {
@@ -830,10 +867,10 @@ define([
     })
   }
 
-  helpers.UI.multiSelect = function () {
+  helpers.UI.multiSelect = function (options) {
     $('.multiselect').each(function () {
       var self = $(this)
-      self.multiSelect()
+      self.multiSelect(options)
     })
   }
 
@@ -913,6 +950,19 @@ define([
     })
   }
 
+  helpers.UI.getPlugins = function (callback) {
+    $.ajax({
+      url: '/api/v1/plugins/list/installed',
+      method: 'GET',
+      success: function (data) {
+        if (_.isFunction(callback)) return callback(null, data)
+      },
+      error: function (error) {
+        if (_.isFunction(callback)) return callback(error, null)
+      }
+    })
+  }
+
   helpers.closeNotificationsWindow = function () {
     UIkit.modal('#viewAllNotificationsModal').hide()
   }
@@ -983,17 +1033,6 @@ define([
   }
 
   helpers.bindKeys = function () {
-    // var commentReply = $('#commentReply');
-    // if (commentReply.length > 0) {
-    //     commentReply.off('keydown');
-    //     commentReply.on('keydown', function(e) {
-    //         var keyCode = (e.which ? e.which : e.keyCode);
-    //         if (keyCode === 10 || keyCode === 13 && e.ctrlKey) {
-    //             $('#comment-reply').find('button[type="submit"]').trigger('click');
-    //         }
-    //     });
-    // }
-
     var ticketIssue = $('#createTicketForm').find('textarea#issue')
     if (ticketIssue.length > 0) {
       ticketIssue.off('keydown')
@@ -1033,6 +1072,8 @@ define([
       $('body > .side-nav-sub.tether-element').each(function () {
         $(this).remove()
       })
+
+      self.UI.tetherUpdate()
 
       self.resizeFullHeight()
       self.hideAllpDropDowns()
@@ -1131,7 +1172,7 @@ define([
   }
 
   helpers.hideAllpDropDowns = function () {
-    $('a[data-notifications]').each(function () {
+    $('[data-notifications]').each(function () {
       var drop = $('#' + $(this).attr('data-notifications'))
       if (drop.hasClass('pDropOpen')) {
         drop.removeClass('pDropOpen')
@@ -1585,24 +1626,27 @@ define([
       })
   }
 
-  helpers.canUser = function (a) {
+  helpers.canUser = function (a, adminOverride) {
     var role = window.trudeskSessionService.getUser().role
+    var roles = window.trudeskSessionService.getRoles()
+
+    if (adminOverride === true && role.isAdmin) return true
+
     if (_.isUndefined(role)) return false
-
-    var rolePerm = _.find(ROLES, { id: role })
+    if (_.isUndefined(roles)) return false
+    if (__.hasIn(role, '_id')) role = role._id
+    var rolePerm = _.find(roles, { _id: role })
     if (_.isUndefined(rolePerm)) return false
-
-    if (rolePerm.allowedAction === '*') return true
-
-    if (_.indexOf(rolePerm.allowedAction, '*') !== -1) return true
+    if (_.indexOf(rolePerm.grants, '*') !== -1) return true
+    if (_.isUndefined(a)) return false
 
     var actionType = a.split(':')[0]
     var action = a.split(':')[1]
 
     if (_.isUndefined(actionType) || _.isUndefined(action)) return false
 
-    var result = _.filter(rolePerm.allowedAction, function (value) {
-      if (stringStartsWith(value, actionType + ':')) return value
+    var result = _.filter(rolePerm.grants, function (value) {
+      if (__.startsWith(value, actionType + ':')) return value
     })
 
     if (_.isUndefined(result) || _.size(result) < 1) return false
@@ -1626,6 +1670,112 @@ define([
     }
 
     return false
+  }
+
+  helpers.hasHierarchyEnabled = function (roleId) {
+    var roles = window.trudeskSessionService.getRoles()
+    var role = _.find(roles, function (o) {
+      return o._id.toString() === roleId.toString()
+    })
+    if (_.isUndefined(role) || _.isUndefined(role.hierarchy)) throw new Error('Invalid Role: ' + roleId)
+    return role.hierarchy
+  }
+
+  helpers.parseRoleGrants = function (grants) {
+    // Takes an array of grants and returns object
+    if (_.isUndefined(grants) || !_.isArray(grants)) return null
+    var final = {}
+    _.each(grants, function (grant) {
+      var grantName = grant.split(':')[0]
+      var typePerm = grant.split(':')[1].split(' ')
+      typePerm = _.uniq(typePerm)
+      var obj = {}
+      obj[grantName] = {
+        all: typePerm.indexOf('*') !== -1,
+        create: typePerm.indexOf('create') !== -1,
+        view: typePerm.indexOf('view') !== -1,
+        update: typePerm.indexOf('update') !== -1,
+        delete: typePerm.indexOf('delete') !== -1,
+        special: __.without(typePerm, '*', 'create', 'view', 'update', 'delete')
+      }
+
+      final = __.merge(final, obj)
+    })
+
+    return final
+  }
+
+  helpers.parseRoleHierarchy = function (roleId) {
+    var roleOrder = window.trudeskSessionService.getRoleOrder()
+    if (_.isUndefined(roleOrder)) return []
+    roleOrder = roleOrder.order
+
+    var idx = _.findIndex(roleOrder, function (i) {
+      return i.toString() === roleId.toString()
+    })
+    if (idx === -1) return []
+
+    return _.rest(roleOrder, idx)
+  }
+
+  helpers.getLoggedInRoleHierarchy = function () {
+    var loggedInRole = window.trudeskSessionService.getUser().role
+    return helpers.parseRoleHierarchy(loggedInRole._id)
+  }
+
+  helpers.getRolesByHierarchy = function () {
+    var roleOrder = helpers.getLoggedInRoleHierarchy()
+    var roles = window.trudeskSessionService.getRoles()
+    var returnedRoles = []
+    _.each(roles, function (r) {
+      var idx = _.findIndex(roleOrder, function (i) {
+        return i.toString() === r._id.toString()
+      })
+      if (idx !== -1) returnedRoles.push(roles[idx])
+    })
+
+    return returnedRoles
+  }
+
+  helpers.hasHierarchyOverRole = function (roleToCheck) {
+    var loggedInRole = window.trudeskSessionService.getUser().role
+    var roleOrder = helpers.parseRoleHierarchy(loggedInRole._id)
+    if (roleOrder.length < 1) return false
+    var idx = _.findIndex(roleOrder, function (i) {
+      return i.toString() === roleToCheck.toString()
+    })
+
+    return idx !== -1
+  }
+
+  helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
+    if (action && !helpers.canUser(action, adminOverride)) return false
+    if (!extRole) extRole = window.trudeskSessionService.getUser().role._id
+
+    if (adminOverride === true) {
+      if (extRole && extRole.role && extRole.role.isAdmin) {
+        return true
+      } else {
+        var r = window.trudeskSessionService.getRoles()
+        var role = _.find(r, function (_role) {
+          return _role._id.toString() === extRole.toString()
+        })
+        if (!_.isUndefined(role) && role.isAdmin) return true
+      }
+    }
+
+    var roles = helpers.parseRoleHierarchy(extRole)
+
+    var i = _.find(roles, function (o) {
+      return o.toString() === ownerRole.toString()
+    })
+
+    return !_.isUndefined(i)
+  }
+
+  helpers.flushRoles = function () {
+    window.trudeskSessionService.flushRoles()
+    window.react.redux.store.dispatch({ type: 'FETCH_ROLES' })
   }
 
   helpers.setupContextMenu = function (selector, complete) {
@@ -1754,6 +1904,202 @@ define([
 
         return str
       }
+  }
+
+  helpers.arrayIsEqual = function (value, other) {
+    var isEqual = function (value, other) {
+      // Get the value type
+      var type = Object.prototype.toString.call(value)
+
+      // If the two objects are not the same type, return false
+      if (type !== Object.prototype.toString.call(other)) return false
+
+      // If items are not an object or array, return false
+      if (['[object Array]', '[object Object]'].indexOf(type) < 0) return false
+
+      // Compare the length of the length of the two items
+      var valueLen = type === '[object Array]' ? value.length : Object.keys(value).length
+      var otherLen = type === '[object Array]' ? other.length : Object.keys(other).length
+      if (valueLen !== otherLen) return false
+
+      // Compare two items
+      var compare = function (item1, item2) {
+        // Get the object type
+        var itemType = Object.prototype.toString.call(item1)
+
+        // If an object or array, compare recursively
+        if (['[object Array]', '[object Object]'].indexOf(itemType) >= 0) {
+          if (!isEqual(item1, item2)) return false
+        }
+
+        // Otherwise, do a simple comparison
+        else {
+          // If the two items are not the same type, return false
+          if (itemType !== Object.prototype.toString.call(item2)) return false
+
+          // Else if it's a function, convert to a string and compare
+          // Otherwise, just compare
+          if (itemType === '[object Function]') {
+            if (item1.toString() !== item2.toString()) return false
+          } else {
+            if (item1 !== item2) return false
+          }
+        }
+      }
+
+      // Compare properties
+      if (type === '[object Array]') {
+        for (var i = 0; i < valueLen; i++) {
+          if (compare(value[i], other[i]) === false) return false
+        }
+      } else {
+        for (var key in value) {
+          if (value.hasOwnProperty(key)) {
+            if (compare(value[key], other[key]) === false) return false
+          }
+        }
+      }
+
+      // If nothing failed, return true
+      return true
+    }
+
+    return isEqual(value, other)
+  }
+
+  helpers.UI.hierarchicalShow = function (element) {
+    var $hierarchicalShow = $('.hierarchical_show')
+
+    if ($hierarchicalShow.length) {
+      $hierarchicalShow.each(function () {
+        var timeout = $(this).attr('data-show-delay') ? parseInt($(this).attr('data-show-delay')) : 0
+        var $this = $(this)
+        var thisChildrenLength = $this.children().length
+        var baseDelay = 100
+
+        $this.children().each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.waypoint({
+            handler: function () {
+              $this.addClass('hierarchical_show_inView')
+              setTimeout(function () {
+                $this
+                  .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+                  .children()
+                  .css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+              }, thisChildrenLength * baseDelay + 1200)
+              this.destroy()
+            },
+            context: 'window',
+            offset: '90%'
+          })
+        }, timeout)
+      })
+    }
+    if (element) {
+      var $this = $(element).addClass('hierarchical_show hierarchical_show_inView')
+      var thisChildrenLength = $this.children().length
+      var baseDelay = 100
+
+      $this.children().each(function (index) {
+        $(this).css({
+          '-webkit-animation-delay': index * baseDelay + 'ms',
+          'animation-delay': index * baseDelay + 'ms'
+        })
+      })
+
+      $this.addClass('')
+      setTimeout(function () {
+        $this
+          .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+          .children()
+          .css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+      }, thisChildrenLength * baseDelay + 1200)
+    }
+  }
+
+  helpers.UI.hierarchicalSlide = function (element) {
+    var $hierarchicalSlide = $('.hierarchical_slide')
+    if ($hierarchicalSlide.length) {
+      $hierarchicalSlide.each(function () {
+        var $this = $(this)
+        var $thisChildren = $this.attr('data-slide-children')
+          ? $this.children($this.attr('data-slide-children'))
+          : $this.children()
+        var thisChildrenLength = $thisChildren.length
+        var thisContext = $this.attr('data-slide-context')
+          ? $this.closest($this.attr('data-slide-context'))[0]
+          : 'window'
+        var delay = $this.attr('data-delay') ? parseInt($this.attr('data-delay')) : 0
+        var baseDelay = 100
+
+        if (thisChildrenLength >= 1) {
+          $thisChildren.each(function (index) {
+            $(this).css({
+              '-webkit-animation-delay': index * baseDelay + 'ms',
+              'animation-delay': index * baseDelay + 'ms'
+            })
+          })
+
+          setTimeout(function () {
+            $this.waypoint({
+              handler: function () {
+                $this.addClass('hierarchical_slide_inView')
+                setTimeout(function () {
+                  $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+                  $thisChildren.css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+                }, thisChildrenLength * baseDelay + 1200)
+                this.destroy()
+              },
+              context: thisContext,
+              offset: '90%'
+            })
+          }, delay)
+        }
+      })
+    }
+
+    if (element) {
+      var $this = $(element).addClass('hierarchical_slide hierarchical_slide_inView')
+      var $thisChildren = $this.attr('data-slide-children')
+        ? $this.children($this.attr('data-slide-children'))
+        : $this.children()
+      var thisChildrenLength = $thisChildren.length
+      // var thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
+      var baseDelay = 100
+
+      if (thisChildrenLength >= 1) {
+        $thisChildren.each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+          $thisChildren.css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+        }, thisChildrenLength * baseDelay + 1200)
+      }
+    }
   }
 
   return helpers

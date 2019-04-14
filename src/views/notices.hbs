@@ -18,17 +18,17 @@
                                         </li>
                                     {{/canUser}}
                                     <li>
-                                        <a href="#" class="no-ajaxy" role="button" ng-click="activateNotice()">Activate</a>
+                                        <a class="no-ajaxy" role="button" ng-click="activateNotice()" close-uk-dropdown>Activate</a>
                                     </li>
                                     <li>
-                                        <a href="#" class="no-ajaxy" role="button" ng-click="clearNotice()">Deactivate</a>
+                                        <a class="no-ajaxy" role="button" ng-click="clearNotice()" close-uk-dropdown>Deactivate</a>
                                     </li>
                                     {{#canUser data.user "notices:delete"}}
                                         <li>
                                             <hr style="margin: 5px 0;">
                                         </li>
                                         <li>
-                                            <a href="#" class="no-ajaxy" role="button" ng-click="deleteNotices()" style="color: red;">Delete</a>
+                                            <a class="no-ajaxy" role="button" ng-click="deleteNotices()" style="color: red;" close-uk-dropdown>Delete</a>
                                         </li>
                                     {{/canUser}}
                                 </ul>

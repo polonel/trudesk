@@ -28,6 +28,7 @@ installController.index = function (req, res) {
   content.layout = false
 
   content.bottom = 'Trudesk v' + pkg.version
+  content.isDocker = process.env.TRUDESK_DOCKER || false
 
   res.render('install', content)
 }
@@ -57,9 +58,13 @@ installController.mongotest = function (req, res) {
   var CONNECTION_URI =
     'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
 
+  if (data.port === '---')
+    CONNECTION_URI = 'mongodb+srv://' + data.username + ':' + dbPassword + '@' + data.host + '/' + data.database
+
   var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
   })
+
   global.forks.push({ name: 'mongotest', fork: child })
   child.on('message', function (data) {
     if (data.error) return res.status(400).json({ success: false, error: data.error })
@@ -68,6 +73,7 @@ installController.mongotest = function (req, res) {
   })
 
   child.on('close', function () {
+    global.forks = _.without(global.forks, { name: 'mongotest' })
     winston.debug('MongoTest process terminated')
   })
 }
@@ -84,6 +90,7 @@ installController.existingdb = function (req, res) {
 
   // Write Configfile
   var fs = require('fs')
+  var chance = new Chance()
   var configFile = path.join(__dirname, '../../config.json')
 
   var conf = {
@@ -93,6 +100,10 @@ installController.existingdb = function (req, res) {
       username: username,
       password: password,
       database: database
+    },
+    tokens: {
+      secret: chance.hash() + chance.md5(),
+      expires: 900 // 15min
     }
   }
 
@@ -108,6 +119,8 @@ installController.existingdb = function (req, res) {
 
 installController.install = function (req, res) {
   var db = require('../database')
+  var roleSchema = require('../models/role')
+  var roleOrderSchema = require('../models/roleorder')
   var UserSchema = require('../models/user')
   var GroupSchema = require('../models/group')
   var Counters = require('../models/counters')
@@ -137,6 +150,7 @@ installController.install = function (req, res) {
 
   var dbPassword = encodeURIComponent(password)
   var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
+  if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
   async.waterfall(
     [
@@ -144,6 +158,18 @@ installController.install = function (req, res) {
         db.init(function (err) {
           return next(err)
         }, conuri)
+      },
+      function (next) {
+        var SettingsSchema = require('../models/setting')
+
+        var s = new SettingsSchema({
+          name: 'gen:version',
+          value: require('../../package.json').version
+        })
+
+        return s.save(function (err) {
+          return next(err)
+        })
       },
       function (next) {
         var Counter = new Counters({
@@ -184,6 +210,59 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        var defaults = require('../settings/defaults')
+        var roleResults = {}
+        async.parallel(
+          [
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'Admin',
+                  description: 'Default role for admins',
+                  grants: defaults.adminGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.adminRole = role
+                  return done()
+                }
+              )
+            },
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'Support',
+                  description: 'Default role for agents',
+                  grants: defaults.supportGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.supportRole = role
+                  return done()
+                }
+              )
+            },
+            function (done) {
+              roleSchema.create(
+                {
+                  name: 'User',
+                  description: 'Default role for users',
+                  grants: defaults.userGrants
+                },
+                function (err, role) {
+                  if (err) return done(err)
+                  roleResults.userRole = role
+                  return done()
+                }
+              )
+            }
+          ],
+          function (err) {
+            return next(err, roleResults)
+          }
+        )
+      },
+      function (roleResults, next) {
         GroupSchema.getGroupByName('Administrators', function (err, group) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -206,11 +285,11 @@ installController.install = function (req, res) {
               return next('Database Error:' + err.message)
             }
 
-            return next(null, adminGroup)
+            return next(null, adminGroup, roleResults)
           })
         })
       },
-      function (adminGroup, next) {
+      function (adminGroup, roleResults, next) {
         UserSchema.getUserByUsername(user.username, function (err, admin) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -231,7 +310,7 @@ installController.install = function (req, res) {
             password: user.password,
             fullname: user.fullname,
             email: user.email,
-            role: 'admin',
+            role: roleResults.adminRole._id,
             title: 'Administrator',
             accessToken: chance.hash()
           })
@@ -265,9 +344,28 @@ installController.install = function (req, res) {
         })
       },
       function (next) {
+        if (!process.env.TRUDESK_DOCKER) return next()
+        var S = require('../models/setting')
+        var installed = new S({
+          name: 'installed',
+          value: true
+        })
+
+        installed.save(function (err) {
+          if (err) {
+            winston.error('DB Error: ' + err.message)
+            return next('DB Error: ' + err.message)
+          }
+
+          return next()
+        })
+      },
+      function (next) {
+        if (process.env.TRUDESK_DOCKER) return next()
         // Write Configfile
         var fs = require('fs')
         var configFile = path.join(__dirname, '../../config.json')
+        var chance = new Chance()
 
         var conf = {
           mongo: {
@@ -275,11 +373,16 @@ installController.install = function (req, res) {
             port: port,
             username: username,
             password: password,
-            database: database
+            database: database,
+            shard: port === '---'
           },
           elasticsearch: {
             host: eHost,
             port: ePort
+          },
+          tokens: {
+            secret: chance.hash() + chance.md5(),
+            expires: 900 // 15min
           }
         }
 

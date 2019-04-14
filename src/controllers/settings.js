@@ -100,6 +100,14 @@ settingsController.mailerSettings = function (req, res) {
   renderView(res, content)
 }
 
+settingsController.permissionsSettings = function (req, res) {
+  if (!checkPerms(req, 'settings:permissions')) return res.redirect('/settings')
+
+  var content = initViewContent('permissions', req)
+
+  renderView(res, content)
+}
+
 settingsController.notificationsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings')
 

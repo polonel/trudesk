@@ -1,0 +1,84 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    1/20/19 4:46 PM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
+@import "../_settings"
+
+.side-nav-bottom-panel
+  //width: 100%
+  background: $sidebar_bg
+  display: block
+  margin: 0
+  padding: 0
+  width: 57px
+  transition: all .2s ease
+  +boxShadow(inset -1px 0 0 0 rgba(0,0,0,0.1))
+  a
+    transition: all .2s ease
+    //padding: 0 0.875rem !important
+    padding: 0 !important
+    font-size: 0
+    color: $sidebar_text !important
+    //border-left: 2px solid $sidebar_bg
+    position: relative
+    //padding-left: 60px !important
+    line-height: 48px
+    height: 48px
+
+    &:after
+      background: $accent_color
+      bottom: 0
+      content: ''
+      position: absolute
+      right: 100%
+      top: 0
+      width: 5px
+      -webkit-transition: -webkit-transform 0.2s ease-in-out
+      transition: -webkit-transform 0.2s ease-in-out
+      transition: transform 0.2s ease-in-out
+      transition: transform 0.2s ease-in-out, -webkit-transform 0.2s ease-in-out
+
+    &:hover
+      &:after
+        transform: translateX(5px)
+
+    &:not(.button)
+      display: block
+      margin: 0
+
+    span
+      padding-bottom: 5px
+
+    &:hover
+      //border-left: 2px solid $accent_color
+      background: $sidebar_item_hover !important
+
+      i,svg
+        color: $sidebar_text_hover
+        fill: $sidebar_text_hover
+        &.icon-accounts
+          background-position: 0 -24px
+        &.icon-groups
+          background-position: 0 -22px
+        &.icon-invoices
+          background-position: 0 -20px
+
+    i,svg
+      line-height: 26px
+      margin-right: 15px
+      color: $sidebar_text
+      margin-top: 5px
+      position: absolute
+      top: 5px
+      left: 15px
+      fill: $sidebar_text

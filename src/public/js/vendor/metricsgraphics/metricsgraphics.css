@@ -5,6 +5,10 @@
     opacity: 0.8;
 }
 
+.mg-area-color {
+    fill: #000;
+}
+
 .mg-area1-color {
     fill: #0000ff;
 }
@@ -25,12 +29,39 @@
     fill: #5c5c5c;
 }
 
+.mg-area6-color {
+    fill: steelblue;
+}
+
+.mg-area7-color {
+    fill: #f673bf;
+}
+
+.mg-area8-color {
+    fill: #0b73b0;
+}
+
+.mg-area9-color {
+    fill: #006400;
+}
+
+.mg-area10-color {
+    fill: #92514f;
+}
+
+text.mg-barplot-group-label {
+    font-weight:900;
+}
+
 .mg-barplot rect.mg-bar {
     shape-rendering: auto;
+}
+
+.mg-barplot rect.mg-bar.default-bar {
     fill: #b6b6fc;
 }
 
-.mg-barplot rect.mg-bar.active {
+.mg-barplot rect.mg-bar.default-active {
     fill: #9e9efc;
 }
 
@@ -41,6 +72,13 @@
 .mg-barplot .mg-bar-baseline {
     stroke: #5b5b5b;
     stroke-width: 2;
+}
+
+.mg-bar-target-element {
+    font-size:11px;
+    padding-left:5px;
+    padding-right:5px;
+    font-weight:300;
 }
 
 .mg-baselines line {
@@ -61,12 +99,22 @@
     font-size: 0.6rem;
 }
 
+.mg-category-guides line {
+    stroke: #b3b2b2;
+}
+
 .mg-header {
     cursor: default;
     font-size: 1.2rem;
 }
 
 .mg-header .mg-chart-description {
+    fill: #ccc;
+    font-family: FontAwesome;
+    font-size: 1.2rem;
+}
+
+.mg-header .mg-warning {
     fill: #ccc;
     font-family: FontAwesome;
     font-size: 1.2rem;
@@ -123,11 +171,11 @@
     padding-left: 30px;
 }
 
-.mg-y-axis line.mg-extended-y-ticks {
+.mg-y-axis line.mg-extended-yax-ticks {
     opacity: 0.4;
 }
 
-.mg-x-axis line.mg-extended-x-ticks {
+.mg-x-axis line.mg-extended-xax-ticks {
     opacity: 0.4;
 }
 
@@ -137,6 +185,10 @@
     opacity: 0.7;
     shape-rendering: auto;
     stroke: #ccc;
+}
+
+tspan.hist-symbol {
+    fill: #9e9efc;
 }
 
 .mg-histogram .mg-bar rect {
@@ -156,6 +208,23 @@
 .mg-lowess-line {
     fill: none;
     stroke: red;
+}
+
+.mg-rollover-rect * {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.mg-line-color {
+    stroke: #000;
+}
+
+.mg-hover-line-color {
+    fill: #000;
 }
 
 .mg-line1-color {
@@ -198,10 +267,55 @@
     fill: #5c5c5c;
 }
 
+.mg-line6-color {
+    stroke: steelblue;
+}
+
+.mg-hover-line6-color {
+    fill: steelblue;
+}
+
+.mg-line7-color {
+    stroke: #f673bf;
+}
+
+.mg-hover-line7-color {
+    fill: #f673bf;
+}
+
+.mg-line8-color {
+    stroke: #0b73b0;
+}
+
+.mg-hover-line8-color {
+    fill: #0b73b0;
+}
+
+.mg-line9-color {
+    stroke: #006400;
+}
+
+.mg-hover-line9-color {
+    fill: #006400;
+}
+
+.mg-line10-color {
+    stroke: #92514f;
+}
+
+.mg-hover-line10-color {
+    fill: #92514f ;
+}
+
 .mg-line-legend text {
     font-size: 0.9rem;
     font-weight: 300;
     stroke: none;
+}
+
+.mg-line-legend-color {
+    color: #000;
+    fill: #000;
 }
 
 .mg-line1-legend-color {
@@ -227,6 +341,31 @@
 .mg-line5-legend-color {
     color: #5c5c5c;
     fill: #5c5c5c;
+}
+
+.mg-line6-legend-color {
+    color: steelblue;
+    fill: steelblue;
+}
+
+.mg-line7-legend-color {
+    color: #f673bf;
+    fill: #f673bf;
+}
+
+.mg-line8-legend-color {
+    color: #0b73b0;
+    fill: #0b73b0;
+}
+
+.mg-line9-legend-color {
+    color: #006400;
+    fill: #006400;
+}
+
+.mg-line10-legend-color {
+    color: #92514f;
+    fill: #92514f;
 }
 
 .mg-main-area-solid svg .mg-main-area {
@@ -294,6 +433,11 @@ circle.mg-points-mono {
     stroke: #0000ff;
 }
 
+tspan.mg-points-mono {
+    fill: #0000ff;
+    stroke: #0000ff;
+}
+
 /* a selected point in a scatterplot */
 .mg-points circle.selected {
     fill-opacity: 1;
@@ -305,6 +449,12 @@ circle.mg-points-mono {
     pointer-events: all;
     stroke: none;
     stroke-opacity: 0.1;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }
 
 .mg-x-rug-mono,
@@ -365,4 +515,29 @@ circle.mg-points-mono {
 
 .mg-year-marker-small text {
     font-size: 0.6rem;
+}
+
+.mg-brush-container {
+    cursor: crosshair;
+}
+
+.mg-brush-container .mg-brushing {
+    cursor: ew-resize;
+}
+
+.mg-brushed, .mg-brushed * {
+    cursor: zoom-out;
+}
+
+.mg-brush rect.mg-extent {
+    fill: rgba(0, 0, 0, 0.3);
+}
+
+.mg-brushing-in-progress {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

@@ -12,26 +12,53 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-var _ = require('lodash')
-var mongoose = require('mongoose')
 var nconf = require('nconf')
+var mongoose = require('mongoose')
 var winston = require('winston')
 
 var db = {}
+var mongoConnectionUri = {
+  server: process.env.TD_MONGODB_SERVER || nconf.get('mongo:host'),
+  port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
+  username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
+  password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
+  database: process.env.TD_MONGODB_DATABASE || nconf.get('mongo:database'),
+  shard: process.env.TD_MONGODB_SHARD || nconf.get('mongo:shard')
+}
 
-var dbPassword = encodeURIComponent(nconf.get('mongo:password'))
+var CONNECTION_URI = ''
+if (!mongoConnectionUri.username) {
+  CONNECTION_URI =
+    'mongodb://' + mongoConnectionUri.server + ':' + mongoConnectionUri.port + '/' + mongoConnectionUri.database
+  if (mongoConnectionUri.shard === true)
+    CONNECTION_URI = 'mongodb+srv://' + mongoConnectionUri.server + '/' + mongoConnectionUri.database
+} else {
+  mongoConnectionUri.password = encodeURIComponent(mongoConnectionUri.password)
+  if (mongoConnectionUri.shard === true)
+    CONNECTION_URI =
+      'mongodb+srv://' +
+      mongoConnectionUri.username +
+      ':' +
+      mongoConnectionUri.password +
+      '@' +
+      mongoConnectionUri.server +
+      '/' +
+      mongoConnectionUri.database
+  else
+    CONNECTION_URI =
+      'mongodb://' +
+      mongoConnectionUri.username +
+      ':' +
+      mongoConnectionUri.password +
+      '@' +
+      mongoConnectionUri.server +
+      ':' +
+      mongoConnectionUri.port +
+      '/' +
+      mongoConnectionUri.database
+}
 
-var CONNECTION_URI =
-  'mongodb://' +
-  nconf.get('mongo:username') +
-  ':' +
-  dbPassword +
-  '@' +
-  nconf.get('mongo:host') +
-  ':' +
-  nconf.get('mongo:port') +
-  '/' +
-  nconf.get('mongo:database')
+if (process.env.TD_MONGODB_URI) CONNECTION_URI = process.env.TD_MONGODB_URI
 
 var options = {
   keepAlive: 1,
@@ -43,7 +70,7 @@ var options = {
 module.exports.init = function (callback, connectionString, opts) {
   if (connectionString) CONNECTION_URI = connectionString
   if (opts) options = opts
-  if (!_.isUndefined(process.env.MONGOHQ_URL)) CONNECTION_URI = process.env.MONGOHQ_URL.trim()
+  options.dbName = mongoConnectionUri.database
 
   if (db.connection) {
     return callback(null, db)
@@ -61,8 +88,11 @@ module.exports.init = function (callback, connectionString, opts) {
       }
 
       db.connection = mongoose.connection
-
-      return callback(null, db)
+      mongoose.connection.db.admin().command({ buildInfo: 1 }, function (err, info) {
+        if (err) winston.warn(err.message)
+        db.version = info.version
+        return callback(null, db)
+      })
     })
     .catch(function (e) {
       winston.error('Oh no, something went wrong with DB! - ' + e.message)

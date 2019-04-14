@@ -1,16 +1,16 @@
-/**
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+/*
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 define('modules/ui', [
   'jquery',
@@ -31,13 +31,12 @@ define('modules/ui', [
     // loggedInAccount = window.trudeskSessionService.getUser();
     socketUi.socket = socket = sock
 
+    this.flushRoles()
     this.onReconnect()
     this.onDisconnect()
-    this.updateUsers()
-    this.updateNotifications()
+    // this.updateUsers()
+    // this.updateNotifications()
     this.updateAllNotifications()
-    // this.updateMailNotifications();
-    this.updateConversationsNotifications()
     this.updateComments()
     this.updateUi()
     this.updateTicketStatus()
@@ -56,8 +55,6 @@ define('modules/ui', [
     this.onUpdateTicketGrid()
     this.onProfileImageUpdate()
 
-    this.updateShowNotice(socket)
-    this.updateClearNotice(socket)
     this.updateSubscribe(socket)
 
     // Logs
@@ -107,6 +104,16 @@ define('modules/ui', [
   socketUi.fetchServerLogs = function () {
     socket.emit('logs:fetch')
   }
+  socketUi.flushRoles = function () {
+    socket.removeAllListeners('$trudesk:flushRoles')
+    socket.on('$trudesk:flushRoles', function () {
+      helpers.flushRoles()
+    })
+  }
+
+  socketUi.sendUpdateTicketStatus = function (id, status) {
+    socket.emit('updateTicketStatus', { ticketId: id, status: status })
+  }
 
   socketUi.onReconnect = function () {
     socket.removeAllListeners('reconnect')
@@ -138,69 +145,6 @@ define('modules/ui', [
 
   socketUi.clearAssignee = function (id) {
     socket.emit('clearAssignee', id)
-  }
-
-  socketUi.updateConversationsNotifications = function () {
-    $(document).ready(function () {
-      var btnMailNotifications = $('#btn_mail-notifications')
-      btnMailNotifications.off('click', updateMailNotificationsClicked)
-      btnMailNotifications.on('click', updateMailNotificationsClicked)
-    })
-
-    socket.removeAllListeners('updateConversationsNotifications')
-    socket.on('updateConversationsNotifications', function (data) {
-      var label = $('#btn_mail-notifications').find('> span')
-      // TODO: Fixed this once unread messages is fully impl.
-      var count = 0 // Setting this to 0 to clear label until above is impl.
-      var items = data.conversations
-      if (count < 1) {
-        label.hide()
-      } else {
-        label.text(count)
-        label.removeClass('hide')
-        label.show()
-      }
-
-      var mailDropList = $('div.mail-Messages').find('ul')
-      mailDropList.empty()
-
-      var html = ''
-
-      _.each(items, function (item) {
-        if (item.partner !== undefined) {
-          html += '<li>'
-          html += '<a class="messageNotification" href="/messages/' + item._id + '" role="button">'
-          html += '<div class="uk-clearfix">'
-          if (item.partner.image) {
-            html +=
-              '<div class="profilePic left"><img src="/uploads/users/' + item.partner.image + '" alt="profile"/></div>'
-          } else {
-            html += '<div class="profilePic left"><img src="/uploads/users/defaultProfile.jpg" alt="profile"/></div>'
-          }
-          html += '<div class="messageAuthor"><strong>' + item.partner.fullname + '</strong></div>'
-          html += '<div class="messageSnippet">'
-          html += '<span>' + item.recentMessage + '</span>'
-          html += '</div>'
-          html += '<div class="messageDate" style="position: absolute; top: 10px; right: 15px;">'
-          html +=
-            '<time datetime="' +
-            helpers.formatDate(item.updatedAt, 'YYYY-MM-DDThh:mm') +
-            '" class="timestamp">' +
-            helpers.formatDate(item.updatedAt, 'MMM DD, YYYY') +
-            '</time>'
-          html += '</div>'
-          html += '</div>'
-          html += '</a>'
-          html += '</li>'
-        }
-      })
-
-      mailDropList.append(html)
-
-      var $body = $('body')
-
-      if (typeof $body.ajaxify === 'function') $body.ajaxify()
-    })
   }
 
   socketUi.updateTicketStatus = function () {
@@ -247,6 +191,7 @@ define('modules/ui', [
         var ticketTypeSelect = $('select#tType')
         var ticketPriority = $('select#tPriority')
         var ticketGroup = $('select#tGroup')
+        var ticketDueDate = $('input#tDueDate')
         var ticketTags = $('div#editTags')
 
         var addAttachments = $('form#attachmentForm > div.add-attachment')
@@ -276,6 +221,10 @@ define('modules/ui', [
 
           if (ticketGroup.length > 0) {
             ticketGroup.prop('disabled', true)
+          }
+
+          if (ticketDueDate.length > 0) {
+            ticketDueDate.prop('disabled', true)
           }
 
           if (ticketTags.length > 0) {
@@ -311,6 +260,10 @@ define('modules/ui', [
             ticketGroup.prop('disabled', false)
           }
 
+          if (ticketDueDate.length > 0) {
+            ticketDueDate.prop('disabled', false)
+          }
+
           if (ticketTags.length > 0) {
             ticketTags.removeClass('hide')
           }
@@ -329,10 +282,12 @@ define('modules/ui', [
 
           // Setup assignee list
           if (assigneeListBtn.length > 0) {
-            assigneeListBtn.attr('data-notifications', 'assigneeDropdown')
-            assigneeListBtn.attr('data-updateui', 'assigneeList')
-            nav.notifications()
-            socketUi.updateUi()
+            if (helpers.hasPermOverRole(payload.owner.role._id, null, 'agent:*', true)) {
+              assigneeListBtn.attr('data-notifications', 'assigneeDropdown')
+              assigneeListBtn.attr('data-updateui', 'assigneeList')
+              nav.notifications()
+              socketUi.updateUi()
+            }
           }
         }
       }
@@ -527,6 +482,15 @@ define('modules/ui', [
     })
   }
 
+  socketUi.setTicketDueDate = function (ticketId, dueDate) {
+    var payload = {
+      ticketId: ticketId,
+      dueDate: dueDate
+    }
+
+    socket.emit('setTicketDueDate', payload)
+  }
+
   socketUi.setTicketIssue = function (ticketId, issue, subject) {
     var payload = {
       ticketId: ticketId,
@@ -678,13 +642,13 @@ define('modules/ui', [
   }
 
   function updateMailNotificationsClicked (e) {
-    socket.emit('updateMailNotifications')
+    socket.emit('updateMailNotifications') // Pointless right now - No Receiver on server
     e.preventDefault()
   }
 
   function updateUsersBtnClicked (e) {
-    socket.emit('updateUsers')
     e.preventDefault()
+    socket.emit('updateUsers')
   }
 
   socketUi.updateUsers = function () {
@@ -709,7 +673,12 @@ define('modules/ui', [
     socket.removeAllListeners('updateComments')
     socket.on('updateComments', function (data) {
       var ticket = data
-      var canViewNotes = helpers.canUser('notes:view')
+      var canViewNotes = helpers.canUser('tickets:notes')
+      var canViewComments = helpers.canUser('comments:view')
+
+      if (!canViewComments) ticket.comments = []
+      if (!canViewNotes) ticket.notes = []
+
       _.each(ticket.comments, function (i) {
         i.isComment = true
       })
@@ -754,9 +723,7 @@ define('modules/ui', [
         .html(ticket.notes.length)
 
       var allCommentsHtml = ''
-
       var commentsHtml = ''
-
       var notesHtml = ''
 
       // Build All Comments / Notes Section
@@ -817,14 +784,14 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'comments:delete', true)) {
             allCommentsHtml +=
               '<div class="remove-comment" data-commentId="' +
               item._id +
               '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(item.owner._id, 'comment')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'comments:update', true)) {
             allCommentsHtml +=
               '<div class="edit-comment" data-commentId="' +
               item._id +
@@ -888,12 +855,12 @@ define('modules/ui', [
             '</form>' +
             '</div>' +
             '<div class="comment-actions">'
-          if (helpers.canUser('note:delete') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'tickets:notes', true)) {
             allCommentsHtml +=
               '<div class="remove-note" data-noteid="' + item._id + '"><i class="material-icons">&#xE5CD;</i></div>'
           }
 
-          if (helpers.canUser('note:edit') || helpers.canUserEditSelf(item.owner._id, 'note')) {
+          if (helpers.hasPermOverRole(item.owner.role._id, null, 'tickets:notes', true)) {
             allCommentsHtml +=
               '<div class="edit-note" data-noteid="' +
               item._id +
@@ -961,14 +928,14 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (helpers.canUser('comment:delete') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+        if (helpers.hasPermOverRole(comment.owner.role._id, null, 'comments:delete', true)) {
           commentsHtml +=
             '<div class="remove-comment" data-commentId="' +
             comment._id +
             '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (helpers.canUser('comment:edit') || helpers.canUserEditSelf(comment.owner._id, 'comment')) {
+        if (helpers.hasPermOverRole(comment.owner.role._id, null, 'comments:update', true)) {
           commentsHtml +=
             '<div class="edit-comment" data-commentId="' +
             comment._id +
@@ -1037,12 +1004,12 @@ define('modules/ui', [
           '</form>' +
           '</div>' +
           '<div class="comment-actions">'
-        if (helpers.canUser('note:delete') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+        if (helpers.hasPermOverRole(note.owner.role._id, null, 'tickets:notes', true)) {
           notesHtml +=
             '<div class="remove-note" data-noteid="' + note._id + '"><i class="material-icons">&#xE5CD;</i></div>'
         }
 
-        if (helpers.canUser('note:edit') || helpers.canUserEditSelf(note.owner._id, 'note')) {
+        if (helpers.hasPermOverRole(note.owner.role._id, null, 'tickets:notes', true)) {
           notesHtml +=
             '<div class="edit-note" data-noteid="' +
             note._id +
@@ -1117,93 +1084,7 @@ define('modules/ui', [
   }
 
   socketUi.updateNotifications = function () {
-    socket.removeAllListeners('updateNotifications')
-    socket.on('updateNotifications', function (data) {
-      var $notifications = $('#notifications-Messages').find('ul')
-      if ($notifications.length < 1) return
-
-      $notifications.html('')
-      // Build Notifications
-      _.each(data.items, function (item) {
-        var html = ''
-        html +=
-          '<li>' +
-          '<a class="messageNotification" href="/tickets/' +
-          item.data.ticket.uid +
-          '" role="button" data-notificationId="' +
-          item._id +
-          '" >' +
-          '<div class="uk-clearfix">'
-        if (item.unread === true) {
-          html += '<div class="messageUnread"></div>'
-        }
-
-        switch (item.type) {
-          case 0:
-            html += '<div class="messageIcon left"><i class="fa fa-check green"></i></div>'
-            break
-          case 1:
-            html += '<div class="messageIcon left"><i class="fa fa-comment-o green" style="margin-top: -5px"></i></div>'
-            break
-          case 2:
-            html += '<div class="messageIcon left"><i class="fa fa-exclamation red"></i></div>'
-            break
-        }
-
-        html +=
-          '<div class="messageAuthor"><strong>' +
-          item.title +
-          '</strong></div>' +
-          '<div class="messageSnippet">' +
-          '<span>' +
-          item.message +
-          '</span>' +
-          '</div>' +
-          '<div class="messageDate">' +
-          '<time datetime="' +
-          helpers.formatDate(item.created, 'YYYY-MM-DDThh:mm') +
-          '" class="timestamp">' +
-          helpers.formatDate(item.created, 'MMM DD, YYYY') +
-          '</time>' +
-          '</div>' +
-          '</div>' +
-          '</a>' +
-          '</li>'
-
-        $notifications.append(html)
-
-        var $nLinks = $('#notifications-Messages').find('a[data-notificationId]')
-        $.each($nLinks, function (k, val) {
-          var item = $(val)
-          item.off('click')
-          item.on('click', function (e) {
-            e.preventDefault()
-            e.stopPropagation()
-            var $id = $(e.currentTarget).attr('data-notificationId')
-            var $href = $(e.currentTarget).attr('href')
-            if ($id.length < 1) return
-
-            socketUi.markNotificationRead($id)
-
-            History.pushState(null, null, $href)
-          })
-        })
-      })
-
-      var $notificationsCount = $('#btn_notifications').find('span')
-      var $bottomActions = $('#notifications').find('.bottom-actions')
-      if ($notificationsCount.length > 0) {
-        if (data.count === 0) {
-          $notificationsCount.html('0')
-          $notificationsCount.addClass('hide')
-          $bottomActions.addClass('hide')
-        } else {
-          $notificationsCount.removeClass('hide')
-          $notificationsCount.html(data.count)
-          $bottomActions.removeClass('hide')
-        }
-      }
-    })
+    socket.emit('updateNotifications')
   }
 
   socketUi.updateAllNotifications = function () {

@@ -288,10 +288,26 @@ events.onImportLDAP = function (socket) {
 
     var addedUsers = data.addedUsers
     var updatedUsers = data.updatedUsers
-
+    var defaultUserRole = null
     var completedCount = 0
+
     async.series(
       [
+        function (next) {
+          var settingSchema = require('../models/setting')
+          settingSchema.getSetting('role:user:default', function (err, setting) {
+            if (err || !setting) {
+              utils.sendToSelf(socket, '$trudesk:accounts:import:error', {
+                error: 'Default user role not set. Please contact an Administrator.'
+              })
+
+              return next('Default user role not set. Please contact an Administrator')
+            }
+
+            defaultUserRole = setting.value
+            return next()
+          })
+        },
         function (next) {
           async.eachSeries(
             addedUsers,
@@ -313,7 +329,7 @@ events.onImportLDAP = function (socket) {
                 fullname: lu.displayName,
                 email: lu.mail,
                 title: lu.title,
-                role: 'user',
+                role: defaultUserRole,
                 password: 'Password1!'
               })
 

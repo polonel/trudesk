@@ -1,3 +1,116 @@
+## [1.0.10](https://github.com/polonel/trudesk/compare/v1.0.9...v1.0.10) (2019-04-08)
+
+
+### Bug Fixes
+
+* **tickets:** filter not showing assignees ([7994855](https://github.com/polonel/trudesk/commit/7994855))
+
+## [1.0.9](https://github.com/polonel/trudesk/compare/v1.0.8...v1.0.9) (2019-03-20)
+
+
+### Bug Fixes
+
+* **accounts:** import failing due to role changes ([893af61](https://github.com/polonel/trudesk/commit/893af61))
+* **mailcheck:** [#170](https://github.com/polonel/trudesk/issues/170) ([10c36fa](https://github.com/polonel/trudesk/commit/10c36fa))
+* **tps:** missing host name in some cases ([c3704b5](https://github.com/polonel/trudesk/commit/c3704b5))
+
+## [1.0.8](https://github.com/polonel/trudesk/compare/v1.0.7...v1.0.8) (2019-03-17)
+
+
+### Bug Fixes
+
+* **accounts:** new users have accessToken by default ([4f36bb4](https://github.com/polonel/trudesk/commit/4f36bb4))
+* **accounts:** space between group names ([24a590b](https://github.com/polonel/trudesk/commit/24a590b))
+* **mailer:** new-ticket template showing large profile pic ([213bc05](https://github.com/polonel/trudesk/commit/213bc05))
+* **signup:** [#167](https://github.com/polonel/trudesk/issues/167) ([5828301](https://github.com/polonel/trudesk/commit/5828301))
+* **theme:** dark theme dropdown select color ([53751bd](https://github.com/polonel/trudesk/commit/53751bd))
+
+## [1.0.7](https://github.com/polonel/trudesk/compare/v1.0.6...v1.0.7) (2019-03-12)
+
+
+### Bug Fixes
+
+* **accounts:** missing account creation modal [#152](https://github.com/polonel/trudesk/issues/152) ([b2cbbda](https://github.com/polonel/trudesk/commit/b2cbbda))
+* **app:** app.js for universal config ([a318545](https://github.com/polonel/trudesk/commit/a318545))
+* **app:** callback failed if mailcheck was enabled ([1520ad5](https://github.com/polonel/trudesk/commit/1520ad5))
+* **build:** incorrect import dep ([a180497](https://github.com/polonel/trudesk/commit/a180497))
+* **chat:** removed self from online user list ([de3a596](https://github.com/polonel/trudesk/commit/de3a596))
+* **component:** easymde handle defaultValue ([b33eb44](https://github.com/polonel/trudesk/commit/b33eb44))
+* **components:** button display incorrectly when width is set ([1693421](https://github.com/polonel/trudesk/commit/1693421))
+* **debug:** populate db with new role permissions ([2bc5ca6](https://github.com/polonel/trudesk/commit/2bc5ca6))
+* **docker:** env var ([ffe26b4](https://github.com/polonel/trudesk/commit/ffe26b4))
+* **docker:** universal config ([a338f3a](https://github.com/polonel/trudesk/commit/a338f3a))
+* **docker:** universal config ([35acf04](https://github.com/polonel/trudesk/commit/35acf04))
+* **images:** profile images not displaying in new email templats ([e89f2f8](https://github.com/polonel/trudesk/commit/e89f2f8))
+* **install:** crash ([4199e03](https://github.com/polonel/trudesk/commit/4199e03))
+* **migration:** crash if certain role types didn't exist ([39dfaa2](https://github.com/polonel/trudesk/commit/39dfaa2))
+* **mobile:** loading issue ([54c2cdd](https://github.com/polonel/trudesk/commit/54c2cdd))
+* **mobile:** mobile was showing blank view ([b8b6e3e](https://github.com/polonel/trudesk/commit/b8b6e3e))
+* **notifications:** issue with push notification during ticket creation ([77dac9a](https://github.com/polonel/trudesk/commit/77dac9a))
+* **permissions:** default user role unable to login correctly [#153](https://github.com/polonel/trudesk/issues/153) ([1b1cec1](https://github.com/polonel/trudesk/commit/1b1cec1))
+* **permissions:** disabled accounts showing in assignee list ([ebe6504](https://github.com/polonel/trudesk/commit/ebe6504))
+* **permissions:** groups nav incorrectly showing ([65d8fe9](https://github.com/polonel/trudesk/commit/65d8fe9))
+* **permissions:** incorrect permissions on edit ticket ([4a75aed](https://github.com/polonel/trudesk/commit/4a75aed))
+* **permissions:** missing add comment button ([c512b8d](https://github.com/polonel/trudesk/commit/c512b8d))
+* **permissions:** roles allowed to edit ticket after socket update ([1f529f8](https://github.com/polonel/trudesk/commit/1f529f8))
+* package.json to reduce vulnerabilities ([025136c](https://github.com/polonel/trudesk/commit/025136c))
+* **react:** multiple renders ([1a9cb7b](https://github.com/polonel/trudesk/commit/1a9cb7b))
+* **sidebar:** incorrect style on active item ([df338b6](https://github.com/polonel/trudesk/commit/df338b6))
+* **sidebar:** overlapping page content [#151](https://github.com/polonel/trudesk/issues/151) ([20235f7](https://github.com/polonel/trudesk/commit/20235f7))
+* **test:** updates for role permissions ([7a0479d](https://github.com/polonel/trudesk/commit/7a0479d))
+* **ticket:** editing subject disappearing ([53e62d7](https://github.com/polonel/trudesk/commit/53e62d7))
+* **ui:** bug displaying view all notifications ([61e4bca](https://github.com/polonel/trudesk/commit/61e4bca))
+* **ui:** grid not resizing correctly ([235c960](https://github.com/polonel/trudesk/commit/235c960))
+
+
+### Performance Improvements
+
+* **code:** cleanup ([362c4f3](https://github.com/polonel/trudesk/commit/362c4f3))
+* **restore:** flushRoles on successful restore ([7b44537](https://github.com/polonel/trudesk/commit/7b44537))
+
+## [1.0.6](https://github.com/polonel/trudesk/compare/v1.0.5...v1.0.6) (2019-02-02)
+
+
+### Bug Fixes
+
+* **attachments:** uploading office mime-types [#140](https://github.com/polonel/trudesk/issues/140) ([b47da40](https://github.com/polonel/trudesk/commit/b47da40))
+* **chat:** chat boxes under some buttons ([c337c76](https://github.com/polonel/trudesk/commit/c337c76))
+* **dates:** overdue on dashboard ([921e258](https://github.com/polonel/trudesk/commit/921e258))
+* **editor:** crash on invalid directory ([bc60899](https://github.com/polonel/trudesk/commit/bc60899))
+* **groups:** issue preventing save ([7208253](https://github.com/polonel/trudesk/commit/7208253))
+* **ldap:** crash if no results are returned ([8ff63ba](https://github.com/polonel/trudesk/commit/8ff63ba))
+* **login:** username whitespaces ([282d725](https://github.com/polonel/trudesk/commit/282d725))
+* **messages:** remove ajax link from start conversation ([988dfa9](https://github.com/polonel/trudesk/commit/988dfa9))
+* **notifications:** unable to clear all notifications ([4f24c8c](https://github.com/polonel/trudesk/commit/4f24c8c))
+* **reports:** invalid date format ([808a740](https://github.com/polonel/trudesk/commit/808a740))
+* **reports:** invalid date string ([0914d91](https://github.com/polonel/trudesk/commit/0914d91))
+* **socket:** high memory usage on notification updates ([b647d4c](https://github.com/polonel/trudesk/commit/b647d4c))
+* **ticket:** priority not updating in realtime ([721f42d](https://github.com/polonel/trudesk/commit/721f42d))
+* **unzip:** out dated dependency [#139](https://github.com/polonel/trudesk/issues/139) ([b0aab01](https://github.com/polonel/trudesk/commit/b0aab01))
+* **url:** invalid parse ([1738287](https://github.com/polonel/trudesk/commit/1738287))
+* **validation:** email validation for modern tlds [#130](https://github.com/polonel/trudesk/issues/130) ([febcbdf](https://github.com/polonel/trudesk/commit/febcbdf))
+
+## [1.0.6](https://github.com/polonel/trudesk/compare/v1.0.5...v1.0.6) (2019-02-02)
+
+
+### Bug Fixes
+
+* **attachments:** uploading office mime-types [#140](https://github.com/polonel/trudesk/issues/140) ([b47da40](https://github.com/polonel/trudesk/commit/b47da40))
+* **chat:** chat boxes under some buttons ([c337c76](https://github.com/polonel/trudesk/commit/c337c76))
+* **dates:** overdue on dashboard ([921e258](https://github.com/polonel/trudesk/commit/921e258))
+* **groups:** issue preventing save ([7208253](https://github.com/polonel/trudesk/commit/7208253))
+* **ldap:** crash if no results are returned ([8ff63ba](https://github.com/polonel/trudesk/commit/8ff63ba))
+* **login:** username whitespaces ([282d725](https://github.com/polonel/trudesk/commit/282d725))
+* **messages:** remove ajax link from start conversation ([988dfa9](https://github.com/polonel/trudesk/commit/988dfa9))
+* **notifications:** unable to clear all notifications ([4f24c8c](https://github.com/polonel/trudesk/commit/4f24c8c))
+* **reports:** invalid date format ([808a740](https://github.com/polonel/trudesk/commit/808a740))
+* **reports:** invalid date string ([0914d91](https://github.com/polonel/trudesk/commit/0914d91))
+* **socket:** high memory usage on notification updates ([b647d4c](https://github.com/polonel/trudesk/commit/b647d4c))
+* **ticket:** priority not updating in realtime ([721f42d](https://github.com/polonel/trudesk/commit/721f42d))
+* **unzip:** out dated dependency [#139](https://github.com/polonel/trudesk/issues/139) ([b0aab01](https://github.com/polonel/trudesk/commit/b0aab01))
+* **url:** invalid parse ([1738287](https://github.com/polonel/trudesk/commit/1738287))
+* **validation:** email validation for modern tlds [#130](https://github.com/polonel/trudesk/issues/130) ([febcbdf](https://github.com/polonel/trudesk/commit/febcbdf))
+
 ## [1.0.5](https://github.com/polonel/trudesk/compare/v1.0.4...v1.0.5) (2019-01-09)
 
 

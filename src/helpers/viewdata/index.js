@@ -1,32 +1,26 @@
 /*
-      .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:46 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var moment = require('moment')
-
 var permissions = require('../../permissions')
-
 var settingSchema = require('../../models/setting')
 
 var viewController = {}
 var viewdata = {}
-viewdata.notifications = {}
 viewdata.users = {}
 
 viewController.getData = function (request, cb) {
@@ -227,21 +221,21 @@ viewController.getData = function (request, cb) {
           return callback()
         })
       },
-      function (callback) {
-        viewController.getUserNotifications(request, function (err, data) {
-          if (err) return callback(err)
-
-          viewdata.notifications.items = data
-          return callback()
-        })
-      },
-      function (callback) {
-        viewController.getUnreadNotificationsCount(request, function (err, count) {
-          if (err) return callback(err)
-          viewdata.notifications.unreadCount = count
-          return callback()
-        })
-      },
+      // function (callback) {
+      //   viewController.getUserNotifications(request, function (err, data) {
+      //     if (err) return callback(err)
+      //
+      //     viewdata.notifications.items = data
+      //     return callback()
+      //   })
+      // },
+      // function (callback) {
+      //   viewController.getUnreadNotificationsCount(request, function (err, count) {
+      //     if (err) return callback(err)
+      //     viewdata.notifications.unreadCount = count
+      //     return callback()
+      //   })
+      // },
       function (callback) {
         viewController.getConversations(request, function (err, conversations) {
           if (err) return callback(err)
@@ -310,8 +304,20 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
-        viewdata.roles = permissions.roles
-        return callback()
+        var roleSchmea = require('../../models/role')
+        var roleOrder = require('../../models/roleorder')
+        roleSchmea.getRoles(function (err, roles) {
+          if (err) return callback(err)
+
+          roleOrder.getOrder(function (err, ro) {
+            if (err) return callback(err)
+
+            viewdata.roles = roles
+            viewdata.roleOrder = ro
+
+            return callback()
+          })
+        })
       },
       function (callback) {
         viewController.getShowTourSetting(request, function (err, data) {
@@ -485,27 +491,39 @@ viewController.loggedInAccount = function (request, callback) {
 
 viewController.getGroups = function (request, callback) {
   var groupSchema = require('../../models/group')
-  groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
-    if (err) {
-      winston.debug(err)
-      return callback(err)
-    }
+  var Department = require('../../models/department')
+  if (request.user.role.isAdmin || request.user.role.isAgent) {
+    Department.getDepartmentGroupsOfUser(request.user._id, function (err, groups) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-    var p = require('../../permissions')
-    if (p.canThis(request.user.role, 'ticket:public')) {
-      groupSchema.getAllPublicGroups(function (err, groups) {
-        if (err) {
-          winston.debug(err)
-          return callback(err)
-        }
+      return callback(null, groups)
+    })
+  } else {
+    groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-        data = data.concat(groups)
+      var p = require('../../permissions')
+      if (p.canThis(request.user.role, 'ticket:public')) {
+        groupSchema.getAllPublicGroups(function (err, groups) {
+          if (err) {
+            winston.debug(err)
+            return callback(err)
+          }
+
+          data = data.concat(groups)
+          return callback(null, data)
+        })
+      } else {
         return callback(null, data)
-      })
-    } else {
-      return callback(null, data)
-    }
-  })
+      }
+    })
+  }
 }
 
 viewController.getTypes = function (request, callback) {

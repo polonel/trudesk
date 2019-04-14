@@ -10,14 +10,18 @@
  ========================================================================
  **/
 
+var _ = require('lodash')
 var async = require('async')
 var path = require('path')
 var fs = require('fs')
 var winston = require('winston')
 var nconf = require('nconf')
+var Chance = require('chance')
+var chance = new Chance()
 var pkg = require('./package.json')
-var ws = require('./src/webserver')
 // `var memory = require('./src/memory');
+
+var isDocker = process.env.TRUDESK_DOCKER || false
 
 global.forks = []
 
@@ -56,18 +60,6 @@ winston.err = function (err) {
   winston.error(err.stack)
 }
 
-process.on('message', function (msg) {
-  if (msg === 'shutdown') {
-    winston.debug('Closing all connections...')
-
-    if (ws.server) {
-      ws.server.close()
-    }
-
-    throw new Error('Server has shutdown.')
-  }
-})
-
 if (!process.env.FORK) {
   winston.info('    .                              .o8                     oooo')
   winston.info('  .o8                             "888                     `888')
@@ -84,8 +76,15 @@ if (!process.env.FORK) {
 }
 
 var configFile = path.join(__dirname, '/config.json')
-
 var configExists
+
+nconf.defaults({
+  base_dir: __dirname,
+  tokens: {
+    secret: chance.hash() + chance.md5(),
+    expires: 900
+  }
+})
 
 if (nconf.get('config')) {
   configFile = path.resolve(__dirname, nconf.get('config'))
@@ -93,47 +92,25 @@ if (nconf.get('config')) {
 
 configExists = fs.existsSync(configFile)
 
-if (process.env.HEROKU) {
-  // Build Config for Heroku
-  var configHeroku = {
-    url: 'http://localhost:8118',
-    port: '8118'
-  }
-
-  winston.info('Creating heroku config file...')
-  var config = JSON.stringify(configHeroku, null, 4)
-
-  if (configExists) {
-    fs.unlinkSync(configFile)
-  }
-
-  fs.writeFileSync(configFile, config)
-
-  start()
-}
-
-if (nconf.get('install') || (!configExists && !process.env.HEROKU)) {
+function launchInstallServer () {
+  var ws = require('./src/webserver')
   ws.installServer(function () {
     return winston.info('Trudesk Install Server Running...')
   })
 }
 
-if (!nconf.get('setup') && !nconf.get('install') && !nconf.get('upgrade') && !nconf.get('reset') && configExists) {
-  start()
+if (nconf.get('install') || (!configExists && !isDocker)) {
+  launchInstallServer()
 }
 
 function loadConfig () {
   nconf.file({
     file: configFile
   })
-
-  nconf.defaults({
-    base_dir: __dirname
-  })
 }
 
 function start () {
-  loadConfig()
+  if (!isDocker) loadConfig()
 
   var _db = require('./src/database')
 
@@ -150,11 +127,8 @@ function start () {
   })
 }
 
-function dbCallback (err, db) {
-  if (err) {
-    return start()
-  }
-
+function launchServer (db) {
+  var ws = require('./src/webserver')
   ws.init(db, function (err) {
     if (err) {
       winston.error(err)
@@ -163,6 +137,12 @@ function dbCallback (err, db) {
 
     async.series(
       [
+        function (next) {
+          require('./src/settings/defaults').init(next)
+        },
+        function (next) {
+          require('./src/permissions').register(next)
+        },
         function (next) {
           var es = require('./src/elasticsearch')
           es.init()
@@ -178,73 +158,57 @@ function dbCallback (err, db) {
           settingSchema.getSetting('mailer:check:enable', function (err, mailCheckEnabled) {
             if (err) {
               winston.warn(err)
-              return next()
+              return next(err)
             }
 
             if (mailCheckEnabled && mailCheckEnabled.value) {
               settingSchema.getSettings(function (err, settings) {
-                if (err) return next()
+                if (err) return next(err)
 
                 var mailCheck = require('./src/mailer/mailCheck')
                 winston.debug('Starting MailCheck...')
                 mailCheck.init(settings)
-              })
-            }
 
-            return next()
+                return next()
+              })
+            } else {
+              return next()
+            }
           })
         },
         function (next) {
-          require('./src/settings/defaults').init(next)
+          require('./src/migration').run(next)
         },
         function (next) {
           winston.debug('Building dynamic sass...')
           require('./src/sass/buildsass').build(next)
         },
+        // function (next) {
+        //   // Start Task Runners
+        //   require('./src/taskrunner')
+        //   return next()
+        // },
         function (next) {
-          // Start Task Runners
-          require('./src/taskrunner')
-          return next()
-        },
-        function (next) {
-          // var pm2 = require('pm2');
-          // pm2.connect(true, function(err) {
-          //    if (err) throw err;
-          //    pm2.start({
-          //        script: path.join(__dirname, '/src/cache/index.js'),
-          //        name: 'trudesk:cache',
-          //        output: path.join(__dirname, '/logs/cache.log'),
-          //        error: path.join(__dirname, '/logs/cache.log'),
-          //        env: {
-          //            FORK: 1,
-          //            NODE_ENV: global.env
-          //        }
-          //    }, function(err) {
-          //        pm2.disconnect();
-          //        if (err) throw err;
-          //
-          //        process.on('message', function(message) {
-          //            if (message.data.cache) {
-          //                var nodeCache = require('./src/cache/node-cache');
-          //                global.cache = new nodeCache({
-          //                    data:  message.data.cache.data,
-          //                    checkperiod: 0
-          //                });
-          //            }
-          //        });
-          //
-          //        next();
-          //    });
-          // });
-
           var fork = require('child_process').fork
-          var memLimit = '2048'
-          if (process.env.MEMORYLIMIT) {
-            memLimit = process.env.MEMORYLIMIT
+          var memLimit = nconf.get('memlimit') || '2048'
+
+          var env = { FORK: 1, NODE_ENV: global.env }
+          if (isDocker) {
+            var envDocker = {
+              TRUDESK_DOCKER: process.env.TRUDESK_DOCKER,
+              TD_MONGODB_SERVER: process.env.TD_MONGODB_SERVER,
+              TD_MONGODB_PORT: process.env.TD_MONGODB_PORT,
+              TD_MONGODB_USERNAME: process.env.TD_MONGODB_USERNAME,
+              TD_MONGODB_PASSWORD: process.env.TD_MONGODB_PASSWORD,
+              TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE
+            }
+
+            env = _.merge(env, envDocker)
           }
+
           var n = fork(path.join(__dirname, '/src/cache/index.js'), {
             execArgv: ['--max-old-space-size=' + memLimit],
-            env: { FORK: 1, NODE_ENV: global.env }
+            env: env
           })
 
           global.forks.push({ name: 'cache', fork: n })
@@ -262,9 +226,36 @@ function dbCallback (err, db) {
           return next()
         }
       ],
-      function () {
-        winston.info('trudesk Ready')
+      function (err) {
+        if (err) throw new Error(err)
+
+        ws.listen(function () {
+          winston.info('trudesk Ready')
+        })
       }
     )
   })
 }
+
+function dbCallback (err, db) {
+  if (err || !db) {
+    return start()
+  }
+
+  if (isDocker) {
+    var s = require('./src/models/setting')
+    s.getSettingByName('installed', function (err, installed) {
+      if (err) return start()
+
+      if (!installed) {
+        return launchInstallServer()
+      } else {
+        return launchServer(db)
+      }
+    })
+  } else {
+    return launchServer(db)
+  }
+}
+
+if (!nconf.get('install') && (configExists || isDocker)) start()

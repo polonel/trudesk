@@ -1,3 +1,4 @@
 {
-  "presets": ["@babel/react", "@babel/env"]
+  "presets": ["@babel/react", "@babel/env"],
+  "plugins": [["@babel/plugin-proposal-decorators", {}], ["@babel/plugin-proposal-class-properties", {}]]
 }

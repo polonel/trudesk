@@ -24,6 +24,185 @@ var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
 
+settingsDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
+settingsDefaults.supportGrants = [
+  'tickets:*',
+  'agent:*',
+  'accounts:create update view import',
+  'teams:create update view',
+  'comments:create view update create delete',
+  'reports:view create',
+  'notices:*'
+]
+settingsDefaults.adminGrants = [
+  'admin:*',
+  'agent:*',
+  'chat:*',
+  'tickets:*',
+  'accounts:*',
+  'groups:*',
+  'teams:*',
+  'departments:*',
+  'comments:*',
+  'reports:*',
+  'notices:*',
+  'settings:*',
+  'api:*'
+]
+
+function teamsDefault (callback) {
+  var teamSchema = require('../models/team')
+  var roleSchmea = require('../models/role')
+  var userSchema = require('../models/user')
+
+  async.series(
+    [
+      function (next) {
+        // Create default Support Team
+      }
+    ],
+    callback
+  )
+
+  teamSchema.create(
+    {
+      name: 'Support'
+    },
+    function (err, team) {
+      if (err) console.log(err)
+
+      teamSchema.getTeams(function (err, teams) {
+        if (err) return callback(err)
+
+        console.log(teams)
+
+        return callback()
+      })
+    }
+  )
+}
+
+function rolesDefault (callback) {
+  var roleSchema = require('../models/role')
+
+  async.series(
+    [
+      function (done) {
+        roleSchema.getRoleByName('User', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+
+          roleSchema.create(
+            {
+              name: 'User',
+              description: 'Default role for users',
+              grants: settingsDefaults.userGrants
+            },
+            function (err, userRole) {
+              if (err) return done(err)
+              SettingsSchema.getSetting('role:user:default', function (err, roleUserDefault) {
+                if (err) return done(err)
+                if (roleUserDefault) return done()
+
+                SettingsSchema.create(
+                  {
+                    name: 'role:user:default',
+                    value: userRole._id
+                  },
+                  done
+                )
+              })
+            }
+          )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Support', function (err, role) {
+          if (err) return done(err)
+          if (role) {
+            return done()
+            // role.updateGrants(supportGrants, done);
+          } else
+            roleSchema.create(
+              {
+                name: 'Support',
+                description: 'Default role for agents',
+                grants: settingsDefaults.supportGrants
+              },
+              done
+            )
+        })
+      },
+      function (done) {
+        roleSchema.getRoleByName('Admin', function (err, role) {
+          if (err) return done(err)
+          if (role) return done()
+          // role.updateGrants(adminGrants, done);
+          else {
+            roleSchema.create(
+              {
+                name: 'Admin',
+                description: 'Default role for admins',
+                grants: settingsDefaults.adminGrants
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        var roleOrderSchema = require('../models/roleorder')
+        roleOrderSchema.getOrder(function (err, roleOrder) {
+          if (err) return done(err)
+          if (roleOrder) return done()
+
+          roleSchema.getRoles(function (err, roles) {
+            if (err) return done(err)
+
+            var roleOrder = []
+            roleOrder.push(_.find(roles, { name: 'Admin' })._id)
+            roleOrder.push(_.find(roles, { name: 'Support' })._id)
+            roleOrder.push(_.find(roles, { name: 'User' })._id)
+
+            roleOrderSchema.create(
+              {
+                order: roleOrder
+              },
+              done
+            )
+          })
+        })
+      }
+    ],
+    function (err) {
+      if (err) throw err
+      return callback()
+    }
+  )
+}
+
+function defaultUserRole (callback) {
+  var roleOrderSchema = require('../models/roleorder')
+  roleOrderSchema.getOrder(function (err, roleOrder) {
+    if (err) return callback(err)
+    if (!roleOrder) return callback()
+
+    SettingsSchema.getSetting('role:user:default', function (err, roleDefault) {
+      if (err) return callback(err)
+      if (roleDefault) return callback()
+
+      var lastId = _.last(roleOrder.order)
+      SettingsSchema.create(
+        {
+          name: 'role:user:default',
+          value: lastId
+        },
+        callback
+      )
+    })
+  })
+}
+
 function createDirectories (callback) {
   async.parallel(
     [
@@ -41,8 +220,12 @@ function createDirectories (callback) {
 function downloadWin32MongoDBTools (callback) {
   var http = require('http')
   var os = require('os')
+  var semver = require('semver')
+  var dbVersion = require('../database').db.version || '3.6.9'
+  var fileVersion = semver(dbVersion).major + '.' + semver(dbVersion).minor
+
   if (os.platform() === 'win32') {
-    var filename = 'mongodb-tools.3.6.9-win32x64.zip'
+    var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
     var savePath = path.join(__dirname, '../backup/bin/win32/')
     fs.ensureDirSync(savePath)
     if (
@@ -105,11 +288,15 @@ function timezoneDefault (callback) {
         winston.debug('Timezone set to ' + setting.value)
         moment.tz.setDefault(setting.value)
 
+        global.timezone = setting.value
+
         if (_.isFunction(callback)) return callback()
       })
     } else {
       winston.debug('Timezone set to ' + setting.value)
       moment.tz.setDefault(setting.value)
+
+      global.timezone = setting.value
 
       if (_.isFunction(callback)) return callback()
     }
@@ -164,6 +351,7 @@ function ticketTypeSettingDefault (callback) {
 
         var type = _.first(types)
         if (!type) return callback('No Types Defined!')
+        if (!_.isObject(type) || _.isUndefined(type._id)) return callback('Invalid Type. Skipping.')
 
         // Save default ticket type
         var defaultTicketType = new SettingsSchema({
@@ -250,9 +438,7 @@ function normalizeTags (callback) {
 function checkPriorities (callback) {
   var ticketSchema = require('../models/ticket')
   var migrateP1 = false
-
   var migrateP2 = false
-
   var migrateP3 = false
 
   async.parallel(
@@ -380,15 +566,6 @@ function addedDefaultPrioritesToTicketTypes (callback) {
                 prioritiesToAdd = _.map(priorities, '_id')
               }
 
-              // } else {
-              //   _.each(priorities, function(priority) {
-              //       if (!_.find(type.priorities, {'_id': priority._id})) {
-              //           winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
-              //           prioritiesToAdd.push(priority._id);
-              //       }
-              //   });
-              // }
-
               if (prioritiesToAdd.length < 1) {
                 return done()
               }
@@ -511,7 +688,13 @@ settingsDefaults.init = function (callback) {
         return createDirectories(done)
       },
       function (done) {
-        downloadWin32MongoDBTools(done)
+        return downloadWin32MongoDBTools(done)
+      },
+      function (done) {
+        return rolesDefault(done)
+      },
+      function (done) {
+        return defaultUserRole(done)
       },
       function (done) {
         return timezoneDefault(done)
@@ -541,10 +724,9 @@ settingsDefaults.init = function (callback) {
         elasticSearchConfToDB(done)
       }
     ],
-    function () {
-      if (_.isFunction(callback)) {
-        return callback()
-      }
+    function (err) {
+      if (err) winston.debug(err)
+      if (_.isFunction(callback)) return callback()
     }
   )
 }

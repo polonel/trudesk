@@ -34,13 +34,13 @@ config.json
 import.csv
 /src/mailer/templates/promo/
 *.pem
+/public/js/
 /public/uploads/tickets/
 /public/uploads/users/
 coverage.html
 *.bk
 apidocs
 /docs/*.html
-/public/js/
 app.css.map
 *.diff
 private/
@@ -60,3 +60,5 @@ public/uploads/assets/*.*
 backups/
 
 public/uploads/assets/upload/
+
+stats\.json

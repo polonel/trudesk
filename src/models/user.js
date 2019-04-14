@@ -1,16 +1,16 @@
 /*
-     .                              .o8                     oooo
-   .o8                             "888                     `888
- .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
-   888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
-   888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
-   888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
-   "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
- ========================================================================
- Created:    02/10/2015
- Author:     Chris Brame
-
- **/
+ *       .                             .o8                     oooo
+ *    .o8                             "888                     `888
+ *  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ *    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ *    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ *    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ *    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ *  ========================================================================
+ *  Author:     Chris Brame
+ *  Updated:    1/20/19 4:43 PM
+ *  Copyright (c) 2014-2019. All rights reserved.
+ */
 
 var async = require('async')
 var mongoose = require('mongoose')
@@ -18,6 +18,9 @@ var winston = require('winston')
 var bcrypt = require('bcrypt')
 var _ = require('lodash')
 var Chance = require('chance')
+
+// Required for linkage
+require('./role')
 
 var SALT_FACTOR = 10
 var COLLECTION = 'accounts'
@@ -47,11 +50,11 @@ var COLLECTION = 'accounts'
  * @property {Boolean} deleted Account Deleted
  */
 var userSchema = mongoose.Schema({
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true, unique: true, lowercase: true },
   password: { type: String, required: true, select: false },
   fullname: { type: String, required: true, index: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  role: { type: String, required: true },
+  role: { type: mongoose.Schema.Types.ObjectId, ref: 'roles', required: true },
   lastOnline: Date,
   title: String,
   image: String,
@@ -76,10 +79,17 @@ var userSchema = mongoose.Schema({
 
 userSchema.set('toObject', { getters: true })
 
+var autoPopulateRole = function (next) {
+  this.populate('role', 'name description normalized _id')
+  next()
+}
+
+userSchema.pre('findOne', autoPopulateRole).pre('find', autoPopulateRole)
+
 userSchema.pre('save', function (next) {
   var user = this
 
-  user.username = user.username.trim()
+  user.username = user.username.toLowerCase().trim()
   user.email = user.email.trim()
   if (user.fullname) user.fullname = user.fullname.trim()
   if (user.title) user.title = user.title.trim()
@@ -324,6 +334,8 @@ userSchema.statics.getUserByUsername = function (user, callback) {
     .exec(callback)
 }
 
+userSchema.statics.getByUsername = userSchema.statics.getUserByUsername
+
 /**
  * Gets user via email
  *
@@ -391,7 +403,7 @@ userSchema.statics.getUserByAccessToken = function (token, callback) {
     return callback('Invalid Token - UserSchema.GetUserByAccessToken()', null)
   }
 
-  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, callback)
+  return this.model(COLLECTION).findOne({ accessToken: token, deleted: false }, '+password', callback)
 }
 
 userSchema.statics.getUserWithObject = function (object, callback) {
@@ -414,11 +426,13 @@ userSchema.statics.getUserWithObject = function (object, callback) {
     q.limit(limit)
   }
 
+  if (!object.showDeleted) q.where({ deleted: false })
+
   if (!_.isEmpty(search)) {
     q.where({ fullname: new RegExp('^' + search.toLowerCase(), 'i') })
   }
 
-  q.exec(callback)
+  return q.exec(callback)
 }
 
 /**
@@ -431,13 +445,12 @@ userSchema.statics.getUserWithObject = function (object, callback) {
  * @param {QueryCallback} callback MongoDB Query Callback
  */
 userSchema.statics.getAssigneeUsers = function (callback) {
-  var permissions = require('../permissions')
-  var roles = permissions.roles
+  var roles = global.roles
+  if (_.isUndefined(roles)) return callback(null, [])
+
   var assigneeRoles = []
   async.each(roles, function (role) {
-    if (permissions.canThis(role.id, 'ticket:assignee')) {
-      assigneeRoles.push(role.id)
-    }
+    if (role.isAgent) assigneeRoles.push(role._id)
   })
 
   assigneeRoles = _.uniq(assigneeRoles)
@@ -447,7 +460,7 @@ userSchema.statics.getAssigneeUsers = function (callback) {
       return callback(err, null)
     }
 
-    callback(null, users)
+    return callback(null, _.sortBy(users, 'fullname'))
   })
 }
 
@@ -514,98 +527,192 @@ userSchema.statics.createUserFromEmail = function (email, callback) {
   }
 
   var self = this
-  var Chance = require('chance')
 
-  var chance = new Chance()
+  var settingSchema = require('./setting')
+  settingSchema.getSetting('role:user:default', function (err, userRoleDefault) {
+    if (err || !userRoleDefault) return callback('Invalid Setting - UserRoleDefault')
 
-  var plainTextPass = chance.string({
-    length: 6,
-    pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
-  })
+    var Chance = require('chance')
 
-  var user = new this({
-    username: email,
-    email: email,
-    password: plainTextPass,
-    fullname: email,
-    role: 'user'
-  })
+    var chance = new Chance()
 
-  self.model(COLLECTION).find({ username: user.username }, function (err, items) {
-    if (err) return callback(err)
-    if (_.size(items) > 0) return callback('Username already exists')
+    var plainTextPass = chance.string({
+      length: 6,
+      pool: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890'
+    })
 
-    user.save(function (err, savedUser) {
+    var user = new self({
+      username: email,
+      email: email,
+      password: plainTextPass,
+      fullname: email,
+      role: userRoleDefault.value
+    })
+
+    self.model(COLLECTION).find({ username: user.username }, function (err, items) {
       if (err) return callback(err)
+      if (_.size(items) > 0) return callback('Username already exists')
 
-      // Create a group for this user
-      var GroupSchema = require('./group')
-      var group = new GroupSchema({
-        name: savedUser.email,
-        members: [savedUser._id],
-        sendMailTo: [savedUser._id],
-        public: true
-      })
-
-      group.save(function (err, group) {
+      user.save(function (err, savedUser) {
         if (err) return callback(err)
 
-        // Send welcome email
-        var path = require('path')
-        var mailer = require('../mailer')
-        var Email = require('email-templates')
-        var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
-
-        var email = new Email({
-          views: {
-            root: templateDir,
-            options: {
-              extension: 'handlebars'
-            }
-          }
+        // Create a group for this user
+        var GroupSchema = require('./group')
+        var group = new GroupSchema({
+          name: savedUser.email,
+          members: [savedUser._id],
+          sendMailTo: [savedUser._id],
+          public: true
         })
 
-        var settingSchema = require('./setting')
-        settingSchema.getSetting('gen:siteurl', function (err, setting) {
+        group.save(function (err, group) {
           if (err) return callback(err)
 
-          if (!setting) {
-            setting = { value: '' }
-          }
+          // Send welcome email
+          var path = require('path')
+          var mailer = require('../mailer')
+          var Email = require('email-templates')
+          var templateDir = path.resolve(__dirname, '..', 'mailer', 'templates')
 
-          var dataObject = {
-            user: savedUser,
-            plainTextPassword: plainTextPass,
-            baseUrl: setting.value
-          }
-
-          email
-            .render('public-account-created', dataObject)
-            .then(function (html) {
-              var mailOptions = {
-                to: savedUser.email,
-                subject: 'Welcome to trudesk! - Here are your account details.',
-                html: html,
-                generateTextFromHTML: true
+          var email = new Email({
+            views: {
+              root: templateDir,
+              options: {
+                extension: 'handlebars'
               }
+            }
+          })
 
-              mailer.sendMail(mailOptions, function (err) {
-                if (err) {
-                  winston.warn(err)
-                  return callback(err)
+          var settingSchema = require('./setting')
+          settingSchema.getSetting('gen:siteurl', function (err, setting) {
+            if (err) return callback(err)
+
+            if (!setting) {
+              setting = { value: '' }
+            }
+
+            var dataObject = {
+              user: savedUser,
+              plainTextPassword: plainTextPass,
+              baseUrl: setting.value
+            }
+
+            email
+              .render('public-account-created', dataObject)
+              .then(function (html) {
+                var mailOptions = {
+                  to: savedUser.email,
+                  subject: 'Welcome to trudesk! - Here are your account details.',
+                  html: html,
+                  generateTextFromHTML: true
                 }
 
-                return callback(null, { user: savedUser, group: group })
+                mailer.sendMail(mailOptions, function (err) {
+                  if (err) {
+                    winston.warn(err)
+                    return callback(err)
+                  }
+
+                  return callback(null, { user: savedUser, group: group })
+                })
               })
-            })
-            .catch(function (err) {
-              winston.warn(err)
-              return callback(err)
-            })
+              .catch(function (err) {
+                winston.warn(err)
+                return callback(err)
+              })
+          })
         })
       })
     })
   })
+}
+
+userSchema.statics.getCustomers = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+  return self
+    .model(COLLECTION)
+    .find({}, '-password -resetPassHash -resetPassExpire')
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var customerRoleIds = _.filter(accounts, function (a) {
+        return !a.role.isAdmin && !a.role.isAgent
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      var q = self
+        .find({ role: { $in: customerRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
+    })
+}
+
+userSchema.statics.getAgents = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({})
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var agentRoleIds = _.filter(accounts, function (a) {
+        return a.role.isAgent
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      var q = self
+        .model(COLLECTION)
+        .find({ role: { $in: agentRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
+    })
+}
+
+userSchema.statics.getAdmins = function (obj, callback) {
+  var limit = obj.limit || 10
+  var page = obj.page || 0
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({})
+    .exec(function (err, accounts) {
+      if (err) return callback(err)
+
+      var adminRoleIds = _.filter(accounts, function (a) {
+        return a.role.isAdmin
+      }).map(function (a) {
+        return a.role._id
+      })
+
+      var q = self
+        .model(COLLECTION)
+        .find({ role: { $in: adminRoleIds } }, '-password -resetPassHash -resetPassExpire')
+        .sort({ fullname: 1 })
+        .skip(page * limit)
+        .limit(limit)
+
+      if (!obj.showDeleted) q.where({ deleted: false })
+
+      q.exec(callback)
+    })
 }
 
 /**

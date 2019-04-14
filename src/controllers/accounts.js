@@ -75,77 +75,65 @@ accountsController.get = function (req, res) {
   content.data = {}
   content.data.user = req.user
   content.data.common = req.viewdata
-  content.data.accounts = {}
-  content.data.page = 2
 
-  async.waterfall(
-    [
-      function (callback) {
-        userSchema.getUserWithObject({ limit: 20 }, function (err, results) {
-          callback(err, results)
-        })
-      },
-      function (users, callback) {
-        // return callback(null, users);
+  return res.render('accounts', content)
+}
 
-        var result = []
-        async.waterfall(
-          [
-            function (cc) {
-              groupSchema.getAllGroups(function (err, grps) {
-                if (err) return cc(err)
-                var g = grps.slice(0)
-                g.members = undefined
-                g.sendMailTo = undefined
-                content.data.allGroups = g
-                cc(null, grps)
-              })
-            },
-            function (grps, cc) {
-              async.eachSeries(
-                users,
-                function (u, c) {
-                  var user = u.toObject()
+accountsController.getCustomers = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
 
-                  var groups = _.filter(grps, function (g) {
-                    return _.some(g.members, function (m) {
-                      if (m) {
-                        return m._id.toString() === user._id.toString()
-                      }
-                    })
-                  })
+  var content = {}
+  content.title = 'Customers'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-customers'
 
-                  user.groups = _.map(groups, 'name')
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'customers'
 
-                  result.push(user)
-                  c()
-                },
-                function (err) {
-                  if (err) return callback(err)
-                  cc(null, result)
-                }
-              )
-            }
-          ],
-          function (err, results) {
-            if (err) return callback(err)
-            callback(null, results)
-          }
-        )
-      }
-    ],
-    function (err, rr) {
-      if (err)
-        return res.render('error', {
-          message: err.message,
-          error: err,
-          layout: false
-        })
-      content.data.accounts = _.sortBy(rr, 'fullname')
+  return res.render('accounts', content)
+}
 
-      res.render('accounts', content)
-    }
-  )
+accountsController.getAgents = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Agents'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-agents'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'agents'
+
+  return res.render('accounts', content)
+}
+
+accountsController.getAdmins = function (req, res) {
+  var user = req.user
+  if (_.isUndefined(user) || !permissions.canThis(user.role, 'accounts:view')) {
+    return res.redirect('/')
+  }
+
+  var content = {}
+  content.title = 'Admins'
+  content.nav = 'accounts'
+  content.subnav = 'accounts-admins'
+
+  content.data = {}
+  content.data.user = user
+  content.data.common = req.viewdata
+  content.data.view = 'admins'
+
+  return res.render('accounts', content)
 }
 
 accountsController.importPage = function (req, res) {
@@ -221,6 +209,7 @@ accountsController.bindLdap = function (req, res) {
 
     ldap.search(searchBase, filter, function (err, results) {
       if (err && !res.headersSent) return res.status(400).json({ success: false, error: err })
+      if (_.isUndefined(results)) return res.status(400).json({ success: false, error: 'Undefined Results' })
 
       var entries = results.entries
       var foundUsers = null

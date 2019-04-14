@@ -49,16 +49,16 @@ winston.add(winston.transports.Console, {
   database.init(
     function (e, db) {
       if (e) {
-        process.send({ error: e })
-        return process.kill(0)
+        return process.send({ error: e })
+        // return process.kill(0)
       }
 
       if (!db) {
-        process.send({ error: { message: 'Unable to open database' } })
-        return process.kill(0)
+        return process.send({ error: { message: 'Unable to open database' } })
+        // return process.kill(0)
       }
 
-      process.send({ success: true })
+      return process.send({ success: true })
     },
     CONNECTION_URI,
     options

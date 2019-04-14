@@ -15,8 +15,11 @@
 var passport = require('passport')
 var Local = require('passport-local').Strategy
 var TotpStrategy = require('passport-totp').Strategy
+var JwtStrategy = require('passport-jwt').Strategy
+var ExtractJwt = require('passport-jwt').ExtractJwt
 var base32 = require('thirty-two')
 var User = require('../models/user')
+var nconf = require('nconf')
 
 module.exports = function () {
   passport.serializeUser(function (user, done) {
@@ -50,10 +53,6 @@ module.exports = function () {
             }
 
             if (!User.validate(password, user.password)) {
-              console.log('Invalid Pass')
-            }
-
-            if (!User.validate(password, user.password)) {
               return done(null, false, req.flash('loginMessage', 'Incorrect Password.'))
             }
 
@@ -83,6 +82,31 @@ module.exports = function () {
 
           return done(null, base32.decode(user.tOTPKey).toString(), user.tOTPPeriod)
         })
+      }
+    )
+  )
+
+  passport.use(
+    'jwt',
+    new JwtStrategy(
+      {
+        jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+        secretOrKey: nconf.get('tokens') ? nconf.get('tokens').secret : false,
+        ignoreExpiration: true
+      },
+      function (jwtPayload, done) {
+        if (jwtPayload.exp < Date.now() / 1000) return done({ type: 'exp' })
+
+        return done(null, jwtPayload.user)
+
+        // User.findOne({ _id: jwtPayload.user._id }, function (err, user) {
+        //   if (err) return done(err)
+        //   if (user) {
+        //     return done(null, jwtPayload.user)
+        //   } else {
+        //     return done(null, false)
+        //   }
+        // })
       }
     )
   )

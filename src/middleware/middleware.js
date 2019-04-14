@@ -86,7 +86,7 @@ middleware.redirectIfUser = function (req, res, next) {
     return res.redirect('/')
   }
 
-  if (req.user.role === 'user') {
+  if (!req.user.role.isAdmin && !req.user.role.isAgent) {
     return res.redirect(301, '/tickets')
   }
 
@@ -192,29 +192,56 @@ middleware.api = function (req, res, next) {
 
 middleware.hasAuth = middleware.api
 
+middleware.apiv2 = function (req, res, next) {
+  // ByPass auth for now if user is set through session
+  if (req.user) return next()
+
+  var passport = require('passport')
+  passport.authenticate('jwt', { session: true }, function (err, user) {
+    if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
+    if (user) {
+      req.user = user
+      return next()
+    }
+
+    return res.status(500).json({ success: false, error: 'Unknown Error Occurred' })
+  })(req, res, next)
+}
+
+middleware.canUser = function (action) {
+  return function (req, res, next) {
+    if (!req.user) return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+    var permissions = require('../permissions')
+    var perm = permissions.canThis(req.user.role, action)
+    if (perm) return next()
+
+    return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
+  }
+}
+
 middleware.isAdmin = function (req, res, next) {
-  if (req.user.role === 'admin') {
-    return next()
-  }
+  var roles = global.roles
+  var role = _.find(roles, { _id: req.user.role._id })
+  if (role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
-middleware.isMod = function (req, res, next) {
-  if (req.user.role === 'mod' || req.user.role === 'admin') {
-    return next()
-  }
+middleware.isAgentOrAdmin = function (req, res, next) {
+  var role = _.find(global.roles, { _id: req.user.role._id })
+  if (role.isAgent || role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
 
-middleware.isSupport = function (req, res, next) {
-  if (req.user.role === 'support' || req.user.role === 'mod' || req.user.role === 'admin') {
-    return next()
-  }
+middleware.isAgent = function (req, res, next) {
+  var role = _.find(global.roles, { _id: req.user.role._id })
+  if (role.isAgent) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
 }
+
+middleware.isSupport = middleware.isAgent
 
 module.exports = function () {
   return middleware

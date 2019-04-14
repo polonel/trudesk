@@ -13,16 +13,13 @@
  */
 
 var _ = require('lodash')
-
 var async = require('async')
-
 var ticketSchema = require('../../../models/ticket')
-
 var groupSchema = require('../../../models/group')
-
 var csv = require('csv')
-
 var moment = require('moment')
+
+var settingsSchema = require('../../../models/setting')
 
 var apiReports = {
   generate: {}
@@ -60,6 +57,8 @@ var apiReports = {
  */
 apiReports.generate.ticketsByGroup = function (req, res) {
   var postData = req.body
+  if (!postData || !postData.startDate || !postData.endDate)
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
 
   ticketSchema.getTicketsWithObject(
     postData.groups,
@@ -461,6 +460,55 @@ apiReports.generate.ticketsByUser = function (req, res) {
                 end: postData.endDate
               },
               owner: postData.users
+            }
+          },
+          function (err, tickets) {
+            if (err) return done(err)
+
+            var input = processReportData(tickets)
+
+            tickets = null
+
+            return done(null, input)
+          }
+        )
+      }
+    ],
+    function (err, input) {
+      if (err) return res.status(400).json({ success: false, error: err })
+
+      return processResponse(res, input)
+    }
+  )
+}
+
+apiReports.generate.ticketsByAssignee = function (req, res) {
+  var postData = req.body
+  async.waterfall(
+    [
+      function (done) {
+        if (_.includes(postData.groups, '-1')) {
+          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+            if (err) return done(err)
+
+            return done(null, grps)
+          })
+        } else {
+          return done(null, postData.groups)
+        }
+      },
+      function (grps, done) {
+        ticketSchema.getTicketsWithObject(
+          grps,
+          {
+            limit: -1,
+            page: 0,
+            filter: {
+              date: {
+                start: postData.startDate,
+                end: postData.endDate
+              },
+              assignee: postData.assignees
             }
           },
           function (err, tickets) {

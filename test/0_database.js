@@ -5,6 +5,7 @@ var winston = require('winston')
 var async = require('async')
 var mongoose = require('mongoose')
 var path = require('path')
+var _ = require('lodash')
 
 winston.setLevels(winston.config.cli.levels)
 winston.remove(winston.transports.Console)
@@ -57,14 +58,27 @@ before(function (done) {
           require('../src/settings/defaults').init(cb)
         },
         function (cb) {
+          var roleSchema = require('../src/models/role')
+          roleSchema.getRoles(function (err, r) {
+            expect(err).to.not.exist
+            expect(r).to.be.a('array')
+
+            global.roles = r
+
+            cb()
+          })
+        },
+        function (cb) {
           var userSchema = require('../src/models/user')
+          var adminRole = _.find(global.roles, { normalized: 'admin' })
+          expect(adminRole).to.exist
           userSchema.create(
             {
               username: 'trudesk',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
               fullname: 'Trudesk',
               email: 'trudesk@trudesk.io',
-              role: 'admin',
+              role: adminRole._id,
               accessToken: 'da39a3ee5e6b4b0d3255bfef95601890afd80709'
             },
             function (err, user) {
@@ -77,13 +91,17 @@ before(function (done) {
         },
         function (cb) {
           var userSchema = require('../src/models/user')
+          var supportRole = _.find(global.roles, { normalized: 'support' })
+          expect(supportRole).to.exist
+          global.supportRoleId = supportRole._id
+
           userSchema.create(
             {
               username: 'fake.user',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
               fullname: 'Fake user',
               email: 'fake.user@trudesk.io',
-              role: 'mod',
+              role: supportRole._id,
               accessToken: '456'
             },
             function (err, user) {
@@ -96,13 +114,16 @@ before(function (done) {
         },
         function (cb) {
           var userSchema = require('../src/models/user')
+          var userRole = _.find(global.roles, { normalized: 'user' })
+          expect(userRole).to.exist
+          global.userRoleId = userRole._id
           userSchema.create(
             {
               username: 'deleted.user',
               password: '$2a$04$350Dkwcq9EpJLFhbeLB0buFcyFkI9q3edQEPpy/zqLjROMD9LPToW',
               fullname: 'Deleted User',
               email: 'deleted.user@trudesk.io',
-              role: 'user',
+              role: userRole._id,
               accessToken: '123',
               deleted: true
             },
@@ -134,11 +155,14 @@ before(function (done) {
             db,
             function (err) {
               expect(err).to.not.exist
-              global.server = ws.server
+              ws.listen(function (err) {
+                expect(err).to.not.exist
+                global.server = ws.server
 
-              require('../src/socketserver')(ws)
+                require('../src/socketserver')(ws)
 
-              cb()
+                cb()
+              })
             },
             3111
           )
@@ -198,7 +222,6 @@ describe('Database', function () {
         }
       ],
       function (err) {
-        expect(err).to.not.exist
         done()
       }
     )
