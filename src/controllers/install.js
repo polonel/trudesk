@@ -125,6 +125,7 @@ installController.install = function (req, res) {
   var GroupSchema = require('../models/group')
   var Counters = require('../models/counters')
   var TicketTypeSchema = require('../models/tickettype')
+  var SettingsSchema = require('../models/setting')
 
   var data = req.body
 
@@ -136,6 +137,7 @@ installController.install = function (req, res) {
   var password = data['mongo[password]']
 
   // ElasticSearch
+  var eEnabled = data['elastic[enable]']
   var eHost = data['elastic[host]']
   var ePort = data['elastic[port]']
 
@@ -160,8 +162,6 @@ installController.install = function (req, res) {
         }, conuri)
       },
       function (next) {
-        var SettingsSchema = require('../models/setting')
-
         var s = new SettingsSchema({
           name: 'gen:version',
           value: require('../../package.json').version
@@ -170,6 +170,38 @@ installController.install = function (req, res) {
         return s.save(function (err) {
           return next(err)
         })
+      },
+      function (next) {
+        if (!eEnabled) return next()
+        async.parallel([
+          function (done) {
+            SettingsSchema.create(
+              {
+                name: 'es:enable',
+                value: true
+              },
+              done
+            )
+          },
+          function (done) {
+            SettingsSchema.create(
+              {
+                name: 'es:host',
+                value: eHost
+              },
+              done
+            )
+          },
+          function (done) {
+            SettingsSchema.create(
+              {
+                name: 'es:port',
+                value: ePort
+              },
+              done
+            )
+          }
+        ])
       },
       function (next) {
         var Counter = new Counters({
