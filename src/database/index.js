@@ -20,8 +20,8 @@ var db = {}
 var mongoConnectionUri = {
     server: process.env.TD_MONGODB_SERVER || nconf.get('mongo:host'),
     // port: process.env.TD_MONGODB_PORT || nconf.get('mongo:port') || '27017',
-    username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
-    password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
+    // username: process.env.TD_MONGODB_USERNAME || nconf.get('mongo:username'),
+    // password: process.env.TD_MONGODB_PASSWORD || nconf.get('mongo:password'),
     database: process.env.TD_MONGODB_DATABASE || nconf.get('mongo:database')
 }
 
@@ -33,10 +33,10 @@ else {
     mongoConnectionUri.password = encodeURIComponent(mongoConnectionUri.password)
     CONNECTION_URI =
         'mongodb+srv://' +
-        mongoConnectionUri.username +
-        ':' +
-        mongoConnectionUri.password +
-        '@' +
+        // mongoConnectionUri.username +
+        // ':' +
+        // mongoConnectionUri.password +
+        // '@' +
         mongoConnectionUri.server +
         // ':' +
         // mongoConnectionUri.port +

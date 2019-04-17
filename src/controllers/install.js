@@ -63,8 +63,8 @@ installController.existingdb = function(req, res) {
     var host = data.host
         // var port = data.port
     var database = data.database
-    var username = data.username
-    var password = data.password
+        // var username = data.username
+        // var password = data.password
 
     // Write Configfile
     var fs = require('fs')
@@ -74,8 +74,8 @@ installController.existingdb = function(req, res) {
         mongo: {
             host: host,
             // port: port,
-            username: username,
-            password: password,
+            // username: username,
+            // password: password,
             database: database
         }
     }
@@ -105,8 +105,8 @@ installController.install = function(req, res) {
     var host = data['mongo[host]']
         // var port = data['mongo[port]']
     var database = data['mongo[database]']
-    var username = data['mongo[username]']
-    var password = data['mongo[password]']
+        // var username = data['mongo[username]']
+        // var password = data['mongo[password]']
 
     // Account
     var user = {
@@ -323,8 +323,8 @@ installController.install = function(req, res) {
                     mongo: {
                         host: host,
                         // port: port,
-                        username: username,
-                        password: password,
+                        // username: username,
+                        // password: password,
                         database: database
                     }
                 }
