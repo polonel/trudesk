@@ -25,9 +25,12 @@ import AppearanceSettings from './Appearance'
 import PermissionsSettingsContainer from './Permissions'
 import TicketsSettings from './Tickets'
 import MailerSettingsContainer from './Mailer'
+import ElasticsearchSettingsContainer from './Elasticsearch'
 import TPSSettingsContainer from './TPS'
 import BackupRestoreSettingsContainer from './BackupRestore'
 import LegalSettingsContainer from 'containers/Settings/Legal'
+
+import helpers from 'lib/helpers'
 
 class SettingsContainer extends React.Component {
   constructor (props) {
@@ -47,6 +50,8 @@ class SettingsContainer extends React.Component {
     }
 
     this.props.fetchSettings()
+
+    helpers.resizeAll()
   }
 
   onMenuItemClick (e, category) {
@@ -112,6 +117,13 @@ class SettingsContainer extends React.Component {
                 }}
               />
               <MenuItem
+                title={'Elasticsearch'}
+                active={this.state.activeCategory === 'settings-elasticsearch'}
+                onClick={e => {
+                  this.onMenuItemClick(e, 'elasticsearch')
+                }}
+              />
+              <MenuItem
                 title='Push Service'
                 active={this.state.activeCategory === 'settings-tps'}
                 onClick={e => {
@@ -147,6 +159,7 @@ class SettingsContainer extends React.Component {
               <PermissionsSettingsContainer active={this.state.activeCategory === 'settings-permissions'} />
               <TicketsSettings active={this.state.activeCategory === 'settings-tickets'} />
               <MailerSettingsContainer active={this.state.activeCategory === 'settings-mailer'} />
+              <ElasticsearchSettingsContainer active={this.state.activeCategory === 'settings-elasticsearch'} />
               <TPSSettingsContainer active={this.state.activeCategory === 'settings-tps'} />
               <BackupRestoreSettingsContainer active={this.state.activeCategory === 'settings-backup'} />
               <LegalSettingsContainer active={this.state.activeCategory === 'settings-legal'} />

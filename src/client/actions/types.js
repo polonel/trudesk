@@ -75,6 +75,10 @@ export const UPDATE_DEPARTMENT = defineAction('UPDATE_DEPARTMENT', [SUCCESS, PEN
 export const DELETE_DEPARTMENT = defineAction('DELETE_DEPARTMENT', [SUCCESS, PENDING, ERROR])
 export const UNLOAD_DEPARTMENTS = defineAction('UNLOAD_DEPARTMENTS', [SUCCESS])
 
+// Search
+export const FETCH_SEARCH_RESULTS = defineAction('FETCH_SEARCH_RESULTS', [SUCCESS, PENDING, ERROR])
+export const UNLOAD_SEARCH_RESULTS = defineAction('UNLOAD_SEARCH_RESULTS', [SUCCESS])
+
 // Settings
 export const FETCH_SETTINGS = defineAction('FETCH_SETTINGS', [SUCCESS, ERROR])
 export const UPDATE_SETTING = defineAction('UPDATE_SETTING', [SUCCESS, ERROR])

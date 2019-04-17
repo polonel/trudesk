@@ -15,11 +15,14 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { connect } from 'react-redux'
+import { observer } from 'mobx-react'
+import { observable } from 'mobx'
 import { each, without, uniq } from 'lodash'
 
 import Log from '../logger'
 import axios from 'axios'
 import { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated } from 'actions/tickets'
+import { fetchSearchResults } from 'actions/search'
 import { showModal } from 'actions/common'
 
 import PageTitle from 'components/PageTitle'
@@ -32,7 +35,6 @@ import TableCell from 'components/Table/TableCell'
 import PageTitleButton from 'components/PageTitleButton'
 import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import Dropdown from 'components/Dropdown'
-import SpinLoader from 'components/SpinLoader'
 import DropdownItem from 'components/Dropdown/DropdownItem'
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
 
@@ -40,8 +42,12 @@ import helpers from 'lib/helpers'
 import socket from 'lib/socket'
 import anime from 'animejs'
 import moment from 'moment-timezone'
+import SearchResults from 'components/SearchResults'
 
+@observer
 class TicketsContainer extends React.Component {
+  @observable searchTerm = ''
+
   selectedTickets = []
   constructor (props) {
     super(props)
@@ -152,13 +158,29 @@ class TicketsContainer extends React.Component {
     })
   }
 
-  onSearchKeypress (e) {
-    e.persist()
-    if (e.charCode === 13) {
-      const searchString = e.target.value
-      if (searchString.length < 1) this.props.unloadTickets().then(this.props.fetchTickets({ type: this.props.view }))
-      else this.props.unloadTickets().then(this.props.fetchTickets({ type: 'search', searchString }))
+  onSearchTermChanged (e) {
+    this.searchTerm = e.target.value
+    if (this.searchTerm.length > 3) {
+      SearchResults.toggleAnimation(true, true)
+      this.props.fetchSearchResults({ term: this.searchTerm })
+    } else {
+      SearchResults.toggleAnimation(true, false)
     }
+  }
+
+  _onSearchFocus (e) {
+    if (this.searchTerm.length > 3) SearchResults.toggleAnimation(true, true)
+  }
+
+  onSearchKeypress (e) {
+    if (this.searchTerm.length > 3) this.props.fetchSearchResults({ term: this.searchTerm })
+
+    // e.persist()
+    // if (e.charCode === 13) {
+    //   const searchString = e.target.value
+    //   if (searchString.length < 1) this.props.unloadTickets().then(this.props.fetchTickets({ type: this.props.view }))
+    //   else this.props.unloadTickets().then(this.props.fetchTickets({ type: 'search', searchString }))
+    // }
   }
 
   _clearChecked () {
@@ -190,51 +212,60 @@ class TicketsContainer extends React.Component {
           title={'Tickets'}
           shadow={false}
           rightComponent={
-            <div className={'uk-float-right'}>
-              <TitlePagination
-                limit={50}
-                total={this.props.totalCount}
-                type={this.props.view}
-                prevEnabled={this.props.prevEnabled}
-                nextEnabled={this.props.nextEnabled}
-                currentPage={this.props.page}
-                prevPage={this.props.prevPage}
-                nextPage={this.props.nextPage}
-              />
-              <PageTitleButton
-                fontAwesomeIcon={'fa-refresh'}
-                onButtonClick={e => {
-                  e.preventDefault()
-                  this.props
-                    .unloadTickets()
-                    .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }))
-                }}
-              />
-              <DropdownTrigger pos={'bottom-right'} offset={5} extraClass={'uk-float-left'}>
-                <PageTitleButton fontAwesomeIcon={'fa-tasks'} />
-                <Dropdown small={true} width={120}>
-                  <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
-                  <DropdownSeparator />
-                  <DropdownItem text={'Set Open'} onClick={() => this.onSetStatus(1)} />
-                  <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
-                  <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
-                  {helpers.canUser('tickets:delete', true) && <DropdownSeparator />}
-                  {helpers.canUser('tickets:delete', true) && (
-                    <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
-                  )}
-                </Dropdown>
-              </DropdownTrigger>
+            <div>
               <div className={'uk-float-right'}>
-                <div className='search-box uk-float-left nb' style={{ marginTop: 8, paddingLeft: 0 }}>
-                  <input
-                    type='text'
-                    id='tickets_Search'
-                    placeholder={'Search'}
-                    className={'ticket-top-search'}
-                    onKeyPress={e => this.onSearchKeypress(e)}
-                  />
+                <TitlePagination
+                  limit={50}
+                  total={this.props.totalCount}
+                  type={this.props.view}
+                  prevEnabled={this.props.prevEnabled}
+                  nextEnabled={this.props.nextEnabled}
+                  currentPage={this.props.page}
+                  prevPage={this.props.prevPage}
+                  nextPage={this.props.nextPage}
+                />
+                <PageTitleButton
+                  fontAwesomeIcon={'fa-refresh'}
+                  onButtonClick={e => {
+                    e.preventDefault()
+                    this.props
+                      .unloadTickets()
+                      .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }))
+                  }}
+                />
+                <DropdownTrigger pos={'bottom-right'} offset={5} extraClass={'uk-float-left'}>
+                  <PageTitleButton fontAwesomeIcon={'fa-tasks'} />
+                  <Dropdown small={true} width={120}>
+                    <DropdownItem text={'Create'} onClick={() => this.props.showModal('CREATE_TICKET')} />
+                    <DropdownSeparator />
+                    <DropdownItem text={'Set Open'} onClick={() => this.onSetStatus(1)} />
+                    <DropdownItem text={'Set Pending'} onClick={() => this.onSetStatus(2)} />
+                    <DropdownItem text={'Set Closed'} onClick={() => this.onSetStatus(3)} />
+                    {helpers.canUser('tickets:delete', true) && <DropdownSeparator />}
+                    {helpers.canUser('tickets:delete', true) && (
+                      <DropdownItem text={'Delete'} extraClass={'text-danger'} onClick={() => this.onDeleteClicked()} />
+                    )}
+                  </Dropdown>
+                </DropdownTrigger>
+                <div className={'uk-float-right'}>
+                  <div
+                    id={'ticket-search-box'}
+                    className='search-box uk-float-left nb'
+                    style={{ marginTop: 8, paddingLeft: 0 }}
+                  >
+                    <input
+                      type='text'
+                      id='tickets_Search'
+                      placeholder={'Search'}
+                      className={'ticket-top-search'}
+                      value={this.searchTerm}
+                      onChange={e => this.onSearchTermChanged(e)}
+                      onFocus={e => this._onSearchFocus(e)}
+                    />
+                  </div>
                 </div>
               </div>
+              <SearchResults target={'#ticket-search-box'} ref={r => (this.searchContainer = r)} />
             </div>
           }
         />
@@ -376,6 +407,7 @@ TicketsContainer.propTypes = {
   unloadTickets: PropTypes.func.isRequired,
   ticketUpdated: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
+  fetchSearchResults: PropTypes.func.isRequired,
   common: PropTypes.object.isRequired
 }
 
@@ -397,5 +429,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated, showModal }
+  { fetchTickets, deleteTicket, ticketEvent, unloadTickets, ticketUpdated, fetchSearchResults, showModal }
 )(TicketsContainer)

@@ -282,6 +282,7 @@ define([
       var obj = helpers.util.options($this.attr('data-tether'))
       if (_.isObject(obj)) {
         var $target = $(obj.target)
+
         if ($target.length > 0) {
           new Tether({
             element: $this,
