@@ -173,35 +173,38 @@ installController.install = function (req, res) {
       },
       function (next) {
         if (!eEnabled) return next()
-        async.parallel([
-          function (done) {
-            SettingsSchema.create(
-              {
-                name: 'es:enable',
-                value: true
-              },
-              done
-            )
-          },
-          function (done) {
-            SettingsSchema.create(
-              {
-                name: 'es:host',
-                value: eHost
-              },
-              done
-            )
-          },
-          function (done) {
-            SettingsSchema.create(
-              {
-                name: 'es:port',
-                value: ePort
-              },
-              done
-            )
-          }
-        ])
+        async.parallel(
+          [
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:enable',
+                  value: true
+                },
+                done
+              )
+            },
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:host',
+                  value: eHost
+                },
+                done
+              )
+            },
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:port',
+                  value: ePort
+                },
+                done
+              )
+            }
+          ],
+          next
+        )
       },
       function (next) {
         var Counter = new Counters({
