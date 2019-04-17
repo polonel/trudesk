@@ -97,6 +97,8 @@
   margin-top: 0 !important
 .mt-5
   margin-top: 5px !important
+.mt-8
+  margin-top: 8px !important
 .mt-10
   margin-top: 10px !important
 .mt-15
@@ -205,6 +207,8 @@
   color: rgba(25,25,25, 0.7) !important
 .text-success
   color: $accent_success !important
+.text-danger
+  color: $accent_danger !important
 .bg-white
   background: #fff !important
 .bg-accent
@@ -240,6 +244,16 @@
     line-height: 18px
     display: block
     color: automatic-text-color($page_content_right_bg, 'muted')
+
+.bg-danger,.bg-warning,.bg-success
+  background: $accent_danger !important
+  color: white !important
+  p,i,h1,h2,h3,h4,h5,h6,a
+    color: white !important
+.bg-warning
+  background: $accent_warn !important
+.bg-success
+  background: $accent_success !important
 
 .cursor-pointer
   cursor: default !important

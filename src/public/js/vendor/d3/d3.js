@@ -208,7 +208,6 @@
       n,
       ticks,
       step
-
     ;(stop = +stop), (start = +start), (count = +count)
     if (start === stop && count > 0) return [start]
     if ((reverse = stop < start)) (n = start), (start = stop), (stop = n)
@@ -5225,7 +5224,7 @@
         i,
         j
 
-      // Compute the sum.
+        // Compute the sum.
       ;(k = 0), (i = -1)
       while (++i < n) {
         ;(x = 0), (j = -1)
@@ -11968,13 +11967,24 @@
   function packEnclose (circles) {
     if (!(n = circles.length)) return 0
 
-    var a, b, c, n, aa, ca, i, j, k, sj, sk
+    var a,
+      b,
+      c,
+      n,
+      aa,
+      ca,
+      i,
+      j,
+      k,
+      sj,
+      sk
 
-    // Place the first circle.
+      // Place the first circle.
     ;(a = circles[0]), (a.x = 0), (a.y = 0)
-    if (!(n > 1)) return a.r
+    if (!(n > 1))
+      return a.r
 
-    // Place the second circle.
+      // Place the second circle.
     ;(b = circles[1]), (a.x = -b.r), (b.x = a.r), (b.y = 0)
     if (!(n > 2)) return a.r + b.r
 
@@ -12009,9 +12019,11 @@
           }
           ;(sk += k._.r), (k = k.previous)
         }
-      } while (j !== k.next)
+      } while (
+        j !== k.next
 
-      // Success! Insert the new circle c between a and b.
+        // Success! Insert the new circle c between a and b.
+      )
       ;(c.previous = a), (c.next = b), (a.next = b.previous = b = c)
 
       // Compute the new closest circle pair to the centroid.

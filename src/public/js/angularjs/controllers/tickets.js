@@ -29,7 +29,15 @@ define([
 ], function (angular, _, $, helpers, socket, UIkit, EasyMDE) {
   return angular
     .module('trudesk.controllers.tickets', ['trudesk.services.settings'])
-    .controller('ticketsCtrl', function (SettingsService, $scope, $http, $window, $log, openFilterTicketWindow) {
+    .controller('ticketsCtrl', function (
+      SettingsService,
+      $scope,
+      $http,
+      $window,
+      $document,
+      $log,
+      openFilterTicketWindow
+    ) {
       var mdeToolbarItems = [
         {
           name: 'bold',
@@ -157,6 +165,108 @@ define([
 
         attachFileDesc($issueTextarea)
       }
+
+      $scope.init = function () {
+        var settings = SettingsService.getSettings()
+        if (!settings.elasticSearchConfigured.value) {
+          $('input.non-es-search')
+            .removeClass('hide')
+            .show()
+          $('input#es-ticket-search')
+            .addClass('hide')
+            .hide()
+        } else {
+          var mEvent = function (event) {
+            var $target = $(event.target)
+
+            var inContainer = $target.parents('.search-results-container').length > 0
+            if (inContainer) return false
+
+            toggleAnimation(true, false)
+          }
+
+          $document.on('mousedown', mEvent)
+          $scope.$on('$destory', function () {
+            $document.off('mousedown', mEvent)
+          })
+
+          var $esInput = $('input#es-ticket-search')
+          $esInput.on('keydown', function (e) {
+            // Esc
+            if (e.keyCode === 27) toggleAnimation(true, false)
+          })
+
+          if ($esInput.length > 0) {
+            $esInput.on('focus', function () {
+              var val = $esInput.val()
+              if (val.length > 2) toggleAnimation(true, true)
+              else toggleAnimation(true, false)
+            })
+          }
+        }
+      }
+
+      function toggleAnimation (forceState, state) {
+        var animateItems = $('.search-results-container')
+        var docElemStyle = $document[0].documentElement.style
+        var transitionProp = angular.isString(docElemStyle.transition) ? 'transition' : 'WebkitTransition'
+
+        for (var i = 0; i < animateItems.length; i++) {
+          var item = animateItems[i]
+          item.style[transitionProp + 'Delay'] = i * 50 + 'ms'
+
+          if (forceState) {
+            if (state) {
+              item.classList.remove('hide')
+              item.classList.add('is-in')
+            } else {
+              item.classList.add('hide')
+              item.classList.remove('is-in')
+            }
+          } else {
+            item.classList.toggle('hide')
+            item.classList.toggle('is-in')
+          }
+        }
+      }
+
+      function searchES (term) {
+        if (_.isEmpty(term)) return
+
+        $http.get('/api/v1/es/search?limit=20&q=' + term).then(
+          function success (res) {
+            $scope.searchResults = res.data.hits.hits
+            $scope.hideNoResults = $scope.searchResults.length > 0
+            toggleAnimation(true, true)
+          },
+          function errorCallback (err) {
+            $log.error(err)
+          }
+        )
+      }
+
+      $scope.searchResultClicked = function (e) {
+        e.preventDefault()
+        History.pushState(null, null, e.currentTarget.getAttribute('href'))
+      }
+
+      $scope.searchTerm = ''
+      $scope.searchResults = []
+      $scope.hideNoResults = false
+      $scope.$watch(
+        'searchTerm',
+        _.debounce(function () {
+          $scope.$apply(function () {
+            if ($scope.searchTerm.trim().length === 0) {
+              $scope.searchResults = []
+              toggleAnimation(true, false)
+              return true
+            }
+
+            if ($scope.searchTerm.trim().length > 2) searchES($scope.searchTerm.trim())
+          })
+        }, 250)
+      )
 
       $scope.openFilterTicketWindow = function () {
         openFilterTicketWindow.openWindow()

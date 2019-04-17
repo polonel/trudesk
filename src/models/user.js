@@ -68,8 +68,6 @@ var userSchema = mongoose.Schema({
   hasL2Auth: { type: Boolean, required: true, default: false },
   accessToken: { type: String, sparse: true, select: false },
 
-  iOSDeviceTokens: { type: [String], select: false },
-
   preferences: {
     tourCompleted: { type: Boolean, default: false },
     autoRefreshTicketGrid: { type: Boolean, default: true },

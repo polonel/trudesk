@@ -101,6 +101,14 @@ util.getSettings = function (callback) {
     s.showTour = parseSetting(settings, 'showTour:enable', false)
     s.showOverdueTickets = parseSetting(settings, 'showOverdueTickets:enable', true)
 
+    // Elasticsearch
+    s.elasticSearchEnabled = parseSetting(settings, 'es:enable', false)
+    s.elasticSearchHost = parseSetting(settings, 'es:host', '')
+    s.elasticSearchPort = parseSetting(settings, 'es:port', 9200)
+    s.elasticSearchConfigured = {
+      value: s.elasticSearchEnabled.value !== false && !_.isEmpty(s.elasticSearchHost.value)
+    }
+
     s.tpsEnabled = parseSetting(settings, 'tps:enable', false)
     s.tpsUsername = parseSetting(settings, 'tps:username', '')
     s.tpsApiKey = parseSetting(settings, 'tps:apikey', '')

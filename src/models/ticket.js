@@ -108,6 +108,7 @@ ticketSchema.index({ deleted: -1, group: 1, status: 1 })
 
 ticketSchema.pre('save', function (next) {
   this.subject = this.subject.trim()
+  this.wasNew = this.isNew
 
   if (!_.isUndefined(this.uid) || this.uid) {
     return next()
@@ -127,6 +128,13 @@ ticketSchema.pre('save', function (next) {
 
     return next()
   })
+})
+
+ticketSchema.post('save', function (savedTicket) {
+  if (!this.wasNew) {
+    var emitter = require('../emitter')
+    emitter.emit('ticket:updated', savedTicket)
+  }
 })
 
 var autoPopulatePriority = function (next) {
@@ -1534,6 +1542,13 @@ ticketSchema.statics.getTypeCount = function (typeId, callback) {
 
   var q = self.model(COLLECTION).countDocuments({ type: typeId, deleted: false })
 
+  return q.exec(callback)
+}
+
+ticketSchema.statics.getCount = function (callback) {
+  var q = this.model(COLLECTION)
+    .countDocuments({ deleted: false })
+    .lean()
   return q.exec(callback)
 }
 

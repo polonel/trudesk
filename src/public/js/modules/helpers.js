@@ -100,6 +100,52 @@ define([
     })
   }
 
+  helpers.util = {}
+  helpers.util.options = function (string) {
+    if ($.type(string) !== 'string') return string
+
+    if (string.indexOf(':') !== -1 && string.trim().substr(-1) !== '}') string = '{' + string + '}'
+
+    var start = string ? string.indexOf('{') : -1,
+      options = {}
+
+    if (start !== -1) {
+      try {
+        options = helpers.util.str2json(string.substr(start))
+      } catch (e) {}
+    }
+
+    return options
+  }
+
+  helpers.util.str2json = function (str, notevil) {
+    try {
+      if (notevil) {
+        return JSON.parse(
+          str
+            // wrap keys without quote with valid double quote
+            .replace(/([$\w]+)\s*:/g, function (_, $1) {
+              return '"' + $1 + '":'
+            })
+            // replacing single quote wrapped ones to double quote
+            .replace(/'([^']+)'/g, function (_, $1) {
+              return '"' + $1 + '"'
+            })
+        )
+      } else return new Function('', 'var json = ' + str + '; return JSON.parse(JSON.stringify(json));')()
+    } catch (e) {
+      return false
+    }
+  }
+
+  helpers.countUpMe = function () {
+    $('.countUpMe').each(function () {
+      var self = this
+      var countTo = $(self).text()
+      var theAnimation = new CountUp(self, 0, countTo, 0, 2)
+      theAnimation.start()
+    })
+  }
   helpers.jsPreventDefault = function () {
     $('.js-prevent-default').each(function () {
       $(this).on('click', function (event) {
@@ -226,6 +272,28 @@ define([
       .each(function () {
         $(this).attr('style', 'padding: 0 !important; font-size: 0 !important;')
       })
+  }
+
+  helpers.UI.setupDataTethers = function () {
+    var $elements = $('*[data-tether]')
+
+    $elements.each(function () {
+      var $this = $(this)
+      var obj = helpers.util.options($this.attr('data-tether'))
+      if (_.isObject(obj)) {
+        var $target = $(obj.target)
+
+        if ($target.length > 0) {
+          new Tether({
+            element: $this,
+            target: $target,
+            attachment: obj.pos,
+            targetAttachment: obj.targetAttachment,
+            offset: obj.offset
+          })
+        }
+      }
+    })
   }
 
   helpers.UI.setupSidebarTether = function () {

@@ -25,6 +25,7 @@ import accountsState from './accountsReducer'
 import groupsState from './groupsReducer'
 import teamsState from './teamsReducer'
 import departmentsState from './departmentsReducer'
+import searchState from './searchReducer'
 
 // const IndexReducer = (state = {}, action) => {
 //   return {
@@ -45,6 +46,7 @@ import departmentsState from './departmentsReducer'
 const IndexReducer = combineReducers({
   shared,
   common,
+  searchState,
   modal,
   sidebar,
   ticketsState,

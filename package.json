@@ -39,6 +39,7 @@
     "csv": "3.1.0",
     "debug": "4.1.1",
     "dive": "0.5.0",
+    "elasticsearch": "15.1.1",
     "email-templates": "4.0.3",
     "express": "4.16.4",
     "express-hbs": "2.0.2",

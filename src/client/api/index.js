@@ -236,6 +236,14 @@ api.departments.delete = ({ _id }) => {
   })
 }
 
+api.search = {}
+api.search.search = ({ limit, term }) => {
+  const l = limit || 25
+  return axios.get(`/api/v2/es/search?limit=${l}&q=${term}`).then(res => {
+    return res.data
+  })
+}
+
 api.settings = {}
 api.settings.update = settings => {
   return axios.put('/api/v1/settings', settings).then(res => {

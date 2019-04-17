@@ -16,6 +16,10 @@ module.exports = function (middleware, router, controllers) {
   // Shorten Vars
   var apiv2Auth = middleware.apiv2
   var apiv2 = controllers.api.v2
+  var isAdmin = middleware.isAdmin
+  var isAgent = middleware.isAgent
+  var isAgentOrAdmin = middleware.isAgentOrAdmin
+  var canUser = middleware.canUser
 
   // Common
   router.post('/api/v2/login', controllers.api.v2.common.login)
@@ -52,4 +56,9 @@ module.exports = function (middleware, router, controllers) {
   router.delete('/api/v2/departments/:id', apiv2Auth, apiv2.departments.delete)
 
   router.get('/api/v2/departments/test', middleware.api, apiv2.departments.test)
+
+  // ElasticSearch
+  router.get('/api/v2/es/search', middleware.api, apiv2.elasticsearch.search)
+  router.get('/api/v2/es/rebuild', apiv2Auth, isAdmin, apiv2.elasticsearch.rebuild)
+  router.get('/api/v2/es/status', apiv2Auth, isAdmin, apiv2.elasticsearch.status)
 }

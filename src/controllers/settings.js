@@ -103,15 +103,23 @@ settingsController.mailerSettings = function (req, res) {
 settingsController.permissionsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:permissions')) return res.redirect('/settings')
 
-    var content = initViewContent('permissions', req);
+  var content = initViewContent('permissions', req)
 
-    renderView(res, content);
-};
+  renderView(res, content)
+}
 
 settingsController.notificationsSettings = function (req, res) {
   if (!checkPerms(req, 'settings:notifications')) return res.redirect('/settings')
 
   var content = initViewContent('notifications', req)
+
+  renderView(res, content)
+}
+
+settingsController.elasticsearchSettings = function (req, res) {
+  if (!checkPerms(req, 'settings:elasticsearch')) return res.redirect('/settings')
+
+  var content = initViewContent('elasticsearch', req)
 
   renderView(res, content)
 }

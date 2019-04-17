@@ -61,7 +61,6 @@
     $$.beforeInit(config)
     $$.init()
     $$.afterInit(config) // bind "this" to nested API
-
     ;(function bindThis (fn, target, argThis) {
       Object.keys(fn).forEach(function (key) {
         target[key] = fn[key].bind(argThis)

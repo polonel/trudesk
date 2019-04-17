@@ -1,5 +1,5 @@
 /* eslint-disable no-unused-expressions */
-/* globals server */
+/* globals server socketServer */
 var expect = require('chai').expect
 var winston = require('winston')
 var async = require('async')
@@ -159,6 +159,8 @@ before(function (done) {
                 expect(err).to.not.exist
                 global.server = ws.server
 
+                require('../src/socketserver')(ws)
+
                 cb()
               })
             },
@@ -178,6 +180,7 @@ after(function (done) {
   this.timeout(5000)
   mongoose.connection.dropDatabase(function () {
     mongoose.connection.close(function () {
+      socketServer.eventLoop.stop()
       server.close()
 
       done()

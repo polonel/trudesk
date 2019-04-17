@@ -12,20 +12,30 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-// require.ensure([], function(require) {
 define([
   'angular',
-  'angularjs/services/session',
+  'angularjs/services',
   'angularjs/controllers',
   'angularRoute',
   'angularCookies',
   'angularSanitize'
 ], function (angular) {
   return angular
-    .module('trudesk', ['trudesk.services.session', 'ngRoute', 'ngCookies', 'ngSanitize', 'trudesk.controllers'])
+    .module('trudesk', [
+      'trudesk.services.session',
+      'trudesk.services.settings',
+      'ngRoute',
+      'ngCookies',
+      'ngSanitize',
+      'trudesk.controllers'
+    ])
+    .filter('htmlToPlainText', function () {
+      return function (text) {
+        return text ? String(text).replace(/<[^>]+>/gm, '') : ''
+      }
+    })
     .config(function ($interpolateProvider) {
       $interpolateProvider.startSymbol('{[{')
       $interpolateProvider.endSymbol('}]}')
     })
 })
-// });

@@ -144,6 +144,15 @@ function launchServer (db) {
           require('./src/permissions').register(next)
         },
         function (next) {
+          require('./src/elasticsearch').init(function (err) {
+            if (err) {
+              winston.error(err)
+            }
+
+            return next()
+          })
+        },
+        function (next) {
           require('./src/socketserver')(ws)
           return next()
         },

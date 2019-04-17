@@ -304,6 +304,12 @@ function mainRoutes (router, middleware, controllers) {
     middleware.loadCommonData,
     controllers.settings.notificationsSettings
   )
+  router.get(
+    '/settings/elasticsearch',
+    middleware.redirectToLogin,
+    middleware.loadCommonData,
+    controllers.settings.elasticsearchSettings
+  )
   router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings)
   router.get(
     '/settings/backup',
@@ -320,11 +326,6 @@ function mainRoutes (router, middleware, controllers) {
     middleware.loadCommonData,
     controllers.editor.page
   )
-  router.get('/api/v1/editor/load/:id', middleware.api, controllers.editor.load)
-  router.post('/api/v1/editor/save', middleware.api, controllers.editor.save)
-  router.get('/api/v1/editor/assets', middleware.api, controllers.editor.getAssets)
-  router.post('/api/v1/editor/assets/remove', middleware.api, controllers.editor.removeAsset)
-  router.post('/api/v1/editor/assets/upload', middleware.api, controllers.editor.assetsUpload)
 
   // Plugins
   router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get)

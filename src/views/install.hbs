@@ -320,6 +320,72 @@
             </div>
         {{/isNotTrue}}
         <div class="slide hide">
+            <h2 style="margin-bottom: 25px;">ElasticSearch Connection</h2>
+            <p style="text-align: left;">
+                It allows us to search. Its optional, but you should probably set up the connection.
+            </p>
+            <form id="elasticConnection" class="uk-form-stacked uk-clearfix">
+                <div class="uk-margin-medium-bottom">
+                    <label for="elastic-host">Server</label>
+                    <input id="elastic-host" name="elastic-host" class="md-input" type="text" value="localhost" />
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="elastic-port">Port</label>
+                    <input id="elastic-port" name="elastic-port" class="md-input" type="text" value="9200"/>
+                </div>
+                <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="test-elastic-connection">Test Connection!</button>
+            </form>
+
+            <div class="uk-clearfix">
+                <a href="#" id="btn-skip-elastic" class="no-ajaxy uk-float-left">Skip ElasticSearch</a>
+                <a href="https://www.elastic.co/products/elasticsearch" class="no-ajaxy" target="_blank">What is ElasticSearch?</a>
+            </div>
+
+        </div>
+
+        <div class="slide hide">
+            <h2 style="margin-bottom: 25px;">MongoDB Connection</h2>
+            <p style="text-align: left;">
+                We've got to store the data somewhere. We've chosen MongoDB as our backend storage.
+                Just enter your connection information below and lets get connected.
+            </p>
+            <form id="mongoConnection" class="uk-form-stacked uk-clearfix">
+                <div class="uk-margin-medium-bottom">
+                    <label for="mongo-server">Server</label>
+                    <input id="mongo-server" name="mongo-server" class="md-input" type="text" value="localhost" />
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="mongo-port">Port</label>
+                    <input id="mongo-port" name="mongo-port" class="md-input" type="text" value="27017"/>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="mongo-username">Username</label>
+                    <input id="mongo-username" name="mongo-username" class="md-input" type="text" value="trudesk"/>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="mongo-password">Password</label>
+                    <input id="mongo-password" name="mongo-password" class="md-input" type="password" value="#TruDesk1$" />
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="mongo-database">Database</label>
+                    <input id="mongo-database" name="mongo-database" class="md-input" type="text"  value="trudesk"/>
+                </div>
+                <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="test-mongo-connection">Test Connection!</button>
+            </form>
+
+            <a href="https://www.mongodb.com/" class="no-ajaxy" target="_blank">What is MongoDB?</a>
+        </div>
+
+        <div class="slide hide">
+            <h2 style="margin-bottom: 25px;">Existing Database?</h2>
+            <p style="text-align: left; margin-bottom: 20px;">
+                Is this mongodb connection an existing database or a new database?
+            </p>
+            <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="margin: 0 0 10px 0 !important;" data-next>New Database</button>
+            <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>
+        </div>
+
+        <div class="slide hide">
             <h2 style="margin-bottom: 25px;">Setup Account</h2>
             <p style="text-align: left;">
                 Now that we got you connected, its time to create an Administrator.
@@ -435,7 +501,18 @@
             });
 
             var mongoConnection = undefined;
+            var elasticConnection = undefined;
             var adminAccount = undefined;
+
+            $('a#btn-skip-elastic').click(function(e) {
+                e.preventDefault();
+
+                elasticConnection = {
+                    enable: false
+                };
+
+                advanceSlide();
+            });
 
             $('button#existing-database-btn').click(function() {
                 if (isDoubleClicked($(this))) return;
@@ -460,7 +537,10 @@
                             port: mongoFormData['mongo-port'],
                             username: mongoFormData['mongo-username'],
                             password: mongoFormData['mongo-password'],
-                            database: mongoFormData['mongo-database']
+                            database: mongoFormData['mongo-database'],
+                            elasticEnable: elasticConnection.enable,
+                            elasticHost: elasticConnection.host,
+                            elasticPort: elasticConnection.port
                         },
                         error: function(e) {
                             window.Snackbar.show({
@@ -497,6 +577,50 @@
                 }, 1000);
             });
 
+            $('button#test-elastic-connection').click(function() {
+                if (isDoubleClicked($(this))) return;
+                var $connectBtn = $(this);
+                $connectBtn.prop('disabled', true).text('Trying to connect...');
+                var elasticFormData = $('form#elasticConnection').serializeObject();
+                $.ajax({
+                    method: 'POST',
+                    url: '/install/elastictest',
+                    data: {
+                        host: elasticFormData['elastic-host'],
+                        port: elasticFormData['elastic-port']
+                    },
+                    error: function(e) {
+                        $connectBtn.prop('disabled', false).text('Test Connection');
+                        window.Snackbar.show({
+                            text: 'Couldn\t connect; make sure connection is correct.',
+                            actionTextColor: 'red'
+                        });
+                        console.error(e);
+                    },
+                    success: function(data) {
+                        if (!data.success) {
+                            window.Snackbar.show({
+                                text: 'Couldn\t connect; make sure connection is correct.',
+                                actionTextColor: 'red'
+                            });
+                            $connectBtn.prop('disabled', false).text('Test Connection!');
+                        } else {
+                            elasticConnection = {
+                                enable: true,
+                                host: elasticFormData['elastic-host'],
+                                port: elasticFormData['elastic-port']
+                            };
+
+                            window.Snackbar.show({
+                                text: 'ElasticSearch Connection Successful!'
+                            });
+
+                            advanceSlide();
+                        }
+                    }
+                })
+            });
+
             $('button#test-mongo-connection').click(function() {
                 if (isDoubleClicked($(this))) return;
                 var $connectBtn = $(this);
@@ -518,7 +642,7 @@
                             text: 'Couldn\'t connect; make sure connection is correct.',
                             actionTextColor: 'red'
                         });
-                        console.log(e);
+                        console.error(e);
                     },
                     success: function(data) {
                         if (!data.success) {
@@ -537,7 +661,7 @@
                             };
 
                             window.Snackbar.show({
-                                text: 'Connection Successful!'
+                                text: 'MongoDB Connection Successful!'
                             });
 
                             //Advance to next slide
@@ -696,7 +820,8 @@
                     url: '/install',
                     data: {
                         mongo: mongoConnection,
-                        account: adminAccount
+                        account: adminAccount,
+                        elastic: elasticConnection
                     },
                     success: function(response) {
                         window.Snackbar.show({

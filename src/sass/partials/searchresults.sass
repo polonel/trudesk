@@ -1,0 +1,77 @@
+.search-results-container
+  font-family: "Ubuntu Mono", monospace
+  width: 300px
+  min-height: 300px
+  max-height: 400px
+  border: 1px solid #ccc
+  +borderRadius(2px)
+  background: #f7f8fa
+  z-index: 20
+  overflow: auto
+  .search-results-list
+    list-style: none
+    margin: 0
+    padding: 0
+    .search-results-item
+      position: relative
+      height: 55px
+      border-bottom: 1px solid #ccc
+      &:hover
+        background: #fff
+      &:before
+        content: ""
+        position: absolute
+        top: 0
+        left: 0
+        height: 100%
+        width: 5px
+        background: $accent_blue
+      &.status-0
+        &:before
+          background: $accent_success
+      &.status-1
+        &:before
+          background: #d32f2f
+      &.status-3
+        &:before
+          background: #ccc
+      a
+        padding: 5px 15px
+        display: block
+        width: 100%
+        height: 100%
+      .priority
+        display: block
+        position: absolute
+        top: 5px
+        right: 7px
+        width: 8px
+        height: 8px
+        +borderRadius(50%)
+        background: transparent
+      .subject
+        font-size: 12px
+        line-height: 13px
+        color: #444
+        display: inline-block
+        width: 200px
+        text-overflow: ellipsis
+        overflow: hidden
+        white-space: nowrap
+        margin: 0
+      .issue
+        font-size: 12px
+        color: #666
+        display: inline-block
+        width: 200px
+        height: 25px
+        text-overflow: ellipsis
+        overflow: hidden
+      .uid
+        font-size: 12px
+        line-height: 13px
+        position: absolute
+        top: 3px
+        right: 19px
+        text-align: right
+        color: #5b5b5b

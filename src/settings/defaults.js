@@ -615,6 +615,71 @@ function mailTemplates (callback) {
   )
 }
 
+function elasticSearchConfToDB (callback) {
+  var nconf = require('nconf')
+  var elasticsearch = {
+    enable: nconf.get('elasticsearch:enable'),
+    host: nconf.get('elasticsearch:host'),
+    port: nconf.get('elasticsearch:port')
+  }
+
+  nconf.set('elasticsearch', undefined)
+
+  async.parallel(
+    [
+      function (done) {
+        nconf.save(done)
+      },
+      function (done) {
+        if (!elasticsearch.enable) return done()
+        SettingsSchema.getSettingByName('es:enable', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:enable',
+                value: elasticsearch.enable
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        if (!elasticsearch.host) return done()
+        SettingsSchema.getSettingByName('es:host', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:host',
+                value: elasticsearch.host
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        if (!elasticsearch.port) return done()
+        SettingsSchema.getSettingByName('es:port', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:port',
+                value: elasticsearch.port
+              },
+              done
+            )
+          }
+        })
+      }
+    ],
+    callback
+  )
+}
+
 settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
@@ -654,6 +719,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return mailTemplates(done)
+      },
+      function (done) {
+        elasticSearchConfToDB(done)
       }
     ],
     function (err) {

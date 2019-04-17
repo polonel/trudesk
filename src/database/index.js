@@ -76,6 +76,8 @@ module.exports.init = function (callback, connectionString, opts) {
     return callback(null, db)
   }
 
+  global.CONNECTION_URI = CONNECTION_URI
+
   mongoose.Promise = global.Promise
   mongoose.set('useFindAndModify', false)
   mongoose

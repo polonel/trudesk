@@ -1198,7 +1198,6 @@ angular
       }
     }
   })
-
 ;(function () {
   return angular.module('trudesk.controllers', [
     'trudesk.controllers.login',
