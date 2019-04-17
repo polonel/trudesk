@@ -278,6 +278,28 @@
 
         {{#isNotTrue isDocker}}
             <div class="slide hide">
+                <h2 style="margin-bottom: 25px;">ElasticSearch Connection</h2>
+                <p style="text-align: left;">
+                    It allows us to search. Its optional, but you should probably set up the connection.
+                </p>
+                <form id="elasticConnection" class="uk-form-stacked uk-clearfix">
+                    <div class="uk-margin-medium-bottom">
+                        <label for="elastic-host">Server</label>
+                        <input id="elastic-host" name="elastic-host" class="md-input" type="text" value="localhost" />
+                    </div>
+                    <div class="uk-margin-medium-bottom">
+                        <label for="elastic-port">Port</label>
+                        <input id="elastic-port" name="elastic-port" class="md-input" type="text" value="9200"/>
+                    </div>
+                    <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="test-elastic-connection">Test Connection!</button>
+                </form>
+
+                <div class="uk-clearfix">
+                    <a href="#" id="btn-skip-elastic" class="no-ajaxy uk-float-left">Skip ElasticSearch</a>
+                    <a href="https://www.elastic.co/products/elasticsearch" class="no-ajaxy" target="_blank">What is ElasticSearch?</a>
+                </div>
+            </div>
+            <div class="slide hide">
                 <h2 style="margin-bottom: 25px;">MongoDB Connection</h2>
                 <p style="text-align: left;">
                     We've got to store the data somewhere. We've chosen MongoDB as our backend storage.
@@ -319,71 +341,6 @@
                 <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>
             </div>
         {{/isNotTrue}}
-        <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">ElasticSearch Connection</h2>
-            <p style="text-align: left;">
-                It allows us to search. Its optional, but you should probably set up the connection.
-            </p>
-            <form id="elasticConnection" class="uk-form-stacked uk-clearfix">
-                <div class="uk-margin-medium-bottom">
-                    <label for="elastic-host">Server</label>
-                    <input id="elastic-host" name="elastic-host" class="md-input" type="text" value="localhost" />
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="elastic-port">Port</label>
-                    <input id="elastic-port" name="elastic-port" class="md-input" type="text" value="9200"/>
-                </div>
-                <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="test-elastic-connection">Test Connection!</button>
-            </form>
-
-            <div class="uk-clearfix">
-                <a href="#" id="btn-skip-elastic" class="no-ajaxy uk-float-left">Skip ElasticSearch</a>
-                <a href="https://www.elastic.co/products/elasticsearch" class="no-ajaxy" target="_blank">What is ElasticSearch?</a>
-            </div>
-
-        </div>
-
-        <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">MongoDB Connection</h2>
-            <p style="text-align: left;">
-                We've got to store the data somewhere. We've chosen MongoDB as our backend storage.
-                Just enter your connection information below and lets get connected.
-            </p>
-            <form id="mongoConnection" class="uk-form-stacked uk-clearfix">
-                <div class="uk-margin-medium-bottom">
-                    <label for="mongo-server">Server</label>
-                    <input id="mongo-server" name="mongo-server" class="md-input" type="text" value="localhost" />
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="mongo-port">Port</label>
-                    <input id="mongo-port" name="mongo-port" class="md-input" type="text" value="27017"/>
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="mongo-username">Username</label>
-                    <input id="mongo-username" name="mongo-username" class="md-input" type="text" value="trudesk"/>
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="mongo-password">Password</label>
-                    <input id="mongo-password" name="mongo-password" class="md-input" type="password" value="#TruDesk1$" />
-                </div>
-                <div class="uk-margin-medium-bottom">
-                    <label for="mongo-database">Database</label>
-                    <input id="mongo-database" name="mongo-database" class="md-input" type="text"  value="trudesk"/>
-                </div>
-                <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="test-mongo-connection">Test Connection!</button>
-            </form>
-
-            <a href="https://www.mongodb.com/" class="no-ajaxy" target="_blank">What is MongoDB?</a>
-        </div>
-
-        <div class="slide hide">
-            <h2 style="margin-bottom: 25px;">Existing Database?</h2>
-            <p style="text-align: left; margin-bottom: 20px;">
-                Is this mongodb connection an existing database or a new database?
-            </p>
-            <button class="btn md-btn md-btn-wave md-btn-success" type="button" style="margin: 0 0 10px 0 !important;" data-next>New Database</button>
-            <button class="btn md-btn md-btn-wave md-btn-primary" type="button" id="existing-database-btn" style="margin: 0;">Existing Database</button>
-        </div>
 
         <div class="slide hide">
             <h2 style="margin-bottom: 25px;">Setup Account</h2>
