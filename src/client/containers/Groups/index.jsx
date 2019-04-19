@@ -29,6 +29,7 @@ import TableCell from 'components/Table/TableCell'
 import ButtonGroup from 'components/ButtonGroup'
 
 import UIKit from 'uikit'
+import helpers from 'lib/helpers'
 
 class GroupsContainer extends React.Component {
   componentDidMount () {
@@ -106,14 +107,18 @@ class GroupsContainer extends React.Component {
           </TableCell>
           <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>
             <ButtonGroup>
-              <Button text={'Edit'} small={true} waves={true} onClick={() => this.onEditGroupClick(group.toJS())} />
-              <Button
-                text={'Delete'}
-                style={'danger'}
-                small={true}
-                waves={true}
-                onClick={() => this.onDeleteGroupClick(group.get('_id'))}
-              />
+              {helpers.canUser('groups:update', true) && (
+                <Button text={'Edit'} small={true} waves={true} onClick={() => this.onEditGroupClick(group.toJS())} />
+              )}
+              {helpers.canUser('groups:delete', true) && (
+                <Button
+                  text={'Delete'}
+                  style={'danger'}
+                  small={true}
+                  waves={true}
+                  onClick={() => this.onDeleteGroupClick(group.get('_id'))}
+                />
+              )}
             </ButtonGroup>
           </TableCell>
         </TableRow>

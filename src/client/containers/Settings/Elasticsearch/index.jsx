@@ -129,8 +129,8 @@ class ElasticsearchSettingsContainer extends React.Component {
 
   getStatus () {
     const self = this
-    self.esStatus = 'Please Wait...'
-    self.inSyncText = 'Please Wait...'
+    // self.esStatus = 'Please Wait...'
+    // self.inSyncText = 'Please Wait...'
     // if (!this.state.configured) {
     //   this.esStatus = 'Not Configured'
     //   this.indexCount = 0
@@ -144,7 +144,10 @@ class ElasticsearchSettingsContainer extends React.Component {
       .get('/api/v2/es/status')
       .then(res => {
         const data = res.data
-        self.esStatus = data.status.esStatus
+        if (data.status.isRebuilding) {
+          self.esStatus = 'Rebuilding...'
+          self.esStatusClass = ''
+        } else self.esStatus = data.status.esStatus
         if (self.esStatus.toLowerCase() === 'connected') self.esStatusClass = 'text-success'
         else if (self.esStatus.toLowerCase() === 'error') self.esStatusClass = 'text-danger'
 
@@ -158,7 +161,7 @@ class ElasticsearchSettingsContainer extends React.Component {
         }
 
         if (data.status.isRebuilding) {
-          setTimeout(self.getStatus, 5000)
+          setTimeout(self.getStatus, 3000)
           self.disableRebuild = true
         } else self.disableRebuild = false
       })
@@ -207,7 +210,7 @@ class ElasticsearchSettingsContainer extends React.Component {
     return (
       <div className={this.props.active ? '' : 'hide'}>
         <SettingItem
-          title={'Elasticsearch'}
+          title={'Elasticsearch - Beta'}
           subtitle={'Enable the Elasticsearch engine'}
           component={
             <EnableSwitch
@@ -236,7 +239,7 @@ class ElasticsearchSettingsContainer extends React.Component {
         />
         <SettingItem
           title={'Elasticsearch Server Configuration'}
-          tooltip={'Changing server settings will require a rebuild of the index'}
+          tooltip={'Changing server settings will require a rebuild of the index and server restart.'}
           subtitle={'The connection settings to the Elasticsearch server.'}
         >
           <form onSubmit={e => this.onFormSubmit(e)}>

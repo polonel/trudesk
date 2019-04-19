@@ -210,7 +210,7 @@ function sendAndEmptyQueue (bulk, callback) {
         }
       }
     )
-  }
+  } else if (typeof callback === 'function') return callback()
 
   return []
 }
@@ -370,14 +370,13 @@ function rebuild (callback) {
   setupClient()
   rebuild(function (err) {
     if (err) {
-      process.send({ success: false, error: err })
-      process.kill(0)
+      return process.send({ success: false, error: err })
     }
 
-    process.send({ success: true })
     //  Kill it in 10sec to offset refresh timers
     setTimeout(function () {
-      process.kill(0)
-    }, 10000)
+      process.send({ success: true })
+      return process.kill(0)
+    }, 6000)
   })
 })()

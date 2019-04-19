@@ -203,7 +203,9 @@ installController.install = function (req, res) {
               )
             }
           ],
-          next
+          function (err) {
+            return next(err)
+          }
         )
       },
       function (next) {
@@ -298,33 +300,18 @@ installController.install = function (req, res) {
         )
       },
       function (roleResults, next) {
-        GroupSchema.getGroupByName('Administrators', function (err, group) {
-          if (err) {
-            winston.error('Database Error: ' + err.message)
-            return next('Database Error:' + err.message)
-          }
-
-          if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
-            return next(null, group)
-          }
-
-          // Create Admin Group
-          var adminGroup = new GroupSchema({
-            name: 'Administrators',
+        var TeamSchema = require('../models/team')
+        TeamSchema.create(
+          {
+            name: 'Support (Default)',
             members: []
-          })
-
-          adminGroup.save(function (err) {
-            if (err) {
-              winston.error('Database Error:' + err.message)
-              return next('Database Error:' + err.message)
-            }
-
-            return next(null, adminGroup, roleResults)
-          })
-        })
+          },
+          function (err, team) {
+            return next(err, team, roleResults)
+          }
+        )
       },
-      function (adminGroup, roleResults, next) {
+      function (defaultTeam, roleResults, next) {
         UserSchema.getUserByUsername(user.username, function (err, admin) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -356,7 +343,7 @@ installController.install = function (req, res) {
               return next('Database Error: ' + err.message)
             }
 
-            adminGroup.addMember(savedUser._id, function (err, success) {
+            defaultTeam.addMember(savedUser._id, function (err, success) {
               if (err) {
                 winston.error('Database Error: ' + err.message)
                 return next('Database Error: ' + err.message)
@@ -366,17 +353,31 @@ installController.install = function (req, res) {
                 return next('Unable to add user to Administrator group!')
               }
 
-              adminGroup.save(function (err) {
+              defaultTeam.save(function (err) {
                 if (err) {
                   winston.error('Database Error: ' + err.message)
                   return next('Database Error: ' + err.message)
                 }
 
-                return next(null)
+                return next(null, defaultTeam)
               })
             })
           })
         })
+      },
+      function (defaultTeam, next) {
+        var DepartmentSchema = require('../models/department')
+        DepartmentSchema.create(
+          {
+            name: 'Support - All Groups (Default)',
+            teams: [defaultTeam._id],
+            allGroups: true,
+            groups: []
+          },
+          function (err) {
+            return next(err)
+          }
+        )
       },
       function (next) {
         if (!process.env.TRUDESK_DOCKER) return next()
@@ -410,10 +411,6 @@ installController.install = function (req, res) {
             password: password,
             database: database,
             shard: port === '---'
-          },
-          elasticsearch: {
-            host: eHost,
-            port: ePort
           },
           tokens: {
             secret: chance.hash() + chance.md5(),

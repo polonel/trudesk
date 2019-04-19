@@ -124,14 +124,18 @@ class TeamsContainer extends React.Component {
           </TableCell>
           <TableCell style={{ textAlign: 'right', paddingRight: 15 }}>
             <ButtonGroup>
-              <Button text={'Edit'} small={true} waves={true} onClick={() => this.onEditTeamClick(team.toJS())} />
-              <Button
-                text={'Delete'}
-                style={'danger'}
-                small={true}
-                waves={true}
-                onClick={() => this.onDeleteTeamClick(team.get('_id'))}
-              />
+              {helpers.canUser('teams:update', true) && (
+                <Button text={'Edit'} small={true} waves={true} onClick={() => this.onEditTeamClick(team.toJS())} />
+              )}
+              {helpers.canUser('teams:delete', true) && (
+                <Button
+                  text={'Delete'}
+                  style={'danger'}
+                  small={true}
+                  waves={true}
+                  onClick={() => this.onDeleteTeamClick(team.get('_id'))}
+                />
+              )}
             </ButtonGroup>
           </TableCell>
         </TableRow>

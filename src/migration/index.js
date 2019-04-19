@@ -62,8 +62,9 @@ function saveVersion (callback) {
 function getDatabaseVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
-    // TODO: Throw error after 1.0.7 if missing ver num
-    if (!setting) return callback(null, '1.0.6')
+
+    if (!setting) throw new Error('Please upgrade to v1.0.7+ Exiting...')
+
     return callback(null, setting.value)
   })
 }
@@ -154,7 +155,7 @@ function createAdminTeamDepartment (callback) {
 
         Team.create(
           {
-            name: 'Default - Admins',
+            name: 'Support (Default)',
             members: adminsIds
           },
           next
@@ -163,7 +164,7 @@ function createAdminTeamDepartment (callback) {
       function (adminTeam, next) {
         Department.create(
           {
-            name: 'Default - Admins',
+            name: 'Support - All Groups (Default)',
             teams: adminTeam._id,
             allGroups: true,
             groups: []

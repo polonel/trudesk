@@ -25,6 +25,7 @@ import Button from 'components/Button'
 import PageContent from 'components/PageContent'
 
 import UIKit from 'uikit'
+import helpers from 'lib/helpers'
 
 class DepartmentsContainer extends React.Component {
   componentDidMount () {
@@ -60,10 +61,6 @@ class DepartmentsContainer extends React.Component {
   }
 
   render () {
-    const mappedDepartments = this.props.departments.map(department => {
-      return department.name
-    })
-
     return (
       <div>
         <PageTitle
@@ -157,19 +154,23 @@ class DepartmentsContainer extends React.Component {
                     </td>
                     <td>
                       <ButtonGroup>
-                        <Button
-                          text={'Edit'}
-                          small={true}
-                          waves={true}
-                          onClick={() => this.onEditDepartmentClick(department)}
-                        />
-                        <Button
-                          text={'Delete'}
-                          style={'danger'}
-                          small={true}
-                          waves={true}
-                          onClick={() => this.onDeleteDepartmentClick(department.get('_id'))}
-                        />
+                        {helpers.canUser('departments:update', true) && (
+                          <Button
+                            text={'Edit'}
+                            small={true}
+                            waves={true}
+                            onClick={() => this.onEditDepartmentClick(department)}
+                          />
+                        )}
+                        {helpers.canUser('departments:delete', true) && (
+                          <Button
+                            text={'Delete'}
+                            style={'danger'}
+                            small={true}
+                            waves={true}
+                            onClick={() => this.onDeleteDepartmentClick(department.get('_id'))}
+                          />
+                        )}
                       </ButtonGroup>
                     </td>
                   </tr>

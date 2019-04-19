@@ -33,6 +33,9 @@ apiElasticSearch.status = function (req, res) {
   async.parallel(
     [
       function (done) {
+        return es.checkConnection(done)
+      },
+      function (done) {
         es.getIndexCount(function (err, data) {
           if (err) return done(err)
           response.indexCount = !_.isUndefined(data.count) ? data.count : 0
@@ -51,7 +54,7 @@ apiElasticSearch.status = function (req, res) {
       if (err) return res.status(500).json({ success: false, error: err })
 
       response.esStatus = global.esStatus
-      response.isRebuilding = global.esRebuilding || false
+      response.isRebuilding = global.esRebuilding === true
       response.inSync = response.dbCount === response.indexCount
 
       res.json({ success: true, status: response })

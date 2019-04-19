@@ -39,16 +39,16 @@ function checkConnection (callback) {
   )
 }
 
-ES.testConnection = function (callback) {
-  if (process.env.ELATICSEARCH_URI) ES.host = process.env.ELATICSEARCH_URI
-  else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
-
-  ES.esclient = new elasticsearch.Client({
-    host: ES.host
-  })
-
-  checkConnection(callback)
-}
+// ES.testConnection = function (callback) {
+//   if (process.env.ELATICSEARCH_URI) ES.host = process.env.ELATICSEARCH_URI
+//   else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
+//
+//   ES.esclient = new elasticsearch.Client({
+//     host: ES.host
+//   })
+//
+//   checkConnection(callback)
+// }
 
 ES.setupHooks = function () {
   var ticketSchema = require('../models/ticket')
@@ -208,6 +208,7 @@ ES.rebuildIndex = function () {
 
     esFork.once('message', function (data) {
       global.esStatus = data.success ? 'Connected' : 'Error'
+      global.esRebuilding = false
     })
 
     esFork.on('exit', function () {
@@ -272,6 +273,20 @@ ES.init = function (callback) {
         if (_.isFunction(callback)) return callback(err)
       }
     )
+  })
+}
+
+ES.checkConnection = function (callback) {
+  // global.esStatus = 'Please Wait...'
+  return checkConnection(function (err) {
+    if (err) {
+      global.esStatus = 'Error'
+      winston.warn(err)
+      return callback()
+    }
+
+    global.esStatus = 'Connected'
+    return callback()
   })
 }
 
