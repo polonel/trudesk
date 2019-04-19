@@ -375,8 +375,7 @@ function rebuild (callback) {
 
     //  Kill it in 10sec to offset refresh timers
     setTimeout(function () {
-      process.send({ success: true })
-      return process.kill(0)
+      return process.send({ success: true })
     }, 6000)
   })
 })()
