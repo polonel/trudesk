@@ -41,6 +41,7 @@ apiController.v1.reports = apiReportsV1
 apiController.v1.settings = apiSettingsV1
 apiController.v1.plugins = apiPluginsV1
 apiController.v1.roles = require('./api/v1/roles')
+apiController.v1.editor = require('./api/v1/editor')
 
 apiController.v2 = {}
 apiController.v2.common = require('./api/v2/common')

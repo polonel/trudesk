@@ -180,4 +180,12 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v1/backup/restore', apiv1, isAdmin, controllers.backuprestore.restoreBackup)
   router.post('/api/v1/backup/upload', apiv1, isAdmin, controllers.backuprestore.uploadBackup)
   router.get('/api/v1/backup/hastools', apiv1, isAdmin, controllers.backuprestore.hasBackupTools)
+
+  // Editor
+
+  router.get('/api/v1/editor/load/:id', apiv1, isAdmin, controllers.editor.load)
+  router.post('/api/v1/editor/save', apiv1, isAdmin, controllers.editor.save)
+  router.get('/api/v1/editor/assets', apiv1, isAdmin, controllers.editor.getAssets)
+  router.post('/api/v1/editor/assets/remove', apiv1, isAdmin, controllers.editor.removeAsset)
+  router.post('/api/v1/editor/assets/upload', apiv1, isAdmin, controllers.editor.assetsUpload)
 }
