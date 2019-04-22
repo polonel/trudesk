@@ -25,7 +25,7 @@ var settingUtil = require('../settings/settingsUtil')
 var ES = {}
 
 function checkConnection (callback) {
-  if (!ES.esclient) return callback('Client not initialized')
+  if (!ES.esclient) return callback('Elasticsearch client not initialized. Restart Trudesk!')
 
   ES.esclient.ping(
     {
