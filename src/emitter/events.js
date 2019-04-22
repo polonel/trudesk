@@ -72,7 +72,7 @@ var notifications = require('../notifications') // Load Push Events
                 departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
                   if (err) return c(err)
 
-                  var members = _.flattenDeep(
+                  var teamMembers = _.flattenDeep(
                     departments.map(function (department) {
                       return department.teams.map(function (team) {
                         return team.members.map(function (member) {
@@ -82,7 +82,18 @@ var notifications = require('../notifications') // Load Push Events
                     })
                   )
 
-                  members = _.concat(members, ticket.group.members)
+                  var members = _.concat(teamMembers, ticket.group.members)
+                  var emailTo = _.concat(teamMembers, ticket.group.sendMailTo)
+
+                  emailTo = _.chain(emailTo)
+                    .filter(function (i) {
+                      return i.email !== ticket.owner.email
+                    })
+                    .map(function (i) {
+                      return i.email
+                    })
+                    .uniq()
+                    .value()
 
                   members = _.uniqBy(members, function (i) {
                     return i._id
@@ -100,16 +111,16 @@ var notifications = require('../notifications') // Load Push Events
                         ticket
                       )
 
-                      if (_.isUndefined(member.email)) return cb()
+                      if (_.isUndefined(member.email) || emailTo.indexOf(member.email) === -1) return cb()
 
                       emails.push(member.email)
-
                       return cb()
                     },
                     function (err) {
                       if (err) return c(err)
 
                       emails = _.uniq(emails)
+                      console.log(emails)
 
                       var email = null
                       if (betaEnabled) {

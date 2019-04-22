@@ -57,7 +57,8 @@ class EditGroupModal extends React.Component {
     const payload = {
       _id: this.props.group._id,
       name: this.name,
-      members: this.membersSelect.getSelected() || []
+      members: this.membersSelect.getSelected() || [],
+      sendMailTo: this.sendMailToSelect.getSelected() || []
     }
 
     this.props.updateGroup(payload)
@@ -71,6 +72,9 @@ class EditGroupModal extends React.Component {
       .toArray()
 
     const selectedMembers = this.props.group.members.map(member => {
+      return member._id
+    })
+    const selectedSendMailTo = this.props.group.sendMailTo.map(member => {
       return member._id
     })
     return (
@@ -99,6 +103,15 @@ class EditGroupModal extends React.Component {
               initialSelected={selectedMembers}
               onChange={() => {}}
               ref={r => (this.membersSelect = r)}
+            />
+          </div>
+          <div className={'uk-margin-medium-bottom'}>
+            <label style={{ marginBottom: 5 }}>Send Notifications To</label>
+            <MultiSelect
+              items={mappedAccounts}
+              initialSelected={selectedSendMailTo}
+              onChange={() => {}}
+              ref={r => (this.sendMailToSelect = r)}
             />
           </div>
           <div className='uk-modal-footer uk-text-right'>
