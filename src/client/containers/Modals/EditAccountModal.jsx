@@ -228,11 +228,21 @@ class EditAccountModal extends React.Component {
                 <div className='uk-margin-medium-bottom uk-clearfix'>
                   <div className='uk-float-left' style={{ width: '50%', paddingRight: '20px' }}>
                     <label className={'uk-form-label'}>Password</label>
-                    <input type='password' className={'md-input'} />
+                    <input
+                      type='password'
+                      className={'md-input'}
+                      value={this.password}
+                      onChange={e => this.onInputChanged(e, 'password')}
+                    />
                   </div>
                   <div className='uk-float-left uk-width-1-2'>
                     <label className={'uk-form-label'}>Confirm Password</label>
-                    <input type='password' className={'md-input'} />
+                    <input
+                      type='password'
+                      className={'md-input'}
+                      value={this.confirmPassword}
+                      onChange={e => this.onInputChanged(e, 'confirmPassword')}
+                    />
                   </div>
                 </div>
               </div>
