@@ -120,7 +120,6 @@ var notifications = require('../notifications') // Load Push Events
                       if (err) return c(err)
 
                       emails = _.uniq(emails)
-                      console.log(emails)
 
                       var email = null
                       if (betaEnabled) {
