@@ -96,6 +96,7 @@ class OnlineUserListPartial extends React.Component {
                 {entries(this.activeUsers).map(([key, value]) => {
                   if (this.props.sessionUser && value.user._id === this.props.sessionUser._id) return
                   const image = value.user.image || 'defaultProfile.jpg'
+                  const isAgentOrAdmin = value.user.role.isAdmin || value.user.role.isAgent
                   return (
                     <li key={key}>
                       <a className={'no-ajaxy'} onClick={e => OnlineUserListPartial.onUserClicked(e, value.user._id)}>
@@ -104,7 +105,9 @@ class OnlineUserListPartial extends React.Component {
                             <img src={`/uploads/users/${image}`} alt='Profile Pic' />
                           </div>
                           <span className='online-status' data-user-status-id={value.user._id} />
-                          <div className='user-name'>{value.user.fullname}</div>
+                          <div className={'user-name' + (isAgentOrAdmin ? ' _agent' : '')}>
+                            {value.user.fullname + (isAgentOrAdmin ? ' - Support Agent' : '')}
+                          </div>
                         </div>
                       </a>
                     </li>
