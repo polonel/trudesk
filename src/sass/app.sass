@@ -67,6 +67,10 @@ li,h1,h2,h3,h4,h5,h6,pre,form,p,blockquote,th,td
 h1,h2,h3,h4,h5,h6
   font-family: $fontFamily
 
+@-moz-document url-prefix()
+  tbody
+    height: 100% !important
+
 pre
   word-wrap: normal
   padding: 16px
