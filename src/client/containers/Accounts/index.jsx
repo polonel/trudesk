@@ -216,14 +216,14 @@ class AccountsContainer extends React.Component {
           title={this.props.title}
           rightComponent={
             <div className={'uk-grid uk-grid-collapse'}>
-              <div className={'uk-width-3-4 pr-10'}>
-                <div className='md-input-wrapper' style={{ marginTop: '10px' }}>
-                  <label className={'uk-form-label'}>Find Account</label>
-                  <input type='text' className={'md-input uk-margin-remove'} onKeyUp={e => this.onSearchKeyUp(e)} />
-                  <div className='md-input-bar' />
-                </div>
-              </div>
-              <div className={'uk-width-1-4 mt-15 pr-20 uk-clearfix'}>
+              {/*<div className={'uk-width-3-4 pr-10'}>*/}
+              {/*  <div className='md-input-wrapper' style={{ marginTop: '10px' }}>*/}
+              {/*    <label className={'uk-form-label'}>Find Account</label>*/}
+              {/*    <input type='text' className={'md-input uk-margin-remove'} onKeyUp={e => this.onSearchKeyUp(e)} />*/}
+              {/*    <div className='md-input-bar' />*/}
+              {/*  </div>*/}
+              {/*</div>*/}
+              <div className={'uk-width-1-4 uk-push-3-4 mt-15 pr-20 uk-clearfix'}>
                 <ButtonGroup classNames={'uk-clearfix uk-float-right'}>
                   <Button
                     text={'Create'}
