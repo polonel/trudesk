@@ -24,6 +24,7 @@ import { saveEditAccount } from 'actions/accounts'
 import { fetchGroups, unloadGroups } from 'actions/groups'
 import { fetchTeams, unloadTeams } from 'actions/teams'
 import { fetchDepartments, unloadDepartments } from 'actions/departments'
+import { fetchRoles } from 'actions/common'
 
 import Button from 'components/Button'
 import BaseModal from 'containers/Modals/BaseModal'
@@ -41,11 +42,14 @@ class EditAccountModal extends React.Component {
   @observable email = ''
 
   selectedRole = ''
+  @observable isAgentRole = false
 
   componentDidMount () {
     this.name = this.props.user.fullname
     this.title = this.props.user.title
     this.email = this.props.user.email
+    this.isAgentRole = this.props.user.role.isAdmin || this.props.user.role.isAgent
+    console.log(this.isAgentRole)
 
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
@@ -53,6 +57,7 @@ class EditAccountModal extends React.Component {
     this.props.fetchGroups({ type: 'all' })
     this.props.fetchTeams()
     this.props.fetchDepartments()
+    this.props.fetchRoles()
   }
 
   componentDidUpdate () {
@@ -95,6 +100,12 @@ class EditAccountModal extends React.Component {
 
   onRoleSelectChange (e) {
     this.selectedRole = e.target.value
+
+    const roleObject = this.props.roles.find(role => {
+      return role.get('_id') === this.selectedRole
+    })
+
+    this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
   }
 
   onSubmitSaveAccount (e) {
@@ -105,8 +116,8 @@ class EditAccountModal extends React.Component {
       fullname: this.name,
       title: this.title,
       email: this.email,
-      groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
-      teams: this.teamsSelect ? this.teamsSelect.getSelected() : undefined,
+      groups: !this.isAgentRole && this.groupSelect ? this.groupSelect.getSelected() : undefined,
+      teams: this.isAgentRole && this.teamsSelect ? this.teamsSelect.getSelected() : undefined,
       role: this.selectedRole,
       password: this.password.length > 1 ? this.password : undefined,
       passwordConfirm: this.confirmPassword.length > 1 ? this.confirmPassword : undefined
@@ -117,7 +128,7 @@ class EditAccountModal extends React.Component {
 
   render () {
     const { user, edit } = this.props
-    const customer = !user.role.isAgent && !user.role.isAdmin
+    const customer = !this.isAgentRole
     const profilePicture = user.image || 'defaultProfile.jpg'
     const parsedRoles = helpers.getRolesByHierarchy()
     const roles = parsedRoles.map(role => {
@@ -126,31 +137,33 @@ class EditAccountModal extends React.Component {
 
     let departments, groups, teams
 
-    if (user.role.isAdmin || user.role.isAgent) {
-      teams = this.props.teams
-        ? this.props.teams
-            .map(team => {
-              return { text: team.get('name'), value: team.get('_id') }
-            })
-            .toArray()
-        : []
+    teams = this.props.teams
+      ? this.props.teams
+          .map(team => {
+            return { text: team.get('name'), value: team.get('_id') }
+          })
+          .toArray()
+      : []
 
-      departments = this.props.departments
-        ? this.props.departments
-            .map(department => {
-              return { text: department.get('name'), value: department.get('_id') }
-            })
-            .toArray()
-        : []
-    } else {
-      groups = this.props.groups
-        ? this.props.groups
-            .map(group => {
-              return { text: group.get('name'), value: group.get('_id') }
-            })
-            .toArray()
-        : []
-    }
+    departments = this.props.departments
+      ? this.props.departments
+          .map(department => {
+            return { text: department.get('name'), value: department.get('_id') }
+          })
+          .toArray()
+      : []
+
+    groups = this.props.groups
+      ? this.props.groups
+          .map(group => {
+            return { text: group.get('name'), value: group.get('_id') }
+          })
+          .toArray()
+      : []
+
+    if (!user.teams) user.teams = []
+    if (!user.departments) user.departments = []
+    if (!user.groups) user.groups = []
 
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
@@ -336,7 +349,9 @@ EditAccountModal.propTypes = {
   fetchTeams: PropTypes.func.isRequired,
   unloadTeams: PropTypes.func.isRequired,
   fetchDepartments: PropTypes.func.isRequired,
-  unloadDepartments: PropTypes.func.isRequired
+  unloadDepartments: PropTypes.func.isRequired,
+  fetchRoles: PropTypes.func.isRequired,
+  roles: PropTypes.object.isRequired
 }
 
 EditAccountModal.defaultProps = {
@@ -346,10 +361,20 @@ EditAccountModal.defaultProps = {
 const mapStateToProps = state => ({
   groups: state.groupsState.groups,
   teams: state.teamsState.teams,
-  departments: state.departmentsState.departments
+  departments: state.departmentsState.departments,
+  roles: state.shared.roles
 })
 
 export default connect(
   mapStateToProps,
-  { saveEditAccount, fetchGroups, unloadGroups, fetchTeams, unloadTeams, fetchDepartments, unloadDepartments }
+  {
+    saveEditAccount,
+    fetchGroups,
+    unloadGroups,
+    fetchTeams,
+    unloadTeams,
+    fetchDepartments,
+    unloadDepartments,
+    fetchRoles
+  }
 )(EditAccountModal)
