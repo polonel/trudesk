@@ -49,7 +49,6 @@ class EditAccountModal extends React.Component {
     this.title = this.props.user.title
     this.email = this.props.user.email
     this.isAgentRole = this.props.user.role.isAdmin || this.props.user.role.isAgent
-    console.log(this.isAgentRole)
 
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
