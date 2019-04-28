@@ -50,7 +50,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
 
       'modules/ajaximgupload',
       'modules/attachmentUpload'
-    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m) {
+    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
       async.parallel(
         [
           function (done) {
@@ -87,8 +87,11 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
             k.init(done)
           },
           function (done) {
-            l.init()
+            l.init(done)
+          },
+          function (done) {
             m.init()
+            n.init()
 
             return done()
           }
