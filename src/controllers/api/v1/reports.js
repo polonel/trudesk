@@ -84,6 +84,40 @@ apiReports.generate.ticketsByGroup = function (req, res) {
   )
 }
 
+apiReports.generate.ticketsByTeam = function (req, res) {
+  var postData = req.body
+  if (!postData || !postData.startDate || !postData.endDate)
+    return res.status(400).json({ success: false, error: 'Invalid Post Data' })
+
+  var departmentSchema = require('../../../models/department')
+  departmentSchema.getDepartmentsByTeam(postData.teams, function (err, departments) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+
+    ticketSchema.getTicketsByDepartments(
+      departments,
+      {
+        limit: -1,
+        page: 0,
+        filter: {
+          date: {
+            start: postData.startDate,
+            end: postData.endDate
+          }
+        }
+      },
+      function (err, tickets) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        var input = processReportData(tickets)
+
+        tickets = null
+
+        return processResponse(res, input)
+      }
+    )
+  })
+}
+
 /**
  * @api {post} /api/v1/reports/generate/tickets_by_priority Generate Report - Priority
  * @apiName generate_ticketsByPriority

@@ -40,6 +40,12 @@ departmentSchema.pre('save', function (next) {
   return next()
 })
 
+departmentSchema.statics.getDepartmentsByTeam = function (teamIds, callback) {
+  return this.model(COLLECTION)
+    .find({ teams: { $in: teamIds } })
+    .exec(callback)
+}
+
 departmentSchema.statics.getUserDepartments = function (userId, callback) {
   var self = this
 

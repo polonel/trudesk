@@ -259,6 +259,14 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
+        viewController.getTeams(request, function (err, teams) {
+          if (err) return callback(null, null)
+
+          viewdata.teams = teams
+          return callback()
+        })
+      },
+      function (callback) {
         viewController.getGroups(request, function (err, data) {
           if (err) return callback(null, null)
 
@@ -520,6 +528,11 @@ viewController.loggedInAccount = function (request, callback) {
 
     return callback(data)
   })
+}
+
+viewController.getTeams = function (request, callback) {
+  var Team = require('../../models/team')
+  return Team.getTeams(callback)
 }
 
 viewController.getGroups = function (request, callback) {

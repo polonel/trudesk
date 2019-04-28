@@ -164,6 +164,7 @@ module.exports = function (middleware, router, controllers) {
   router.post(genBaseUrl + 'tickets_by_type', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByType)
   router.post(genBaseUrl + 'tickets_by_user', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByUser)
   router.post(genBaseUrl + 'tickets_by_assignee', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByAssignee)
+  router.post(genBaseUrl + 'tickets_by_team', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByTeam)
 
   // Settings
   router.get('/api/v1/settings', apiv1, apiCtrl.settings.getSettings)
