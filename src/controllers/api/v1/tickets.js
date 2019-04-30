@@ -154,13 +154,20 @@ apiTickets.get = function (req, res) {
 
   var ticketModel = require('../../../models/ticket')
   var groupModel = require('../../../models/group')
+  var departmentModel = require('../../../models/department')
 
   async.waterfall(
     [
       function (callback) {
-        groupModel.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
-          callback(err, grps)
-        })
+        if (user.role.isAdmin || user.role.isAgent) {
+          departmentModel.getDepartmentGroupsOfUser(user._id, function (err, groups) {
+            callback(err, groups)
+          })
+        } else {
+          groupModel.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
+            callback(err, grps)
+          })
+        }
       },
       function (grps, callback) {
         if (permissions.canThis(user.role, 'tickets:public')) {
