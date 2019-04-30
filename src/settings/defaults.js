@@ -50,38 +50,6 @@ settingsDefaults.adminGrants = [
   'api:*'
 ]
 
-function teamsDefault (callback) {
-  var teamSchema = require('../models/team')
-  var roleSchmea = require('../models/role')
-  var userSchema = require('../models/user')
-
-  async.series(
-    [
-      function (next) {
-        // Create default Support Team
-      }
-    ],
-    callback
-  )
-
-  teamSchema.create(
-    {
-      name: 'Support'
-    },
-    function (err, team) {
-      if (err) console.log(err)
-
-      teamSchema.getTeams(function (err, teams) {
-        if (err) return callback(err)
-
-        console.log(teams)
-
-        return callback()
-      })
-    }
-  )
-}
-
 function rolesDefault (callback) {
   var roleSchema = require('../models/role')
 
@@ -680,6 +648,23 @@ function elasticSearchConfToDB (callback) {
   )
 }
 
+function installationID (callback) {
+  var Chance = require('chance')
+  var chance = new Chance()
+  SettingsSchema.getSettingByName('gen:installid', function (err, setting) {
+    if (err) return callback(err)
+    if (!setting) {
+      SettingsSchema.create(
+        {
+          name: 'gen:installid',
+          value: chance.guid()
+        },
+        callback
+      )
+    }
+  })
+}
+
 settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
@@ -722,6 +707,9 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         elasticSearchConfToDB(done)
+      },
+      function (done) {
+        installationID(done)
       }
     ],
     function (err) {
