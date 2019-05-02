@@ -1,3 +1,40 @@
+## [1.0.11](https://github.com/polonel/trudesk/compare/v1.0.10...v1.0.11) (2019-05-02)
+
+
+### Bug Fixes
+
+* **accounts:** crash if user had deleted tickets and was removed ([ce376b4](https://github.com/polonel/trudesk/commit/ce376b4))
+* **accounts:** editing admin/agent ([8a973c7](https://github.com/polonel/trudesk/commit/8a973c7))
+* **accounts:** issue not showing upload dialog ([38a4c85](https://github.com/polonel/trudesk/commit/38a4c85))
+* **accounts:** passwords not updating ([c28d1ad](https://github.com/polonel/trudesk/commit/c28d1ad))
+* **api:** v1 crash if ticket _id was incorrect ([eea4d20](https://github.com/polonel/trudesk/commit/eea4d20))
+* **api:** v1 for group changes ([3d12667](https://github.com/polonel/trudesk/commit/3d12667))
+* **api:** v2 removed ability to delete group if group had tickets ([35dbef8](https://github.com/polonel/trudesk/commit/35dbef8))
+* **apiv1:** invalid response if group was not sent as obj [#175](https://github.com/polonel/trudesk/issues/175) ([ee223ff](https://github.com/polonel/trudesk/commit/ee223ff))
+* **backup:** mongodb binaries for mongodb 4 windows [#138](https://github.com/polonel/trudesk/issues/138) ([052d6da](https://github.com/polonel/trudesk/commit/052d6da))
+* **defaults:** loading incorrectly ([f4c2841](https://github.com/polonel/trudesk/commit/f4c2841))
+* **editor:** missing routes ([2946d07](https://github.com/polonel/trudesk/commit/2946d07))
+* **elasticsearch:** crash on rebuild ([bc0728b](https://github.com/polonel/trudesk/commit/bc0728b))
+* **install:** crash if mongodb failed to connect ([76036b9](https://github.com/polonel/trudesk/commit/76036b9))
+* **install:** invalid role name [#179](https://github.com/polonel/trudesk/issues/179) ([643703e](https://github.com/polonel/trudesk/commit/643703e))
+* **mailcheck:** TLS not being set correctly ([40627d0](https://github.com/polonel/trudesk/commit/40627d0))
+* **mailcheck:** typo ([e5e387d](https://github.com/polonel/trudesk/commit/e5e387d))
+* **permissions:** role hierarchy not allowing ticket status updates ([51029b6](https://github.com/polonel/trudesk/commit/51029b6))
+* **profile:** removing user from all groups on profile save ([1e9accd](https://github.com/polonel/trudesk/commit/1e9accd))
+* **test:** crash if missing config token object ([ac3fe81](https://github.com/polonel/trudesk/commit/ac3fe81))
+* **test:** fixed ([e419f81](https://github.com/polonel/trudesk/commit/e419f81))
+* **test:** updates ([969d3f2](https://github.com/polonel/trudesk/commit/969d3f2))
+* **tickets:** attachments loader not initializing ([bd949b7](https://github.com/polonel/trudesk/commit/bd949b7))
+* **tickets:** dropdown arrow not showing with certain themes ([b839551](https://github.com/polonel/trudesk/commit/b839551))
+* **tickets:** sort icon color - themes ([9fbb391](https://github.com/polonel/trudesk/commit/9fbb391))
+* **tickets:** xss fixes ([99c02fb](https://github.com/polonel/trudesk/commit/99c02fb))
+* **ui:** bug with firefox displaying table incorrectly ([6967e74](https://github.com/polonel/trudesk/commit/6967e74))
+
+
+### Performance Improvements
+
+* **elasticsearch:** fixes ([eddc577](https://github.com/polonel/trudesk/commit/eddc577))
+
 ## [1.0.10](https://github.com/polonel/trudesk/compare/v1.0.9...v1.0.10) (2019-04-08)
 
 
