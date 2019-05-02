@@ -92,7 +92,78 @@ events.onSetUserActive = function (socket) {
 
 function updateUsers () {
   var sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
-  utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
+  _.forEach(sortedUserList, function (v) {
+    var user = v.user
+    var sockets = v.sockets
+    if (user && sockets.length > 0) {
+      _.forEach(sockets, function (sock) {
+        var socket = _.find(sharedVars.sockets, function (s) {
+          return s.id === sock
+        })
+
+        if (socket) {
+          if (user.role.isAdmin || user.role.isAgent) {
+            socket.emit('updateUsers', sortedUserList)
+          } else {
+            var groupSchema = require('../models/group')
+            groupSchema.getAllGroupsOfUser(user._id, function (err, groups) {
+              if (!err) {
+                var usersOfGroups = _.map(groups, function (g) {
+                  return _.map(g.members, function (m) {
+                    return { user: m }
+                  })
+                })
+
+                var agentsAndAdmins = _.chain(sortedUserList)
+                  .filter(function (u) {
+                    return u.user.role.isAdmin || u.user.role.isAgent
+                  })
+                  .map(function (u) {
+                    return u
+                  })
+                  .value()
+
+                usersOfGroups = _.concat(usersOfGroups, agentsAndAdmins)
+
+                var onlineUsernames = _.map(sortedUserList, function (u) {
+                  return u.user.username
+                })
+                onlineUsernames = _.flattenDeep(onlineUsernames)
+
+                var sortedUsernames = _.chain(usersOfGroups)
+                  .flattenDeep()
+                  .map(function (u) {
+                    return u.user.username
+                  })
+                  .value()
+
+                var actual = _.intersection(onlineUsernames, sortedUsernames)
+
+                usersOfGroups = _.chain(usersOfGroups)
+                  .flattenDeep()
+                  .filter(function (i) {
+                    return actual.indexOf(i.user.username) !== -1
+                  })
+                  .uniqBy(function (i) {
+                    return i.user._id
+                  })
+                  .value()
+
+                var sortedKeys = _.map(usersOfGroups, function (m) {
+                  return m.user.username
+                })
+
+                var obj = _.zipObject(sortedKeys, usersOfGroups)
+
+                socket.emit('updateUsers', obj)
+              }
+            })
+          }
+        }
+      })
+    }
+  })
+  // utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
 }
 
 function updateOnlineBubbles () {
@@ -390,10 +461,10 @@ function joinChatServer (socket) {
         sockets: [socket.id],
         user: user
       }
-      sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
+      // sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
 
       utils.sendToSelf(socket, 'joinSuccessfully')
-      utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
+      // utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
       sharedVars.sockets.push(socket)
 
       spawnOpenChatWindows(socket, user._id)
@@ -402,8 +473,8 @@ function joinChatServer (socket) {
     sharedVars.usersOnline[user.username].sockets.push(socket.id)
     utils.sendToSelf(socket, 'joinSuccessfully')
 
-    sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
-    utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
+    // sortedUserList = sharedUtils.sortByKeys(sharedVars.usersOnline)
+    // utils.sendToAllConnectedClients(io, 'updateUsers', sortedUserList)
     sharedVars.sockets.push(socket)
 
     spawnOpenChatWindows(socket, user._id)

@@ -14,8 +14,8 @@
 
 import React from 'react'
 import PropTypes from 'prop-types'
-import DropdownTrigger from 'components/Drowdown/DropdownTrigger'
-import Dropdown from 'components/Drowdown'
+import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
+import Dropdown from 'components/Dropdown'
 import SpinLoader from 'components/SpinLoader'
 
 class TruCard extends React.Component {
@@ -41,7 +41,7 @@ class TruCard extends React.Component {
             <div className={'uk-text-center'}>{this.props.header}</div>
           </div>
           {/* Tru Card Content */}
-          <div className={'tru-card-content'}>{this.props.content}</div>
+          <div className={'tru-card-content ' + (this.props.extraContentClass || '')}>{this.props.content}</div>
         </div>
       </div>
     )
@@ -52,6 +52,7 @@ TruCard.propTypes = {
   menu: PropTypes.arrayOf(PropTypes.element),
   header: PropTypes.element.isRequired,
   extraHeadClass: PropTypes.string,
+  extraContentClass: PropTypes.string,
   content: PropTypes.element.isRequired,
   loaderActive: PropTypes.bool
 }

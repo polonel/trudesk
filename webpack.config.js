@@ -91,6 +91,7 @@ module.exports = {
       cm4InlineAttachment: 'vendor/easymde/dist/codemirror-4.inline-attachment',
       grapesjs: 'vendor/grapesjs/grapes.min',
       grapesjsEmail: 'vendor/grapesjs/grapesjs-preset-email.min',
+      waypoints: 'vendor/waypoints/jquery.waypoints',
       snackbar: 'plugins/snackbar',
 
       sass: path.resolve(__dirname, 'src/sass'),

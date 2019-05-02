@@ -23,10 +23,21 @@ import {
   CREATE_TAG,
   GET_TAGS_WITH_PAGE,
   TAGS_UPDATE_CURRENT_PAGE,
-  CREATE_TICKET
+  CREATE_TICKET,
+  FETCH_TICKETS,
+  UNLOAD_TICKETS,
+  TICKET_UPDATED,
+  DELETE_TICKET,
+  TICKET_EVENT
 } from 'actions/types'
 
+export const fetchTickets = createAction(FETCH_TICKETS.ACTION)
 export const createTicket = createAction(CREATE_TICKET.ACTION)
+export const ticketUpdated = createAction(TICKET_UPDATED.ACTION)
+export const deleteTicket = createAction(DELETE_TICKET.ACTION)
+export const unloadTickets = createAction(UNLOAD_TICKETS.ACTION, payload => payload, () => ({ thunk: true }))
+export const ticketEvent = createAction(TICKET_EVENT.ACTION)
+
 export const createTicketType = createAction(CREATE_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const renameTicketType = createAction(RENAME_TICKET_TYPE.ACTION, input => ({ name: input.name }))
 export const deleteTicketType = createAction(DELETE_TICKET_TYPE.ACTION, (id, newTypeId) => ({ id, newTypeId }))

@@ -20,7 +20,6 @@ var pkg = require('../../package')
 var Chance = require('chance')
 
 var installController = {}
-
 installController.content = {}
 
 installController.index = function (req, res) {
@@ -34,11 +33,33 @@ installController.index = function (req, res) {
   res.render('install', content)
 }
 
+installController.elastictest = function (req, res) {
+  var data = req.body
+  var CONNECTION_URI = data.host + ':' + data.port
+
+  var child = require('child_process').fork(path.join(__dirname, '../../src/install/elasticsearchtest'), {
+    env: { FORK: 1, NODE_ENV: global.env, ELATICSEARCH_URI: CONNECTION_URI }
+  })
+  global.forks.push({ name: 'elastictest', fork: child })
+
+  child.on('message', function (data) {
+    if (data.error) return res.status(400).json({ success: false, error: data.error })
+    return res.json({ success: true })
+  })
+
+  child.on('close', function () {
+    winston.debug('ElasticSearchTest process terminated.')
+  })
+}
+
 installController.mongotest = function (req, res) {
   var data = req.body
   var dbPassword = encodeURIComponent(data.password)
   var CONNECTION_URI =
     'mongodb://' + data.username + ':' + dbPassword + '@' + data.host + ':' + data.port + '/' + data.database
+
+  if (data.port === '---')
+    CONNECTION_URI = 'mongodb+srv://' + data.username + ':' + dbPassword + '@' + data.host + '/' + data.database
 
   var child = require('child_process').fork(path.join(__dirname, '../../src/install/mongotest'), {
     env: { FORK: 1, NODE_ENV: global.env, MONGOTESTURI: CONNECTION_URI }
@@ -52,6 +73,7 @@ installController.mongotest = function (req, res) {
   })
 
   child.on('close', function () {
+    global.forks = _.without(global.forks, { name: 'mongotest' })
     winston.debug('MongoTest process terminated')
   })
 }
@@ -68,6 +90,7 @@ installController.existingdb = function (req, res) {
 
   // Write Configfile
   var fs = require('fs')
+  var chance = new Chance()
   var configFile = path.join(__dirname, '../../config.json')
 
   var conf = {
@@ -77,6 +100,10 @@ installController.existingdb = function (req, res) {
       username: username,
       password: password,
       database: database
+    },
+    tokens: {
+      secret: chance.hash() + chance.md5(),
+      expires: 900 // 15min
     }
   }
 
@@ -98,6 +125,7 @@ installController.install = function (req, res) {
   var GroupSchema = require('../models/group')
   var Counters = require('../models/counters')
   var TicketTypeSchema = require('../models/tickettype')
+  var SettingsSchema = require('../models/setting')
 
   var data = req.body
 
@@ -107,6 +135,11 @@ installController.install = function (req, res) {
   var database = data['mongo[database]']
   var username = data['mongo[username]']
   var password = data['mongo[password]']
+
+  // ElasticSearch
+  var eEnabled = data['elastic[enable]']
+  var eHost = data['elastic[host]']
+  var ePort = data['elastic[port]']
 
   // Account
   var user = {
@@ -119,6 +152,7 @@ installController.install = function (req, res) {
 
   var dbPassword = encodeURIComponent(password)
   var conuri = 'mongodb://' + username + ':' + dbPassword + '@' + host + ':' + port + '/' + database
+  if (port === '---') conuri = 'mongodb+srv://' + username + ':' + dbPassword + '@' + host + '/' + database
 
   async.waterfall(
     [
@@ -126,6 +160,53 @@ installController.install = function (req, res) {
         db.init(function (err) {
           return next(err)
         }, conuri)
+      },
+      function (next) {
+        var s = new SettingsSchema({
+          name: 'gen:version',
+          value: require('../../package.json').version
+        })
+
+        return s.save(function (err) {
+          return next(err)
+        })
+      },
+      function (next) {
+        if (!eEnabled) return next()
+        async.parallel(
+          [
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:enable',
+                  value: true
+                },
+                done
+              )
+            },
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:host',
+                  value: eHost
+                },
+                done
+              )
+            },
+            function (done) {
+              SettingsSchema.create(
+                {
+                  name: 'es:port',
+                  value: ePort
+                },
+                done
+              )
+            }
+          ],
+          function (err) {
+            return next(err)
+          }
+        )
       },
       function (next) {
         var Counter = new Counters({
@@ -219,33 +300,18 @@ installController.install = function (req, res) {
         )
       },
       function (roleResults, next) {
-        GroupSchema.getGroupByName('Administrators', function (err, group) {
-          if (err) {
-            winston.error('Database Error: ' + err.message)
-            return next('Database Error:' + err.message)
-          }
-
-          if (!_.isNull(group) && !_.isUndefined(group) && !_.isEmpty(group)) {
-            return next(null, group)
-          }
-
-          // Create Admin Group
-          var adminGroup = new GroupSchema({
-            name: 'Administrators',
+        var TeamSchema = require('../models/team')
+        TeamSchema.create(
+          {
+            name: 'Support (Default)',
             members: []
-          })
-
-          adminGroup.save(function (err) {
-            if (err) {
-              winston.error('Database Error:' + err.message)
-              return next('Database Error:' + err.message)
-            }
-
-            return next(null, adminGroup, roleResults)
-          })
-        })
+          },
+          function (err, team) {
+            return next(err, team, roleResults)
+          }
+        )
       },
-      function (adminGroup, roleResults, next) {
+      function (defaultTeam, roleResults, next) {
         UserSchema.getUserByUsername(user.username, function (err, admin) {
           if (err) {
             winston.error('Database Error: ' + err.message)
@@ -277,7 +343,7 @@ installController.install = function (req, res) {
               return next('Database Error: ' + err.message)
             }
 
-            adminGroup.addMember(savedUser._id, function (err, success) {
+            defaultTeam.addMember(savedUser._id, function (err, success) {
               if (err) {
                 winston.error('Database Error: ' + err.message)
                 return next('Database Error: ' + err.message)
@@ -287,17 +353,31 @@ installController.install = function (req, res) {
                 return next('Unable to add user to Administrator group!')
               }
 
-              adminGroup.save(function (err) {
+              defaultTeam.save(function (err) {
                 if (err) {
                   winston.error('Database Error: ' + err.message)
                   return next('Database Error: ' + err.message)
                 }
 
-                return next(null)
+                return next(null, defaultTeam)
               })
             })
           })
         })
+      },
+      function (defaultTeam, next) {
+        var DepartmentSchema = require('../models/department')
+        DepartmentSchema.create(
+          {
+            name: 'Support - All Groups (Default)',
+            teams: [defaultTeam._id],
+            allGroups: true,
+            groups: []
+          },
+          function (err) {
+            return next(err)
+          }
+        )
       },
       function (next) {
         if (!process.env.TRUDESK_DOCKER) return next()
@@ -321,6 +401,7 @@ installController.install = function (req, res) {
         // Write Configfile
         var fs = require('fs')
         var configFile = path.join(__dirname, '../../config.json')
+        var chance = new Chance()
 
         var conf = {
           mongo: {
@@ -328,7 +409,12 @@ installController.install = function (req, res) {
             port: port,
             username: username,
             password: password,
-            database: database
+            database: database,
+            shard: port === '---'
+          },
+          tokens: {
+            secret: chance.hash() + chance.md5(),
+            expires: 900 // 15min
           }
         }
 

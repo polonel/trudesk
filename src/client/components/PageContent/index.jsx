@@ -25,8 +25,12 @@ class PageContent extends React.Component {
 
   render () {
     return (
-      <div id={this.props.id} className={'page-content no-border-top full-height scrollable p-25'}>
-        <div className={'pb-100'}>{this.props.children}</div>
+      <div
+        id={this.props.id}
+        className={'page-content no-border-top full-height scrollable ' + (this.props.extraClass || '')}
+        style={{ padding: this.props.padding }}
+      >
+        <div style={{ paddingBottom: this.props.paddingBottom }}>{this.props.children}</div>
       </div>
     )
   }
@@ -34,7 +38,15 @@ class PageContent extends React.Component {
 
 PageContent.propTypes = {
   id: PropTypes.string,
+  padding: PropTypes.number,
+  paddingBottom: PropTypes.number,
+  extraClass: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node]).isRequired
+}
+
+PageContent.defaultProps = {
+  padding: 25,
+  paddingBottom: 100
 }
 
 export default PageContent

@@ -12,112 +12,88 @@
 
  **/
 
-var _               = require('lodash');
-var mongoose        = require('mongoose');
+var _ = require('lodash')
+var async = require('async')
+var mongoose = require('mongoose')
 
-//Refs
-require('./user');
+// Refs
+require('./group')
+var Teams = require('./team')
+var Groups = require('./group')
 
-var COLLECTION = 'departments';
+var COLLECTION = 'departments'
 
 var departmentSchema = mongoose.Schema({
-    name:       { type: String, required: true, unique: true },
-    members:    [{type: mongoose.Schema.Types.ObjectId, ref: 'accounts'}]
-});
+  name: { type: String, required: true, unique: true },
+  normalized: { type: String },
+  teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams', autopopulate: true }],
+  allGroups: { type: Boolean, default: false },
+  groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups', autopopulate: true }]
+})
 
-departmentSchema.pre('save', function(next) {
-    this.name = this.name.trim();
+departmentSchema.plugin(require('mongoose-autopopulate'))
 
-    return next();
-});
+departmentSchema.pre('save', function (next) {
+  this.name = this.name.trim()
+  this.normalized = this.name.trim().toLowerCase()
 
-departmentSchema.methods.addMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.AddMember()');
+  return next()
+})
 
-    if (this.members === null) this.members = [];
-
-    if (isMember(this.members, memberId)) return callback(null, false);
-
-    this.members.push(memberId);
-    this.members = _.uniq(this.members);
-
-    return callback(null, true);
-};
-
-departmentSchema.methods.removeMember = function(memberId, callback) {
-    if (_.isUndefined(memberId)) return callback('Invalid MemberId - TeamSchema.RemoveMember()');
-
-    if (!isMember(this.members, memberId)) return callback(null, false);
-
-    this.members.splice(_.indexOf(this.members, _.find(this.members, {'_id' : memberId})), 1);
-
-    this.members = _.uniq(this.members);
-
-    return callback(null, true);
-};
-
-departmentSchema.methods.isMember = function(memberId) {
-    return isMember(this.members, memberId);
-};
-
-departmentSchema.statics.getByName = function(name, callback) {
-    if (_.isUndefined(name) || name.length < 1) return callback('Invalid Team Name - TeamSchema.GetTeamByName()');
-
-    var q = this.model(COLLECTION).findOne({name: name})
-        .populate('members', '_id username fullname email image title');
-
-    return q.exec(callback);
-};
-
-departmentSchema.statics.getAll = function(callback) {
-    var q = this.model(COLLECTION).find({})
-        .populate('members', '_id username fullname email image title')
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-departmentSchema.statics.getNoPopulate = function(callback) {
-    var q = this.model(COLLECTION).find({}).sort('name');
-
-    return q.exec(callback);
-};
-
-departmentSchema.statics.getByUser = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUser()');
-
-    var q = this.model(COLLECTION).find({members: userId})
-        .populate('members', '_id username fullname email image title')
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-departmentSchema.statics.getByUserNoPopulate = function(userId, callback) {
-    if (_.isUndefined(userId)) return callback('Invalid UserId - TeamSchema.GetTeamsOfUserNoPopulate()');
-
-    var q = this.model(COLLECTION).find({members: userId})
-        .sort('name');
-
-    return q.exec(callback);
-};
-
-departmentSchema.statics.get = function(id, callback) {
-    if (_.isUndefined(id)) return callback('Invalid TeamId - TeamSchema.GetTeam()');
-
-    var q = this.model(COLLECTION).findOne({_id: id})
-        .populate('members', '_id username fullname email image title');
-
-    return q.exec(callback);
-};
-
-function isMember(arr, id) {
-    var matches = _.filter(arr, function (value) {
-        if (value._id.toString() === id.toString()) 
-            return value;
-    });
-
-    return matches.length > 0;
+departmentSchema.statics.getDepartmentsByTeam = function (teamIds, callback) {
+  return this.model(COLLECTION)
+    .find({ teams: { $in: teamIds } })
+    .exec(callback)
 }
 
-module.exports = mongoose.model(COLLECTION, departmentSchema);
+departmentSchema.statics.getUserDepartments = function (userId, callback) {
+  var self = this
+
+  Teams.getTeamsOfUser(userId, function (err, teams) {
+    if (err) return callback(err)
+
+    return self
+      .model(COLLECTION)
+      .find({ teams: { $in: teams } })
+      .exec(callback)
+  })
+}
+
+departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback) {
+  var self = this
+
+  Teams.getTeamsOfUser(userId, function (err, teams) {
+    if (err) return callback(err)
+
+    return self
+      .model(COLLECTION)
+      .find({ teams: { $in: teams } })
+      .exec(function (err, departments) {
+        if (err) return callback(err)
+
+        var hasAllGroups = _.some(departments, { allGroups: true })
+        if (hasAllGroups) {
+          return Groups.getAllGroups(callback)
+        }
+
+        var groups = _.flattenDeep(
+          departments.map(function (department) {
+            return department.groups
+          })
+        )
+
+        return callback(null, groups)
+      })
+  })
+}
+
+departmentSchema.statics.getDepartmentsByGroup = function (groupId, callback) {
+  var self = this
+
+  return self
+    .model(COLLECTION)
+    .find({ $or: [{ groups: groupId }, { allGroups: true }] })
+    .exec(callback)
+}
+
+module.exports = mongoose.model(COLLECTION, departmentSchema)

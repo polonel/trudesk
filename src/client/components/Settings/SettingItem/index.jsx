@@ -21,10 +21,10 @@ class SettingItem extends React.Component {
   }
 
   render () {
-    const { title, subtitle, component, tooltip } = this.props
+    const { title, subtitle, component, tooltip, extraClass } = this.props
     return (
       <div className='setting-item-wrap uk-margin-medium-bottom'>
-        <div className='panel trupanel nopadding no-hover-shadow' style={{ minHeight: '60px' }}>
+        <div className={'panel trupanel nopadding no-hover-shadow ' + extraClass || ''} style={{ minHeight: '60px' }}>
           <div className='left'>
             <h6 style={{ padding: '0 0 0 15px', margin: '15px 0 0 0', fontSize: '16px', lineHeight: '14px' }}>
               {title}
@@ -80,6 +80,7 @@ SettingItem.propTypes = {
   component: PropTypes.element,
   footer: PropTypes.element,
   subPanelPadding: PropTypes.string,
+  extraClass: PropTypes.string,
   children: PropTypes.oneOfType([PropTypes.arrayOf(PropTypes.node), PropTypes.node])
 }
 

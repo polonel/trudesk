@@ -126,7 +126,7 @@ function runBackup (callback) {
         })
       })
     } else {
-      callback(new Error('MongoDump falied with code ' + code))
+      callback(new Error('MongoDump failed with code ' + code))
     }
   })
 }

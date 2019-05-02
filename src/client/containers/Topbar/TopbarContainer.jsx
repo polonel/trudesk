@@ -21,11 +21,11 @@ import { size } from 'lodash'
 
 import { showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
-import Dropdown from 'components/Drowdown'
-import DropdownItem from 'components/Drowdown/DropdownItem'
-import DropdownSeparator from 'components/Drowdown/DropdownSeperator'
-import DropdownHeader from 'components/Drowdown/DropdownHeader'
-import DropdownTrigger from 'components/Drowdown/DropdownTrigger'
+import Dropdown from 'components/Dropdown'
+import DropdownItem from 'components/Dropdown/DropdownItem'
+import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
+import DropdownHeader from 'components/Dropdown/DropdownHeader'
+import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
 import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
 import NotificationsDropdownPartial from './notificationsDropdown'
@@ -137,20 +137,20 @@ class TopbarContainer extends React.Component {
                   <ul className='uk-subnav uk-margin-bottom-remove'>
                     {/* Start Create Ticket Perm */}
                     {sessionUser && helpers.canUser('tickets:create') && (
-                      <div>
-                        <li className='top-bar-icon nopadding'>
-                          <button
-                            title={'Create Ticket'}
-                            className={'anchor'}
-                            onClick={() => this.props.showModal('CREATE_TICKET')}
-                          >
-                            <i className='material-icons'>&#xE145;</i>
-                          </button>
-                        </li>
-                        <li className='top-bar-icon nopadding'>
-                          <i className='material-icons'>more_vert</i>
-                        </li>
-                      </div>
+                      <li className='top-bar-icon nopadding'>
+                        <button
+                          title={'Create Ticket'}
+                          className={'anchor'}
+                          onClick={() => this.props.showModal('CREATE_TICKET')}
+                        >
+                          <i className='material-icons'>&#xE145;</i>
+                        </button>
+                      </li>
+                    )}
+                    {sessionUser && helpers.canUser('tickets:create') && (
+                      <li className='top-bar-icon nopadding'>
+                        <i className='material-icons'>more_vert</i>
+                      </li>
                     )}
                     {/* End Create Ticket Perm */}
                     <li className='top-bar-icon'>

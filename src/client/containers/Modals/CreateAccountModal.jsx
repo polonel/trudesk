@@ -19,6 +19,9 @@ import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 
 import { createAccount } from 'actions/accounts'
+import { fetchGroups, unloadGroups } from 'actions/groups'
+import { fetchTeams, unloadTeams } from 'actions/teams'
+import { fetchRoles } from 'actions/common'
 
 import BaseModal from './BaseModal'
 import Button from 'components/Button'
@@ -37,8 +40,13 @@ class CreateAccountModal extends React.Component {
   @observable email = ''
   @observable title = ''
   selectedRole = ''
+  @observable isAgentRole = false
 
   componentDidMount () {
+    this.props.fetchGroups({ type: 'all' })
+    this.props.fetchTeams()
+    this.props.fetchRoles()
+
     helpers.UI.inputs()
     helpers.formvalidator()
   }
@@ -54,11 +62,17 @@ class CreateAccountModal extends React.Component {
   onRoleSelectChange (e) {
     this.selectedRole = e.target.value
 
+    const roleObject = this.props.roles.find(role => {
+      return role.get('_id') === this.selectedRole
+    })
+
+    this.isAgentRole = roleObject.get('isAdmin') || roleObject.get('isAgent')
+
     if (!this.selectedRole || this.selectedRole.length < 1) this.roleSelectErrorMessage.classList.remove('hide')
     else this.roleSelectErrorMessage.classList.add('hide')
   }
 
-  onGroupSelectChange (values) {
+  onGroupSelectChange () {
     const selectedGroups = this.groupSelect.getSelected()
     if (!selectedGroups || selectedGroups.length < 1) this.groupSelectErrorMessage.classList.remove('hide')
     else this.groupSelectErrorMessage.classList.add('hide')
@@ -77,35 +91,50 @@ class CreateAccountModal extends React.Component {
       if (isValid) isValid = false
     } else this.roleSelectErrorMessage.classList.add('hide')
 
-    const selectedGroups = this.groupSelect.getSelected()
-    if (!selectedGroups || selectedGroups.length < 1) {
-      this.groupSelectErrorMessage.classList.remove('hide')
-      if (isValid) isValid = false
-    } else this.groupSelectErrorMessage.classList.add('hide')
+    const selectedGroups = this.groupSelect ? this.groupSelect.getSelected() : undefined
+    if (selectedGroups) {
+      if (selectedGroups.length < 1) {
+        this.groupSelectErrorMessage.classList.remove('hide')
+        if (isValid) isValid = false
+      } else this.groupSelectErrorMessage.classList.add('hide')
+    }
 
     if (!isValid) return
 
     const payload = {
-      aUsername: this.username,
-      aPass: this.password,
-      aPassConfirm: this.passwordConfirm,
-      aFullname: this.fullname,
-      aTitle: this.title,
-      aEmail: this.email,
-      aRole: this.selectedRole,
-      aGrps: this.groupSelect.getSelected()
+      username: this.username,
+      fullname: this.fullname,
+      title: this.title,
+      email: this.email,
+      groups: this.groupSelect ? this.groupSelect.getSelected() : undefined,
+      teams: this.teamSelect ? this.teamSelect.getSelected() : undefined,
+      role: this.selectedRole,
+      password: this.password.length > 1 ? this.password : undefined,
+      passwordConfirm: this.passwordConfirm.length > 1 ? this.passwordConfirm : undefined
     }
 
     this.props.createAccount(payload)
   }
 
   render () {
-    const roles = this.props.common.roles.map(role => {
-      return { text: role.name, value: role._id }
-    })
-    const groups = this.props.common.groups.map(group => {
-      return { text: group.name, value: group._id }
-    })
+    const roles = this.props.roles
+      .map(role => {
+        return { text: role.get('name'), value: role.get('_id') }
+      })
+      .toArray()
+
+    const groups = this.props.groups
+      .map(group => {
+        return { text: group.get('name'), value: group.get('_id') }
+      })
+      .toArray()
+
+    const teams = this.props.teams
+      .map(team => {
+        return { text: team.get('name'), value: team.get('_id') }
+      })
+      .toArray()
+
     return (
       <BaseModal parentExtraClass={'pt-0'} extraClass={'p-0 pb-25'}>
         <div className='user-heading' style={{ minHeight: '130px', background: '#1976d2', padding: '24px' }}>
@@ -213,21 +242,33 @@ class CreateAccountModal extends React.Component {
                 Please select a role for this user
               </span>
             </div>
-            <div className='uk-margin-medium-bottom'>
-              <label className='uk-form-label'>Groups</label>
-              <MultiSelect
-                items={groups}
-                onChange={e => this.onGroupSelectChange(e)}
-                ref={r => (this.groupSelect = r)}
-              />
-              <span
-                className={'hide help-block'}
-                style={{ display: 'inline-block', marginTop: '3px', fontWeight: 'bold', color: '#d85030' }}
-                ref={r => (this.groupSelectErrorMessage = r)}
-              >
-                Please select a group for this user.
-              </span>
-            </div>
+            {!this.isAgentRole && (
+              <div>
+                <div className='uk-margin-medium-bottom'>
+                  <label className='uk-form-label'>Groups</label>
+                  <MultiSelect
+                    items={groups}
+                    onChange={e => this.onGroupSelectChange(e)}
+                    ref={r => (this.groupSelect = r)}
+                  />
+                  <span
+                    className={'hide help-block'}
+                    style={{ display: 'inline-block', marginTop: '3px', fontWeight: 'bold', color: '#d85030' }}
+                    ref={r => (this.groupSelectErrorMessage = r)}
+                  >
+                    Please select a group for this user.
+                  </span>
+                </div>
+              </div>
+            )}
+            {this.isAgentRole && (
+              <div>
+                <div className='uk-margin-medium-bottom'>
+                  <label className='uk-form-label'>Teams</label>
+                  <MultiSelect items={teams} onChange={() => {}} ref={r => (this.teamSelect = r)} />
+                </div>
+              </div>
+            )}
             <div className='uk-modal-footer uk-text-right'>
               <Button text={'Close'} flat={true} waves={true} extraClass={'uk-modal-close'} />
               <Button text={'Create Account'} flat={true} waves={true} style={'success'} type={'submit'} />
@@ -241,14 +282,25 @@ class CreateAccountModal extends React.Component {
 
 CreateAccountModal.propTypes = {
   common: PropTypes.object.isRequired,
-  createAccount: PropTypes.func.isRequired
+  groups: PropTypes.object.isRequired,
+  teams: PropTypes.object.isRequired,
+  roles: PropTypes.object.isRequired,
+  createAccount: PropTypes.func.isRequired,
+  fetchGroups: PropTypes.func.isRequired,
+  unloadGroups: PropTypes.func.isRequired,
+  fetchTeams: PropTypes.func.isRequired,
+  unloadTeams: PropTypes.func.isRequired,
+  fetchRoles: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-  common: state.common
+  roles: state.shared.roles,
+  common: state.common,
+  groups: state.groupsState.groups,
+  teams: state.teamsState.teams
 })
 
 export default connect(
   mapStateToProps,
-  { createAccount }
+  { createAccount, fetchGroups, unloadGroups, fetchTeams, unloadTeams, fetchRoles }
 )(CreateAccountModal)

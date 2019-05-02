@@ -26,17 +26,17 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       }
     })
 
-    window.react.redux.store.dispatch({
-      type: 'SET_SESSION_USER',
-      payload: {
-        sessionUser: window.trudeskSessionService.getUser()
-      }
-    })
+    if (!window.react.redux.store.getState().shared.sessionUser)
+      window.react.redux.store.dispatch({
+        type: 'SET_SESSION_USER',
+        payload: {
+          sessionUser: window.trudeskSessionService.getUser()
+        }
+      })
 
     require([
       'pages/dashboard',
       'pages/messages',
-      'pages/tickets',
       'pages/accountsImport',
       'pages/groups',
       'pages/profile',

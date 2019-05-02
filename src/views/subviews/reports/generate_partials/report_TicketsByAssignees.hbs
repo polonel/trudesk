@@ -1,0 +1,66 @@
+<div id="report_ticketsByAssignee" class="hide1">
+    <div class="tru-card full-height" data-offset="25">
+        <h6 style="display: inline-block; padding: 15px; margin: 0; font-size: 14px;">Tickets by Assignee</h6>
+        <div class="uk-float-right">
+            <!--<button class="btn md-btn-flat-success md-btn-small md-btn md-btn-flat md-btn-wave md-btn-wave-light"-->
+            <!--style="margin: 10px 15px 0 0; font-size: 14px !important;">-->
+            <!--Generate-->
+            <!--</button>-->
+            <!--<button class="btn md-btn-flat-primary md-btn-small md-btn md-btn-flat md-btn-wave md-btn-wave-light"-->
+                    <!--style="margin: 10px 15px 0 0; font-size: 14px !important;">-->
+                <!--Need Help?-->
+            <!--</button>-->
+        </div>
+        <hr class="nomargin">
+        <div class="tru-card-content">
+            <p class="uk-text-muted" style="margin-bottom: 10px;">
+                Please select the start and end dates for the report and which users to include in the report.
+            </p>
+            <hr class="uk-margin-large-bottom" />
+            <form action="#" class="uk-form-stacked sel_report_tickets" id="report_ticketsByGroup_form">
+                <div class="uk-grid uk-grid-collapse uk-margin-medium-bottom">
+                    <div class="uk-width-1-2" style="padding: 0 15px 0 0;">
+                        <label for="filterDate_Start" class="uk-form-label nopadding nomargin">Date Start</label>
+                        <input id="filterDate_Start" class="filterDate_Start md-input label-fixed" name="filterDate_Start" type="text" data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}"
+                               data-validation="shortDate"
+                        />
+                    </div>
+                    <div class="uk-width-1-2" style="padding: 0 0 0 15px;">
+                        <label for="filterDate_End" class="uk-form-label nopadding nomargin">Date End</label>
+                        <input id="filterDate_End" class="filterDate_End md-input label-fixed" name="filterDate_End" type="text" data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}" value="{{formatDate now data.common.shortDateFormat}}"
+                               data-validation="shortDate"
+                        />
+                    </div>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="groups" class="uk-form-label">Groups</label>
+                    <select name="groups" id="groups" class="selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true"
+                            data-validation="length"
+                            data-validation-length="min1"
+                    >
+                        <option value="-1">All</option>
+                        {{#each data.common.groups}}
+                            <option value="{{{_id}}}">{{name}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <label for="users" class="uk-form-label">Assignees</label>
+                    <select name="assignees" id="assignees" class="selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true"
+                            data-validation="length"
+                            data-validation-length="min1"
+                    >
+                        {{#each data.common.users}}
+                            <option value="{{{_id}}}">{{fullname}}</option>
+                        {{/each}}
+                    </select>
+                </div>
+                <div class="uk-margin-medium-bottom">
+                    <div class="uk-float-right">
+                        <button class="md-btn md-btn-success md-btn-wave" type="submit" ng-click="submitGenerateReport($event, 'assignees');">Generate</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

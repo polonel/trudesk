@@ -26,36 +26,56 @@ div#accountsTable_wrapper
 
 .ticket-status span
   display: block
-  width: 65px
-  line-height: 25px
+  width: 25px
+  line-height: 27px
   height: 25px
   text-align: center
   font-size: 12px
-  font-weight: 300
+  font-weight: 600
   font-family: "Roboto", sans-serif
-  color: white
-  background: $ticket_status_closed
+  //color: white
+  //background: $ticket_status_closed
+  //border: 2px solid $ticket_status_closed
   +borderRadius(3px)
 
 .ticket-status.ticket-open span,
 .ticket-status-open
   background: $ticket_status_open !important
+  color: white !important
 .ticket-status.ticket-new span,
 .ticket-status-new
   background: $ticket_status_new !important
+  color: white !important
 .ticket-status.ticket-pending span,
 .ticket-status-pending
   background: $ticket_status_pending !important
+  color: white !important
 .ticket-status.ticket-closed span,
 .ticket-status-closed
   background: $ticket_status_closed !important
+  color: white !important
+
+.floating-ticket-status
+  .ticket-status,
+  .ticket-status span
+    width: 65px !important
+  .ticket-status
+    &.ticket-new span
+      background: $ticket_status_new !important
+      color: white !important
+    &.ticket-open span
+      background: $ticket_status_open !important
+      color: white !important
+    &.ticket-pending span
+      background: $ticket_status_pending !important
+      color: white !important
+    &.ticket-closed span
+      background: $ticket_status_closed !important
+      color: white !important
 
 .ticket-priority
   border-left: 10px solid transparent
-  &.ticket-priority-2
-    border-color: #8e24aa
-  &.ticket-priority-3
-    border-color: #e65100
+  background-clip: padding-box !important //Fix for firefox not showing borders
 
 .floating-ticket-status
   position: absolute
@@ -231,7 +251,7 @@ div#accountsTable_wrapper
 
   select, select:focus
     -webkit-appearance: none
-    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='%23ccc' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>")
+    background: url("data:image/svg+xml;utf8,<svg version='1.1' xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' width='24' height='24' viewBox='0 0 24 24'><path fill='rgba(0,0,0,0.15)' d='M7.406 7.828l4.594 4.594 4.594-4.594 1.406 1.406-6 6-6-6z'></path></svg>")
     background-position: 100% 50%
     background-repeat: no-repeat
     border: none

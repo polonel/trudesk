@@ -26,7 +26,8 @@ define([
   'angularjs/controllers/notices',
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
-  'angularjs/controllers/editor'
+  'angularjs/controllers/editor',
+  'angularjs/controllers/settingsElasticSearch'
 ], function ($, angular, _) {
   return angular
     .module('trudesk.controllers', [
@@ -41,7 +42,8 @@ define([
       'trudesk.controllers.notices',
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
-      'trudesk.controllers.editor'
+      'trudesk.controllers.editor',
+      'trudesk.controllers.settingsElasticSearch'
     ])
     .controller('TrudeskController', function ($rootScope, $scope) {})
 })

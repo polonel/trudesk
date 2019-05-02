@@ -50,6 +50,8 @@ class PermissionBody extends React.Component {
   @observable commentGrants = defaultGrants()
   @observable accountGrants = defaultGrants()
   @observable groupGrants = defaultGrants()
+  @observable teamGrants = defaultGrants()
+  @observable departmentGrants = defaultGrants()
   @observable reportGrants = defaultGrants()
   @observable noticeGrants = defaultGrants()
 
@@ -85,6 +87,9 @@ class PermissionBody extends React.Component {
       this.accountGrants = parsedGrants.accounts
 
     if (parsedGrants.groups && !isEqual(parsedGrants.groups, this.groupGrants)) this.groupGrants = parsedGrants.groups
+    if (parsedGrants.teams && !isEqual(parsedGrants.teams, this.teamGrants)) this.teamGrants = parsedGrants.teams
+    if (parsedGrants.departments && !isEqual(parsedGrants.departments, this.departmentGrants))
+      this.departmentGrants = parsedGrants.departments
 
     if (parsedGrants.reports && !isEqual(parsedGrants.reports, this.reportGrants))
       this.reportGrants = parsedGrants.reports
@@ -124,6 +129,8 @@ class PermissionBody extends React.Component {
     obj.comments = PermissionBody.buildPermArray(this.commentPermGroup)
     obj.accounts = PermissionBody.buildPermArray(this.accountPermGroup)
     obj.groups = PermissionBody.buildPermArray(this.groupPermGroup)
+    obj.teams = PermissionBody.buildPermArray(this.teamPermGroup)
+    obj.departments = PermissionBody.buildPermArray(this.departmentPermGroup)
     obj.reports = PermissionBody.buildPermArray(this.reportPermGroup)
     obj.notices = PermissionBody.buildPermArray(this.noticePermGroup)
 
@@ -220,6 +227,20 @@ class PermissionBody extends React.Component {
             role={this.props.role}
             grants={this.groupGrants}
             subtitle={'Group Permissions'}
+          />
+          <PermissionGroupPartial
+            ref={i => (this.teamPermGroup = i)}
+            title={'Teams'}
+            role={this.props.role}
+            grants={this.teamGrants}
+            subtitle={'Team Permissions'}
+          />
+          <PermissionGroupPartial
+            ref={i => (this.departmentPermGroup = i)}
+            title={'Departments'}
+            role={this.props.role}
+            grants={this.departmentGrants}
+            subtitle={'Department Permissions'}
           />
           <PermissionGroupPartial
             ref={i => (this.reportPermGroup = i)}

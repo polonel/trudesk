@@ -366,7 +366,7 @@ apiUsers.update = function (req, res) {
 
   var data = req.body
   // saveGroups - Profile saving where groups are not sent
-  var saveGroups = data.saveGroups || true
+  var saveGroups = !_.isUndefined(data.saveGroups) ? data.saveGroups : true
   var obj = {
     fullname: data.aFullname,
     title: data.aTitle,
@@ -421,54 +421,57 @@ apiUsers.update = function (req, res) {
         })
       },
       groups: function (done) {
-        if (!saveGroups) return done()
-        var userGroups = []
-        groupSchema.getAllGroups(function (err, groups) {
-          if (err) return done(err)
-          async.each(
-            groups,
-            function (grp, callback) {
-              if (_.includes(obj.groups, grp._id.toString())) {
-                if (grp.isMember(obj._id)) {
-                  userGroups.push(grp)
-                  return callback()
+        if (!saveGroups) {
+          groupSchema.getAllGroupsOfUser(obj._id, done)
+        } else {
+          var userGroups = []
+          groupSchema.getAllGroups(function (err, groups) {
+            if (err) return done(err)
+            async.each(
+              groups,
+              function (grp, callback) {
+                if (_.includes(obj.groups, grp._id.toString())) {
+                  if (grp.isMember(obj._id)) {
+                    userGroups.push(grp)
+                    return callback()
+                  }
+                  grp.addMember(obj._id, function (err, result) {
+                    if (err) return callback(err)
+
+                    if (result) {
+                      grp.save(function (err) {
+                        if (err) return callback(err)
+                        userGroups.push(grp)
+                        return callback()
+                      })
+                    } else {
+                      return callback()
+                    }
+                  })
+                } else {
+                  // Remove Member from group
+                  grp.removeMember(obj._id, function (err, result) {
+                    if (err) return callback(err)
+                    if (result) {
+                      grp.save(function (err) {
+                        if (err) return callback(err)
+
+                        return callback()
+                      })
+                    } else {
+                      return callback()
+                    }
+                  })
                 }
-                grp.addMember(obj._id, function (err, result) {
-                  if (err) return callback(err)
+              },
+              function (err) {
+                if (err) return done(err)
 
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-                      userGroups.push(grp)
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
-              } else {
-                // Remove Member from group
-                grp.removeMember(obj._id, function (err, result) {
-                  if (err) return callback(err)
-                  if (result) {
-                    grp.save(function (err) {
-                      if (err) return callback(err)
-
-                      return callback()
-                    })
-                  } else {
-                    return callback()
-                  }
-                })
+                return done(null, userGroups)
               }
-            },
-            function (err) {
-              if (err) return done(err)
-
-              return done(null, userGroups)
-            }
-          )
-        })
+            )
+          })
+        }
       }
     },
     function (err, results) {
@@ -600,7 +603,7 @@ apiUsers.deleteUser = function (req, res) {
       },
       function (user, cb) {
         var ticketSchema = require('../../../models/ticket')
-        ticketSchema.getTicketsByRequester(user._id, function (err, tickets) {
+        ticketSchema.find({ owner: user._id }, function (err, tickets) {
           if (err) return cb(err)
 
           var hasTickets = _.size(tickets) > 0
@@ -1018,6 +1021,34 @@ apiUsers.getAssingees = function (req, res) {
       }
     )
   })
+}
+
+apiUsers.getGroups = function (req, res) {
+  if (req.user.role.isAdmin || req.user.role.isAgent) {
+    var departmentSchema = require('../../../models/department')
+    departmentSchema.getDepartmentGroupsOfUser(req.user._id, function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      var mappedGroups = groups.map(function (g) {
+        return g._id
+      })
+
+      return res.json({ success: true, groups: mappedGroups })
+    })
+  } else {
+    if (req.user.username !== req.params.username)
+      return res.status(400).json({ success: false, error: 'Invalid API Call' })
+
+    groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, function (err, groups) {
+      if (err) return res.status(400).json({ success: false, error: err.message })
+
+      var mappedGroups = groups.map(function (g) {
+        return g._id
+      })
+
+      return res.json({ success: true, groups: mappedGroups })
+    })
+  }
 }
 
 apiUsers.uploadProfilePic = function (req, res) {

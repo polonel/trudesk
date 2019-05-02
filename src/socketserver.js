@@ -31,8 +31,8 @@ var socketServer = function (ws) {
   'use strict'
 
   var socketConfig = {
-    pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 5000,
-    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 25000
+    pingTimeout: nconf.get('socket:pingTimeout') ? nconf.get('socket:pingTimeout') : 15000,
+    pingInterval: nconf.get('socket:pingInterval') ? nconf.get('socket:pingInterval') : 30000
   }
 
   var io = require('socket.io')(ws.server, {

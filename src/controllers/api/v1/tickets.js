@@ -18,6 +18,7 @@ var moment = require('moment-timezone')
 var winston = require('winston')
 var permissions = require('../../../permissions')
 var emitter = require('../../../emitter')
+var sanitizeHtml = require('sanitize-html')
 
 var apiTickets = {}
 
@@ -153,13 +154,20 @@ apiTickets.get = function (req, res) {
 
   var ticketModel = require('../../../models/ticket')
   var groupModel = require('../../../models/group')
+  var departmentModel = require('../../../models/department')
 
   async.waterfall(
     [
       function (callback) {
-        groupModel.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
-          callback(err, grps)
-        })
+        if (user.role.isAdmin || user.role.isAgent) {
+          departmentModel.getDepartmentGroupsOfUser(user._id, function (err, groups) {
+            callback(err, groups)
+          })
+        } else {
+          groupModel.getAllGroupsOfUserNoPopulate(user._id, function (err, grps) {
+            callback(err, grps)
+          })
+        }
       },
       function (grps, callback) {
         if (permissions.canThis(user.role, 'tickets:public')) {
@@ -221,6 +229,68 @@ apiTickets.get = function (req, res) {
   )
 }
 
+apiTickets.getByGroup = function (req, res) {
+  var groupId = req.params.id
+  if (!groupId) return res.status(400).json({ success: false, error: 'Invalid Group Id' })
+
+  var limit = req.query.limit ? Number(req.query.limit) : 50
+  var page = req.query.page ? Number(req.query.page) : 0
+
+  var obj = {
+    limit: limit,
+    page: page
+  }
+
+  var ticketSchema = require('../../../models/ticket')
+  ticketSchema.getTicketsWithObject([groupId], obj, function (err, tickets) {
+    if (err) return res.status(500).json({ success: false, error: err.message })
+
+    return res.json({ success: true, tickets: tickets, count: tickets.length })
+  })
+}
+
+apiTickets.getCountByGroup = function (req, res) {
+  var groupId = req.params.id
+  if (!groupId) return res.status(400).json({ success: false, error: 'Invalid Group Id' })
+  if (_.isUndefined(req.query.type) || _.isUndefined(req.query.value))
+    return res.status(400).json({ success: false, error: 'Invalid QueryString' })
+
+  var type = req.query.type
+  var value = req.query.value
+  // var limit = req.query.limit ? Number(req.query.limit) : -1
+  // var page = req.query.page ? Number(req.query.page) : 0
+
+  var ticketSchema = require('../../../models/ticket')
+
+  var obj = {
+    // limit: limit,
+    // page: page
+  }
+
+  switch (type.toLowerCase()) {
+    case 'status':
+      obj.status = [Number(value)]
+      ticketSchema.getCountWithObject([groupId], obj, function (err, count) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        return res.json({ success: true, count: count })
+      })
+      break
+    case 'tickettype':
+      obj.filter = {
+        types: [value]
+      }
+      ticketSchema.getCountWithObject([groupId], obj, function (err, count) {
+        if (err) return res.status(500).json({ success: false, error: err.message })
+
+        return res.json({ success: true, count: count })
+      })
+      break
+    default:
+      return res.status(400).json({ success: false, error: 'Unsupported type query' })
+  }
+}
+
 /**
  * @api {get} /api/v1/tickets/search/?search={searchString} Get Tickets by Search String
  * @apiName search
@@ -247,13 +317,16 @@ apiTickets.search = function (req, res) {
 
   var ticketModel = require('../../../models/ticket')
   var groupModel = require('../../../models/group')
+  var departmentModel = require('../../../models/department')
 
   async.waterfall(
     [
       function (callback) {
-        groupModel.getAllGroupsOfUserNoPopulate(req.user._id, function (err, grps) {
-          callback(err, grps)
-        })
+        if (req.user.role.isAdmin || req.user.role.isAgent) {
+          return departmentModel.getDepartmentGroupsOfUser(req.user._id, callback)
+        } else {
+          return groupModel.getAllGroupsOfUserNoPopulate(req.user._id, callback)
+        }
       },
       function (grps, callback) {
         if (permissions.canThis(req.user.role, 'tickets:public')) {
@@ -287,6 +360,7 @@ apiTickets.search = function (req, res) {
         success: true,
         error: null,
         count: _.size(results),
+        totalCount: _.size(results),
         tickets: _.sortBy(results, 'uid').reverse()
       })
     }
@@ -361,9 +435,12 @@ apiTickets.create = function (req, res) {
     ticket.owner = req.user._id
   }
 
+  ticket.subject = sanitizeHtml(ticket.subject).trim()
+
   var marked = require('marked')
   var tIssue = ticket.issue
   tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+  tIssue = sanitizeHtml(tIssue).trim()
   ticket.issue = marked(tIssue)
   ticket.history = [HistoryItem]
   ticket.subscribers = [req.user._id]
@@ -376,14 +453,23 @@ apiTickets.create = function (req, res) {
       return res.status(400).json(response)
     }
 
-    emitter.emit('ticket:created', {
-      hostname: req.headers.host,
-      socketId: socketId,
-      ticket: t
-    })
+    t.populate('group owner priority', function (err, tt) {
+      if (err) {
+        response.success = false
+        response.error = err
+        winston.debug(response)
+        return res.status(400).json(response)
+      }
 
-    response.ticket = t
-    res.json(response)
+      emitter.emit('ticket:created', {
+        hostname: req.headers.host,
+        socketId: socketId,
+        ticket: tt
+      })
+
+      response.ticket = tt
+      res.json(response)
+    })
   })
 }
 
@@ -514,8 +600,8 @@ apiTickets.createPublicTicket = function (req, res) {
             group: group._id,
             type: ticketType._id,
             priority: _.first(ticketType.priorities)._id, // TODO: change when priority order is complete!
-            subject: postData.ticket.subject,
-            issue: postData.ticket.issue,
+            subject: sanitizeHtml(postData.ticket.subject).trim(),
+            issue: sanitizeHtml(postData.ticket.issue).trim(),
             history: [HistoryItem],
             subscribers: [savedUser._id]
           })
@@ -523,6 +609,7 @@ apiTickets.createPublicTicket = function (req, res) {
           var marked = require('marked')
           var tIssue = ticket.issue
           tIssue = tIssue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+          tIssue = sanitizeHtml(tIssue).trim()
           ticket.issue = marked(tIssue)
 
           ticket.save(function (err, t) {
@@ -636,6 +723,7 @@ apiTickets.update = function (req, res) {
     var ticketModel = require('../../../models/ticket')
     ticketModel.getTicketById(oId, function (err, ticket) {
       if (err) return res.status(400).json({ success: false, error: err.message })
+      if (!ticket) return res.status(400).json({ success: false, error: 'Unable to locate ticket. Aborting...' })
       async.parallel(
         [
           function (cb) {
@@ -647,14 +735,14 @@ apiTickets.update = function (req, res) {
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.subject)) {
-              ticket.subject = reqTicket.subject
+              ticket.subject = sanitizeHtml(reqTicket.subject).trim()
             }
 
             return cb()
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.group)) {
-              ticket.group = reqTicket.group._id
+              ticket.group = reqTicket.group._id || reqTicket.group
 
               ticket.populate('group', function () {
                 return cb()
@@ -679,7 +767,7 @@ apiTickets.update = function (req, res) {
           },
           function (cb) {
             if (!_.isUndefined(reqTicket.issue) && !_.isNull(reqTicket.issue)) {
-              ticket.issue = reqTicket.issue
+              ticket.issue = sanitizeHtml(reqTicket.issue).trim()
             }
 
             return cb()
@@ -817,6 +905,8 @@ apiTickets.postComment = function (req, res) {
     marked.setOptions({
       breaks: true
     })
+
+    comment = sanitizeHtml(comment).trim()
 
     var Comment = {
       owner: owner,
@@ -1435,7 +1525,8 @@ apiTickets.getTicketStatsForGroup = function (req, res) {
   async.waterfall(
     [
       function (callback) {
-        ticketModel.getTickets([groupId], function (err, tickets) {
+        var obj = { limit: 10000, page: 0 }
+        ticketModel.getTicketsWithObject([groupId], obj, function (err, tickets) {
           if (err) return callback(err)
           parseTicketStats(req.user.role, tickets, function (data) {
             tags = data.tags
@@ -1800,20 +1891,38 @@ apiTickets.getOverdue = function (req, res) {
     }
 
     var ticketSchema = require('../../../models/ticket')
+    var departmentSchema = require('../../../models/department')
     var groupSchema = require('../../../models/group')
-    groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
-      if (err) return res.status(400).json({ success: false, error: err.message })
-      grps = grps.map(function (g) {
-        return g._id.toString()
-      })
-      ticketSchema.getOverdue(grps, function (err, objs) {
+
+    async.waterfall(
+      [
+        function (next) {
+          if (!req.user.role.isAdmin && !req.user.role.isAgent) {
+            return groupSchema.getAllGroupsOfUserNoPopulate(req.user._id, next)
+          } else {
+            return departmentSchema.getDepartmentGroupsOfUser(req.user._id, next)
+          }
+        },
+        function (groups, next) {
+          var groupIds = groups.map(function (g) {
+            return g._id
+          })
+
+          ticketSchema.getOverdue(groupIds, function (err, tickets) {
+            if (err) return next(err)
+
+            var sorted = _.sortBy(tickets, 'uid').reverse()
+
+            return next(null, sorted)
+          })
+        }
+      ],
+      function (err, overdueTickets) {
         if (err) return res.status(400).json({ success: false, error: err.message })
 
-        var sorted = _.sortBy(objs, 'uid').reverse()
-
-        return res.json({ success: true, tickets: sorted })
-      })
-    })
+        return res.json({ success: true, tickets: overdueTickets })
+      }
+    )
   })
 }
 

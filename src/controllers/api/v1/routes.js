@@ -21,16 +21,16 @@ module.exports = function (middleware, router, controllers) {
   var isAgent = middleware.isAgent
   var isAgentOrAdmin = middleware.isAgentOrAdmin
   var canUser = middleware.canUser
-  var apiCtrl = controllers.api
+  var apiCtrl = controllers.api.v1
 
   // Common
   router.get('/api', controllers.api.index)
   router.get('/api/v1/version', function (req, res) {
     return res.json({ version: packagejson.version })
   })
-  router.post('/api/v1/login', apiCtrl.login)
-  router.get('/api/v1/login', apiv1, apiCtrl.getLoggedInUser)
-  router.get('/api/v1/logout', apiv1, apiCtrl.logout)
+  router.post('/api/v1/login', apiCtrl.common.login)
+  router.get('/api/v1/login', apiv1, apiCtrl.common.getLoggedInUser)
+  router.get('/api/v1/logout', apiv1, apiCtrl.common.logout)
 
   // Roles
   router.get('/api/v1/roles', apiv1, apiCtrl.roles.get)
@@ -40,6 +40,7 @@ module.exports = function (middleware, router, controllers) {
 
   // Tickets
   router.get('/api/v1/tickets', apiv1, canUser('tickets:view'), apiCtrl.tickets.get)
+  router.get('/api/v1/tickets/group/:id', apiv1, isAdmin, canUser('tickets:view'), apiCtrl.tickets.getByGroup)
   router.get('/api/v1/tickets/search', apiv1, canUser('tickets:view'), apiCtrl.tickets.search)
   router.post('/api/v1/tickets/create', apiv1, canUser('tickets:create'), apiCtrl.tickets.create)
   router.get('/api/v1/tickets/type/:id', apiv1, apiCtrl.tickets.getType)
@@ -65,6 +66,13 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/tickets/count/topgroups', apiv1, apiCtrl.tickets.getTopTicketGroups)
   router.get('/api/v1/tickets/count/topgroups/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
   router.get('/api/v1/tickets/count/topgroups/:timespan/:top', apiv1, apiCtrl.tickets.getTopTicketGroups)
+  router.get(
+    '/api/v1/tickets/count/group/:id',
+    apiv1,
+    isAgentOrAdmin,
+    canUser('tickets:view'),
+    apiCtrl.tickets.getCountByGroup
+  )
   router.get('/api/v1/tickets/stats', apiv1, apiCtrl.tickets.getTicketStats)
   router.get('/api/v1/tickets/stats/group/:group', apiv1, apiCtrl.tickets.getTicketStatsForGroup)
   router.get('/api/v1/tickets/stats/user/:user', apiv1, apiCtrl.tickets.getTicketStatsForUser)
@@ -121,6 +129,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v1/users/getassignees', apiv1, isAgentOrAdmin, apiCtrl.users.getAssingees)
   router.get('/api/v1/users/:username', apiv1, canUser('accounts:view'), apiCtrl.users.single)
   router.put('/api/v1/users/:username', apiv1, canUser('accounts:update'), apiCtrl.users.update)
+  router.get('/api/v1/users/:username/groups', apiv1, apiCtrl.users.getGroups)
   router.post('/api/v1/users/:username/uploadprofilepic', apiv1, apiCtrl.users.uploadProfilePic)
   router.put('/api/v1/users/:username/updatepreferences', apiv1, apiCtrl.users.updatePreferences)
   router.get('/api/v1/users/:username/enable', apiv1, canUser('accounts:update'), apiCtrl.users.enableUser)
@@ -154,6 +163,8 @@ module.exports = function (middleware, router, controllers) {
   router.post(genBaseUrl + 'tickets_by_tags', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByTags)
   router.post(genBaseUrl + 'tickets_by_type', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByType)
   router.post(genBaseUrl + 'tickets_by_user', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByUser)
+  router.post(genBaseUrl + 'tickets_by_assignee', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByAssignee)
+  router.post(genBaseUrl + 'tickets_by_team', apiv1, canUser('reports:create'), reportsGenCtrl.ticketsByTeam)
 
   // Settings
   router.get('/api/v1/settings', apiv1, apiCtrl.settings.getSettings)
@@ -170,4 +181,12 @@ module.exports = function (middleware, router, controllers) {
   router.post('/api/v1/backup/restore', apiv1, isAdmin, controllers.backuprestore.restoreBackup)
   router.post('/api/v1/backup/upload', apiv1, isAdmin, controllers.backuprestore.uploadBackup)
   router.get('/api/v1/backup/hastools', apiv1, isAdmin, controllers.backuprestore.hasBackupTools)
+
+  // Editor
+
+  router.get('/api/v1/editor/load/:id', apiv1, isAdmin, controllers.editor.load)
+  router.post('/api/v1/editor/save', apiv1, isAdmin, controllers.editor.save)
+  router.get('/api/v1/editor/assets', apiv1, isAdmin, controllers.editor.getAssets)
+  router.post('/api/v1/editor/assets/remove', apiv1, isAdmin, controllers.editor.removeAsset)
+  router.post('/api/v1/editor/assets/upload', apiv1, isAdmin, controllers.editor.assetsUpload)
 }

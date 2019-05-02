@@ -13,13 +13,9 @@
  */
 
 var async = require('async')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var ConversationSchema = require('../../../models/chat/conversation')
-
 var MessageSchema = require('../../../models/chat/message')
 
 var apiMessages = {}

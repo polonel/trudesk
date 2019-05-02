@@ -11,7 +11,7 @@
 
 var express = require('express')
 var router = express.Router()
-var controllers = require('../controllers/index.js')
+var controllers = require('../controllers')
 var path = require('path')
 var winston = require('winston')
 var packagejson = require('../../package.json')
@@ -38,7 +38,7 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/login', function (req, res) {
     return res.redirect('/')
   })
-  router.get('/logint', controllers.main.index)
+
   router.post('/login', controllers.main.loginPost)
   router.get('/l2auth', controllers.main.l2authget)
   router.post('/l2auth', controllers.main.l2AuthPost)
@@ -221,7 +221,15 @@ function mainRoutes (router, middleware, controllers) {
 
   // Accounts
   router.get('/profile', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.profile)
-  router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.get)
+  router.get('/accounts', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getCustomers)
+  router.get(
+    '/accounts/customers',
+    middleware.redirectToLogin,
+    middleware.loadCommonData,
+    controllers.accounts.getCustomers
+  )
+  router.get('/accounts/agents', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getAgents)
+  router.get('/accounts/admins', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.getAdmins)
   router.post('/accounts/uploadimage', middleware.redirectToLogin, controllers.accounts.uploadImage)
   router.get('/accounts/import', middleware.redirectToLogin, middleware.loadCommonData, controllers.accounts.importPage)
   router.post('/accounts/import/csv/upload', middleware.redirectToLogin, controllers.accounts.uploadCSV)
@@ -232,6 +240,12 @@ function mainRoutes (router, middleware, controllers) {
   router.get('/groups', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.get)
   router.get('/groups/create', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.getCreate)
   router.get('/groups/:id', middleware.redirectToLogin, middleware.loadCommonData, controllers.groups.edit)
+
+  // Teams
+  router.get('/teams', middleware.redirectToLogin, middleware.loadCommonData, controllers.teams.get)
+
+  // Departments
+  router.get('/departments', middleware.redirectToLogin, middleware.loadCommonData, controllers.departments.get)
 
   // Reports
   router.get('/reports', middleware.redirectToLogin, middleware.loadCommonData, controllers.reports.overview)
@@ -290,6 +304,12 @@ function mainRoutes (router, middleware, controllers) {
     middleware.loadCommonData,
     controllers.settings.notificationsSettings
   )
+  router.get(
+    '/settings/elasticsearch',
+    middleware.redirectToLogin,
+    middleware.loadCommonData,
+    controllers.settings.elasticsearchSettings
+  )
   router.get('/settings/tps', middleware.redirectToLogin, middleware.loadCommonData, controllers.settings.tpsSettings)
   router.get(
     '/settings/backup',
@@ -306,11 +326,6 @@ function mainRoutes (router, middleware, controllers) {
     middleware.loadCommonData,
     controllers.editor.page
   )
-  router.get('/api/v1/editor/load/:id', middleware.api, controllers.editor.load)
-  router.post('/api/v1/editor/save', middleware.api, controllers.editor.save)
-  router.get('/api/v1/editor/assets', middleware.api, controllers.editor.getAssets)
-  router.post('/api/v1/editor/assets/remove', middleware.api, controllers.editor.removeAsset)
-  router.post('/api/v1/editor/assets/upload', middleware.api, controllers.editor.assetsUpload)
 
   // Plugins
   router.get('/plugins', middleware.redirectToLogin, middleware.loadCommonData, controllers.plugins.get)
@@ -318,6 +333,8 @@ function mainRoutes (router, middleware, controllers) {
   // API
   // v1
   require('../controllers/api/v1/routes')(middleware, router, controllers)
+  // v2
+  require('../controllers/api/v2/routes')(middleware, router, controllers)
 
   router.get('/api/v1/plugins/list/installed', middleware.api, function (req, res) {
     return res.json({ success: true, loadedPlugins: global.plugins })
@@ -326,13 +343,13 @@ function mainRoutes (router, middleware, controllers) {
     '/api/v1/plugins/install/:packageid',
     middleware.api,
     middleware.isAdmin,
-    controllers.api.plugins.installPlugin
+    controllers.api.v1.plugins.installPlugin
   )
   router.delete(
     '/api/v1/plugins/remove/:packageid',
     middleware.api,
     middleware.isAdmin,
-    controllers.api.plugins.removePlugin
+    controllers.api.v1.plugins.removePlugin
   )
 
   router.get('/api/v1/admin/restart', middleware.api, middleware.isAdmin, function (req, res) {

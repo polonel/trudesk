@@ -33,7 +33,8 @@ define([
   'velocity',
   'peity',
   'multiselect',
-  'moment_timezone'
+  'moment_timezone',
+  'waypoints'
 ], function ($, _, __, moment, UIkit, CountUp, Waves, Selectize, Snackbar, Cookies, Tether) {
   var helpers = {}
   var easingSwiftOut = [0.4, 0, 0.2, 1]
@@ -99,6 +100,52 @@ define([
     })
   }
 
+  helpers.util = {}
+  helpers.util.options = function (string) {
+    if ($.type(string) !== 'string') return string
+
+    if (string.indexOf(':') !== -1 && string.trim().substr(-1) !== '}') string = '{' + string + '}'
+
+    var start = string ? string.indexOf('{') : -1,
+      options = {}
+
+    if (start !== -1) {
+      try {
+        options = helpers.util.str2json(string.substr(start))
+      } catch (e) {}
+    }
+
+    return options
+  }
+
+  helpers.util.str2json = function (str, notevil) {
+    try {
+      if (notevil) {
+        return JSON.parse(
+          str
+            // wrap keys without quote with valid double quote
+            .replace(/([$\w]+)\s*:/g, function (_, $1) {
+              return '"' + $1 + '":'
+            })
+            // replacing single quote wrapped ones to double quote
+            .replace(/'([^']+)'/g, function (_, $1) {
+              return '"' + $1 + '"'
+            })
+        )
+      } else return new Function('', 'var json = ' + str + '; return JSON.parse(JSON.stringify(json));')()
+    } catch (e) {
+      return false
+    }
+  }
+
+  helpers.countUpMe = function () {
+    $('.countUpMe').each(function () {
+      var self = this
+      var countTo = $(self).text()
+      var theAnimation = new CountUp(self, 0, countTo, 0, 2)
+      theAnimation.start()
+    })
+  }
   helpers.jsPreventDefault = function () {
     $('.js-prevent-default').each(function () {
       $(this).on('click', function (event) {
@@ -227,9 +274,32 @@ define([
       })
   }
 
+  helpers.UI.setupDataTethers = function () {
+    var $elements = $('*[data-tether]')
+
+    $elements.each(function () {
+      var $this = $(this)
+      var obj = helpers.util.options($this.attr('data-tether'))
+      if (_.isObject(obj)) {
+        var $target = $(obj.target)
+
+        if ($target.length > 0) {
+          new Tether({
+            element: $this,
+            target: $target,
+            attachment: obj.pos,
+            targetAttachment: obj.targetAttachment,
+            offset: obj.offset
+          })
+        }
+      }
+    })
+  }
+
   helpers.UI.setupSidebarTether = function () {
     var sidebarElements = [
       { element: '#side-nav-sub-tickets', target: 'tickets' },
+      { element: '#side-nav-sub-accounts', target: 'accounts' },
       { element: '#side-nav-sub-reports', target: 'reports' },
       { element: '#side-nav-sub-settings', target: 'settings' }
     ]
@@ -1896,6 +1966,141 @@ define([
     }
 
     return isEqual(value, other)
+  }
+
+  helpers.UI.hierarchicalShow = function (element) {
+    var $hierarchicalShow = $('.hierarchical_show')
+
+    if ($hierarchicalShow.length) {
+      $hierarchicalShow.each(function () {
+        var timeout = $(this).attr('data-show-delay') ? parseInt($(this).attr('data-show-delay')) : 0
+        var $this = $(this)
+        var thisChildrenLength = $this.children().length
+        var baseDelay = 100
+
+        $this.children().each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.waypoint({
+            handler: function () {
+              $this.addClass('hierarchical_show_inView')
+              setTimeout(function () {
+                $this
+                  .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+                  .children()
+                  .css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+              }, thisChildrenLength * baseDelay + 1200)
+              this.destroy()
+            },
+            context: 'window',
+            offset: '90%'
+          })
+        }, timeout)
+      })
+    }
+    if (element) {
+      var $this = $(element).addClass('hierarchical_show hierarchical_show_inView')
+      var thisChildrenLength = $this.children().length
+      var baseDelay = 100
+
+      $this.children().each(function (index) {
+        $(this).css({
+          '-webkit-animation-delay': index * baseDelay + 'ms',
+          'animation-delay': index * baseDelay + 'ms'
+        })
+      })
+
+      $this.addClass('')
+      setTimeout(function () {
+        $this
+          .removeClass('hierarchical_show hierarchical_show_inView fast_animation')
+          .children()
+          .css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+      }, thisChildrenLength * baseDelay + 1200)
+    }
+  }
+
+  helpers.UI.hierarchicalSlide = function (element) {
+    var $hierarchicalSlide = $('.hierarchical_slide')
+    if ($hierarchicalSlide.length) {
+      $hierarchicalSlide.each(function () {
+        var $this = $(this)
+        var $thisChildren = $this.attr('data-slide-children')
+          ? $this.children($this.attr('data-slide-children'))
+          : $this.children()
+        var thisChildrenLength = $thisChildren.length
+        var thisContext = $this.attr('data-slide-context')
+          ? $this.closest($this.attr('data-slide-context'))[0]
+          : 'window'
+        var delay = $this.attr('data-delay') ? parseInt($this.attr('data-delay')) : 0
+        var baseDelay = 100
+
+        if (thisChildrenLength >= 1) {
+          $thisChildren.each(function (index) {
+            $(this).css({
+              '-webkit-animation-delay': index * baseDelay + 'ms',
+              'animation-delay': index * baseDelay + 'ms'
+            })
+          })
+
+          setTimeout(function () {
+            $this.waypoint({
+              handler: function () {
+                $this.addClass('hierarchical_slide_inView')
+                setTimeout(function () {
+                  $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+                  $thisChildren.css({
+                    '-webkit-animation-delay': '',
+                    'animation-delay': ''
+                  })
+                }, thisChildrenLength * baseDelay + 1200)
+                this.destroy()
+              },
+              context: thisContext,
+              offset: '90%'
+            })
+          }, delay)
+        }
+      })
+    }
+
+    if (element) {
+      var $this = $(element).addClass('hierarchical_slide hierarchical_slide_inView')
+      var $thisChildren = $this.attr('data-slide-children')
+        ? $this.children($this.attr('data-slide-children'))
+        : $this.children()
+      var thisChildrenLength = $thisChildren.length
+      // var thisContext = $this.attr('data-slide-context') ? $this.closest($this.attr('data-slide-context'))[0] : 'window'
+      var baseDelay = 100
+
+      if (thisChildrenLength >= 1) {
+        $thisChildren.each(function (index) {
+          $(this).css({
+            '-webkit-animation-delay': index * baseDelay + 'ms',
+            'animation-delay': index * baseDelay + 'ms'
+          })
+        })
+
+        setTimeout(function () {
+          $this.removeClass('hierarchical_slide hierarchical_slide_inView')
+          $thisChildren.css({
+            '-webkit-animation-delay': '',
+            'animation-delay': ''
+          })
+        }, thisChildrenLength * baseDelay + 1200)
+      }
+    }
   }
 
   return helpers

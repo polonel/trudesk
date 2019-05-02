@@ -16,30 +16,11 @@ var mongoose = require('mongoose')
 
 var COLLECTION = 'settings'
 
-/**
- * Setting Schema
- * @module models/setting
- * @class Setting
-
- *
- * @property {object} _id ```Required``` ```unique``` MongoDB Object ID
- * @property {String} name ```Required``` ```unique``` Name of Setting
- * @property {object} value ```Required``` Value of Setting
- */
 var settingSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
   value: { type: mongoose.Schema.Types.Mixed, required: true }
 })
 
-/**
- * Return all Settings
- *
- * @memberof Setting
- * @static
- * @method getSettings
- *
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 settingSchema.statics.getSettings = function (callback) {
   var q = this.model(COLLECTION)
     .find()
@@ -48,16 +29,6 @@ settingSchema.statics.getSettings = function (callback) {
   return q.exec(callback)
 }
 
-/**
- * Return Single Setting via setting name
- *
- * @memberof Setting
- * @static
- * @method getSettingByName
- *
- * @param {String} name Name of Setting to search for
- * @param {QueryCallback} callback MongoDB Query Callback
- */
 settingSchema.statics.getSettingByName = function (name, callback) {
   var q = this.model(COLLECTION).findOne({ name: name })
 

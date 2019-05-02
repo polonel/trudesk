@@ -359,83 +359,93 @@ class TicketsSettings extends React.Component {
           }
           footer={<ul id={'tagPagination'} className={'uk-pagination'} />}
         >
-          <Grid extraClass={'zone uk-margin-medium-bottom'}>
+          <Grid extraClass={'uk-margin-medium-bottom'}>
             {this.props.tagsSettings.tags.size < 1 && (
               <div style={{ width: '100%', padding: '55px', textAlign: 'center' }}>
                 <h3 style={{ fontSize: '24px', fontWeight: '300' }}>No Tags Found</h3>
               </div>
             )}
             <SpinLoader active={this.props.tagsSettings.loading} extraClass={'panel-bg'} />
-            {this.props.tagsSettings.tags.map(i => {
-              return (
-                <GridItem width={'1-2'} key={i.get('_id')} extraClass={'tag-wrapper br bb'}>
-                  <Grid extraClass={'view-tag'}>
-                    <GridItem width={'1-1'}>
-                      <ZoneBox>
-                        <Grid>
-                          <GridItem width={'1-2'}>
-                            <h5
-                              style={{ fontSize: '16px', lineHeight: '31px', margin: 0, padding: 0, fontWeight: 300 }}
-                            >
-                              {i.get('name')}
-                            </h5>
-                          </GridItem>
-                          <GridItem width={'1-2'} extraClass={'uk-text-right'}>
-                            <ButtonGroup classNames={'mt-5'}>
-                              <Button
-                                text={'edit'}
-                                flat={true}
-                                waves={true}
-                                small={true}
-                                onClick={e => TicketsSettings.toggleEditTag(e)}
-                              />
-                              <Button
-                                text={'remove'}
-                                flat={true}
-                                waves={true}
-                                style={'danger'}
-                                small={true}
-                                onClick={e => this.onRemoveTagClicked(e, i)}
-                              />
-                            </ButtonGroup>
-                          </GridItem>
-                        </Grid>
-                      </ZoneBox>
+            <GridItem width={'1-1'}>
+              <Grid extraClass={'zone ml-0'}>
+                {this.props.tagsSettings.tags.map(i => {
+                  return (
+                    <GridItem width={'1-2'} key={i.get('_id')} extraClass={'tag-wrapper br bb'}>
+                      <Grid extraClass={'view-tag'}>
+                        <GridItem width={'1-1'}>
+                          <ZoneBox>
+                            <Grid>
+                              <GridItem width={'1-2'}>
+                                <h5
+                                  style={{
+                                    fontSize: '16px',
+                                    lineHeight: '31px',
+                                    margin: 0,
+                                    padding: 0,
+                                    fontWeight: 300
+                                  }}
+                                >
+                                  {i.get('name')}
+                                </h5>
+                              </GridItem>
+                              <GridItem width={'1-2'} extraClass={'uk-text-right'}>
+                                <ButtonGroup classNames={'mt-5'}>
+                                  <Button
+                                    text={'edit'}
+                                    flat={true}
+                                    waves={true}
+                                    small={true}
+                                    onClick={e => TicketsSettings.toggleEditTag(e)}
+                                  />
+                                  <Button
+                                    text={'remove'}
+                                    flat={true}
+                                    waves={true}
+                                    style={'danger'}
+                                    small={true}
+                                    onClick={e => this.onRemoveTagClicked(e, i)}
+                                  />
+                                </ButtonGroup>
+                              </GridItem>
+                            </Grid>
+                          </ZoneBox>
+                        </GridItem>
+                      </Grid>
+                      <Grid extraClass={'edit-tag z-box uk-clearfix nbt hide'} style={{ paddingTop: '5px' }}>
+                        <GridItem width={'1-1'}>
+                          <form onSubmit={e => this.onSubmitUpdateTag(e, i.get('_id'))}>
+                            <Grid>
+                              <GridItem width={'2-3'}>
+                                <input type='text' className={'md-input'} name={'name'} defaultValue={i.get('name')} />
+                              </GridItem>
+                              <GridItem width={'1-3'} style={{ paddingTop: '10px' }}>
+                                <ButtonGroup classNames={'uk-float-right uk-text-right'}>
+                                  <Button
+                                    text={'cancel'}
+                                    flat={true}
+                                    waves={true}
+                                    small={true}
+                                    onClick={e => TicketsSettings.toggleEditTag(e)}
+                                  />
+                                  <Button
+                                    type={'submit'}
+                                    text={'save'}
+                                    flat={true}
+                                    waves={true}
+                                    small={true}
+                                    style={'success'}
+                                  />
+                                </ButtonGroup>
+                              </GridItem>
+                            </Grid>
+                          </form>
+                        </GridItem>
+                      </Grid>
                     </GridItem>
-                  </Grid>
-                  <Grid extraClass={'edit-tag z-box uk-clearfix nbt hide'} style={{ paddingTop: '5px' }}>
-                    <GridItem width={'1-1'}>
-                      <form onSubmit={e => this.onSubmitUpdateTag(e, i.get('_id'))}>
-                        <Grid>
-                          <GridItem width={'2-3'}>
-                            <input type='text' className={'md-input'} name={'name'} defaultValue={i.get('name')} />
-                          </GridItem>
-                          <GridItem width={'1-3'} style={{ paddingTop: '10px' }}>
-                            <ButtonGroup classNames={'uk-float-right uk-text-right'}>
-                              <Button
-                                text={'cancel'}
-                                flat={true}
-                                waves={true}
-                                small={true}
-                                onClick={e => TicketsSettings.toggleEditTag(e)}
-                              />
-                              <Button
-                                type={'submit'}
-                                text={'save'}
-                                flat={true}
-                                waves={true}
-                                small={true}
-                                style={'success'}
-                              />
-                            </ButtonGroup>
-                          </GridItem>
-                        </Grid>
-                      </form>
-                    </GridItem>
-                  </Grid>
-                </GridItem>
-              )
-            })}
+                  )
+                })}
+              </Grid>
+            </GridItem>
           </Grid>
         </SettingItem>
       </div>

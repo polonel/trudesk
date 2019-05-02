@@ -40,7 +40,10 @@ const composeSetup =
 localStorage.setItem('debug', 'trudesk:*') // Enable logger
 // }
 
-const preloadedState = { common: window.trudesk.__PRELOADED_STATE__ }
+const preloadedState = {
+  common: window.trudesk.__PRELOADED_STATE__
+}
+
 delete window.trudesk
 $('script#preloader').remove()
 

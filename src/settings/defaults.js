@@ -29,6 +29,7 @@ settingsDefaults.supportGrants = [
   'tickets:*',
   'agent:*',
   'accounts:create update view import',
+  'teams:create update view',
   'comments:create view update create delete',
   'reports:view create',
   'notices:*'
@@ -48,38 +49,6 @@ settingsDefaults.adminGrants = [
   'settings:*',
   'api:*'
 ]
-
-function teamsDefault (callback) {
-  var teamSchema = require('../models/team')
-  var roleSchmea = require('../models/role')
-  var userSchema = require('../models/user')
-
-  async.series(
-    [
-      function (next) {
-        // Create default Support Team
-      }
-    ],
-    callback
-  )
-
-  teamSchema.create(
-    {
-      name: 'Support'
-    },
-    function (err, team) {
-      if (err) console.log(err)
-
-      teamSchema.getTeams(function (err, teams) {
-        if (err) return callback(err)
-
-        console.log(teams)
-
-        return callback()
-      })
-    }
-  )
-}
 
 function rolesDefault (callback) {
   var roleSchema = require('../models/role')
@@ -219,8 +188,12 @@ function createDirectories (callback) {
 function downloadWin32MongoDBTools (callback) {
   var http = require('http')
   var os = require('os')
+  var semver = require('semver')
+  var dbVersion = require('../database').db.version || '3.6.9'
+  var fileVersion = semver(dbVersion).major + '.' + semver(dbVersion).minor
+
   if (os.platform() === 'win32') {
-    var filename = 'mongodb-tools.3.6.9-win32x64.zip'
+    var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
     var savePath = path.join(__dirname, '../backup/bin/win32/')
     fs.ensureDirSync(savePath)
     if (
@@ -283,11 +256,15 @@ function timezoneDefault (callback) {
         winston.debug('Timezone set to ' + setting.value)
         moment.tz.setDefault(setting.value)
 
+        global.timezone = setting.value
+
         if (_.isFunction(callback)) return callback()
       })
     } else {
       winston.debug('Timezone set to ' + setting.value)
       moment.tz.setDefault(setting.value)
+
+      global.timezone = setting.value
 
       if (_.isFunction(callback)) return callback()
     }
@@ -557,15 +534,6 @@ function addedDefaultPrioritesToTicketTypes (callback) {
                 prioritiesToAdd = _.map(priorities, '_id')
               }
 
-              // } else {
-              //   _.each(priorities, function(priority) {
-              //       if (!_.find(type.priorities, {'_id': priority._id})) {
-              //           winston.debug('Adding default priority %s to ticket type %s', priority.name, type.name);
-              //           prioritiesToAdd.push(priority._id);
-              //       }
-              //   });
-              // }
-
               if (prioritiesToAdd.length < 1) {
                 return done()
               }
@@ -615,6 +583,90 @@ function mailTemplates (callback) {
   )
 }
 
+function elasticSearchConfToDB (callback) {
+  var nconf = require('nconf')
+  var elasticsearch = {
+    enable: nconf.get('elasticsearch:enable'),
+    host: nconf.get('elasticsearch:host'),
+    port: nconf.get('elasticsearch:port')
+  }
+
+  nconf.set('elasticsearch', undefined)
+
+  async.parallel(
+    [
+      function (done) {
+        nconf.save(done)
+      },
+      function (done) {
+        if (!elasticsearch.enable) return done()
+        SettingsSchema.getSettingByName('es:enable', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:enable',
+                value: elasticsearch.enable
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        if (!elasticsearch.host) return done()
+        SettingsSchema.getSettingByName('es:host', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:host',
+                value: elasticsearch.host
+              },
+              done
+            )
+          }
+        })
+      },
+      function (done) {
+        if (!elasticsearch.port) return done()
+        SettingsSchema.getSettingByName('es:port', function (err, setting) {
+          if (err) return done(err)
+          if (!setting) {
+            SettingsSchema.create(
+              {
+                name: 'es:port',
+                value: elasticsearch.port
+              },
+              done
+            )
+          }
+        })
+      }
+    ],
+    callback
+  )
+}
+
+function installationID (callback) {
+  var Chance = require('chance')
+  var chance = new Chance()
+  SettingsSchema.getSettingByName('gen:installid', function (err, setting) {
+    if (err) return callback(err)
+    if (!setting) {
+      SettingsSchema.create(
+        {
+          name: 'gen:installid',
+          value: chance.guid()
+        },
+        callback
+      )
+    } else {
+      return callback()
+    }
+  })
+}
+
 settingsDefaults.init = function (callback) {
   winston.debug('Checking Default Settings...')
   async.series(
@@ -654,9 +706,16 @@ settingsDefaults.init = function (callback) {
       },
       function (done) {
         return mailTemplates(done)
+      },
+      function (done) {
+        elasticSearchConfToDB(done)
+      },
+      function (done) {
+        installationID(done)
       }
     ],
-    function () {
+    function (err) {
+      if (err) winston.debug(err)
       if (_.isFunction(callback)) return callback()
     }
   )

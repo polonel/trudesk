@@ -85,6 +85,8 @@
 .marginright30,
 .mr-30
   margin-right: 30px !important
+.ml-0
+  margin-left: 0 !important
 .marginleft5,
 .ml-5
   margin-left: 5px !important
@@ -95,6 +97,8 @@
   margin-top: 0 !important
 .mt-5
   margin-top: 5px !important
+.mt-8
+  margin-top: 8px !important
 .mt-10
   margin-top: 10px !important
 .mt-15
@@ -109,6 +113,8 @@
   margin-bottom: 15px !important
 .mb-25
   margin-bottom: 25px !important
+.mb-50
+  margin-bottom: 50px !important
 .mr-10
   margin-right: 10px !important
 .mr-15
@@ -116,8 +122,14 @@
 
 .p-0
   padding: 0 !important
+.p-15
+  padding: 15px !important
 .pt-0
   padding-top: 0 !important
+.pt-10
+  padding-top: 10px !important
+.pt-15
+  padding-top: 15px !important
 .pr-5
   padding-right: 5px !important
 .pr-10
@@ -130,6 +142,10 @@
   padding-left: 0 !important
 .pl-25
   padding-left: 25px !important
+.pb-10
+  padding-bottom: 10px !important
+.pb-15
+  padding-bottom: 15px !important
 .pb-25
   padding-bottom: 25px !important
 .pb-100
@@ -140,6 +156,7 @@
   padding-right: 15px !important
 .padding-right-15
   padding-right: 15px !important
+.p-10,
 .padding-10
   padding: 10px !important
 .padding-15
@@ -188,6 +205,10 @@
   color: #fff !important
 .text-dark
   color: rgba(25,25,25, 0.7) !important
+.text-success
+  color: $accent_success !important
+.text-danger
+  color: $accent_danger !important
 .bg-white
   background: #fff !important
 .bg-accent
@@ -205,8 +226,14 @@
 .font-light,
 .text-light
   font-weight: 300 !important
+.font-size-12,
+.small-font
+  font-size: 12px !important
 .font-size-40
   font-size: 40px !important
+
+.vam
+  vertical-align: middle !important
 
 .heading-wiz
   margin: 0
@@ -217,6 +244,16 @@
     line-height: 18px
     display: block
     color: automatic-text-color($page_content_right_bg, 'muted')
+
+.bg-danger,.bg-warning,.bg-success
+  background: $accent_danger !important
+  color: white !important
+  p,i,h1,h2,h3,h4,h5,h6,a
+    color: white !important
+.bg-warning
+  background: $accent_warn !important
+.bg-success
+  background: $accent_success !important
 
 .cursor-pointer
   cursor: default !important
@@ -290,7 +327,7 @@ a.hoverUnderline
   border-bottom: 1px solid $page_content_title_border_color
 
 .page-content
-  background: $page_content_bg
+  //background: $page_content_bg
   border-top: $page_content_border_top
 //overflow: auto
 

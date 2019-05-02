@@ -30,10 +30,18 @@ var COLLECTION = 'groups'
  */
 var groupSchema = mongoose.Schema({
   name: { type: String, required: true, unique: true },
-  members: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'accounts',
+      autopopulate: { select: '-hasL2Auth -preferences -__v' }
+    }
+  ],
   sendMailTo: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }],
   public: { type: Boolean, required: true, default: false }
 })
+
+groupSchema.plugin(require('mongoose-autopopulate'))
 
 groupSchema.pre('save', function (next) {
   this.name = this.name.trim()
@@ -98,17 +106,43 @@ groupSchema.statics.getGroupByName = function (name, callback) {
 
   var q = this.model(COLLECTION)
     .findOne({ name: name })
-    .populate('members', '_id username fullname email role preferences image title')
-    .populate('sendMailTo', '_id username fullname email role preferences image title')
+    .populate('members', '_id username fullname email role preferences image title deleted')
+    .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
 
   return q.exec(callback)
+}
+
+groupSchema.statics.getWithObject = function (obj, callback) {
+  var limit = obj.limit ? Number(obj.limit) : 100
+  var page = obj.page ? Number(obj.page) : 0
+  var userId = obj.userId
+
+  if (userId) {
+    return this.model(COLLECTION)
+      .find({ members: userId })
+      .limit(limit)
+      .skip(page * limit)
+      .populate('members', '_id username fullname email role preferences image title deleted')
+      .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
+      .sort('name')
+      .exec(callback)
+  }
+
+  return this.model(COLLECTION)
+    .find({})
+    .limit(limit)
+    .skip(page * limit)
+    .populate('members', '_id username fullname email role preferences image title deleted')
+    .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
+    .sort('name')
+    .exec(callback)
 }
 
 groupSchema.statics.getAllGroups = function (callback) {
   var q = this.model(COLLECTION)
     .find({})
-    .populate('members', '_id username fullname email role preferences image title')
-    .populate('sendMailTo', '_id username fullname email role preferences image title')
+    .populate('members', '_id username fullname email role preferences image title deleted')
+    .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
     .sort('name')
 
   return q.exec(callback)
@@ -130,13 +164,23 @@ groupSchema.statics.getAllPublicGroups = function (callback) {
   return q.exec(callback)
 }
 
+groupSchema.statics.getGroups = function (groupIds, callback) {
+  if (_.isUndefined(groupIds)) return callback('Invalid Array of Group IDs - GroupSchema.GetGroups()')
+
+  this.model(COLLECTION)
+    .find({ _id: { $in: groupIds } })
+    .populate('members', '_id username fullname email role preferences image title deleted')
+    .sort('name')
+    .exec(callback)
+}
+
 groupSchema.statics.getAllGroupsOfUser = function (userId, callback) {
   if (_.isUndefined(userId)) return callback('Invalid UserId - GroupSchema.GetAllGroupsOfUser()')
 
   var q = this.model(COLLECTION)
     .find({ members: userId })
-    .populate('members', '_id username fullname email role preferences image title')
-    .populate('sendMailTo', '_id username fullname email role preferences image title')
+    .populate('members', '_id username fullname email role preferences image title deleted')
+    .populate('sendMailTo', '_id username fullname email role preferences image title deleted')
     .sort('name')
 
   return q.exec(callback)

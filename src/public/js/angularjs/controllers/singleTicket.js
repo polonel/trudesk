@@ -32,6 +32,7 @@ define([
     .module('trudesk.controllers.singleTicket', ['trudesk.services.session'])
     .controller('singleTicket', function (SessionService, $window, $rootScope, $scope, $http, $timeout, $q, $log) {
       $scope.loggedInAccount = SessionService.getUser()
+      onSocketUpdateTicketDueDate()
 
       var mdeToolbarItems = [
         {
@@ -433,7 +434,7 @@ define([
       })
 
       var groupHttpGet = $http
-        .get('/api/v1/groups')
+        .get('/api/v2/groups')
         .success(function (data) {
           _.each(data.groups, function (item) {
             $scope.groups.push(item)
@@ -477,6 +478,40 @@ define([
         if (id.length > 0) {
           socket.ui.setTicketGroup(id, $scope.selectedGroup)
         }
+      }
+
+      $scope.updateTicketDueDate = function () {
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, $scope.dueDate)
+        }
+      }
+
+      $scope.clearDueDate = function ($event) {
+        $event.preventDefault()
+        var id = $('#__ticketId').html()
+        if (id.length > 0) {
+          socket.ui.setTicketDueDate(id, null)
+        }
+      }
+
+      function onSocketUpdateTicketDueDate () {
+        socket.socket.removeAllListeners('updateTicketDueDate')
+        socket.socket.on('updateTicketDueDate', function (data) {
+          $timeout(function () {
+            if ($scope.ticketId === data._id)
+              if (data.dueDate) $scope.dueDate = helpers.formatDate(data.dueDate, helpers.getShortDateFormat())
+              else $scope.dueDate = ''
+          }, 0)
+          // var dueDateInput = $('input#tDueDate[data-ticketId="' + data._id + '"]')
+          // if (dueDateInput.length > 0) {
+          //   $scope.dueDate = helpers.formatDate(data.duedate, helpers.getShortDateFormat())
+          // } else {
+          //   dueDateInput = $('div#tDueDate[data-ticketId="' + data._id + '"]')
+          //   if (dueDateInput.length > 0)
+          //     dueDateInput.html(helpers.formatDate(data.duedate, helpers.getShortDateFormat()))
+          // }
+        })
       }
 
       $scope.updateTicketIssue = function () {

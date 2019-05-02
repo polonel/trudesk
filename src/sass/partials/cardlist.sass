@@ -1,0 +1,64 @@
+/*!
+ /       .                             .o8                     oooo
+ /    .o8                             "888                     `888
+ /  .o888oo oooo d8b oooo  oooo   .oooo888   .ooooo.   .oooo.o  888  oooo
+ /    888   `888""8P `888  `888  d88' `888  d88' `88b d88(  "8  888 .8P'
+ /    888    888      888   888  888   888  888ooo888 `"Y88b.   888888.
+ /    888 .  888      888   888  888   888  888    .o o.  )88b  888 `88b.
+ /    "888" d888b     `V88V"V8P' `Y8bod88P" `Y8bod8P' 8""888P' o888o o888o
+ /  ========================================================================
+ /  Author:     Chris Brame
+ /  Updated:    3/15/19 12:42 AM
+ /  Copyright (c) 2014-2019. All rights reserved.
+ /
+
+.md-card-list-wrapper
+  -webkit-box-sizing: border-box
+  box-sizing: border-box
+  *, :after, :before, &:after, &:before
+    -webkit-box-sizing: border-box
+    box-sizing: border-box
+  .md-card-list-header
+    position: absolute
+    top: -24px
+    left: 0
+  .md-card-list-header-right
+    @extend .md-card-list-header
+    left: auto
+    right: 0
+  .md-card-list
+    margin: 48px 0 0 0
+    position: relative
+    &:first-child
+      margin-top: 24px
+    > ul
+      margin: 0
+      padding: 0
+      list-style: none
+      > li
+        padding: 0
+        margin: 0
+        list-style: none
+        min-height: 34px
+        padding: 8px 16px
+        font-size: 13px
+        -webkit-transition: background 150ms,padding .2s
+        transition: background 150ms,padding .2s
+        background: #fff
+        -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)
+        &:after, &:before
+          content: " "
+          display: table
+        &:after
+          clear: both
+          content: " "
+          display: table
+        &:before
+          content: " "
+          display: table
+        &:after
+          clear: both
+        &.item-shown
+          background: #fff
+          padding: 8px 36px

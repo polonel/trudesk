@@ -259,6 +259,14 @@ viewController.getData = function (request, cb) {
         })
       },
       function (callback) {
+        viewController.getTeams(request, function (err, teams) {
+          if (err) return callback(null, null)
+
+          viewdata.teams = teams
+          return callback()
+        })
+      },
+      function (callback) {
         viewController.getGroups(request, function (err, data) {
           if (err) return callback(null, null)
 
@@ -454,28 +462,61 @@ viewController.getConversations = function (request, callback) {
 
 viewController.getUsers = function (request, callback) {
   var userSchema = require('../../models/user')
-  userSchema.findAll(function (err, users) {
-    if (err) {
-      winston.warn(err)
-      return callback()
-    }
+  if (request.user.role.isAdmin || request.user.role.isAgent) {
+    userSchema.findAll(function (err, users) {
+      if (err) {
+        winston.warn(err)
+        return callback()
+      }
 
-    var u = _.reject(users, function (u) {
-      return u.deleted === true
+      var u = _.reject(users, function (u) {
+        return u.deleted === true
+      })
+      u.password = null
+      u.role = null
+      u.resetPassHash = null
+      u.resetPassExpire = null
+      u.accessToken = null
+      u.iOSDeviceTokens = null
+      u.preferences = null
+      u.tOTPKey = null
+
+      u = _.sortBy(u, 'fullname')
+
+      return callback(u)
     })
-    u.password = null
-    u.role = null
-    u.resetPassHash = null
-    u.resetPassExpire = null
-    u.accessToken = null
-    u.iOSDeviceTokens = null
-    u.preferences = null
-    u.tOTPKey = null
+  } else {
+    var groupSchema = require('../../models/group')
+    groupSchema.getAllGroupsOfUser(request.user._id, function (err, groups) {
+      if (err) return callback(err)
 
-    u = _.sortBy(u, 'fullname')
+      var users = _.map(groups, function (g) {
+        return _.map(g.members, function (m) {
+          var mFiltered = m
+          m.password = null
+          m.role = null
+          m.resetPassHash = null
+          m.resetPassExpire = null
+          m.accessToken = null
+          m.iOSDeviceTokens = null
+          m.preferences = null
+          m.tOTPKey = null
 
-    return callback(u)
-  })
+          return mFiltered
+        })
+      })
+
+      users = _.chain(users)
+        .flattenDeep()
+        .uniqBy(function (i) {
+          return i._id
+        })
+        .sortBy('fullname')
+        .value()
+
+      return callback(users)
+    })
+  }
 }
 
 viewController.loggedInAccount = function (request, callback) {
@@ -489,29 +530,46 @@ viewController.loggedInAccount = function (request, callback) {
   })
 }
 
+viewController.getTeams = function (request, callback) {
+  var Team = require('../../models/team')
+  return Team.getTeams(callback)
+}
+
 viewController.getGroups = function (request, callback) {
   var groupSchema = require('../../models/group')
-  groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
-    if (err) {
-      winston.debug(err)
-      return callback(err)
-    }
+  var Department = require('../../models/department')
+  if (request.user.role.isAdmin || request.user.role.isAgent) {
+    Department.getDepartmentGroupsOfUser(request.user._id, function (err, groups) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-    var p = require('../../permissions')
-    if (p.canThis(request.user.role, 'ticket:public')) {
-      groupSchema.getAllPublicGroups(function (err, groups) {
-        if (err) {
-          winston.debug(err)
-          return callback(err)
-        }
+      return callback(null, groups)
+    })
+  } else {
+    groupSchema.getAllGroupsOfUserNoPopulate(request.user._id, function (err, data) {
+      if (err) {
+        winston.debug(err)
+        return callback(err)
+      }
 
-        data = data.concat(groups)
+      var p = require('../../permissions')
+      if (p.canThis(request.user.role, 'ticket:public')) {
+        groupSchema.getAllPublicGroups(function (err, groups) {
+          if (err) {
+            winston.debug(err)
+            return callback(err)
+          }
+
+          data = data.concat(groups)
+          return callback(null, data)
+        })
+      } else {
         return callback(null, data)
-      })
-    } else {
-      return callback(null, data)
-    }
-  })
+      }
+    })
+  }
 }
 
 viewController.getTypes = function (request, callback) {

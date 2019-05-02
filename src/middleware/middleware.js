@@ -58,19 +58,19 @@ middleware.redirectToLogin = function (req, res, next) {
       req.session.redirectUrl = req.url
     }
 
-    return res.redirect('/')
+    return res.redirect(401, '/')
   }
 
   if (req.user.deleted) {
     req.logout()
     req.session.l2auth = null
     req.session.destroy()
-    return res.redirect('/')
+    return res.redirect(401, '/')
   }
 
   if (req.user.hasL2Auth) {
     if (req.session.l2auth !== 'totp') {
-      return res.redirect('/')
+      return res.redirect(401, '/')
     }
   }
 
@@ -191,6 +191,22 @@ middleware.api = function (req, res, next) {
 }
 
 middleware.hasAuth = middleware.api
+
+middleware.apiv2 = function (req, res, next) {
+  // ByPass auth for now if user is set through session
+  if (req.user) return next()
+
+  var passport = require('passport')
+  passport.authenticate('jwt', { session: true }, function (err, user) {
+    if (err || !user) return res.status(401).json({ success: false, error: 'Invalid Authentication Token' })
+    if (user) {
+      req.user = user
+      return next()
+    }
+
+    return res.status(500).json({ success: false, error: 'Unknown Error Occurred' })
+  })(req, res, next)
+}
 
 middleware.canUser = function (action) {
   return function (req, res, next) {

@@ -19,7 +19,11 @@ class SpinLoader extends React.Component {
   render () {
     return (
       <div
-        className={'card-spinner ' + (this.props.extraClass || '') + (!this.props.active ? ' hide ' : '')}
+        className={
+          'card-spinner' +
+          (this.props.extraClass ? ` ${this.props.extraClass}` : '') +
+          (!this.props.active ? ' hide' : '')
+        }
         style={this.props.style}
       >
         <div className='spinner' style={this.props.spinnerStyle} />

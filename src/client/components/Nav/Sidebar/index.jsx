@@ -22,17 +22,11 @@ import SubmenuItem from 'components/Nav/SubmenuItem'
 
 import { updateNavChange } from '../../../actions/nav'
 
-// import Permissions from '../../../../permissions/index.js'
-
 import Helpers from 'lib/helpers'
 
 class Sidebar extends React.Component {
   constructor (props) {
     super(props)
-
-    // window.react.updateSidebar = (data) => {
-    //     this.props.updateNavChange(data);
-    // };
   }
 
   componentDidMount () {
@@ -155,7 +149,36 @@ class Sidebar extends React.Component {
             href='/accounts'
             class='navAccounts'
             active={activeItem === 'accounts'}
-          />
+            subMenuTarget='accounts'
+            hasSubmenu={sessionUser && Helpers.canUser('agent:*', true)}
+          >
+            {sessionUser && Helpers.canUser('agent:*', true) && (
+              <Submenu id='accounts'>
+                <SubmenuItem
+                  href={'/accounts/customers'}
+                  text={'Customers'}
+                  icon={'account_box'}
+                  active={activeSubItem === 'accounts-customers'}
+                />
+                {sessionUser && Helpers.canUser('agent:*', true) && (
+                  <SubmenuItem
+                    href={'/accounts/agents'}
+                    text={'Agents'}
+                    icon={'account_circle'}
+                    active={activeSubItem === 'accounts-agents'}
+                  />
+                )}
+                {sessionUser && Helpers.canUser('admin:*') && (
+                  <SubmenuItem
+                    href={'/accounts/admins'}
+                    text={'Admins'}
+                    icon={'how_to_reg'}
+                    active={activeSubItem === 'accounts-admins'}
+                  />
+                )}
+              </Submenu>
+            )}
+          </SidebarItem>
         )}
         {sessionUser && Helpers.canUser('groups:view') && (
           <SidebarItem
@@ -166,14 +189,18 @@ class Sidebar extends React.Component {
             active={activeItem === 'groups'}
           />
         )}
-        {/*<SidebarItem text='Teams' icon='wc' href='/teams' class='navTeams' active={activeItem === 'teams'} />*/}
-        {/*<SidebarItem*/}
-        {/*text='Departments'*/}
-        {/*icon='domain'*/}
-        {/*href='/departments'*/}
-        {/*class='navTeams'*/}
-        {/*active={activeItem === 'departments'}*/}
-        {/*/>*/}
+        {sessionUser && Helpers.canUser('teams:view') && (
+          <SidebarItem text='Teams' icon='wc' href='/teams' class='navTeams' active={activeItem === 'teams'} />
+        )}
+        {sessionUser && Helpers.canUser('departments:view') && (
+          <SidebarItem
+            text='Departments'
+            icon='domain'
+            href='/departments'
+            class='navTeams'
+            active={activeItem === 'departments'}
+          />
+        )}
         {sessionUser && Helpers.canUser('reports:view') && (
           <SidebarItem
             text='Reports'
@@ -246,7 +273,7 @@ class Sidebar extends React.Component {
               />
               <SubmenuItem
                 text='Permissions'
-                icon='lock'
+                icon='security'
                 href='/settings/permissions'
                 active={activeSubItem === 'settings-permissions'}
               />
@@ -257,6 +284,12 @@ class Sidebar extends React.Component {
                 active={activeSubItem === 'settings-mailer'}
               />
               {/*<SubmenuItem text="Notifications" icon="" href="/settings/notifications" active={activeSubItem === 'settings-notifications'} />*/}
+              <SubmenuItem
+                href={'/settings/elasticsearch'}
+                text={'Elasticsearch'}
+                icon={'search'}
+                active={activeSubItem === 'settings-elasticsearch'}
+              />
               <SubmenuItem
                 text='Push Service'
                 icon='mobile_friendly'

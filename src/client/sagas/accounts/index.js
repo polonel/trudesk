@@ -24,12 +24,11 @@ import {
 } from 'actions/types'
 
 import Log from '../../logger'
-
 import api from '../../api'
-
 import helpers from 'lib/helpers'
 
 function * fetchAccounts ({ payload, meta }) {
+  yield put({ type: FETCH_ACCOUNTS.PENDING })
   try {
     const response = yield call(api.accounts.getWithPage, payload)
     yield put({ type: FETCH_ACCOUNTS.SUCCESS, payload: { response, payload }, meta })
@@ -61,6 +60,7 @@ function * saveEditAccount ({ payload }) {
     const response = yield call(api.accounts.updateUser, payload)
     yield put({ type: SAVE_EDIT_ACCOUNT.SUCCESS, response })
     yield put({ type: HIDE_MODAL.ACTION })
+    helpers.UI.showSnackbar('Account updated successfully')
   } catch (error) {
     let errorText = ''
     if (error.response) errorText = error.response.data.error

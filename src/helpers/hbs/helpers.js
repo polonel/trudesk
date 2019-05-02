@@ -518,6 +518,7 @@ var helpers = {
   },
 
   formatDate: function (date, format) {
+    if (!date) return ''
     return moment
       .utc(date)
       .tz(global.timezone)

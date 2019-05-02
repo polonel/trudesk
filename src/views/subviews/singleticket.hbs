@@ -1,7 +1,9 @@
 <div ng-init="
+    ticketId='{{data.ticket._id}}';
     ticketType='{{data.ticket.type._id}}';
     ticketPriority='{{data.ticket.priority._id}}';
     ticketGroup='{{data.ticket.group._id}}';
+    dueDate='{{formatDate data.ticket.dueDate data.common.shortDateFormat}}';
     subscribed={{isSubscribed data.ticket.subscribers data.common.loggedInAccount._id}};
     user='{{data.common.loggedInAccount._id}}';">
 
@@ -21,7 +23,11 @@
                                     <div class="ticket-status ticket-new"><span>New</span></div>
                                 {{/hasPermOverRole}}
                             {{else}}
-                                <div class="ticket-status ticket-new"><span>New</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-new cursor-pointer" ng-click="showStatusSelect()"><span>New</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-new"><span>New</span></div>
+                                {{/hasPermOverRole}}
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 1}}
@@ -32,7 +38,11 @@
                                     <div class="ticket-status ticket-open"><span>Open</span></div>
                                 {{/hasPermOverRole}}
                             {{else}}
-                                <div class="ticket-status ticket-open"><span>Open</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-open cursor-pointer" ng-click="showStatusSelect()"><span>Open</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-open"><span>Open</span></div>
+                                {{/hasPermOverRole}}
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 2}}
@@ -43,7 +53,11 @@
                                     <div class="ticket-status ticket-pending"><span>Pending</span></div>
                                 {{/hasPermOverRole}}
                             {{else}}
-                                <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-pending cursor-pointer" ng-click="showStatusSelect()"><span>Pending</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-pending"><span>Pending</span></div>
+                                {{/hasPermOverRole}}
                             {{/canUserOrAdmin}}
                         {{/is}}
                         {{#is data.ticket.status 3}}
@@ -54,7 +68,11 @@
                                     <div class="ticket-status ticket-closed"><span>Closed</span></div>
                                 {{/hasPermOverRole}}
                             {{else}}
-                                <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                                {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    <div title="Change Status" class="ticket-status ticket-closed cursor-pointer" ng-click="showStatusSelect()"><span>Closed</span></div>
+                                {{else}}
+                                    <div class="ticket-status ticket-closed"><span>Closed</span></div>
+                                {{/hasPermOverRole}}
                             {{/canUserOrAdmin}}
                         {{/is}}
                         <span class="drop-icon material-icons" style="left: auto; right: 22px; bottom: -18px">keyboard_arrow_down</span>
@@ -179,6 +197,27 @@
                                         {{else}}
                                             <div id="tGroup" class="input-box" data-ticketId="{{data.ticket._id}}">{{data.ticket.group.name}}</div>
                                         {{/hasPermOverRole}}
+                                </div>
+                                <div class="uk-width-1-1 p-0">
+                                    <span>Due Date</span>
+                                    {{#hasPermOverRole data.ticket.owner.role data.common.loggedInAccount.role "tickets:update"}}
+                                    - <a href="#" class="no-ajaxy" ng-click="clearDueDate($event)">Clear</a>
+                                    <input
+                                            id="tDueDate"
+                                            type="text"
+                                            readonly
+                                            class="md-input small-font p-0"
+                                            data-ticketId="{{data.ticket._id}}"
+                                            data-uk-datepicker="{format:'{{data.common.shortDateFormat}}'}"
+                                            data-validation="shortDate"
+                                            style="width: 97%"
+                                            ng-model="dueDate"
+                                            ng-change="updateTicketDueDate($event)"
+                                            {{#compare data.ticket.status '==' 3}}disabled{{/compare}}
+                                    />
+                                    {{else}}
+                                        <div id="tDueDate" class="input-box" ng-bind="dueDate"></div>
+                                    {{/hasPermOverRole}}
                                 </div>
                                 <div class="uk-width-1-1 nopadding">
                                     <span>Tags

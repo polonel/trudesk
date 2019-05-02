@@ -62,8 +62,9 @@ function saveVersion (callback) {
 function getDatabaseVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
-    // TODO: Throw error after 1.0.7 if missing ver num
-    if (!setting) return callback(null, '1.0.6')
+
+    if (!setting) throw new Error('Please upgrade to v1.0.7+ Exiting...')
+
     return callback(null, setting.value)
   })
 }
@@ -137,21 +138,100 @@ function migrateUserRoles (callback) {
   )
 }
 
+function createAdminTeamDepartment (callback) {
+  var Team = require('../models/team')
+  var Department = require('../models/department')
+  var Account = require('../models/user')
+
+  async.waterfall(
+    [
+      function (next) {
+        Account.getAdmins({}, next)
+      },
+      function (admins, next) {
+        var adminsIds = admins.map(function (admin) {
+          return admin._id
+        })
+
+        Team.create(
+          {
+            name: 'Support (Default)',
+            members: adminsIds
+          },
+          next
+        )
+      },
+      function (adminTeam, next) {
+        Department.create(
+          {
+            name: 'Support - All Groups (Default)',
+            teams: adminTeam._id,
+            allGroups: true,
+            groups: []
+          },
+          next
+        )
+      }
+    ],
+    callback
+  )
+}
+
+function removeAgentsFromGroups (callback) {
+  // winston.debug('Migrating Agents from Groups...')
+  var groupSchema = require('../models/group')
+  groupSchema.getAllGroups(function (err, groups) {
+    if (err) return callback(err)
+    async.eachSeries(
+      groups,
+      function (group, next) {
+        group.members = _.filter(group.members, function (member) {
+          return !member.role.isAdmin && !member.role.isAgent
+        })
+
+        group.save(next)
+      },
+      callback
+    )
+  })
+}
+
 migrations.run = function (callback) {
+  var databaseVersion
+
   async.series(
     [
       function (next) {
         getDatabaseVersion(function (err, dbVer) {
           if (err) return next(err)
-          if (semver.satisfies(dbVer, '1.0.6')) return migrateUserRoles(next)
+          databaseVersion = dbVer
 
+          if (semver.satisfies(databaseVersion, '<1.0.10')) {
+            throw new Error('Please upgrade to v1.0.10+ Exiting...')
+          }
           return next()
         })
+      },
+      function (next) {
+        if (semver.satisfies(semver.coerce(databaseVersion).version, '<1.0.11')) {
+          async.parallel(
+            [
+              function (done) {
+                removeAgentsFromGroups(done)
+              },
+              function (done) {
+                createAdminTeamDepartment(done)
+              }
+            ],
+            next
+          )
+        } else {
+          return next()
+        }
       }
     ],
     function (err) {
       if (err) return callback(err)
-
       //  Update DB Version Num
       return saveVersion(callback)
     }
