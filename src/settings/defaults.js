@@ -661,6 +661,8 @@ function installationID (callback) {
         },
         callback
       )
+    } else {
+      return callback()
     }
   })
 }
