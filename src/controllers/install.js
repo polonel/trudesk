@@ -185,6 +185,7 @@ installController.install = function (req, res) {
               )
             },
             function (done) {
+              if (!eHost) return done()
               SettingsSchema.create(
                 {
                   name: 'es:host',
@@ -194,6 +195,7 @@ installController.install = function (req, res) {
               )
             },
             function (done) {
+              if (!ePort) return done()
               SettingsSchema.create(
                 {
                   name: 'es:port',
