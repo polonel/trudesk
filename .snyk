@@ -66,3 +66,6 @@ patch:
   'npm:marked:20170907':
     - marked:
         patched: '2017-10-31T23:21:19.994Z'
+  SNYK-JS-AXIOS-174505:
+    - axios:
+        patched: '2019-05-07T07:40:45.658Z'
