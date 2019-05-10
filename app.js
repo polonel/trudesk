@@ -228,6 +228,10 @@ function launchServer (db) {
           })
 
           return next()
+        },
+        function (next) {
+          var taskRunner = require('./src/taskrunner')
+          return taskRunner.init(next)
         }
       ],
       function (err) {
