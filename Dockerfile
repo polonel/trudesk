@@ -5,14 +5,19 @@ WORKDIR /usr/src/trudesk
 
 COPY . /usr/src/trudesk
 
-RUN apk add --no-cache --update bash make gcc g++ python mongodb-tools
+RUN apk add --no-cache --update bash make gcc g++ python
+RUN npm install -g yarn
+RUN yarn install --production=true
+RUN npm rebuild bcrypt node-sass --build-from-source
+RUN cp -R node_modules prod_node_modules
+RUN yarn install --production=false
+RUN yarn build
+RUN rm -rf node_modules && mv prod_node_modules node_modules
 
-RUN npm install -g yarn && \
-    yarn install --production=false --prefer-offline && \
-    npm rebuild bcrypt node-sass --build-from-source && \
-    yarn run build && \
-    yarn install --production --prefer-offline && \
-    apk del make gcc g++ python
+FROM node:10.10-alpine
+WORKDIR /usr/src/trudesk
+RUN apk add --no-cache bash mongodb-tools
+COPY --from=0 /usr/src/trudesk .
 
 EXPOSE 8118
 
