@@ -1206,7 +1206,7 @@ apiTickets.typeRemovePriority = function (req, res) {
 apiTickets.deleteType = function (req, res) {
   var newTypeId = req.body.newTypeId
   var delTypeId = req.params.id
-  console.log(newTypeId)
+
   if (_.isUndefined(newTypeId) || _.isUndefined(delTypeId)) {
     return res.status(400).json({ success: false, error: 'Invalid POST data.' })
   }
