@@ -1,3 +1,16 @@
+## [1.0.12](https://github.com/polonel/trudesk/compare/v1.0.11...v1.0.12) (2019-05-10)
+
+
+### Bug Fixes
+
+* **install:** elasticsearch failing [#192](https://github.com/polonel/trudesk/issues/192) ([1a3fe15](https://github.com/polonel/trudesk/commit/1a3fe15))
+* **tests:** unauth redirect test ([d6449c7](https://github.com/polonel/trudesk/commit/d6449c7))
+
+
+### Performance Improvements
+
+* **core:** updates ([8607c6a](https://github.com/polonel/trudesk/commit/8607c6a))
+
 ## [1.0.11](https://github.com/polonel/trudesk/compare/v1.0.10...v1.0.11) (2019-05-02)
 
 

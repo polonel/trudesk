@@ -47,8 +47,9 @@ describe('sessions', function () {
 
   it('should redirect on un-auth', function (done) {
     unauthAgent.get('http://localhost:3111/tickets').end(function (err, res) {
-      expect(err).to.exist
-      expect(res.status).to.equal(401)
+      expect(err).to.not.exist
+      expect(res.status).to.equal(200)
+      expect(res.text).to.include('<title>Trudesk &middot; Login</title>')
 
       done()
     })
