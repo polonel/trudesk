@@ -58,19 +58,19 @@ middleware.redirectToLogin = function (req, res, next) {
       req.session.redirectUrl = req.url
     }
 
-    return res.redirect(401, '/')
+    return res.redirect('/')
   }
 
   if (req.user.deleted) {
     req.logout()
     req.session.l2auth = null
     req.session.destroy()
-    return res.redirect(401, '/')
+    return res.redirect('/')
   }
 
   if (req.user.hasL2Auth) {
     if (req.session.l2auth !== 'totp') {
-      return res.redirect(401, '/')
+      return res.redirect('/')
     }
   }
 

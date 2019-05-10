@@ -10,21 +10,109 @@
 */
 
 var _ = require('lodash')
+var async = require('async')
 var winston = require('winston')
-var taskSchema = require('../models/task')
+var request = require('request')
+var ticketSchema = require('../models/ticket')
+var userSchema = require('../models/user')
+var groupSchema = require('../models/group')
+var conversationSchema = require('../models/chat/conversation')
+var settingSchema = require('../models/setting')
 
-/**
- * @namespace
- */
-;(function () {
-  // Start up Task Runners
-  winston.debug('Starting Runners...')
+var taskRunner = {}
 
-  taskSchema.getTasks(function (err, items) {
-    if (err) {
-      return winston.warn('Task Runner Error: ' + err.message)
+taskRunner.init = function (callback) {
+  taskRunner.sendStats(function (err) {
+    if (!err) setInterval(taskRunner.sendStats, 86400000) // 24 hours
+  })
+
+  return callback()
+}
+
+taskRunner.sendStats = function (callback) {
+  settingSchema.getSettingsByName(['gen:installid', 'gen:version'], function (err, settings) {
+    if (err) return callback(err)
+    if (!settings || settings.length < 1) return callback()
+
+    var versionSetting = _.find(settings, function (x) {
+      return x.name === 'gen:version'
+    })
+    var installIdSetting = _.find(settings, function (x) {
+      return x.name === 'gen:installid'
+    })
+
+    if (!installIdSetting) return callback()
+
+    versionSetting = _.isUndefined(versionSetting) ? { value: '--' } : versionSetting
+
+    var result = {
+      ticketCount: 0,
+      agentCount: 0,
+      customerGroupCount: 0,
+      conversationCount: 0
     }
 
-    winston.debug('Number of Tasks: ' + _.size(items))
+    async.parallel(
+      [
+        function (done) {
+          ticketSchema.countDocuments({ deleted: false }, function (err, count) {
+            if (err) return done(err)
+
+            result.ticketCount = count
+            return done()
+          })
+        },
+        function (done) {
+          userSchema.getAgents({}, function (err, agents) {
+            if (err) return done(err)
+
+            if (!agents) return done()
+            result.agentCount = agents.length
+
+            return done()
+          })
+        },
+        function (done) {
+          groupSchema.countDocuments({}, function (err, count) {
+            if (err) return done(err)
+
+            result.customerGroupCount = count
+
+            return done()
+          })
+        },
+        function (done) {
+          conversationSchema.countDocuments({}, function (err, count) {
+            if (err) return done(err)
+
+            result.conversationCount = count
+
+            return done()
+          })
+        }
+      ],
+      function (err) {
+        if (err) return callback()
+        request(
+          'https://stats.trudesk.app/api/v1/installation',
+          {
+            method: 'POST',
+            json: true,
+            body: {
+              statsKey: 'trudesk',
+              id: installIdSetting.value,
+              version: versionSetting.value,
+              ticketCount: result.ticketCount,
+              agentCount: result.agentCount,
+              customerGroupCount: result.customerGroupCount,
+              conversationCount: result.conversationCount
+            }
+          },
+          callback
+        )
+      }
+    )
   })
-})()
+}
+
+module.exports = taskRunner
