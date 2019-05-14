@@ -1,4 +1,9 @@
-FROM node:10.10-alpine
+FROM golang:1.10.0-alpine AS gcsfuse
+RUN apk add --no-cache git
+ENV GOPATH /go
+RUN go get -u github.com/googlecloudplatform/gcsfuse
+
+FROM node:10.10-alpine AS builder
 
 RUN mkdir -p /usr/src/trudesk
 WORKDIR /usr/src/trudesk
@@ -16,8 +21,9 @@ RUN rm -rf node_modules && mv prod_node_modules node_modules
 
 FROM node:10.10-alpine
 WORKDIR /usr/src/trudesk
-RUN apk add --no-cache bash mongodb-tools
-COPY --from=0 /usr/src/trudesk .
+RUN apk add --no-cache ca-certificates bash mongodb-tools fuse && rm -rf /tmp/*
+COPY --from=builder /usr/src/trudesk .
+COPY --from=gcsfuse /go/bin/gcsfuse /usr/local/bin
 
 EXPOSE 8118
 
