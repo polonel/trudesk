@@ -8505,6 +8505,13 @@ mongoose-autopopulate@0.9.1:
   resolved "https://registry.yarnpkg.com/mongoose-autopopulate/-/mongoose-autopopulate-0.9.1.tgz#ee497b50a40e065fb54f4be81eef3004d33c17bb"
   integrity sha512-Sh0eJXwENYtZbNBzkGyxxbcwwXeSd8Zi9QLHxLsVwwRoiYPC5qCas8+3mQcyKdWoZJOVV6rBVzS2Q1M/d+3j0g==
 
+mongoose-lean-virtuals@0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/mongoose-lean-virtuals/-/mongoose-lean-virtuals-0.4.2.tgz#e476a7f0074e3cdd1fdd441348f9a88c71ed795f"
+  integrity sha512-2zsJBxhNotbRqeVy1uNcS460WylTMG8QliEvjbGC/INAvxA+irPplhyJpg586SuT2lS3sNCFxKOJj3GngCCU/g==
+  dependencies:
+    mpath "0.5.x"
+
 mongoose-legacy-pluralize@1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/mongoose-legacy-pluralize/-/mongoose-legacy-pluralize-1.0.2.tgz#3ba9f91fa507b5186d399fb40854bff18fb563e4"
@@ -8544,6 +8551,11 @@ mpath@0.5.1:
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.5.1.tgz#17131501f1ff9e6e4fbc8ffa875aa7065b5775ab"
   integrity sha512-H8OVQ+QEz82sch4wbODFOz+3YQ61FYz/z3eJ5pIdbMEaUzDqA268Wd+Vt4Paw9TJfvDgVKaayC0gBzMIw2jhsg==
+
+mpath@0.5.x:
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/mpath/-/mpath-0.5.2.tgz#b1eac586dffb5175d2f51ca9aacba35d9940dd41"
+  integrity sha512-NOeCoW6AYc3hLi30npe7uzbD9b4FQZKH40YKABUCCvaKKL5agj6YzvHoNx8jQpDMNPgIa5bvSZQbQpWBAVD0Kw==
 
 mquery@3.2.0:
   version "3.2.0"

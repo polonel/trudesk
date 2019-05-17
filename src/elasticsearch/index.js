@@ -212,6 +212,7 @@ ES.rebuildIndex = function () {
     })
 
     esFork.on('exit', function () {
+      winston.debug('Rebuilding Process Closed: ' + esFork.pid)
       global.esRebuilding = false
       global.forks = _.filter(global.forks, function (i) {
         return i.name !== 'elasticsearchRebuild'

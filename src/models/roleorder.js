@@ -27,6 +27,13 @@ roleOrder.statics.getOrder = function (callback) {
     .exec(callback)
 }
 
+roleOrder.statics.getOrderLean = function (callback) {
+  return this.model(COLLECTION)
+    .findOne({})
+    .lean()
+    .exec(callback)
+}
+
 roleOrder.methods.updateOrder = function (order, callback) {
   this.order = order
   this.save(callback)

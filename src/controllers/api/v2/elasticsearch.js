@@ -83,9 +83,9 @@ apiElasticSearch.search = function (req, res) {
         var g = _.map(groups, function (i) {
           return i._id
         })
-
+        // For docker we need to add a unique ID for the index.
         var obj = {
-          index: 'trudesk',
+          index: es.indexName,
           body: {
             size: limit,
             from: 0,

@@ -68,6 +68,7 @@
     "moment-timezone": "0.5.23",
     "mongoose": "5.4.5",
     "mongoose-autopopulate": "0.9.1",
+    "mongoose-lean-virtuals": "0.4.2",
     "nconf": "0.10.0",
     "netmask": "1.0.6",
     "node-cache": "4.2.0",

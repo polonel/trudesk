@@ -222,6 +222,8 @@ middleware.canUser = function (action) {
 middleware.isAdmin = function (req, res, next) {
   var roles = global.roles
   var role = _.find(roles, { _id: req.user.role._id })
+  role.isAdmin = role.grants.indexOf('admin:*') !== -1
+
   if (role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
@@ -229,6 +231,9 @@ middleware.isAdmin = function (req, res, next) {
 
 middleware.isAgentOrAdmin = function (req, res, next) {
   var role = _.find(global.roles, { _id: req.user.role._id })
+  role.isAdmin = role.grants.indexOf('admin:*') !== -1
+  role.isAgent = role.grants.indexOf('agent:*') !== -1
+
   if (role.isAgent || role.isAdmin) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })
@@ -236,6 +241,8 @@ middleware.isAgentOrAdmin = function (req, res, next) {
 
 middleware.isAgent = function (req, res, next) {
   var role = _.find(global.roles, { _id: req.user.role._id })
+  role.isAgent = role.grants.indexOf('agent:*') !== -1
+
   if (role.isAgent) return next()
 
   return res.status(401).json({ success: false, error: 'Not Authorized for this API call.' })

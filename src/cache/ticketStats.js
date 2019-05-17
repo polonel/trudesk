@@ -96,11 +96,8 @@ var init = function (tickets, callback) {
     .minute(59)
     .second(59)
   var e30 = today.clone().subtract(30, 'd')
-
   var e60 = today.clone().subtract(60, 'd')
-
   var e90 = today.clone().subtract(90, 'd')
-
   var e180 = today.clone().subtract(180, 'd')
   // e365 = today.clone().subtract(365, 'd');
 

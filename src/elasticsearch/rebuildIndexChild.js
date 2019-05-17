@@ -20,7 +20,7 @@ winston.add(winston.transports.Console, {
       ' ' +
       date.toTimeString().substr(0, 8) +
       ' [Child:ElasticSearch:' +
-      global.process.pid +
+      process.pid +
       ']'
     )
   },
@@ -54,6 +54,7 @@ function setupDatabase (callback) {
 }
 
 function setupClient () {
+  ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
   ES.esclient = new elasticsearch.Client({
     host: process.env.ELASTICSEARCH_URI,
     pingTimeout: 10000,
@@ -64,14 +65,14 @@ function setupClient () {
 function deleteIndex (callback) {
   ES.esclient.indices.exists(
     {
-      index: 'trudesk'
+      index: ES.indexName
     },
     function (err, exists) {
       if (err) return callback(err)
       if (exists) {
         ES.esclient.indices.delete(
           {
-            index: 'trudesk'
+            index: ES.indexName
           },
           function (err) {
             if (err) return callback(err)
@@ -87,7 +88,7 @@ function deleteIndex (callback) {
 function createIndex (callback) {
   ES.esclient.indices.create(
     {
-      index: 'trudesk',
+      index: ES.indexName,
       body: {
         settings: {
           index: {
@@ -198,12 +199,12 @@ function sendAndEmptyQueue (bulk, callback) {
     ES.esclient.bulk(
       {
         body: bulk,
-        timeout: '2m'
+        timeout: '3m'
       },
       function (err) {
         if (err) {
           process.send({ success: false })
-          throw err
+          return process.exit()
         } else {
           winston.debug('Sent ' + bulk.length + ' documents to Elasticsearch!')
           if (typeof callback === 'function') return callback()
@@ -267,9 +268,10 @@ function crawlTickets (callback) {
 
   stream
     .on('data', function (doc) {
+      stream.pause()
       count += 1
 
-      bulk.push({ index: { _index: 'trudesk', _type: 'doc', _id: doc._id } })
+      bulk.push({ index: { _index: ES.indexName, _type: 'doc', _id: doc._id } })
       var comments = []
       if (doc.comments !== undefined) {
         doc.comments.forEach(function (c) {
@@ -325,6 +327,8 @@ function crawlTickets (callback) {
       })
 
       if (count % 200 === 1) bulk = sendAndEmptyQueue(bulk)
+
+      stream.resume()
     })
     .on('err', function (err) {
       winston.error(err)
@@ -370,12 +374,14 @@ function rebuild (callback) {
   setupClient()
   rebuild(function (err) {
     if (err) {
-      return process.send({ success: false, error: err })
+      process.send({ success: false, error: err })
+      return process.exit(0)
     }
 
     //  Kill it in 10sec to offset refresh timers
     setTimeout(function () {
-      return process.send({ success: true })
+      process.send({ success: true })
+      return process.exit()
     }, 6000)
   })
 })()

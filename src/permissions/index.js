@@ -19,10 +19,10 @@ var roleOrder = require('../models/roleorder')
 
 var register = function (callback) {
   // Register Roles
-  roleSchema.getRoles(function (err, roles) {
+  roleSchema.getRolesLean(function (err, roles) {
     if (err) return callback(err)
 
-    roleOrder.getOrder(function (err, ro) {
+    roleOrder.getOrderLean(function (err, ro) {
       if (err) return callback(err)
 
       winston.debug('Registering Permissions...')

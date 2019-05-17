@@ -13,17 +13,11 @@
  */
 
 var NodeCache = require('node-cache')
-
 var async = require('async')
-
 var path = require('path')
-
 var nconf = require('nconf')
-
 var _ = require('lodash')
-
 var winston = require('winston')
-
 var moment = require('moment')
 
 var truCache = {}
@@ -237,7 +231,7 @@ truCache.refreshCache = function (callback) {
       if (err) return winston.warn(err)
       // Send to parent
       process.send({ cache: cache })
-
+      cache.flushAll()
       if (_.isFunction(callback)) {
         return callback(err)
       }

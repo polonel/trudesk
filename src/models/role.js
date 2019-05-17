@@ -13,6 +13,7 @@
  **/
 
 var mongoose = require('mongoose')
+var mongooseLeanVirtuals = require('mongoose-lean-virtuals')
 var _ = require('lodash')
 
 var COLLECTION = 'roles'
@@ -26,7 +27,7 @@ var roleSchema = mongoose.Schema(
     hierarchy: { type: Boolean, required: true, default: true }
   },
   {
-    toObject: { getters: true },
+    toObject: { getters: true, virtuals: true },
     toJSON: { virtuals: true }
   }
 )
@@ -46,6 +47,8 @@ roleSchema.virtual('isAgent').get(function () {
 
   return _.indexOf(role.grants, 'agent:*') !== -1
 })
+
+roleSchema.plugin(mongooseLeanVirtuals)
 
 roleSchema.pre('save', function (next) {
   this.name = this.name.trim()
@@ -68,6 +71,13 @@ roleSchema.methods.updateGrantsAndHierarchy = function (grants, hierarchy, callb
 roleSchema.statics.getRoles = function (callback) {
   return this.model(COLLECTION)
     .find({})
+    .exec(callback)
+}
+
+roleSchema.statics.getRolesLean = function (callback) {
+  return this.model(COLLECTION)
+    .find({})
+    .lean({ virtuals: true })
     .exec(callback)
 }
 
