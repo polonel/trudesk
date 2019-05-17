@@ -48,8 +48,11 @@ function buildGraphData (arr, days, callback) {
     obj.date = d.format('YYYY-MM-DD')
 
     obj.value = counted[obj.date] === undefined ? 0 : counted[obj.date]
+
     graphData.push(obj)
   }
+
+  counted = null
 
   return callback(graphData)
 }

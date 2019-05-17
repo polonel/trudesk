@@ -21,7 +21,7 @@ var ticketSchema = require('../models/ticket')
 var init = function (tickets, timespan, callback) {
   var tags = []
   var $tickets = []
-  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 99999
+  if (_.isUndefined(timespan) || _.isNaN(timespan) || timespan === 0) timespan = 365
 
   var today = moment()
     .hour(23)
@@ -88,6 +88,8 @@ var init = function (tickets, timespan, callback) {
             return a[1]
           }).reverse()
         )
+
+        t = null
 
         return done()
       }
