@@ -63,7 +63,7 @@ function getDatabaseVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
 
-    if (!setting) throw new Error('Please upgrade to v1.0.7+ Exiting...')
+    if (!setting) throw new Error('Please upgrade to v1.0.7 Exiting...')
 
     return callback(null, setting.value)
   })
@@ -207,7 +207,7 @@ migrations.run = function (callback) {
           databaseVersion = dbVer
 
           if (semver.satisfies(databaseVersion, '<1.0.10')) {
-            throw new Error('Please upgrade to v1.0.10+ Exiting...')
+            throw new Error('Please upgrade to v1.0.10 Exiting...')
           }
           return next()
         })

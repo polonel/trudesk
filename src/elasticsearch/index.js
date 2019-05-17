@@ -23,6 +23,7 @@ var moment = require('moment-timezone')
 var settingUtil = require('../settings/settingsUtil')
 
 var ES = {}
+ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
 
 function checkConnection (callback) {
   if (!ES.esclient) return callback('Elasticsearch client not initialized. Restart Trudesk!')
@@ -40,7 +41,7 @@ function checkConnection (callback) {
 }
 
 ES.testConnection = function (callback) {
-  if (process.env.ELATICSEARCH_URI) ES.host = process.env.ELATICSEARCH_URI
+  if (process.env.ELEASTICSEARCH_URI) ES.host = process.env.ELEASTICSEARCH_URI
   else ES.host = nconf.get('elasticsearch:host') + ':' + nconf.get('elasticsearch:port')
 
   ES.esclient = new elasticsearch.Client({
@@ -57,7 +58,7 @@ ES.setupHooks = function () {
 
     ES.esclient.index(
       {
-        index: 'trudesk',
+        index: ES.indexName,
         type: 'ticket',
         id: data._id.toString(),
         refresh: 'true',
@@ -103,7 +104,7 @@ ES.setupHooks = function () {
 
       ES.esclient.index(
         {
-          index: 'trudesk',
+          index: ES.indexName,
           type: 'doc',
           id: ticket._id.toString(),
           refresh: 'true',
@@ -154,7 +155,7 @@ ES.setupHooks = function () {
 
       ES.esclient.index(
         {
-          index: 'trudesk',
+          index: ES.indexName,
           type: 'doc',
           id: _id,
           body: cleanedTicket
@@ -226,7 +227,7 @@ ES.getIndexCount = function (callback) {
 
   ES.esclient.count(
     {
-      index: 'trudesk'
+      index: ES.indexName
     },
     callback
   )
