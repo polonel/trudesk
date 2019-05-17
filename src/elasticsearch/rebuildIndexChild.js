@@ -28,6 +28,7 @@ winston.add(winston.transports.Console, {
 })
 
 var ES = {}
+ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
 
 function setupTimezone (callback) {
   var settingsSchema = require('../models/setting')
@@ -54,7 +55,6 @@ function setupDatabase (callback) {
 }
 
 function setupClient () {
-  ES.indexName = process.env.ELASTICSEARCH_INDEX_NAME || 'trudesk'
   ES.esclient = new elasticsearch.Client({
     host: process.env.ELASTICSEARCH_URI,
     pingTimeout: 10000,
@@ -229,7 +229,7 @@ function crawlUsers (callback) {
   stream
     .on('data', function (doc) {
       count += 1
-      bulk.push({ index: { _index: 'trudesk', _type: 'doc', _id: doc._id } })
+      bulk.push({ index: { _index: ES.indexName, _type: 'doc', _id: doc._id } })
       bulk.push({
         datatype: 'user',
         username: doc.username,

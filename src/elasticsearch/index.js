@@ -201,7 +201,13 @@ ES.rebuildIndex = function () {
 
     var fork = require('child_process').fork
     var esFork = fork(path.join(__dirname, 'rebuildIndexChild.js'), {
-      env: { FORK: 1, NODE_ENV: global.env, ELASTICSEARCH_URI: ELASTICSEARCH_URI, MONGODB_URI: global.CONNECTION_URI }
+      env: {
+        FORK: 1,
+        NODE_ENV: global.env,
+        ELASTICSEARCH_INDEX_NAME: ES.indexName,
+        ELASTICSEARCH_URI: ELASTICSEARCH_URI,
+        MONGODB_URI: global.CONNECTION_URI
+      }
     })
 
     global.esRebuilding = true
