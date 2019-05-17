@@ -39,7 +39,7 @@ winston.add(winston.transports.Console, {
       ' ' +
       date.toTimeString().substr(0, 8) +
       ' [Child:Backup:' +
-      global.process.pid +
+      process.pid +
       ']'
     )
   },

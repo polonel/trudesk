@@ -23,9 +23,10 @@ var SettingsSchema = require('../models/setting')
 var PrioritySchema = require('../models/ticketpriority')
 
 var settingsDefaults = {}
+var roleDefaults = {}
 
-settingsDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
-settingsDefaults.supportGrants = [
+roleDefaults.userGrants = ['tickets:create view update', 'comments:create view update']
+roleDefaults.supportGrants = [
   'tickets:*',
   'agent:*',
   'accounts:create update view import',
@@ -34,7 +35,7 @@ settingsDefaults.supportGrants = [
   'reports:view create',
   'notices:*'
 ]
-settingsDefaults.adminGrants = [
+roleDefaults.adminGrants = [
   'admin:*',
   'agent:*',
   'chat:*',
@@ -64,7 +65,7 @@ function rolesDefault (callback) {
             {
               name: 'User',
               description: 'Default role for users',
-              grants: settingsDefaults.userGrants
+              grants: roleDefaults.userGrants
             },
             function (err, userRole) {
               if (err) return done(err)
@@ -95,7 +96,7 @@ function rolesDefault (callback) {
               {
                 name: 'Support',
                 description: 'Default role for agents',
-                grants: settingsDefaults.supportGrants
+                grants: roleDefaults.supportGrants
               },
               done
             )
@@ -111,7 +112,7 @@ function rolesDefault (callback) {
               {
                 name: 'Admin',
                 description: 'Default role for admins',
-                grants: settingsDefaults.adminGrants
+                grants: roleDefaults.adminGrants
               },
               done
             )
@@ -144,6 +145,9 @@ function rolesDefault (callback) {
     ],
     function (err) {
       if (err) throw err
+
+      roleDefaults = null
+
       return callback()
     }
   )
@@ -151,7 +155,7 @@ function rolesDefault (callback) {
 
 function defaultUserRole (callback) {
   var roleOrderSchema = require('../models/roleorder')
-  roleOrderSchema.getOrder(function (err, roleOrder) {
+  roleOrderSchema.getOrderLean(function (err, roleOrder) {
     if (err) return callback(err)
     if (!roleOrder) return callback()
 
@@ -687,9 +691,6 @@ settingsDefaults.init = function (callback) {
         return timezoneDefault(done)
       },
       function (done) {
-        return showTourSettingDefault(done)
-      },
-      function (done) {
         return ticketTypeSettingDefault(done)
       },
       function (done) {
@@ -708,14 +709,14 @@ settingsDefaults.init = function (callback) {
         return mailTemplates(done)
       },
       function (done) {
-        elasticSearchConfToDB(done)
+        return elasticSearchConfToDB(done)
       },
       function (done) {
-        installationID(done)
+        return installationID(done)
       }
     ],
     function (err) {
-      if (err) winston.debug(err)
+      if (err) winston.warn(err)
       if (_.isFunction(callback)) return callback()
     }
   )

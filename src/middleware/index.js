@@ -34,7 +34,7 @@ module.exports = function (app, db, callback) {
   app.disable('x-powered-by')
 
   app.set('views', path.join(__dirname, '../views/'))
-  global.HandleBars = HandleBars
+
   app.engine(
     'hbs',
     hbs.express4({

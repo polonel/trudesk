@@ -193,12 +193,7 @@ function launchServer (db) {
         //   return next()
         // },
         function (next) {
-          var NodeCache = require('./src/cache/node-cache')
-          global.cache = new NodeCache({ checkperiod: 0 })
-          var fork = require('child_process').fork
-          var memLimit = nconf.get('memlimit') || '2048'
-
-          var env = { FORK: 1, NODE_ENV: global.env }
+          var cache = require('./src/cache/cache')
           if (isDocker) {
             var envDocker = {
               TRUDESK_DOCKER: process.env.TRUDESK_DOCKER,
@@ -209,21 +204,10 @@ function launchServer (db) {
               TD_MONGODB_DATABASE: process.env.TD_MONGODB_DATABASE
             }
 
-            env = _.merge(env, envDocker)
+            cache.env = envDocker
           }
 
-          var n = fork(path.join(__dirname, '/src/cache/index.js'), {
-            execArgv: ['--max-old-space-size=' + memLimit],
-            env: env
-          })
-
-          global.forks.push({ name: 'cache', fork: n })
-
-          n.on('message', function (data) {
-            if (data.cache) {
-              global.cache.data = data.cache.data
-            }
-          })
+          cache.init()
 
           return next()
         },
