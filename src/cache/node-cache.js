@@ -21,13 +21,9 @@
   }
 
   var hasProp = {}.hasOwnProperty
-
   var slice = [].slice
-
   _ = require('lodash')
-
   clone = require('clone')
-
   EventEmitter = require('events').EventEmitter
 
   module.exports = (function (superClass) {

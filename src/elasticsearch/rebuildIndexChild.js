@@ -343,7 +343,6 @@ function crawlTickets (callback) {
 }
 
 function rebuild (callback) {
-  setupClient()
   async.series(
     [
       function (next) {
@@ -363,7 +362,7 @@ function rebuild (callback) {
       }
     ],
     function (err) {
-      if (err) winston.debug(err)
+      if (err) winston.error(err)
 
       return callback(err)
     }

@@ -222,6 +222,7 @@ truCache.refreshCache = function (callback) {
             }
           ],
           function (err) {
+            tickets = null
             return cb(err)
           }
         )

@@ -193,6 +193,8 @@ function launchServer (db) {
         //   return next()
         // },
         function (next) {
+          var NodeCache = require('./src/cache/node-cache')
+          global.cache = new NodeCache({ checkperiod: 0 })
           var fork = require('child_process').fork
           var memLimit = nconf.get('memlimit') || '2048'
 
@@ -219,11 +221,7 @@ function launchServer (db) {
 
           n.on('message', function (data) {
             if (data.cache) {
-              var NodeCache = require('./src/cache/node-cache')
-              global.cache = new NodeCache({
-                data: data.cache.data,
-                checkperiod: 0
-              })
+              global.cache.data = data.cache.data
             }
           })
 
