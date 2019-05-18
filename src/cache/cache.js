@@ -20,7 +20,7 @@ var cache = {}
 cache.init = function () {
   global.cache = new NodeCache({ checkperiod: 0 })
   cache.memLimit = process.env.CACHE_MEMLIMIT || '2048'
-  var env = { FORK: 1, NODE_ENV: global.env }
+  var env = { FORK: 1, NODE_ENV: global.env, TIMEZONE: global.timezone }
   cache.env = _.merge(cache.env, env)
 
   spawnCache()
@@ -29,7 +29,7 @@ cache.init = function () {
 
 function spawnCache () {
   var fork = require('child_process').fork
-  console.log(cache.env)
+
   var n = fork(path.join(__dirname, './index.js'), {
     execArgv: ['--max-old-space-size=' + cache.memLimit],
     env: cache.env

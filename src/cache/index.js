@@ -18,7 +18,7 @@ var path = require('path')
 var nconf = require('nconf')
 var _ = require('lodash')
 var winston = require('winston')
-var moment = require('moment')
+var moment = require('moment-timezone')
 
 var truCache = {}
 var cache
@@ -57,7 +57,7 @@ function loadConfig () {
 }
 
 var refreshTimer
-var lastUpdated = moment()
+var lastUpdated = moment.utc().tz(process.env.TIMEZONE || 'America/New_York')
 
 truCache.init = function (callback) {
   cache = new NodeCache({

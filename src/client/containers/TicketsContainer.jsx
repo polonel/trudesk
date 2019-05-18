@@ -61,7 +61,7 @@ class TicketsContainer extends React.Component {
     socket.socket.on('$trudesk:client:ticket:updated', this.onTicketUpdated)
     socket.socket.on('$trudesk:client:ticket:deleted', this.onTicketDeleted)
 
-    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view })
+    this.props.fetchTickets({ limit: 50, page: this.props.page, type: this.props.view, filter: this.props.filter })
   }
 
   componentDidUpdate () {
@@ -223,6 +223,7 @@ class TicketsContainer extends React.Component {
                   currentPage={this.props.page}
                   prevPage={this.props.prevPage}
                   nextPage={this.props.nextPage}
+                  filter={this.props.filter}
                 />
                 <PageTitleButton
                   fontAwesomeIcon={'fa-refresh'}
@@ -231,6 +232,13 @@ class TicketsContainer extends React.Component {
                     this.props
                       .unloadTickets()
                       .then(this.props.fetchTickets({ type: this.props.view, page: this.props.page }))
+                  }}
+                />
+                <PageTitleButton
+                  fontAwesomeIcon={'fa-filter'}
+                  onButtonClick={e => {
+                    e.preventDefault()
+                    this.props.showModal('FILTER_TICKET')
                   }}
                 />
                 <DropdownTrigger pos={'bottom-right'} offset={5} extraClass={'uk-float-left'}>

@@ -263,6 +263,7 @@ ticketsController.filter = function (req, res, next) {
   processor.nav = 'tickets'
   processor.renderpage = 'tickets'
   processor.pagetype = 'filter'
+  processor.filter = filter
   processor.object = {
     limit: 50,
     page: page,
@@ -299,6 +300,7 @@ ticketsController.processor = function (req, res) {
 
   var object = processor.object
   content.data.page = object.page
+  content.data.filter = object.filter
 
   return res.render(processor.renderpage, content)
 }

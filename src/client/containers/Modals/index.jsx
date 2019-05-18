@@ -20,6 +20,7 @@ import { connect } from 'react-redux'
 import NoticeAlertModal from './NoticeAlertModal'
 import CreateTicketTypeModal from './CreateTicketTypeModal'
 import DeleteTicketTypeModal from './DeleteTicketTypeModal'
+import FilterTicketModal from './FilterTicketsModal'
 import AddPriorityToTypeModal from './AddPriorityToTypeModal'
 import CreatePriorityModal from './CreatePriorityModal'
 import DeletePriorityModal from './DeletePriorityModal'
@@ -42,6 +43,7 @@ const MODAL_COMPONENTS = {
   CREATE_TICKET: CreateTicketModal,
   CREATE_TICKET_TYPE: CreateTicketTypeModal,
   DELETE_TICKET_TYPE: DeleteTicketTypeModal,
+  FILTER_TICKET: FilterTicketModal,
   ADD_PRIORITY_TO_TYPE: AddPriorityToTypeModal,
   CREATE_PRIORITY: CreatePriorityModal,
   DELETE_PRIORITY: DeletePriorityModal,

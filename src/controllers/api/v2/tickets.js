@@ -97,6 +97,15 @@ ticketsV2.get = function (req, res) {
             break
           case 'closed':
             queryObject.status = [3]
+            break
+          case 'filter':
+            try {
+              queryObject.filter = JSON.parse(query.filter)
+              queryObject.status = queryObject.filter.status
+            } catch (error) {
+              winston.warn(error)
+            }
+            break
         }
 
         Ticket.getTicketsWithObject(mappedGroups, queryObject, function (err, tickets) {
