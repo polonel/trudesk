@@ -64,6 +64,10 @@ class EditGroupModal extends React.Component {
     this.props.updateGroup(payload)
   }
 
+  onInputChange (e) {
+    this.name = e.target.value
+  }
+
   render () {
     const mappedAccounts = this.props.accounts
       .map(account => {
