@@ -1,0 +1,21 @@
+version: '3'
+services:
+  trudesk:
+    image: polonel/trudesk:1
+    restart: always
+    ports:
+      - "8118:8118"
+    environment:
+      NODE_ENV: production
+      TRUDESK_DOCKER: "true"
+      TD_MONGODB_SERVER: mongo
+      TD_MONGODB_DATABASE: trudesk
+  mongo:
+    image: mongo:3.6
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo:/var/lib/mongo
+volumes:
+  mongo:
