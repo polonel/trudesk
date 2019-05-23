@@ -15,9 +15,6 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import { each } from 'lodash'
 import { connect } from 'react-redux'
-import { observable } from 'mobx'
-import { observer } from 'mobx-react'
-
 import { hideModal } from 'actions/common'
 
 import BaseModal from 'containers/Modals/BaseModal'
@@ -26,7 +23,6 @@ import Button from 'components/Button'
 
 import helpers from 'lib/helpers'
 
-@observer
 class FilterTicketsModal extends React.Component {
   constructor (props) {
     super(props)

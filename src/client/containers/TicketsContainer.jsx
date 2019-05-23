@@ -416,7 +416,8 @@ TicketsContainer.propTypes = {
   ticketUpdated: PropTypes.func.isRequired,
   showModal: PropTypes.func.isRequired,
   fetchSearchResults: PropTypes.func.isRequired,
-  common: PropTypes.object.isRequired
+  common: PropTypes.object.isRequired,
+  filter: PropTypes.object.isRequired
 }
 
 TicketsContainer.defaultProps = {
