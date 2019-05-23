@@ -1,3 +1,18 @@
+## [1.0.13](https://github.com/polonel/trudesk/compare/v1.0.12...v1.0.13) (2019-05-23)
+
+
+### Bug Fixes
+
+* **groups:** unable to edit name [#204](https://github.com/polonel/trudesk/issues/204) ([9247d9e](https://github.com/polonel/trudesk/commit/9247d9e))
+
+
+### Performance Improvements
+
+* **cache:** improvements ([16bd9f8](https://github.com/polonel/trudesk/commit/16bd9f8))
+* **cache:** improvements ([9ff2c14](https://github.com/polonel/trudesk/commit/9ff2c14))
+* **core:** fix memory leak on rebuild es index ([de17ba9](https://github.com/polonel/trudesk/commit/de17ba9))
+* **core:** memory fixes ([e320e83](https://github.com/polonel/trudesk/commit/e320e83))
+
 ## [1.0.12](https://github.com/polonel/trudesk/compare/v1.0.11...v1.0.12) (2019-05-10)
 
 
