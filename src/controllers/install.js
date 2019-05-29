@@ -258,7 +258,7 @@ installController.install = function (req, res) {
                 {
                   name: 'Admin',
                   description: 'Default role for admins',
-                  grants: defaults.adminGrants
+                  grants: defaults.roleDefaults.adminGrants
                 },
                 function (err, role) {
                   if (err) return done(err)
@@ -272,7 +272,7 @@ installController.install = function (req, res) {
                 {
                   name: 'Support',
                   description: 'Default role for agents',
-                  grants: defaults.supportGrants
+                  grants: defaults.roleDefaults.supportGrants
                 },
                 function (err, role) {
                   if (err) return done(err)
@@ -286,7 +286,7 @@ installController.install = function (req, res) {
                 {
                   name: 'User',
                   description: 'Default role for users',
-                  grants: defaults.userGrants
+                  grants: defaults.roleDefaults.userGrants
                 },
                 function (err, role) {
                   if (err) return done(err)

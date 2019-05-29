@@ -51,6 +51,8 @@ roleDefaults.adminGrants = [
   'api:*'
 ]
 
+settingsDefaults.roleDefaults = roleDefaults
+
 function rolesDefault (callback) {
   var roleSchema = require('../models/role')
 

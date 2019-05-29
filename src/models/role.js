@@ -23,7 +23,7 @@ var roleSchema = mongoose.Schema(
     name: { type: String, required: true, unique: true },
     normalized: String,
     description: String,
-    grants: [{ type: String, required: true, default: '' }],
+    grants: [{ type: String, required: true }],
     hierarchy: { type: Boolean, required: true, default: true }
   },
   {
