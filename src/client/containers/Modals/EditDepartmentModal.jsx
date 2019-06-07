@@ -78,6 +78,8 @@ class EditDepartmentModal extends React.Component {
 
   render () {
     const { department } = this.props
+    const departmentTeams = department.get('teams')
+    const departmentGroups = department.get('groups')
     const mappedTeams = this.props.teams
       .map(team => {
         return { text: team.get('name'), value: team.get('_id') }
@@ -112,10 +114,7 @@ class EditDepartmentModal extends React.Component {
             <label style={{ marginBottom: 5 }}>Teams</label>
             <MultiSelect
               items={mappedTeams}
-              initialSelected={department
-                .get('teams')
-                .map(d => d.get('_id'))
-                .toArray()}
+              initialSelected={departmentTeams ? departmentTeams.map(d => d.get('_id')).toArray() : []}
               onChange={() => {}}
               ref={r => (this.teamsSelect = r)}
             />
@@ -146,10 +145,7 @@ class EditDepartmentModal extends React.Component {
             <MultiSelect
               items={mappedGroups}
               onChange={() => {}}
-              initialSelected={this.props.department
-                .get('groups')
-                .map(d => d.get('_id'))
-                .toArray()}
+              initialSelected={departmentGroups ? departmentGroups.map(d => d.get('_id')).toArray() : []}
               ref={r => (this.groupSelect = r)}
               disabled={this.allGroups}
             />
