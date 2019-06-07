@@ -17,6 +17,7 @@ import { each } from 'lodash'
 import { connect } from 'react-redux'
 import { hideModal } from 'actions/common'
 import { fetchGroups } from 'actions/groups'
+import { fetchAccounts } from 'actions/accounts'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
@@ -32,6 +33,7 @@ class FilterTicketsModal extends React.Component {
   componentDidMount () {
     helpers.UI.inputs()
     this.props.fetchGroups()
+    this.props.fetchAccounts({ page: 0, limit: -1, type: 'agents', showDeleted: false })
   }
 
   componentDidUpdate () {
@@ -47,6 +49,7 @@ class FilterTicketsModal extends React.Component {
     const tags = this.tagsSelect.value
     const types = this.typesSelect.value
     const groups = this.groupSelect.value
+    const assignees = this.assigneeSelect.value
 
     let queryString = '?f=1'
     if (startDate) queryString += `&ds=${startDate}`
@@ -70,6 +73,10 @@ class FilterTicketsModal extends React.Component {
       queryString += `&gp=${i}`
     })
 
+    each(assignees, i => {
+      queryString += `&au=${i}`
+    })
+
     History.pushState(null, null, `/tickets/filter/${queryString}&r=${Math.floor(Math.random() * (99999 - 1 + 1)) + 1}`)
     this.props.hideModal()
   }
@@ -90,9 +97,17 @@ class FilterTicketsModal extends React.Component {
       return { text: t.name, value: t._id }
     })
 
-    const groups = this.props.groupsState.groups.toJS().map(g => {
-      return { text: g.name, value: g._id }
-    })
+    const groups = this.props.groupsState.groups
+      .map(g => {
+        return { text: g.get('name'), value: g.get('_id') }
+      })
+      .toArray()
+
+    const assignees = this.props.accountsState.accounts
+      .map(a => {
+        return { text: a.get('fullname'), value: a.get('_id') }
+      })
+      .toArray()
 
     return (
       <BaseModal options={{ bgclose: false }}>
@@ -155,6 +170,19 @@ class FilterTicketsModal extends React.Component {
           <div className='uk-grid uk-grid-collapse uk-margin-small-bottom'>
             <div className='uk-width-1-1'>
               <label htmlFor='filterStatus' className='uk-form-label' style={{ paddingBottom: 0, marginBottom: 0 }}>
+                Assignee
+              </label>
+              <SingleSelect
+                items={assignees}
+                showTextbox={false}
+                multiple={true}
+                ref={r => (this.assigneeSelect = r)}
+              />
+            </div>
+          </div>
+          <div className='uk-grid uk-grid-collapse uk-margin-small-bottom'>
+            <div className='uk-width-1-1'>
+              <label htmlFor='filterStatus' className='uk-form-label' style={{ paddingBottom: 0, marginBottom: 0 }}>
                 Groups
               </label>
               <SingleSelect items={groups} showTextbox={false} multiple={true} ref={r => (this.groupSelect = r)} />
@@ -173,16 +201,19 @@ class FilterTicketsModal extends React.Component {
 FilterTicketsModal.propTypes = {
   common: PropTypes.object.isRequired,
   groupsState: PropTypes.object.isRequired,
+  accountsState: PropTypes.object.isRequired,
   hideModal: PropTypes.func.isRequired,
-  fetchGroups: PropTypes.func.isRequired
+  fetchGroups: PropTypes.func.isRequired,
+  fetchAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   common: state.common,
-  groupsState: state.groupsState
+  groupsState: state.groupsState,
+  accountsState: state.accountsState
 })
 
 export default connect(
   mapStateToProps,
-  { hideModal, fetchGroups }
+  { hideModal, fetchGroups, fetchAccounts }
 )(FilterTicketsModal)
