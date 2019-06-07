@@ -28,7 +28,7 @@ export default function (store) {
     const view = document.getElementById('tickets-container').getAttribute('data-view')
     const page = document.getElementById('tickets-container').getAttribute('data-page')
     let filter = document.getElementById('tickets-container').getAttribute('data-filter')
-    if (filter) filter = JSON.parse(filter)
+    filter = filter ? JSON.parse(filter) : {}
 
     const TicketsContainerWithProvider = (
       <Provider store={store}>

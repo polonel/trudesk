@@ -16,6 +16,7 @@ import PropTypes from 'prop-types'
 import { each } from 'lodash'
 import { connect } from 'react-redux'
 import { hideModal } from 'actions/common'
+import { fetchGroups } from 'actions/groups'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
@@ -30,6 +31,7 @@ class FilterTicketsModal extends React.Component {
 
   componentDidMount () {
     helpers.UI.inputs()
+    this.props.fetchGroups()
   }
 
   componentDidUpdate () {
@@ -44,6 +46,7 @@ class FilterTicketsModal extends React.Component {
     const statuses = this.statusSelect.value
     const tags = this.tagsSelect.value
     const types = this.typesSelect.value
+    const groups = this.groupSelect.value
 
     let queryString = '?f=1'
     if (startDate) queryString += `&ds=${startDate}`
@@ -61,6 +64,10 @@ class FilterTicketsModal extends React.Component {
 
     each(tags, i => {
       queryString += `&tag=${i}`
+    })
+
+    each(groups, i => {
+      queryString += `&gp=${i}`
     })
 
     History.pushState(null, null, `/tickets/filter/${queryString}&r=${Math.floor(Math.random() * (99999 - 1 + 1)) + 1}`)
@@ -81,6 +88,10 @@ class FilterTicketsModal extends React.Component {
 
     const types = this.props.common.ticketTypes.map(t => {
       return { text: t.name, value: t._id }
+    })
+
+    const groups = this.props.groupsState.groups.toJS().map(g => {
+      return { text: g.name, value: g._id }
     })
 
     return (
@@ -141,6 +152,14 @@ class FilterTicketsModal extends React.Component {
               <SingleSelect items={types} showTextbox={false} multiple={true} ref={r => (this.typesSelect = r)} />
             </div>
           </div>
+          <div className='uk-grid uk-grid-collapse uk-margin-small-bottom'>
+            <div className='uk-width-1-1'>
+              <label htmlFor='filterStatus' className='uk-form-label' style={{ paddingBottom: 0, marginBottom: 0 }}>
+                Groups
+              </label>
+              <SingleSelect items={groups} showTextbox={false} multiple={true} ref={r => (this.groupSelect = r)} />
+            </div>
+          </div>
           <div className='uk-modal-footer uk-text-right'>
             <Button text={'Cancel'} flat={true} waves={true} extraClass={'uk-modal-close'} />
             <Button text={'Apply Filter'} style={'primary'} flat={false} type={'submit'} />
@@ -153,14 +172,17 @@ class FilterTicketsModal extends React.Component {
 
 FilterTicketsModal.propTypes = {
   common: PropTypes.object.isRequired,
-  hideModal: PropTypes.func.isRequired
+  groupsState: PropTypes.object.isRequired,
+  hideModal: PropTypes.func.isRequired,
+  fetchGroups: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
-  common: state.common
+  common: state.common,
+  groupsState: state.groupsState
 })
 
 export default connect(
   mapStateToProps,
-  { hideModal }
+  { hideModal, fetchGroups }
 )(FilterTicketsModal)
