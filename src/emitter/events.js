@@ -155,7 +155,7 @@ var notifications = require('../notifications') // Load Push Events
                         email
                           .render('new-ticket', context)
                           .then(function (html) {
-                            var subjectParsed = global.HandleBars.compile(template.subject)(context)
+                            var subjectParsed = global.Handlebars.compile(template.subject)(context)
                             var mailOptions = {
                               to: emails.join(),
                               subject: subjectParsed,
