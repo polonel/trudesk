@@ -16,8 +16,8 @@ import PropTypes from 'prop-types'
 import { each } from 'lodash'
 import { connect } from 'react-redux'
 import { hideModal } from 'actions/common'
-import { fetchGroups } from 'actions/groups'
-import { fetchAccounts } from 'actions/accounts'
+import { fetchGroups, unloadGroups } from 'actions/groups'
+import { fetchAccounts, unloadAccounts } from 'actions/accounts'
 
 import BaseModal from 'containers/Modals/BaseModal'
 import SingleSelect from 'components/SingleSelect'
@@ -38,6 +38,11 @@ class FilterTicketsModal extends React.Component {
 
   componentDidUpdate () {
     helpers.UI.reRenderInputs()
+  }
+
+  componentWillUnmount () {
+    this.props.unloadGroups()
+    this.props.unloadAccounts()
   }
 
   onSubmit (e) {
@@ -204,7 +209,9 @@ FilterTicketsModal.propTypes = {
   accountsState: PropTypes.object.isRequired,
   hideModal: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
-  fetchAccounts: PropTypes.func.isRequired
+  unloadGroups: PropTypes.func.isRequired,
+  fetchAccounts: PropTypes.func.isRequired,
+  unloadAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
@@ -215,5 +222,5 @@ const mapStateToProps = state => ({
 
 export default connect(
   mapStateToProps,
-  { hideModal, fetchGroups, fetchAccounts }
+  { hideModal, fetchGroups, unloadGroups, fetchAccounts, unloadAccounts }
 )(FilterTicketsModal)
