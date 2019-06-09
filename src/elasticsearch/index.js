@@ -53,22 +53,23 @@ ES.testConnection = function (callback) {
 
 ES.setupHooks = function () {
   var ticketSchema = require('../models/ticket')
-  emitter.on('ticket:deleted', function (data) {
-    if (_.isUndefined(data._id)) return false
 
-    ES.esclient.index(
+  emitter.on('ticket:deleted', function (_id) {
+    if (_.isUndefined(_id)) return false
+
+    ES.esclient.delete(
       {
         index: ES.indexName,
-        type: 'ticket',
-        id: data._id.toString(),
-        refresh: 'true',
-        body: { deleted: true }
+        type: 'doc',
+        id: _id.toString(),
+        refresh: 'true'
       },
       function (err) {
         if (err) winston.warn('Elasticsearch Error: ' + err)
       }
     )
   })
+
   emitter.on('ticket:updated', function (data) {
     if (_.isUndefined(data._id)) return
 
