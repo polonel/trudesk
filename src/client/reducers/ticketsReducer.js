@@ -38,6 +38,9 @@ function hasInView (view, status, assignee, userId, userGroupIds, groupId) {
   let hasView = false
   let hasGroup = false
   switch (view) {
+    case 'filter':
+      hasView = true
+      break
     case 'all':
       hasView = [0, 1, 2, 3].indexOf(status) !== -1
       break

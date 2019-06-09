@@ -133,29 +133,33 @@ class TicketsContainer extends React.Component {
         statusText = 'Closed'
     }
 
-    each(this.selectedTickets, id => {
-      axios
-        .put(`/api/v1/tickets/${id}`, { status })
-        .then(res => {
-          if (res.data.success) {
-            helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` })
-            this._clearChecked()
-          } else {
-            helpers.UI.showSnackbar('An unknown error occurred.', true)
-            Log.error(res.data.error)
-          }
-        })
-        .catch(error => {
-          Log.error(error)
-          helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
-        })
+    const batch = this.selectedTickets.map(id => {
+      return { id, status }
     })
+
+    axios
+      .put(`/api/v2/tickets/batch`, { batch })
+      .then(res => {
+        if (res.data.success) {
+          helpers.UI.showSnackbar({ text: `Ticket status set to ${statusText}` })
+          this._clearChecked()
+        } else {
+          helpers.UI.showSnackbar('An unknown error occurred.', true)
+          Log.error(res.data.error)
+        }
+      })
+      .catch(error => {
+        Log.error(error)
+        helpers.UI.showSnackbar('An Error occurred. Please check console.', true)
+      })
   }
 
   onDeleteClicked () {
     each(this.selectedTickets, id => {
       this.props.deleteTicket({ id })
     })
+
+    this._clearChecked()
   }
 
   onSearchTermChanged (e) {
@@ -183,12 +187,30 @@ class TicketsContainer extends React.Component {
     // }
   }
 
+  _selectAll () {
+    this.selectedTickets = []
+    const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]')
+    checkboxes.forEach(item => {
+      this.selectedTickets.push(item.dataset.ticket)
+      item.checked = true
+    })
+
+    this.selectedTickets = uniq(this.selectedTickets)
+  }
+
   _clearChecked () {
     this.selectedTickets = []
     const checkboxes = this.ticketsTable.querySelectorAll('td > input[type="checkbox"]')
     checkboxes.forEach(item => {
       item.checked = false
     })
+
+    this.selectAllCheckbox.checked = false
+  }
+
+  onSelectAll (e) {
+    if (e.target.checked) this._selectAll()
+    else this._clearChecked()
   }
 
   render () {
@@ -205,6 +227,25 @@ class TicketsContainer extends React.Component {
 
       loadingItems.push(<TableRow key={Math.random()}>{cells}</TableRow>)
     }
+
+    const selectAllCheckbox = (
+      <div style={{ marginLeft: 17 }}>
+        <input
+          type='checkbox'
+          id={'select_all'}
+          style={{ display: 'none' }}
+          className='svgcheckinput'
+          onChange={e => this.onSelectAll(e)}
+          ref={r => (this.selectAllCheckbox = r)}
+        />
+        <label htmlFor={'select_all'} className='svgcheck'>
+          <svg width='16px' height='16px' viewBox='0 0 18 18'>
+            <path d='M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z' />
+            <polyline points='1 9 7 14 15 4' />
+          </svg>
+        </label>
+      </div>
+    )
 
     return (
       <div>
@@ -286,7 +327,7 @@ class TicketsContainer extends React.Component {
             stickyHeader={true}
             striped={true}
             headers={[
-              <TableHeader key={0} width={45} height={50} />,
+              <TableHeader key={0} width={45} height={50} component={selectAllCheckbox} />,
               <TableHeader key={1} width={60} text={'Status'} />,
               <TableHeader key={2} width={65} text={'#'} />,
               <TableHeader key={3} width={'23%'} text={'Subject'} />,
@@ -365,6 +406,7 @@ class TicketsContainer extends React.Component {
                       <input
                         type='checkbox'
                         id={`c_${ticket.get('_id')}`}
+                        data-ticket={ticket.get('_id')}
                         style={{ display: 'none' }}
                         onChange={e => this.onTicketCheckChanged(e, ticket.get('_id'))}
                         className='svgcheckinput'

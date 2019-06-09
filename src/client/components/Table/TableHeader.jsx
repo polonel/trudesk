@@ -17,7 +17,7 @@ import PropTypes from 'prop-types'
 
 class TableHeader extends React.Component {
   render () {
-    const { width, height, padding, textAlign, text } = this.props
+    const { width, height, padding, textAlign, text, component } = this.props
 
     return (
       <th
@@ -31,6 +31,7 @@ class TableHeader extends React.Component {
           textAlign: textAlign
         }}
       >
+        {component}
         {text}
       </th>
     )
@@ -42,7 +43,8 @@ TableHeader.propTypes = {
   height: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   padding: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
   textAlign: PropTypes.string,
-  text: PropTypes.string
+  text: PropTypes.string,
+  component: PropTypes.oneOfType([PropTypes.element, PropTypes.func])
 }
 
 TableHeader.defaultProps = {

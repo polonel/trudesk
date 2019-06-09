@@ -34,6 +34,7 @@ module.exports = function (middleware, router, controllers) {
   router.get('/api/v2/tickets', apiv2Auth, apiv2.tickets.get)
   router.post('/api/v2/tickets', apiv2Auth, apiv2.tickets.create)
   router.get('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.single)
+  router.put('/api/v2/tickets/batch', apiv2Auth, apiv2.tickets.batchUpdate)
   router.put('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.update)
   router.delete('/api/v2/tickets/:uid', apiv2Auth, apiv2.tickets.delete)
 

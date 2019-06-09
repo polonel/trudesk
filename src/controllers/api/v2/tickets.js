@@ -154,11 +154,44 @@ ticketsV2.update = function (req, res) {
   var putTicket = req.body.ticket
   if (!uid || !putTicket) return apiUtils.sendApiError(res, 400, 'Invalid Parameters')
 
+  // todo: complete this...
   Ticket.getTicketByUid(uid, function (err, ticket) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
 
     return apiUtils.sendApiSuccess(res, ticket)
   })
+}
+
+ticketsV2.batchUpdate = function (req, res) {
+  var batch = req.body.batch
+  if (!_.isArray(batch)) return apiUtils.sendApiError_InvalidPostData(res)
+
+  async.each(
+    batch,
+    function (batchTicket, next) {
+      Ticket.getTicketById(batchTicket.id, function (err, ticket) {
+        if (err) return next(err)
+
+        if (!_.isUndefined(batchTicket.status)) {
+          ticket.status = batchTicket.status
+          var HistoryItem = {
+            action: 'ticket:set:status',
+            description: 'status set to: ' + batchTicket.status,
+            owner: req.user._id
+          }
+
+          ticket.history.push(HistoryItem)
+        }
+
+        return ticket.save(next)
+      })
+    },
+    function (err) {
+      if (err) return apiUtils.sendApiError(res, 400, err.message)
+
+      return apiUtils.sendApiSuccess(res)
+    }
+  )
 }
 
 ticketsV2.delete = function (req, res) {
