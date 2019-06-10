@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.0.14-beta",
+  "version": "1.0.14",
   "private": true,
   "engines": {
     "node": ">=9.10.0"

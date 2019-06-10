@@ -1,3 +1,12 @@
+## [1.0.14](https://github.com/polonel/trudesk/compare/v1.0.13...v1.0.14) (2019-06-10)
+
+
+### Bug Fixes
+
+* **departments:** issue with creating department with no teams [#206](https://github.com/polonel/trudesk/issues/206) ([94ff47a](https://github.com/polonel/trudesk/commit/94ff47a))
+* **elasticsearch:** remove ticket from index on delete ([1b46ff4](https://github.com/polonel/trudesk/commit/1b46ff4))
+* **mailer:** issue where mail was not being sent ([4f2ba22](https://github.com/polonel/trudesk/commit/4f2ba22))
+
 ## [1.0.13](https://github.com/polonel/trudesk/compare/v1.0.12...v1.0.13) (2019-05-23)
 
 
