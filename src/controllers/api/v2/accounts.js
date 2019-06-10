@@ -31,6 +31,8 @@ accountsApi.create = function (req, res) {
   async.series(
     {
       user: function (next) {
+        var chance = require('chance').Chance(),
+            accessToken = chance.hash();
         User.create(
           {
             username: postData.username,
@@ -38,7 +40,8 @@ accountsApi.create = function (req, res) {
             password: postData.password,
             fullname: postData.fullname,
             title: postData.title,
-            role: postData.role
+            role: postData.role,
+            accessToken
           },
           function (err, user) {
             if (err) return apiUtil.sendApiError(res, 500, err.message)
