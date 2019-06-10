@@ -60,7 +60,17 @@ class CreateDepartmentModal extends React.Component {
     e.preventDefault()
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
-
+  
+    if(!this.allGroups && this.groupSelect.getSelected() == null){
+      helpers.UI.showSnackbar('Can not create department without a group selected or all groups enabled!', true)
+      return false;
+    }
+    
+    if(this.teamsSelect.getSelected() == null){
+      helpers.UI.showSnackbar('Can not create department without a team selected!', true)
+      return false;
+    }
+    
     const payload = {
       name: this.name,
       teams: this.teamsSelect.getSelected(),
