@@ -28,6 +28,9 @@ apiDepartments.get = function (req, res) {
 apiDepartments.create = function (req, res) {
   var postData = req.body
   if (!postData) return apiUtils.sendApiError_InvalidPostData(res)
+  
+  if (!postData.teams) postData.teams = []
+  if (!postData.groups) postData.groups = []
 
   Department.create(postData, function (err, createdDepartment) {
     if (err) return apiUtils.sendApiError(res, 500, err.message)
