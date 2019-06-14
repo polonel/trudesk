@@ -148,8 +148,8 @@ class TopbarContainer extends React.Component {
                       </li>
                     )}
                     {sessionUser && helpers.canUser('tickets:create') && (
-                      <li className='top-bar-icon nopadding'>
-                        <i className='material-icons'>more_vert</i>
+                      <li className='top-bar-icon nopadding nohover'>
+                        <i className='material-icons separator'>remove</i>
                       </li>
                     )}
                     {/* End Create Ticket Perm */}
@@ -190,6 +190,9 @@ class TopbarContainer extends React.Component {
                           </span>
                         </a>
                       </OffCanvasTrigger>
+                    </li>
+                    <li className='top-bar-icon nopadding nohover'>
+                      <i className='material-icons separator'>remove</i>
                     </li>
 
                     <li className='profile-area profile-name'>
