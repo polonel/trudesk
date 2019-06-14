@@ -62,7 +62,7 @@
         overflow: hidden
         max-height: 74px
 
-        &:hover
+        &:hover:not(.nohover)
           color: $topbar_icons_hover !important
           i
             color: $topbar_icons_hover !important
@@ -92,6 +92,10 @@
           &.material-icons
             margin-top: 2px
             line-height: 70px
+            &.separator
+              +rotate(90deg)
+              color: $topbar_separator !important
+
         svg
           width: 32px !important
           height: 32px !important
@@ -126,21 +130,9 @@
   color: $topbar_text_color !important
   //background: url("/img/midDots.png") no-repeat
   //background-position: 0 50%
-  margin-left: 10px
-  &:before
-    content: "\E5D4"
-    font-family: 'Material Icons'
-    font-style: normal
-    font-weight: 400
-    color: $topbar_icons
-    font-size: 30px
-    position: absolute
-    left: -10px
-    top: 0
-
   span
     display: inline-block
-    margin: 0 20px 0 15px
+    margin: 0 20px 0 0
     color: $topbar_text_color !important
     &:hover
       color: inherit
