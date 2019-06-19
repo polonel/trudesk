@@ -44,3 +44,9 @@
     @return #ffffff
   @else
     @return $accent_color
+
+@function topbar-separator-color()
+  @if (lightness($topbar_bg) > 50)
+    @return darken($topbar_bg, 15%)
+  @else
+    @return lighten($topbar_bg, 15%)
