@@ -76,7 +76,7 @@ const reducer = handleActions(
 
       let accounts = null
       if ((state.type === 'agents' || state.type === 'admins') && !customer)
-        state.accounts.set(accountIndex, fromJS(resUser))
+        accounts = state.accounts.set(accountIndex, fromJS(resUser))
       else if ((state.type === 'agents' || state.type === 'admins') && customer)
         accounts = state.accounts.remove(accountIndex)
       else if (state.type === 'customers' && !customer) accounts = state.accounts.remove(accountIndex)
