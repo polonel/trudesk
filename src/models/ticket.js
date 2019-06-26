@@ -14,6 +14,7 @@
 
 var async = require('async')
 var mongoose = require('mongoose')
+var winston = require('winston')
 var _ = require('lodash')
 var moment = require('moment')
 var sanitizeHtml = require('sanitize-html')
@@ -69,19 +70,16 @@ var ticketSchema = mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'accounts',
-    autopopulate: true
+    ref: 'accounts'
   },
   group: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'groups',
-    autopopulate: true
+    ref: 'groups'
   },
   assignee: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'accounts',
-    autopopulate: { select: '-hasL2Auth -preferences -__v' }
+    ref: 'accounts'
   },
   date: { type: Date, default: Date.now, required: true, index: true },
   updated: { type: Date },
@@ -89,16 +87,14 @@ var ticketSchema = mongoose.Schema({
   type: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'tickettypes',
-    autopopulate: true
+    ref: 'tickettypes'
   },
   status: { type: Number, default: 0, required: true, index: true },
 
   priority: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'priorities',
-    required: true,
-    autopopulate: true
+    required: true
   },
   tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags', autopopulate: true }],
   subject: { type: String, required: true },
@@ -112,9 +108,15 @@ var ticketSchema = mongoose.Schema({
   subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
 
-ticketSchema.plugin(require('mongoose-autopopulate'))
-
 ticketSchema.index({ deleted: -1, group: 1, status: 1 })
+
+var autoPopulate = function (next) {
+  this.populate('priority')
+
+  return next()
+}
+
+ticketSchema.pre('findOne', autoPopulate).pre('find', autoPopulate)
 
 ticketSchema.pre('save', function (next) {
   this.subject = this.subject.trim()
@@ -140,14 +142,18 @@ ticketSchema.pre('save', function (next) {
   })
 })
 
-ticketSchema.post('save', function (savedTicket) {
+ticketSchema.post('save', function (doc, next) {
   if (!this.wasNew) {
     var emitter = require('../emitter')
-    savedTicket.populate('assignee', '_id fullname title email image', function (err, savedTicket) {
+    doc.populate('assignee', '_id fullname title email image', function (err, savedTicket) {
       if (err) winston.warn(err)
       emitter.emit('ticket:updated', savedTicket)
+
+      return next()
     })
   }
+
+  return next()
 })
 
 ticketSchema.virtual('statusFormatted').get(function () {
@@ -297,6 +303,7 @@ ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
   self.type = typeId
   typeSchema.findOne({ _id: typeId }, function (err, type) {
     if (err) return callback(err)
+    if (!type) return callback('Invalid Type Id: ' + typeId)
 
     var historyItem = {
       action: 'ticket:set:type',
@@ -1584,13 +1591,13 @@ ticketSchema.statics.softDelete = function (oId, callback) {
 
   var self = this
 
-  return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: true }, callback)
+  return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: true }, { new: true }, callback)
 }
 
 ticketSchema.statics.softDeleteUid = function (uid, callback) {
   if (_.isUndefined(uid)) return callback({ message: 'Invalid UID - TicketSchema.SoftDeleteUid()' })
 
-  return this.model(COLLECTION).findOneAndUpdate({ uid: uid }, { deleted: true }, callback)
+  return this.model(COLLECTION).findOneAndUpdate({ uid: uid }, { deleted: true }, { new: true }, callback)
 }
 
 ticketSchema.statics.restoreDeleted = function (oId, callback) {
@@ -1598,7 +1605,7 @@ ticketSchema.statics.restoreDeleted = function (oId, callback) {
 
   var self = this
 
-  return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: false }, callback)
+  return self.model(COLLECTION).findOneAndUpdate({ _id: oId }, { deleted: false }, { new: true }, callback)
 }
 
 ticketSchema.statics.getDeleted = function (callback) {

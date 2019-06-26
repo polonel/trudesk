@@ -136,13 +136,18 @@ describe('ticket.js', function () {
   it('should set ticket type', function (done) {
     ticketSchema.getTicketByUid(1000, function (err, ticket) {
       expect(err).to.not.exist
-      var type = m.Types.ObjectId()
-      var ownerId = m.Types.ObjectId()
-      ticket.setTicketType(ownerId, type, function (err, ticket) {
+      var typeSchema = require('../../src/models/tickettype')
+      typeSchema.getTypeByName('Issue', function (err, type) {
         expect(err).to.not.exist
-        expect(ticket.type).to.equal(type)
+        expect(type).to.be.a('object')
+        var ownerId = m.Types.ObjectId()
 
-        done()
+        ticket.setTicketType(ownerId, type._id, function (err, ticket) {
+          expect(err).to.not.exist
+          expect(ticket.type._id).to.equal(type._id)
+
+          done()
+        })
       })
     })
   })
@@ -330,7 +335,7 @@ describe('ticket.js', function () {
       var ownerId = m.Types.ObjectId()
       ticket.setIssue(ownerId, 'This is the new issue text', function (err, ticket) {
         expect(err).to.not.exist
-        expect(ticket.issue).to.equal('This is the new issue text')
+        expect(ticket.issue).to.equal('<p>This is the new issue text</p>\n')
 
         done()
       })
@@ -483,15 +488,9 @@ describe('ticket.js', function () {
       ticketSchema.softDelete(ticket._id, function (err, ticket) {
         expect(err).to.not.exist
         expect(ticket).to.be.a('object')
+        expect(ticket.deleted).to.be.true
 
-        ticket.save(function (err, t) {
-          expect(err).to.not.exist
-          expect(t).to.be.a('object')
-
-          expect(t.deleted).to.be.false
-
-          done()
-        })
+        done()
       })
     })
   })
