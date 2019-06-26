@@ -22,6 +22,8 @@ import ReactHtmlParser from 'react-html-parser'
 
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
+import axios from 'axios'
+import Log from '../../logger'
 
 const setupImages = parent => {
   const imagesEl = parent.issueBody.querySelectorAll('img:not(.hasLinked)')
@@ -83,6 +85,42 @@ class IssuePartial extends React.Component {
     if (this.ticketId === data.ticket._id) {
       this.attachments = data.ticket.attachments
     }
+  }
+
+  onAttachmentInputChange (e) {
+    const formData = new FormData()
+    const attachmentFile = e.target.files[0]
+    formData.append('ticketId', this.ticketId)
+    formData.append('attachment', attachmentFile)
+    axios
+      .post(`/tickets/uploadattachment`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
+        socket.ui.refreshTicketAttachments(this.ticketId)
+        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
+      })
+      .catch(error => {
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
+  }
+
+  removeAttachment (e, attachmentId) {
+    axios
+      .delete(`/api/v1/tickets/${this.ticketId}/attachments/remove/${attachmentId}`)
+      .then(() => {
+        socket.ui.refreshTicketAttachments(this.ticketId)
+        helpers.UI.showSnackbar('Attachment Removed')
+      })
+      .catch(error => {
+        Log.error(error)
+        if (error.response) Log.error(error.response)
+        helpers.UI.showSnackbar(error, true)
+      })
   }
 
   render () {

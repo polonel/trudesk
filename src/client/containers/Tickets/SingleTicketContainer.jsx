@@ -183,42 +183,6 @@ class SingleTicketContainer extends React.Component {
       })
   }
 
-  onAttachmentInputChange (e) {
-    const formData = new FormData()
-    const attachmentFile = e.target.files[0]
-    formData.append('ticketId', this.ticket._id)
-    formData.append('attachment', attachmentFile)
-    axios
-      .post(`/tickets/uploadattachment`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      })
-      .then(() => {
-        socket.ui.refreshTicketAttachments(this.ticket._id)
-        helpers.UI.showSnackbar('Attachment Successfully Uploaded')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
-  }
-
-  removeAttachment (e, attachmentId) {
-    axios
-      .delete(`/api/v1/tickets/${this.ticket._id}/attachments/remove/${attachmentId}`)
-      .then(() => {
-        socket.ui.refreshTicketAttachments(this.ticket._id)
-        helpers.UI.showSnackbar('Attachment Removed')
-      })
-      .catch(error => {
-        Log.error(error)
-        if (error.response) Log.error(error.response)
-        helpers.UI.showSnackbar(error, true)
-      })
-  }
-
   onSubscriberChanged (e) {
     axios
       .put(`/api/v1/tickets/${this.ticket._id}/subscribe`, {
@@ -499,10 +463,7 @@ class SingleTicketContainer extends React.Component {
 
                     {helpers.canUser('agent:*', true) && (
                       <div className='uk-width-1-1 padding-left-right-15'>
-                        <div
-                          className='tru-card ticket-details'
-                          style={{ height: 250, paddingRight: '0 !important', paddingBottom: '0 !important' }}
-                        >
+                        <div className='tru-card ticket-details pr-0 pb-0' style={{ height: 250 }}>
                           Ticket History
                           <hr style={{ padding: 0, margin: 0 }} />
                           <div className='history-items scrollable' style={{ paddingTop: 12 }}>
@@ -581,6 +542,7 @@ class SingleTicketContainer extends React.Component {
                       issue={this.ticket.issue}
                       date={this.ticket.date}
                       dateFormat={`${this.props.common.longDateFormat}, ${this.props.common.timeFormat}`}
+                      attachments={this.ticket.attachments}
                       editorWindow={this.editorWindow}
                     />
 
