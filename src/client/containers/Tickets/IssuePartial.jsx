@@ -73,12 +73,16 @@ class IssuePartial extends React.Component {
   }
 
   onUpdateTicketIssue (data) {
-    this.subject = data.subject
-    this.issue = data.issue
+    if (this.ticketId === data._id) {
+      this.subject = data.subject
+      this.issue = data.issue
+    }
   }
 
   onUpdateTicketAttachments (data) {
-    this.attachments = data.ticket.attachments
+    if (this.ticketId === data.ticket._id) {
+      this.attachments = data.ticket.attachments
+    }
   }
 
   render () {

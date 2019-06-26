@@ -116,36 +116,39 @@ class SingleTicketContainer extends React.Component {
   }
 
   onSocketUpdateComments (data) {
-    this.ticket.comments = data.comments
+    if (this.ticket._id === data._id) this.ticket.comments = data.comments
   }
 
   onUpdateTicketNotes (data) {
-    this.ticket.notes = data.notes
+    if (this.ticket._id === data._id) this.ticket.notes = data.notes
   }
 
   onUpdateAssignee (data) {
-    this.ticket.assignee = data.assignee
-    if (this.ticket.assignee && this.ticket.assignee._id === this.props.shared.sessionUser._id) this.isSubscribed = true
+    if (this.ticket._id === data._id) {
+      this.ticket.assignee = data.assignee
+      if (this.ticket.assignee && this.ticket.assignee._id === this.props.shared.sessionUser._id)
+        this.isSubscribed = true
+    }
   }
 
   onUpdateTicketType (data) {
-    this.ticket.type = data.type
+    if (this.ticket._id === data._id) this.ticket.type = data.type
   }
 
   onUpdateTicketPriority (data) {
-    this.ticket.priority = data.priority
+    if (this.ticket._id === data._id) this.ticket.priority = data.priority
   }
 
   onUpdateTicketGroup (data) {
-    this.ticket.group = data.group
+    if (this.ticket._id === data._id) this.ticket.group = data.group
   }
 
   onUpdateTicketDueDate (data) {
-    this.ticket.dueDate = data.dueDate
+    if (this.ticket._id === data._id) this.ticket.dueDate = data.dueDate
   }
 
   onUpdateTicketTags (data) {
-    this.ticket.tags = data.tags
+    if (this.ticket._id === data._id) this.ticket.tags = data.tags
   }
 
   onCommentNoteSubmit (e, type) {
