@@ -928,13 +928,9 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
-      ticketModel.populate(tt, 'subscribers comments.owner history.owner', function (err) {
-        if (err) return res.json({ success: true, error: null, ticket: tt })
+      emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
 
-        emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
-
-        return res.json({ success: true, error: null, ticket: tt })
-      })
+      return res.json({ success: true, error: null, ticket: tt })
     })
   })
 }

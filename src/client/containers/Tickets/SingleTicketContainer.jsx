@@ -145,7 +145,7 @@ class SingleTicketContainer extends React.Component {
   }
 
   onUpdateTicketTags (data) {
-    this.ticket.tags = data.ticket.tags
+    this.ticket.tags = data.tags
   }
 
   onCommentNoteSubmit (e, type) {

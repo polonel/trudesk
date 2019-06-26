@@ -145,15 +145,37 @@ ticketSchema.pre('save', function (next) {
 ticketSchema.post('save', function (doc, next) {
   if (!this.wasNew) {
     var emitter = require('../emitter')
-    doc.populate('assignee', '_id fullname title email image', function (err, savedTicket) {
-      if (err) winston.warn(err)
-      emitter.emit('ticket:updated', savedTicket)
+    doc
+      .populate(
+        'owner assignee comments.owner notes.owner subscribers history.owner',
+        '_id username fullname email role image title'
+      )
+      .populate('type tags')
+      .populate({
+        path: 'group',
+        model: groupSchema,
+        populate: [
+          {
+            path: 'members',
+            model: userSchema,
+            select: '-__v -accessToken -tOTPKey'
+          },
+          {
+            path: 'sendMailTo',
+            model: userSchema,
+            select: '-__v -accessToken -tOTPKey'
+          }
+        ]
+      })
+      .execPopulate(function (err, savedTicket) {
+        if (err) return winston.warn(err)
+        emitter.emit('ticket:updated', savedTicket)
 
-      return next()
-    })
+        return next()
+      })
+  } else {
+    return next()
   }
-
-  return next()
 })
 
 ticketSchema.virtual('statusFormatted').get(function () {

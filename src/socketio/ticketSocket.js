@@ -417,7 +417,7 @@ events.onRemoveNote = function (socket) {
         t.save(function (err, tt) {
           if (err) return true
 
-          utils.sendToAllConnectedClients(io, 'updateComments', tt)
+          utils.sendToAllConnectedClients(io, 'updateNotes', tt)
         })
       })
     })
@@ -455,11 +455,7 @@ events.onRefreshTicketTags = function (socket) {
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return true
 
-      var data = {
-        ticket: ticket
-      }
-
-      utils.sendToAllConnectedClients(io, 'updateTicketTags', data)
+      utils.sendToAllConnectedClients(io, 'updateTicketTags', ticket)
     })
   })
 }

@@ -1746,6 +1746,8 @@ define([
     if (!extRole) extRole = window.trudeskSessionService.getUser().role
     if (!_.isObject(ownerRole) || !_.isObject(extRole)) {
       console.log('Invalid Role Sent to helpers.hasPermOverRole. [Must be role obj]')
+      console.log('Owner: ' + ownerRole)
+      console.log('ExtRole: ' + extRole)
       return false
     }
 

@@ -319,22 +319,6 @@ define([
           modal.show()
         }
       }
-
-      $scope.showAllNotifications = function ($event) {
-        $event.preventDefault()
-
-        $scope.showAllNotificationsWindow = $('#viewAllNotificationsModal')
-        if ($scope.showAllNotificationsWindow.length > 0) {
-          socket.ui.emitUpdateAllNotifications()
-
-          var modal = UI.modal($scope.showAllNotificationsWindow, {
-            bgclose: true
-          })
-
-          helpers.hideAllpDropDowns()
-          modal.show()
-        }
-      }
     })
     .directive('closeUkDropdown', function ($document, $timeout) {
       return {
