@@ -41,6 +41,7 @@ import helpers from 'lib/helpers'
 import Log from '../../logger'
 import socket from 'lib/socket'
 import UIkit from 'uikit'
+import SpinLoader from 'components/SpinLoader'
 
 const fetchTicket = parent => {
   axios
@@ -244,7 +245,8 @@ class SingleTicketContainer extends React.Component {
       helpers.hasPermOverRole(this.ticket.owner.role, null, 'tickets:update', true)
 
     return (
-      <div className={'uk-clearfix'}>
+      <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
+        {!this.ticket && <SpinLoader active={true} />}
         {this.ticket && (
           <Fragment>
             <div className={'page-content'}>

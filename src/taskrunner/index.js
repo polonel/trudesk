@@ -102,7 +102,7 @@ taskRunner.sendStats = function (callback) {
         // return
         if (err) return callback()
         request(
-          'http://localhost:3000/api/v1/installation',
+          'https://stats.trudesk.app/api/v1/installation',
           {
             method: 'POST',
             json: true,
