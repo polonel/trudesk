@@ -106,7 +106,7 @@ class OnlineUserListPartial extends React.Component {
                           </div>
                           <span className='online-status' data-user-status-id={value.user._id} />
                           <div className={'user-name' + (isAgentOrAdmin ? ' _agent' : '')}>
-                            {value.user.fullname + (isAgentOrAdmin ? ' - Support Agent' : '')}
+                            {value.user.fullname + (isAgentOrAdmin ? ' - Agent' : '')}
                           </div>
                         </div>
                       </a>

@@ -230,6 +230,8 @@ define('modules/ajaxify', [
             // This will be removed once angular and ajaxy are gone (react-router will Replace)
             if (document.getElementById('tickets-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('tickets-container'))
+            if (document.getElementById('single-ticket-container'))
+              window.react.dom.unmountComponentAtNode(document.getElementById('single-ticket-container'))
             if (document.getElementById('settings-container'))
               window.react.dom.unmountComponentAtNode(document.getElementById('settings-container'))
             if (document.getElementById('accounts-container'))

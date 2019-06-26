@@ -132,7 +132,7 @@ define(['jquery', 'modules/helpers', 'underscore', 'modules/socket'], function (
     top = top + 'px'
 
     var override = $(drop).attr('data-override')
-    if (!_.isUndefined(override) && override.length > 0) {
+    if (!_.isUndefined(override) && override === ('true' || true)) {
       top = topExtraOffset + 'px'
       left = leftExtraOffset + 'px'
     }

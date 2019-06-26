@@ -17,33 +17,24 @@ define([
   'underscore',
 
   'angularjs/controllers/common',
-  'angularjs/controllers/profile',
   'angularjs/controllers/accounts',
-  'angularjs/controllers/groups',
-  'angularjs/controllers/tickets',
-  'angularjs/controllers/singleTicket',
+  'angularjs/controllers/profile',
   'angularjs/controllers/messages',
   'angularjs/controllers/notices',
   'angularjs/controllers/plugins',
   'angularjs/controllers/reports',
-  'angularjs/controllers/editor',
-  'angularjs/controllers/settingsElasticSearch'
+  'angularjs/controllers/editor'
 ], function ($, angular, _) {
   return angular
     .module('trudesk.controllers', [
       'trudesk.controllers.common',
-
-      'trudesk.controllers.profile',
       'trudesk.controllers.accounts',
-      'trudesk.controllers.groups',
-      'trudesk.controllers.tickets',
-      'trudesk.controllers.singleTicket',
+      'trudesk.controllers.profile',
       'trudesk.controllers.messages',
       'trudesk.controllers.notices',
       'trudesk.controllers.plugins',
       'trudesk.controllers.reports',
-      'trudesk.controllers.editor',
-      'trudesk.controllers.settingsElasticSearch'
+      'trudesk.controllers.editor'
     ])
     .controller('TrudeskController', function ($rootScope, $scope) {})
 })

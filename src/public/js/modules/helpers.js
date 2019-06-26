@@ -1507,6 +1507,8 @@ define([
       .calendar()
   }
 
+  helpers.calendarDate = helpers.getCalendarDate
+
   helpers.getShortDateFormat = function () {
     if (window.trudeskSettingsService) {
       return window.trudeskSettingsService.getSettings().shortDateFormat.value
@@ -1663,16 +1665,6 @@ define([
     return _.indexOf(typePerm, action) !== -1
   }
 
-  helpers.canUserEditSelf = function (ownerId, perm) {
-    var id = window.trudeskSessionService.getUser()._id
-
-    if (helpers.canUser(perm + ':editSelf')) {
-      return id.toString() === ownerId.toString()
-    }
-
-    return false
-  }
-
   helpers.hasHierarchyEnabled = function (roleId) {
     var roles = window.trudeskSessionService.getRoles()
     var role = _.find(roles, function (o) {
@@ -1751,21 +1743,34 @@ define([
 
   helpers.hasPermOverRole = function (ownerRole, extRole, action, adminOverride) {
     if (action && !helpers.canUser(action, adminOverride)) return false
-    if (!extRole) extRole = window.trudeskSessionService.getUser().role._id
+    if (!extRole) extRole = window.trudeskSessionService.getUser().role
+    if (!_.isObject(ownerRole) || !_.isObject(extRole)) {
+      console.log('Invalid Role Sent to helpers.hasPermOverRole. [Must be role obj]')
+      return false
+    }
+
+    if (extRole.role) {
+      console.warn(
+        'Seems like a user object was sent to helpers.hasPermOverRole --- [extRole must be a role object or null]'
+      )
+      return false
+    }
+
+    if (ownerRole._id === extRole._id) return true
 
     if (adminOverride === true) {
-      if (extRole && extRole.role && extRole.role.isAdmin) {
+      if (extRole && extRole.isAdmin) {
         return true
       } else {
         var r = window.trudeskSessionService.getRoles()
         var role = _.find(r, function (_role) {
-          return _role._id.toString() === extRole.toString()
+          return _role._id.toString() === extRole._id.toString()
         })
         if (!_.isUndefined(role) && role.isAdmin) return true
       }
     }
 
-    var roles = helpers.parseRoleHierarchy(extRole)
+    var roles = helpers.parseRoleHierarchy(extRole._id)
 
     var i = _.find(roles, function (o) {
       return o.toString() === ownerRole.toString()
@@ -2101,6 +2106,17 @@ define([
         }, thisChildrenLength * baseDelay + 1200)
       }
     }
+  }
+
+  helpers.setupImageLink = function (el) {
+    var $this = $(el)
+    var src = $this.attr('src')
+    $this.addClass('hasLinked')
+    var a = $('<a>')
+      .addClass('no-ajaxy')
+      .attr('href', src)
+      .attr('target', '_blank')
+    $this.wrap(a)
   }
 
   return helpers

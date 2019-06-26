@@ -458,10 +458,10 @@ define('modules/ui', [
     })
   }
 
-  socketUi.setTicketGroup = function (ticketId, group) {
+  socketUi.setTicketGroup = function (ticketId, groupId) {
     var payload = {
       ticketId: ticketId,
-      groupId: group._id
+      groupId: groupId
     }
 
     socket.emit('setTicketGroup', payload)

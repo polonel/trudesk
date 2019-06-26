@@ -413,7 +413,7 @@ define([
 
       function showSelectPriorityConfirm () {
         UIkit.modal.confirm(
-          'Selected Priority does not exit for this ticket type.<br><br><strong>Please select a new priority</strong>',
+          'Selected Priority does not exist for this ticket type.<br><br><strong>Please select a new priority</strong>',
           function () {},
           { cancelButtonClass: 'uk-hidden' }
         )

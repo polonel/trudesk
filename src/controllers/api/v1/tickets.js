@@ -803,8 +803,6 @@ apiTickets.update = function (req, res) {
               t.notes = []
             }
 
-            emitter.emit('ticket:updated', t)
-
             return res.json({
               success: true,
               error: null,
@@ -891,7 +889,7 @@ apiTickets.delete = function (req, res) {
 apiTickets.postComment = function (req, res) {
   var commentJson = req.body
   var comment = commentJson.comment
-  var owner = commentJson.ownerId
+  var owner = commentJson.ownerId || req.user._id
   var ticketId = commentJson._id
 
   if (_.isUndefined(ticketId)) return res.status(400).json({ success: false, error: 'Invalid Post Data' })
@@ -930,7 +928,7 @@ apiTickets.postComment = function (req, res) {
         tt.notes = []
       }
 
-      ticketModel.populate(tt, 'subscribers comments.owner', function (err) {
+      ticketModel.populate(tt, 'subscribers comments.owner history.owner', function (err) {
         if (err) return res.json({ success: true, error: null, ticket: tt })
 
         emitter.emit('ticket:comment:added', tt, Comment, req.headers.host)
@@ -985,7 +983,7 @@ apiTickets.postInternalNote = function (req, res) {
     var marked = require('marked')
     // var note = payload.note.replace(/(\r\n|\n\r|\r|\n)/g, "<br>");
     var Note = {
-      owner: payload.owner,
+      owner: payload.owner || req.user._id,
       date: new Date(),
       note: marked(payload.note)
     }
@@ -995,14 +993,14 @@ apiTickets.postInternalNote = function (req, res) {
     var HistoryItem = {
       action: 'ticket:note:added',
       description: 'Internal note was added',
-      owner: payload.owner
+      owner: payload.owner || req.user._id
     }
     ticket.history.push(HistoryItem)
 
     ticket.save(function (err, savedTicket) {
       if (err) return res.status(400).json({ success: false, error: err.message })
 
-      ticketModel.populate(savedTicket, 'subscribers notes.owner', function (err) {
+      ticketModel.populate(savedTicket, 'subscribers notes.owner history.owner', function (err, savedTicket) {
         if (err) return res.json({ success: true, ticket: savedTicket })
 
         emitter.emit('ticket:note:added', savedTicket, Note)
@@ -1824,12 +1822,12 @@ apiTickets.subscribe = function (req, res) {
         }
       ],
       function () {
-        ticket.save(function (err) {
+        ticket.save(function (err, ticket) {
           if (err) return res.status(400).json({ error: err })
 
-          emitter.emit('ticket:subscribers:update')
+          emitter.emit('ticket:subscriber:update', ticket)
 
-          res.json({ success: true })
+          res.json({ success: true, ticket: ticket })
         })
       }
     )

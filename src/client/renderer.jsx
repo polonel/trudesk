@@ -16,7 +16,8 @@ import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
 import React from 'react'
 
-import TicketsContainer from 'containers/TicketsContainer'
+import TicketsContainer from 'containers/Tickets/TicketsContainer'
+import SingleTicketContainer from 'containers/Tickets/SingleTicketContainer'
 import SettingsContainer from 'containers/Settings/SettingsContainer'
 import AccountsContainer from 'containers/Accounts'
 import GroupsContainer from 'containers/Groups'
@@ -37,6 +38,18 @@ export default function (store) {
     )
 
     ReactDOM.render(TicketsContainerWithProvider, document.getElementById('tickets-container'))
+  }
+
+  if (document.getElementById('single-ticket-container')) {
+    const ticketId = document.getElementById('single-ticket-container').getAttribute('data-ticket-id')
+    const ticketUid = document.getElementById('single-ticket-container').getAttribute('data-ticket-uid')
+    const SingleTicketContainerWithProvider = (
+      <Provider store={store}>
+        <SingleTicketContainer ticketId={ticketId} ticketUid={ticketUid} />
+      </Provider>
+    )
+
+    ReactDOM.render(SingleTicketContainerWithProvider, document.getElementById('single-ticket-container'))
   }
 
   if (document.getElementById('accounts-container')) {

@@ -1,6 +1,6 @@
 {
   "name": "trudesk",
-  "version": "1.0.14",
+  "version": "1.0.15-beta",
   "private": true,
   "engines": {
     "node": ">=9.10.0"
@@ -32,6 +32,7 @@
     "chance": "1.0.18",
     "cheerio": "1.0.0-rc.2",
     "clone": "2.1.2",
+    "clsx": "1.0.4",
     "connect-flash": "0.1.1",
     "connect-mongo": "2.0.3",
     "cookie": "0.3.1",
@@ -85,6 +86,7 @@
     "prop-types": "15.6.2",
     "react": "16.7.0",
     "react-dom": "16.7.0",
+    "react-html-parser": "2.0.2",
     "react-infinite-scroller": "1.2.4",
     "react-redux": "6.0.0",
     "redis": "2.8.0",

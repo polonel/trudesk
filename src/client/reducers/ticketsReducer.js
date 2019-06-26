@@ -198,13 +198,6 @@ const reducer = handleActions(
         }
       }
 
-      // if (ticket.status === 3) {
-      //   return {
-      //     ...state,
-      //     tickets: state.tickets.delete(idx)
-      //   }
-      // }
-
       return {
         ...state,
         tickets: state.tickets.set(idx, fromJS(ticket))

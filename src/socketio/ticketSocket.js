@@ -69,7 +69,7 @@ events.onUpdateTicketStatus = function (socket) {
         t.save(function (err, t) {
           if (err) return true
 
-          emitter.emit('ticket:updated', t)
+          // emitter.emit('ticket:updated', t)
           utils.sendToAllConnectedClients(io, 'updateTicketStatus', {
             tid: t._id,
             owner: t.owner,
@@ -135,7 +135,7 @@ events.onSetAssignee = function (socket) {
           ticket = results.subscriber
           ticket.save(function (err, ticket) {
             if (err) return true
-            ticketSchema.populate(ticket, 'assignee', function (err) {
+            ticket.populate('assignee', function (err, ticket) {
               if (err) return true
 
               emitter.emit('ticket:subscriber:update', {
@@ -148,7 +148,8 @@ events.onSetAssignee = function (socket) {
                 ticketUid: ticket.uid,
                 hostname: socket.handshake.headers.host
               })
-              emitter.emit('ticket:updated', ticket)
+
+              // emitter.emit('ticket:updated', ticket)
               utils.sendToAllConnectedClients(io, 'updateAssignee', ticket)
             })
           })
@@ -176,7 +177,7 @@ events.onSetTicketType = function (socket) {
           ticketSchema.populate(tt, 'type', function (err) {
             if (err) return true
 
-            emitter.emit('ticket:updated', tt)
+            // emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketType', tt)
           })
         })
@@ -205,7 +206,7 @@ events.onSetTicketPriority = function (socket) {
           t.save(function (err, tt) {
             if (err) return true
 
-            emitter.emit('ticket:updated', tt)
+            // emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketPriority', tt)
           })
         })
@@ -227,7 +228,7 @@ events.onClearAssignee = function (socket) {
         t.save(function (err, tt) {
           if (err) return true
 
-          emitter.emit('ticket:updated', tt)
+          // emitter.emit('ticket:updated', tt)
           utils.sendToAllConnectedClients(io, 'updateAssignee', tt)
         })
       })
@@ -255,7 +256,7 @@ events.onSetTicketGroup = function (socket) {
           ticketSchema.populate(tt, 'group', function (err) {
             if (err) return true
 
-            emitter.emit('ticket:updated', tt)
+            // emitter.emit('ticket:updated', tt)
             utils.sendToAllConnectedClients(io, 'updateTicketGroup', tt)
           })
         })
@@ -270,7 +271,7 @@ events.onSetTicketDueDate = function (socket) {
     var dueDate = data.dueDate
     var ownerId = socket.request.user._id
 
-    if (_.isUndefined(ticketId) || _.isUndefined(dueDate)) return true
+    if (_.isUndefined(ticketId)) return true
 
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return true
@@ -281,7 +282,7 @@ events.onSetTicketDueDate = function (socket) {
         t.save(function (err, tt) {
           if (err) return true
 
-          emitter.emit('ticket:updated', tt)
+          // emitter.emit('ticket:updated', tt)
           utils.sendToAllConnectedClients(io, 'updateTicketDueDate', tt)
         })
       })
@@ -297,24 +298,18 @@ events.onSetTicketIssue = function (socket) {
     var ownerId = socket.request.user._id
     if (_.isUndefined(ticketId) || _.isUndefined(issue)) return true
 
-    marked.setOptions({
-      breaks: true
-    })
-    var markedIssue = marked(issue)
-
     ticketSchema.getTicketById(ticketId, function (err, ticket) {
       if (err) return true
 
       ticket.setSubject(ownerId, subject, function (err, ticket) {
         if (err) return true
 
-        ticket.setIssue(ownerId, markedIssue, function (err, t) {
+        ticket.setIssue(ownerId, issue, function (err, t) {
           if (err) return true
 
           t.save(function (err, tt) {
             if (err) return true
 
-            // emitter.emit('ticket:updated', ticketId);
             utils.sendToAllConnectedClients(io, 'updateTicketIssue', tt)
           })
         })
@@ -399,7 +394,7 @@ events.onSetNoteText = function (socket) {
         ticket.save(function (err, tt) {
           if (err) return winston.error(err)
 
-          utils.sendToAllConnectedClients(io, 'updateComments', tt)
+          utils.sendToAllConnectedClients(io, 'updateNotes', tt)
         })
       })
     })

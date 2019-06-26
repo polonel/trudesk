@@ -12,15 +12,18 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
+import React, { Fragment } from 'react'
 import PropTypes from 'prop-types'
 
 import Log from '../../logger'
 
 import $ from 'jquery'
+import toMarkdown from 'tomarkdown'
 import Easymde from 'easymde'
+
 import 'inlineAttachment'
 import 'inputInlineAttachment'
+import 'cm4InlineAttachment'
 
 class EasyMDE extends React.Component {
   constructor (props) {
@@ -106,7 +109,7 @@ class EasyMDE extends React.Component {
   static getDerivedStateFromProps (nextProps, state) {
     if (typeof nextProps.defaultValue !== 'undefined') {
       if (!state.loaded && nextProps.defaultValue !== state.value)
-        return { value: nextProps.defaultValue, loaded: true }
+        return { value: toMarkdown(nextProps.defaultValue), loaded: true }
     }
 
     return null
@@ -131,6 +134,16 @@ class EasyMDE extends React.Component {
     })
 
     if (this.props.onChange) this.props.onChange(value)
+  }
+
+  getEditorText () {
+    return this.state.value
+  }
+
+  setEditorText (value) {
+    this.setState({
+      value: toMarkdown(value)
+    })
   }
 
   static getMdeToolbarItems () {
@@ -200,10 +213,10 @@ class EasyMDE extends React.Component {
       this.easymde.codemirror.refresh()
     }, 250)
     return (
-      <div>
+      <Fragment>
         <textarea ref={i => (this.element = i)} value={this.state.value} onChange={e => this.onTextareaChanged(e)} />
-        <div className='editor-statusbar uk-float-left uk-width-1-1' />
-      </div>
+        {this.props.showStatusBar && <div className='editor-statusbar uk-float-left uk-width-1-1' />}
+      </Fragment>
     )
   }
 }
@@ -215,12 +228,14 @@ EasyMDE.propTypes = {
   defaultValue: PropTypes.string,
   allowImageUpload: PropTypes.bool,
   inlineImageUploadUrl: PropTypes.string,
-  inlineImageUploadHeaders: PropTypes.object
+  inlineImageUploadHeaders: PropTypes.object,
+  showStatusBar: PropTypes.bool.isRequired
 }
 
 EasyMDE.defaultProps = {
   height: '150px',
-  allowImageUpload: false
+  allowImageUpload: false,
+  showStatusBar: true
 }
 
 export default EasyMDE

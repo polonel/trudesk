@@ -22,7 +22,7 @@ define('modules/attachmentUpload', ['jquery', 'underscore', 'modules/helpers', '
 
   attachmentUploader.init = function () {
     $(document).ready(function () {
-      $('.attachmentInput').each(function () {
+      $('.attachmentInput1').each(function () {
         $(this).on('change', function () {
           var self = $(this)
           var val = self.val()

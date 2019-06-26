@@ -566,7 +566,7 @@ var notifications = require('../notifications') // Load Push Events
 
   emitter.on('ticket:note:added', function (ticket) {
     // Goes to client
-    io.sockets.emit('updateComments', ticket)
+    io.sockets.emit('updateNotes', ticket)
   })
 
   emitter.on('trudesk:profileImageUpdate', function (data) {

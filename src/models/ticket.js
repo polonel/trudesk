@@ -69,30 +69,38 @@ var ticketSchema = mongoose.Schema({
   owner: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'accounts'
+    ref: 'accounts',
+    autopopulate: true
   },
   group: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'groups'
+    ref: 'groups',
+    autopopulate: true
   },
-  assignee: { type: mongoose.Schema.Types.ObjectId, ref: 'accounts' },
+  assignee: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'accounts',
+    autopopulate: { select: '-hasL2Auth -preferences -__v' }
+  },
   date: { type: Date, default: Date.now, required: true, index: true },
   updated: { type: Date },
   deleted: { type: Boolean, default: false, required: true, index: true },
   type: {
     type: mongoose.Schema.Types.ObjectId,
     required: true,
-    ref: 'tickettypes'
+    ref: 'tickettypes',
+    autopopulate: true
   },
   status: { type: Number, default: 0, required: true, index: true },
 
   priority: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'priorities',
-    required: true
+    required: true,
+    autopopulate: true
   },
-  tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags' }],
+  tags: [{ type: mongoose.Schema.Types.ObjectId, ref: 'tags', autopopulate: true }],
   subject: { type: String, required: true },
   issue: { type: String, required: true },
   closedDate: { type: Date },
@@ -103,6 +111,8 @@ var ticketSchema = mongoose.Schema({
   history: [historySchema],
   subscribers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'accounts' }]
 })
+
+ticketSchema.plugin(require('mongoose-autopopulate'))
 
 ticketSchema.index({ deleted: -1, group: 1, status: 1 })
 
@@ -133,16 +143,12 @@ ticketSchema.pre('save', function (next) {
 ticketSchema.post('save', function (savedTicket) {
   if (!this.wasNew) {
     var emitter = require('../emitter')
-    emitter.emit('ticket:updated', savedTicket)
+    savedTicket.populate('assignee', '_id fullname title email image', function (err, savedTicket) {
+      if (err) winston.warn(err)
+      emitter.emit('ticket:updated', savedTicket)
+    })
   }
 })
-
-var autoPopulatePriority = function (next) {
-  this.populate('priority')
-  next()
-}
-
-ticketSchema.pre('findOne', autoPopulatePriority).pre('find', autoPopulatePriority)
 
 ticketSchema.virtual('statusFormatted').get(function () {
   var s = this.status
@@ -286,17 +292,22 @@ ticketSchema.methods.clearAssignee = function (ownerId, callback) {
  * @param {TicketCallback} callback Callback with the updated ticket.
  */
 ticketSchema.methods.setTicketType = function (ownerId, typeId, callback) {
+  var typeSchema = require('./tickettype')
   var self = this
   self.type = typeId
-  var historyItem = {
-    action: 'ticket:set:type',
-    description: 'Ticket type set to: ' + typeId.name,
-    owner: ownerId
-  }
+  typeSchema.findOne({ _id: typeId }, function (err, type) {
+    if (err) return callback(err)
 
-  self.history.push(historyItem)
+    var historyItem = {
+      action: 'ticket:set:type',
+      description: 'Ticket type set to: ' + type.name,
+      owner: ownerId
+    }
 
-  callback(null, self)
+    self.history.push(historyItem)
+
+    if (typeof callback === 'function') return callback(null, self)
+  })
 }
 
 /**
@@ -356,7 +367,7 @@ ticketSchema.methods.setTicketGroup = function (ownerId, groupId, callback) {
     }
     self.history.push(historyItem)
 
-    callback(null, ticket)
+    return callback(null, ticket)
   })
 }
 
@@ -372,7 +383,7 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
 
   self.history.push(historyItem)
 
-  callback(null, self)
+  return callback(null, self)
 }
 
 /**
@@ -394,8 +405,13 @@ ticketSchema.methods.setTicketDueDate = function (ownerId, dueDate, callback) {
  * });
  */
 ticketSchema.methods.setIssue = function (ownerId, issue, callback) {
+  var marked = require('marked')
+
   var self = this
-  self.issue = sanitizeHtml(issue).trim()
+  issue = issue.replace(/(\r\n|\n\r|\r|\n)/g, '<br>')
+  issue = sanitizeHtml(issue).trim()
+  self.issue = marked(issue)
+
   var historyItem = {
     action: 'ticket:update:issue',
     description: 'Ticket Issue was updated.',

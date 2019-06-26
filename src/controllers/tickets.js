@@ -15,6 +15,7 @@ var path = require('path')
 var _ = require('lodash')
 var winston = require('winston')
 var groupSchema = require('../models/group')
+var departmentSchema = require('../models/department')
 var permissions = require('../permissions')
 
 /**
@@ -313,13 +314,16 @@ ticketsController.processor = function (req, res) {
  */
 ticketsController.print = function (req, res) {
   var user = req.user
-  var uid = req.params.id
-  if (isNaN(uid)) {
+  var uid = null
+  try {
+    uid = parseInt(req.params.uid)
+  } catch (e) {
+    winston.warn(e)
     return res.redirect('/tickets')
   }
 
   var content = {}
-  content.title = 'Tickets - ' + req.params.id
+  content.title = 'Tickets - ' + req.params.uid
   content.nav = 'tickets'
 
   content.data = {}
@@ -332,27 +336,67 @@ ticketsController.print = function (req, res) {
     if (_.isNull(ticket) || _.isUndefined(ticket)) return res.redirect('/tickets')
 
     var hasPublic = permissions.canThis(user.role, 'tickets:public')
+    var hasAccess = false
+    async.series(
+      [
+        function (next) {
+          if (user.role.isAdmin || user.role.isAgent) {
+            departmentSchema.getDepartmentGroupsOfUser(user._id, function (err, groups) {
+              if (err) return res.redirect('/tickets')
+              var gIds = groups.map(function (g) {
+                return g._id
+              })
 
-    if (!_.some(ticket.group.members, user._id)) {
-      if (ticket.group.public && hasPublic) {
-        // Blank to bypass
-      } else {
-        winston.warn('User access ticket outside of group - UserId: ' + user._id)
-        return res.redirect('/tickets')
+              console.log(gIds)
+              if (_.some(gIds, ticket.group._id)) {
+                if (!permissions.canThis(user.role, 'tickets:notes')) {
+                  ticket.notes = []
+                }
+
+                hasAccess = true
+                return next()
+              } else {
+                return next('UNAUTHORIZED_GROUP_ACCESS')
+              }
+            })
+          } else {
+            return next()
+          }
+        },
+        function (next) {
+          if (hasAccess) return next()
+          if (!_.some(ticket.group.members, user._id)) {
+            if (ticket.group.public && hasPublic) {
+              // Blank to bypass
+            } else {
+              return next('UNAUTHORIZED_GROUP_ACCESS')
+            }
+          }
+
+          if (!permissions.canThis(user.role, 'tickets:notes')) {
+            ticket.notes = []
+          }
+
+          return next()
+        }
+      ],
+      function (err) {
+        if (err) {
+          if (err === 'UNAUTHORIZED_GROUP_ACCESS')
+            winston.warn('User access ticket outside of group - UserId: ' + user._id)
+
+          return res.redirect('/tickets')
+        }
+
+        content.data.ticket = ticket
+        content.data.ticket.priorityname = ticket.priority.name
+        content.data.ticket.tagsArray = ticket.tags
+        content.data.ticket.commentCount = _.size(ticket.comments)
+        content.layout = 'layout/print'
+
+        return res.render('subviews/printticket', content)
       }
-    }
-
-    if (!permissions.canThis(user.role, 'tickets:notes')) {
-      ticket.notes = []
-    }
-
-    content.data.ticket = ticket
-    content.data.ticket.priorityname = ticket.priority.name
-    content.data.ticket.tagsArray = ticket.tags
-    content.data.ticket.commentCount = _.size(ticket.comments)
-    content.layout = 'layout/print'
-
-    return res.render('subviews/printticket', content)
+    )
   })
 }
 
@@ -550,7 +594,9 @@ ticketsController.uploadAttachment = function (req, res) {
     }
   })
 
-  var object = {}
+  var object = {
+    ownerId: req.user._id
+  }
   var error
 
   busboy.on('field', function (fieldname, val) {
@@ -620,6 +666,7 @@ ticketsController.uploadAttachment = function (req, res) {
     if (error) return res.status(error.status).send(error.message)
 
     if (_.isUndefined(object.ticketId) || _.isUndefined(object.ownerId) || _.isUndefined(object.filePath)) {
+      fs.unlinkSync(object.filePath)
       return res.status(400).send('Invalid Form Data')
     }
 

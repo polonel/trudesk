@@ -25,6 +25,7 @@ import AddPriorityToTypeModal from './AddPriorityToTypeModal'
 import CreatePriorityModal from './CreatePriorityModal'
 import DeletePriorityModal from './DeletePriorityModal'
 import CreateTagModal from './CreateTagModal'
+import AddTagsModal from './AddTagsModal'
 import CreateTicketModal from './CreateTicketModal'
 import CreateRoleModal from './CreateRoleModal'
 import DeleteRoleModal from './DeleteRoleModal'
@@ -48,6 +49,7 @@ const MODAL_COMPONENTS = {
   CREATE_PRIORITY: CreatePriorityModal,
   DELETE_PRIORITY: DeletePriorityModal,
   CREATE_TAG: CreateTagModal,
+  ADD_TAGS_MODAL: AddTagsModal,
   CREATE_ROLE: CreateRoleModal,
   DELETE_ROLE: DeleteRoleModal,
   VIEW_ALL_NOTIFICATIONS: ViewAllNotificationsModal,

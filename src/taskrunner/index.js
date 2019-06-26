@@ -30,7 +30,7 @@ taskRunner.init = function (callback) {
 }
 
 taskRunner.sendStats = function (callback) {
-  settingSchema.getSettingsByName(['gen:installid', 'gen:version'], function (err, settings) {
+  settingSchema.getSettingsByName(['gen:installid', 'gen:version', 'gen:siteurl'], function (err, settings) {
     if (err) return callback(err)
     if (!settings || settings.length < 1) return callback()
 
@@ -41,9 +41,15 @@ taskRunner.sendStats = function (callback) {
       return x.name === 'gen:installid'
     })
 
+    var hostnameSetting = _.find(settings, function (x) {
+      return x.name === 'gen:siteurl'
+    })
+
     if (!installIdSetting) return callback()
 
     versionSetting = _.isUndefined(versionSetting) ? { value: '--' } : versionSetting
+
+    hostnameSetting = _.isUndefined(hostnameSetting) ? { value: '--' } : hostnameSetting
 
     var result = {
       ticketCount: 0,
@@ -92,9 +98,11 @@ taskRunner.sendStats = function (callback) {
         }
       ],
       function (err) {
+        // if (typeof callback === 'function') return callback()
+        // return
         if (err) return callback()
         request(
-          'https://stats.trudesk.app/api/v1/installation',
+          'http://localhost:3000/api/v1/installation',
           {
             method: 'POST',
             json: true,
@@ -102,6 +110,7 @@ taskRunner.sendStats = function (callback) {
               statsKey: 'trudesk',
               id: installIdSetting.value,
               version: versionSetting.value,
+              hostname: hostnameSetting.value,
               ticketCount: result.ticketCount,
               agentCount: result.agentCount,
               customerGroupCount: result.customerGroupCount,

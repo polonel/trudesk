@@ -37,6 +37,7 @@ import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
 import NoticeBanner from 'components/NoticeBanner'
+import Avatar from 'components/Avatar/Avatar'
 
 @observer
 class TopbarContainer extends React.Component {
@@ -204,10 +205,7 @@ class TopbarContainer extends React.Component {
                             title={viewdata.loggedInAccount.fullname}
                             className={'profile-pic no-ajaxy uk-vertical-align-middle'}
                           >
-                            <img
-                              src={'/uploads/users/' + (viewdata.loggedInAccount.image || 'defaultProfile.jpg')}
-                              alt='Profile Picture'
-                            />
+                            <Avatar image={viewdata.loggedInAccount.image} showOnlineBubble={false} />
                           </a>
                           <Dropdown small={true}>
                             <DropdownHeader text={viewdata.loggedInAccount.fullname} />

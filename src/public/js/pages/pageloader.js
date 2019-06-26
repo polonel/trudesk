@@ -40,7 +40,6 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
       'pages/accountsImport',
       'pages/groups',
       'pages/profile',
-      'pages/singleTicket',
       'pages/reports',
       'pages/reportsBreakdown',
       'pages/notices',
@@ -50,7 +49,7 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
 
       'modules/ajaximgupload',
       'modules/attachmentUpload'
-    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m, n) {
+    ], function (a, b, c, d, e, f, g, h, i, j, k, l, m) {
       async.parallel(
         [
           function (done) {
@@ -87,11 +86,8 @@ define('pages/pageloader', ['async', 'jquery'], function (async, $) {
             k.init(done)
           },
           function (done) {
-            l.init(done)
-          },
-          function (done) {
+            l.init()
             m.init()
-            n.init()
 
             return done()
           }

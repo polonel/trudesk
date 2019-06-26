@@ -61,12 +61,15 @@ tagSchema.statics.getTags = function (callback) {
 }
 
 tagSchema.statics.getTagsWithLimit = function (limit, page, callback) {
-  return this.model(COLLECTION)
+  var q = this.model(COLLECTION)
     .find({})
-    .limit(limit)
-    .skip(page * limit)
     .sort('normalized')
-    .exec(callback)
+
+  if (limit !== -1) {
+    q.limit(limit).skip(page * limit)
+  }
+
+  return q.exec(callback)
 }
 
 tagSchema.statics.getTagByName = function (tagName, callback) {
