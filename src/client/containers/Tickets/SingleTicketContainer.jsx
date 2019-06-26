@@ -40,6 +40,7 @@ import axios from 'axios'
 import helpers from 'lib/helpers'
 import Log from '../../logger'
 import socket from 'lib/socket'
+import UIkit from 'uikit'
 
 const fetchTicket = parent => {
   axios
@@ -56,6 +57,14 @@ const fetchTicket = parent => {
     })
 }
 
+const showPriorityConfirm = () => {
+  UIkit.modal.confirm(
+    'Selected Priority does not exist for this ticket type.<br><br><strong>Please select a new priority</strong>',
+    () => {},
+    { cancelButtonClass: 'uk-hidden' }
+  )
+}
+
 @observer
 class SingleTicketContainer extends React.Component {
   @observable ticket = null
@@ -68,6 +77,7 @@ class SingleTicketContainer extends React.Component {
     this.onUpdateTicketNotes = this.onUpdateTicketNotes.bind(this)
     this.onUpdateAssignee = this.onUpdateAssignee.bind(this)
     this.onUpdateTicketType = this.onUpdateTicketType.bind(this)
+    this.onUpdateTicketPriority = this.onUpdateTicketPriority.bind(this)
     this.onUpdateTicketGroup = this.onUpdateTicketGroup.bind(this)
     this.onUpdateTicketDueDate = this.onUpdateTicketDueDate.bind(this)
     this.onUpdateTicketTags = this.onUpdateTicketTags.bind(this)
@@ -78,6 +88,7 @@ class SingleTicketContainer extends React.Component {
     socket.socket.on('updateNotes', this.onUpdateTicketNotes)
     socket.socket.on('updateAssignee', this.onUpdateAssignee)
     socket.socket.on('updateTicketType', this.onUpdateTicketType)
+    socket.socket.on('updateTicketPriority', this.onUpdateTicketPriority)
     socket.socket.on('updateTicketGroup', this.onUpdateTicketGroup)
     socket.socket.on('updateTicketDueDate', this.onUpdateTicketDueDate)
     socket.socket.on('updateTicketTags', this.onUpdateTicketTags)
@@ -96,6 +107,7 @@ class SingleTicketContainer extends React.Component {
     socket.socket.off('updateNotes', this.onUpdateTicketNotes)
     socket.socket.off('updateAssignee', this.onUpdateAssignee)
     socket.socket.off('updateTicketType', this.onUpdateTicketType)
+    socket.socket.off('updateTicketPriority', this.onUpdateTicketPriority)
     socket.socket.off('updateTicketGroup', this.onUpdateTicketGroup)
     socket.socket.off('updateTicketDueDate', this.onUpdateTicketDueDate)
     socket.socket.off('updateTicketTags', this.onUpdateTicketTags)
@@ -118,6 +130,10 @@ class SingleTicketContainer extends React.Component {
 
   onUpdateTicketType (data) {
     this.ticket.type = data.type
+  }
+
+  onUpdateTicketPriority (data) {
+    this.ticket.priority = data.priority
   }
 
   onUpdateTicketGroup (data) {
@@ -343,10 +359,17 @@ class SingleTicketContainer extends React.Component {
                             <span>Type</span>
                             {hasTicketUpdate && (
                               <select
-                                name='tType'
-                                id='tType'
                                 value={this.ticket.type._id}
                                 onChange={e => {
+                                  const type = this.props.common.ticketTypes.find(t => t._id === e.target.value)
+                                  const hasPriority =
+                                    type.priorities.findIndex(p => p._id === this.ticket.priority._id) !== -1
+
+                                  if (!hasPriority) {
+                                    socket.ui.setTicketPriority(this.ticket._id, type.priorities.find(() => true))
+                                    showPriorityConfirm()
+                                  }
+
                                   socket.ui.setTicketType(this.ticket._id, e.target.value)
                                 }}
                               >
@@ -366,7 +389,12 @@ class SingleTicketContainer extends React.Component {
                           <div className='marginleft5'>
                             <span>Priority</span>
                             {hasTicketUpdate && (
-                              <select name='tPriority' id='tPriority' defaultValue={this.ticket.priority._id}>
+                              <select
+                                name='tPriority'
+                                id='tPriority'
+                                value={this.ticket.priority._id}
+                                onChange={e => socket.ui.setTicketPriority(this.ticket._id, e.target.value)}
+                              >
                                 {this.ticket.type &&
                                   this.ticket.type.priorities &&
                                   this.ticket.type.priorities.map(priority => (
