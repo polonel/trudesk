@@ -232,7 +232,7 @@ define([
               components:
                 '<span>\n' +
                 '{{#if ticket.owner.image}}\n' +
-                '<img src="{{base_url}}/uploads/users/{{ticket.owner.image}}" style="box-sizing: border-box; width: 50px; height: 50px; border-radius: 25px 25px 25px 25px;" width="50" height="50">\n' +
+                '<div style="width: 50px; height: 50px;"><img src="{{base_url}}/uploads/users/{{ticket.owner.image}}" style="box-sizing: border-box; width: 50px; height: 50px; border-radius: 25px 25px 25px 25px;" width="50" height="50"></div>\n' +
                 '{{else}}\n' +
                 '<img src="{{base_url}}/uploads/users/defaultProfile.jpg" style="box-sizing: border-box; width: 50px; height: 50px; border-radius: 25px 25px 25px 25px;" width="50" height="50">\n' +
                 '{{/if}}\n' +

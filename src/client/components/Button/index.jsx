@@ -26,6 +26,10 @@ class Button extends React.Component {
     helpers.UI.waves()
   }
 
+  click () {
+    if (this.button) this.button.click()
+  }
+
   render () {
     const {
       type,
@@ -61,6 +65,7 @@ class Button extends React.Component {
         type={type ? type : 'button'}
         disabled={disabled}
         style={renderStyleOverride}
+        ref={r => (this.button = r)}
       >
         <div className={'uk-float-left uk-width-1-1 uk-text-center'}> {text}</div>
         {hasDropdown && (

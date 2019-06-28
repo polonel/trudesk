@@ -18,6 +18,7 @@ import { connect } from 'react-redux'
 import { getTagsWithPage } from 'actions/tickets'
 
 import BaseModal from 'containers/Modals/BaseModal'
+import Button from 'components/Button'
 import Log from '../../logger'
 import axios from 'axios'
 import $ from 'jquery'
@@ -90,27 +91,27 @@ class AddTagsModal extends React.Component {
                   ))}
                 </select>
                 <button type='button' style={{ borderRadius: 0 }}>
-                  <i className='fa fa-plus' style={{ marginRight: 0 }} />
+                  <i className='material-icons' style={{ marginRight: 0 }}>
+                    add
+                  </i>
                 </button>
               </div>
 
               <div className='left' style={{ marginTop: 15 }}>
-                <button className='uk-button red nomargin' type='button'>
-                  Clear
-                </button>
+                <Button type={'button'} text={'Clear'} small={true} flat={true} style={'danger'} />
               </div>
               <div className='right' style={{ marginTop: 15 }}>
-                <button
-                  className='uk-button uk-button-secondary cancel uk-modal-close'
-                  type='button'
-                  style={{ margin: '0 5px 0 0' }}
+                <Button
+                  type={'button'}
+                  text={'Cancel'}
+                  style={'secondary'}
+                  small={true}
+                  flat={true}
+                  waves={true}
+                  extraClass={'uk-modal-close'}
                   ref={r => (this.closeButton = r)}
-                >
-                  Cancel
-                </button>
-                <button className='uk-button uk-button-success nomargin' type='submit'>
-                  Save Tags
-                </button>
+                />
+                <Button type={'submit'} text={'Save Tags'} style={'success'} small={true} waves={true} />
               </div>
             </form>
           </div>
