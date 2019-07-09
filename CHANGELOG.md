@@ -1,3 +1,10 @@
+## [1.0.15](https://github.com/polonel/trudesk/compare/v1.0.14...v1.0.15) (2019-07-09)
+
+
+### Bug Fixes
+
+* **accounts:** account list returning null after updating admin ([da79f1d](https://github.com/polonel/trudesk/commit/da79f1d))
+
 ## [1.0.14](https://github.com/polonel/trudesk/compare/v1.0.13...v1.0.14) (2019-06-10)
 
 
