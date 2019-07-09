@@ -18,9 +18,11 @@ import { connect } from 'react-redux'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 import { size } from 'lodash'
+import clsx from 'clsx'
 
 import { showModal, hideModal, showNotice, clearNotice } from 'actions/common'
 
+import Avatar from 'components/Avatar/Avatar'
 import Dropdown from 'components/Dropdown'
 import DropdownItem from 'components/Dropdown/DropdownItem'
 import DropdownSeparator from 'components/Dropdown/DropdownSeperator'
@@ -28,6 +30,7 @@ import DropdownHeader from 'components/Dropdown/DropdownHeader'
 import DropdownTrigger from 'components/Dropdown/DropdownTrigger'
 import PDropdownTrigger from 'components/PDropdown/PDropdownTrigger'
 import OffCanvasTrigger from 'components/OffCanvas/OffCanvasTrigger'
+import NoticeBanner from 'components/NoticeBanner'
 import NotificationsDropdownPartial from './notificationsDropdown'
 
 import socket from 'lib/socket'
@@ -36,13 +39,13 @@ import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
-import NoticeBanner from 'components/NoticeBanner'
-import Avatar from 'components/Avatar/Avatar'
 
 @observer
 class TopbarContainer extends React.Component {
   @observable notificationCount = 0
   @observable activeUserCount = 0
+
+  @observable showInfoBanner = true
 
   constructor (props) {
     super(props)
@@ -64,6 +67,7 @@ class TopbarContainer extends React.Component {
     socket.ui.updateUsers()
 
     this.showNotice(this.props.viewdata.notice, this.props.viewdata.noticeCookieName)
+    this.shouldShowBanner()
   }
 
   componentWillUnmount () {
@@ -71,6 +75,16 @@ class TopbarContainer extends React.Component {
     socket.socket.off('updateUsers', this.onSocketUpdateUsers)
     socket.socket.off('$trudesk:notice:show', this.onSocketShowNotice)
     socket.socket.off('updateClearNotice', this.onSocketClearNotice)
+  }
+
+  shouldShowBanner () {
+    const hasSeen = Cookies.get('trudesk_info_banner_closed') === 'true'
+    if (hasSeen) this.showInfoBanner = false
+  }
+
+  closeInfo () {
+    Cookies.set('trudesk_info_banner_closed', 'true')
+    this.showInfoBanner = false
   }
 
   showNotice (notice, cookieName) {
@@ -124,6 +138,23 @@ class TopbarContainer extends React.Component {
     const { viewdata, sessionUser } = this.props
     return (
       <div>
+        {sessionUser && sessionUser.role.isAdmin && (
+          <div className={clsx('info-banner', this.showInfoBanner ? '' : 'hide')}>
+            <div className={'close'} onClick={() => this.closeInfo()} />
+            <p>
+              You're invited to sign up for Trudesk Cloud Beta, our free-to-use cloud-hosted platform.
+              <a
+                href='https://trudesk.io'
+                className={'md-btn md-btn-wave md-btn-small md-btn-success text-white'}
+                style={{ marginLeft: 15 }}
+                target={'_blank'}
+                onClick={() => this.closeInfo()}
+              >
+                Apply Now
+              </a>
+            </p>
+          </div>
+        )}
         {this.props.notice && <NoticeBanner notice={this.props.notice} />}
         <div className={'uk-grid top-nav'}>
           <div className='uk-width-1-1'>

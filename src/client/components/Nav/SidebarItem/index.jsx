@@ -31,7 +31,7 @@ class NavButton extends Component {
 
   renderAnchorLink () {
     return (
-      <a href={this.props.href} className={this.props.class}>
+      <a href={this.props.href} className={this.props.class} target={this.props.target || ''}>
         <i className='material-icons'>{this.props.icon}</i>
         {this.props.text}
       </a>
@@ -70,6 +70,7 @@ NavButton.propTypes = {
   hasSubmenu: PropTypes.bool,
   subMenuTarget: PropTypes.string,
   active: PropTypes.bool,
+  target: PropTypes.string,
   children: PropTypes.node
 }
 

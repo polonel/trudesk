@@ -246,7 +246,7 @@ class Sidebar extends React.Component {
             active={activeItem === 'notices'}
           />
         )}
-        <NavSeparator />
+
         {sessionUser && Helpers.canUser('settings:edit') && (
           <SidebarItem
             text='Settings'
@@ -320,7 +320,9 @@ class Sidebar extends React.Component {
             </Submenu>
           </SidebarItem>
         )}
+        <NavSeparator />
         <SidebarItem href='/about' icon='help' text='About' active={activeItem === 'about'} />
+        <SidebarItem href={'https://www.trudesk.io'} icon={'cloud'} text={'Cloud'} target={'_blank'} />
       </ul>
     )
   }
