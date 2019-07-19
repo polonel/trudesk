@@ -107,5 +107,16 @@
   "Comment": "Comentário",
   "Internal": "Interno",
   "Note": "Anotação",
-  "Post": "Enviar"
+  "Post": "Enviar",
+  "Teams": "Times",
+  "Departments": "Departamentos",
+  "Customers": "Clientes",
+  "Agents": "Agentes",
+  "Customer Groups": "Grupos de Clientes",
+  "Group Breakdown": "Análise de Grupo",
+  "User Breakdown": "Análise de Usuário",
+  "Appearance": "Aparencia",
+  "Permissions": "Permissões",
+  "Push Service": "Serviço de Push",
+  "Backup/Restore": "Backup/Restaurar"
 }

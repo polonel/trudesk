@@ -120,14 +120,14 @@ class Sidebar extends React.Component {
                 active={activeSubItem === 'tickets-unassigned'}
               />
               <NavSeparator />
-              <SubmenuItem text='New' icon='&#xE24D;' href='/tickets/new' active={activeSubItem === 'tickets-new'} />
+              <SubmenuItem text={t('New')} icon='&#xE24D;' href='/tickets/new' active={activeSubItem === 'tickets-new'} />
               <SubmenuItem
                 text={t('Pending')}
                 icon='&#xE629;'
                 href='/tickets/pending'
                 active={activeSubItem === 'tickets-pending'}
               />
-              <SubmenuItem text='Open' icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
+              <SubmenuItem text={t('Open')} icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
               <SubmenuItem
                 text={t('Closed')}
                 icon='&#xE2C7;'
@@ -192,7 +192,7 @@ class Sidebar extends React.Component {
           />
         )}
         {sessionUser && Helpers.canUser('teams:view') && (
-          <SidebarItem text='Teams' icon='wc' href='/teams' class='navTeams' active={activeItem === 'teams'} />
+          <SidebarItem text={t('Teams')} icon='wc' href='/teams' class='navTeams' active={activeItem === 'teams'} />
         )}
         {sessionUser && Helpers.canUser('departments:view') && (
           <SidebarItem
@@ -260,7 +260,7 @@ class Sidebar extends React.Component {
             active={activeItem === 'settings'}
           >
             <Submenu id='settings'>
-              <SubmenuItem text='General' icon='tune' href='/settings' active={activeSubItem === 'settings-general'} />
+              <SubmenuItem text={t('General')} icon='tune' href='/settings' active={activeSubItem === 'settings-general'} />
               <SubmenuItem
                 text={t('Appearance')}
                 icon='style'
