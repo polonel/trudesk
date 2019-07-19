@@ -1,0 +1,10 @@
+{
+  "Find_Group": "Найти группу",
+  "Members_with_count": "{{count}} пользователь",
+  "Members_with_count_plural": "{{count}} пользователей",
+  "Members": "Пользователи",
+  "Send_Notifications_To": "Отправлять уведомления",
+  "Create_Group": "Создать группу",
+  "Group_Name": "Название группы",
+  "Group_Breakdown": "Продуктивность групп"
+}

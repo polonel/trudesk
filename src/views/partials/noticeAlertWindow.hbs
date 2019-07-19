@@ -7,8 +7,8 @@
                     <h4 id="noticeTitle" style="font-size: 24px; margin-top: 7px; font-weight: 300;color: {{data.common.notice.fontColor}};">{{data.common.notice.name}}</h4>
                 </div>
                 <div>
-                    <p id="noticeText" style="color: #000;">{{formatDate data.common.notice.activeDate (concat data.common.shortDateFormat data.common.timeFormat true true)}} - Important: {{data.common.notice.message}}</p>
-                    <button class="md-btn md-btn-flat-success md-btn-wave-light right" type="button" style="margin-bottom: 0;" ng-click="confirmNoticeClick();">Confirm</button>
+                    <p id="noticeText" style="color: #000;">{{formatDate data.common.notice.activeDate (concat data.common.shortDateFormat data.common.timeFormat true true)}} - {{t 'common:Important'}}: {{data.common.notice.message}}</p>
+                    <button class="md-btn md-btn-flat-success md-btn-wave-light right" type="button" style="margin-bottom: 0;" ng-click="confirmNoticeClick();">{{t 'common:Confirm'}}</button>
                 </div>
             </div>
         </div>

@@ -2,11 +2,11 @@
     <div class="uk-modal-dialog">
         <form class="uk-form-stacked" id="createGroupForm" action="#" method="POST">
             <div class="uk-margin-medium-bottom">
-                <label for="gName">Group Name</label>
+                <label for="gName">{{t 'common:Group'}} {{t 'common:Name'}}</label>
                 <input type="text" class="md-input" id="gName" name="gName"/>
             </div>
             <div class="uk-margin-small-bottom">
-                <label for="gMembers" class="uk-form-label nopadding">Members</label>
+                <label for="gMembers" class="uk-form-label nopadding">{{t 'group:Members'}}</label>
                 <select class="selectize" name="gMembers" id="gMembers" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                     {{#each data.users}}
                         <option value="{{id}}">{{fullname}}</option>
@@ -14,7 +14,7 @@
                 </select>
             </div>
             <div class="uk-margin-small-bottom">
-                <label for="gSendMailTo" class="uk-form-label nopadding">Send Mail To</label>
+                <label for="gSendMailTo" class="uk-form-label nopadding">{{t 'group:Send_Notifications_To'}}</label>
                 <select name="gSendMailTo" id="gSendMailTo" class="selectize" multiple data-md-selectize-inline data-md-selectize-bottom="true">
                     {{#each data.users}}
                         <option value="{{_id}}">{{fullname}}</option>
@@ -22,8 +22,8 @@
                 </select>
             </div>
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Close</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewGroup" ng-click="createGroup()">Create Group</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Close'}}</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-primary" id="submitNewGroup" ng-click="createGroup()">{{t 'group:Create_Group'}}</button>
             </div>
         </form>
     </div>

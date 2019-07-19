@@ -4,10 +4,10 @@
     <div class="uk-width-3-10 message-list full-height" data-offset="68">
         <div class="page-title noshadow nopadding-right" style="border-top: none !important; border-bottom: none !important; height: 68px !important; padding-left: 20px !important;">
             <div class="page-title-border-right" style="position:relative;">
-                <p style="font-size: 24px;">Conversations</p>
+                <p style="font-size: 24px;">{{t 'messages:Conversations'}}</p>
                 <div id="convo-actions" style="position:absolute; top: 20px; right: 15px;">
-                    <a title="Start Conversation" class="no-ajaxy" style="display: block; height: 28px;" ng-click="showUserList($event);"><i class="material-icons" style="font-size: 28px; font-weight: 300;">add</i></a>
-                    <a class="no-ajaxy" style="display: none; height: 28px; line-height: 30px; font-size: 16px; font-weight: 300;" ng-click="hideUserList($event);">Cancel</a>
+                    <a title="Start Conversation" style="display: block; height: 28px;" ng-click="showUserList($event);"><i class="material-icons no-ajaxy" style="font-size: 28px; font-weight: 300;">add</i></a>
+                    <a class="no-ajaxy" style="display: none; height: 28px; line-height: 30px; font-size: 16px; font-weight: 300;" ng-click="hideUserList($event);">{{t 'common:Cancel'}}</a>
                 </div>
             </div>
         </div>
@@ -36,7 +36,7 @@
 
         <div id="new-convo-user-list" class="page-content-left noborder" style="display: none; overflow-y: hidden; height: 100%;">
             <div class="search-box">
-                <input type="text" placeholder="Search" />
+                <input type="text" placeholder="{{t 'common:Search'}}" />
             </div>
             <ul class="all-user-list message-items scrollable">
                 {{#each data.common.users}}
@@ -105,9 +105,9 @@
     {{#if data.conversation}}
         <div class="uk-width-7-10 nopadding page-message" style="position:relative;">
             <div id="message-content" class="page-content page-content-right full-height scrollable" data-offset="41" style="margin-bottom: 41px !important;" data-conversation-id="{{data.conversation._id}}">
-                <span class="conversation-start">Conversation Started on {{formatDate data.conversation.createdAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
+                <span class="conversation-start">{{t 'messages:Conversation_started_on'}} {{formatDate data.conversation.createdAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
                 {{#if data.conversation.requestingUserMeta.deletedAt}}
-                    <span class="conversation-deleted">Conversation Deleted at {{formatDate data.conversation.requestingUserMeta.deletedAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
+                    <span class="conversation-deleted">{{t 'messages:Conversation_deleted_at'}} {{formatDate data.conversation.requestingUserMeta.deletedAt (concat data.common.longDateFormat data.common.timeFormat true true)}}</span>
                 {{/if}}
                 <div id="conversation-scrollspy" class="uk-text-center">
                     <i class="uk-icon-refresh uk-icon-spin uk-hidden"></i>
@@ -161,8 +161,8 @@
 
             <div class="message-textbox">
                 <form ng-submit="sendChatMessage('{{data.conversation._id}}', '{{data.conversation.partner._id}}', $event)">
-                    <input type="text" name="chatMessage" placeholder="Type your message..." ng-keydown="onKeyDown('{{data.conversation._id}}', '{{data.conversation.partner._id}}', $event);" />
-                    <button type="submit">SEND</button>
+                    <input type="text" name="chatMessage" placeholder="{{t 'messages:Type_your_message'}}" ng-keydown="onKeyDown('{{data.conversation._id}}', '{{data.conversation.partner._id}}', $event);" />
+                    <button type="submit">{{t 'common:Send'}}</button>
                 </form>
             </div>
         </div>
@@ -170,7 +170,7 @@
 
     <div>
         <ul class="context-menu">
-            <li data-action="delete" style="color: #d32f2f;">Delete Conversation</li>
+            <li data-action="delete" style="color: #d32f2f;">{{t 'messages:Delete_Conversation'}}</li>
         </ul>
     </div>
 </div>

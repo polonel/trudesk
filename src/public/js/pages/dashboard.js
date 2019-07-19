@@ -79,7 +79,9 @@ define('pages/dashboard', [
                 ticket.uid +
                 '</a></td>'
               html +=
-                '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">Open</span></td>'
+                '<td class="uk-width-1-10 uk-text-nowrap"><span class="uk-badge ticket-status-open uk-width-1-1">' +
+                window.i18next.t('common:Open') +
+                '</span></td>'
               html += '<td class="uk-width-6-10">' + ticket.subject + '</td>'
               if (ticket.updated) {
                 html +=
@@ -129,18 +131,26 @@ define('pages/dashboard', [
             var lastUpdated = $('#lastUpdated').find('span')
 
             var formatString = helpers.getLongDateFormat() + ' ' + helpers.getTimeFormat()
-            var formated = moment.utc(_data.lastUpdated, 'MM/DD/YYYY hh:mm:ssa').format(formatString)
+            var formatted = moment
+              .utc(_data.lastUpdated, 'MM/DD/YYYY hh:mm:ssa')
+              .tz(helpers.getTimezone())
+              .format(formatString)
 
-            lastUpdated.text(formated)
+            lastUpdated.text(formatted)
 
             if (!_data.data) {
               console.log('[trudesk:dashboard:getData] Error - Invalid Graph Data')
-              helpers.UI.showSnackbar('Error - Invalid Graph Data', true)
+              helpers.UI.showSnackbar(
+                window.i18next.t('common:Error') + ' - ' + window.i18next.t('Invalid_Graph_Data'),
+                true
+              )
             } else if (_data.data.length < 1) {
-              // No data in graph. Show No Data avaliable
+              // No data in graph. Show No Data available
               var $breakdownGraph = $('#breakdownGraph')
               $breakdownGraph.empty()
-              $breakdownGraph.append('<div class="no-data-available-text">No Data Available</div>')
+              $breakdownGraph.append(
+                '<div class="no-data-available-text">' + window.i18next.t('No_Data_Available') + '</div>'
+              )
             } else {
               $('#breakdownGraph').empty()
               parms.data = MG.convert.date(_data.data, 'date')
@@ -151,7 +161,7 @@ define('pages/dashboard', [
 
             var ticketCount = $('#ticketCount')
             var oldTicketCount = ticketCount.text() === '--' ? 0 : ticketCount.text()
-            var totalTicketText = 'Total Tickets (last ' + timespan + 'd)'
+            var totalTicketText = window.i18next.t('Total_Tickets_last_x', { days: timespan })
             // if (timespan == 0)
             //     totalTicketText = 'Total Tickets (lifetime)';
             ticketCount
@@ -270,7 +280,7 @@ define('pages/dashboard', [
                 columns: arr,
                 type: 'donut',
                 colors: c,
-                empty: { label: { text: 'No Data Available' } }
+                empty: { label: { text: window.i18next.t('No_Data_Available') } }
               },
               donut: {
                 label: {
@@ -339,7 +349,7 @@ define('pages/dashboard', [
                 columns: arr,
                 type: 'pie',
                 colors: c,
-                empty: { label: { text: 'No Data Available' } }
+                empty: { label: { text: window.i18next.t('No_Data_Available') } }
               },
               donut: {
                 label: {

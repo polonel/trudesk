@@ -52,6 +52,9 @@ module.exports = function (app, db, callback) {
   app.use(bodyParser.json({ limit: '2mb' }))
   app.use(cookieParser())
 
+  require('./i18n').register(app, hbs.handlebars)
+  app.use('/locales/', express.static(path.join(__dirname, '../../locales')))
+
   app.use(function (req, res, next) {
     if (mongoose.connection.readyState !== 1) {
       var err = new Error('MongoDb Error')

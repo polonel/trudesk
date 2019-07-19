@@ -52,6 +52,8 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
             'underscore',
             'modules/navigation',
             'modules/socket',
+            'i18next',
+            'i18nextXHR',
             'uikit',
             'modules/ajaxify',
             'modernizr',
@@ -60,9 +62,20 @@ require(['jquery', 'modules/helpers', 'angular', 'async', 'angularjs/services'],
             'pace',
             'easypiechart',
             'idletimer'
-          ], function (_, nav, socket) {
+          ], function (_, nav, socket, i18next, i18nextXHR) {
             // React Bootstrap
             require('../../client/app.jsx')
+            i18next.use(i18nextXHR).init({
+              backend: {
+                loadPath: '/locales/{{lng}}/{{ns}}.json',
+                addPath: '/debug/locales/add/{{lng}}/{{ns}}'
+              },
+              // lng: 'de',
+              ns: ['install', 'account', 'ticket', 'group', 'messages', 'client', 'common'],
+              defaultNS: 'client',
+              saveMissing: true
+            })
+            window.i18next = i18next
 
             // Page loading (init)
             require(['pages/pageloader'], function (pl) {

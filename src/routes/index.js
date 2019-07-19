@@ -373,6 +373,27 @@ function mainRoutes (router, middleware, controllers) {
   })
 
   if (global.env === 'development') {
+    router.post('/debug/locales/add/:lng/:ns', function (req, res) {
+      // This is used to pop lng file with strings in codebase.
+      var fs = require('fs')
+      var path = require('path')
+      var _ = require('lodash')
+      var lngFile = path.join(__dirname, '../../locales/' + req.params.lng + '/' + req.params.ns + '.json')
+      var obj = JSON.parse(fs.readFileSync(lngFile))
+      var k = _.extend(obj, req.body)
+      fs.writeFileSync(lngFile, JSON.stringify(k, null, 2))
+
+      return res.send()
+    })
+
+    router.get('/debug/lng/:lng', function (req, res) {
+      global.i18next.changeLanguage(req.params.lng, function (err) {
+        if (err) return res.status(400).json({ success: false, error: err })
+
+        return res.json({ success: true, lng: req.params.lng, message: 'Locale changed to: ' + req.params.lng })
+      })
+    })
+
     router.get('/debug/populatedb', controllers.debug.populatedatabase)
     router.get('/debug/sendmail', controllers.debug.sendmail)
     router.get('/debug/mailcheck/refetch', function (req, res) {

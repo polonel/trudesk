@@ -3,13 +3,13 @@
         <form class="uk-form-stacked" id="deleteTicketTypeForm-{{_id}}" action="#" method="POST">
             <input type="hidden" id="del_type_name-{{_id}}" name="del_type_name" value="{{name}}">
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <h2 class="">Remove Ticket Type</h2>
-                <span>Please select the ticket type you wish to reassign tickets to in order to delete the ticket type.</span>
+                <h2 class="">{{t 'ticket:Remove_Ticket_Type'}}</h2>
+                <span>{{t 'ticket:remove_ticket_type_desc'}}</span>
                 <hr style="margin: 10px 0" />
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
                 <div class="uk-float-left" style="width: 100%;">
-                    <label for="ticketType" class="uk-form-label">Type</label>
+                    <label for="ticketType" class="uk-form-label">{{t 'common:Type'}}</label>
                     <select class="selectize" name="ticketType" data-md-selectize-inline>
                         {{#each @root.data.common.ticketTypes}}
                             {{#isnot name ../name}}
@@ -20,11 +20,11 @@
                 </div>
             </div>
             <div class="uk-margin-medium-bottom uk-clearfix">
-                <span class="uk-text-danger">WARNING: This will change all tickets with type: <strong>{{name}}</strong> to the selected ticket type above. <br /><strong>This is permanent!</strong></span>
+                <span class="uk-text-danger">{{t 'common:WARNING'}}: {{t 'ticket:This_will_change_all_tickets_with_type'}}: <strong>{{name}}</strong> {{t 'ticket:to_the_selected_ticket_type_above'}}. <br /><strong>This is permanent!</strong></span>
             </div>
             <div class="uk-modal-footer uk-text-right">
-                <button type="button" class="md-btn md-btn-flat uk-modal-close">Cancel</button>
-                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitDeleteTicketType('{{_id}}', $event)">Delete</button>
+                <button type="button" class="md-btn md-btn-flat uk-modal-close">{{t 'common:Cancel'}}</button>
+                <button type="button" class="md-btn md-btn-flat md-btn-flat-danger" data-id="submitDeleteTicketType" ng-click="submitDeleteTicketType('{{_id}}', $event)">{{t 'common:Delete'}}</button>
             </div>
         </form>
     </div>

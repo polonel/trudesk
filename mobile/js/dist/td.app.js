@@ -1425,7 +1425,6 @@ angular
         ionic.trigger('$trudesk.imgcrop.showCropper', {})
         $scope.imgcropModal.show()
       })
-
       ionic.on('$trudesk.account.updateImage', function (data) {
         $scope.updateAccountImage()
       })

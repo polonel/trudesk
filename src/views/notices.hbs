@@ -11,24 +11,24 @@
                                 <ul class="uk-nav">
                                     {{#canUser data.user "notices:create"}}
                                         <li>
-                                            <a href="/notices/create" role="button">Create</a>
+                                            <a href="/notices/create" role="button">{{t 'common:Create'}}</a>
                                         </li>
                                         <li>
                                             <hr style="margin: 5px 0;">
                                         </li>
                                     {{/canUser}}
                                     <li>
-                                        <a class="no-ajaxy" role="button" ng-click="activateNotice()" close-uk-dropdown>Activate</a>
+                                        <a href="#" class="no-ajaxy" role="button" ng-click="activateNotice()">{{t 'common:Activate'}}</a>
                                     </li>
                                     <li>
-                                        <a class="no-ajaxy" role="button" ng-click="clearNotice()" close-uk-dropdown>Deactivate</a>
+                                        <a href="#" class="no-ajaxy" role="button" ng-click="clearNotice()">{{t 'common:Deactivate'}}</a>
                                     </li>
                                     {{#canUser data.user "notices:delete"}}
                                         <li>
                                             <hr style="margin: 5px 0;">
                                         </li>
                                         <li>
-                                            <a class="no-ajaxy" role="button" ng-click="deleteNotices()" style="color: red;" close-uk-dropdown>Delete</a>
+                                            <a href="#" class="no-ajaxy" role="button" ng-click="deleteNotices()" style="color: red;">{{t 'common:Delete'}}</a>
                                         </li>
                                     {{/canUser}}
                                 </ul>
@@ -46,9 +46,9 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>Name</th>
-                    <th>Message</th>
-                    <th>Date</th>
+                    <th>{{t 'common:Name'}}</th>
+                    <th>{{t 'common:Message'}}</th>
+                    <th>{{t 'common:Date'}}</th>
                     <th></th>
                 </tr>
                 </thead>
