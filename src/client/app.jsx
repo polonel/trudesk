@@ -12,7 +12,7 @@
  *  Copyright (c) 2014-2019. All rights reserved.
  */
 
-import React from 'react'
+import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import { applyMiddleware, createStore, compose } from 'redux'
 import { Provider } from 'react-redux'
@@ -26,6 +26,13 @@ import ModalRoot from './containers/Modals'
 import renderer from './renderer'
 
 import $ from 'jquery'
+import './i18n';
+
+const Loader = () => (
+  <div className="App">
+    <div>loading...</div>
+  </div>
+);
 
 const sagaMiddleware = createSagaMiddleware()
 
@@ -55,13 +62,17 @@ window.react.redux = { store }
 
 sagaMiddleware.run(IndexSagas)
 
-const sidebarWithProvider = (
+const SidebarWithProvider = () => (
   <Provider store={store}>
     <Sidebar />
   </Provider>
 )
 
-ReactDOM.render(sidebarWithProvider, document.getElementById('side-nav'))
+ReactDOM.render(
+  <Suspense fallback={<Loader/>}>
+    <SidebarWithProvider/>
+  </Suspense>
+, document.getElementById('side-nav'))
 
 if (document.getElementById('modal-wrapper')) {
   const RootModal = (
