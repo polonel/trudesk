@@ -12,8 +12,8 @@
   "create_ticket_type_desc": "Criar um tipo de ticket para categorizar os tickets",
   "Type_Name": "Nome do tipo",
   "invalid_type_name_text": "Por favor, insira um nome de tipo válido. Nome de tipo deve conter pelo menos 3 caracteres.",
-  "invalid_ticket_subject_text": "Por favor, insira um de assunto válido. O assunto deve conter pelo menos 10 caracteres.",
-  "invalid_ticket_issue_text": "Por favor, insira um problema válido. O problema deve conter pelo menos 10 caracteres.",
+  "invalid_ticket_subject_text": "Por favor, insira um de assunto válido. O assunto deve conter pelo menos {{minSubjectLength}} caracteres.",
+  "invalid_ticket_issue_text": "Por favor, insira um problema válido. O problema deve conter pelo menos {{minIssueLength}} caracteres.",
   "invalid_comment_text": "Por favor, insira um comentário válido. O comentário deve conter pelo menos 5 caracteres.",
   "invalid_note_text": "Por favor, insira uma nota válida. Notas devem conter pelo menos 5 caracteres.",
   "ticket_issue_desc": "Por favor, tente ser o mais específico possível. Inclua todos os detalhes que você acha que possam ser relevantes, como as etapas de solução de problemas que você tomou.",
@@ -28,5 +28,6 @@
   "Assignee": "Assignee",
   "Add_Comment": "Add Comment",
   "No_Tags_Found_for": "No Tags Found for",
-  "Create_Tag": "Create Tag"
+  "Create_Tag": "Create Tag",
+  "Subject": "Assunto"
 }
