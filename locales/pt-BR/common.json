@@ -118,5 +118,8 @@
   "Appearance": "Aparencia",
   "Permissions": "Permissões",
   "Push Service": "Serviço de Push",
-  "Backup/Restore": "Backup/Restaurar"
+  "Backup/Restore": "Backup/Restaurar",
+  "Customer": "Cliente",
+  "No Tickets Found": "Nenhum Ticket Encontrado",
+  "Due Date": "Data de Vencimento"
 }
