@@ -14,7 +14,7 @@
 
 import { Provider } from 'react-redux'
 import ReactDOM from 'react-dom'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 import TicketsContainer from 'containers/Tickets/TicketsContainer'
 import SingleTicketContainer from 'containers/Tickets/SingleTicketContainer'
@@ -24,6 +24,13 @@ import GroupsContainer from 'containers/Groups'
 import TeamsContainer from 'containers/Teams'
 import DepartmentsContainer from 'containers/Departments'
 
+const Loader = () => (
+  <div className="App">
+    <div>loading...</div>
+  </div>
+);
+
+
 export default function (store) {
   if (document.getElementById('tickets-container')) {
     const view = document.getElementById('tickets-container').getAttribute('data-view')
@@ -31,13 +38,17 @@ export default function (store) {
     let filter = document.getElementById('tickets-container').getAttribute('data-filter')
     filter = filter ? JSON.parse(filter) : {}
 
-    const TicketsContainerWithProvider = (
+    const TicketsContainerWithProvider = () => (
       <Provider store={store}>
         <TicketsContainer view={view} page={page} filter={filter} />
       </Provider>
     )
 
-    ReactDOM.render(TicketsContainerWithProvider, document.getElementById('tickets-container'))
+    ReactDOM.render(
+      <Suspense fallback={<Loader/>}>
+        <TicketsContainerWithProvider/>
+      </Suspense>
+    , document.getElementById('tickets-container'))
   }
 
   if (document.getElementById('single-ticket-container')) {
