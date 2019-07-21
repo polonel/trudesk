@@ -159,7 +159,7 @@ class CreateTicketModal extends React.Component {
             <label>{t('Subject')}</label>
             <input
               type='text'
-              name={t('Subject')}
+              name={'subject'}
               className={'md-input'}
               data-validation='length'
               data-validation-length={`min${viewdata.ticketSettings.minSubject}`}
