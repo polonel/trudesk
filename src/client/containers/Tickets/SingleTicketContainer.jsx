@@ -43,6 +43,8 @@ import socket from 'lib/socket'
 import UIkit from 'uikit'
 import SpinLoader from 'components/SpinLoader'
 
+import { withTranslation } from 'react-i18next';
+
 const fetchTicket = parent => {
   axios
     .get(`/api/v2/tickets/${parent.props.ticketUid}`)
@@ -244,6 +246,7 @@ class SingleTicketContainer extends React.Component {
       this.ticket.status !== 3 &&
       helpers.hasPermOverRole(this.ticket.owner.role, null, 'tickets:update', true)
 
+    const { t } = this.props;
     return (
       <div className={'uk-clearfix uk-position-relative'} style={{ width: '100%', height: '100vh' }}>
         {!this.ticket && <SpinLoader active={true} />}
@@ -267,12 +270,12 @@ class SingleTicketContainer extends React.Component {
                 <div className='page-content-left full-height scrollable'>
                   <div className='ticket-details-wrap uk-position-relative uk-clearfix'>
                     <div className='ticket-assignee-wrap uk-clearfix' style={{ paddingRight: 30 }}>
-                      <h4>Assignee</h4>
+                      <h4>{t('Assignee')}</h4>
                       <div className='ticket-assignee uk-clearfix'>
                         {hasTicketUpdate && (
                           <a
                             role='button'
-                            title='Set Assignee'
+                            title={t('Set Assignee')}
                             style={{ float: 'left' }}
                             className='relative no-ajaxy'
                             onClick={() => socket.socket.emit('updateAssigneeList')}
@@ -295,7 +298,7 @@ class SingleTicketContainer extends React.Component {
                           />
                         )}
                         <div className='ticket-assignee-details'>
-                          {!this.ticket.assignee && <h3>No User Assigned</h3>}
+                          {!this.ticket.assignee && <h3>{t('No User Assigned')}</h3>}
                           {this.ticket.assignee && (
                             <Fragment>
                               <h3>{this.ticket.assignee.fullname}</h3>
@@ -325,7 +328,7 @@ class SingleTicketContainer extends React.Component {
                         {/* Type */}
                         <div className='uk-width-1-2 uk-float-left nopadding'>
                           <div className='marginright5'>
-                            <span>Type</span>
+                            <span>{t('common:Type')}</span>
                             {hasTicketUpdate && (
                               <select
                                 value={this.ticket.type._id}
@@ -356,7 +359,7 @@ class SingleTicketContainer extends React.Component {
                         {/* Priority */}
                         <div className='uk-width-1-2 uk-float-left nopadding'>
                           <div className='marginleft5'>
-                            <span>Priority</span>
+                            <span>{t('common:Priority')}</span>
                             {hasTicketUpdate && (
                               <select
                                 name='tPriority'
@@ -378,7 +381,7 @@ class SingleTicketContainer extends React.Component {
                         </div>
                         {/*  Group */}
                         <div className='uk-width-1-1 nopadding uk-clearfix'>
-                          <span>Group</span>
+                          <span>{t('common:Group')}</span>
                           {hasTicketUpdate && (
                             <select
                               value={this.ticket.group._id}
@@ -398,7 +401,7 @@ class SingleTicketContainer extends React.Component {
                         </div>
                         {/*  Due Date */}
                         <div className='uk-width-1-1 p-0'>
-                          <span>Due Date</span> {hasTicketUpdate && <span>-&nbsp;</span>}
+                          <span>{t('common:Due Date')}</span> {hasTicketUpdate && <span>-&nbsp;</span>}
                           {hasTicketUpdate && (
                             <div className={'uk-display-inline'}>
                               <a
@@ -408,7 +411,7 @@ class SingleTicketContainer extends React.Component {
                                   socket.ui.setTicketDueDate(this.ticket._id, undefined)
                                 }}
                               >
-                                Clear
+                                {t('common:Clear')}
                               </a>
                               <DatePicker
                                 format={this.props.common.shortDateFormat}
@@ -445,7 +448,7 @@ class SingleTicketContainer extends React.Component {
                                       })
                                     }}
                                   >
-                                    Edit Tags
+                                    {t('Edit Tags')}
                                   </a>
                                 </div>
                               </Fragment>
@@ -466,7 +469,7 @@ class SingleTicketContainer extends React.Component {
                     {helpers.canUser('agent:*', true) && (
                       <div className='uk-width-1-1 padding-left-right-15'>
                         <div className='tru-card ticket-details pr-0 pb-0' style={{ height: 250 }}>
-                          Ticket History
+                          {t('Ticket History')}
                           <hr style={{ padding: 0, margin: 0 }} />
                           <div className='history-items scrollable' style={{ paddingTop: 12 }}>
                             {this.ticket.history &&
@@ -474,7 +477,7 @@ class SingleTicketContainer extends React.Component {
                                 <div key={item._id} className='history-item'>
                                   <time dateTime={helpers.formatDate(item.date, this.props.common.longDateFormat)} />
                                   <em>
-                                    Action by: <span>{item.owner.fullname}</span>
+                                    {t('Action by')}: <span>{item.owner.fullname}</span>
                                   </em>
                                   <p>{item.description}</p>
                                 </div>
@@ -498,7 +501,7 @@ class SingleTicketContainer extends React.Component {
                         helpers.scrollToBottom('.page-content-right', true)
                       }}
                     >
-                      Add Comment
+                      {t('Add Comment')}
                     </a>
                   </div>
                   <div
@@ -673,7 +676,7 @@ class SingleTicketContainer extends React.Component {
                               {helpers.canUser('tickets:notes', true) && (
                                 <TruTabSelector
                                   selectorId={1}
-                                  label={'Internal Note'}
+                                  label={t('Internal Note')}
                                   active={!helpers.canUser('comments:create', true)}
                                 />
                               )}
@@ -697,7 +700,7 @@ class SingleTicketContainer extends React.Component {
                                       className='uk-button uk-button-accent'
                                       style={{ padding: '10px 15px' }}
                                     >
-                                      Post Comment
+                                      {t('Post Comment')}
                                     </button>
                                   </div>
                                 </div>
@@ -722,7 +725,7 @@ class SingleTicketContainer extends React.Component {
                                       className='uk-button uk-button-accent'
                                       style={{ padding: '10px 15px' }}
                                     >
-                                      Save Note
+                                      {t('Save Note')}
                                     </button>
                                   </div>
                                 </div>
@@ -760,7 +763,7 @@ const mapStateToProps = state => ({
   groupsState: state.groupsState
 })
 
-export default connect(
+export default withTranslation('ticket')(connect(
   mapStateToProps,
   { fetchGroups, unloadGroups, showModal }
-)(SingleTicketContainer)
+)(SingleTicketContainer))

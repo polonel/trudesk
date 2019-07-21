@@ -25,6 +25,8 @@ import 'inlineAttachment'
 import 'inputInlineAttachment'
 import 'cm4InlineAttachment'
 
+import { withTranslation } from 'react-i18next';
+
 class EasyMDE extends React.Component {
   constructor (props) {
     super(props)
@@ -88,7 +90,7 @@ class EasyMDE extends React.Component {
           urlText: '![Image]({filename})'
         })
 
-        EasyMDE.attachFileDesc(self.element)
+        EasyMDE.attachFileDesc(self.element, this.props.t)
       }
     }
   }
@@ -115,12 +117,12 @@ class EasyMDE extends React.Component {
     return null
   }
 
-  static attachFileDesc (textarea) {
+  static attachFileDesc (textarea, t) {
     const $el = $(textarea)
     const attachFileDiv = $('<div></div>')
     attachFileDiv
       .addClass('attachFileDesc')
-      .html('<p>Attach images by dragging & dropping or pasting from clipboard.</p>')
+      .html(`<p>${t('Image_Drag_Drop')}.</p>`)
     $el.siblings('.CodeMirror').addClass('hasFileDesc')
     $el
       .siblings('.editor-statusbar')
@@ -238,4 +240,4 @@ EasyMDE.defaultProps = {
   showStatusBar: true
 }
 
-export default EasyMDE
+export default withTranslation('common')(EasyMDE)

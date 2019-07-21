@@ -107,5 +107,15 @@
   "Comment": "Comment",
   "Internal": "Internal",
   "Note": "Note",
-  "Post": "Post"
+  "Post": "Post",
+  "Admins": "Admins",
+  "Elasticsearch": "Elasticsearch",
+  "Cloud": "Cloud",
+  "Set Open": "Set Open",
+  "Set Pending": "Set Pending",
+  "Set Closed": "Set Closed",
+  "Edit Tags": "Edit Tags",
+  "Action by": "Action by",
+  "Add Comment": "Add Comment",
+  "Image_Drag_Drop": "Attach images by dragging & dropping or pasting from clipboard"
 }

@@ -127,7 +127,7 @@ class Sidebar extends React.Component {
                 href='/tickets/pending'
                 active={activeSubItem === 'tickets-pending'}
               />
-              <SubmenuItem text={t('Open')} icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
+              <SubmenuItem text={t('ticket:Open')} icon='&#xE2C8;' href='/tickets/open' active={activeSubItem === 'tickets-open'} />
               <SubmenuItem
                 text={t('Closed')}
                 icon='&#xE2C7;'

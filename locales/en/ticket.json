@@ -28,5 +28,20 @@
   "Assignee": "Assignee",
   "Add_Comment": "Add Comment",
   "No_Tags_Found_for": "No Tags Found for",
-  "Create_Tag": "Create Tag"
+  "Create_Tag": "Create Tag",
+  "No User Assigned": "No User Assigned",
+  "Type": "Type",
+  "Priority": "Priority",
+  "Edit Tags": "Edit Tags",
+  "Ticket History": "Ticket History",
+  "Action by": "Action by",
+  "Add Comment": "Add Comment",
+  "Save Note": "Save Note",
+  "Post Comment": "Post Comment",
+  "Set Assignee": "Set Assignee",
+  "Ticket was created.": "Ticket was created.",
+  "Change Status": "Change Status",
+  "Internal Note": "Internal Note",
+  "Select Assignee": "Select Assignee",
+  "Clear Assignee": "Clear Assignee"
 }

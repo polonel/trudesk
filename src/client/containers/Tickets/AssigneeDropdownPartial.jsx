@@ -22,6 +22,8 @@ import PDropDown from 'components/PDropdown'
 import helpers from 'lib/helpers'
 import socket from 'lib/socket'
 
+import { withTranslation } from 'react-i18next';
+
 @observer
 class AssigneeDropdownPartial extends React.Component {
   @observable agents = []
@@ -45,9 +47,10 @@ class AssigneeDropdownPartial extends React.Component {
   }
 
   render () {
+    const { t } = this.props;
     return (
       <PDropDown
-        title={'Select Assignee'}
+        title={t('Select Assignee')}
         id={'assigneeDropdown'}
         override={true}
         leftArrow={true}
@@ -63,7 +66,7 @@ class AssigneeDropdownPartial extends React.Component {
               socket.socket.emit('clearAssignee', this.props.ticketId)
             }}
           >
-            Clear Assignee
+            {t('Clear Assignee')}
           </a>
         }
       >
@@ -103,4 +106,4 @@ AssigneeDropdownPartial.propTypes = {
   onAssigneeClick: PropTypes.func
 }
 
-export default AssigneeDropdownPartial
+export default withTranslation('ticket')(AssigneeDropdownPartial)

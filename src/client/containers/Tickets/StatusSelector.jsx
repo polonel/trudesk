@@ -19,18 +19,20 @@ import socket from 'lib/socket'
 import { observer } from 'mobx-react'
 import { observable } from 'mobx'
 
-const statusToName = status => {
+const statusToName = (status, t) => {
   switch (status) {
     case 0:
-      return 'New'
+      return t && t('New') || 'New'
     case 1:
-      return 'Open'
+      return t && t('ticket:Open') || 'Open'
     case 2:
-      return 'Pending'
+      return t && t('Pending') || 'Pending'
     case 3:
-      return 'Closed'
+      return t && t('Closed') || 'Closed'
   }
 }
+
+import { withTranslation } from 'react-i18next';
 
 @observer
 class StatusSelector extends React.Component {
@@ -92,10 +94,11 @@ class StatusSelector extends React.Component {
   }
 
   render () {
+    const { t } = this.props;
     return (
       <div className='floating-ticket-status'>
         <div
-          title='Change Status'
+          title={t('ticket:Change Status')}
           className={clsx(
             `ticket-status`,
             `ticket-${statusToName(this.status).toLowerCase()}`,
@@ -104,7 +107,7 @@ class StatusSelector extends React.Component {
           onClick={e => this.toggleDropMenu(e)}
           ref={r => (this.selectorButton = r)}
         >
-          <span>{statusToName(this.status)}</span>
+          <span>{statusToName(this.status, t)}</span>
         </div>
 
         {this.props.hasPerm && (
@@ -116,16 +119,16 @@ class StatusSelector extends React.Component {
         <div id={'statusSelect'} ref={r => (this.dropMenu = r)} className='hide'>
           <ul>
             <li className='ticket-status ticket-new' onClick={() => this.changeStatus(0)}>
-              <span>New</span>
+              <span>{t('New')}</span>
             </li>
             <li className='ticket-status ticket-open' onClick={() => this.changeStatus(1)}>
-              <span>Open</span>
+              <span>{t('ticket:Open')}</span>
             </li>
             <li className='ticket-status ticket-pending' onClick={() => this.changeStatus(2)}>
-              <span>Pending</span>
+              <span>{t('Pending')}</span>
             </li>
             <li className='ticket-status ticket-closed' onClick={() => this.changeStatus(3)}>
-              <span>Closed</span>
+              <span>{t('Closed')}</span>
             </li>
           </ul>
         </div>
@@ -145,4 +148,4 @@ StatusSelector.defaultProps = {
   hasPerm: false
 }
 
-export default StatusSelector
+export default withTranslation('common')(StatusSelector)

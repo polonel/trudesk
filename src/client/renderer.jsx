@@ -54,13 +54,17 @@ export default function (store) {
   if (document.getElementById('single-ticket-container')) {
     const ticketId = document.getElementById('single-ticket-container').getAttribute('data-ticket-id')
     const ticketUid = document.getElementById('single-ticket-container').getAttribute('data-ticket-uid')
-    const SingleTicketContainerWithProvider = (
+    const SingleTicketContainerWithProvider = () => (
       <Provider store={store}>
         <SingleTicketContainer ticketId={ticketId} ticketUid={ticketUid} />
       </Provider>
     )
 
-    ReactDOM.render(SingleTicketContainerWithProvider, document.getElementById('single-ticket-container'))
+    ReactDOM.render(
+      <Suspense fallback={<Loader/>}>
+        <SingleTicketContainerWithProvider/>
+      </Suspense>
+    , document.getElementById('single-ticket-container'))
   }
 
   if (document.getElementById('accounts-container')) {

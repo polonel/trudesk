@@ -25,9 +25,21 @@
   "remove_ticket_type_desc": "Please select the ticket type you wish to reassign tickets to in order to delete the ticket type.",
   "This_will_change_all_tickets_with_type": "This will change all tickets with type",
   "to_the_selected_ticket_type_above": "to the selected ticket type above",
-  "Assignee": "Assignee",
+  "Assignee": "Responsável",
   "Add_Comment": "Add Comment",
   "No_Tags_Found_for": "No Tags Found for",
   "Create_Tag": "Create Tag",
-  "Subject": "Assunto"
+  "Subject": "Assunto",
+  "No User Assigned": "Não Atribuido a Usuário",
+  "Action by": "Feito por",
+  "Add Comment": "Adicionar Comentário",
+  "Ticket History": "Histórico do Ticket",
+  "Change Status": "Mudar Status",
+  "Open": "Aberto",
+  "Edit Tags": "Editar Tags",
+  "Internal Note": "Nota Interna",
+  "Set Assignee": "Selecionar Responsável",
+  "Select Assignee": "Selecione o Resposável",
+  "Clear Assignee": "Limpar Responsavel",
+  "Post Comment": "Adicionar Comentário"
 }
