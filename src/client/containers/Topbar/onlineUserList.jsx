@@ -24,6 +24,8 @@ import OffCanvas from 'components/OffCanvas'
 import UIkit from 'uikit'
 import socket from 'lib/socket'
 
+import { withTranslation } from 'react-i18next';
+
 @observer
 class OnlineUserListPartial extends React.Component {
   @observable activeUsers = new Map()
@@ -85,12 +87,12 @@ class OnlineUserListPartial extends React.Component {
   }
 
   render () {
-    const { timezone, users } = this.props
+    const { timezone, users, t } = this.props
     return (
-      <OffCanvas title={'Online Users'} id={'online-user-list'}>
+      <OffCanvas title={t('Online Users')} id={'online-user-list'}>
         <div style={{ padding: '0 5px' }}>
           <div className='active-now'>
-            <h5>Active Now</h5>
+            <h5>{t('Active_Now')}</h5>
             <div className='online-list-wrapper'>
               <ul className='online-list'>
                 {entries(this.activeUsers).map(([key, value]) => {
@@ -117,13 +119,13 @@ class OnlineUserListPartial extends React.Component {
             </div>
           </div>
 
-          <h5>More Conversations</h5>
+          <h5>{t('More Conversations')}</h5>
           <div className='user-list-wrapper' style={{ lineHeight: 'normal' }}>
             <div
               className='online-list-search-box search-box'
               style={{ borderTop: '1px solid rgba(0,0,0,0.1)', borderRight: 'none' }}
             >
-              <input type='text' placeholder={'Search'} />
+              <input type='text' placeholder={t('Search')} />
             </div>
             <ul className='user-list'>
               {users.map(user => {
@@ -164,4 +166,4 @@ OnlineUserListPartial.propTypes = {
   users: PropTypes.array.isRequired
 }
 
-export default OnlineUserListPartial
+export default withTranslation('common')(OnlineUserListPartial)

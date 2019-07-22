@@ -84,13 +84,17 @@ if (document.getElementById('modal-wrapper')) {
 }
 
 if (document.getElementById('topbar')) {
-  const TopbarRoot = (
+  const TopbarRoot = () => (
     <Provider store={store}>
       <TopbarContainer />
     </Provider>
   )
 
-  ReactDOM.render(TopbarRoot, document.getElementById('topbar'))
+  ReactDOM.render(
+  <Suspense fallback={<Loader/>}>
+    <TopbarRoot/>
+  </Suspense>
+  , document.getElementById('topbar'))
 }
 
 window.react.renderer = renderer

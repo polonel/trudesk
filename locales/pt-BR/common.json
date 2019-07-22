@@ -91,7 +91,7 @@
   "Logs": "Registo de Eventos",
   "Collapse_Menu": "Recolher Menu",
   "Important": "Importante",
-  "Active_Now": "Ativar agora",
+  "Active_Now": "Ativo agora",
   "Date_Start": "Data de início",
   "Date_End": "Data de fim",
   "Apply_Filter": "Aplicar Filtro",
@@ -122,5 +122,7 @@
   "Customer": "Cliente",
   "No Tickets Found": "Nenhum Ticket Encontrado",
   "Due Date": "Data de Vencimento",
-  "Image_Drag_Drop": "Anexe imagens arrastando e soltando ou colando"
+  "Image_Drag_Drop": "Anexe imagens arrastando e soltando ou colando",
+  "More Conversations": "Mais Conversas",
+  "Online Users": "Usuários Online"
 }
