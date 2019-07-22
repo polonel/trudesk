@@ -40,9 +40,9 @@ obj.register = function (app, handlebars) {
     return new handlebars.SafeString(i18next.t(key, options.hash))
   })
 
-  handlebars.registerHelper('t', function (key, options) {
-    return new handlebars.SafeString(i18next.t(key, options.hash))
-  })
+  /*handlebars.registerHelper('t', function(str){
+    return (I18n != undefined ? I18n.t(str) : str);
+  })*/
 }
 
 module.exports = obj
