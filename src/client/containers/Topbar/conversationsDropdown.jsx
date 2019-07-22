@@ -24,6 +24,8 @@ import helpers from 'lib/helpers'
 import socket from 'lib/socket'
 import 'history'
 
+import { withTranslation } from 'react-i18next';
+
 @observer
 class ConversationsDropdownPartial extends React.Component {
   @observable conversations = []
@@ -53,18 +55,18 @@ class ConversationsDropdownPartial extends React.Component {
   }
 
   render () {
-    const { timezone, shortDateFormat } = this.props
+    const { timezone, shortDateFormat, t } = this.props
 
     return (
       <PDropDown
         id={'conversations'}
-        title={'Conversations'}
+        title={t('Conversations')}
         titleHref={'/messages'}
         topOffset={'-10'}
         leftOffset={'4'}
         rightComponent={
           <a href={'/messages/startconversation'} className={'hoverUnderline'}>
-            Start Conversation
+            {t('Start_Conversation')}
           </a>
         }
       >
@@ -116,4 +118,4 @@ ConversationsDropdownPartial.propTypes = {
   shortDateFormat: PropTypes.string.isRequired
 }
 
-export default ConversationsDropdownPartial
+export default withTranslation('common')(ConversationsDropdownPartial)

@@ -40,6 +40,8 @@ import OnlineUserListPartial from 'containers/Topbar/onlineUserList'
 import helpers from 'lib/helpers'
 import Cookies from 'jscookie'
 
+import { withTranslation } from 'react-i18next';
+
 @observer
 class TopbarContainer extends React.Component {
   @observable notificationCount = 0
@@ -135,7 +137,7 @@ class TopbarContainer extends React.Component {
   }
 
   render () {
-    const { viewdata, sessionUser } = this.props
+    const { viewdata, sessionUser, t } = this.props
     return (
       <div>
         {sessionUser && sessionUser.role.isAdmin && (
@@ -171,7 +173,7 @@ class TopbarContainer extends React.Component {
                     {sessionUser && helpers.canUser('tickets:create') && (
                       <li className='top-bar-icon nopadding'>
                         <button
-                          title={'Create Ticket'}
+                          title={t('ticket:Create_Ticket')}
                           className={'anchor'}
                           onClick={() => this.props.showModal('CREATE_TICKET')}
                         >
@@ -188,7 +190,7 @@ class TopbarContainer extends React.Component {
                     <li className='top-bar-icon'>
                       <PDropdownTrigger target={'conversations'}>
                         <a
-                          title={'Conversations'}
+                          title={t('Conversations')}
                           className='no-ajaxy uk-vertical-align'
                           onClick={e => TopbarContainer.onConversationsClicked(e)}
                         >
@@ -198,7 +200,7 @@ class TopbarContainer extends React.Component {
                     </li>
                     <li className='top-bar-icon'>
                       <PDropdownTrigger target={'notifications'}>
-                        <a title={'Notifications'} className={'no-ajaxy uk-vertical-align'}>
+                        <a title={t('Notifications')} className={'no-ajaxy uk-vertical-align'}>
                           <i className='material-icons'>&#xE88E;</i>
                           <span
                             className={'alert uk-border-circle label ' + (this.notificationCount < 1 ? 'hide' : '')}
@@ -210,7 +212,7 @@ class TopbarContainer extends React.Component {
                     </li>
                     <li className='top-bar-icon'>
                       <OffCanvasTrigger target={'online-user-list'}>
-                        <a title={'Online Users'} className='no-ajaxy'>
+                        <a title={t('Online Users')} className='no-ajaxy'>
                           <i className='material-icons'>perm_contact_calendar</i>
                           <span
                             className={
@@ -240,9 +242,9 @@ class TopbarContainer extends React.Component {
                           </a>
                           <Dropdown small={true}>
                             <DropdownHeader text={viewdata.loggedInAccount.fullname} />
-                            <DropdownItem text='Profile' href={'/profile'} />
+                            <DropdownItem text={t('Profile')} href={'/profile'} />
                             <DropdownSeparator />
-                            <DropdownItem text={'Logout'} href={'/logout'} />
+                            <DropdownItem text={t('Logout')} href={'/logout'} />
                           </Dropdown>
                         </DropdownTrigger>
                       </div>
@@ -289,7 +291,7 @@ const mapStateToProps = state => ({
   viewdata: state.common
 })
 
-export default connect(
+export default withTranslation('common')(connect(
   mapStateToProps,
   { showModal, hideModal, showNotice, clearNotice }
-)(TopbarContainer)
+)(TopbarContainer))

@@ -24,6 +24,8 @@ import helpers from 'lib/helpers'
 import socket from 'lib/socket'
 import 'history'
 
+import { withTranslation } from 'react-i18next'
+
 @observer
 class NotificationsDropdownPartial extends React.Component {
   @observable notifications = []
@@ -63,12 +65,12 @@ class NotificationsDropdownPartial extends React.Component {
   }
 
   render () {
-    const { shortDateFormat, timezone } = this.props
+    const { shortDateFormat, timezone, t } = this.props
 
     return (
       <PDropdown
         id={'notifications'}
-        title={'Notifications'}
+        title={t('Notifications')}
         topOffset={'-10'}
         leftOffset={'4'}
         rightComponent={
@@ -76,13 +78,13 @@ class NotificationsDropdownPartial extends React.Component {
             className={'hoverUnderline no-ajaxy'}
             onClick={e => NotificationsDropdownPartial.clearNotificationsClicked(e)}
           >
-            Clear Notifications
+            {t('Clear_Notifications')}
           </a>
         }
         footerComponent={
           <div className={'uk-text-center' + (this.notifications.length < 1 ? ' hide' : '')}>
             <a className={'no-ajaxy hoverUnderline'} onClick={this.props.onViewAllNotificationsClick}>
-              View All Notifications
+              {t('View_All_Notifications')}
             </a>
           </div>
         }
@@ -146,4 +148,4 @@ NotificationsDropdownPartial.propTypes = {
   onViewAllNotificationsClick: PropTypes.func.isRequired
 }
 
-export default NotificationsDropdownPartial
+export default withTranslation('common')(NotificationsDropdownPartial)
