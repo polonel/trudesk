@@ -28,6 +28,7 @@ var departmentSchema = mongoose.Schema({
   normalized: { type: String },
   teams: [{ type: mongoose.Schema.Types.ObjectId, ref: 'teams', autopopulate: true }],
   allGroups: { type: Boolean, default: false },
+  publicGroups: { type: Boolean, default: false },
   groups: [{ type: mongoose.Schema.Types.ObjectId, ref: 'groups', autopopulate: true }]
 })
 
@@ -72,17 +73,34 @@ departmentSchema.statics.getDepartmentGroupsOfUser = function (userId, callback)
         if (err) return callback(err)
 
         var hasAllGroups = _.some(departments, { allGroups: true })
+        var hasPublicGroups = _.some(departments, { publicGroups: true })
         if (hasAllGroups) {
           return Groups.getAllGroups(callback)
-        }
+        } else if (hasPublicGroups) {
+          return Groups.getAllPublicGroups(function (err, publicGroups) {
+            if (err) return callback(err)
 
-        var groups = _.flattenDeep(
-          departments.map(function (department) {
-            return department.groups
+            var mapped = departments.map(function (department) {
+              return department.groups
+            })
+            var merged = _.concat(publicGroups, mapped)
+
+            merged = _.flattenDeep(merged)
+            merged = _.uniqBy(merged, function (i) {
+              return i._id
+            })
+
+            return callback(null, merged)
           })
-        )
+        } else {
+          var groups = _.flattenDeep(
+            departments.map(function (department) {
+              return department.groups
+            })
+          )
 
-        return callback(null, groups)
+          return callback(null, groups)
+        }
       })
   })
 }

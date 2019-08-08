@@ -33,6 +33,7 @@ import MultiSelect from 'components/MultiSelect'
 class EditDepartmentModal extends React.Component {
   @observable name = ''
   @observable allGroups = false
+  @observable publicGroups = false
 
   componentDidMount () {
     this.props.fetchTeams()
@@ -40,6 +41,7 @@ class EditDepartmentModal extends React.Component {
 
     this.name = this.props.department.get('name')
     this.allGroups = this.props.department.get('allGroups')
+    this.publicGroups = this.allGroups ? true : this.props.department.get('publicGroups')
 
     helpers.UI.inputs()
     helpers.UI.reRenderInputs()
@@ -70,6 +72,7 @@ class EditDepartmentModal extends React.Component {
       name: this.name,
       teams: this.teamsSelect.getSelected(),
       allGroups: this.allGroups,
+      publicGroups: this.publicGroups,
       groups: this.allGroups ? [] : this.groupSelect.getSelected()
     }
 
@@ -132,8 +135,27 @@ class EditDepartmentModal extends React.Component {
                   checked={this.allGroups}
                   onChange={e => {
                     this.allGroups = e.target.checked
+                    this.publicGroups = this.allGroups
                     if (this.allGroups) this.groupSelect.selectAll()
                     else this.groupSelect.deselectAll()
+                  }}
+                />
+                <span className={'lever'} />
+              </label>
+            </div>
+          </div>
+          <div className={'uk-margin-medium-bottom uk-clearfix'}>
+            <div className='uk-float-left'>
+              <h4 style={{ paddingLeft: 2 }}>Access all current and new public groups?</h4>
+            </div>
+            <div className='uk-float-right md-switch md-green' style={{ marginTop: 1 }}>
+              <label>
+                Yes
+                <input
+                  type='checkbox'
+                  checked={this.publicGroups}
+                  onChange={e => {
+                    this.publicGroups = e.target.checked
                   }}
                 />
                 <span className={'lever'} />
