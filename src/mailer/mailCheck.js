@@ -285,7 +285,23 @@ function handleMessages (messages) {
                   message.group = group
                 }
 
-                return callback(null, group)
+                if (!message.group) {
+                  groupSchema.create(
+                    {
+                      name: message.owner.email,
+                      members: [message.owner._id],
+                      sendMailTo: [message.owner._id],
+                      public: true
+                    },
+                    function (err, group) {
+                      if (err) return callback(err)
+                      message.group = group
+                      return callback(null, group)
+                    }
+                  )
+                } else {
+                  return callback(null, group)
+                }
               })
             }
           ],
