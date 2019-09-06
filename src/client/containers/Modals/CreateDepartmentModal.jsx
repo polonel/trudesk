@@ -33,6 +33,7 @@ import MultiSelect from 'components/MultiSelect'
 class CreateDepartmentModal extends React.Component {
   @observable name = ''
   @observable allGroups = false
+  @observable publicGroups = false
 
   componentDidMount () {
     this.props.fetchTeams()
@@ -60,21 +61,22 @@ class CreateDepartmentModal extends React.Component {
     e.preventDefault()
     const $form = $(e.target)
     if (!$form.isValid(null, null, false)) return false
-  
-    if(!this.allGroups && this.groupSelect.getSelected() == null){
+
+    if (!this.allGroups && !this.publicGroups && this.groupSelect.getSelected() == null) {
       helpers.UI.showSnackbar('Can not create department without a group selected or all groups enabled!', true)
-      return false;
+      return false
     }
-    
-    if(this.teamsSelect.getSelected() == null){
+
+    if (this.teamsSelect.getSelected() == null) {
       helpers.UI.showSnackbar('Can not create department without a team selected!', true)
-      return false;
+      return false
     }
-    
+
     const payload = {
       name: this.name,
       teams: this.teamsSelect.getSelected(),
       allGroups: this.allGroups,
+      publicGroups: this.publicGroups,
       groups: this.allGroups ? [] : this.groupSelect.getSelected()
     }
 
@@ -131,6 +133,24 @@ class CreateDepartmentModal extends React.Component {
                     this.allGroups = e.target.checked
                     if (this.allGroups) this.groupSelect.selectAll()
                     else this.groupSelect.deselectAll()
+                  }}
+                />
+                <span className={'lever'} />
+              </label>
+            </div>
+          </div>
+          <div className={'uk-margin-medium-bottom uk-clearfix'}>
+            <div className='uk-float-left'>
+              <h4 style={{ paddingLeft: 2 }}>Access all current and new public groups?</h4>
+            </div>
+            <div className='uk-float-right md-switch md-green' style={{ marginTop: 1 }}>
+              <label>
+                Yes
+                <input
+                  type='checkbox'
+                  checked={this.publicGroups}
+                  onChange={e => {
+                    this.publicGroups = e.target.checked
                   }}
                 />
                 <span className={'lever'} />

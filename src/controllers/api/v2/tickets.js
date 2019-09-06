@@ -48,22 +48,14 @@ ticketsV2.get = function (req, res) {
     [
       function (next) {
         if (req.user.role.isAdmin || req.user.role.isAgent) {
-          Department.getUserDepartments(req.user._id, function (err, departments) {
+          Department.getDepartmentGroupsOfUser(req.user._id, function (err, dbGroups) {
             if (err) return next(err)
 
-            if (_.some(departments, { allGroups: true })) {
-              Group.find({}, next)
-            } else {
-              var groups = _.flattenDeep(
-                departments.map(function (d) {
-                  return d.groups.map(function (g) {
-                    return g._id
-                  })
-                })
-              )
+            var groups = dbGroups.map(function (g) {
+              return g._id
+            })
 
-              return next(null, groups)
-            }
+            return next(null, groups)
           })
         } else {
           Group.getAllGroupsOfUser(req.user._id, next)

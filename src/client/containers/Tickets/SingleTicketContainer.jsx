@@ -41,6 +41,7 @@ import helpers from 'lib/helpers'
 import Log from '../../logger'
 import socket from 'lib/socket'
 import UIkit from 'uikit'
+import moment from 'moment'
 import SpinLoader from 'components/SpinLoader'
 
 const fetchTicket = parent => {
@@ -411,10 +412,13 @@ class SingleTicketContainer extends React.Component {
                                 Clear
                               </a>
                               <DatePicker
-                                format={this.props.common.shortDateFormat}
+                                format={helpers.getShortDateFormat()}
                                 value={this.ticket.dueDate}
                                 onChange={e => {
-                                  socket.ui.setTicketDueDate(this.ticket._id, e.target.value)
+                                  const dueDate = moment(e.target.value, helpers.getShortDateFormat())
+                                    .utc()
+                                    .toISOString()
+                                  socket.ui.setTicketDueDate(this.ticket._id, dueDate)
                                 }}
                               />
                             </div>

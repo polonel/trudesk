@@ -155,6 +155,13 @@ class DepartmentsContainer extends React.Component {
                             </h6>
                           </div>
                         )}
+                        {department.get('publicGroups') === true && (
+                          <div>
+                            <h6 className={'text-success'} style={{ fontWeight: 'bold' }}>
+                              All Public Groups
+                            </h6>
+                          </div>
+                        )}
                         {department.get('allGroups') !== true &&
                           groups &&
                           groups.map(group => {
