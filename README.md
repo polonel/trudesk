@@ -1,5 +1,6 @@
 <h1 align="center">
 <a href="http://trudesk.io"><img src="http://trudesk.io/TD_Black.png" width="500" /></a>
+<br />Self-Hosted
 </h1>
 <p align="center">
 <a href="https://api.codacy.com/project/badge/Grade/7b3acb53c33b4a40bb32da109bbdd1a9"><img src="https://img.shields.io/codacy/grade/7b3acb53c33b4a40bb32da109bbdd1a9/develop.svg?style=flat-square" /></a>
@@ -12,12 +13,12 @@
 <a href="https://github.com/polonel/trudesk/releases"><img src="https://img.shields.io/github/release/polonel/trudesk.svg?style=flat-square" /></a>
 <a href="http://trudesk.io/docs"><img src="https://img.shields.io/badge/documentation-click%20to%20read-blue.svg?style=flat-square" /></a>
 <br />
-<sub>© 2014-2019, Chris Brame (<b><a href="https://github.com/polonel">@polonel</a></b>).</sub>
+<sub>© 2014-2019, Trudesk, Inc. (<b><a href="https://trudesk.io">@trudesk</a></b>).</sub>
 </p>
 <br />
 
 ### Open Source Help Desk - Simply Organized.
-Quickly resolve issues & task with an easy to use solution. Built with one goal in mind, to keep work loads organized and simple. Get started today at <a href="http://trudesk.io">Trudesk.io</a>
+Quickly resolve issues & task with an easy to use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Self-Hosted**, the community edition of Trudesk. **For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
 
 <p align="center">
     <img src="http://trudesk.io/images/hero-td-right.png" />
@@ -55,7 +56,7 @@ Trudesk is tested with confidence using [BrowserStack](https://browserstack.com)
 
 ### License
 
-    Copyright 2014-2019 Chris Brame
+    Copyright 2014-2019 Trudesk, Inc.
     
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
