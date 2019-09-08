@@ -1,3 +1,11 @@
+## [1.0.16](https://github.com/polonel/trudesk/compare/v1.0.15...v1.0.16) (2019-09-08)
+
+
+### Bug Fixes
+
+* **datepicker:** [#247](https://github.com/polonel/trudesk/issues/247) ([d51e341](https://github.com/polonel/trudesk/commit/d51e341))
+* **mailcheck:** [#251](https://github.com/polonel/trudesk/issues/251) - Not creating ticket due to invalid group ([1d97104](https://github.com/polonel/trudesk/commit/1d97104))
+
 ## [1.0.15](https://github.com/polonel/trudesk/compare/v1.0.14...v1.0.15) (2019-07-09)
 
 
