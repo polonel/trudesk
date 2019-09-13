@@ -16,12 +16,16 @@
             height: 3px;
             border: none;
         }
+        .hidden {
+          display: none
+        }
     </style>
 </head>
 <body>
 <div>
     <p>Dear {{user.fullname}},</p>
     <p>Your password has been reset to: {{password}}</p>
+    <span class="hidden">--trudesk-ignore--</span>
 </div>
 </body>
 </html>

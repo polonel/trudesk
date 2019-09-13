@@ -348,37 +348,84 @@ function handleMessages (messages) {
             'handleGroup',
             'handlePriority',
             function (results, callback) {
-              var HistoryItem = {
-                action: 'ticket:created',
-                description: 'Ticket was created.',
-                owner: message.owner._id
-              }
-
-              Ticket.create(
-                {
-                  owner: message.owner._id,
-                  group: message.group._id,
-                  type: message.type._id,
-                  status: 0,
-                  priority: results.handlePriority,
-                  subject: message.subject,
-                  issue: message.body,
-                  history: [HistoryItem]
-                },
-                function (err, ticket) {
+              if (/--trudesk-ignore--/.test(message.body)) return callback()
+              message.body = message.body
+                .replace(/\s*On.+wrote.*$/im, '')
+                .replace(/^>.*$/gm, '')
+                .trim()
+              var HistoryItem
+              var result = /Ticket\s#(\d+)/.exec(message.subject)
+              if (result && result[1]) {
+                var ticketId = parseInt(result[1])
+                Ticket.getTicketByUid(ticketId, function (err, t) {
                   if (err) {
-                    winston.warn('Failed to create ticket from email: ' + err)
+                    winston.warn('Failed to update ticket from email: ' + err)
                     return callback(err)
                   }
 
-                  emitter.emit('ticket:created', {
-                    socketId: '',
-                    ticket: ticket
-                  })
+                  if (_.findIndex(t.subscribers, { _id: message.owner._id }) === -1) {
+                    winston.warn('User not subscribed to ticket from email')
+                    return callback()
+                  }
 
-                  return callback()
+                  var Comment = {
+                    owner: message.owner._id,
+                    date: new Date(),
+                    comment: message.body
+                  }
+                  HistoryItem = {
+                    action: 'ticket:comment:added',
+                    description: 'Comment was added',
+                    owner: message.owner._id
+                  }
+
+                  t.updated = Date.now()
+                  t.comments.push(Comment)
+                  t.history.push(HistoryItem)
+
+                  t.save(function (err, tt) {
+                    if (err) {
+                      winston.warn('Failed to update ticket from email: ' + err)
+                      return callback(err)
+                    }
+
+                    emitter.emit('ticket:comment:added', tt, Comment)
+                    return callback()
+                  })
+                })
+              } else {
+                HistoryItem = {
+                  action: 'ticket:created',
+                  description: 'Ticket was created.',
+                  owner: message.owner._id
                 }
-              )
+                Ticket.create(
+                  {
+                    owner: message.owner._id,
+                    group: message.group._id,
+                    type: message.type._id,
+                    status: 0,
+                    priority: results.handlePriority,
+                    subject: message.subject,
+                    issue: message.body,
+                    history: [HistoryItem],
+                    subscribers: [message.owner._id]
+                  },
+                  function (err, ticket) {
+                    if (err) {
+                      winston.warn('Failed to create ticket from email: ' + err)
+                      return callback(err)
+                    }
+
+                    emitter.emit('ticket:created', {
+                      socketId: '',
+                      ticket: ticket
+                    })
+
+                    return callback()
+                  }
+                )
+              }
             }
           ]
         },
