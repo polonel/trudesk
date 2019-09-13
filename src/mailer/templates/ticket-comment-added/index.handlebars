@@ -44,12 +44,15 @@
         <h4>Comments</h4>
         <hr/>
         {{#each ticket.comments}}
+          {{#if @last}}
+            <hr/>
             <h5>{{owner.fullname}}</h5>
             <h5>{{date}}</h5>
             <br/>
             <p class="issue">{{{comment}}}</p>
             <br/>
             <hr/>
+          {{/if}}
         {{/each}}
     </div>
 </body>
