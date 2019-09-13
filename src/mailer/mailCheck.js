@@ -348,23 +348,24 @@ function handleMessages (messages) {
             'handleGroup',
             'handlePriority',
             function (results, callback) {
-              if (/--trudesk-ignore--/.test(message.body)) return callback()
+              if (/--trudesk-ignore--/m.test(message.body)) return callback()
               message.body = message.body
                 .replace(/\s*On.+wrote.*$/im, '')
                 .replace(/^>.*$/gm, '')
                 .trim()
+              if (message.body.length === 0) return callback()
               var HistoryItem
               var result = /Ticket\s#(\d+)/.exec(message.subject)
               if (result && result[1]) {
                 var ticketId = parseInt(result[1])
                 Ticket.getTicketByUid(ticketId, function (err, t) {
                   if (err) {
-                    winston.warn('Failed to update ticket from email: ' + err)
+                    winston.warn('Failed to get ticket from email: ' + err)
                     return callback(err)
                   }
 
-                  if (_.findIndex(t.subscribers, { _id: message.owner._id }) === -1) {
-                    winston.warn('User not subscribed to ticket from email')
+                  if (!t) {
+                    winston.warn('Could not find ticket from email')
                     return callback()
                   }
 
@@ -382,6 +383,7 @@ function handleMessages (messages) {
                   t.updated = Date.now()
                   t.comments.push(Comment)
                   t.history.push(HistoryItem)
+                  if (_.findIndex(t.subscribers, { _id: message.owner._id }) === -1) t.subscribers.push(message.owner._id)
 
                   t.save(function (err, tt) {
                     if (err) {
