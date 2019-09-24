@@ -37,7 +37,7 @@
     "connect-mongo": "2.0.3",
     "cookie": "0.3.1",
     "cookie-parser": "1.4.3",
-    "csv": "3.1.0",
+    "csv": "5.0.0",
     "debug": "4.1.1",
     "dive": "0.5.0",
     "elasticsearch": "15.1.1",
