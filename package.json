@@ -43,7 +43,7 @@
     "elasticsearch": "15.1.1",
     "email-templates": "4.0.3",
     "express": "4.16.4",
-    "express-hbs": "2.0.2",
+    "express-hbs": "2.2.0",
     "express-session": "1.15.6",
     "fast-csv": "2.4.1",
     "file-tail": "0.3.0",
