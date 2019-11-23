@@ -199,6 +199,7 @@ function downloadWin32MongoDBTools (callback) {
   var fileVersion = semver(dbVersion).major + '.' + semver(dbVersion).minor
 
   if (os.platform() === 'win32') {
+    winston.debug('MongoDB version ' + fileVersion + ' detected.')
     var filename = 'mongodb-tools.' + fileVersion + '-win32x64.zip'
     var savePath = path.join(__dirname, '../backup/bin/win32/')
     fs.ensureDirSync(savePath)

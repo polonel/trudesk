@@ -173,7 +173,7 @@ api.groups.create = payload => {
   })
 }
 api.groups.get = payload => {
-  const limit = payload && payload.limit ? payload.limit : 50
+  const limit = payload && payload.limit ? payload.limit : 1000
   const page = payload && payload.page ? payload.page : 0
   const type = payload && payload.type ? `&type=${payload.type}` : ''
 
@@ -194,7 +194,7 @@ api.groups.delete = ({ _id }) => {
 
 api.teams = {}
 api.teams.getWithPage = payload => {
-  const limit = payload && payload.limit ? payload.limit : 25
+  const limit = payload && payload.limit ? payload.limit : 100
   const page = payload && payload.page ? payload.page : 0
   return axios.get(`/api/v2/teams?limit=${limit}&page=${page}`).then(res => {
     return res.data
