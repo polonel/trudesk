@@ -1,3 +1,12 @@
+## [1.0.17](https://github.com/polonel/trudesk/compare/v1.0.16...v1.0.17) (2019-11-23)
+
+
+### Bug Fixes
+
+* **build:** circleci changes ([401ddab](https://github.com/polonel/trudesk/commit/401ddab))
+* **customer:** [#279](https://github.com/polonel/trudesk/issues/279) ([c08a7e9](https://github.com/polonel/trudesk/commit/c08a7e9))
+* **migration:** [#278](https://github.com/polonel/trudesk/issues/278) ([b558134](https://github.com/polonel/trudesk/commit/b558134))
+
 ## [1.0.16](https://github.com/polonel/trudesk/compare/v1.0.15...v1.0.16) (2019-09-08)
 
 
