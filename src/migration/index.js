@@ -16,6 +16,7 @@ var _ = require('lodash')
 var async = require('async')
 var winston = require('winston')
 var semver = require('semver')
+var version = require('../../package.json').version
 
 var SettingsSchema = require('../models/setting')
 var userSchema = require('../models/user')
@@ -34,7 +35,7 @@ function saveVersion (callback) {
     if (!setting) {
       var s = new SettingsSchema({
         name: 'gen:version',
-        value: require('../../package.json').version
+        value: version
       })
       s.save(function (err) {
         if (err) {
@@ -63,7 +64,11 @@ function getDatabaseVersion (callback) {
   SettingsSchema.getSettingByName('gen:version', function (err, setting) {
     if (err) return callback(err)
 
-    if (!setting) throw new Error('Please upgrade to v1.0.7 Exiting...')
+    if (!setting) {
+      if (semver.satisfies(version, '>=1.0.11')) {
+        return saveVersion(callback)
+      } else throw new Error('Please upgrade to v1.0.7 Exiting...')
+    }
 
     return callback(null, setting.value)
   })
