@@ -21,7 +21,7 @@
 Quickly resolve issues & task with an easy to use solution. Built with one goal in mind, to keep work loads organized and simple. **This is the source for Trudesk Self-Hosted**, the community edition of Trudesk. **For the more comprehensive, cloud-hosted version, please see Trudesk Cloud at <a href="http://trudesk.io">Trudesk.io</a>.**
 
 <p align="center">
-    <img src="http://trudesk.io/images/hero-td-right.png" />
+    <img src="https://files.trudesk.io/hero-td-right.png" />
 </p>
 
 ### Online Demo
@@ -50,7 +50,7 @@ If you like what you see here, and want to help support the work being done, you
 ### Sponsors
 Just a few who have made the project possible.
 <br />
-<a href="https://www.browserstack.com"><img src="https://trudesk.io/images/browserstack-logo-600x315.png" width="115" /></a>
+<a href="https://www.browserstack.com"><img src="https://files.trudesk.io/browserstack-logo-600x315.png" width="115" /></a>
 
 Trudesk is tested with confidence using [BrowserStack](https://browserstack.com).
 
