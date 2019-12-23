@@ -22,6 +22,7 @@ import axios from 'axios'
 import Log from '../../logger'
 import { createTicket } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
+import { fetchAccounts } from 'actions/accounts'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -38,6 +39,8 @@ import EasyMDE from 'components/EasyMDE'
 @observer
 class CreateTicketModal extends React.Component {
   @observable priorities = []
+  @observable allAccounts = this.props.accounts || []
+  @observable groupAccounts = []
   @observable selectedPriority = ''
   issueText = ''
 
@@ -47,6 +50,7 @@ class CreateTicketModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchGroups()
+    this.props.fetchAccounts({ type: 'all' })
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
@@ -100,6 +104,10 @@ class CreateTicketModal extends React.Component {
 
     let data = {}
     if (this.issueText.length < 1) return
+    const allowAgentUserTickets =
+      this.props.viewdata.ticketSettings.allowAgentUserTickets &&
+      (this.props.shared.sessionUser.role.isAdmin || this.props.shared.sessionUser.role.isAgent)
+
     const minIssueLength = this.props.viewdata.ticketSettings.minIssue
     let $mdeError
     const $issueTextbox = $(this.issueMde.element)
@@ -121,6 +129,8 @@ class CreateTicketModal extends React.Component {
 
     if (!$form.isValid(null, null, false)) return true
 
+    if (allowAgentUserTickets) data.owner = this.ownerSelect.value
+
     data.subject = e.target.subject.value
     data.group = this.groupSelect.value
     data.type = this.typeSelect.value
@@ -132,8 +142,30 @@ class CreateTicketModal extends React.Component {
     this.props.createTicket(data)
   }
 
+  onGroupSelectChange (e) {
+    // this.groupAccounts = this.props.groups
+    //   .filter(grp => grp.get('_id') === e.target.value)
+    //   .first()
+    //   .get('members')
+    //   .map(a => {
+    //     return { text: a.get('fullname'), value: a.get('_id') }
+    //   })
+    //   .toArray()
+  }
+
   render () {
-    const { viewdata } = this.props
+    const { shared, viewdata } = this.props
+
+    const allowAgentUserTickets =
+      viewdata.ticketSettings.allowAgentUserTickets &&
+      (shared.sessionUser.role.isAdmin || shared.sessionUser.role.isAgent)
+
+    const mappedAccounts = this.props.accounts
+      .map(a => {
+        return { text: a.get('fullname'), value: a.get('_id') }
+      })
+      .toArray()
+
     const mappedGroups = this.props.groups
       .map(grp => {
         return { text: grp.get('name'), value: grp.get('_id') }
@@ -163,14 +195,31 @@ class CreateTicketModal extends React.Component {
             />
           </div>
           <div className='uk-margin-medium-bottom'>
-            <label className={'uk-form-label'}>Group</label>
-            <SingleSelect
-              showTextbox={false}
-              items={mappedGroups}
-              defaultValue={head(mappedGroups) ? head(mappedGroups).value : ''}
-              width={'100%'}
-              ref={i => (this.groupSelect = i)}
-            />
+            <Grid>
+              {allowAgentUserTickets && (
+                <GridItem width={'1-3'}>
+                  <label className={'uk-form-label'}>Owner</label>
+                  <SingleSelect
+                    showTextbox={true}
+                    items={mappedAccounts}
+                    defaultValue={[this.props.viewdata.loggedInAccount._id]}
+                    width={'100%'}
+                    ref={i => (this.ownerSelect = i)}
+                  />
+                </GridItem>
+              )}
+              <GridItem width={allowAgentUserTickets ? '2-3' : '1-1'}>
+                <label className={'uk-form-label'}>Group</label>
+                <SingleSelect
+                  showTextbox={false}
+                  items={mappedGroups}
+                  defaultValue={head(mappedGroups) ? head(mappedGroups).value : ''}
+                  onSelectChange={e => this.onGroupSelectChange(e)}
+                  width={'100%'}
+                  ref={i => (this.groupSelect = i)}
+                />
+              </GridItem>
+            </Grid>
           </div>
           <div className='uk-margin-medium-bottom'>
             <Grid>
@@ -253,6 +302,7 @@ class CreateTicketModal extends React.Component {
             </div>
             <span style={{ marginTop: '6px', display: 'inline-block', fontSize: '11px' }} className={'uk-text-muted'}>
               Please try to be as specific as possible. Please include any details you think may be relevant, such as
+              {/* eslint-disable-next-line react/no-unescaped-entities */}
               troubleshooting steps you've taken.
             </span>
           </div>
@@ -267,18 +317,23 @@ class CreateTicketModal extends React.Component {
 }
 
 CreateTicketModal.propTypes = {
+  shared: PropTypes.object.isRequired,
   viewdata: PropTypes.object.isRequired,
+  accounts: PropTypes.object.isRequired,
   groups: PropTypes.object.isRequired,
   createTicket: PropTypes.func.isRequired,
-  fetchGroups: PropTypes.func.isRequired
+  fetchGroups: PropTypes.func.isRequired,
+  fetchAccounts: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
+  shared: state.shared,
   viewdata: state.common,
-  groups: state.groupsState.groups
+  groups: state.groupsState.groups,
+  accounts: state.accountsState.accounts
 })
 
 export default connect(
   mapStateToProps,
-  { createTicket, fetchGroups }
+  { createTicket, fetchGroups, fetchAccounts }
 )(CreateTicketModal)

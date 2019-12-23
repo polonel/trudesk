@@ -107,6 +107,15 @@ class TicketsSettings extends React.Component {
     })
   }
 
+  onAllowAgentUserTicketsChange (e) {
+    this.props.updateSetting({
+      name: 'allowAgentUserTickets:enable',
+      value: e.target.checked,
+      stateName: 'allowAgentUserTickets',
+      noSnackbar: true
+    })
+  }
+
   onShowOverdueChange (e) {
     this.props.updateSetting({
       name: 'showOverdueTickets:enable',
@@ -234,6 +243,21 @@ class TicketsSettings extends React.Component {
               checked={this.getSetting('allowPublicTickets')}
               onChange={e => {
                 this.onAllowPublicTicketsChange(e)
+              }}
+            />
+          }
+        />
+        <SettingItem
+          title={'Allow Agents to Submit Tickets on Behalf of User'}
+          subtitle={<div>Allow the creation of tickets by agents on behalf of users.</div>}
+          tooltip={'Setting takes affect after refresh.'}
+          component={
+            <EnableSwitch
+              stateName={'allowAgentUserTickets'}
+              label={'Enable'}
+              checked={this.getSetting('allowAgentUserTickets')}
+              onChange={e => {
+                this.onAllowAgentUserTicketsChange(e)
               }}
             />
           }

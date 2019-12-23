@@ -113,6 +113,7 @@ util.getSettings = function (callback) {
     s.tpsUsername = parseSetting(settings, 'tps:username', '')
     s.tpsApiKey = parseSetting(settings, 'tps:apikey', '')
 
+    s.allowAgentUserTickets = parseSetting(settings, 'allowAgentUserTickets:enable', false)
     s.allowPublicTickets = parseSetting(settings, 'allowPublicTickets:enable', false)
     s.allowUserRegistration = parseSetting(settings, 'allowUserRegistration:enable', false)
 

@@ -98,6 +98,17 @@ viewController.getData = function (request, cb) {
 
                 return done()
               })
+            },
+            function (done) {
+              settingSchema.getSetting('allowAgentUserTickets:enable', function (err, setting) {
+                if (!err && setting && setting.value) {
+                  viewdata.ticketSettings.allowAgentUserTickets = setting.value
+                } else {
+                  viewdata.ticketSettings.allowAgentUserTickets = false
+                }
+
+                return done()
+              })
             }
           ],
           callback
