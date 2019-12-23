@@ -156,10 +156,19 @@ apiReports.generate.ticketsByPriority = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
-            return done(null, grps)
-          })
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
@@ -232,11 +241,19 @@ apiReports.generate.ticketsByStatus = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
 
-            return done(null, grps)
-          })
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
@@ -313,11 +330,19 @@ apiReports.generate.ticketsByTags = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
 
-            return done(null, grps)
-          })
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
@@ -393,11 +418,19 @@ apiReports.generate.ticketsByType = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
 
-            return done(null, grps)
-          })
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
@@ -473,11 +506,19 @@ apiReports.generate.ticketsByUser = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
 
-            return done(null, grps)
-          })
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
@@ -522,11 +563,19 @@ apiReports.generate.ticketsByAssignee = function (req, res) {
     [
       function (done) {
         if (_.includes(postData.groups, '-1')) {
-          groupSchema.getAllGroupsNoPopulate(function (err, grps) {
-            if (err) return done(err)
+          if (req.user.role.isAdmin || req.user.role.isAgent) {
+            groupSchema.getAllGroupsNoPopulate(function (err, grps) {
+              if (err) return done(err)
 
-            return done(null, grps)
-          })
+              return done(null, grps)
+            })
+          } else {
+            groupSchema.getAllGroupsOfUser(req.user._id, function (err, grps) {
+              if (err) return done(err)
+
+              return done(null, grps)
+            })
+          }
         } else {
           return done(null, postData.groups)
         }
