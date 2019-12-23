@@ -14,6 +14,7 @@
 
 var _ = require('lodash')
 var async = require('async')
+var Chance = require('chance')
 var apiUtil = require('../apiUtils')
 var User = require('../../../models/user')
 var Group = require('../../../models/group')
@@ -27,7 +28,7 @@ accountsApi.create = function (req, res) {
   if (!postData) return apiUtil.sendApiError_InvalidPostData(res)
 
   var savedId = null
-
+  var chance = new Chance()
   async.series(
     {
       user: function (next) {
@@ -38,7 +39,8 @@ accountsApi.create = function (req, res) {
             password: postData.password,
             fullname: postData.fullname,
             title: postData.title,
-            role: postData.role
+            role: postData.role,
+            accessToken: chance.hash()
           },
           function (err, user) {
             if (err) return apiUtil.sendApiError(res, 500, err.message)
