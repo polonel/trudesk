@@ -50,7 +50,7 @@ class CreateTicketModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchGroups()
-    this.props.fetchAccounts({ type: 'all' })
+    this.props.fetchAccounts({ type: 'all', limit: 1000 })
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
