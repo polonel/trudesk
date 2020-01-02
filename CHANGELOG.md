@@ -1,3 +1,12 @@
+## [1.1.1](https://github.com/polonel/trudesk/compare/v1.1.0...v1.1.1) (2020-01-02)
+
+
+### Bug Fixes
+
+* **accounts:** issue where accounts would load twice on create ticket ([6aa507b](https://github.com/polonel/trudesk/commit/6aa507b))
+* **events:** [#294](https://github.com/polonel/trudesk/issues/294) server crash on sending mail ([b126338](https://github.com/polonel/trudesk/commit/b126338))
+* **tickets:** issue where not all users would load on behalf of ticket ([7ca56f5](https://github.com/polonel/trudesk/commit/7ca56f5))
+
 # [1.1.0](https://github.com/polonel/trudesk/compare/v1.0.17...v1.1.0) (2019-12-23)
 
 
