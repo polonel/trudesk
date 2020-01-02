@@ -18,6 +18,7 @@ import {
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FETCH_ACCOUNTS_CREATE_TICKET,
   HIDE_MODAL,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
@@ -38,6 +39,21 @@ function * fetchAccounts ({ payload, meta }) {
     helpers.UI.showSnackbar(`Error: ${errorText}`, true)
     Log.error(errorText, error.response || error)
     yield put({ type: FETCH_ACCOUNTS.ERROR, error })
+  }
+}
+
+function * fetchAccountsCreateTicket ({ payload, meta }) {
+  try {
+    const response = yield call(api.accounts.getWithPage, payload)
+    yield put({ type: FETCH_ACCOUNTS_CREATE_TICKET.SUCCESS, payload: { response, payload }, meta })
+  } catch (error) {
+    const errorText = error.response ? error.response.data.error : error
+    if (error.response && error.response.status !== (401 || 403)) {
+      Log.error(errorText, error)
+      helpers.UI.showSnackbar(`Error: ${errorText}`, true)
+    }
+
+    yield put({ type: FETCH_ACCOUNTS_CREATE_TICKET.ERROR, error })
   }
 }
 
@@ -109,6 +125,7 @@ function * unloadThunk ({ payload, meta }) {
 export default function * watcher () {
   yield takeLatest(CREATE_ACCOUNT.ACTION, createAccount)
   yield takeLatest(FETCH_ACCOUNTS.ACTION, fetchAccounts)
+  yield takeLatest(FETCH_ACCOUNTS_CREATE_TICKET.ACTION, fetchAccountsCreateTicket)
   yield takeLatest(SAVE_EDIT_ACCOUNT.ACTION, saveEditAccount)
   yield takeEvery(DELETE_ACCOUNT.ACTION, deleteAccount)
   yield takeEvery(ENABLE_ACCOUNT.ACTION, enableAccount)

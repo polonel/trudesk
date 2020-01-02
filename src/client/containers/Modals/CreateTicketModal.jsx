@@ -22,7 +22,7 @@ import axios from 'axios'
 import Log from '../../logger'
 import { createTicket } from 'actions/tickets'
 import { fetchGroups } from 'actions/groups'
-import { fetchAccounts } from 'actions/accounts'
+import { fetchAccountsCreateTicket } from 'actions/accounts'
 
 import $ from 'jquery'
 import helpers from 'lib/helpers'
@@ -50,7 +50,7 @@ class CreateTicketModal extends React.Component {
 
   componentDidMount () {
     this.props.fetchGroups()
-    this.props.fetchAccounts({ type: 'all', limit: 1000 })
+    this.props.fetchAccountsCreateTicket({ type: 'all', limit: 1000 })
     helpers.UI.inputs()
     helpers.formvalidator()
     this.defaultTicketTypeWatcher = when(
@@ -323,17 +323,17 @@ CreateTicketModal.propTypes = {
   groups: PropTypes.object.isRequired,
   createTicket: PropTypes.func.isRequired,
   fetchGroups: PropTypes.func.isRequired,
-  fetchAccounts: PropTypes.func.isRequired
+  fetchAccountsCreateTicket: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
   shared: state.shared,
   viewdata: state.common,
   groups: state.groupsState.groups,
-  accounts: state.accountsState.accounts
+  accounts: state.accountsState.accountsCreateTicket
 })
 
 export default connect(
   mapStateToProps,
-  { createTicket, fetchGroups, fetchAccounts }
+  { createTicket, fetchGroups, fetchAccountsCreateTicket }
 )(CreateTicketModal)

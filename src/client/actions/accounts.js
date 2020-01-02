@@ -18,11 +18,17 @@ import {
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
 } from 'actions/types'
 
 export const fetchAccounts = createAction(FETCH_ACCOUNTS.ACTION, payload => payload, () => ({ thunk: true }))
+export const fetchAccountsCreateTicket = createAction(
+  FETCH_ACCOUNTS_CREATE_TICKET.ACTION,
+  payload => payload,
+  () => ({ thunk: true })
+)
 export const createAccount = createAction(CREATE_ACCOUNT.ACTION)
 export const saveEditAccount = createAction(SAVE_EDIT_ACCOUNT.ACTION)
 export const deleteAccount = createAction(DELETE_ACCOUNT.ACTION)

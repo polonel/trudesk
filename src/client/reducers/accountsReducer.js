@@ -19,6 +19,7 @@ import {
   DELETE_ACCOUNT,
   ENABLE_ACCOUNT,
   FETCH_ACCOUNTS,
+  FETCH_ACCOUNTS_CREATE_TICKET,
   SAVE_EDIT_ACCOUNT,
   UNLOAD_ACCOUNTS
 } from 'actions/types'
@@ -26,7 +27,10 @@ import {
 const initialState = {
   accounts: List([]),
   type: 'customers',
-  loading: false
+  loading: false,
+
+  accountsCreateTicket: List([]),
+  createTicketLoading: false
 }
 
 const reducer = handleActions(
@@ -48,6 +52,25 @@ const reducer = handleActions(
         accounts: fromJS(arr),
         type: action.payload.payload && action.payload.payload.type ? action.payload.payload.type : 'customers',
         loading: false
+      }
+    },
+
+    [FETCH_ACCOUNTS_CREATE_TICKET.PENDING]: state => {
+      return {
+        ...state,
+        createTicketLoading: true
+      }
+    },
+
+    [FETCH_ACCOUNTS_CREATE_TICKET.SUCCESS]: (state, action) => {
+      let arr = state.accountsCreateTicket.toArray()
+      action.payload.response.accounts.map(i => {
+        arr.push(i)
+      })
+      return {
+        ...state,
+        accountsCreateTicket: fromJS(arr),
+        createTicketLoading: false
       }
     },
 
