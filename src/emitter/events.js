@@ -44,15 +44,17 @@ var notifications = require('../notifications') // Load Push Events
       if (err) return false
 
       settingsSchema.getSettingsByName(
-        ['tps:enable', 'tps:username', 'tps:apikey', 'gen:siteurl', 'beta:email'],
+        ['tps:enable', 'tps:username', 'tps:apikey', 'gen:siteurl', 'mailer:enable', 'beta:email'],
         function (err, tpsSettings) {
           if (err) return false
           var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
           var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
           var tpsApiKey = _.head(_.filter(tpsSettings, ['name', 'tps:apikey']))
           var baseUrl = _.head(_.filter(tpsSettings, ['name', 'gen:siteurl'])).value
-          var betaEnabled = _.head(_.filter(tpsSettings, ['name', 'beta:email']))
+          var mailerEnabled = _.head(_.filter(tpsSettings, ['name', 'mailer:enable']))
+          mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
 
+          var betaEnabled = _.head(_.filter(tpsSettings, ['name', 'beta:email']))
           betaEnabled = !betaEnabled ? false : betaEnabled.value
 
           if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
@@ -118,6 +120,7 @@ var notifications = require('../notifications') // Load Push Events
                     },
                     function (err) {
                       if (err) return c(err)
+                      if (!mailerEnabled) return c()
 
                       emails = _.uniq(emails)
 
@@ -165,14 +168,14 @@ var notifications = require('../notifications') // Load Push Events
 
                             mailer.sendMail(mailOptions, function (err) {
                               if (err) winston.warn('[trudesk:events:ticket:created] - ' + err)
+
+                              winston.debug('SentMail')
+                              return c()
                             })
                           })
                           .catch(function (err) {
                             winston.warn('[trudesk:events:ticket:created] - ' + err)
                             return c(err)
-                          })
-                          .finally(function () {
-                            return c()
                           })
                       })
                     }
@@ -389,12 +392,17 @@ var notifications = require('../notifications') // Load Push Events
     // Goes to client
     io.sockets.emit('updateComments', ticket)
 
-    settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey'], function (err, tpsSettings) {
+    settingsSchema.getSettingsByName(['tps:enable', 'tps:username', 'tps:apikey', 'mailer:enable'], function (
+      err,
+      tpsSettings
+    ) {
       if (err) return false
 
       var tpsEnabled = _.head(_.filter(tpsSettings, ['name', 'tps:enable']))
       var tpsUsername = _.head(_.filter(tpsSettings, ['name', 'tps:username']))
       var tpsApiKey = _.head(_.filter(tpsSettings), ['name', 'tps:apikey'])
+      var mailerEnabled = _.head(_.filter(tpsSettings), ['name', 'mailer:enable'])
+      mailerEnabled = !mailerEnabled ? false : mailerEnabled.value
 
       if (!tpsEnabled || !tpsUsername || !tpsApiKey) {
         tpsEnabled = false
@@ -456,6 +464,8 @@ var notifications = require('../notifications') // Load Push Events
           },
           // Send email to subscribed users
           function (c) {
+            if (!mailerEnabled) return c()
+
             var mailer = require('../mailer')
             var emails = []
             async.each(
@@ -505,17 +515,14 @@ var notifications = require('../notifications') // Load Push Events
                       }
 
                       mailer.sendMail(mailOptions, function (err) {
-                        if (err) {
-                          winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-                        }
+                        if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
+                        winston.debug('SentMail')
+                        return c()
                       })
                     })
                     .catch(function (err) {
                       winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
                       return c(err)
-                    })
-                    .finally(function () {
-                      return c()
                     })
                 })
               }
