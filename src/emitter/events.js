@@ -73,6 +73,7 @@ var notifications = require('../notifications') // Load Push Events
 
                 departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
                   if (err) return c(err)
+                  if (!departments) return c('Group is not assigned to any departments. Exiting...')
 
                   var teamMembers = _.flattenDeep(
                     departments.map(function (department) {
@@ -169,9 +170,10 @@ var notifications = require('../notifications') // Load Push Events
                             mailer.sendMail(mailOptions, function (err) {
                               if (err) winston.warn('[trudesk:events:ticket:created] - ' + err)
 
-                              winston.debug('SentMail')
-                              return c()
+                              winston.debug('Sent [' + emails.length + '] emails.')
                             })
+
+                            return c()
                           })
                           .catch(function (err) {
                             winston.warn('[trudesk:events:ticket:created] - ' + err)
@@ -217,6 +219,7 @@ var notifications = require('../notifications') // Load Push Events
 
                 departmentSchema.getDepartmentsByGroup(ticket.group._id, function (err, departments) {
                   if (err) return c(err)
+                  if (!departments) return c('Group is not assigned to any departments. Exiting...')
 
                   var members = _.flattenDeep(
                     departments.map(function (department) {
@@ -516,9 +519,11 @@ var notifications = require('../notifications') // Load Push Events
 
                       mailer.sendMail(mailOptions, function (err) {
                         if (err) winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
-                        winston.debug('SentMail')
-                        return c()
+
+                        winston.debug('Sent [' + emails.length + '] emails.')
                       })
+
+                      return c()
                     })
                     .catch(function (err) {
                       winston.warn('[trudesk:events:sendSubscriberEmail] - ' + err)
