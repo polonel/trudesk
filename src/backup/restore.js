@@ -117,26 +117,28 @@ function runRestore (file, callback) {
     path.join(__dirname, '../../restores/restore_' + file, 'database', dbName),
     '--noIndexRestore'
   ]
-  var mongodump = null
+  var mongorestore = null
   if (platform === 'win32') {
-    mongodump = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options)
+    mongorestore = spawn(path.join(__dirname, 'bin', platform, 'mongorestore'), options, {
+      env: { PATH: process.env.PATH }
+    })
   } else {
-    mongodump = spawn('mongorestore', options)
+    mongorestore = spawn('mongorestore', options, { env: { PATH: process.env.PATH } })
   }
 
-  mongodump.stdout.on('data', function (data) {
+  mongorestore.stdout.on('data', function (data) {
     winston.debug(data.toString())
   })
 
-  mongodump.stderr.on('data', function (data) {
+  mongorestore.stderr.on('data', function (data) {
     winston.debug(data.toString())
   })
 
-  mongodump.on('exit', function (code) {
+  mongorestore.on('exit', function (code) {
     if (code === 0) {
       callback(null, 'done')
     } else {
-      callback(new Error('MongoDump falied with code ' + code))
+      callback(new Error('mongorestore falied with code ' + code))
     }
   })
 }
