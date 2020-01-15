@@ -384,7 +384,7 @@ function handleMessages (messages) {
         },
         function (err) {
           if (err) {
-            winston.debug(err)
+            winston.warn(err)
           }
         }
       )

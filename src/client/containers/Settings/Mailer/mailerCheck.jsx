@@ -191,6 +191,18 @@ class Mailer_MailerCheck extends React.Component {
     })
   }
 
+  onCheckNowClicked (e) {
+    axios
+      .get(`/api/v2/mailer/check`)
+      .then(function (res) {
+        if (res.data && res.data.success) helpers.UI.showSnackbar('Fetch mail task scheduled.')
+      })
+      .catch(function (err) {
+        Log.error(err)
+        helpers.UI.showSnackbar(err, true)
+      })
+  }
+
   render () {
     const mappedTicketTypes = this.getTicketTypes().map(type => {
       return { text: type.get('name'), value: type.get('_id') }
@@ -368,6 +380,16 @@ class Mailer_MailerCheck extends React.Component {
             </div>
             <div className='uk-clearfix'>
               <Button
+                text={'Check Now'}
+                type={'button'}
+                extraClass={'uk-float-left'}
+                flat={true}
+                waves={true}
+                style={'primary'}
+                onClick={e => this.onCheckNowClicked(e)}
+                disabled={!this.getSetting('mailerCheckEnabled')}
+              />
+              <Button
                 text={'Apply'}
                 type={'submit'}
                 extraClass={'uk-float-right'}
@@ -394,7 +416,4 @@ const mapStateToProps = state => ({
   settings: state.settings.settings
 })
 
-export default connect(
-  mapStateToProps,
-  { updateSetting, updateMultipleSettings }
-)(Mailer_MailerCheck)
+export default connect(mapStateToProps, { updateSetting, updateMultipleSettings })(Mailer_MailerCheck)
