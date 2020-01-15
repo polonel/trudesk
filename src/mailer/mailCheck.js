@@ -127,8 +127,9 @@ function bindImapError () {
 function bindImapReady () {
   try {
     mailCheck.Imap.on('end', function () {
-      handleMessages(mailCheck.messages)
-      mailCheck.Imap.destroy()
+      handleMessages(mailCheck.messages, function () {
+        mailCheck.Imap.destroy()
+      })
     })
 
     mailCheck.Imap.on('ready', function () {
@@ -148,16 +149,12 @@ function bindImapReady () {
                   return next()
                 }
 
-                winston.debug('Processed %s Mail > Ticket', _.size(results))
+                winston.debug('Processing %s Mail', _.size(results))
 
                 var flag = '\\Seen'
                 if (mailCheck.fetchMailOptions.deleteMessage) {
                   flag = '\\Deleted'
                 }
-
-                mailCheck.Imap.addFlags(results, flag, function (err) {
-                  if (err) winston.warn(err)
-                })
 
                 var message = {}
 
@@ -201,11 +198,20 @@ function bindImapReady () {
                 })
 
                 f.on('end', function () {
-                  mailCheck.Imap.closeBox(true, function (err) {
-                    if (err) winston.warn(err)
-
-                    return next()
-                  })
+                  async.series(
+                    [
+                      function (cb) {
+                        mailCheck.Imap.addFlags(results, flag, cb)
+                      },
+                      function (cb) {
+                        mailCheck.Imap.closeBox(true, cb)
+                      }
+                    ],
+                    function (err) {
+                      if (err) winston.warn(err)
+                      return next()
+                    }
+                  )
                 })
               }
             ],
@@ -233,7 +239,8 @@ mailCheck.fetchMail = function () {
   }
 }
 
-function handleMessages (messages) {
+function handleMessages (messages, done) {
+  var count = 0
   messages.forEach(function (message) {
     if (
       !_.isUndefined(message.from) &&
@@ -376,6 +383,7 @@ function handleMessages (messages) {
                     ticket: ticket
                   })
 
+                  count++
                   return callback()
                 }
               )
@@ -383,9 +391,9 @@ function handleMessages (messages) {
           ]
         },
         function (err) {
-          if (err) {
-            winston.warn(err)
-          }
+          winston.debug('Created %s tickets from mail', count)
+          if (err) winston.warn(err)
+          return done(err)
         }
       )
     }
