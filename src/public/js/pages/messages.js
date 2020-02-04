@@ -230,7 +230,9 @@ define('pages/messages', [
             '" data-uk-tooltip="{pos:\'left\', animation: false}" title="' +
             message.owner.fullname +
             ' - ' +
-            moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
+            moment(message.createdAt)
+              .tz(helpers.getTimezone())
+              .format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
             '"/>'
           html += '<div class="message-body">'
           html += '<p>' + message.body + '</p>'
@@ -240,7 +242,9 @@ define('pages/messages', [
           html += '<div class="message message-right">'
           html +=
             '<div class="message-body" data-uk-tooltip="{pos:\'right\', animation: false}" title="' +
-            moment(message.createdAt).format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
+            moment(message.createdAt)
+              .tz(helpers.getTimezone())
+              .format(helpers.getShortDateFormat() + ' ' + helpers.getTimeFormat()) +
             '">'
           html += '<p>' + message.body + '</p>'
           html += '</div>'
